@@ -1,0 +1,261 @@
+package fr.inria.astor.core.loop.evolutionary;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.declaration.CtElement;
+
+import com.martiansoftware.jsap.JSAPException;
+
+import fr.inria.astor.core.entities.Gen;
+import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightCtElement;
+import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
+import fr.inria.astor.core.loop.mutation.mutants.operators.LogicalBinaryOperatorMutator;
+import fr.inria.astor.core.loop.mutation.mutants.operators.MutatorComposite;
+import fr.inria.astor.core.loop.mutation.mutants.operators.NegationUnaryOperatorConditionMutator;
+import fr.inria.astor.core.loop.mutation.mutants.operators.RelationalBinaryOperatorMutator;
+import fr.inria.astor.core.setup.MutationProperties;
+import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.stats.StatSpaceSize;
+
+/**
+ * Mutational evolution.
+ * @author Matias Martinez, matias.martinez@inria.fr
+ * 
+ */
+public class MutationalRepair extends JGenProg {
+
+	MutatorComposite mutatorBinary = null;
+	
+	Map<String, List<MutantCtElement>> mutantsCache = new HashMap<String, List<MutantCtElement>>();
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	public MutationalRepair(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+			throws JSAPException {
+		super(mutatorExecutor, projFacade);
+		this.mutatorBinary =  new MutatorComposite(mutatorExecutor.getFactory());
+		this.mutatorBinary.getMutators().add(new RelationalBinaryOperatorMutator(mutatorExecutor.getFactory()));
+		this.mutatorBinary.getMutators().add(new LogicalBinaryOperatorMutator(mutatorExecutor.getFactory()));
+		this.mutatorBinary.getMutators().add(new NegationUnaryOperatorConditionMutator(mutatorExecutor.getFactory()));
+	}
+
+//	private Logger log = Logger.getLogger(MutationalEvolutionEngine.class.getName());
+	
+	/**
+	 * Create a Gen Mutation for a given CtElement
+	 * 
+	 * @param ctElementPointed
+	 * @param className
+	 * @param suspValue
+	 * @return
+	 * @throws IllegalAccessException
+	 */
+	 @Override
+	protected GenOperationInstance createGenMutationForElement(Gen gen) throws IllegalAccessException {
+		Gen genSusp =  gen;
+							
+		GenProgMutationOperation operationType = GenProgMutationOperation.REPLACE;
+		
+		if (!(genSusp.getRootElement() instanceof CtIf)) {
+			// logger.error(".....The pointed Element is Not a statement");
+			return null;
+		}
+		CtIf targetIF = (CtIf) genSusp.getRootElement();
+
+		CtElement cpar = targetIF.getParent();
+		
+
+		//TODO: the parent not always is a block.. and we should manage them...
+		if ((cpar == null /*|| !(cpar instanceof CtBlock)*/)) {
+			return null;
+		}
+		//CtBlock parentBlock = (CtBlock) cpar;
+
+		GenOperationInstance operation = new GenOperationInstance();
+		operation.setOriginal(targetIF.getCondition());
+		operation.setOperationApplied(operationType);
+		//operation.setParentBlock(parentBlock);
+		operation.setGen(genSusp);
+		
+		List<MutantCtElement> mutations = getMutants(targetIF);
+		
+		currentStat.sizeSpace.add(new StatSpaceSize(mutations.size(),0));
+		
+		log.info("mutations: ("+mutations.size()+") "+mutations);
+		if(mutations == null || mutations.size() == 0){
+			return null;
+		}
+		CtElement fix = null;
+		int max = 0;
+		boolean continueSearching = true;
+		while(continueSearching && max < mutations.size()){
+			fix = getFixMutation(mutations);
+			continueSearching = alreadyApplied(gen.getProgramVariant().getId(),fix.toString(), targetIF.getCondition().toString());
+			max++;
+		} 
+		if(continueSearching ){
+			log.info("All mutations were applied: no mutation left to apply");
+			return null;
+		}
+		operation.setModified(fix);
+
+		return operation;
+	}
+
+	protected CtElement getFixMutation(List<MutantCtElement> mutations) {
+		CtElement fix = null;
+		//TODO: Rename
+		if(MutationProperties.uniformRandom)
+			fix = uniformRandom(mutations);
+		else
+			fix = weightRandom(mutations);
+		return fix;
+	}
+
+	protected CtElement uniformRandom(List<MutantCtElement> mutations) {
+		return mutations.get((new Random()).nextInt(mutations.size())).getElement();
+	}
+	/**
+	 * 
+	 * @param mutations
+	 * @return
+	 */
+	 private CtElement weightRandom(List<MutantCtElement> mutations) {
+		 List<WeightCtElement> we = new ArrayList<WeightCtElement>();
+			
+		 double sum = 0; 
+		 for (MutantCtElement mutantCtElement : mutations) {
+			sum+=mutantCtElement.getProbabilistic();
+			WeightCtElement w = new WeightCtElement(mutantCtElement, 0);
+			w.weight = mutantCtElement.getProbabilistic();
+			we.add(w);
+		}
+		if(sum == 0)
+			return uniformRandom(mutations);
+		
+		for (WeightCtElement weightCtElement : we) {
+			weightCtElement.weight = weightCtElement.weight / sum;
+		}
+	
+		WeightCtElement.feedAccumulative(we);
+		WeightCtElement selected =  WeightCtElement.selectElementWeightBalanced(we);
+		MutantCtElement mutatnSelected = (MutantCtElement) selected.element;
+		return	mutatnSelected.getElement();		 
+	}
+
+	/**
+	  * Retrieve the mutants for a CtIf.
+	  * If the condition were mutated before, we retrive them from a cache of mutants. 
+	  * @param targetIF
+	  * @return
+	  */
+	public List<MutantCtElement> getMutants(CtIf targetIF) {
+		List<MutantCtElement> mutations = null;
+		if(this.mutantsCache.containsKey(targetIF.getCondition().getSignature())){
+			 mutations = clone(this.mutantsCache.get(targetIF.getCondition().getSignature()));
+		}
+		else{
+			mutations = this.mutatorBinary.execute(targetIF.getCondition());
+			mutantsCache.put(targetIF.getCondition().getSignature(), mutations);
+		}
+		return mutations;
+	}
+	/**
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public List<MutantCtElement> getMutants(CtElement element) {
+		
+		CtExpression target = getExpressionFromElement(element); 
+				
+		List<MutantCtElement> mutations = null;
+		if(this.mutantsCache.containsKey(target.getSignature())){
+			 mutations = clone(this.mutantsCache.get(target.getSignature()));
+		}
+		else{
+			mutations = this.mutatorBinary.execute(target);
+			mutantsCache.put(target.getSignature(), mutations);
+		}
+		return mutations;
+	}
+	
+
+	private CtExpression getExpressionFromElement(CtElement element) {
+		
+		if(element instanceof CtExpression)
+			return (CtExpression) element;
+		
+		if(element instanceof CtIf){
+			return ((CtIf)element).getCondition();
+		}
+		//TODO: to continue			
+		
+		return null;
+	}
+
+	private List<MutantCtElement> clone(List<MutantCtElement> list) {
+		List<MutantCtElement> clonedExpression = new ArrayList<MutantCtElement>();
+		for (MutantCtElement mutation : list) {
+			CtExpression cloned = (CtExpression) mutatorBinary.getFactory().Core().clone(mutation.getElement());
+			clonedExpression.add(new MutantCtElement(cloned, mutation.getProbabilistic()));
+		}
+		
+		return clonedExpression;
+	}
+	@SuppressWarnings("rawtypes")
+	public void undoOperationToSpoonElement(GenOperationInstance operation) {
+		CtExpression ctst = (CtExpression) operation.getOriginal();
+		CtExpression fix = (CtExpression) operation.getModified();
+		try{
+		fix.replace(ctst);
+		}
+		catch(Throwable tr){
+			operation.setExceptionAtApplied((Exception) tr);
+		}
+	}
+	
+	/**
+	 * Apply a given Mutation to the node referenced by the operation
+	 * 
+	 * @param operation
+	 * @throws IllegalAccessException 
+	 */
+	@Override
+	protected void applyNewMutationOperationToSpoonElement(GenOperationInstance operation) throws IllegalAccessException {
+
+		boolean successful = false;
+		CtExpression ctst = (CtExpression) operation.getOriginal();
+		CtExpression fix = (CtExpression) operation.getModified();
+		//
+		try {
+			ctst.replace((CtExpression) fix);
+			successful = true;
+			operation.setSuccessfulyApplied((successful));
+		} catch (Exception ex) {
+			log.error("Error applying an operation, exception: " + ex.getMessage());
+			operation.setExceptionAtApplied(ex);
+			operation.setSuccessfulyApplied(false);
+		}
+			
+	}
+	
+	
+
+	@Override
+	public Class getClassToManage() {
+		return CtIf.class;
+	}
+	
+
+}
