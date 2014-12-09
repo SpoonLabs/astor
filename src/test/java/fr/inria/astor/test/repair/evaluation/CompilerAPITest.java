@@ -33,8 +33,7 @@ public class CompilerAPITest {
     static String sourceCode = "package com.accordess.ca;" +
         "class DynamicCompilationHelloWorld{" +
             "public static void main (String args[]){" +
-        //    "bababa"+
-                "System.out.println (\"Hello, dynamic compilation world!\");" +
+            "System.out.println (\"Hello, dynamic compilation world!\");" +
             "}" +
         "}" ;
  

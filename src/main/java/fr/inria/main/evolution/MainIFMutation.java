@@ -26,7 +26,6 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.setup.MutationProperties;
 import fr.inria.astor.core.setup.MutationSupporter;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.test.repair.ProjectSetupWarehouse;
 import fr.inria.main.AbstractMain;
 /**
  *   Main for version of Mutation Repair that repairs If conditions
@@ -58,7 +57,7 @@ public class MainIFMutation extends AbstractMain {
 			List<String> failingList = Arrays.asList(new String[] { failing });
 			
 			
-			rep = ProjectSetupWarehouse.getProject(location, projectName,method, failing, failingList,dependencies,false);
+			rep = getProject(location, projectName,method, failing, failingList,dependencies,false);
 			rep.getProperties().setExperimentName(this.getClass().getSimpleName());
 			
 			rep.init(MutationSupporter.DEFAULT_ORIGINAL_VARIANT);

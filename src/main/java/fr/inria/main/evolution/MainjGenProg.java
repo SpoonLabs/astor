@@ -21,7 +21,6 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.setup.MutationProperties;
 import fr.inria.astor.core.setup.MutationSupporter;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.test.repair.ProjectSetupWarehouse;
 import fr.inria.main.AbstractMain;
 
 /**
@@ -51,7 +50,7 @@ public void run(String location, String projectName, String dependencies, Stats 
 	
 	List<String> failingList = Arrays.asList(new String[] { failing });
 	String method = this.getClass().getSimpleName();
-	rep = ProjectSetupWarehouse.getProject(location, projectName,method , failing, failingList,dependencies,true);
+	rep = getProject(location, projectName,method , failing, failingList,dependencies,true);
 	rep.getProperties().setExperimentName(this.getClass().getSimpleName());
 			
 	rep.init(MutationSupporter.DEFAULT_ORIGINAL_VARIANT);

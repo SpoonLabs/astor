@@ -24,7 +24,6 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.setup.MutationProperties;
 import fr.inria.astor.core.setup.MutationSupporter;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.test.repair.ProjectSetupWarehouse;
 import fr.inria.main.AbstractMain;
 
 /**
@@ -56,8 +55,7 @@ public class MainIFPar extends AbstractMain {
 
 		List<String> failingList = Arrays.asList(new String[] { failing });
 
-		rep = ProjectSetupWarehouse
-				.getProject(location, projectName, method, failing, failingList, dependencies, false);
+		rep = getProject(location, projectName, method, failing, failingList, dependencies, false);
 
 		rep.getProperties().setExperimentName(this.getClass().getSimpleName());
 

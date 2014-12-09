@@ -1,6 +1,8 @@
 package fr.inria.main;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -12,6 +14,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.Stats;
 
@@ -159,4 +162,77 @@ public abstract class AbstractMain {
 		}
 		return facade;
 	}
+	
+	
+
+	
+
+	protected ProjectRepairFacade getProject(
+			String location, 
+			String method,
+			String regressiontest,
+			List<String> failingTestCases,
+			String dependencies, boolean srcWithMain) throws Exception {
+		File locFile = new File(location);
+		String projectname = locFile.getName();
+		
+		return getProject(location, projectname, method, regressiontest, failingTestCases, dependencies, srcWithMain);
+	}
+	
+	
+	protected  ProjectRepairFacade getProject(
+			String location, 
+			String projectIdentifier, 
+			String method,
+			String regressionTest,
+			List<String> failingTestCases,
+			String dependencies, boolean srcWithMain) 
+					throws Exception {
+		
+		if(projectIdentifier == null){
+			File locFile = new File(location);
+			projectIdentifier = locFile.getName();
+		}
+		
+		
+		String key = File.separator+method+ "-"+projectIdentifier +File.separator;
+		String inResult = ConfigurationProperties.getProperty("workingDirectory") + key + "/src/";
+		String outResult = ConfigurationProperties.getProperty("workingDirectory") + key + "/bin/";
+		String originalProjectRoot = location + File.separator+ projectIdentifier + File.separator;
+	
+		List<String> src = determineMavenFolders(srcWithMain,originalProjectRoot);
+		
+		String libdir = dependencies;
+	
+		String mainClassTest = regressionTest;
+		
+		ProjectConfiguration properties = new ProjectConfiguration();
+		properties.setInDir(inResult);
+		properties.setOutDir(outResult);
+		properties.setTestClass(mainClassTest);
+		properties.setOriginalAppBinDir(originalProjectRoot+ "/target/classes");
+		properties.setOriginalTestBinDir(originalProjectRoot+ "/target/test-classes");
+		properties.setFixid(projectIdentifier);
+		
+		properties.setOriginalProjectRootDir(originalProjectRoot);
+		properties.setOriginalDirSrc(src);
+		properties.setLibPath(libdir);
+		properties.setFailingTestCases(failingTestCases);
+		
+		properties.setPackageToInstrument(ConfigurationProperties.getProperty("packageToInstrument"));
+		
+		ProjectRepairFacade ce = new ProjectRepairFacade(properties);
+				
+		return ce;
+	}
+
+	private  List<String> determineMavenFolders(boolean srcWithMain, String originalProjectRoot) {
+		File src = new File(originalProjectRoot+File.separator+"src/main/java");
+		if(src.exists())
+			return Arrays.asList(new String[]{"src/main/java","src/test/java"});
+		else{
+			return Arrays.asList(new String[]{"src/java","src/test"});
+		}
+	}
+	
 }

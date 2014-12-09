@@ -15,18 +15,7 @@ public class MutationEvolutionaryTest extends BaseEvolutionaryTest{
 	
 	static List<SuspiciousCode> filtercandidates = null;
 	
-/*	private void setUpFilters(MutationalEvolutionEngine gploop)
-			throws JSAPException {
-		List<AbstractFixSpaceProcessor> proc = new ArrayList<AbstractFixSpaceProcessor>();
-		proc.add(new LoopExpressionFixSpaceProcessor());
-		proc.add(new IFExpressionFixSpaceProcessor());
-		gploop.setFixspace(new UniformRandomFixSpace(proc));
-		gploop.setRepairSpace(new UniformRandomRepairOperatorSpace());
-		gploop.setPopulationControler(new FitnessPopulationController());
-	}*/
-	
-	
-	//public void generic(String fixid,String regression,String failing, String dependencies, double thfl, Stats currentStat) throws Exception {
+
 	@Override
 	public void generic(
 			String location,

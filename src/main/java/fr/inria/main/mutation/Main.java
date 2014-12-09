@@ -28,7 +28,6 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.test.repair.ProjectSetupWarehouse;
 import fr.inria.main.AbstractMain;
 /**
  * 
@@ -57,7 +56,7 @@ public class Main extends AbstractMain {
 
 		String method = this.getClass().getSimpleName();
 
-		rep = ProjectSetupWarehouse.getProject(location, projectName, method, null/* failing */, null /* regression */,
+		rep = getProject(location, projectName, method, null/* failing */, null /* regression */,
 				dependencies, false);
 		rep.getProperties().setExperimentName(method);
 
