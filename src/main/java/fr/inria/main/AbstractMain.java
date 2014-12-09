@@ -40,7 +40,7 @@ public abstract class AbstractMain {
 		options.addOption("bug280", false, "Run the bug 280 from Apache Commons Math");
 
 		// Optional parameters
-		options.addOption("jvm", true, "(Optional) location of JVM that executes the mutated version of a program");
+		options.addOption("jvm", true, "(Optional) location of JVM that executes the mutated version of a program (Folder that contains java script ) ");
 		options.addOption("maxgen", true, "(Optional) max number of generation a program variant is evolved");
 		options.addOption("maxpop", true, "(Optional)number of population (program variants) that the approach evolves");
 		options.addOption("kindvalidation", true, "(Optional) type of validation: process|thread|local ");
@@ -73,6 +73,16 @@ public abstract class AbstractMain {
 			return;
 		}
 
+		if (cmd.hasOption("jvm")){
+			ConfigurationProperties.properties.setProperty("jvm4testexecution", cmd.getOptionValue("jvm"));
+		
+		}
+		String javaPath = ConfigurationProperties.getProperty("jvm4testexecution");
+		File javaFolder = new File(javaPath);
+		if(!javaFolder.exists())
+			throw new IllegalArgumentException("jdk folder not found, please configure property jvm4testexecution in the configuration.properties file");
+		
+		
 		boolean isExample = executeExample(cmd);
 		if (isExample)
 			return;
@@ -99,14 +109,13 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("kindvalidation"))
 			ConfigurationProperties.properties.setProperty("validation", cmd.getOptionValue("kindvalidation"));
 
-		if (cmd.hasOption("jvm"))
-			ConfigurationProperties.properties.setProperty("jvm4testexecution", cmd.getOptionValue("jvm"));
-
+		
 		double thfl = 0.5;
 		if (cmd.hasOption("flthreshold")) {
-			ConfigurationProperties.properties.setProperty("jvm4testexecution", cmd.getOptionValue("flthreshold"));
 			try {
 				thfl = Double.valueOf(cmd.getOptionValue("flthreshold"));
+				ConfigurationProperties.properties.setProperty("flthreshold", cmd.getOptionValue("flthreshold"));
+				
 			} catch (Exception e) {
 				System.out.println("Error: threshold not valid");
 				help();

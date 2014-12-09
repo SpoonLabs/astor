@@ -52,7 +52,12 @@ public class ProgramValidatorProcess {
 	public TestResult execute(String path, List<String> classesToExecute, int waitTime) {
 		Process p = null;
 		String javaPath = ConfigurationProperties.getProperty("jvm4testexecution");
-	
+		
+		File javaFolder = new File(javaPath);
+		if(!javaFolder.exists())
+			throw new IllegalArgumentException("jdk folder not found, please configure property jvm4testexecution in the configuration.properties file");
+		
+		javaPath += File.separator + "java";
 		String systemcp = System.getProperty("java.class.path");
 
 		path = systemcp + File.pathSeparator + path;
