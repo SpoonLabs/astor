@@ -74,7 +74,7 @@ public abstract class EvolutionaryEngine {
 		this.log = log;
 	}
 
-	protected ProgramVariantFactory variantFactory; //= new ProgramVariantFactory();
+	protected ProgramVariantFactory variantFactory;
 
 	protected ProgramValidator programVariantValidator = new ProgramValidator();
 

@@ -14,7 +14,7 @@ import fr.inria.astor.core.validation.JUnitTestExecutor;
 
 /**
  * Validates a program instance using different criterials i.e. test unit
- * results. TODO: Assertion Slice validation in future!
+ * results. 
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 

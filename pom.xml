@@ -10,7 +10,13 @@
 		<developer>
 			<name>Matias Martinez</name>
 			<email>matias.martinez@inria.fr;matias.sebastian.martinez@gmail.com</email>
-			<organization>inria</organization>
+			<organization>University of Lille and Inria</organization>
+		</developer>
+
+		<developer>
+			<name>Martin Monperrus</name>
+			<email>martin.monperrus@univ-lille1.fr</email>
+			<organization>University of Lille and Inria</organization>
 		</developer>
 	</developers>
 

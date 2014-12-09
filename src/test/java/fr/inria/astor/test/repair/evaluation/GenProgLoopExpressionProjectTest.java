@@ -41,7 +41,6 @@ public class GenProgLoopExpressionProjectTest  extends BaseEvolutionaryTest{
 	public void testExampleMath280() throws Exception{
 		
 		String dependenciespath= "examples/Math-issue-280/lib/junit-4.4.jar";
-				//Thread.currentThread().getContextClassLoader().getResource("Math-issue-280/lib/junit-4.4.jar").getPath();
 		String folder= "Math-issue-280";
 		String failing= "org.apache.commons.math.distribution.NormalDistributionTest";
 		Stats currentStat= new Stats();
