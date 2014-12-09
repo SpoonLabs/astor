@@ -59,7 +59,7 @@ public class SpoonURLClassLoader extends URLClassLoader {
 			return super.loadClass(classname);
 		} else {
 			logger.debug(classname + " has a spoon representation");
-			//if it's in caché of loaded spoon classes, return it
+			//if it's in cache of loaded spoon classes, return it
 			if(loadedFromModel.containsKey(classname)){
 				logger.debug(classname +" previously loaded");
 				return loadedFromModel.get(classname);
