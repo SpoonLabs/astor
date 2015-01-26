@@ -10,7 +10,7 @@ import org.junit.runner.Result;
 import org.junit.runners.model.InitializationError;
 
 import fr.inria.astor.core.entities.ProgramVariantValidation;
-import fr.inria.astor.core.validation.JUnitTestExecutor;
+import fr.inria.astor.core.validation.junit.JUnitTestExecutor;
 
 /**
  * Validates a program instance using different criterials i.e. test unit
@@ -21,7 +21,6 @@ import fr.inria.astor.core.validation.JUnitTestExecutor;
  */
 public class ProgramValidator {
 
-	//private Logger logger = Logger.getLogger(ProgramValidator.class.getName());
 	private Logger logger = Logger.getLogger(Thread.currentThread().getName());
 	/**
 	 * First execute the ``originals`` failing test case, then carries out a
@@ -40,8 +39,6 @@ public class ProgramValidator {
 			throws FileNotFoundException, ClassNotFoundException, InitializationError {
 
 		LogManager.getRootLogger().setLevel(Level.INFO);// OFF
-		// List<String> failingCases =
-		// supporter.getProperties().getFailingTestCases();
 		JUnitTestExecutor muTestEx = new JUnitTestExecutor();
 
 		ProgramVariantValidation validation = new ProgramVariantValidation();

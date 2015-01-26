@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransformator;
-import fr.inria.astor.core.manipulation.code.ExpressionRevolver;
+import fr.inria.astor.core.manipulation.sourcecode.ExpressionRevolver;
 /**
  * Retrieves the expressions of a if conditions
  * @author Matias Martinez,  matias.martinez@inria.fr

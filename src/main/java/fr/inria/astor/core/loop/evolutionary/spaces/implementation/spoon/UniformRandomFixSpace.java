@@ -20,7 +20,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.evolutionary.spaces.FixLocationSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
-import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 
 /**
  * This Fix Space takes uniform randomly elements from the the search space.

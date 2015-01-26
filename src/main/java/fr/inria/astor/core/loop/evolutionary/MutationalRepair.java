@@ -21,8 +21,8 @@ import fr.inria.astor.core.loop.mutation.mutants.operators.LogicalBinaryOperator
 import fr.inria.astor.core.loop.mutation.mutants.operators.MutatorComposite;
 import fr.inria.astor.core.loop.mutation.mutants.operators.NegationUnaryOperatorConditionMutator;
 import fr.inria.astor.core.loop.mutation.mutants.operators.RelationalBinaryOperatorMutator;
-import fr.inria.astor.core.setup.MutationProperties;
-import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatSpaceSize;
 
@@ -115,7 +115,7 @@ public class MutationalRepair extends JGenProg {
 	protected CtElement getFixMutation(List<MutantCtElement> mutations) {
 		CtElement fix = null;
 		//TODO: Rename
-		if(MutationProperties.uniformRandom)
+		if(TransformationProperties.uniformRandom)
 			fix = uniformRandom(mutations);
 		else
 			fix = weightRandom(mutations);

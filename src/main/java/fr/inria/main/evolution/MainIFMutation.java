@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.commons.cli.ParseException;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.MutationalRepair;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
@@ -19,8 +20,8 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandom
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
-import fr.inria.astor.core.setup.MutationProperties;
-import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.AbstractMain;
 /**
@@ -48,7 +49,7 @@ public class MainIFMutation extends AbstractMain {
 			String method = this.getClass().getSimpleName();
 			
 			if(thfl>0)
-				MutationProperties.THRESHOLD_SUSPECTNESS = thfl;
+				TransformationProperties.THRESHOLD_SUSPECTNESS = thfl;
 				
 			List<String> failingList = Arrays.asList(new String[] { failing });
 			
@@ -56,7 +57,7 @@ public class MainIFMutation extends AbstractMain {
 			rep = getProject(location, projectName,method, failing, failingList,dependencies,false);
 			rep.getProperties().setExperimentName(this.getClass().getSimpleName());
 			
-			rep.init(MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+			rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 			MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 			
 			MutationalRepair mutloop = new MutationalRepair(mutSupporter,rep);
@@ -82,7 +83,7 @@ public class MainIFMutation extends AbstractMain {
 				if(filtercandidates == null){
 				List<SuspiciousCode> candidates = rep.getSuspicious(
 						rep.getProperties().getPackageToInstrument()
-						,MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+						,ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
 				
 				assertNotNull(candidates);
@@ -99,7 +100,7 @@ public class MainIFMutation extends AbstractMain {
 					}
 				}
 				currentStat.fl_size = filtercandidates.size();
-				currentStat.fl_threshold = MutationProperties.THRESHOLD_SUSPECTNESS ;
+				currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
 		}
 				mutloop.start(filtercandidates);
 				

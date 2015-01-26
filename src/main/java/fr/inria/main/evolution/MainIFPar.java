@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.commons.cli.ParseException;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.ParRepair;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
@@ -21,8 +22,8 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
-import fr.inria.astor.core.setup.MutationProperties;
-import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.AbstractMain;
 
@@ -51,7 +52,7 @@ public class MainIFPar extends AbstractMain {
 		String method = this.getClass().getSimpleName();
 
 		if (thfl > 0)
-			MutationProperties.THRESHOLD_SUSPECTNESS = thfl;
+			TransformationProperties.THRESHOLD_SUSPECTNESS = thfl;
 
 		List<String> failingList = Arrays.asList(new String[] { failing });
 
@@ -59,7 +60,7 @@ public class MainIFPar extends AbstractMain {
 
 		rep.getProperties().setExperimentName(this.getClass().getSimpleName());
 
-		rep.init(MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+		rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		
 		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 				
@@ -80,7 +81,7 @@ public class MainIFPar extends AbstractMain {
 		parloop.setPopulationControler(new FitnessPopulationController());
 				
 		List<SuspiciousCode> candidates = rep.getSuspicious(rep.getProperties().getPackageToInstrument(),
-				MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+				ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
 		parloop.setProgramVariantValidator(new ProgramValidatorSpoonRegression());
@@ -92,7 +93,7 @@ public class MainIFPar extends AbstractMain {
 			}
 		}
 		currentStat.fl_size = filtercandidates.size();
-		currentStat.fl_threshold = MutationProperties.THRESHOLD_SUSPECTNESS;
+		currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS;
 
 		assertNotNull(candidates);
 		assertTrue(candidates.size() > 0);

@@ -6,7 +6,7 @@ import java.util.List;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeElement;
 import fr.inria.astor.core.loop.evolutionary.transformators.ModelTransformator;
-import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 
 /**
  * Spoon processor to create a Fix Space for a given CtElement <T> Update: we

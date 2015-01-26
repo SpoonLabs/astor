@@ -12,6 +12,7 @@ import org.apache.commons.cli.ParseException;
 
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.JGenProgIfExpression;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
@@ -22,8 +23,8 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
-import fr.inria.astor.core.setup.MutationProperties;
-import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.AbstractMain;
 /**
@@ -51,14 +52,14 @@ public class MainIFjGenProg extends AbstractMain {
 			double thfl, String failing) throws Exception {
 		System.out.println(System.getProperty("java.class.path"));
 		if(thfl>0)
-			MutationProperties.THRESHOLD_SUSPECTNESS = thfl;
+			TransformationProperties.THRESHOLD_SUSPECTNESS = thfl;
 		
 		List<String> failingList = Arrays.asList(new String[] { failing });
 		String method = this.getClass().getSimpleName();
 		rep = getProject(location, projectName,method , failing, failingList,dependencies,true);
 		rep.getProperties().setExperimentName(this.getClass().getSimpleName());
 				
-		rep.init(MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+		rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		Factory facade = FactoryImpl.getLauchingFactory();
 		if(facade == null){
 			facade = rep.createFactory();
@@ -83,7 +84,7 @@ public class MainIFjGenProg extends AbstractMain {
 		
 		List<SuspiciousCode> candidates = rep.getSuspicious(
 				packageToInstrument,
-				MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+				ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
 		for (SuspiciousCode suspiciousCode : candidates) {
@@ -93,7 +94,7 @@ public class MainIFjGenProg extends AbstractMain {
 			}
 		}
 		currentStat.fl_size = filtercandidates.size();
-		currentStat.fl_threshold = MutationProperties.THRESHOLD_SUSPECTNESS ;
+		currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
 		
 		assertNotNull(candidates);
   		assertTrue(candidates.size() > 0);

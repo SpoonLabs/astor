@@ -16,8 +16,6 @@ import fr.inria.astor.core.entities.ProgramVariantValidation;
  */
 public class FitnessPopulationController implements PopulationController{
 	
-	///private Logger log = Logger.getLogger(FitnessPopulationController.class.getName());
-//	private Logger log = Logger.getLogger(FitnessPopulationController.class.getName());
 	private Logger log = Logger.getLogger(Thread.currentThread().getName());
 	
 	protected FitnessComparator comparator = new FitnessComparator();

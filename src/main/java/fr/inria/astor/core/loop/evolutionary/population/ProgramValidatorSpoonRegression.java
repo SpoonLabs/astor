@@ -14,7 +14,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.entities.ProgramVariantValidation;
-import fr.inria.astor.core.validation.JUnitTestExecutor;
+import fr.inria.astor.core.validation.junit.JUnitTestExecutor;
 
 /**
  * Validates a program instance using different criterials i.e. test unit
@@ -25,7 +25,6 @@ import fr.inria.astor.core.validation.JUnitTestExecutor;
  */
 public class ProgramValidatorSpoonRegression extends ProgramValidator {
 
-	//private Logger logger = Logger.getLogger(ProgramValidatorSpoonRegression.class.getName());
 	private Logger logger = Logger.getLogger(Thread.currentThread().getName());
 	
 	List<String> regressionCases = null;

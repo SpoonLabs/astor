@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
@@ -18,8 +19,8 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.SingleStatementFixSpaceProcessor;
-import fr.inria.astor.core.setup.MutationProperties;
-import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.AbstractMain;
 
@@ -46,14 +47,14 @@ public void run(String location, String projectName, String dependencies, Stats 
 	
 	//System.out.println(System.getProperty("java.class.path"));
 	if(thfl>0)
-		MutationProperties.THRESHOLD_SUSPECTNESS = thfl;
+		TransformationProperties.THRESHOLD_SUSPECTNESS = thfl;
 	
 	List<String> failingList = Arrays.asList(new String[] { failing });
 	String method = this.getClass().getSimpleName();
 	rep = getProject(location, projectName,method , failing, failingList,dependencies,true);
 	rep.getProperties().setExperimentName(this.getClass().getSimpleName());
 			
-	rep.init(MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+	rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 	
 	
 	MutationSupporter mutSupporter = new MutationSupporter(getFactory());
@@ -84,7 +85,7 @@ public void run(String location, String projectName, String dependencies, Stats 
 	//Suspicious
 	List<SuspiciousCode> candidates = rep.getSuspicious(
 			packageToInstrument,
-			MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+			ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 	List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
 	for (SuspiciousCode suspiciousCode : candidates) {
@@ -94,7 +95,7 @@ public void run(String location, String projectName, String dependencies, Stats 
 		}
 	}
 	currentStat.fl_size = filtercandidates.size();
-	currentStat.fl_threshold = MutationProperties.THRESHOLD_SUSPECTNESS ;
+	currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
 	
 	assertNotNull(candidates);
 	assertTrue(candidates.size() > 0);

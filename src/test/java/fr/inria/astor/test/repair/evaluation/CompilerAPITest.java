@@ -19,8 +19,8 @@ import javax.tools.ToolProvider;
 
 import org.junit.Test;
 
-import fr.inria.astor.core.manipulation.compiler.bytecode.CompiledObjectFileObject;
-import fr.inria.astor.core.manipulation.compiler.bytecode.VirtualFileObjectManager;
+import fr.inria.astor.core.manipulation.bytecode.compiler.tools.CompiledObjectFileObject;
+import fr.inria.astor.core.manipulation.bytecode.compiler.tools.VirtualFileObjectManager;
  
 /**
  * A test class to test dynamic compilation API.

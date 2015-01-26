@@ -10,7 +10,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import fr.inria.astor.core.loop.mutation.mutants.core.SpoonMutator;
 import fr.inria.astor.core.loop.mutation.mutants.processor.MethodCallParameterProcessor;
-import fr.inria.astor.core.manipulation.code.VariableResolver;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 
 public class MethodInvocationMutator extends SpoonMutator{
 

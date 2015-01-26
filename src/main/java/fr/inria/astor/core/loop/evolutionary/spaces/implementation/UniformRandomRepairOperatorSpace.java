@@ -5,7 +5,7 @@ import java.util.Random;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.entities.taxonomy.MutationOperation;
 import fr.inria.astor.core.loop.evolutionary.spaces.RepairOperatorSpace;
-import fr.inria.astor.core.setup.MutationProperties;
+import fr.inria.astor.core.setup.TransformationProperties;
 
 /**
  * Represents a Uniform Random Repair operator space.
@@ -24,7 +24,7 @@ public class UniformRandomRepairOperatorSpace implements RepairOperatorSpace {
 	@Override
 	public MutationOperation getNextMutation(double suspiciousValue) {
 		double randomVal = random.nextDouble();
-		if(( suspiciousValue * MutationProperties.mutation_rate ) >= randomVal ){
+		if(( suspiciousValue * TransformationProperties.mutation_rate ) >= randomVal ){
 			return this.getNextMutation();
 		}
 		//As we use a mutation rate to indicate the prob of mutation, if there is not mutation , return null

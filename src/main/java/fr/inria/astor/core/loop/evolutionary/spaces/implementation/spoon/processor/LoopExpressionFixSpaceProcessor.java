@@ -10,7 +10,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtWhile;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransformator;
-import fr.inria.astor.core.manipulation.code.ExpressionRevolver;
+import fr.inria.astor.core.manipulation.sourcecode.ExpressionRevolver;
 /**
  * 
  * @author Matias Martinez,  matias.martinez@inria.fr

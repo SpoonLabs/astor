@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.reflect.declaration.CtClass;
-import fr.inria.astor.core.manipulation.compiler.bytecode.CompilationResult;
-import fr.inria.astor.core.manipulation.compiler.bytecode.ProgramVariantCompilationResult;
+import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.manipulation.bytecode.entities.ProgramVariantCompilationResult;
 /**
  * Representation of a Program Variant (Genotype)
  * The program is represented by a list of Gens. 
@@ -15,6 +15,10 @@ import fr.inria.astor.core.manipulation.compiler.bytecode.ProgramVariantCompilat
  *
  */
 public class ProgramVariant {
+	
+
+	public static String DEFAULT_ORIGINAL_VARIANT = "default";
+
 	/**
 	 * Variand ID
 	 */
@@ -46,24 +50,10 @@ public class ProgramVariant {
 	 * Number of the generation this variant born
 	 */
 	protected int generationSource = 0;
-	
-	//protected ExecutionSlice assertionExecutionTrace = null;
-	
-	protected CompilationResult compilation = null;
-	
-	
-	@Deprecated
-	protected ProgramVariantCompilationResult compilationResult = null;
-	
-	@Deprecated
-	public ProgramVariantCompilationResult getCompilationResult() {
-		return compilationResult;
-	}
 
-	public void setCompilationResult(
-			ProgramVariantCompilationResult compilationResult) {
-		this.compilationResult = compilationResult;
-	}
+	
+	protected CompilationResult compilationResult = null;
+
 
 	public ProgramVariant(){
 		genList = new ArrayList<Gen>();
@@ -126,10 +116,7 @@ public class ProgramVariant {
 	public void setParent(ProgramVariant parent) {
 		this.parent = parent;
 	}
-	public String toString(){
-		return "[Variant id: "+this.id+", #gens: "+this.getGenList().size()+ ", #ops: "+this.operations.values().size()+", parent:"+((this.parent==null)?"-":this.parent.id)+"]";
-	}
-
+	
 	public int getGenerationSource() {
 		return generationSource;
 	}
@@ -140,11 +127,19 @@ public class ProgramVariant {
 
 	
 	public CompilationResult getCompilation() {
-		return compilation;
+		return compilationResult;
 	}
 
 	public void setCompilation(CompilationResult compilation) {
-		this.compilation = compilation;
+		this.compilationResult = compilation;
+	}
+	
+	public String toString(){
+		return "[Variant id: "+this.id+", #gens: "+this.getGenList().size()+ ", #ops: "+this.operations.values().size()+", parent:"+((this.parent==null)?"-":this.parent.id)+"]";
+	}
+	
+	public String currentMutatorIdentifier() {
+		return (id >= 0)? ( "variant-" + id) : DEFAULT_ORIGINAL_VARIANT;
 	}
 	
 }

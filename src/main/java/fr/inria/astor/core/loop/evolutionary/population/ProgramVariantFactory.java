@@ -24,9 +24,9 @@ import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerL
 import fr.inria.astor.core.loop.evolutionary.spaces.FixLocationSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
-import fr.inria.astor.core.manipulation.code.VariableResolver;
-import fr.inria.astor.core.setup.MutationProperties;
-import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
+import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
@@ -52,8 +52,10 @@ public class ProgramVariantFactory {
 
 	List<AbstractFixSpaceProcessor> processors = null;
 
+	
+	
 	public ProgramVariantFactory() {
-
+		super();
 	}
 
 	public ProgramVariantFactory(List<AbstractFixSpaceProcessor> processors) {
@@ -82,9 +84,8 @@ public class ProgramVariantFactory {
 			// --Then, create the instances (using the Spoon Model)
 			ProgramVariant v_ins = variants.get(ins);
 
-			mutatorSupporter.setMutationId(ins);
-			if (MutationProperties.saveProgramVariant) {
-				String srcOutput = projectFacade.getInDirWithPrefix(mutatorSupporter.currentMutatorIdentifier());
+			if (TransformationProperties.saveProgramVariant) {
+				String srcOutput = projectFacade.getInDirWithPrefix(v_ins.currentMutatorIdentifier());
 				mutatorSupporter.saveSourceCodeOnDiskProgramVariant(v_ins, srcOutput);
 			}
 			log.info("Creating program variant #" + ins + ", " + v_ins.toString());
@@ -94,46 +95,8 @@ public class ProgramVariantFactory {
 		return variants;
 	}
 
-	public List<ProgramVariant> createInitialPopulation(List<CtElement> elements,
-			ProgramValidator programVariantValidator, PopulationController populationControler,
-			ProjectRepairFacade projectFacade) throws Exception {
-		List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
 
-		for (CtElement ctElement : elements) {
 
-			variants.addAll(this.createInitialPopulation(ctElement, programVariantValidator, populationControler,
-					projectFacade));
-		}
-		int id = 0;
-		for (ProgramVariant programVariant : variants) {
-			programVariant.setId(id++);
-		}
-		return variants;
-	}
-
-	public List<ProgramVariant> createInitialPopulation(CtElement element, ProgramValidator programVariantValidator,
-			PopulationController populationControler, ProjectRepairFacade projectFacade) throws Exception {
-
-		URL[] url = projectFacade.getURLforMutation(mutatorSupporter.DEFAULT_ORIGINAL_VARIANT);
-
-		CtClass classOfElement = getCtClassFromCtElement(element);
-
-		List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
-		// First one
-		idCounter = 1;
-
-		// --Then, create the instances (using the Spoon Model)
-		ProgramVariant v_1 = createProgramInstance(element, classOfElement, idCounter);
-		variants.add(v_1);
-
-		mutatorSupporter.setMutationId(0);
-		String srcOutput = projectFacade.getInDirWithPrefix(mutatorSupporter.currentMutatorIdentifier());
-		mutatorSupporter.saveSourceCodeOnDiskProgramVariant(v_1, srcOutput);
-
-		log.info("Creating program variant #" + 0 + ", " + v_1.toString());
-
-		return variants;
-	}
 
 	public CtClass getCtClassFromCtElement(CtElement element) {
 
@@ -176,31 +139,6 @@ public class ProgramVariantFactory {
 		return progInstance;
 	}
 
-	private ProgramVariant createProgramInstance(CtElement element, CtClass ctclass, int idProgramInstance) {
-
-		ProgramVariant progInstance = new ProgramVariant(idProgramInstance);
-		progInstance.getBuiltClasses().put(ctclass.getQualifiedName(), ctclass);
-
-		log.info("Creating variant " + idProgramInstance);
-
-		Gen gen = new Gen();
-		gen.setRootElement(element);
-		gen.setClonedClass(ctclass);
-
-		if (MutationProperties.analyzeContext) {
-			List<CtVariable> contextOfGen = VariableResolver.getVariablesFromBlockInScope(gen.getRootElement());
-			gen.setContextOfGen(contextOfGen);
-		}
-
-		if (gen != null) {
-			progInstance.getGenList().add(gen);
-			log.info("---> gen created:" + gen.getRootElement().getClass().getSimpleName());
-		}
-
-		return progInstance;
-	}
-
-	
 
 	/**
 	 * It receives a suspicious code (a line)and it create a list of Gens from than suspicious line when it's possible.
@@ -244,7 +182,7 @@ public class ProgramVariantFactory {
 
 		List<CtVariable> contextOfGen = null;
 		// We take the first element for getting the context (as the remaining have the same location, it's not necessary)
-		if (MutationProperties.analyzeContext) {
+		if (TransformationProperties.analyzeContext) {
 			contextOfGen = VariableResolver.getVariablesFromBlockInScope(ctSuspects.get(0));
 		}
 		

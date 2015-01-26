@@ -39,34 +39,7 @@ public class SpoonElementPointer extends AbstractProcessor<CtElement> {
 			inLine.add(element);
 		}
 	}
-	@Deprecated
-	public List<CtElement> retrieveSpoonElement(SuspiciousCode candidate) throws Exception {
-		return retrieveSpoonElement(candidate.getClassName(), candidate.getLineNumber());
-	}
-	/**
-	 * OLD
-	 * @param path
-	 * @param line
-	 * @return
-	 * @throws Exception
-	 */
-	@Deprecated
-	public List<CtElement> retrieveSpoonElement(String path,int line) throws Exception {
-		inLine.clear();
-		
-		logger.info("Searching line "+line+" in file "+path);
-		String[] argsS = ("-i "+path
-				+ " -p mut.manipulator.SpoonElementPointer").split(" ");
-		
-		SpoonElementPointer.line = line;
-		Launcher.main(argsS);
-		logger.info("For Line: " + SpoonElementPointer.inLine);
-		for (CtElement e : inLine) {
-			logger.info("--> " + e.getClass().getSimpleName()
-					+ " " + e.getPosition().getFile());
-		}
-		return  SpoonElementPointer.inLine;
 	
-	}
+
 
 }

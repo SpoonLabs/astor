@@ -26,21 +26,21 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidation;
 import fr.inria.astor.core.loop.evolutionary.population.PopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramValidator;
-import fr.inria.astor.core.loop.evolutionary.population.ProgramValidatorProcess;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.FixLocationSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.RepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightCtElement;
-import fr.inria.astor.core.manipulation.compiler.bytecode.BytecodeClassLoader;
-import fr.inria.astor.core.manipulation.compiler.bytecode.CompilationResult;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.bytecode.classloader.BytecodeClassLoader;
+import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.setup.MutationProperties;
-import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.core.validation.TestResult;
-import fr.inria.astor.core.validation.ValidationDualModeThread;
+import fr.inria.astor.core.validation.entity.TestResult;
+import fr.inria.astor.core.validation.executors.ValidatorProcess;
+import fr.inria.astor.core.validation.executors.ValidationDualModeThread;
 
 /**
  * Evolutionary program transformation Loop
@@ -116,8 +116,8 @@ public abstract class EvolutionaryEngine {
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
 
-		while ((!foundsolution || !MutationProperties.stopAtFirstSolutionFound)
-				&& generation < MutationProperties.maxGeneration) {
+		while ((!foundsolution || !TransformationProperties.stopAtFirstSolutionFound)
+				&& generation < TransformationProperties.maxGeneration) {
 			generation++;
 			log.info("----------Running generation " + generation + ", population size: " + this.variants.size());
 			foundsolution = processGenerations(generation);
@@ -157,7 +157,7 @@ public abstract class EvolutionaryEngine {
 
 		for (ProgramVariant parentVariant : variants) {
 
-			if (MutationProperties.stopAtFirstSolutionFound && foundSolution) {
+			if (TransformationProperties.stopAtFirstSolutionFound && foundSolution) {
 				break;
 			}
 
@@ -165,7 +165,7 @@ public abstract class EvolutionaryEngine {
 			log.info("-Parent Variant: " + parentVariant);
 
 			// workarround, the class is loader when in the subtype
-			URL[] originalURL = projectFacade.getURLforMutation(MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+			URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 			URLClassLoader loader = new URLClassLoader(originalURL);
 			Thread.currentThread().setContextClassLoader(loader);
 
@@ -173,16 +173,16 @@ public abstract class EvolutionaryEngine {
 
 			if (childVariant != null) {
 
-				CompilationResult compilation = mutatorSupporter.compileOnMemoryProgramVariantWithTools(childVariant,
+				CompilationResult compilation = mutatorSupporter.compileOnMemoryProgramVariant(childVariant,
 						originalURL);
 			
 				boolean childCompiles = compilation.compiles();
 
-				mutatorSupporter.setMutationId(childVariant.getId());
+				//mutatorSupporter.setMutationId(childVariant.getId());
 
-				String srcOutput = projectFacade.getInDirWithPrefix(mutatorSupporter.currentMutatorIdentifier());
+				String srcOutput = projectFacade.getInDirWithPrefix(childVariant.currentMutatorIdentifier()/*mutatorSupporter.currentMutatorIdentifier()*/);
 
-				if (MutationProperties.saveProgramVariant) {
+				if (TransformationProperties.saveProgramVariant) {
 					log.info("-Saving child on disk variant #" + childVariant.getId() + " at " + srcOutput);
 					// This method should be refactored, and replace by the
 					// output from memory compilation
@@ -205,7 +205,7 @@ public abstract class EvolutionaryEngine {
 						log.info("-Found Solution, child variant #" + childVariant.getId());
 						saveStaticSucessful(generation);
 						// if the mode is not save, we only save the solution
-						if (!MutationProperties.saveProgramVariant) {
+						if (!TransformationProperties.saveProgramVariant) {
 							mutatorSupporter.saveSourceCodeOnDiskProgramVariant(childVariant, srcOutput);
 
 						}
@@ -229,9 +229,9 @@ public abstract class EvolutionaryEngine {
 		}
 		// New population creation:
 		variants = populationControler.selectProgramVariantsForNextGeneration(variants, temporalInstances,
-				this.solutions, MutationProperties.populationSize);
+				this.solutions, TransformationProperties.populationSize);
 
-		if (MutationProperties.reintroduceOriginalProgram) {
+		if (TransformationProperties.reintroduceOriginalProgram) {
 			// Create a new variant from the original parent
 			ProgramVariant parentNew = this.variantFactory.createProgramVariantFromAnother(originalVariant, generation);
 			parentNew.getOperations().clear();
@@ -369,7 +369,7 @@ public abstract class EvolutionaryEngine {
 					operationInGen.setGen(genProgInstance);
 					created = true;
 					mut++;
-					if (MutationProperties.mutateOnlyOneGenPerGeneration) {
+					if (TransformationProperties.mutateOnlyOneGenPerGeneration) {
 						break;
 					}
 				} else {// Not applied
@@ -406,9 +406,9 @@ public abstract class EvolutionaryEngine {
 	 * @return
 	 */
 	protected List<Gen> getGenList(List<Gen> genList) {
-		if (MutationProperties.mutateGenInOrder) {
+		if (TransformationProperties.mutateGenInOrder) {
 			return genList;
-		} else if (MutationProperties.mutateGenRandomlySuspicious) {
+		} else if (TransformationProperties.mutateGenRandomlySuspicious) {
 			return getWeightGenList(genList);
 		}
 		List<Gen> shuffList = new ArrayList<Gen>(genList);
@@ -487,7 +487,7 @@ public abstract class EvolutionaryEngine {
 		// New: for the operation of each generation
 		log.info("--Apply previous mutations to the model of variant " + variant);
 		// We do not include the current generation (should be empty)
-		for (int generation_i = MutationProperties.firstgenerationIndex; generation_i < currentGeneration; generation_i++) {
+		for (int generation_i = TransformationProperties.firstgenerationIndex; generation_i < currentGeneration; generation_i++) {
 
 			List<GenOperationInstance> operations = variant.getOperations().get(generation_i);
 			if (operations == null || operations.isEmpty()) {
@@ -566,10 +566,10 @@ public abstract class EvolutionaryEngine {
 	 */
 	protected boolean validateInstanceProcess(ProgramVariant mutatedVariant) {
 		try {
-			String bytecodeOutput = projectFacade.getOutDirWithPrefix(mutatorSupporter.currentMutatorIdentifier());
+			String bytecodeOutput = projectFacade.getOutDirWithPrefix(mutatedVariant.currentMutatorIdentifier());
 			File variantOutputFile = new File(bytecodeOutput);
 			URL[] bc = null;
-			URL[] originalURL = projectFacade.getURLforMutation(MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+			URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
 			if (mutatedVariant.getCompilation() != null) {
 				mutatorSupporter.getSpoonClassCompiler().saveByteCode(
@@ -579,7 +579,7 @@ public abstract class EvolutionaryEngine {
 			} else {
 				bc = originalURL;
 			}
-			ProgramValidatorProcess p = new ProgramValidatorProcess(currentStat);
+			ValidatorProcess p = new ValidatorProcess(currentStat);
 			// First validation: failing test case
 			String localPrefix = projectFacade.getProperties().getExperimentName() + File.separator
 					+ projectFacade.getProperties().getFixid();
@@ -587,7 +587,7 @@ public abstract class EvolutionaryEngine {
 		
 			
 			TestResult trfailing = p.execute(bc, projectFacade.getProperties().getFailingTestCases(),
-					MutationProperties.validationSingleTimeLimit * 5);
+					TransformationProperties.validationSingleTimeLimit * 5);
 			currentStat.passFailingval1++;
 			if (trfailing == null) {
 				log.info("The validation 1 have not finished well");
@@ -598,7 +598,7 @@ public abstract class EvolutionaryEngine {
 				log.info(trfailing);
 				if (trfailing.wasSuccessful()) {
 					currentStat.passFailingval2++;
-					if (MutationProperties.executeCompleteRegression)
+					if (TransformationProperties.executeCompleteRegression)
 						return executeRegressionTesting(mutatedVariant, bc, p, localPrefix);
 					else
 						return executeRegressionTestingOneByOne(mutatedVariant, bc, p, localPrefix);
@@ -627,11 +627,11 @@ public abstract class EvolutionaryEngine {
 		return (URL[]) urls.toArray(originalURL);
 	}
 
-	protected boolean executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc, ProgramValidatorProcess p,
+	protected boolean executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc, ValidatorProcess p,
 			String localPrefix) {
 		log.info("Test Failing is passing, Executing regression");
 		TestResult trregression = p.execute(bc, retrieveRegressionTestCases(),
-				MutationProperties.validationRegressionTimeLimit * 2);
+				TransformationProperties.validationRegressionTimeLimit * 2);
 		if (trregression == null) {
 			mutatedVariant.setFitness(Double.MAX_VALUE);
 			return false;
@@ -643,14 +643,14 @@ public abstract class EvolutionaryEngine {
 	}
 
 	protected boolean executeRegressionTestingOneByOne(ProgramVariant mutatedVariant, URL[] bc,
-			ProgramValidatorProcess p, String localPrefix) {
+			ValidatorProcess p, String localPrefix) {
 		log.info("Test Failing is passing, Executing regression");
 		TestResult trregressionall = new TestResult();
 		long t1 = System.currentTimeMillis();
 		for (String tc : retrieveRegressionTestCases()) {
 			List<String> parcial = new ArrayList<String>();
 			parcial.add(tc);
-			TestResult trregression = p.execute(bc, parcial, MutationProperties.validationRegressionTimeLimit * 2);
+			TestResult trregression = p.execute(bc, parcial, TransformationProperties.validationRegressionTimeLimit * 2);
 			if (trregression == null) {
 				log.info("The validation 2 have not finished well");
 				mutatedVariant.setFitness(Double.MAX_VALUE);
@@ -727,7 +727,7 @@ public abstract class EvolutionaryEngine {
 				try {
 					log.info("Waiting for validation...");
 					thread.start();
-					thread.wait(MutationProperties.validationSingleTimeLimit);
+					thread.wait(TransformationProperties.validationSingleTimeLimit);
 
 				} catch (InterruptedException e) {
 					log.info("stop validation thread");
@@ -750,7 +750,7 @@ public abstract class EvolutionaryEngine {
 						threadRegression.modeFirst = false;
 						threadRegression.start();
 						log.info("Thread 2 id " + threadRegression.getId() + " " + threadRegression.getName());
-						threadRegression.wait(MutationProperties.validationRegressionTimeLimit);
+						threadRegression.wait(TransformationProperties.validationRegressionTimeLimit);
 					} catch (InterruptedException e) {
 						log.info("stop validation thread");
 						e.printStackTrace();

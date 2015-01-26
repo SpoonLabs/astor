@@ -43,17 +43,9 @@ We provide an implementation of GenProg repair algorithm.
 The class to run it is:
 fr.inria.main.evolution.MainjGenProg
 
-This implementations applies the GenProg's operators over 1) statements in a code block, 2) conditions in if and boucle .
+This implementations applies the GenProg's operators over 1) statements in a code block, 2) conditions in if and boucle.
 After the execution, Astor writes in the output folder (property 'workingDirectory'in the mentioned file), a folder with all the variants that fulfill the goals i.e., repair the bugs.
 Each variant folder contains the files that Astor have analyzed (and eventually modified). Additionally, it contains a file called 'Patch.xml' that summarized all changes done in the variant.
-
-
-** Mutation Repair ** 
-To generate mutants, execute: 
-
-    fr.inria.main.mutation.Main  (old MuTestingMutantGeneratorTest)
-
-To verify rates of killed/alived mutants execute MuTestExecutorTest.java
 
 
 Contacts

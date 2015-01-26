@@ -23,8 +23,8 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransformator;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtStatementTransformator;
 import fr.inria.astor.core.loop.evolutionary.transformators.ModelTransformator;
-import fr.inria.astor.core.setup.MutationProperties;
-import fr.inria.astor.core.setup.MutationSupporter;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
@@ -75,7 +75,7 @@ public class JGenProg extends EvolutionaryEngine {
 			return;
 		}
 				
-		URL[] originalURL = projectFacade.getURLforMutation(MutationSupporter.DEFAULT_ORIGINAL_VARIANT);
+		URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		URLClassLoader loader = new URLClassLoader(originalURL);
 		Thread.currentThread().setContextClassLoader(loader);
 		
@@ -95,7 +95,7 @@ public class JGenProg extends EvolutionaryEngine {
 	}
 
 	public void initModel() {
-		String codeLocation = projectFacade.getInDirWithPrefix(mutatorSupporter.DEFAULT_ORIGINAL_VARIANT);
+		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
 		mutatorSupporter.buildModel(codeLocation,classpath);
 	}
@@ -103,7 +103,7 @@ public class JGenProg extends EvolutionaryEngine {
 	public void initializePopulation(List<SuspiciousCode> suspicious) throws Exception {
 		variantFactory.setMutatorExecutor(getMutatorSupporter());
 		variantFactory.setFixspace(getFixspace());
-		this.variants = variantFactory.createInitialPopulation(suspicious, MutationProperties.populationSize,
+		this.variants = variantFactory.createInitialPopulation(suspicious, TransformationProperties.populationSize,
 				programVariantValidator, populationControler, projectFacade);
 
 		// We save the first variant

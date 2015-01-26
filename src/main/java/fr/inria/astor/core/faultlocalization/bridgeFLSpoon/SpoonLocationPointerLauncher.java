@@ -10,7 +10,6 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import fr.inria.astor.core.faultlocalization.SpoonLauncher;
 
 
 /**

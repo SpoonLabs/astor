@@ -20,7 +20,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtExecutableReference;
-import fr.inria.astor.core.manipulation.code.VariableResolver;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 
 public class MethodCallParameterProcessor extends AbstractProcessor<CtMethod<?>> {
 
