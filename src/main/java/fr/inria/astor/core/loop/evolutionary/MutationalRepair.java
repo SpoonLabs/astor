@@ -49,7 +49,6 @@ public class MutationalRepair extends JGenProg {
 		this.mutatorBinary.getMutators().add(new NegationUnaryOperatorConditionMutator(mutatorExecutor.getFactory()));
 	}
 
-//	private Logger log = Logger.getLogger(MutationalEvolutionEngine.class.getName());
 	
 	/**
 	 * Create a Gen Mutation for a given CtElement
@@ -79,19 +78,17 @@ public class MutationalRepair extends JGenProg {
 		if ((cpar == null /*|| !(cpar instanceof CtBlock)*/)) {
 			return null;
 		}
-		//CtBlock parentBlock = (CtBlock) cpar;
-
+		
 		GenOperationInstance operation = new GenOperationInstance();
 		operation.setOriginal(targetIF.getCondition());
 		operation.setOperationApplied(operationType);
-		//operation.setParentBlock(parentBlock);
 		operation.setGen(genSusp);
 		
 		List<MutantCtElement> mutations = getMutants(targetIF);
 		
 		currentStat.sizeSpace.add(new StatSpaceSize(mutations.size(),0));
 		
-		log.info("mutations: ("+mutations.size()+") "+mutations);
+		log.debug("mutations: ("+mutations.size()+") "+mutations);
 		if(mutations == null || mutations.size() == 0){
 			return null;
 		}
@@ -104,7 +101,7 @@ public class MutationalRepair extends JGenProg {
 			max++;
 		} 
 		if(continueSearching ){
-			log.info("All mutations were applied: no mutation left to apply");
+			log.debug("All mutations were applied: no mutation left to apply");
 			return null;
 		}
 		operation.setModified(fix);

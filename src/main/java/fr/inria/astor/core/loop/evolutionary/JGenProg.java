@@ -65,13 +65,13 @@ public class JGenProg extends EvolutionaryEngine {
 			initModel();
 		}
 
-		log.info("----Starting Mutation: Initial suspicious size: " + suspicious.size());
+		log.debug("----Starting Mutation: Initial suspicious size: " + suspicious.size());
 		long startT = System.currentTimeMillis();
 
 		initializePopulation(suspicious);
 		
 		if(originalVariant.getGenList().isEmpty()){
-			log.info("No gen to analyze");
+			log.debug("No gen to analyze");
 			return;
 		}
 				
@@ -89,7 +89,7 @@ public class JGenProg extends EvolutionaryEngine {
 		startEvolution();
 
 		long endT = System.currentTimeMillis();
-		log.info("Time (ms): " + (endT - startT));
+		log.debug("Time (ms): " + (endT - startT));
 		currentStat.timeIteraction = ((endT-startT));
 		
 	}
@@ -122,7 +122,7 @@ public class JGenProg extends EvolutionaryEngine {
 		GenProgMutationOperation type = (GenProgMutationOperation) operation.getOperationApplied();
 		if (type.equals(GenProgMutationOperation.DELETE) || type.equals(GenProgMutationOperation.REPLACE)) {
 			boolean removed = gens.remove(operation.getGen());
-			log.info("---updating gen list " + operation + " removed gen? " + removed);
+			log.debug("---updating gen list " + operation + " removed gen? " + removed);
 		}
 		if (!type.equals(GenProgMutationOperation.DELETE)) {
 			Gen existingGen = operation.getGen();
@@ -132,7 +132,7 @@ public class JGenProg extends EvolutionaryEngine {
 			else
 				newGen = variantFactory.cloneGen(existingGen, operation.getModified());
 
-			log.info("---updating gen list " + operation + " adding gen: " + newGen);
+			log.debug("---updating gen list " + operation + " adding gen: " + newGen);
 			gens.add(newGen);
 		}
 
@@ -158,7 +158,6 @@ public class JGenProg extends EvolutionaryEngine {
 			return null;
 		}
 
-		//CtStatement targetStmt = (CtStatement) genSusp.getRootElement();
 		CtElement targetStmt = genSusp.getRootElement();
 		CtElement cparent = targetStmt.getParent();
 		
@@ -210,14 +209,14 @@ public class JGenProg extends EvolutionaryEngine {
 			}
 			attempts++;
 			if (fix.getSignature().equals(targetStmt.getSignature()) ) {
-				log.info("Discarting operation, replacement is the same than the replaced code");
+				log.debug("Discarting operation, replacement is the same than the replaced code");
 				// Discard the operation.
 			}else
 				continueSearching = alreadyApplied(gen.getProgramVariant().getId(),fix.toString(), targetStmt.toString());
 		
 		} 
 		if(continueSearching ){
-			log.info("All mutations were applied: no mutation left to apply");
+			log.debug("All mutations were applied: no mutation left to apply");
 			return null;
 		}
 		return fix;
