@@ -90,16 +90,7 @@ public class ProgramValidator {
 	 * @throws ClassNotFoundException
 	 * @throws InitializationError
 	 */
-	@Deprecated
-	public Result validateVariant(String testSuiteClassName) throws FileNotFoundException, ClassNotFoundException,
-			InitializationError {
-		LogManager.getRootLogger().setLevel(Level.INFO);// OFF
-		JUnitTestExecutor muTestEx = new JUnitTestExecutor();
-		Result result = muTestEx.execute(testSuiteClassName);
-		LogManager.getRootLogger().setLevel(Level.INFO);
 
-		return result;
-	}
 
 	public ProgramVariantValidation validateVariantFirstPhases(List<String> failingCases, String testSuiteClassName)
 			throws FileNotFoundException, ClassNotFoundException, InitializationError {

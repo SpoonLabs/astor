@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.junit.TestRunnerEngine;
@@ -47,12 +48,12 @@ public class ValidatorProcess {
 	
 	public TestResult execute(String path, List<String> classesToExecute, int waitTime) {
 		Process p = null;
-		String javaPath = ConfigurationProperties.getProperty("jvm4testexecution");
-		
-		File javaFolder = new File(javaPath);
-		if(!javaFolder.exists())
+	
+	
+		if(!ProjectConfiguration.validJDK())
 			throw new IllegalArgumentException("jdk folder not found, please configure property jvm4testexecution in the configuration.properties file");
 		
+		String javaPath = ConfigurationProperties.getProperty("jvm4testexecution");
 		javaPath += File.separator + "java";
 		String systemcp = System.getProperty("java.class.path");
 

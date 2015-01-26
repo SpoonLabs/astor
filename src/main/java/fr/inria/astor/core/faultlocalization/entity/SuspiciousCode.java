@@ -1,4 +1,4 @@
-package fr.inria.astor.core.faultlocalization;
+package fr.inria.astor.core.faultlocalization.entity;
 
 import java.text.DecimalFormat;
 

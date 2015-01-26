@@ -1,4 +1,4 @@
-package fr.inria.astor.core.faultlocalization.entity;
+package fr.inria.astor.core.faultlocalization;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,7 +16,7 @@ import com.gzoltar.core.GZoltar;
 import com.gzoltar.core.components.Statement;
 import com.gzoltar.core.instr.testing.TestResult;
 
-import fr.inria.astor.core.faultlocalization.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.setup.TransformationProperties;
 
 /**

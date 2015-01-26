@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import spoon.reflect.declaration.CtElement;
-import fr.inria.astor.core.faultlocalization.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 /**
  * Return the result of a mutation of a Candidate
  * @author Matias Martinez,  matias.martinez@inria.fr

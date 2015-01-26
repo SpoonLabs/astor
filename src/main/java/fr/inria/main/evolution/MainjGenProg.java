@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.faultlocalization.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;

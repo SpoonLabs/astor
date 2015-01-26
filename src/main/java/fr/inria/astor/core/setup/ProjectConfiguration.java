@@ -217,5 +217,14 @@ public class ProjectConfiguration {
 		this.internalProperties.put(ProjectPropertiesEnum.packageToInstrument,outDir);
 	}
 	
+	public static boolean validJDK(){
+		String javaPath= ConfigurationProperties.getProperty("jvm4testexecution");
+		File javaFolder = new File(javaPath);
+		if(javaFolder.exists()){
+			return true;
+		}
+		return false;
+	}
+	
 	
 }

@@ -2,7 +2,7 @@ package fr.inria.astor.test.repair.evaluation;
 
 import java.util.List;
 
-import fr.inria.astor.core.faultlocalization.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainIFMutation;

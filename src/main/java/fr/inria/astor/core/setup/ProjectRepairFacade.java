@@ -16,8 +16,8 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-import fr.inria.astor.core.faultlocalization.SuspiciousCode;
-import fr.inria.astor.core.faultlocalization.entity.FaultLocalizationFacade;
+import fr.inria.astor.core.faultlocalization.FaultLocalizationFacade;
+import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 /**
  *  
  * @author Matias Martinez, matias.martinez@inria.fr
@@ -25,7 +25,6 @@ import fr.inria.astor.core.faultlocalization.entity.FaultLocalizationFacade;
  */
 public class ProjectRepairFacade {
 
-	//Logger logger = Logger.getLogger(ProjectRepairFacade.class.getName());
 	Logger logger = Logger.getLogger(Thread.currentThread().getName());
 
 	protected ProjectConfiguration setUpProperties = new ProjectConfiguration();
@@ -48,7 +47,7 @@ public class ProjectRepairFacade {
 	public synchronized void init(String currentMutatorIdentifier) throws IOException {
 		
 		cleanMutationResultDirectories();
-		//cleanMutationResultDirectories(currentMutatorIdentifier);//cleanAllDirectories();//TODO
+		
 		copyOriginalCode(currentMutatorIdentifier);
 
 		boolean copied1 = copyOriginalBin(getProperties().getOriginalAppBinDir(),currentMutatorIdentifier);// NEW

@@ -9,7 +9,7 @@ import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
-import fr.inria.astor.core.faultlocalization.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 /**
  * Spoon processor used to retrieve the CtElements contained in a given a line number.
  * Used by the {@link SpoonLocationPointerLauncher}}

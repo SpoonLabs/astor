@@ -77,12 +77,10 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("jvm4testexecution", cmd.getOptionValue("jvm"));
 		
 		}
-		String javaPath = ConfigurationProperties.getProperty("jvm4testexecution");
-		File javaFolder = new File(javaPath);
-		if(!javaFolder.exists())
+		
+		if(!ProjectConfiguration.validJDK())
 			throw new IllegalArgumentException("jdk folder not found, please configure property jvm4testexecution in the configuration.properties file");
-		
-		
+			
 		boolean isExample = executeExample(cmd);
 		if (isExample)
 			return;
