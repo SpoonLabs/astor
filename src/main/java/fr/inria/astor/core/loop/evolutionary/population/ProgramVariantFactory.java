@@ -1,6 +1,5 @@
 package fr.inria.astor.core.loop.evolutionary.population;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +25,8 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.Uniform
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
-import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.setup.TransformationProperties;
 
 /**
  * Creates the initial population of program variants
@@ -54,6 +53,7 @@ public class ProgramVariantFactory {
 
 	
 	
+	
 	public ProgramVariantFactory() {
 		super();
 	}
@@ -62,8 +62,10 @@ public class ProgramVariantFactory {
 		this.processors = processors;
 	}
 
-	public List<ProgramVariant> createInitialPopulation(List<SuspiciousCode> suspiciousList, int maxNumberInstances,
-			ProgramValidator programVariantValidator, PopulationController populationControler,
+	public List<ProgramVariant> createInitialPopulation(List<SuspiciousCode> suspiciousList, 
+			int maxNumberInstances,
+			//ProgramValidator programVariantValidator, 
+			PopulationController populationControler,
 			ProjectRepairFacade projectFacade) throws Exception {
 
 		List<ProgramVariant> variants = new ArrayList<ProgramVariant>();

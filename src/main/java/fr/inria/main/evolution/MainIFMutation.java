@@ -14,7 +14,6 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.MutationalRepair;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
-import fr.inria.astor.core.loop.evolutionary.population.ProgramValidatorSpoonRegression;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
@@ -23,6 +22,7 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.validation.ProcessValidator;
 import fr.inria.main.AbstractMain;
 /**
  *   Main for version of Mutation Repair that repairs If conditions
@@ -71,12 +71,7 @@ public class MainIFMutation extends AbstractMain {
 			suspiciousProcessor.add(new IFConditionFixSpaceProcessor());
 			mutloop.setVariantFactory(new ProgramVariantFactory(suspiciousProcessor));
 			
-			
-		/*	List<AbstractFixSpaceProcessor> ctElementProcessors = new ArrayList<AbstractFixSpaceProcessor>();
-			ctElementProcessors.add(new LoopExpressionFixSpaceProcessor());
-			ctElementProcessors.add(new IFExpressionFixSpaceProcessor());*/
-			
-			mutloop.setProgramVariantValidator(new ProgramValidatorSpoonRegression());
+			mutloop.setProgramValidator(new ProcessValidator());
 			//
 			
 			try {

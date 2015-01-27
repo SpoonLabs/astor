@@ -26,6 +26,7 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.validation.ProcessValidator;
 import fr.inria.main.AbstractMain;
 /**
  *   Main for version of jGenProg that repairs If conditions
@@ -81,6 +82,8 @@ public class MainIFjGenProg extends AbstractMain {
 		gploop.setFixspace(new UniformRandomFixSpace(procFix));
 		gploop.setRepairSpace(new UniformRandomRepairOperatorSpace());
 		gploop.setPopulationControler(new FitnessPopulationController());
+		
+		gploop.setProgramValidator(new ProcessValidator());
 		
 		List<SuspiciousCode> candidates = rep.getSuspicious(
 				packageToInstrument,

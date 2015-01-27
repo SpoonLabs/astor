@@ -13,7 +13,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.validation.entity.TestResult;
-import fr.inria.astor.core.validation.junit.TestRunnerEngine;
+import fr.inria.astor.core.validation.junit.JUnitTestExecutor;
 
 /**
  * Process-based program variant validation
@@ -26,22 +26,15 @@ public class ValidatorProcess {
 	Stats currentStat;
 	private Logger log = Logger.getLogger(Thread.currentThread().getName());
 
+	public ValidatorProcess() {
+		super();
+	}
+	
 	public ValidatorProcess(Stats currentStat) {
 		super();
 		this.currentStat = currentStat;
 	}
-
-	
 		
-	protected String urlArrayToString(URL[] urls){
-		String s= "";
-		for (int i = 0; i < urls.length; i++) {
-			URL url = urls[i];
-			s+=url.getPath()+File.pathSeparator;
-		}
-		return s;
-	}
-	
 	public TestResult execute(URL[] path, List<String> classesToExecute, int waitTime) {
 		 return execute(urlArrayToString(path), classesToExecute,waitTime);
 	}
@@ -67,7 +60,7 @@ public class ValidatorProcess {
 			command.add(javaPath);
 			command.add("-cp");
 			command.add(path);
-			command.add(TestRunnerEngine.class.getName());
+			command.add(JUnitTestExecutor.class.getName());
 			
 			command.addAll(cls);
 
@@ -103,8 +96,12 @@ public class ValidatorProcess {
 	}
 
 	
-
-	
+	/**
+	 * This method analyze the output of the junit executor (i.e.,{@link JUnitTestExecutor}) and return an entity
+	 * called TestResult with the result of the test execution 
+	 * @param p
+	 * @return
+	 */
 	private TestResult getTestResult(Process p) {
 		TestResult tr = new TestResult();
 		boolean success = false;
@@ -112,9 +109,8 @@ public class ValidatorProcess {
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
 			while ((line = in.readLine()) != null) {
-				//log.info(line);
-				if(line.startsWith(TestRunnerEngine.OUTSEP)){
-					String[] s = line.split(TestRunnerEngine.OUTSEP);
+				if(line.startsWith(JUnitTestExecutor.OUTSEP)){
+					String[] s = line.split(JUnitTestExecutor.OUTSEP);
 					int nrtc = Integer.valueOf(s[1]);
 					tr.casesExecuted = nrtc;
 					int failing = Integer.valueOf(s[2]);
@@ -138,7 +134,14 @@ public class ValidatorProcess {
 		else
 			return null;
 	}
-	
+	protected String urlArrayToString(URL[] urls){
+		String s= "";
+		for (int i = 0; i < urls.length; i++) {
+			URL url = urls[i];
+			s+=url.getPath()+File.pathSeparator;
+		}
+		return s;
+	}
 
 	private static class Worker extends Thread {
 		private final Process process;

@@ -104,7 +104,7 @@ public class JGenProg extends EvolutionaryEngine {
 		variantFactory.setMutatorExecutor(getMutatorSupporter());
 		variantFactory.setFixspace(getFixspace());
 		this.variants = variantFactory.createInitialPopulation(suspicious, TransformationProperties.populationSize,
-				programVariantValidator, populationControler, projectFacade);
+				populationControler, projectFacade);
 
 		// We save the first variant
 		this.originalVariant = variants.get(0);

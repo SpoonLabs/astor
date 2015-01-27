@@ -23,9 +23,8 @@ import fr.inria.astor.core.entities.Gen;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidation;
+import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.loop.evolutionary.population.PopulationController;
-import fr.inria.astor.core.loop.evolutionary.population.ProgramValidator;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.FixLocationSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.RepairOperatorSpace;
@@ -38,6 +37,8 @@ import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.validation.IProgramValidator;
+import fr.inria.astor.core.validation.ProgramValidator;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.executors.ValidatorProcess;
 import fr.inria.astor.core.validation.executors.ValidationDualModeThread;
@@ -67,7 +68,7 @@ public abstract class EvolutionaryEngine {
 
 	protected ProgramVariantFactory variantFactory;
 
-	protected ProgramValidator programVariantValidator = new ProgramValidator();
+	protected IProgramValidator programValidator;
 
 	// INTERNAL
 	protected List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
@@ -545,253 +546,22 @@ public abstract class EvolutionaryEngine {
 	protected abstract void applyNewMutationOperationToSpoonElement(GenOperationInstance operation)
 			throws IllegalAccessException;
 
-	/**
-	 * Process-based validation Advantage: stability, memory consumption, CG
-	 * activity Disadvantage: time.
-	 * 
-	 * @param mutatedVariant
-	 * @return
-	 */
-	protected boolean validateInstanceProcess(ProgramVariant mutatedVariant) {
-		try {
-			String bytecodeOutput = projectFacade.getOutDirWithPrefix(mutatedVariant.currentMutatorIdentifier());
-			File variantOutputFile = new File(bytecodeOutput);
-			URL[] bc = null;
-			URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-
-			if (mutatedVariant.getCompilation() != null) {
-				mutatorSupporter.getSpoonClassCompiler().saveByteCode(
-						mutatedVariant.getCompilation(), variantOutputFile);
-
-				bc = redefineURL(variantOutputFile, originalURL);
-			} else {
-				bc = originalURL;
-			}
-			ValidatorProcess p = new ValidatorProcess(currentStat);
-			// First validation: failing test case
-			String localPrefix = projectFacade.getProperties().getExperimentName() + File.separator
-					+ projectFacade.getProperties().getFixid();
-
-		
-			
-			TestResult trfailing = p.execute(bc, projectFacade.getProperties().getFailingTestCases(),
-					TransformationProperties.validationSingleTimeLimit * 5);
-			currentStat.passFailingval1++;
-			if (trfailing == null) {
-				log.debug("The validation 1 have not finished well");
-				mutatedVariant.setFitness(Double.MAX_VALUE);
-				return false;
-			} else {
-				// If it is successful, execute regression
-				log.debug(trfailing);
-				if (trfailing.wasSuccessful()) {
-					currentStat.passFailingval2++;
-					if (TransformationProperties.executeCompleteRegression)
-						return executeRegressionTesting(mutatedVariant, bc, p, localPrefix);
-					else
-						return executeRegressionTestingOneByOne(mutatedVariant, bc, p, localPrefix);
-
-				} else {
-					mutatedVariant.setFitness(trfailing.getFailures().size());
-					return trfailing.wasSuccessful();// false
-				}
-
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-
-	
-	protected URL[] redefineURL(File foutgen, URL[] originalURL) throws MalformedURLException {
-		List<URL> urls = new ArrayList<URL>();
-		urls.add(foutgen.toURL());
-		for (int i = 0; (originalURL != null) && i < originalURL.length; i++) {
-			urls.add(originalURL[i]);
-		}
-
-		return (URL[]) urls.toArray(originalURL);
-	}
-
-	protected boolean executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc, ValidatorProcess p,
-			String localPrefix) {
-		log.debug("Test Failing is passing, Executing regression");
-		TestResult trregression = p.execute(bc, retrieveRegressionTestCases(),
-				TransformationProperties.validationRegressionTimeLimit * 2);
-		if (trregression == null) {
-			mutatedVariant.setFitness(Double.MAX_VALUE);
-			return false;
-		} else {
-			log.debug(trregression);
-			mutatedVariant.setFitness(trregression.getFailures().size());
-			return trregression.wasSuccessful();
-		}
-	}
-
-	protected boolean executeRegressionTestingOneByOne(ProgramVariant mutatedVariant, URL[] bc,
-			ValidatorProcess p, String localPrefix) {
-		log.debug("Test Failing is passing, Executing regression");
-		TestResult trregressionall = new TestResult();
-		long t1 = System.currentTimeMillis();
-		for (String tc : retrieveRegressionTestCases()) {
-			List<String> parcial = new ArrayList<String>();
-			parcial.add(tc);
-			TestResult trregression = p.execute(bc, parcial, TransformationProperties.validationRegressionTimeLimit * 2);
-			if (trregression == null) {
-				log.debug("The validation 2 have not finished well");
-				mutatedVariant.setFitness(Double.MAX_VALUE);
-				return false;
-			} else {
-				mutatedVariant.setFitness(trregression.getFailures().size());
-				// return trregression.wasSuccessful();
-				trregressionall.getFailures().addAll(trregression.getFailures());
-				trregressionall.getSuccessTest().addAll(trregression.getSuccessTest());
-			}
-		}
-		long t2 = System.currentTimeMillis();
-		currentStat.time2Validation.add((t2 - t1));
-		log.debug(trregressionall);
-		return trregressionall.wasSuccessful();
-
-	}
-
-	List<String> regressionCases = null;
-
-	/**
-	 * Feed the list of test cases according to the definition POM/build.xml
-	 */
-	public List<String> retrieveRegressionTestCases() {
-		if (regressionCases == null) {
-			regressionCases = new ArrayList<String>();
-			for (CtSimpleType<?> type : FactoryImpl.getLauchingFactory().Type().getAll()) {
-				String name = type.getQualifiedName();
-				if ((name.endsWith("Test") || name.endsWith("TestBinary") || name.endsWith("TestPermutations"))
-						&& (!name.endsWith("AbstractTest")) && !(type instanceof CtInterface)
-						&& !(name.equals("junit.framework.TestSuite"))) {
-					regressionCases.add(type.getQualifiedName());
-				}
-
-			}
-		}
-		return regressionCases;
-	}
-
-
 	
 	
 	protected boolean validateInstance(ProgramVariant mutatedVariant) {
-		String validation = ConfigurationProperties.getProperty("validation");
-		if("process".equals(validation)){
-			return validateInstanceProcess(mutatedVariant);
+		ProgramVariantValidationResult result;
+		if( (result = programValidator.validate(mutatedVariant, projectFacade)) != null){
+			//
+			double fitness = this.populationControler.getFitnessValue(mutatedVariant, result);
+			mutatedVariant.setFitness(fitness);
+			return result.isResult();
 		}
-		if("thread".equals(validation)){
-			return validateInstanceThread(mutatedVariant);
-		}
-		if("local".equals(validation))
-			return validateInstanceLocal(mutatedVariant);
-		
-		throw new IllegalArgumentException("Validation not specified");
+		return false;
 	}
 	
-	/**
-	 * Thread-based validation. Advantage: execution time Disadvantage: use of
-	 * memory, many classes and instances loaded in the heap/permMem of the
-	 * application.
-	 * 
-	 * @param mutatedVariant
-	 * @return
-	 */
-	protected boolean validateInstanceThread(ProgramVariant mutatedVariant) {
 
-		try {
 
-			ValidationDualModeThread thread = new ValidationDualModeThread(projectFacade, this.programVariantValidator,
-					populationControler, mutatedVariant, true);
-
-			// First validation
-			synchronized (thread) {
-				try {
-					log.debug("Waiting for validation...");
-					thread.start();
-					thread.wait(TransformationProperties.validationSingleTimeLimit);
-
-				} catch (InterruptedException e) {
-					log.debug("stop validation thread");
-					e.printStackTrace();
-				}
-			}
-			boolean interrumped1 = !thread.finish;
-			thread.stop();
-			/*
-			 * if (interrumped1)
-			 * currentStat.time1Validation.add(Long.MAX_VALUE);
-			 */log.debug("Thread 1 live" + thread.isAlive() + ", interrumped " + interrumped1);
-			// If the first validation is ok, we call the regression
-			if (thread.sucessfull) {
-				ValidationDualModeThread threadRegression = new ValidationDualModeThread(projectFacade,
-						this.programVariantValidator, populationControler, mutatedVariant, false);
-				synchronized (threadRegression) {
-					try {
-						log.debug("First validation ok, start with the second one");
-						threadRegression.modeFirst = false;
-						threadRegression.start();
-						log.debug("Thread 2 id " + threadRegression.getId() + " " + threadRegression.getName());
-						threadRegression.wait(TransformationProperties.validationRegressionTimeLimit);
-					} catch (InterruptedException e) {
-						log.debug("stop validation thread");
-						e.printStackTrace();
-					}
-					boolean interrumped2 = !threadRegression.finish;
-					if (interrumped2)
-						currentStat.time2Validation.add(Long.MAX_VALUE);
-					threadRegression.stop();
-					log.debug("Thread 2 " + threadRegression.isAlive() + ", interrumped " + interrumped2);
-				}
-
-				return threadRegression.sucessfull;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return false;
-	}
-
-	/**
-	 * Validation that does not use neither thread nor process.
-	 * 
-	 * @param mutatedVariant
-	 * @return
-	 */
-	protected boolean validateInstanceLocal(ProgramVariant mutatedVariant) {
-
-		try {
-			// Load version (variant) in new thread to execute it
-			// Get test cases to execute.
-			List<String> failingCases = projectFacade.getProperties().getFailingTestCases();
-			String testSuiteClassName = projectFacade.getProperties().getTestSuiteClassName();
-
-			ProgramVariantValidation result = this.programVariantValidator.validateVariantTwoPhases(failingCases,
-					testSuiteClassName);
-
-			// putting fitness into program variant
-			double fitness = populationControler.getFitnessValue(mutatedVariant, result);
-			mutatedVariant.setFitness(fitness);
-
-			// TODO: result has ignore count
-			log.debug("Fitness of instance #" + mutatedVariant.getId() + ": " + fitness + " (Totals: "
-					+ result.getRunCount() + ", failed: " + result.getFailureCount() + ")");
-
-			return result.wasSuccessful();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return false;
-	}
-
+	
 	public RepairOperatorSpace getRepairSpace() {
 		return repairSpace;
 	}
@@ -832,17 +602,6 @@ public abstract class EvolutionaryEngine {
 		this.populationControler = populationControler;
 	}
 
-	public ProgramValidator getProgramVariantValidator() {
-		return programVariantValidator;
-	}
-
-	public void setProgramVariantValidator(ProgramValidator programVariantValidator) {
-		this.programVariantValidator = programVariantValidator;
-	}
-
-	public ProjectRepairFacade getProjectFacade() {
-		return projectFacade;
-	}
 
 	public void setProjectFacade(ProjectRepairFacade projectFacade) {
 		this.projectFacade = projectFacade;
@@ -855,4 +614,14 @@ public abstract class EvolutionaryEngine {
 	public void setVariantFactory(ProgramVariantFactory variantFactory) {
 		this.variantFactory = variantFactory;
 	}
+	
+	
+	public IProgramValidator getProgramValidator() {
+		return programValidator;
+	}
+
+	public void setProgramValidator(IProgramValidator programValidator) {
+		this.programValidator = programValidator;
+	}
+
 }

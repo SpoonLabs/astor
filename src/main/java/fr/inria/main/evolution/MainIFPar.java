@@ -14,7 +14,6 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.ParRepair;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
-import fr.inria.astor.core.loop.evolutionary.population.ProgramValidatorSpoonRegression;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.ParUniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
@@ -25,6 +24,7 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.validation.ProcessValidator;
 import fr.inria.main.AbstractMain;
 
 /**
@@ -84,7 +84,7 @@ public class MainIFPar extends AbstractMain {
 				ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
-		parloop.setProgramVariantValidator(new ProgramValidatorSpoonRegression());
+		parloop.setProgramValidator(new ProcessValidator());
 		//
 
 		for (SuspiciousCode suspiciousCode : candidates) {

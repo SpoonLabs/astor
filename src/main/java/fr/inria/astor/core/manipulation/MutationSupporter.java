@@ -49,7 +49,7 @@ import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class MutationSupporter {
 
-
+	public static  MutationSupporter currentSupporter = null;
 
 	private Logger logger = Logger.getLogger(Thread.currentThread().getName());
 
@@ -78,6 +78,7 @@ public class MutationSupporter {
 		this.factory = factory;
 		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
 		spoonClassCompiler = new SpoonClassCompiler(factory);
+		this.currentSupporter = this;
 	}
 
 

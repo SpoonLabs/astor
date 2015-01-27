@@ -32,7 +32,7 @@ public class TestResult {
 	}
 
 	public boolean wasSuccessful(){
-		return failTest.isEmpty();
+		return failures != 0;
 	}
 
 	@Override

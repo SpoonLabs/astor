@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidation;
+import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 /**
  * Controls the population of program by the fitness values.
  * @author Matias Martinez,  matias.martinez@inria.fr
@@ -73,7 +73,7 @@ public class FitnessPopulationController implements PopulationController{
  *In this case the fitness value is associate to the failures: LESS FITNESS is better. 
  */
 	@Override
-	public double getFitnessValue(ProgramVariant variant, ProgramVariantValidation result) {
+	public double getFitnessValue(ProgramVariant variant, ProgramVariantValidationResult result) {
 		
 		return /*result.getRunCount() -*/ result.getFailureCount();
 	}
