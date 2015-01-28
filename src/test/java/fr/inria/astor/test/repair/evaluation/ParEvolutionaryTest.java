@@ -23,14 +23,12 @@ public class ParEvolutionaryTest  extends BaseEvolutionaryTest{
 			String regression, 
 			String failing,
 			String dependenciespath, 
-			String packageToInstrument, double thfl,
-			Stats currentStat) throws Exception {
+			String packageToInstrument, double thfl) throws Exception {
 		
 		getMain().run(
 				location, 
 				folder, 
 				dependenciespath, 
-				currentStat,
 				packageToInstrument, 
 				thfl, failing);
 		

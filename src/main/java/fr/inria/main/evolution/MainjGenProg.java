@@ -21,7 +21,6 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.TransformationProperties;
-import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.main.AbstractMain;
 
@@ -36,14 +35,14 @@ public class MainjGenProg extends AbstractMain{
 
 
 @Override
-public void run(String location, String projectName, String dependencies, Stats currentStat, String packageToMine)
+public void run(String location, String projectName, String dependencies,  String packageToMine)
 		throws Exception {
 	
 	
 }
 
 @Override
-public void run(String location, String projectName, String dependencies, Stats currentStat, String packageToInstrument,
+public void run(String location, String projectName, String dependencies, String packageToInstrument,
 		double thfl, String failing) throws Exception {
 	
 	//System.out.println(System.getProperty("java.class.path"));
@@ -60,7 +59,7 @@ public void run(String location, String projectName, String dependencies, Stats 
 	
 	MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 	JGenProg gploop = new JGenProg(mutSupporter,rep);
-	gploop.setCurrentStat(currentStat);
+	//gploop.setCurrentStat(currentStat);
 			
 	//Fix Space
 	List<AbstractFixSpaceProcessor> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor>();
@@ -95,8 +94,8 @@ public void run(String location, String projectName, String dependencies, Stats 
 			filtercandidates.add(suspiciousCode);
 		}
 	}
-	currentStat.fl_size = filtercandidates.size();
-	currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
+//	currentStat.fl_size = filtercandidates.size();
+//	currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
 	
 	assertNotNull(candidates);
 	assertTrue(candidates.size() > 0);

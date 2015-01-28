@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
-import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.junit.JUnitTestExecutor;
 
@@ -23,18 +22,13 @@ import fr.inria.astor.core.validation.junit.JUnitTestExecutor;
  */
 public class ValidatorProcess {
 
-	Stats currentStat;
 	private Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	public ValidatorProcess() {
 		super();
 	}
 	
-	public ValidatorProcess(Stats currentStat) {
-		super();
-		this.currentStat = currentStat;
-	}
-		
+			
 	public TestResult execute(URL[] path, List<String> classesToExecute, int waitTime) {
 		 return execute(urlArrayToString(path), classesToExecute,waitTime);
 	}

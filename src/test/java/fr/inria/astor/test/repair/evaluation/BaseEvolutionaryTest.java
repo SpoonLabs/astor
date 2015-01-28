@@ -9,8 +9,6 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.junit.After;
 import org.junit.Before;
-
-import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.AbstractMain;
 /**
  * 
@@ -88,8 +86,7 @@ public abstract class BaseEvolutionaryTest  {
 			String failing, 
 			String dependenciespath,
 			String packageToInstrument, 
-			double thfl, 
-			Stats currentStat) throws Exception;
+			double thfl) throws Exception;
 	
 	protected AbstractMain getMain(){
 		return this.main;

@@ -57,10 +57,10 @@ public abstract class AbstractMain {
 		mutSupporter = new MutationSupporter(factory);
 	}
 
-	public abstract void run(String location, String projectName, String dependencies, Stats currentStat,
+	public abstract void run(String location, String projectName, String dependencies, 
 			String packageToInstrument) throws Exception;
 
-	public abstract void run(String location, String projectName, String dependencies, Stats currentStat,
+	public abstract void run(String location, String projectName, String dependencies,
 			String packageToInstrument, double thfl, String failing) throws Exception;
 
 	protected void execute(String[] args) throws Exception {
@@ -120,7 +120,7 @@ public abstract class AbstractMain {
 			}
 		}
 
-		this.run(location, null, dependenciespath, currentStat, packageToInstrument, thfl, failing);
+		this.run(location, null, dependenciespath,  packageToInstrument, thfl, failing);
 	}
 
 	/**
@@ -143,7 +143,7 @@ public abstract class AbstractMain {
 			String location = f.getParent();
 			String packageToInstrument = "org.apache.commons";
 			double thfl = 0.5;
-			this.run(location, folder, dependenciespath, currentStat, packageToInstrument, thfl, failing);
+			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 			return true;
 		}
 

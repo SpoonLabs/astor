@@ -59,7 +59,7 @@ public class IterationTest {
 			long t1 = System.currentTimeMillis();	
 			String location = ConfigurationProperties.getProperty("version-location");
 			String packageToInstrument = ConfigurationProperties.getProperty("packageToInstrument");
-			test.generic(location, fixid, regression,failing,dependenciespath,packageToInstrument, th,currentStat);
+			test.generic(location, fixid, regression,failing,dependenciespath,packageToInstrument, th);
 			
 			long t2 = System.currentTimeMillis();
 			test.log.info("time executing " + numberExecutions + " runs: " + (t2 - t1) + " ms");

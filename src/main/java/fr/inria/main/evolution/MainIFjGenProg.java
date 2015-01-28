@@ -36,7 +36,7 @@ import fr.inria.main.AbstractMain;
 public class MainIFjGenProg extends AbstractMain {
 
 	@Override
-	public void run(String location, String projectName, String dependencies, Stats currentStat, String packageToMine)
+	public void run(String location, String projectName, String dependencies,  String packageToMine)
 			throws Exception {
 	
 
@@ -48,7 +48,7 @@ public class MainIFjGenProg extends AbstractMain {
 	
 		
 	@Override
-	public void run(String location, String projectName, String dependencies, Stats currentStat, 
+	public void run(String location, String projectName, String dependencies,  
 			String packageToInstrument,
 			double thfl, String failing) throws Exception {
 		System.out.println(System.getProperty("java.class.path"));
@@ -68,7 +68,7 @@ public class MainIFjGenProg extends AbstractMain {
 		}
 		MutationSupporter mutSupporter = new MutationSupporter(facade);
 		JGenProgIfExpression gploop = new JGenProgIfExpression(mutSupporter,rep);
-		gploop.setCurrentStat(currentStat);
+		//gploop.setCurrentStat(currentStat);
 				
 		List<AbstractFixSpaceProcessor> procCondition = new ArrayList<AbstractFixSpaceProcessor>();
 		procCondition.add(new IFConditionFixSpaceProcessor());
@@ -96,8 +96,8 @@ public class MainIFjGenProg extends AbstractMain {
 				filtercandidates.add(suspiciousCode);
 			}
 		}
-		currentStat.fl_size = filtercandidates.size();
-		currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
+		//currentStat.fl_size = filtercandidates.size();
+		//currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
 		
 		assertNotNull(candidates);
   		assertTrue(candidates.size() > 0);

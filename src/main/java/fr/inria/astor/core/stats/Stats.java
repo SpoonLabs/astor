@@ -14,15 +14,15 @@ public class Stats {
 	
 	private static Logger log = Logger.getLogger(Stats.class.getName());
 
-	//public static Stats currentStat = null;
+	public static Stats currentStat = null;
 	
-	/*public static Stats getCurrentStats(){
+	public static Stats getCurrentStats(){
 		
 		if(currentStat == null){
 			currentStat = new Stats();
 		}
 		return currentStat;
-	}*/
+	}
 	
 	public int id = 0;
 		

@@ -32,7 +32,7 @@ import fr.inria.main.AbstractMain;
 public class MainIFMutation extends AbstractMain {
 	static List<SuspiciousCode> filtercandidates = null;
 	@Override
-	public void run(String location, String projectName, String dependencies, Stats currentStat, String packageToMine)
+	public void run(String location, String projectName, String dependencies, String packageToMine)
 			throws Exception {
 		throw new IllegalArgumentException("Functionality not provided");
 
@@ -42,7 +42,6 @@ public class MainIFMutation extends AbstractMain {
 	public void run(String location, 
 			String projectName, 
 			String dependencies, 
-			Stats currentStat, 
 			String packageToMine,
 			double thfl, String failing) throws Exception {
 
@@ -61,7 +60,7 @@ public class MainIFMutation extends AbstractMain {
 			MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 			
 			MutationalRepair mutloop = new MutationalRepair(mutSupporter,rep);
-			mutloop.setCurrentStat(currentStat);
+		//	mutloop.setCurrentStat(currentStat);
 			mutloop.setFixspace(new UniformRandomFixSpace());
 			
 			mutloop.setRepairSpace(new UniformRandomRepairOperatorSpace());
@@ -94,8 +93,8 @@ public class MainIFMutation extends AbstractMain {
 						filtercandidates.add(suspiciousCode);
 					}
 				}
-				currentStat.fl_size = filtercandidates.size();
-				currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
+			//	currentStat.fl_size = filtercandidates.size();
+			//	currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
 		}
 				mutloop.start(filtercandidates);
 				

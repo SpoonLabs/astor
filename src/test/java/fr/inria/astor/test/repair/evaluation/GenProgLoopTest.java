@@ -82,14 +82,13 @@ String location = f.getParent();
 		String dependenciespath= "examples/Math-issue-280/lib/junit-4.4.jar";
 		String folder= "Math-issue-280";
 		String failing= "org.apache.commons.math.distribution.NormalDistributionTest";
-		Stats currentStat= new Stats();
 		File f = new File("examples/Math-issue-280/");
 		String location = f.getParent();
 		String regression= "org.apache.commons.math.distribution.NormalDistributionTest";
 		String packageToInstrument= "org.apache.commons";
 		double thfl = 0.5;
 
-		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl, currentStat);
+		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl);
 		
 	}
 
@@ -101,8 +100,8 @@ String location = f.getParent();
 
 	@Override
 	public void generic(String location, String folder, String regression, String failing, String dependenciespath,
-			String packageToInstrument, double thfl, Stats currentStat) throws Exception {
-		// TODO Auto-generated method stub
+			String packageToInstrument, double thfl) throws Exception {
+		
 		
 	}
 	

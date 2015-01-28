@@ -3,8 +3,6 @@ package fr.inria.astor.test.repair.evaluation;
 import java.io.File;
 
 import org.junit.Test;
-
-import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainIFjGenProg;
 /**
@@ -22,10 +20,9 @@ public class GenProgLoopExpressionProjectTest  extends BaseEvolutionaryTest{
 			String regression, 
 			String failing,
 			String dependenciespath, 
-			String packageToInstrument, double thfl,
-			Stats currentStat) throws Exception {
+			String packageToInstrument, double thfl) throws Exception {
 	
-		getMain().run(location, folder, dependenciespath, currentStat, packageToInstrument, thfl, failing);
+		getMain().run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 		
 	}
 
@@ -43,14 +40,13 @@ public class GenProgLoopExpressionProjectTest  extends BaseEvolutionaryTest{
 		String dependenciespath= "examples/Math-issue-280/lib/junit-4.4.jar";
 		String folder= "Math-issue-280";
 		String failing= "org.apache.commons.math.distribution.NormalDistributionTest";
-		Stats currentStat= new Stats();
 		File f = new File("examples/Math-issue-280/");
 		String location = f.getParent();
 		String regression= "org.apache.commons.math.distribution.NormalDistributionTest";
 		String packageToInstrument= "org.apache.commons";
 		double thfl = 0.5;
 
-		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl, currentStat);
+		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl);
 		
 	}
 	

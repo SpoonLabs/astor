@@ -22,10 +22,9 @@ public class JGenProgTest  extends BaseEvolutionaryTest{
 			String regression, 
 			String failing,
 			String dependenciespath, 
-			String packageToInstrument, double thfl,
-			Stats currentStat) throws Exception {
+			String packageToInstrument, double thfl) throws Exception {
 	
-		getMain().run(location, folder, dependenciespath, currentStat, packageToInstrument, thfl, failing);
+		getMain().run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 		
 	}
 
@@ -50,7 +49,7 @@ public class JGenProgTest  extends BaseEvolutionaryTest{
 		String packageToInstrument= "org.apache.commons";
 		double thfl = 0.5;
 
-		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl, currentStat);
+		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl);
 		
 	}
 	

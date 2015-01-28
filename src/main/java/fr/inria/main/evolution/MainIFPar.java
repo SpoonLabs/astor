@@ -47,7 +47,7 @@ public class MainIFPar extends AbstractMain {
 	}
 
 	@Override
-	public void run(String location, String projectName, String dependencies, Stats currentStat, String packageToMine,
+	public void run(String location, String projectName, String dependencies, String packageToMine,
 			double thfl, String failing) throws Exception {
 		String method = this.getClass().getSimpleName();
 
@@ -65,7 +65,7 @@ public class MainIFPar extends AbstractMain {
 		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 				
 		ParRepair parloop = new ParRepair(mutSupporter, rep);
-		parloop.setCurrentStat(currentStat);
+		//parloop.setCurrentStat(currentStat);
 		
 		List<AbstractFixSpaceProcessor> suspiciousProcessor = new ArrayList<AbstractFixSpaceProcessor>();
 		suspiciousProcessor.add(new IFConditionFixSpaceProcessor());
@@ -92,8 +92,8 @@ public class MainIFPar extends AbstractMain {
 				filtercandidates.add(suspiciousCode);
 			}
 		}
-		currentStat.fl_size = filtercandidates.size();
-		currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS;
+	//	currentStat.fl_size = filtercandidates.size();
+	//	currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS;
 
 		assertNotNull(candidates);
 		assertTrue(candidates.size() > 0);
@@ -108,7 +108,7 @@ public class MainIFPar extends AbstractMain {
 	}
 
 	@Override
-	public void run(String location, String projectName, String dependencies, Stats currentStat, String packageToMine)
+	public void run(String location, String projectName, String dependencies,  String packageToMine)
 			throws Exception {
 		throw new IllegalArgumentException("Functionality not provided");
 
