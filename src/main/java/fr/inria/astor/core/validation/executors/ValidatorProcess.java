@@ -76,7 +76,6 @@ public class ValidatorProcess {
 			int exitvalue = p.exitValue();
 			TestResult tr = getTestResult(p);
 			p.destroy();
-			
 			System.out.println("Execution time "+((t_end-t_start)/1000)+ " seconds");
 			
 			return tr;
