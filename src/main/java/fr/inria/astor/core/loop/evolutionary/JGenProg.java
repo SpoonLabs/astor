@@ -24,8 +24,8 @@ import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransfor
 import fr.inria.astor.core.loop.evolutionary.transformators.CtStatementTransformator;
 import fr.inria.astor.core.loop.evolutionary.transformators.ModelTransformator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.setup.TransformationProperties;
 
 /**
  * Extension of Evolutionary loop with GenProgOperations

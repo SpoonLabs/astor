@@ -7,7 +7,6 @@ import java.util.Map;
 
 import spoon.reflect.declaration.CtClass;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
-import fr.inria.astor.core.manipulation.bytecode.entities.ProgramVariantCompilationResult;
 /**
  * Representation of a Program Variant (Genotype)
  * The program is represented by a list of Gens. 

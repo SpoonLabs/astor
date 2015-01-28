@@ -1,4 +1,4 @@
-package fr.inria.astor.core.validation;
+package fr.inria.astor.core.validation.validators;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class LocalValidator implements IProgramValidator{
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 
-	ProgramValidator programVariantValidator = new ProgramValidator();
+	ProgramVariantValidator programVariantValidator = new ProgramVariantValidator();
 	
 	@Override
 	public ProgramVariantValidationResult validate(ProgramVariant mutatedVariant,ProjectRepairFacade projectFacade) {

@@ -1,7 +1,8 @@
-package fr.inria.astor.core.validation;
+package fr.inria.astor.core.validation.validators;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -14,6 +15,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.junit.JUnitTestExecutor;
 
 /**
@@ -23,66 +25,11 @@ import fr.inria.astor.core.validation.junit.JUnitTestExecutor;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class ProgramValidator {
+public class ProgramVariantValidator {
 
 	private Logger logger = Logger.getLogger(Thread.currentThread().getName());
-
-	/**
-	 * First execute the ``originals`` failing test case, then carries out a
-	 * regression testing
-	 * 
-	 * @param supporter
-	 * @return
-	 * @throws FileNotFoundException
-	 * @throws ClassNotFoundException
-	 * @throws InitializationError
-	 */
-	public ProgramVariantValidationResult validateVariantTwoPhasesOld(
-			List<String> failingCases, String testSuiteClassName)
-			throws FileNotFoundException, ClassNotFoundException,
-			InitializationError {
-
-		LogManager.getRootLogger().setLevel(Level.INFO);// OFF
-		JUnitTestExecutor muTestEx = new JUnitTestExecutor();
-
-		ProgramVariantValidationResult validation = new ProgramVariantValidationResult();
-
-		boolean failing = false;
-		long in1 = System.currentTimeMillis();
-		// First, failing test cases
-		if (failingCases != null) {
-			// Stats.getCurrentStats().numberOfFailingTestCaseExecution++;
-			for (String failingcase : failingCases) {
-				Result result = muTestEx.runTest(failingcase);
-				if (!result.wasSuccessful()) {
-					failing = true;
-				}
-				//validation.getTestResults().add(result);
-				validation.addResultTest(result);
-			}
-
-		}
-		long fin1 = System.currentTimeMillis();
-		// We remove the stats, it is in the previous validation
-		// Stats.getCurrentStats().time1Validation.add(fin1 - in1);
-
-		// Then, Regression test
-		if (!failing) {
-			in1 = System.currentTimeMillis();
-			logger.info("Executing Regression");
-			Result result = muTestEx.runTest(testSuiteClassName);
-			validation.addResultRegressionTest(result);
-			failing = result.wasSuccessful();
-			// Stats.getCurrentStats().numberOfRegressionTestExecution++;
-			fin1 = System.currentTimeMillis();
-			// Stats.getCurrentStats().time2Validation.add(fin1 - in1);
-		}
-
-		validation.setResult(!failing);
-		LogManager.getRootLogger().setLevel(Level.INFO);
-		return validation;
-	}
-
+	
+	
 	public ProgramVariantValidationResult validateVariantSecondPhaseSingle(
 			List<String> failingCases, String testSuiteClassName)
 			throws FileNotFoundException, ClassNotFoundException,
@@ -150,7 +97,7 @@ public class ProgramValidator {
 		return validation;
 	}
 
-	List<String> regressionCases = null;
+	
 
 	/**
 	 * First execute the ``originals`` failing test case, then carries out a
@@ -217,7 +164,7 @@ public class ProgramValidator {
 		long in1;
 		long fin1;
 		
-		retrieveRegressionTestCases();
+		List<String> regressionCases = retrieveRegressionTestCases();
 		
 		in1 = System.currentTimeMillis();
 		logger.info("Starting Regression");
@@ -225,19 +172,7 @@ public class ProgramValidator {
 		int sizeReg = 0;
 		for (String failingcaseReg : regressionCases) {
 			sizeReg++;
-			if (failingcaseReg
-					.equals("org.apache.commons.math.ode.nonstiff.GillStepInterpolatorTest")
-					|| failingcaseReg
-							.equals("org.apache.commons.math.ode.nonstiff.GillIntegratorTest")
-					|| failingcaseReg
-							.equals("org.apache.commons.math.ode.nonstiff.EulerStepInterpolatorTest")
-					|| failingcaseReg
-							.equals("org.apache.commons.math.ode.nonstiff.EulerIntegratorTest")
-					|| failingcaseReg
-							.startsWith("org.apache.commons.math.ode.nonstiff")) {
-				continue;
-			}
-
+		
 			Result result = muTestEx.runTest(failingcaseReg);
 						
 			if (!result.wasSuccessful()) {
@@ -260,9 +195,11 @@ public class ProgramValidator {
 
 	/**
 	 * Feed the list of test cases according to the definition POM/build.xml
+	 * @return 
 	 */
-	private void retrieveRegressionTestCases() {
-		if (regressionCases == null) {
+	public List<String> retrieveRegressionTestCases() {
+			List<String> regressionCases = new ArrayList<String>();
+			List<String> ignoreTestcases = retriveIgnoreTestCases();
 			regressionCases = new ArrayList<String>();
 			for (CtSimpleType<?> type : FactoryImpl.getLauchingFactory().Type()
 					.getAll()) {
@@ -270,12 +207,32 @@ public class ProgramValidator {
 				if ((name.endsWith("Test") || name.endsWith("TestBinary") || name
 						.endsWith("TestPermutations"))
 						&& (!name.endsWith("AbstractTest"))
-						&& !(type instanceof CtInterface)) {
+						&& !(type instanceof CtInterface) 
+						&&  !(isIgnoredTestCase(name, ignoreTestcases)))
+				{
 					regressionCases.add(type.getQualifiedName());
 				}
 
 			}
-		}
+	
+			return regressionCases;
+	}
+	
+	private List<String> retriveIgnoreTestCases() {
+		String list = ConfigurationProperties.getProperty("ignoredTestCases");
+		String[] cases = list.split(";");
+		return 	Arrays.asList(cases);
 	}
 
+	private boolean isIgnoredTestCase(String nameTestCase, List<String> ignoredList ){
+		
+		for (String ignoreTC : ignoredList) {
+			
+			if(nameTestCase.startsWith(ignoreTC)){
+				return true;
+			};
+		}
+		return false;
+	}
+	
 }

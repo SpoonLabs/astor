@@ -1,7 +1,5 @@
 package fr.inria.astor.core.loop.evolutionary;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -13,9 +11,6 @@ import org.apache.log4j.Logger;
 
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.factory.FactoryImpl;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -32,16 +27,11 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightC
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.classloader.BytecodeClassLoader;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
-import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.core.validation.IProgramValidator;
-import fr.inria.astor.core.validation.ProgramValidator;
-import fr.inria.astor.core.validation.entity.TestResult;
-import fr.inria.astor.core.validation.executors.ValidatorProcess;
-import fr.inria.astor.core.validation.executors.ValidationDualModeThread;
+import fr.inria.astor.core.validation.validators.IProgramValidator;
 
 /**
  * Evolutionary program transformation Loop

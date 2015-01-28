@@ -6,9 +6,8 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
-import fr.inria.astor.core.loop.evolutionary.population.PopulationController;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.validation.ProgramValidator;
+import fr.inria.astor.core.validation.validators.ProgramVariantValidator;
 /**
  * This thread executes the test and set the fitness value.
  * @author Matias Martinez,  matias.martinez@inria.fr
@@ -22,7 +21,7 @@ public class ValidationDualModeThread extends Thread {
 	
 	ProjectRepairFacade projectFacade;
 	
-	ProgramValidator programVariantValidator = new ProgramValidator();
+	ProgramVariantValidator programVariantValidator = new ProgramVariantValidator();
 	
 	ProgramVariant mutatedVariant;
 	

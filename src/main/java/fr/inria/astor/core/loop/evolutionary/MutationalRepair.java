@@ -22,8 +22,8 @@ import fr.inria.astor.core.loop.mutation.mutants.operators.MutatorComposite;
 import fr.inria.astor.core.loop.mutation.mutants.operators.NegationUnaryOperatorConditionMutator;
 import fr.inria.astor.core.loop.mutation.mutants.operators.RelationalBinaryOperatorMutator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.StatSpaceSize;
 
 /**

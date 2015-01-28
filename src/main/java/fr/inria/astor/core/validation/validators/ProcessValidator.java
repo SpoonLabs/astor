@@ -1,4 +1,4 @@
-package fr.inria.astor.core.validation;
+package fr.inria.astor.core.validation.validators;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -8,9 +8,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -46,7 +43,7 @@ public class ProcessValidator implements IProgramValidator {
 			} else {
 				bc = originalURL;
 			}
-			ValidatorProcess p = new ValidatorProcess(/*currentStat*/);
+			ValidatorProcess p = new ValidatorProcess();
 			// First validation: failing test case
 			String localPrefix = projectFacade.getProperties().getExperimentName() + File.separator
 					+ projectFacade.getProperties().getFixid();
@@ -65,7 +62,7 @@ public class ProcessValidator implements IProgramValidator {
 				log.debug(trfailing);
 				if (trfailing.wasSuccessful()) {
 					//currentStat.passFailingval2++;
-					if (TransformationProperties.executeCompleteRegression)
+					if (TransformationProperties.allTestInOneProcess)
 						return executeRegressionTesting(mutatedVariant, bc, p, localPrefix);
 					else
 						return executeRegressionTestingOneByOne(mutatedVariant, bc, p, localPrefix);
@@ -99,7 +96,8 @@ public class ProcessValidator implements IProgramValidator {
 	protected ProgramVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc, ValidatorProcess p,
 			String localPrefix) {
 		log.debug("Test Failing is passing, Executing regression");
-		TestResult trregression = p.execute(bc, retrieveRegressionTestCases(),
+		ProgramVariantValidator validator = new ProgramVariantValidator();
+		TestResult trregression = p.execute(bc, validator.retrieveRegressionTestCases(),
 				TransformationProperties.validationRegressionTimeLimit * 2);
 		if (trregression == null) {
 			return null;
@@ -114,7 +112,9 @@ public class ProcessValidator implements IProgramValidator {
 		log.debug("Test Failing is passing, Executing regression");
 		TestResult trregressionall = new TestResult();
 		long t1 = System.currentTimeMillis();
-		for (String tc : retrieveRegressionTestCases()) {
+		ProgramVariantValidator validator = new ProgramVariantValidator();
+		for (String tc : validator.retrieveRegressionTestCases()) {
+									
 			List<String> parcial = new ArrayList<String>();
 			parcial.add(tc);
 			TestResult trregression = p.execute(bc, parcial, TransformationProperties.validationRegressionTimeLimit * 2);
@@ -138,9 +138,9 @@ public class ProcessValidator implements IProgramValidator {
 
 	List<String> regressionCases = null;
 
-	/**
+/*	*//**
 	 * Feed the list of test cases according to the definition POM/build.xml
-	 */
+	 *//*
 	public List<String> retrieveRegressionTestCases() {
 		if (regressionCases == null) {
 			regressionCases = new ArrayList<String>();
@@ -148,13 +148,15 @@ public class ProcessValidator implements IProgramValidator {
 				String name = type.getQualifiedName();
 				if ((name.endsWith("Test") || name.endsWith("TestBinary") || name.endsWith("TestPermutations"))
 						&& (!name.endsWith("AbstractTest")) && !(type instanceof CtInterface)
-						&& !(name.equals("junit.framework.TestSuite"))) {
+						&& !(name.equals("junit.framework.TestSuite"))
+						&& !(name.startsWith("org.apache.commons.math.ode.nonstiff"))
+						) {
 					regressionCases.add(type.getQualifiedName());
 				}
 
 			}
 		}
 		return regressionCases;
-	}
+	}*/
 	
 }

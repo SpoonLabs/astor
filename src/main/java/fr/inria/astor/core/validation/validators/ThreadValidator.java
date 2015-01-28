@@ -1,4 +1,4 @@
-package fr.inria.astor.core.validation;
+package fr.inria.astor.core.validation.validators;
 
 import org.apache.log4j.Logger;
 

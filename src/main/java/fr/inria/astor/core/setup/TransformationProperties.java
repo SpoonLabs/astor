@@ -72,7 +72,7 @@ public class TransformationProperties {
 	/**
 	 * Execute all regression test in one process or analyze one by one.
 	 */
-	public static boolean executeCompleteRegression = true;
+	public static boolean allTestInOneProcess = true;
 	
 	public static boolean uniformRandom = true;
 	
