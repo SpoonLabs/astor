@@ -89,7 +89,7 @@ public class JGenProg extends EvolutionaryEngine {
 		startEvolution();
 
 		long endT = System.currentTimeMillis();
-		log.debug("Time (ms): " + (endT - startT));
+		log.info("Time (ms): " + (endT - startT));
 		currentStat.timeIteraction = ((endT-startT));
 		
 	}

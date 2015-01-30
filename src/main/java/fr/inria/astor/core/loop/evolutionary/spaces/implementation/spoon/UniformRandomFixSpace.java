@@ -76,7 +76,9 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 		ProcessingManager processing = new QueueProcessingManager(FactoryImpl.getLauchingFactory());
 		for (String processorName : getProcessorTypes()) {
 			processing.addProcessor(processorName);
-			FactoryImpl.getLauchingFactory().getEnvironment().debugMessage("Loaded processor " + processorName + ".");
+			//FactoryImpl.getLauchingFactory().getEnvironment().debugMessage("Loaded processor " + processorName + ".");
+			logger.debug("Loaded processor " + processorName + ".");
+			
 		}
 
 		processing.process(element);

@@ -107,18 +107,18 @@ public abstract class EvolutionaryEngine {
 		// At the end
 
 		if (!this.solutions.isEmpty()) {
-			log.debug("End Repair Loops: Found solution");
-			log.debug("Solution stored at: "+projectFacade.getProperties().getInDir());
+			log.info("End Repair Loops: Found solution");
+			log.info("Solution stored at: "+projectFacade.getProperties().getInDir());
 			
 		} else {
-			log.debug("End Repair Loops: NOT Found solution");
+			log.info("End Repair Loops: NOT Found solution");
 		}
 		for (ProgramVariant variant : solutions) {
-			log.debug("f (sol) " + variant.getFitness() + ", " + variant);
+			log.info("f (sol) " + variant.getFitness() + ", " + variant);
 		}
 
 		for (ProgramVariant variant : variants) {
-			log.debug("f " + variant.getFitness() + ", " + variant);
+			log.info("f " + variant.getFitness() + ", " + variant);
 		}
 	}
 
@@ -179,9 +179,9 @@ public abstract class EvolutionaryEngine {
 					Thread.currentThread().setContextClassLoader(bcclassloader);
 
 					boolean validInstance = validateInstance(childVariant);
-					log.debug("-Valid: " + validInstance + ", fitness " + childVariant.getFitness());
+					log.debug("-Valid?: " + validInstance + ", fitness " + childVariant.getFitness());
 					if (validInstance) {
-						log.debug("-Found Solution, child variant #" + childVariant.getId());
+						log.info("-Found Solution, child variant #" + childVariant.getId());
 						saveStaticSucessful(generation);
 						// if the mode is not save, we only save the solution
 						if (!TransformationProperties.saveProgramVariant) {

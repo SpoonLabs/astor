@@ -25,7 +25,6 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.TransformationProperties;
-import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.main.AbstractMain;
 /**
