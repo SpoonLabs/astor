@@ -46,6 +46,7 @@ public class JUnitTestExecutor {
 			}
 		}
 		out = out.substring(0, out.length()-1)+"]";
+		//This sysout is necessary for the communication between process...
 		System.out.println(OUTSEP + r.getRunCount() + OUTSEP + r.getFailureCount() + OUTSEP + out + OUTSEP);
 
 	}

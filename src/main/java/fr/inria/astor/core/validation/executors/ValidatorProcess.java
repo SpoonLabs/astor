@@ -65,7 +65,7 @@ public class ValidatorProcess {
 			p = pb.start();
 			
 			String cm2 = command.toString().replace("[", "").replace("]", "").replace(",", " ");
-			System.out.println(cm2);
+			log.debug("Executing process: "+cm2);
 				
 			Worker worker = new Worker(p);
 			worker.start();
@@ -76,11 +76,11 @@ public class ValidatorProcess {
 			int exitvalue = p.exitValue();
 			TestResult tr = getTestResult(p);
 			p.destroy();
-			System.out.println("Execution time "+((t_end-t_start)/1000)+ " seconds");
+			log.debug("Execution time "+((t_end-t_start)/1000)+ " seconds");
 			
 			return tr;
 		} catch (Exception ex) {
-			System.out.println("The validation thread continues working " + ex.getMessage());
+			log.error("The validation thread continues working " + ex.getMessage());
 			if (p != null)
 				p.destroy();
 			return null;

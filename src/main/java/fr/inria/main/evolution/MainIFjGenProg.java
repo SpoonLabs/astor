@@ -51,7 +51,6 @@ public class MainIFjGenProg extends AbstractMain {
 	public void run(String location, String projectName, String dependencies,  
 			String packageToInstrument,
 			double thfl, String failing) throws Exception {
-		System.out.println(System.getProperty("java.class.path"));
 		if(thfl>0)
 			TransformationProperties.THRESHOLD_SUSPECTNESS = thfl;
 		

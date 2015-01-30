@@ -11,7 +11,11 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
-
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class CtExpressionTransformator implements ModelTransformator{
 
 	private Logger log = Logger.getLogger(CtExpressionTransformator.class.getName());
@@ -28,7 +32,6 @@ public class CtExpressionTransformator implements ModelTransformator{
 
 	@Override
 	public void transform(GenOperationInstance operation) throws Exception {
-		System.out.println("Expression transformation");
 		Factory factory = FactoryImpl.getLauchingFactory();
 		
 		CtExpression rightTerm = null, leftTerm = null;
@@ -87,11 +90,7 @@ public class CtExpressionTransformator implements ModelTransformator{
 				operation.setModified(binaryOp);
 
 				successful = true;
-				/*if (binaryOp.getParent() == null) {
-					log.error("No parent setted");
-					successful = false;
-				}*/
-
+			
 				operation.setSuccessfulyApplied((successful));
 			}
 			log.debug(" applied: " + ctst.getParent().getSignature());

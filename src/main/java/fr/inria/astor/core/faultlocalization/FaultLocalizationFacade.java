@@ -43,7 +43,7 @@ public class FaultLocalizationFacade {
 		// be run. Can be the full or relative path.
 		//Example: GZoltar gz = new GZoltar("C:\\Personal\\develop\\workspaceEvolution\\testProject\\target\\classes");
 
-		System.out.println(new File(location).getAbsolutePath());
+		logger.info(new File(location).getAbsolutePath());
 		GZoltar gz = new GZoltar(new File(location).getAbsolutePath());
 		
 		// 2. Add Package/Class names to instrument

@@ -43,7 +43,7 @@ public abstract class EvolutionaryEngine {
 	/**
 	 * Statistic for
 	 */
-	protected Stats currentStat;
+	protected Stats currentStat = new Stats();
 
 	public Stats getCurrentStat() {
 		return currentStat;
@@ -143,7 +143,6 @@ public abstract class EvolutionaryEngine {
 				break;
 			}
 
-			log.debug("");
 			log.debug("-Parent Variant: " + parentVariant);
 
 			// workarround, the class is loader when in the subtype

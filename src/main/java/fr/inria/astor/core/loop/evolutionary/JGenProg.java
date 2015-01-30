@@ -108,7 +108,7 @@ public class JGenProg extends EvolutionaryEngine {
 
 		// We save the first variant
 		this.originalVariant = variants.get(0);
-		currentStat.fl_gens_size = this.originalVariant.getGenList().size();
+	//	currentStat.fl_gens_size = this.originalVariant.getGenList().size();
 	}
 
 	/**

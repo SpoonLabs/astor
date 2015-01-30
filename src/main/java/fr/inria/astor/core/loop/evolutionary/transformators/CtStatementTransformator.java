@@ -57,7 +57,6 @@ public class CtStatementTransformator implements ModelTransformator {
 	 * @throws IllegalAccessException
 	 */
 	public void transform(GenOperationInstance operation) throws IllegalAccessException {
-		System.out.println("Statement transformation");
 		
 		boolean successful = false;
 		CtStatement ctst = (CtStatement) operation.getOriginal();

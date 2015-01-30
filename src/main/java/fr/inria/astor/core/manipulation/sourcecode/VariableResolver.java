@@ -250,17 +250,17 @@ public class VariableResolver {
 	@SuppressWarnings("unused")
 	public static List<MethodInstantialization> compatibleMethodInvocationInScope(CtVariable target,List<CtVariable> varScope, CtTypeReference compatibleReturning){
 		List<MethodInstantialization> instant = new ArrayList<MethodInstantialization>();
-		System.out.println("Target class "+target.getType());
+		logger.debug("Target class "+target.getType());
 		if(target.getType().getDeclaration() instanceof CtType){
 			CtType type = (CtType) target.getType().getDeclaration();
 			Collection<CtMethod> methods = type.getAllMethods();
 			for (CtMethod ctMethod : methods) {
 				CtTypeReference returningMethodType = ctMethod.getType();
-				System.out.println("Analyzing Method "+ctMethod.getSimpleName()+" returning "+returningMethodType);
+				logger.debug("Analyzing Method "+ctMethod.getSimpleName()+" returning "+returningMethodType);
 				//Analyze return 
 				//TODO: check
 				if(compatibleReturning != null && !compatibleReturning.isAssignableFrom(returningMethodType)){
-					System.out.println("Method return not compatible with type ref assignement");
+					logger.debug("Method return not compatible with type ref assignement");
 					continue;
 				}
 				
@@ -277,7 +277,7 @@ public class VariableResolver {
 					}else{
 						candidates.put(ctParameter, vari);
 					}
-					System.out.println(typ.getSimpleName()+" ==> "+vari);
+					logger.debug(typ.getSimpleName()+" ==> "+vari);
 				}
 				if(compatibles){
 					MethodInstantialization mi = new MethodInstantialization(ctMethod, candidates);
@@ -288,7 +288,7 @@ public class VariableResolver {
 		}else{
 			//
 			//TODO:The declaration is null i.e. there is not representation of the class in the model
-			System.out.println("");
+		
 		}
 		return instant;
 	}

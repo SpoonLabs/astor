@@ -53,8 +53,6 @@ public class MutationSupporter {
 
 	private Logger logger = Logger.getLogger(Thread.currentThread().getName());
 
-//	private int mutationId = -1;
-
 	/**
 	 * 
 	 */
@@ -80,13 +78,6 @@ public class MutationSupporter {
 		spoonClassCompiler = new SpoonClassCompiler(factory);
 		this.currentSupporter = this;
 	}
-
-
-
-
-	/*public String currentMutatorIdentifier() {
-		return (getMutationId() >= 0)? ( "variant-" + getMutationId()) : DEFAULT_ORIGINAL_VARIANT;
-	}*/
 
 
 	public void buildModel(String srcPathToBuild, String classpath) {
