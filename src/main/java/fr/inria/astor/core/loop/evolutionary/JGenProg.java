@@ -68,12 +68,21 @@ public class JGenProg extends EvolutionaryEngine {
 		log.debug("----Starting Mutation: Initial suspicious size: " + suspicious.size());
 		long startT = System.currentTimeMillis();
 
+		//Prepare the initial population	
 		initializePopulation(suspicious);
 		
-		if(originalVariant.getGenList().isEmpty()){
-			log.debug("No gen to analyze");
+		if(originalVariant == null){
+			log.error("Any variant for analyze ");
 			return;
 		}
+		
+		if(originalVariant.getGenList().isEmpty()){
+			log.error("No gen to analyze");
+			return;
+		}
+		
+		//Prepare Space
+		getFixspace().defineSpace(originalVariant.getAffectedClasses(),this.mutatorSupporter.getFactory().Type().getAll());
 				
 		URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		URLClassLoader loader = new URLClassLoader(originalURL);
@@ -101,8 +110,9 @@ public class JGenProg extends EvolutionaryEngine {
 	}
 
 	public void initializePopulation(List<SuspiciousCode> suspicious) throws Exception {
+		
 		variantFactory.setMutatorExecutor(getMutatorSupporter());
-		variantFactory.setFixspace(getFixspace());
+		
 		this.variants = variantFactory.createInitialPopulation(suspicious, TransformationProperties.populationSize,
 				populationControler, projectFacade);
 

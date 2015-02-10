@@ -48,11 +48,11 @@ public class FitnessPopulationController implements PopulationController{
 			}
 		}
 		
-		log.info("Solutions: " +  "--> (" + solutionId + ")");
+		log.debug("Solutions found:" +  "--> (" + solutionId + ")");
 
 		childVariants.removeAll(genSolutions);
 				
-		log.info("Variants to next generation from: " + totalInstances + "--> (" + variantsIds + ")");
+		log.debug("Variants to next generation from: " + totalInstances + "-->IDs: (" + variantsIds + ")");
 
 		
 		int min = (childVariants.size() > maxNumberInstances) ? maxNumberInstances : childVariants.size();
@@ -62,7 +62,7 @@ public class FitnessPopulationController implements PopulationController{
 		for (ProgramVariant programVariant : newPop) {
 			variantsIds += programVariant.getId()+"(f="+programVariant.getFitness()+")" + ", ";
 		}
-		log.info("Selected to next generation: " + totalInstances + "--> (" + variantsIds + ")");
+		log.debug("Selected to next generation: IDs" + totalInstances + "--> (" + variantsIds + ")");
 
 		allSolutions.addAll(genSolutions);
 		return newPop;

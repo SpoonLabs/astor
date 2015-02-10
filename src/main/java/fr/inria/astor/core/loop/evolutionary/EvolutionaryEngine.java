@@ -45,14 +45,6 @@ public abstract class EvolutionaryEngine {
 	 */
 	protected Stats currentStat = new Stats();
 
-	public Stats getCurrentStat() {
-		return currentStat;
-	}
-
-	public void setCurrentStat(Stats currentStat) {
-		this.currentStat = currentStat;
-	}
-
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 
@@ -88,11 +80,15 @@ public abstract class EvolutionaryEngine {
 		this.projectFacade = projFacade;
 	}
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	public void startEvolution() throws Exception {
-		// Process of Instances
+		
 		int generation = 0;
 		boolean foundsolution = false;
-
+				
 		log.debug("FIXSPACE:" + this.getFixspace());
 	
 		currentStat.passFailingval1 = 0;
@@ -610,4 +606,11 @@ public abstract class EvolutionaryEngine {
 		this.programValidator = programValidator;
 	}
 
+	public Stats getCurrentStat() {
+		return currentStat;
+	}
+
+	public void setCurrentStat(Stats currentStat) {
+		this.currentStat = currentStat;
+	}
 }

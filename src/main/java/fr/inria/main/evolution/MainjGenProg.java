@@ -59,20 +59,21 @@ public void run(String location, String projectName, String dependencies, String
 	
 	MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 	JGenProg gploop = new JGenProg(mutSupporter,rep);
-	//gploop.setCurrentStat(currentStat);
-			
+
+	
 	//Fix Space
 	List<AbstractFixSpaceProcessor> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor>();
-	
 	ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 	ingredientProcessors.add(new LoopExpressionFixSpaceProcessor());
 	ingredientProcessors.add(new IFExpressionFixSpaceProcessor());
 	
-	
-	gploop.setFixspace(new UniformRandomFixSpace(ingredientProcessors));
-	//---
+	//We analyze 
 	gploop.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 	//--
+	
+	//The ingredients for build the patches
+	gploop.setFixspace(new UniformRandomFixSpace(ingredientProcessors));
+	//---
 	
 	//Repair Space
 	gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
@@ -94,8 +95,6 @@ public void run(String location, String projectName, String dependencies, String
 			filtercandidates.add(suspiciousCode);
 		}
 	}
-//	currentStat.fl_size = filtercandidates.size();
-//	currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
 	
 	assertNotNull(candidates);
 	assertTrue(candidates.size() > 0);

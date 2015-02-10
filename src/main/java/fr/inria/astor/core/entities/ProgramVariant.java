@@ -1,11 +1,13 @@
 package fr.inria.astor.core.entities;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtSimpleType;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 /**
  * Representation of a Program Variant (Genotype)
@@ -139,6 +141,10 @@ public class ProgramVariant {
 	
 	public String currentMutatorIdentifier() {
 		return (id >= 0)? ( "variant-" + id) : DEFAULT_ORIGINAL_VARIANT;
+	}
+	
+	public List<CtSimpleType> getAffectedClasses(){
+		return new ArrayList<CtSimpleType>(loadClasses.values());
 	}
 	
 }

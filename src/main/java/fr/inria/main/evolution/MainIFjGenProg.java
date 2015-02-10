@@ -18,6 +18,7 @@ import fr.inria.astor.core.loop.evolutionary.JGenProgIfExpression;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.LocalFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
@@ -73,10 +74,10 @@ public class MainIFjGenProg extends AbstractMain {
 		gploop.setVariantFactory(new ProgramVariantFactory(procCondition));
 	
 		//Now, we focus on the fix space i.e. ingredients for the fix.
-		List<AbstractFixSpaceProcessor> procFix = new ArrayList<AbstractFixSpaceProcessor>();
+		List<AbstractFixSpaceProcessor<?>> procFix = new ArrayList<AbstractFixSpaceProcessor<?>>();
 		procFix.add(new LoopExpressionFixSpaceProcessor());
 		procFix.add(new IFExpressionFixSpaceProcessor());
-		gploop.setFixspace(new UniformRandomFixSpace(procFix));
+		gploop.setFixspace(new LocalFixSpace(procFix));
 		
 		//
 		gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());

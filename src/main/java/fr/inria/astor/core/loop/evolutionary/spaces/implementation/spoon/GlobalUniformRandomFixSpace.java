@@ -31,12 +31,12 @@ public class GlobalUniformRandomFixSpace<K,T extends CtCodeElement> extends Unif
 	private Logger logger = Logger.getLogger(GlobalUniformRandomFixSpace.class.getName());
 
 	
-	public GlobalUniformRandomFixSpace(AbstractFixSpaceProcessor processor) throws JSAPException {
+	public GlobalUniformRandomFixSpace(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
 		super(processor);
 		
 	}
 	
-	public GlobalUniformRandomFixSpace(List<AbstractFixSpaceProcessor> processor) throws JSAPException {
+	public GlobalUniformRandomFixSpace(List<AbstractFixSpaceProcessor<?>> processor) throws JSAPException {
 		super(processor);
 		
 	}

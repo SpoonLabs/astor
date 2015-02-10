@@ -13,6 +13,7 @@ import spoon.processing.ProcessingManager;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.QueueProcessingManager;
 
@@ -55,7 +56,7 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 	 * @param processor processor such as  @link{InvocationFixSpaceProcessor}
 	 * @throws JSAPException
 	 */
-	public UniformRandomFixSpace(AbstractFixSpaceProcessor processor) throws JSAPException {
+	public UniformRandomFixSpace(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
 		super();
 		this.addProcessor(processor.getClass().getName());
 	}
@@ -64,9 +65,9 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 	 * @param processors
 	 * @throws JSAPException
 	 */
-	public UniformRandomFixSpace(List<AbstractFixSpaceProcessor> processors) throws JSAPException {
+	public UniformRandomFixSpace(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
 		super();
-		for (AbstractFixSpaceProcessor abstractFixSpaceProcessor : processors) {
+		for (AbstractFixSpaceProcessor<?> abstractFixSpaceProcessor : processors) {
 			this.addProcessor(abstractFixSpaceProcessor.getClass().getName() );
 		}
 	}
@@ -76,12 +77,15 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 		ProcessingManager processing = new QueueProcessingManager(FactoryImpl.getLauchingFactory());
 		for (String processorName : getProcessorTypes()) {
 			processing.addProcessor(processorName);
-			//FactoryImpl.getLauchingFactory().getEnvironment().debugMessage("Loaded processor " + processorName + ".");
 			logger.debug("Loaded processor " + processorName + ".");
 			
 		}
 
 		processing.process(element);
+	}
+	
+	protected Map<K, List<T>> getFixSpace() {
+		return fixSpace;
 	}
 	
 	public List<T> createFixSpace(CtElement ctelement) {
@@ -103,17 +107,15 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 		return returnList;
 	}
 		
-	protected Map<K, List<T>> getFixSpace() {
-		return fixSpace;
-	}
+
 
 	/**
 	 * Creation of fix space from a CtClass
 	 * 
 	 * @param root
 	 */
-	public void createFixSpaceFromAClass(K key, CtClass root) {
-		// --FIX SPACE
+	public void createFixSpaceFromAClass(K key, CtSimpleType root) {
+		
 		if (!getFixSpace().containsKey(key)) {
 			List<T> fixspace = createFixSpace(root);
 			AbstractFixSpaceProcessor.mustClone = true;
@@ -189,6 +191,13 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 		if(elements == null)
 			return null;
 		return getRandomStatementFromSpace(elements);
+	}
+	
+	@Override
+	public void defineSpace(List<CtSimpleType<?>> affected,
+			List<CtSimpleType<?>> all) {
+		throw new IllegalArgumentException("Not Implemented");
+		
 	}
 	
 	

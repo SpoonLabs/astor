@@ -75,7 +75,7 @@ public class MainIFPar extends AbstractMain {
 		ingredientsProcessors.add(new IFExpressionFixSpaceProcessor());
 		
 		// We include the new location fix space
-		parloop.setFixspace(new UniformRandomFixSpace<>(ingredientsProcessors));
+		parloop.setFixspace(new UniformRandomFixSpace(ingredientsProcessors));
 		parloop.setRepairActionSpace(new ParUniformRandomRepairOperatorSpace());
 		parloop.setPopulationControler(new FitnessPopulationController());
 				

@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
@@ -20,7 +19,6 @@ import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerLauncher;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
-import fr.inria.astor.core.loop.evolutionary.spaces.FixLocationSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -38,18 +36,14 @@ public class ProgramVariantFactory {
 
 	private Logger log = Logger.getLogger(Thread.currentThread().getName());
 
-	protected FixLocationSpace<String, CtCodeElement> fixspace = null;
-
 	/**
 	 * counter of id to assign to program instances
 	 */
 	protected int idCounter = 0;
 
 	protected MutationSupporter mutatorSupporter = null;
-
-	protected Class acceptedCtElement = CtElement.class;
-
-	List<AbstractFixSpaceProcessor> processors = null;
+	
+	protected List<AbstractFixSpaceProcessor> processors = null;
 
 	
 	
@@ -64,7 +58,6 @@ public class ProgramVariantFactory {
 
 	public List<ProgramVariant> createInitialPopulation(List<SuspiciousCode> suspiciousList, 
 			int maxNumberInstances,
-			//ProgramValidator programVariantValidator, 
 			PopulationController populationControler,
 			ProjectRepairFacade projectFacade) throws Exception {
 
@@ -157,8 +150,7 @@ public class ProgramVariantFactory {
 			log.info(" Not ctClass for suspicious code " + suspiciousCode);
 			return null;
 		}
-		//TODO:
-		this.fixspace.createFixSpaceFromAClass(ctclasspointed.getQualifiedName(), ctclasspointed);
+		//this.fixspace.createFixSpaceFromAClass(ctclasspointed.getQualifiedName(), ctclasspointed);
 
 		List<CtElement> ctSuspects = null;
 		try {
@@ -325,14 +317,6 @@ public class ProgramVariantFactory {
 		CtClass cloned = mutatorSupporter.getFactory().Core().clone(ctclass);
 		cloned.setParent(ctclass.getParent());
 		return cloned;
-	}
-
-	public FixLocationSpace getFixspace() {
-		return fixspace;
-	}
-
-	public void setFixspace(FixLocationSpace fixspace) {
-		this.fixspace = fixspace;
 	}
 
 	public MutationSupporter getMutatorExecutor() {
