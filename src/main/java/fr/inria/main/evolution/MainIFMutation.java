@@ -59,10 +59,9 @@ public class MainIFMutation extends AbstractMain {
 			MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 			
 			MutationalRepair mutloop = new MutationalRepair(mutSupporter,rep);
-		//	mutloop.setCurrentStat(currentStat);
 			mutloop.setFixspace(new UniformRandomFixSpace());
 			
-			mutloop.setRepairSpace(new UniformRandomRepairOperatorSpace());
+			mutloop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
 			mutloop.setPopulationControler(new FitnessPopulationController());
 			
 			List<AbstractFixSpaceProcessor> suspiciousProcessor = new ArrayList<AbstractFixSpaceProcessor>();

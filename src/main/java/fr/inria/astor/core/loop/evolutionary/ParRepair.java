@@ -53,7 +53,7 @@ public class ParRepair extends JGenProg {
 		// GenSuspicious genSusp = (GenSuspicious) gen;
 		Gen genSusp = gen;
 
-		ParMutationOperation operationType = (ParMutationOperation) repairSpace.getNextMutation();// GenProgMutationOperation.REPLACE;
+		ParMutationOperation operationType = (ParMutationOperation) repairActionSpace.getNextMutation();// GenProgMutationOperation.REPLACE;
 
 		if (!(genSusp.getRootElement() instanceof CtIf)) {
 			// logger.error(".....The pointed Element is Not a statement");
@@ -88,7 +88,7 @@ public class ParRepair extends JGenProg {
 		
 		//--
 		int elementsFromFixSpace = this.fixspace.getFixSpace(genSusp.getCtClass().getQualifiedName()).size();
-		int numberOperations = repairSpace.size();
+		int numberOperations = repairActionSpace.size();
 		currentStat.sizeSpace.add(new StatSpaceSize(numberOperations, elementsFromFixSpace));
 		//--
 		

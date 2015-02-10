@@ -75,7 +75,7 @@ public void run(String location, String projectName, String dependencies, String
 	//--
 	
 	//Repair Space
-	gploop.setRepairSpace(new UniformRandomRepairOperatorSpace());
+	gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
 	
 	//Pop controller
 	gploop.setPopulationControler(new FitnessPopulationController());

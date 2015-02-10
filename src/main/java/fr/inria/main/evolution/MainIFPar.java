@@ -76,7 +76,7 @@ public class MainIFPar extends AbstractMain {
 		
 		// We include the new location fix space
 		parloop.setFixspace(new UniformRandomFixSpace<>(ingredientsProcessors));
-		parloop.setRepairSpace(new ParUniformRandomRepairOperatorSpace());
+		parloop.setRepairActionSpace(new ParUniformRandomRepairOperatorSpace());
 		parloop.setPopulationControler(new FitnessPopulationController());
 				
 		List<SuspiciousCode> candidates = rep.getSuspicious(rep.getProperties().getPackageToInstrument(),

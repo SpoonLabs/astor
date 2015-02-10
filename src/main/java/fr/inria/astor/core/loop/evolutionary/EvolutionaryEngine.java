@@ -68,7 +68,7 @@ public abstract class EvolutionaryEngine {
 	// SPACES
 	protected FixLocationSpace<String, CtCodeElement> fixspace = null;
 
-	protected RepairOperatorSpace repairSpace = null;
+	protected RepairOperatorSpace repairActionSpace = null;
 
 	protected PopulationController populationControler = null;
 
@@ -547,16 +547,13 @@ public abstract class EvolutionaryEngine {
 		}
 		return false;
 	}
-	
-
-
-	
-	public RepairOperatorSpace getRepairSpace() {
-		return repairSpace;
+		
+	public RepairOperatorSpace getRepairActionSpace() {
+		return repairActionSpace;
 	}
 
-	public void setRepairSpace(RepairOperatorSpace repairSpace) {
-		this.repairSpace = repairSpace;
+	public void setRepairActionSpace(RepairOperatorSpace repairSpace) {
+		this.repairActionSpace = repairSpace;
 	}
 
 	public List<ProgramVariant> getVariants() {

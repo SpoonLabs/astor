@@ -66,19 +66,20 @@ public class MainIFjGenProg extends AbstractMain {
 		}
 		MutationSupporter mutSupporter = new MutationSupporter(facade);
 		JGenProgIfExpression gploop = new JGenProgIfExpression(mutSupporter,rep);
-		//gploop.setCurrentStat(currentStat);
-				
+
+		//This processor collects the If for creating a population of suspicious ifs.
 		List<AbstractFixSpaceProcessor> procCondition = new ArrayList<AbstractFixSpaceProcessor>();
 		procCondition.add(new IFConditionFixSpaceProcessor());
-		//
 		gploop.setVariantFactory(new ProgramVariantFactory(procCondition));
-		
+	
+		//Now, we focus on the fix space i.e. ingredients for the fix.
 		List<AbstractFixSpaceProcessor> procFix = new ArrayList<AbstractFixSpaceProcessor>();
 		procFix.add(new LoopExpressionFixSpaceProcessor());
 		procFix.add(new IFExpressionFixSpaceProcessor());
-		
 		gploop.setFixspace(new UniformRandomFixSpace(procFix));
-		gploop.setRepairSpace(new UniformRandomRepairOperatorSpace());
+		
+		//
+		gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
 		gploop.setPopulationControler(new FitnessPopulationController());
 		
 		gploop.setProgramValidator(new ProcessValidator());
