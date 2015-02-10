@@ -1,6 +1,6 @@
-package fr.inria.astor.test.repair.evaluation;
+package fr.inria.astor.test.repair.evaluation.ifcondition;
 
-import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.test.repair.evaluation.BaseEvolutionaryTest;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainIFPar;
 /**

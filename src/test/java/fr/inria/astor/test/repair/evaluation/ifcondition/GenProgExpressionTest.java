@@ -1,8 +1,10 @@
-package fr.inria.astor.test.repair.evaluation;
+package fr.inria.astor.test.repair.evaluation.ifcondition;
 
 import java.io.File;
 
 import org.junit.Test;
+
+import fr.inria.astor.test.repair.evaluation.BaseEvolutionaryTest;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainIFjGenProg;
 /**
@@ -10,7 +12,7 @@ import fr.inria.main.evolution.MainIFjGenProg;
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public class GenProgLoopExpressionProjectTest  extends BaseEvolutionaryTest{
+public class GenProgExpressionTest  extends BaseEvolutionaryTest{
 		
 	
 	@Override

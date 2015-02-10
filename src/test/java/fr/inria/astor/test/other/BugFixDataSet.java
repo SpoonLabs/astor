@@ -1,4 +1,4 @@
-package fr.inria.astor.test.repair.evaluation;
+package fr.inria.astor.test.other;
 
 
 /**

@@ -1,4 +1,4 @@
-package fr.inria.astor.test.repair.evaluation;
+package fr.inria.astor.test.other;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -17,6 +17,10 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.XMLStat;
+import fr.inria.astor.test.repair.evaluation.BaseEvolutionaryTest;
+import fr.inria.astor.test.repair.evaluation.ifcondition.GenProgExpressionTest;
+import fr.inria.astor.test.repair.evaluation.ifcondition.MutationEvolutionaryTest;
+import fr.inria.astor.test.repair.evaluation.ifcondition.ParEvolutionaryTest;
 /**
  * This class executes the experiment from our paper if-conditional-dataset-2014.
  * @author Matias Martinez,  matias.martinez@inria.fr
@@ -103,7 +107,7 @@ public class IterationTest {
 		BaseEvolutionaryTest methodPar = new ParEvolutionaryTest();
 		//singleIssue(methodPar);
 		
-		BaseEvolutionaryTest methodGenProg = new GenProgLoopExpressionProjectTest();
+		BaseEvolutionaryTest methodGenProg = new GenProgExpressionTest();
 		//singleIssue(methodGenProg);
 		
 		
@@ -126,7 +130,7 @@ public class IterationTest {
 	@Test
 	public void singleGP() throws NumberFormatException, Exception {
 	
-		BaseEvolutionaryTest methodGenProg = new GenProgLoopExpressionProjectTest();
+		BaseEvolutionaryTest methodGenProg = new GenProgExpressionTest();
 		singleIssue(methodGenProg);
 		
 		
@@ -145,7 +149,7 @@ public class IterationTest {
 		Worker w2 = new Worker(this, methodPar);
 		w2.start();
 		
-		BaseEvolutionaryTest methodGenProg = new GenProgLoopExpressionProjectTest();
+		BaseEvolutionaryTest methodGenProg = new GenProgExpressionTest();
 		//singleIssue(methodGenProg);
 		Worker w3 = new Worker(this, methodGenProg);
 		w3.start();
@@ -203,7 +207,7 @@ public class IterationTest {
 		Worker w2 = new Worker(this, methodPar);
 	//	w2.start();
 		
-		BaseEvolutionaryTest methodGenProg = new GenProgLoopExpressionProjectTest();
+		BaseEvolutionaryTest methodGenProg = new GenProgExpressionTest();
 		//singleIssue(methodGenProg);
 		Worker w3 = new Worker(this, methodGenProg);
 	
@@ -239,7 +243,7 @@ public class IterationTest {
 		Worker w2 = new Worker(this, methodPar);
 	//	w2.start();
 		
-		BaseEvolutionaryTest methodGenProg = new GenProgLoopExpressionProjectTest();
+		BaseEvolutionaryTest methodGenProg = new GenProgExpressionTest();
 		//singleIssue(methodGenProg);
 		Worker w3 = new Worker(this, methodGenProg);
 	

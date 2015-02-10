@@ -1,4 +1,4 @@
-package fr.inria.astor.test.repair.evaluation;
+package fr.inria.astor.test.other;
 
 import java.io.IOException;
 import java.net.URI;

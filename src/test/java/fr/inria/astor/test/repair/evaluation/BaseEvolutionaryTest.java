@@ -9,6 +9,7 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.junit.After;
 import org.junit.Before;
+
 import fr.inria.main.AbstractMain;
 /**
  * 

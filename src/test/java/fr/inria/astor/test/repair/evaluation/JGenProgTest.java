@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.junit.Test;
 
-import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainjGenProg;
 /**
@@ -42,7 +41,6 @@ public class JGenProgTest  extends BaseEvolutionaryTest{
 		String dependenciespath= "examples/Math-issue-280/lib/junit-4.4.jar";
 		String folder= "Math-issue-280";
 		String failing= "org.apache.commons.math.distribution.NormalDistributionTest";
-		Stats currentStat= new Stats();
 		File f = new File("examples/Math-issue-280/");
 		String location = f.getParent();
 		String regression= "org.apache.commons.math.distribution.NormalDistributionTest";
