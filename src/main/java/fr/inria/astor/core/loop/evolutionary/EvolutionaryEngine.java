@@ -58,7 +58,7 @@ public abstract class EvolutionaryEngine {
 	protected ProgramVariant originalVariant = null;
 
 	// SPACES
-	protected FixLocationSpace<String, CtCodeElement> fixspace = null;
+	protected FixLocationSpace<String, CtCodeElement,String> fixspace = null;
 
 	protected RepairOperatorSpace repairActionSpace = null;
 

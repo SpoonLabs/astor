@@ -81,7 +81,7 @@ public class JGenProg extends EvolutionaryEngine {
 			return;
 		}
 		
-		//Prepare Space
+		//Create fix Space
 		getFixspace().defineSpace(originalVariant.getAffectedClasses(),this.mutatorSupporter.getFactory().Type().getAll());
 				
 		URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
@@ -186,9 +186,7 @@ public class JGenProg extends EvolutionaryEngine {
 				|| operationType.equals(GenProgMutationOperation.INSERT_BEFORE)
 				|| (operationType.equals(GenProgMutationOperation.REPLACE))
 					) {
-		//	fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName());
-			//}else
-		//	if (operationType.equals(GenProgMutationOperation.REPLACE)) {
+	
 			fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName(),gen.getRootElement().getClass().getName());
 			
 			if(fix == null){
@@ -208,10 +206,14 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @param elementsFromFixSpace
 	 * @return
 	 */
-	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt, int elementsFromFixSpace) {
+	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt) {
 		CtElement fix = null;
 		int attempts = 0;
+		
 		boolean continueSearching = true;
+	
+		int elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName()).size();
+		
 		while(continueSearching && attempts < elementsFromFixSpace){
 			fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName());
 			if(fix == null){

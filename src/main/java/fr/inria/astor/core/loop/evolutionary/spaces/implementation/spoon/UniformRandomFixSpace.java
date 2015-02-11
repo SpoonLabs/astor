@@ -8,14 +8,8 @@ import java.util.Random;
 
 import org.apache.log4j.Logger;
 
-import spoon.Launcher;
-import spoon.processing.ProcessingManager;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.factory.FactoryImpl;
-import spoon.support.QueueProcessingManager;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -27,11 +21,11 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
  * This Fix Space takes uniform randomly elements from the the search space.
  * It creates the space ON DEMAND, that is, it process a CtClass the first time it is required
  * @author Matias Martinez,  matias.martinez@inria.fr
- * @param <T>
+ * @param <I>
  *
  */
-public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement> 
-	extends Launcher implements FixLocationSpace <K, T >{
+public class UniformRandomFixSpace<L extends Object, I extends CtCodeElement, T extends Object> 
+	implements FixLocationSpace <L, I , T>{
 	
 	
 	private Logger logger = Logger.getLogger(UniformRandomFixSpace.class.getName());
@@ -40,15 +34,20 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 	 *
 	 * 
 	 */
-	//to remove
-	private Map<K,List<T>> fixSpace = new HashMap<K,List<T>> ();
-	private Map<K,Map<String, List<T>>> fixSpaceByType = new HashMap<K,Map<String,List<T>>> ();
+	//I keep this structure for optimization (to avoid creating a list )
+	protected Map<L,List<I>> fixSpaceByLocation = new HashMap<L,List<I>> ();
+	protected Map<L,Map<T, List<I>>> fixSpaceByLocationType = new HashMap<L,Map<T,List<I>>> ();
+	protected Map<T,List<I>> fixSpaceByType = new HashMap<T,List<I>> ();
 	
+	
+	
+	private  IngredientProcessor<L, I> ingredientProcessor;
 	
 	private Random random = new Random();
 	
 	public UniformRandomFixSpace() throws JSAPException {
 		super();
+		ingredientProcessor = new IngredientProcessor<L, I>();
 		
 	}
 	/**
@@ -58,7 +57,8 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 	 */
 	public UniformRandomFixSpace(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
 		super();
-		this.addProcessor(processor.getClass().getName());
+		//this.addProcessor();
+		ingredientProcessor = new IngredientProcessor<L, I>(processor);
 	}
 	/**
 	 * 
@@ -67,45 +67,18 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 	 */
 	public UniformRandomFixSpace(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
 		super();
-		for (AbstractFixSpaceProcessor<?> abstractFixSpaceProcessor : processors) {
+		/*for (AbstractFixSpaceProcessor<?> abstractFixSpaceProcessor : processors) {
 			this.addProcessor(abstractFixSpaceProcessor.getClass().getName() );
-		}
+		}*/
+		ingredientProcessor = new IngredientProcessor<L, I>(processors);
 	}
 
-	protected void process(CtElement element)  {
 	
-		ProcessingManager processing = new QueueProcessingManager(FactoryImpl.getLauchingFactory());
-		for (String processorName : getProcessorTypes()) {
-			processing.addProcessor(processorName);
-			logger.debug("Loaded processor " + processorName + ".");
-			
-		}
+	protected Map<L, List<I>> getFixSpace() {
+		return fixSpaceByLocation;
+	}
+	
 
-		processing.process(element);
-	}
-	
-	protected Map<K, List<T>> getFixSpace() {
-		return fixSpace;
-	}
-	
-	public List<T> createFixSpace(CtElement ctelement) {
-		return createFixSpace(ctelement, true);
-	}
-	/**
-	 * It run the processor for the ctElement passed as parameter. It clones the element according to the argument <b>mustClone</b>
-	 * @param ctelement
-	 * @param mustClone
-	 * @return
-	 */
-	public List<T> createFixSpace(CtElement ctelement, boolean mustClone ) {
-		AbstractFixSpaceProcessor.mustClone = mustClone;
-		AbstractFixSpaceProcessor.spaceElements.clear();
-		this.process(ctelement);
-		List<T> returnList =  new ArrayList(AbstractFixSpaceProcessor.spaceElements);
-		AbstractFixSpaceProcessor.spaceElements.clear();
-		
-		return returnList;
-	}
 		
 
 
@@ -114,44 +87,48 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 	 * 
 	 * @param root
 	 */
-	public void createFixSpaceFromAClass(K key, CtSimpleType root) {
+	public void createFixSpaceFromAClass(L key, CtSimpleType root) {
 		
 		if (!getFixSpace().containsKey(key)) {
-			List<T> fixspace = createFixSpace(root);
+			List<I> ingredientsToProcess = this.ingredientProcessor.createFixSpace(root);
 			AbstractFixSpaceProcessor.mustClone = true;
-			logger.debug("Fix space size " + fixspace.size());
-			getFixSpace().put(key, fixspace);
-			splitByType(key,fixspace);
+			logger.debug("Fix space size " + ingredientsToProcess.size());
+			getFixSpace().put(key, ingredientsToProcess);
+			splitByType(key,ingredientsToProcess);
 	
 		}
 	}
 	
 	
 	
-	private void splitByType(K location, List<T> fixspace2) {
-		Map<String, List<T>> typesFromLocation = this.fixSpaceByType.get(location);
+	private void splitByType(L location, List<I> ingredients) {
+		Map<T, List<I>> typesFromLocation = this.fixSpaceByLocationType.get(location);
 		if(typesFromLocation == null){
 			typesFromLocation = new HashMap<>();
-			this.fixSpaceByType.put(location, typesFromLocation);
+			this.fixSpaceByLocationType.put(location, typesFromLocation);
 		}
-		for (T element : fixspace2) {
-			String type = element.getClass().getName();
-			List<T> list = typesFromLocation.get(type);
+		for (I element : ingredients) {
+			T type = getType(element);
+			List<I> list = typesFromLocation.get(type);
 			if(list == null){
 				list = new ArrayList<>();
 				typesFromLocation.put(type, list);
 			}
 			list.add(element);
-			
 		}
+		fixSpaceByType.putAll(typesFromLocation);
 		
+	}
+	protected T getType(I element) {
+		
+		return (T) element;
 	}
 	/**
 	 * 
 	 * @param fixSpace
 	 * @return
 	 */
-	protected T getRandomStatementFromSpace(List<T> fixSpace) {
+	protected I getRandomStatementFromSpace(List<I> fixSpace) {
 		int size = fixSpace.size();
 		int index = random.nextInt(size);
 		return fixSpace.get(index);
@@ -162,31 +139,32 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 	 * @return 
 	 */
 	@Override
-	public  T getElementFromSpace(K rootClass) {
-		T originalPicked = getRandomStatementFromSpace(this.getFixSpace().get(rootClass));
-		T cloned =  (T) MutationSupporter.clone(originalPicked);
+	public  I getElementFromSpace(L rootClass) {
+		I originalPicked = getRandomStatementFromSpace(this.getFixSpace().get(rootClass));
+		I cloned =  (I) MutationSupporter.clone(originalPicked);
 		return cloned;
 	}
 	@Override
-	public List<T> getFixSpace(K rootClass){
+	public List<I> getFixSpace(L rootClass){
 		return getFixSpace().get(rootClass);
 	}
+	
 	@Override
-	public List<T> getFixSpace(K rootClass, String type){
-		Map<String, List<T>> types =  this.fixSpaceByType.get(rootClass);
+	public List<I> getFixSpace(L rootClass, T type){
+		Map<T, List<I>> types =  this.fixSpaceByLocationType.get(rootClass);
 		if(types == null)
 			return null;
 		
-		List<T> elements = types.get(type);
+		List<I> elements = types.get(type);
 		return elements;
 	}
 	
 	public String toString(){
-		return fixSpace.toString();
+		return fixSpaceByLocation.toString();
 	}
 
 	@Override
-	public T getElementFromSpace(K rootCloned, String type) {
+	public I getElementFromSpace(L rootCloned, T type) {
 		List elements = getFixSpace(rootCloned, type);
 		if(elements == null)
 			return null;
@@ -199,6 +177,6 @@ public class UniformRandomFixSpace<K extends Object, T extends CtCodeElement>
 		throw new IllegalArgumentException("Not Implemented");
 		
 	}
-	
+
 	
 }

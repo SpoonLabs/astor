@@ -11,7 +11,7 @@ import spoon.reflect.declaration.CtSimpleType;
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public interface FixLocationSpace<K,T extends CtElement> {
+public interface FixLocationSpace<L extends Object,I extends CtElement, T extends Object > {
 	
 	/**
 	 * 
@@ -20,11 +20,11 @@ public interface FixLocationSpace<K,T extends CtElement> {
 	 */
 	public void defineSpace(List<CtSimpleType<?>> affected, List<CtSimpleType<?>> all );
 	
-	public void createFixSpaceFromAClass(K key,CtSimpleType<?> rootCloned);
-	public T getElementFromSpace(K rootCloned) ;
-	public T getElementFromSpace(K rootCloned, String type) ;
-	public List<T> getFixSpace(K rootClass);
-	public List<T> getFixSpace(K rootClass,String type);
+	public void createFixSpaceFromAClass(L key,CtSimpleType<?> rootCloned);
+	public I getElementFromSpace(L rootCloned) ;
+	public I getElementFromSpace(L rootCloned, T type) ;
+	public List<I> getFixSpace(L rootClass);
+	public List<I> getFixSpace(L rootClass, T type);
 
 	
 }

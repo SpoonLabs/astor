@@ -19,6 +19,7 @@ import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerLauncher;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.IngredientProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -219,7 +220,7 @@ public class ProgramVariantFactory {
 		List<CtElement> ctMatching = new ArrayList<CtElement>();
 
 		try {
-			UniformRandomFixSpace spaceProcessor = new UniformRandomFixSpace(processors);
+			IngredientProcessor spaceProcessor = new IngredientProcessor(processors);
 			for (CtElement element : ctSuspects) {
 				List<CtElement> result = spaceProcessor.createFixSpace(element, false);
 				//ctMatching.addAll(result);

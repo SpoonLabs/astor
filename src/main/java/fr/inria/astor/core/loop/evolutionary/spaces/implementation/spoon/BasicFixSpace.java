@@ -12,19 +12,19 @@ import spoon.reflect.declaration.CtSimpleType;
  * @author Matias Martinez
  *
  */
-public class LocalFixSpace extends UniformRandomFixSpace<String, CtCodeElement>{
+public class BasicFixSpace extends UniformRandomFixSpace<String, CtCodeElement,String>{
 
-	public LocalFixSpace(AbstractFixSpaceProcessor<?> processor)
+	public BasicFixSpace(AbstractFixSpaceProcessor<?> processor)
 			throws JSAPException {
 		super(processor);
 	}
 
-	public LocalFixSpace(List<AbstractFixSpaceProcessor<?>> processors)
+	public BasicFixSpace(List<AbstractFixSpaceProcessor<?>> processors)
 			throws JSAPException {
 		super(processors);
 	}
 
-	public LocalFixSpace() throws JSAPException {
+	public BasicFixSpace() throws JSAPException {
 		super();
 	
 	}
@@ -37,6 +37,12 @@ public class LocalFixSpace extends UniformRandomFixSpace<String, CtCodeElement>{
 				this.createFixSpaceFromAClass(ctSimpleType.getQualifiedName(), ctSimpleType);
 			}
 				
+	}
+
+	@Override
+	protected String getType(CtCodeElement element) {
+		
+		return element.getClass().getName();
 	}
 
 }

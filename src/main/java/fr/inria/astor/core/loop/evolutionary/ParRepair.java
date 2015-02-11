@@ -53,8 +53,7 @@ public class ParRepair extends JGenProg {
 		// GenSuspicious genSusp = (GenSuspicious) gen;
 		Gen genSusp = gen;
 
-		ParMutationOperation operationType = (ParMutationOperation) repairActionSpace.getNextMutation();// GenProgMutationOperation.REPLACE;
-
+		
 		if (!(genSusp.getRootElement() instanceof CtIf)) {
 			// logger.error(".....The pointed Element is Not a statement");
 			return null;
@@ -66,12 +65,15 @@ public class ParRepair extends JGenProg {
 		if ((cpar == null /*|| !(cpar instanceof CtBlock)*/)) {
 			return null;
 		}
-		// Should be the if.....
-		//CtBlock parentBlock = (CtBlock) cpar;
+
 		CtExpression condit = targetIF.getCondition();
 		CtExpression originalCond = condit;
+		
+		ParMutationOperation operationType = (ParMutationOperation) repairActionSpace.getNextMutation();
+
 		if (operationType.equals(ParMutationOperation.DELETE_BEFORE)
 				|| operationType.equals(ParMutationOperation.DELETE_AFTER)) {
+		
 			condit = isBinary(condit);
 			// We can not apply both elements to not binary operator.
 			if (condit == null) {
@@ -88,11 +90,6 @@ public class ParRepair extends JGenProg {
 		
 		//--
 		int elementsFromFixSpace = this.fixspace.getFixSpace(genSusp.getCtClass().getQualifiedName()).size();
-		int numberOperations = repairActionSpace.size();
-		currentStat.sizeSpace.add(new StatSpaceSize(numberOperations, elementsFromFixSpace));
-		//--
-		
-		//	CtElement fix = this.fixspace.getElementFromSpace(genSusp);
 		CtElement fix = null;
 		//
 		
@@ -116,7 +113,7 @@ public class ParRepair extends JGenProg {
 				return null;
 			}
 			
-			if (fix.getSignature().equals(targetIF.getSignature()) || includeClause(condit, fix, operationType)) {
+			if (fix.getSignature().equals(targetIF.getSignature()) ) {
 			//	log.info("Discarting operation, replacement is the same than the replaced code");
 				// Discard the operation.
 			}else
@@ -138,7 +135,7 @@ public class ParRepair extends JGenProg {
 	}
 
 	/**
-	 * 
+	 * Return if the expression already contains the fix expression 
 	 * @param condit
 	 * @param fix
 	 * @param operationType
@@ -147,8 +144,7 @@ public class ParRepair extends JGenProg {
 	private boolean includeClause(CtExpression condit, CtElement fix, ParMutationOperation operationType) {
 		if (operationType.equals(ParMutationOperation.INSERT_AFTER)
 				|| operationType.equals(ParMutationOperation.INSERT_BEFORE)) {
-		//	return (condit.getSignature().contains(fix.getSignature()));
-			return (condit.toString().contains(fix.toString()) 
+		return (condit.toString().contains(fix.toString()) 
 					|| fix.toString().contains(condit.toString()) );
 		}
 		return false;

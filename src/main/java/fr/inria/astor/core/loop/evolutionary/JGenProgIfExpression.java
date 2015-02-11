@@ -74,12 +74,8 @@ public class JGenProgIfExpression extends JGenProg {
 		operation.setParentBlock(parentBlock);
 		operation.setGen(genSusp);
 
-		// Stats Fix space:
-		int elementsFromFixSpace = this.fixspace.getFixSpace(genSusp.getCtClass().getQualifiedName()).size();
-		int numberOperations = 1;
-		currentStat.sizeSpace.add(new StatSpaceSize(numberOperations, elementsFromFixSpace));
 		
-		CtElement fix = getFixIngredient(gen, targetExpression, elementsFromFixSpace);
+		CtElement fix = getFixIngredient(gen, targetExpression);
 		if (fix == null) {
 			return null;
 		}
