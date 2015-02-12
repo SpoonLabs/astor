@@ -14,6 +14,7 @@ import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.BasicFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFExpressionFixSpaceProcessor;
@@ -62,7 +63,7 @@ public void run(String location, String projectName, String dependencies, String
 
 	
 	//Fix Space
-	List<AbstractFixSpaceProcessor> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor>();
+	List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
 	ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 	ingredientProcessors.add(new LoopExpressionFixSpaceProcessor());
 	ingredientProcessors.add(new IFExpressionFixSpaceProcessor());
@@ -72,7 +73,7 @@ public void run(String location, String projectName, String dependencies, String
 	//--
 	
 	//The ingredients for build the patches
-	gploop.setFixspace(new UniformRandomFixSpace(ingredientProcessors));
+	gploop.setFixspace(new BasicFixSpace(ingredientProcessors));
 	//---
 	
 	//Repair Space

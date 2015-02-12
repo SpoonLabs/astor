@@ -2,12 +2,15 @@ package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import spoon.reflect.code.CtCodeElement;
+
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.IngredientSpaceStrategy;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 
@@ -19,28 +22,28 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class GlobalBasicFixSpace 
-	extends BasicFixSpace{
-	
-	private Logger logger = Logger.getLogger(GlobalBasicFixSpace.class.getName());
+public class GlobalBasicFixSpace extends BasicFixSpace {
 
-	
-	public GlobalBasicFixSpace(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
+	private Logger logger = Logger.getLogger(GlobalBasicFixSpace.class
+			.getName());
+
+	public GlobalBasicFixSpace(AbstractFixSpaceProcessor<?> processor)
+			throws JSAPException {
 		super(processor);
-		
-	}
-	
-	public GlobalBasicFixSpace(List<AbstractFixSpaceProcessor<?>> processor) throws JSAPException {
-		super(processor);
-		
+
 	}
 
+	public GlobalBasicFixSpace(List<AbstractFixSpaceProcessor<?>> processor)
+			throws JSAPException {
+		super(processor);
+
+	}
 
 	@Override
 	public CtCodeElement getElementFromSpace(String rootClass) {
-		CtCodeElement originalPicked = getRandomStatementFromSpace( getFixSpace(null));
-		return  MutationSupporter.clone(originalPicked);
-	
+		CtCodeElement originalPicked = getRandomStatementFromSpace(getFixSpace(null));
+		return MutationSupporter.clone(originalPicked);
+
 	}
 
 	/**
@@ -48,21 +51,41 @@ public class GlobalBasicFixSpace
 	 */
 	@Override
 	public List<CtCodeElement> getFixSpace(String rootClass) {
-		return new ArrayList(this.fixSpaceByType.values());
+		List result = 	new ArrayList();
+		for(String type : fixSpaceByType.keySet()){
+			result.addAll(this.fixSpaceByType.get(type));
+		}
+		
+		return result;
 	}
 
 	@Override
 	public List<CtCodeElement> getFixSpace(String rootClass, String type) {
-		
+
 		return this.fixSpaceByType.get(type);
 
 	}
+
 	@Override
 	public CtCodeElement getElementFromSpace(String rootCloned, String type) {
-		CtCodeElement originalPicked = getRandomStatementFromSpace( getFixSpace(null, type));
-		return  MutationSupporter.clone(originalPicked);
+		CtCodeElement originalPicked = getRandomStatementFromSpace(getFixSpace(
+				null, type));
+		return MutationSupporter.clone(originalPicked);
 	}
 	
-	
-	
+	@Override
+	public IngredientSpaceStrategy strategy() {
+		return IngredientSpaceStrategy.GLOBAL;
+	}
+
+	public String toString() {
+		String s = "";
+		for (String l : this.fixSpaceByType.keySet()) {
+			List ing = this.fixSpaceByType.get(l);
+			s += "\t " + l + ": (" + ing.size() + ") " + ing + "\n";
+
+		}
+		return s;
+	}
+
 }

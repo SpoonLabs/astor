@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.IngredientSpaceStrategy;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtSimpleType;
@@ -28,10 +29,10 @@ public class BasicFixSpace extends UniformRandomFixSpace<String, CtCodeElement,S
 		super();
 	
 	}
+	
 
 	@Override
-	public void defineSpace(List<CtSimpleType<?>> affected,
-			List<CtSimpleType<?>> all) {
+	public void defineSpace(List<CtSimpleType<?>> affected) {
 
 			for (CtSimpleType<?> ctSimpleType : affected) {
 				this.createFixSpaceFromAClass(ctSimpleType.getQualifiedName(), ctSimpleType);
@@ -42,7 +43,12 @@ public class BasicFixSpace extends UniformRandomFixSpace<String, CtCodeElement,S
 	@Override
 	protected String getType(CtCodeElement element) {
 		
-		return element.getClass().getName();
+		return element.getClass().getSimpleName();//.getName();
+	}
+
+	@Override
+	public IngredientSpaceStrategy strategy() {
+		return IngredientSpaceStrategy.LOCAL;
 	}
 
 }

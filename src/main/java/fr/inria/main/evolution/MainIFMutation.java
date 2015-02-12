@@ -16,6 +16,7 @@ import fr.inria.astor.core.loop.evolutionary.MutationalRepair;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.BasicFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
@@ -59,12 +60,12 @@ public class MainIFMutation extends AbstractMain {
 			MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 			
 			MutationalRepair mutloop = new MutationalRepair(mutSupporter,rep);
-			mutloop.setFixspace(new UniformRandomFixSpace());
+			mutloop.setFixspace(new BasicFixSpace());
 			
 			mutloop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
 			mutloop.setPopulationControler(new FitnessPopulationController());
 			
-			List<AbstractFixSpaceProcessor> suspiciousProcessor = new ArrayList<AbstractFixSpaceProcessor>();
+			List<AbstractFixSpaceProcessor<?>> suspiciousProcessor = new ArrayList<AbstractFixSpaceProcessor<?>>();
 			suspiciousProcessor.add(new IFConditionFixSpaceProcessor());
 			mutloop.setVariantFactory(new ProgramVariantFactory(suspiciousProcessor));
 			

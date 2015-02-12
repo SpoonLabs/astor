@@ -69,7 +69,7 @@ public class MainIFjGenProg extends AbstractMain {
 		JGenProgIfExpression gploop = new JGenProgIfExpression(mutSupporter,rep);
 
 		//This processor collects the If for creating a population of suspicious ifs.
-		List<AbstractFixSpaceProcessor> procCondition = new ArrayList<AbstractFixSpaceProcessor>();
+		List<AbstractFixSpaceProcessor<?>> procCondition = new ArrayList<AbstractFixSpaceProcessor<?>>();
 		procCondition.add(new IFConditionFixSpaceProcessor());
 		gploop.setVariantFactory(new ProgramVariantFactory(procCondition));
 	

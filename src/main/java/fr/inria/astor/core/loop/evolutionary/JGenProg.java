@@ -19,6 +19,7 @@ import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.IngredientSpaceStrategy;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransformator;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtStatementTransformator;
@@ -82,7 +83,8 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 		
 		//Create fix Space
-		getFixspace().defineSpace(originalVariant.getAffectedClasses(),this.mutatorSupporter.getFactory().Type().getAll());
+		List classesForIngredients = retrieveClassesForIngredients();
+		getFixspace().defineSpace(classesForIngredients);
 				
 		URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		URLClassLoader loader = new URLClassLoader(originalURL);
@@ -101,6 +103,16 @@ public class JGenProg extends EvolutionaryEngine {
 		log.info("Time (ms): " + (endT - startT));
 		currentStat.timeIteraction = ((endT-startT));
 		
+	}
+
+	protected List retrieveClassesForIngredients() {
+		if(getFixspace().strategy().equals(IngredientSpaceStrategy.LOCAL))
+			return originalVariant.getAffectedClasses();
+		
+		if(getFixspace().strategy().equals(IngredientSpaceStrategy.GLOBAL))
+			return this.mutatorSupporter.getFactory().Type().getAll();
+	
+		return null;
 	}
 
 	public void initModel() {
@@ -235,8 +247,8 @@ public class JGenProg extends EvolutionaryEngine {
 	}
 
 	public void undoOperationToSpoonElement(GenOperationInstance operation) {
-		List<AbstractFixSpaceProcessor> processors = this.getVariantFactory().getProcessors();
-		for (AbstractFixSpaceProcessor processor : processors) {
+		List<AbstractFixSpaceProcessor<?>> processors = this.getVariantFactory().getProcessors();
+		for (AbstractFixSpaceProcessor<?> processor : processors) {
 			ModelTransformator mt = processor.getTransformator();
 			if(mt.canTransform(operation)){
 				try {
@@ -272,8 +284,8 @@ public class JGenProg extends EvolutionaryEngine {
 	protected void applyNewMutationOperationToSpoonElement(GenOperationInstance operation)
 			throws IllegalAccessException {
 				
-		List<AbstractFixSpaceProcessor> processors = this.getVariantFactory().getProcessors();
-		for (AbstractFixSpaceProcessor processor : processors) {
+		List<AbstractFixSpaceProcessor<?>> processors = this.getVariantFactory().getProcessors();
+		for (AbstractFixSpaceProcessor<?> processor : processors) {
 			ModelTransformator mt = processor.getTransformator();
 			if(mt.canTransform(operation)){
 				try {

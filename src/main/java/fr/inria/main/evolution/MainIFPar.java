@@ -16,6 +16,7 @@ import fr.inria.astor.core.loop.evolutionary.ParRepair;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.ParUniformRandomRepairOperatorSpace;
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.BasicFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
@@ -66,16 +67,16 @@ public class MainIFPar extends AbstractMain {
 		ParRepair parloop = new ParRepair(mutSupporter, rep);
 		//parloop.setCurrentStat(currentStat);
 		
-		List<AbstractFixSpaceProcessor> suspiciousProcessor = new ArrayList<AbstractFixSpaceProcessor>();
+		List<AbstractFixSpaceProcessor<?>> suspiciousProcessor = new ArrayList<AbstractFixSpaceProcessor<?>>();
 		suspiciousProcessor.add(new IFConditionFixSpaceProcessor());
 		parloop.setVariantFactory(new ProgramVariantFactory(suspiciousProcessor));
 				
-		List<AbstractFixSpaceProcessor> ingredientsProcessors = new ArrayList<AbstractFixSpaceProcessor>();
+		List<AbstractFixSpaceProcessor<?>> ingredientsProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
 		ingredientsProcessors.add(new LoopExpressionFixSpaceProcessor());
 		ingredientsProcessors.add(new IFExpressionFixSpaceProcessor());
 		
 		// We include the new location fix space
-		parloop.setFixspace(new UniformRandomFixSpace(ingredientsProcessors));
+		parloop.setFixspace(new BasicFixSpace(ingredientsProcessors));
 		parloop.setRepairActionSpace(new ParUniformRandomRepairOperatorSpace());
 		parloop.setPopulationControler(new FitnessPopulationController());
 				

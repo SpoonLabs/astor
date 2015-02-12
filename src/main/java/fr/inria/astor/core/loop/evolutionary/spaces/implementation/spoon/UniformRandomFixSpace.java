@@ -24,7 +24,7 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
  * @param <I>
  *
  */
-public class UniformRandomFixSpace<L extends Object, I extends CtCodeElement, T extends Object> 
+public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeElement, T extends Object> 
 	implements FixLocationSpace <L, I , T>{
 	
 	
@@ -115,8 +115,16 @@ public class UniformRandomFixSpace<L extends Object, I extends CtCodeElement, T 
 				typesFromLocation.put(type, list);
 			}
 			list.add(element);
+			
+			List<I> listType = this.fixSpaceByType.get(type);
+			if(listType == null){
+				listType = new ArrayList<>();
+				this.fixSpaceByType.put(type, listType);
+			}
+			listType.add(element);
+			
 		}
-		fixSpaceByType.putAll(typesFromLocation);
+		//fixSpaceByType.putAll(typesFromLocation);
 		
 	}
 	protected T getType(I element) {
@@ -159,9 +167,9 @@ public class UniformRandomFixSpace<L extends Object, I extends CtCodeElement, T 
 		return elements;
 	}
 	
-	public String toString(){
+	/*public String toString(){
 		return fixSpaceByLocation.toString();
-	}
+	}*/
 
 	@Override
 	public I getElementFromSpace(L rootCloned, T type) {
@@ -171,12 +179,29 @@ public class UniformRandomFixSpace<L extends Object, I extends CtCodeElement, T 
 		return getRandomStatementFromSpace(elements);
 	}
 	
-	@Override
-	public void defineSpace(List<CtSimpleType<?>> affected,
-			List<CtSimpleType<?>> all) {
+/*	@Override
+	public void defineSpace(List<CtSimpleType<?>> affected) {
 		throw new IllegalArgumentException("Not Implemented");
 		
 	}
-
+*/
+	public String toString(){
+		String s = "";
+		for (L l : this.fixSpaceByLocationType.keySet()) {
+			
+			Map<T, List<I>> r = this.fixSpaceByLocationType.get(l);
+			String s2 = "";
+			int ingredients = 0;
+			for (T t : r.keySet()) {
+				List ing = r.get(t);
+				s2+="\t "+t+": ("+ing.size()+") "+ ing + "\n";
+				ingredients+= ing.size();
+			}
+			s+= "--> "+l + "(kind ing:"+r.values().size()+", ingrs:"+ingredients+") \n";
+			s+=s2;
+			
+		}
+		return s;
+	}
 	
 }

@@ -44,7 +44,7 @@ public class ProgramVariantFactory {
 
 	protected MutationSupporter mutatorSupporter = null;
 	
-	protected List<AbstractFixSpaceProcessor> processors = null;
+	protected List<AbstractFixSpaceProcessor<?>> processors = null;
 
 	
 	
@@ -53,7 +53,7 @@ public class ProgramVariantFactory {
 		super();
 	}
 
-	public ProgramVariantFactory(List<AbstractFixSpaceProcessor> processors) {
+	public ProgramVariantFactory(List<AbstractFixSpaceProcessor<?>> processors) {
 		this.processors = processors;
 	}
 
@@ -211,7 +211,7 @@ public class ProgramVariantFactory {
 	 * @return
 	 */
 	private List<CtElement> getMatchedElementsToProcess(List<CtElement> ctSuspects,
-			List<AbstractFixSpaceProcessor> processors) {
+			List<AbstractFixSpaceProcessor<?>> processors) {
 
 		if (processors == null || processors.isEmpty()) {
 			return ctSuspects;
@@ -360,11 +360,11 @@ public class ProgramVariantFactory {
 	        return list;
 	    }
 
-	public List<AbstractFixSpaceProcessor> getProcessors() {
+	public List<AbstractFixSpaceProcessor<?>> getProcessors() {
 		return processors;
 	}
 
-	public void setProcessors(List<AbstractFixSpaceProcessor> processors) {
+	public void setProcessors(List<AbstractFixSpaceProcessor<?>> processors) {
 		this.processors = processors;
 	}
 }
