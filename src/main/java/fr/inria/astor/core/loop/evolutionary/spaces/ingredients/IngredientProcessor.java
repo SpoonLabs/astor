@@ -1,4 +1,4 @@
-package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon;
+package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	
 	
 	private Logger logger = Logger.getLogger(IngredientProcessor.class.getName());
-		
+	private ProcessingManager processing = new QueueProcessingManager(FactoryImpl.getLauchingFactory());	
 	
 	public IngredientProcessor() throws JSAPException {
 		super();
@@ -40,7 +40,9 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	 */
 	public IngredientProcessor(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
 		super();
-		this.addProcessor(processor.getClass().getName());
+		//this.addProcessor(processor.getClass().getName());
+		processing.addProcessor(processor.getClass().getName());
+
 	}
 	/**
 	 * 
@@ -50,20 +52,23 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	public IngredientProcessor(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
 		super();
 		for (AbstractFixSpaceProcessor<?> abstractFixSpaceProcessor : processors) {
-			this.addProcessor(abstractFixSpaceProcessor.getClass().getName() );
+			//this.addProcessor(abstractFixSpaceProcessor.getClass().getName() );
+			processing.addProcessor(abstractFixSpaceProcessor.getClass().getName() );
 		}
 	}
 
 	protected void process(CtElement element)  {
 	
-		ProcessingManager processing = new QueueProcessingManager(FactoryImpl.getLauchingFactory());
+	/*	ProcessingManager processing = new QueueProcessingManager(FactoryImpl.getLauchingFactory());
 		for (String processorName : getProcessorTypes()) {
 			processing.addProcessor(processorName);
-			logger.debug("Loaded processor " + processorName + ".");
-			
+			//logger.debug("Loaded processor " + processorName + ".");
 		}
-
 		processing.process(element);
+		*/
+		processing.process(element);
+		
+		
 	}
 	
 

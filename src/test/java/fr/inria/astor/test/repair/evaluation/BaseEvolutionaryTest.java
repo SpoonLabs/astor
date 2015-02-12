@@ -30,7 +30,7 @@ public abstract class BaseEvolutionaryTest  {
 	public void setUp() throws Exception {
 
 	
-		createFileLogger("c:/tmp/outs/log.txt");
+	//	createFileLogger("c:/tmp/outs/log.txt");
 		
 		main = createMain();
 		

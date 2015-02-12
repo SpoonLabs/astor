@@ -4,7 +4,7 @@ import java.util.Random;
 
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.entities.taxonomy.MutationOperation;
-import fr.inria.astor.core.loop.evolutionary.spaces.RepairOperatorSpace;
+import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpace;
 import fr.inria.astor.core.setup.TransformationProperties;
 
 /**

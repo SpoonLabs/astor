@@ -14,12 +14,11 @@ import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.BasicFixSpace;
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.SingleStatementFixSpaceProcessor;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
@@ -46,7 +45,6 @@ public void run(String location, String projectName, String dependencies,  Strin
 public void run(String location, String projectName, String dependencies, String packageToInstrument,
 		double thfl, String failing) throws Exception {
 	
-	//System.out.println(System.getProperty("java.class.path"));
 	if(thfl>0)
 		TransformationProperties.THRESHOLD_SUSPECTNESS = thfl;
 	
@@ -91,8 +89,7 @@ public void run(String location, String projectName, String dependencies, String
 	List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
 	for (SuspiciousCode suspiciousCode : candidates) {
-		if(!suspiciousCode.getClassName().endsWith("Exception") 
-							){
+		if(!suspiciousCode.getClassName().endsWith("Exception")){
 			filtercandidates.add(suspiciousCode);
 		}
 	}

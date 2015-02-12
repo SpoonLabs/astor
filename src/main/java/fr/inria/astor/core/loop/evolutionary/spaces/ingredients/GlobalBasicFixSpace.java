@@ -1,4 +1,4 @@
-package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon;
+package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,6 @@ import spoon.reflect.code.CtCodeElement;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.IngredientSpaceStrategy;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 

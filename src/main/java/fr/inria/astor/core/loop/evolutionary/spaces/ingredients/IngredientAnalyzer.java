@@ -1,4 +1,4 @@
-package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon;
+package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 
 import java.util.HashMap;
 import java.util.List;

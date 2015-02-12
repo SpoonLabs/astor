@@ -1,4 +1,4 @@
-package fr.inria.astor.core.loop.evolutionary.spaces;
+package fr.inria.astor.core.loop.evolutionary.spaces.operators;
 
 import fr.inria.astor.core.entities.taxonomy.MutationOperation;
 /**

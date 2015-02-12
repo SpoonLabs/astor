@@ -19,8 +19,8 @@ import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.IngredientSpaceStrategy;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransformator;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtStatementTransformator;
 import fr.inria.astor.core.loop.evolutionary.transformators.ModelTransformator;
@@ -78,14 +78,14 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 		
 		if(originalVariant.getGenList().isEmpty()){
-			log.error("No gen to analyze");
+			log.error("Variant with any gen");
 			return;
 		}
 		
 		//Create fix Space
 		List classesForIngredients = retrieveClassesForIngredients();
 		getFixSpace().defineSpace(classesForIngredients);
-		log.debug(getFixSpace());		
+		log.info(getFixSpace());		
 		
 		URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		URLClassLoader loader = new URLClassLoader(originalURL);
@@ -122,6 +122,11 @@ public class JGenProg extends EvolutionaryEngine {
 		mutatorSupporter.buildModel(codeLocation,classpath);
 	}
 
+	/**
+	 * Creates the variants from the suspicious code
+	 * @param suspicious
+	 * @throws Exception
+	 */
 	public void initializePopulation(List<SuspiciousCode> suspicious) throws Exception {
 		
 		variantFactory.setMutatorExecutor(getMutatorSupporter());
@@ -129,6 +134,9 @@ public class JGenProg extends EvolutionaryEngine {
 		this.variants = variantFactory.createInitialPopulation(suspicious, TransformationProperties.populationSize,
 				populationControler, projectFacade);
 
+		if(variants.isEmpty()){
+			throw new IllegalArgumentException("Any variant created from list of suspicious");
+		}
 		// We save the first variant
 		this.originalVariant = variants.get(0);
 	//	currentStat.fl_gens_size = this.originalVariant.getGenList().size();
@@ -200,10 +208,12 @@ public class JGenProg extends EvolutionaryEngine {
 				|| (operationType.equals(GenProgMutationOperation.REPLACE))
 					) {
 	
-			fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName(),gen.getRootElement().getClass().getName());
+			fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName(),
+					gen.getRootElement().getClass().getSimpleName()
+					/*gen.getRootElement().getClass().getName()*/);
 			
 			if(fix == null){
-				System.err.println("fix ingredient null");
+				log.error("fix ingredient null");
 			}	
 		}
 		

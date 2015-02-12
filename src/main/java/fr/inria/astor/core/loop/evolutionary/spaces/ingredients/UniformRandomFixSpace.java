@@ -1,4 +1,4 @@
-package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon;
+package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,6 @@ import spoon.reflect.declaration.CtSimpleType;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.loop.evolutionary.spaces.FixLocationSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 
@@ -186,7 +185,7 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	}
 */
 	public String toString(){
-		String s = "";
+		String s ="--Space: "+this.strategy() +"\n";
 		for (L l : this.fixSpaceByLocationType.keySet()) {
 			
 			Map<T, List<I>> r = this.fixSpaceByLocationType.get(l);

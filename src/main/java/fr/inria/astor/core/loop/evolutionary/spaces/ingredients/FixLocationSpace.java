@@ -1,9 +1,8 @@
-package fr.inria.astor.core.loop.evolutionary.spaces;
+package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 
 
 import java.util.List;
 
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.IngredientSpaceStrategy;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
 /**

@@ -1,15 +1,13 @@
-package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon;
+package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtSimpleType;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.IngredientSpaceStrategy;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtSimpleType;
 /**
  * 
  * @author Matias Martinez

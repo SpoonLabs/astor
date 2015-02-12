@@ -19,9 +19,9 @@ import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerLauncher;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.IngredientProcessor;
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.UniformRandomFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientProcessor;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.UniformRandomFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -56,7 +56,15 @@ public class ProgramVariantFactory {
 	public ProgramVariantFactory(List<AbstractFixSpaceProcessor<?>> processors) {
 		this.processors = processors;
 	}
-
+/**
+ * Create a list of Program Variant from a list of suspicious code. 
+ * @param suspiciousList
+ * @param maxNumberInstances
+ * @param populationControler
+ * @param projectFacade
+ * @return
+ * @throws Exception
+ */
 	public List<ProgramVariant> createInitialPopulation(List<SuspiciousCode> suspiciousList, 
 			int maxNumberInstances,
 			PopulationController populationControler,
@@ -69,23 +77,13 @@ public class ProgramVariantFactory {
 			idCounter = ins;
 			ProgramVariant v_i = createProgramInstance(suspiciousList, idCounter);
 			variants.add(v_i);
-
 			log.info("Creating program variant #" + idCounter + ", " + v_i.toString());
 
-		}
-
-		// Saving
-		for (int ins = 0; ins < maxNumberInstances; ins++) {
-
-			// --Then, create the instances (using the Spoon Model)
-			ProgramVariant v_ins = variants.get(ins);
-
 			if (TransformationProperties.saveProgramVariant) {
-				String srcOutput = projectFacade.getInDirWithPrefix(v_ins.currentMutatorIdentifier());
-				mutatorSupporter.saveSourceCodeOnDiskProgramVariant(v_ins, srcOutput);
+				String srcOutput = projectFacade.getInDirWithPrefix(v_i.currentMutatorIdentifier());
+				mutatorSupporter.saveSourceCodeOnDiskProgramVariant(v_i, srcOutput);
 			}
-			log.info("Creating program variant #" + ins + ", " + v_ins.toString());
-
+			
 		}
 
 		return variants;
@@ -105,8 +103,8 @@ public class ProgramVariantFactory {
 	}
 
 	/**
-	 * A Program instances is created from the suspicious. Some of them
-	 * (Probabilistic) are mutated using the 3 basic genprog repair actions
+	 * A Program instances is created from the list of suspicious. 
+	 * For each suspiciuos a list of gens is created.
 	 * 
 	 * @param suspiciousList
 	 * @param idProgramInstance
@@ -116,28 +114,25 @@ public class ProgramVariantFactory {
 
 		ProgramVariant progInstance = new ProgramVariant(idProgramInstance);
 
-		log.info("Creating variant " + idProgramInstance);
+		log.debug("Creating variant " + idProgramInstance);
 
 		for (SuspiciousCode suspiciousCode : suspiciousList) {
-			
+			//For each suspicious code, we create one or more Gens (when it is possible)
 			List<GenSuspicious> gens = createGens(suspiciousCode, progInstance);
-			if (gens != null) {
-				for (GenSuspicious gen : gens) {
-					progInstance.getGenList().add(gen);
-					//log.info("---> gen created:" + gen.getRootElement().getClass().getSimpleName());
-				}
-			}
+			if(gens!= null)
+				progInstance.getGenList().addAll(gens);
 
 		}
 		// Stats.getCurrentStats().fl_gens_size =
 		// progInstance.getGenList().size();
-		log.info("Total suspicious: " + suspiciousList.size() + ", analyzed: " + progInstance.getGenList().size());
+		log.info("Total suspicious from FL: " + suspiciousList.size() + ",  " + progInstance.getGenList().size());
+		log.info("Total Gens created: " + progInstance.getGenList().size());
 		return progInstance;
 	}
 
 
 	/**
-	 * It receives a suspicious code (a line)and it create a list of Gens from than suspicious line when it's possible.
+	 * It receives a suspicious code (a line) and it create a list of Gens from than suspicious line when it's possible.
 	 * @param suspiciousCode
 	 * @param progInstance
 	 * @return
@@ -188,18 +183,17 @@ public class ProgramVariantFactory {
 		List<CtElement> filteredTypeByLine = intersection(filterByType, ctSuspects ); 
 		//For each filtered element, we create a Gen. 
 		for (CtElement ctElement : filteredTypeByLine) {
-
 			GenSuspicious gen = new GenSuspicious();
 			gen.setSuspicious(suspiciousCode);
 			gen.setClonedClass(ctclasspointed);
 			gen.setRootElement(ctElement);
 			gen.setContextOfGen(contextOfGen);
 			suspGen.add(gen);
-			log.info("Creating Gen for cte " + ctElement.getClass().getSimpleName() + ", suspValue "
-					+ suspiciousCode.getSuspiciousValue());
-
+			log.info("--Gen:" + ctElement.getClass().getSimpleName()  + ", suspValue "
+					+ suspiciousCode.getSuspiciousValue()
+					+", line "+  ctElement.getPosition().getLine()
+					+", file "+ctElement.getPosition().getFile().getName());
 		}
-
 		return suspGen;
 	}
 
@@ -297,8 +291,7 @@ public class ProgramVariantFactory {
 	 */
 	public List<CtElement> retrieveCtModelOfSuspect(SuspiciousCode candidate, CtElement ctclass) throws Exception {
 
-		log.info("Analyzing candidate " + candidate.getClassName() + " , line " + candidate.getLineNumber() + " susp "
-				+ candidate.getSuspiciousValue());
+		//log.debug("Analyzing candidate " + candidate.getClassName() + " , line " + candidate.getLineNumber() + " susp "+ candidate.getSuspiciousValue());
 
 		SpoonLocationPointerLauncher muSpoonLaucher = new SpoonLocationPointerLauncher(FactoryImpl.getLauchingFactory());
 		List<CtElement> susp = muSpoonLaucher.run(ctclass, candidate.getLineNumber());
