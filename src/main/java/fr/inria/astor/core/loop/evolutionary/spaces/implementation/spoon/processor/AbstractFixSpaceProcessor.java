@@ -22,6 +22,7 @@ public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends
 	public ModelTransformator transformator;
 	
 	public static boolean mustClone = true;
+	public static boolean duplicated = true;
 	
 	/**
 	 * This list saves the result
@@ -29,13 +30,13 @@ public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends
 	public static List<CtCodeElement> spaceElements = new ArrayList<CtCodeElement>();
 
 	public void add(CtCodeElement st) {
+		CtCodeElement code = st; 
 		if (mustClone()) {
-			if (!contains(st)) {
-				CtCodeElement cloned = MutationSupporter.clone(st);
-				spaceElements.add(cloned);
-			}
-		} else {
-			spaceElements.add(st);
+			code = MutationSupporter.clone(st);
+		}
+		if (duplicated ||  !duplicated && !contains(st)) {
+				spaceElements.add(code);
+		
 		}
 	}
 

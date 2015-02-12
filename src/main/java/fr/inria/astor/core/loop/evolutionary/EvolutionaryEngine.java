@@ -89,7 +89,7 @@ public abstract class EvolutionaryEngine {
 		int generation = 0;
 		boolean foundsolution = false;
 				
-		log.debug("FIXSPACE:" + this.getFixspace());
+		log.debug("FIXSPACE:" + this.getFixSpace());
 	
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
@@ -556,7 +556,7 @@ public abstract class EvolutionaryEngine {
 		return variants;
 	}
 
-	public FixLocationSpace getFixspace() {
+	public FixLocationSpace getFixSpace() {
 		return fixspace;
 	}
 

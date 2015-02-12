@@ -92,7 +92,7 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 		if (!getFixSpace().containsKey(key)) {
 			List<I> ingredientsToProcess = this.ingredientProcessor.createFixSpace(root);
 			AbstractFixSpaceProcessor.mustClone = true;
-			logger.debug("Fix space size " + ingredientsToProcess.size());
+			//logger.debug("Fix space size " + ingredientsToProcess.size());
 			getFixSpace().put(key, ingredientsToProcess);
 			splitByType(key,ingredientsToProcess);
 	

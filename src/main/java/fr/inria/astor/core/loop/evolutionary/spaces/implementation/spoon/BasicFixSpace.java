@@ -1,6 +1,8 @@
 package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -50,5 +52,6 @@ public class BasicFixSpace extends UniformRandomFixSpace<String, CtCodeElement,S
 	public IngredientSpaceStrategy strategy() {
 		return IngredientSpaceStrategy.LOCAL;
 	}
+	
 
 }

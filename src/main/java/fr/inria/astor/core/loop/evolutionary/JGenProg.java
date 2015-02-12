@@ -84,8 +84,9 @@ public class JGenProg extends EvolutionaryEngine {
 		
 		//Create fix Space
 		List classesForIngredients = retrieveClassesForIngredients();
-		getFixspace().defineSpace(classesForIngredients);
-				
+		getFixSpace().defineSpace(classesForIngredients);
+		log.debug(getFixSpace());		
+		
 		URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		URLClassLoader loader = new URLClassLoader(originalURL);
 		Thread.currentThread().setContextClassLoader(loader);
@@ -106,10 +107,10 @@ public class JGenProg extends EvolutionaryEngine {
 	}
 
 	protected List retrieveClassesForIngredients() {
-		if(getFixspace().strategy().equals(IngredientSpaceStrategy.LOCAL))
+		if(getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL))
 			return originalVariant.getAffectedClasses();
 		
-		if(getFixspace().strategy().equals(IngredientSpaceStrategy.GLOBAL))
+		if(getFixSpace().strategy().equals(IngredientSpaceStrategy.GLOBAL))
 			return this.mutatorSupporter.getFactory().Type().getAll();
 	
 		return null;
