@@ -11,18 +11,16 @@ import spoon.reflect.code.CtStatement;
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public class InvocationFixSpaceProcessor extends AbstractFixSpaceProcessor<CtInvocation> {
+public class MethodInvocationFixSpaceProcessor extends AbstractFixSpaceProcessor<CtInvocation> {
 
-	private Logger logger = Logger.getLogger(InvocationFixSpaceProcessor.class.getName());
+	private Logger logger = Logger.getLogger(MethodInvocationFixSpaceProcessor.class.getName());
 	@Override
 	public void process(CtInvocation element) {
 		
 		if(element.getParent() instanceof CtBlock){
 			if(!element.toString().equals("super()"))
 				super.add((CtStatement)element);
-			else{
-				logger.info("Discarting "+ element);
-			}
+			
 		}
 	}
 

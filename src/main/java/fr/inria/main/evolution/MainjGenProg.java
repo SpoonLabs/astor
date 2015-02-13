@@ -16,6 +16,7 @@ import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFExpressionFixSpaceProcessor;
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.MethodInvocationFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicFixSpace;
@@ -62,9 +63,11 @@ public void run(String location, String projectName, String dependencies, String
 	
 	//Fix Space
 	List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
-	ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
-	ingredientProcessors.add(new LoopExpressionFixSpaceProcessor());
-	ingredientProcessors.add(new IFExpressionFixSpaceProcessor());
+	//ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
+	//ingredientProcessors.add(new LoopExpressionFixSpaceProcessor());
+	//ingredientProcessors.add(new IFExpressionFixSpaceProcessor());
+	ingredientProcessors.add(new MethodInvocationFixSpaceProcessor());
+	
 	
 	//We analyze 
 	gploop.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));

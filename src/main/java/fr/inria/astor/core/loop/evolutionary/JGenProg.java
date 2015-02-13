@@ -10,6 +10,7 @@ import java.util.Map;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.FactoryImpl;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -52,24 +53,14 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @throws Exception
 	 */
 	public void start(List<SuspiciousCode> suspicious) throws Exception {
-		this.start(suspicious, true);
-	}
 
-	/**
-	 * 
-	 * @param suspicious
-	 * @throws Exception
-	 */
-	public void start(List<SuspiciousCode> suspicious, boolean buildSpoonModel) throws Exception {
-
-		if (buildSpoonModel && !(this.mutatorSupporter.getFactory().Type().getAll().size()>0)) {
+		if (FactoryImpl.getLauchingFactory().Type().getAll().isEmpty()) {
 			initModel();
 		}
 
 		log.debug("----Starting Mutation: Initial suspicious size: " + suspicious.size());
 		long startT = System.currentTimeMillis();
 
-		//Prepare the initial population	
 		initializePopulation(suspicious);
 		
 		if(originalVariant == null){
@@ -87,9 +78,10 @@ public class JGenProg extends EvolutionaryEngine {
 		getFixSpace().defineSpace(classesForIngredients);
 		log.info(getFixSpace());		
 		
-		URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		/*URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		URLClassLoader loader = new URLClassLoader(originalURL);
 		Thread.currentThread().setContextClassLoader(loader);
+		*/
 		
 		boolean validInstance = validateInstance(originalVariant);
 		assert (validInstance);
@@ -208,12 +200,13 @@ public class JGenProg extends EvolutionaryEngine {
 				|| (operationType.equals(GenProgMutationOperation.REPLACE))
 					) {
 	
-			fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName(),
-					gen.getRootElement().getClass().getSimpleName()
-					/*gen.getRootElement().getClass().getName()*/);
+			//fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName(),
+			//		gen.getRootElement().getClass().getSimpleName());
+			fix = this.getFixIngredient(gen, targetStmt, gen.getRootElement().getClass().getSimpleName());
 			
 			if(fix == null){
 				log.error("fix ingredient null");
+				throw new IllegalAccessError("Not ingredient found");
 			}	
 		}
 		
@@ -222,6 +215,10 @@ public class JGenProg extends EvolutionaryEngine {
 
 		return operation;
 	}
+	
+	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt) {
+		return this.getFixIngredient(gen, targetStmt,null);
+	}
 	/**
 	 * Return fix ingredient considering cache.
 	 * @param gen
@@ -229,16 +226,29 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @param elementsFromFixSpace
 	 * @return
 	 */
-	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt) {
+	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt, String type) {
 		CtElement fix = null;
 		int attempts = 0;
 		
 		boolean continueSearching = true;
 	
-		int elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName()).size();
+		int elementsFromFixSpace = 0;
+		
+		if(type == null){
+			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName()).size();
+		}
+		else{
+			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName(),type).size();
+		}
+		
 		
 		while(continueSearching && attempts < elementsFromFixSpace){
-			fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName());
+			if(type == null){
+				fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName());
+			}
+			else{
+				fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName(),type);
+			}
 			if(fix == null){
 				return null;
 			}

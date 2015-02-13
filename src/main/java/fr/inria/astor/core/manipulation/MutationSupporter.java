@@ -266,7 +266,7 @@ public class MutationSupporter {
 		return result;
 	}
 
-	public void saveSolution(ProgramVariant childVariant, String srcOutput, int generation) {
+	public void saveSolutionData(ProgramVariant childVariant, String srcOutput, int generation) {
 		try {
 			Map<String, Integer> result = new HashMap<String, Integer>();
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

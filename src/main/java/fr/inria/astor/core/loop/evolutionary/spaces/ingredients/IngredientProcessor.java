@@ -11,6 +11,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.QueueProcessingManager;
+import spoon.support.RuntimeProcessingManager;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -27,8 +28,9 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	
 	
 	private Logger logger = Logger.getLogger(IngredientProcessor.class.getName());
-	private ProcessingManager processing = new QueueProcessingManager(FactoryImpl.getLauchingFactory());	
-	
+	private ProcessingManager processing = 
+				new RuntimeProcessingManager(FactoryImpl.getLauchingFactory());
+			
 	public IngredientProcessor() throws JSAPException {
 		super();
 		
@@ -66,6 +68,7 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 		}
 		processing.process(element);
 		*/
+		//processing.
 		processing.process(element);
 		
 		

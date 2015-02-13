@@ -61,9 +61,7 @@ public class ProgramVariantValidationResult {
 	public void setTestResults(List<Result> failingResults) {
 		this.testResults = failingResults;
 	}
-	public boolean isResult() {
-		return resultSuccess;
-	}
+
 	public void setResult(boolean result) {
 		this.resultSuccess = result;
 	}

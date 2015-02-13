@@ -120,11 +120,11 @@ public class ProgramVariantValidator {
 		ProgramVariantValidationResult validation = validateVariantFirstPhases(failingCases, testSuiteClassName);
 
 		// Then, Regression test
-		if (!validation.isResult()) {
+		if (!validation.isResultSuccess()) {
 			executeRegressionOneByOne(muTestEx, validation);
 			muTestEx.logger.setLevel(Level.INFO);
 		}
-		validation.setResult(!validation.isResult());
+		validation.setResult(!validation.isResultSuccess());
 		LogManager.getRootLogger().setLevel(Level.INFO);
 
 		return validation;
