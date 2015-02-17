@@ -32,13 +32,13 @@ public class TestResult {
 	}
 
 	public boolean wasSuccessful(){
-		return failures != 0;
+		return failures == 0;
 	}
 
 	@Override
 	public String toString() {
 		return "TR: Success: "+ failTest.isEmpty() + ", failTest= "
-				+ failures + "]";
+				+ failures + ", was successful: "+this.wasSuccessful()+"]";
 	}
 
 	public int getFailureCount(){

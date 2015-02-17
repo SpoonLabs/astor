@@ -49,7 +49,7 @@ public class ProcessValidator implements IProgramValidator {
 					+ projectFacade.getProperties().getFixid();
 
 		
-			
+			log.debug("Running first validation");
 			TestResult trfailing = p.execute(bc, projectFacade.getProperties().getFailingTestCases(),
 					TransformationProperties.validationSingleTimeLimit * 5);
 		//	currentStat.passFailingval1++;

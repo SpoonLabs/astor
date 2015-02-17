@@ -39,6 +39,9 @@ public abstract class AbstractMain {
 		options.addOption("help", false, "print help and usage");
 		options.addOption("bug280", false, "Run the bug 280 from Apache Commons Math");
 		options.addOption("bug288", false, "Run the bug 288 from Apache Commons Math");
+		options.addOption("bug309", false, "Run the bug 309 from Apache Commons Math");
+		options.addOption("bug428", false, "Run the bug 428 from Apache Commons Math");
+		options.addOption("bug340", false, "Run the bug 340 from Apache Commons Math");
 
 		
 		// Optional parameters
@@ -148,7 +151,7 @@ public abstract class AbstractMain {
 		}
 		
 		if (cmd.hasOption("bug288")) {
-			String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
+			String dependenciespath = "examples/Math-issue-288/lib/junit-4.4.jar";
 			String folder = "Math-issue-288";
 			String failing = "org.apache.commons.math.optimization.linear.SimplexSolverTest";
 			File f = new File("examples/Math-issue-288/");
@@ -159,7 +162,7 @@ public abstract class AbstractMain {
 			return true;
 		}	
 		if (cmd.hasOption("bug309")) {
-			String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
+			String dependenciespath = "examples/Math-issue-309/lib/junit-4.4.jar";
 			String folder = "Math-issue-309";
 			String failing = "org.apache.commons.math.random.RandomDataTest";
 			File f = new File("examples/Math-issue-309/");
@@ -181,7 +184,7 @@ public abstract class AbstractMain {
 			return true;
 		}
 		if (cmd.hasOption("bug428")) {
-			String dependenciespath = "examples/Math-issue-428/lib/junit-4.4.jar";
+			String dependenciespath = "examples/Lang-issue-428/lib/easymock-2.5.2.jar;examples/Lang-issue-428/lib/junit-4.7.jar";
 			String folder = "Math-issue-428";
 			String failing = "org.apache.commons.lang3.StringUtilsIsTest";
 			File f = new File("examples/Math-issue-428/");
