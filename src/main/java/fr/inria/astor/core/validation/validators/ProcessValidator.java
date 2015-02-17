@@ -14,7 +14,7 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.validation.entity.TestResult;
-import fr.inria.astor.core.validation.executors.ValidatorProcess;
+import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
 
 public class ProcessValidator implements IProgramValidator {
 	
@@ -43,7 +43,7 @@ public class ProcessValidator implements IProgramValidator {
 			} else {
 				bc = originalURL;
 			}
-			ValidatorProcess p = new ValidatorProcess();
+			JUnitExecutorProcess p = new JUnitExecutorProcess();
 			// First validation: failing test case
 			String localPrefix = projectFacade.getProperties().getExperimentName() + File.separator
 					+ projectFacade.getProperties().getFixid();
@@ -93,7 +93,7 @@ public class ProcessValidator implements IProgramValidator {
 		return (URL[]) urls.toArray(originalURL);
 	}
 
-	protected ProgramVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc, ValidatorProcess p,
+	protected ProgramVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc, JUnitExecutorProcess p,
 			String localPrefix) {
 		log.debug("Test Failing is passing, Executing regression");
 		ProgramVariantValidator validator = new ProgramVariantValidator();
@@ -108,7 +108,7 @@ public class ProcessValidator implements IProgramValidator {
 	}
 
 	protected ProgramVariantValidationResult executeRegressionTestingOneByOne(ProgramVariant mutatedVariant, URL[] bc,
-			ValidatorProcess p, String localPrefix) {
+			JUnitExecutorProcess p, String localPrefix) {
 		log.debug("Test Failing is passing, Executing regression");
 		TestResult trregressionall = new TestResult();
 		long t1 = System.currentTimeMillis();
@@ -138,25 +138,5 @@ public class ProcessValidator implements IProgramValidator {
 
 	List<String> regressionCases = null;
 
-/*	*//**
-	 * Feed the list of test cases according to the definition POM/build.xml
-	 *//*
-	public List<String> retrieveRegressionTestCases() {
-		if (regressionCases == null) {
-			regressionCases = new ArrayList<String>();
-			for (CtSimpleType<?> type : FactoryImpl.getLauchingFactory().Type().getAll()) {
-				String name = type.getQualifiedName();
-				if ((name.endsWith("Test") || name.endsWith("TestBinary") || name.endsWith("TestPermutations"))
-						&& (!name.endsWith("AbstractTest")) && !(type instanceof CtInterface)
-						&& !(name.equals("junit.framework.TestSuite"))
-						&& !(name.startsWith("org.apache.commons.math.ode.nonstiff"))
-						) {
-					regressionCases.add(type.getQualifiedName());
-				}
-
-			}
-		}
-		return regressionCases;
-	}*/
 	
 }

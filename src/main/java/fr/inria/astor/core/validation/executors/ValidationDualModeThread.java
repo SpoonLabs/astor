@@ -65,18 +65,14 @@ public class ValidationDualModeThread extends Thread {
 					result = this.programVariantValidator.validateVariantTwoPhases(failingCases,testSuiteClassName);
 					
 				}
-
-				// putting fitness into program variant
-			//	double fitness = populationControler.getFitnessValue(mutatedVariant, result);
-			//	mutatedVariant.setFitness(fitness);
-
+	
 			
 			/*	log.info("Fitness of instance #" + mutatedVariant.getId() + ": " + fitness + " (Totals: "
 						+ result.getRunCount() + ", failed: " + result.getFailureCount() + ")");
 */
 				sucessfull =  result.wasSuccessful();
 				
-				}// catch (FileNotFoundException | ClassNotFoundException | InitializationError e) {
+				}
 				catch (Throwable e) {
 					
 					e.printStackTrace();

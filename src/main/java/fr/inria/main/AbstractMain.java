@@ -38,7 +38,9 @@ public abstract class AbstractMain {
 		options.addOption("t", true, "failing test case");
 		options.addOption("help", false, "print help and usage");
 		options.addOption("bug280", false, "Run the bug 280 from Apache Commons Math");
+		options.addOption("bug288", false, "Run the bug 288 from Apache Commons Math");
 
+		
 		// Optional parameters
 		options.addOption("jvm", true, "(Optional) location of JVM that executes the mutated version of a program (Folder that contains java script ) ");
 		options.addOption("maxgen", true, "(Optional) max number of generation a program variant is evolved");
@@ -132,9 +134,7 @@ public abstract class AbstractMain {
 	 */
 	private boolean executeExample(CommandLine cmd) throws Exception {
 
-		boolean b280 = cmd.hasOption("bug280");
-
-		if (b280) {
+		if (cmd.hasOption("bug280")) {
 			String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
 			String folder = "Math-issue-280";
 			String failing = "org.apache.commons.math.distribution.NormalDistributionTest";
@@ -146,6 +146,52 @@ public abstract class AbstractMain {
 			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 			return true;
 		}
+		
+		if (cmd.hasOption("bug288")) {
+			String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
+			String folder = "Math-issue-288";
+			String failing = "org.apache.commons.math.optimization.linear.SimplexSolverTest";
+			File f = new File("examples/Math-issue-288/");
+			String location = f.getParent();
+			String packageToInstrument = "org.apache.commons";
+			double thfl = 0.2;
+			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
+			return true;
+		}	
+		if (cmd.hasOption("bug309")) {
+			String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
+			String folder = "Math-issue-309";
+			String failing = "org.apache.commons.math.random.RandomDataTest";
+			File f = new File("examples/Math-issue-309/");
+			String location = f.getParent();
+			String packageToInstrument = "org.apache.commons";
+			double thfl = 0.5;
+			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
+			return true;
+		}
+		if (cmd.hasOption("bug340")) {
+			String dependenciespath = "examples/Math-issue-340/lib/junit-4.4.jar";
+			String folder = "Math-issue-340";
+			String failing = "org.apache.commons.math.fraction.BigFractionTest";
+			File f = new File("examples/Math-issue-340/");
+			String location = f.getParent();
+			String packageToInstrument = "org.apache.commons";
+			double thfl = 0.5;
+			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
+			return true;
+		}
+		if (cmd.hasOption("bug428")) {
+			String dependenciespath = "examples/Math-issue-428/lib/junit-4.4.jar";
+			String folder = "Math-issue-428";
+			String failing = "org.apache.commons.lang3.StringUtilsIsTest";
+			File f = new File("examples/Math-issue-428/");
+			String location = f.getParent();
+			String packageToInstrument = "org.apache.commons";
+			double thfl = 0.5;
+			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
+			return true;
+		}
+		
 
 		return false;
 	}

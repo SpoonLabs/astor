@@ -55,7 +55,7 @@ public class ProgramVariant {
 	
 	protected CompilationResult compilationResult = null;
 
-	protected boolean solution = false;	
+	protected boolean isSolution = false;	
 
 	public ProgramVariant(){
 		genList = new ArrayList<Gen>();
@@ -148,10 +148,10 @@ public class ProgramVariant {
 		return new ArrayList<CtSimpleType>(loadClasses.values());
 	}
 	public boolean isSolution() {
-		return solution;
+		return isSolution;
 	}
 
-	public void setSolution(boolean solution) {
-		this.solution = solution;
+	public void setIsSolution(boolean solution) {
+		this.isSolution = solution;
 	}
 }

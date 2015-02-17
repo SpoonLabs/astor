@@ -113,7 +113,7 @@ public abstract class EvolutionaryEngine {
 		for (ProgramVariant variant : solutions) {
 			log.info("f (sol) " + variant.getFitness() + ", " + variant);
 		}
-
+		log.info("All variants:");
 		for (ProgramVariant variant : variants) {
 			log.info("f " + variant.getFitness() + ", " + variant);
 		}
@@ -583,8 +583,9 @@ public abstract class EvolutionaryEngine {
 			double fitness = this.populationControler.getFitnessValue(variant,
 					result);
 			variant.setFitness(fitness);
-			variant.setSolution(result.isResultSuccess());
-			return result.isResultSuccess();
+			boolean wasSuc = result.wasSuccessful();
+			variant.setIsSolution(wasSuc);
+			return wasSuc;
 		}
 		return false;
 	}

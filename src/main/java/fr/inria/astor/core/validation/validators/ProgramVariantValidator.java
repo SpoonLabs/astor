@@ -92,7 +92,7 @@ public class ProgramVariantValidator {
 
 		}
 		
-		validation.setResult(!failing);
+		//validation.setResultSuccess(!failing);
 		LogManager.getRootLogger().setLevel(Level.INFO);
 		return validation;
 	}
@@ -120,41 +120,16 @@ public class ProgramVariantValidator {
 		ProgramVariantValidationResult validation = validateVariantFirstPhases(failingCases, testSuiteClassName);
 
 		// Then, Regression test
-		if (!validation.isResultSuccess()) {
+		if (!validation.wasSuccessful()) {
 			executeRegressionOneByOne(muTestEx, validation);
 			muTestEx.logger.setLevel(Level.INFO);
 		}
-		validation.setResult(!validation.isResultSuccess());
+		//validation.setResultSuccess(!validation.isResultSuccess());
 		LogManager.getRootLogger().setLevel(Level.INFO);
 
 		return validation;
 	}
 
-	/**
-	 * new
-	 */
-	@Deprecated
-	public ProgramVariantValidationResult validateVariantRegressionPhases(
-			String testSuiteClassName) throws FileNotFoundException,
-			ClassNotFoundException, InitializationError {
-
-		LogManager.getRootLogger().setLevel(Level.INFO);// OFF
-		JUnitTestExecutor muTestEx = new JUnitTestExecutor();
-
-		ProgramVariantValidationResult validation = new ProgramVariantValidationResult();
-
-		boolean failing = false;
-	
-			logger.info("Executing Regression");
-		Result result = muTestEx.runTest(testSuiteClassName);
-		validation.addResultRegressionTest(result);
-		failing = result.wasSuccessful();
-		// Stats.getCurrentStats().numberOfRegressionTestExecution++;
-		
-		validation.setResult(!failing);
-		LogManager.getRootLogger().setLevel(Level.INFO);
-		return validation;
-	}
 
 	protected boolean executeRegressionOneByOne(JUnitTestExecutor muTestEx,
 			ProgramVariantValidationResult validation)

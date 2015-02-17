@@ -49,11 +49,13 @@ public class ProjectRepairFacade {
 		cleanMutationResultDirectories();
 		
 		copyOriginalCode(currentMutatorIdentifier);
-
+		try{
 		boolean copied1 = copyOriginalBin(getProperties().getOriginalAppBinDir(),currentMutatorIdentifier);// NEW
 																									// ADDED
 		boolean copied2 = copyOriginalBin(getProperties().getOriginalTestBinDir(),currentMutatorIdentifier);// NEW
-																									// ADDED
+		}catch(Exception e){
+			e.printStackTrace();
+		}																							// ADDED
 
 		copyData(currentMutatorIdentifier);
 

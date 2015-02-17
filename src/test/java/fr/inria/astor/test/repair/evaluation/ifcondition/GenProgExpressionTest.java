@@ -39,7 +39,7 @@ public class GenProgExpressionTest  extends BaseEvolutionaryTest{
 	@Test
 	public void testExampleMath280() throws Exception{
 		
-		String dependenciespath= "examples/Math-issue-280/lib/junit-4.4.jar";
+		/*String dependenciespath= "examples/Math-issue-280/lib/junit-4.4.jar";
 		String folder= "Math-issue-280";
 		String failing= "org.apache.commons.math.distribution.NormalDistributionTest";
 		File f = new File("examples/Math-issue-280/");
@@ -49,6 +49,26 @@ public class GenProgExpressionTest  extends BaseEvolutionaryTest{
 		double thfl = 0.5;
 
 		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl);
+		*/
+		 MainIFjGenProg.main(new String[]{"-bug280"});;
+		
+	}
+	
+	@Test
+	public void testExampleMath288() throws Exception{
+		
+		/*String dependenciespath= "examples/Math-issue-280/lib/junit-4.4.jar";
+		String folder= "Math-issue-280";
+		String failing= "org.apache.commons.math.distribution.NormalDistributionTest";
+		File f = new File("examples/Math-issue-280/");
+		String location = f.getParent();
+		String regression= "org.apache.commons.math.distribution.NormalDistributionTest";
+		String packageToInstrument= "org.apache.commons";
+		double thfl = 0.5;
+
+		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl);
+		*/
+		 MainIFjGenProg.main(new String[]{"-bug288"});;
 		
 	}
 	

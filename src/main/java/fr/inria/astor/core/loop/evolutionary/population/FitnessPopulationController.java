@@ -42,7 +42,8 @@ public class FitnessPopulationController implements PopulationController{
 		String variantsIds = "",solutionId="";
 		for (ProgramVariant programVariant : childVariants) {
 			variantsIds += programVariant.getId()+"(f="+programVariant.getFitness()+")" + ", ";
-			if(programVariant.getFitness() == 0){
+			//if(programVariant.getFitness() == 0){
+			if(programVariant.isSolution()){	
 				genSolutions.add(programVariant);
 				solutionId += programVariant.getId()+"(f="+programVariant.getFitness()+")" + ", ";
 			}

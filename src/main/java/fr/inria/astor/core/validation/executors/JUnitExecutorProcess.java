@@ -20,11 +20,11 @@ import fr.inria.astor.core.validation.junit.JUnitTestExecutor;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class ValidatorProcess {
+public class JUnitExecutorProcess {
 
 	private Logger log = Logger.getLogger(Thread.currentThread().getName());
 
-	public ValidatorProcess() {
+	public JUnitExecutorProcess() {
 		super();
 	}
 	
