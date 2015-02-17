@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<document>
+ <properties>
+  <title>What's new in Commons Lang 3.0?</title>
+  <author email="dev@commons.apache.org">Commons Documentation Team</author>
+ </properties>
+<body>
+
+<section name="DRAFT">
+<p>THIS IS A DRAFT - 3.0 IS NOT OUT, BUT THIS DOCUMENT SHOULD PROVE USEFUL WHEN EXAMINING BETA RELEASES OR TRUNK</p>
+</section>
+
+<section name="What's new in Commons Lang 3.0?">
+<p>Commons Lang 3.0 is <strong>(not yet)</strong> out, and the obvious question is: <i>"So what? What's changed?"</i>.</p>
+<section name="The big story">
+<p>Lang is now Java 5 based. We've generified the API, moved certain APIs to support <code>varargs</code> and thrown out any features 
+that are now supported by Java itself. We've removed the deprecated parts of the API and have also removed some features that 
+were deemed weak or unnecessary. All of this means that Lang 3.0 is not backwards compatible. </p>
+<p>To that end we have changed the package name, allowing Lang 3.0 to sit side-by-side with your previous version of Lang without any bad side effects. The new package name is the exciting and original <code>org.apache.commons.lang3</code>. This also forces you to recompile your code, making sure the compiler can let you know if a backwards incompatibility affects you. </p>
+<p>As you'd expect, there are also new features, enhancements and bugs fixed. </p>
+</section>
+<!--
+<section name="The build">
+<p>We built 3.0 using Maven 2.2.1 and Java 1.5. <strong>Needs confirmation before release of actual build details</strong></p>
+</section>
+-->
+<section name="Migrating from 2.x">
+<h3>Java code</h3>
+<p>Despite the label of backwards incompatibility, in the vast majority of cases the simple addition of a <code>'3'</code> to an import statement will suffice for your migration. </p><br/>
+<p>Change: <code>import org.apache.commons.lang</code> -&gt; <code>import org.apache.commons.lang3</code></p>
+<h3>Maven</h3>
+<p><code>groupId</code>: <code>commons-lang</code> -&gt; <code>org.apache.commons</code></p>
+<p><code>artifactId</code>: <code>commons-lang</code> -&gt; <code>commons-lang3</code></p>
+</section>
+
+<section name="What's gone?">
+<h3>Enum package</h3>
+<p>Java 5 provided enums out of the box, therefore we dispensed with both the deprecated enum package, 
+and the enums package. Instead you should migrate over to the standard Java enum. An EnumUtils class has been born 
+from the ashes of the old code, focused on providing additional functionality to the standard Java enum API. </p>
+<h3>NestedExceptions</h3>
+<p>In Java 1.4, the notion that all Throwables could be linked to a cause was introduced. In Lang we 
+had provided a NestedException framework to support the same feature, and now that we're jumping from Java 1.3 to 
+Java 5 we are remove this feature. The deprecation section below covers one part of ExceptionUtils that remains until 
+we are on Java 6, where the last remaining parts of the JDK appear to have embraced the new cause API. </p>
+<h3>JVMRandom</h3>
+<p>This class was introduced in Lang 2.0 to support a Random object built around the system seed. This 
+proved to be both an uncommon use case and one with bugs and so was dropped. </p>
+<h3>StringEscapeUtils.escapeSql</h3>
+<p>This was a misleading method, only handling the simplest of possible SQL cases. As SQL is not Lang's focus, it didn't make sense to maintain this method. </p>
+<p>Various Exception classes were removed - the lesson in defining more semantically relevant exception classes is that you can keep on coming up with more and more new classes. Simpler to focus on using the main JDK classes. </p>
+<h3>math.*Range</h3>
+<p>The various Range classes in the <code>math</code> package were removed in favour of a new generic Range class. </p>
+<h3>Previous Deprecations</h3>
+<p>All deprecated fields/methods/classes - with a new major version, all of the previously deprecated parts of the API could finally go away. </p>
+<p>If you feel that something was unfairly taken away, please feel free to contact the list. In many cases the possibility exists to reintroduce code. </p>
+</section>
+<section name="Deprecations">
+<p>The lone deprecation in 3.0 is that of the notion of 'cause method names' in ExceptionUtils. In Java 5.0 it is still just about 
+needed to handle some JDK classes that have not been migrated to the getCause API. In Java 6.0 things appear to be resolved and 
+we will remove the related methods in Lang 4.0. </p>
+</section>
+<section name="New packages">
+<p>Two new packages have shown up. org.apache.commons.lang3.concurrent, which unsurprisingly provides support classes for 
+multi-threaded programming, and org.apache.commons.lang3.text.translate, which provides a pluggable API for text transformation. </p>
+<!-- TODO: Add examples -->
+</section>
+<section name="New classes + methods">
+<p>There are many new classes and methods in Lang 3.0 - the most complete way to see the changes is via this <a href="lang2-lang3-clirr-report.html">Lang2 to Lang3 Clirr report</a>. </p>
+<p>Here is a summary of the new classes: </p>
+<ul>
+<li><code>AnnotationUtils</code></li>
+<li><code>CharSequenceUtils</code></li>
+<li><code>EnumUtils</code></li>
+<li><code>JavaVersion</code> - used in SystemUtils</li>
+<li><code>Pair</code></li>
+<li><code>Range</code> - replaces the old math.*Range classes</li>
+<li><code>builder.Builder</code></li>
+<li><code>exception.ContextedException</code></li>
+<li><code>exception.CloneFailedException</code></li>
+<li><code>reflect.ConstructorUtils</code></li>
+<li><code>reflect.FieldUtils</code></li>
+<li><code>reflect.MethodUtils</code></li>
+<li><code>reflect.TypeUtils</code></li>
+<li><code>text.WordUtils</code></li>
+</ul>
+</section>
+
+<section name="Bugfixes?">
+<p>See the <a href="changes-report.html#3.0">3.0 changes report</a> for the list of fixed bugs and other enhancements. </p>
+</section>
+
+<section name="Other Notable Changes">
+<ul>
+<li>StringUtils.isAlpha, isNumeric and isAlphanumeric now all return false when passed an empty String. Previously they returned true. </li>
+</ul>
+</section>
+
+<!--
+<section name="What next???"> TODO: Add Beta info.
+<p>Hopefully that was all of interest. Don't forget to download <a href="http://commons.apache.org/lang/download_lang.cgi">Lang 3.0</a>, or, for the Maven repository users, upgrade your &lt;version&gt; tag to 3.0 and your groupId to org.apache.commons. Please feel free to raise any questions you might have on the <a href="mail-lists.html">mailing lists</a>, and report bugs or enhancements in the <a href="issue-tracking.html">issue tracker</a>.</p>
+</section>
+-->
+
+</section>
+
+</body>
+</document>
