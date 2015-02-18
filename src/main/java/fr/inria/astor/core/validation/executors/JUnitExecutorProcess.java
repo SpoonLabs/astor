@@ -2,6 +2,7 @@ package fr.inria.astor.core.validation.executors;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.validation.entity.TestResult;
-import fr.inria.astor.core.validation.junit.JUnitTestExecutor;
+import fr.inria.astor.junitexec.JUnitTestExecutor;
 
 /**
  * Process-based program variant validation
@@ -79,7 +80,7 @@ public class JUnitExecutorProcess {
 			log.debug("Execution time "+((t_end-t_start)/1000)+ " seconds");
 			
 			return tr;
-		} catch (Exception ex) {
+		} catch (IllegalThreadStateException|IOException | InterruptedException ex) {
 			log.error("The validation thread continues working " + ex.getMessage());
 			if (p != null)
 				p.destroy();
@@ -97,11 +98,12 @@ public class JUnitExecutorProcess {
 	 */
 	private TestResult getTestResult(Process p) {
 		TestResult tr = new TestResult();
-		boolean success = false;
+		boolean success = false; String out ="";
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
 			while ((line = in.readLine()) != null) {
+				out+=line+"\n";
 				if(line.startsWith(JUnitTestExecutor.OUTSEP)){
 					String[] s = line.split(JUnitTestExecutor.OUTSEP);
 					int nrtc = Integer.valueOf(s[1]);
@@ -124,9 +126,12 @@ public class JUnitExecutorProcess {
 		}
 		if(success)
 			return tr;
-		else
-			return null;
+		else{
+		 throw new IllegalArgumentException("The validation process does not execute well the test cases\n "+out);	
+		}
 	}
+	
+	
 	protected String urlArrayToString(URL[] urls){
 		String s= "";
 		for (int i = 0; i < urls.length; i++) {

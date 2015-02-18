@@ -75,7 +75,7 @@ public class ProcessValidator implements IProgramValidator {
 				}
 
 			}
-		} catch (Exception e) {
+		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			return null;
 		}

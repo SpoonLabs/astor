@@ -45,7 +45,7 @@ public abstract class AbstractMain {
 
 		
 		// Optional parameters
-		options.addOption("jvm", true, "(Optional) location of JVM that executes the mutated version of a program (Folder that contains java script ) ");
+		options.addOption("jvm", true, "(Optional) location of JVM that executes the mutated version of a program (Folder that contains java script ). For the examples, run jdk 6");
 		options.addOption("maxgen", true, "(Optional) max number of generation a program variant is evolved");
 		options.addOption("maxpop", true, "(Optional)number of population (program variants) that the approach evolves");
 		options.addOption("kindvalidation", true, "(Optional) type of validation: process|thread|local ");

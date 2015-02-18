@@ -18,7 +18,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.validation.junit.JUnitTestExecutor;
+import fr.inria.astor.junitexec.JUnitTestExecutor;
 
 /**
  * Validates a program instance using different criterials i.e. test unit
@@ -124,7 +124,6 @@ public class ProgramVariantValidator {
 		// Then, Regression test
 		if (!validation.wasSuccessful()) {
 			executeRegressionOneByOne(muTestEx, validation);
-			muTestEx.logger.setLevel(Level.INFO);
 		}
 		//validation.setResultSuccess(!validation.isResultSuccess());
 		LogManager.getRootLogger().setLevel(Level.INFO);
@@ -145,7 +144,6 @@ public class ProgramVariantValidator {
 		
 		in1 = System.currentTimeMillis();
 		logger.info("Starting Regression");
-		muTestEx.logger.setLevel(Level.ERROR);
 		int sizeReg = 0;
 		for (String failingcaseReg : regressionCases) {
 			sizeReg++;
