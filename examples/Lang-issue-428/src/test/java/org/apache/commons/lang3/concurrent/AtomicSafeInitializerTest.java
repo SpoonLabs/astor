@@ -52,13 +52,13 @@ public class AtomicSafeInitializerTest extends
     /**
      * Tests that initialize() is called only once.
      */
-   // @Test //mm
+ /* @Test //mm
     public void xtestNumberOfInitializeInvocations() throws ConcurrentException,
             InterruptedException {
         testGetConcurrent();
         assertEquals("Wrong number of invocations", 1,
                 initializer.initCounter.get());
-    }
+    }*/
 
     /**
      * A concrete test implementation of {@code AtomicSafeInitializer}. This
