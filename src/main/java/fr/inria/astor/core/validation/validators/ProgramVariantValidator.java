@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -13,6 +14,7 @@ import org.junit.runners.model.InitializationError;
 
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -179,11 +181,12 @@ public class ProgramVariantValidator {
 			for (CtSimpleType<?> type : FactoryImpl.getLauchingFactory().Type()
 					.getAll()) {
 				String name = type.getQualifiedName();
+				
 				if ((name.endsWith("Test") || name.endsWith("TestBinary") || name
 						.endsWith("TestPermutations"))
-						&& (!name.endsWith("AbstractTest"))
+						&& (!type.getModifiers().contains(ModifierKind.ABSTRACT))
 						&& !(type instanceof CtInterface) 
-						&&  !(isIgnoredTestCase(name, ignoreTestcases)))
+						&& !(isIgnoredTestCase(name, ignoreTestcases)))
 				{
 					regressionCases.add(type.getQualifiedName());
 				}

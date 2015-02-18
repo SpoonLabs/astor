@@ -184,10 +184,10 @@ public abstract class AbstractMain {
 			return true;
 		}
 		if (cmd.hasOption("bug428")) {
-			String dependenciespath = "examples/Lang-issue-428/lib/easymock-2.5.2.jar;examples/Lang-issue-428/lib/junit-4.7.jar";
-			String folder = "Math-issue-428";
+			String dependenciespath = "examples/Lang-issue-428/lib/easymock-2.5.2.jar"+File.pathSeparator+"examples/Lang-issue-428/lib/junit-4.7.jar";
+			String folder = "Lang-issue-428";
 			String failing = "org.apache.commons.lang3.StringUtilsIsTest";
-			File f = new File("examples/Math-issue-428/");
+			File f = new File("examples/Lang-issue-428/");
 			String location = f.getParent();
 			String packageToInstrument = "org.apache.commons";
 			double thfl = 0.5;

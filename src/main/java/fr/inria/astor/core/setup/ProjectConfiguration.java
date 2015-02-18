@@ -106,25 +106,43 @@ public class ProjectConfiguration {
 	public void setDependencies(List<URL> dependencies) {
 		this.internalProperties.put(ProjectPropertiesEnum.dependencies,dependencies);
 	}
-	public void addJarFolderToClasspath(String path){
-		File dir = new File(path);
-		if(!dir.exists()){
+	/**
+	 * Add the location given as parameters as project dependency.
+	 * If the location is a folder it adds all jar contained, if it's a file the method directly add it.
+	 * @param path
+	 */
+	public void addLocationToClasspath(String path){
+		File location = new File(path);
+		try {
+		List cp = ((List)this.internalProperties.get(ProjectPropertiesEnum.dependencies));
+		
+		if(!location.exists()){
 			return;
 		}
-		if(!dir.isDirectory()){
-			dir = dir.getParentFile();//throw new IllegalArgumentException();
+		if(!location.isDirectory()){
+			if(!cp.contains(location.toURI().toURL()))	{	
+				cp.add(location.toURI().toURL());
+			}
 		}
-		for (File file : dir.listFiles()) {
+		else{
+	
+		
+		for (File file : location.listFiles()) {
 			if(file.getName().endsWith(".jar")){
-				try {
+			
 					logger.info("Adding to classpath "+file.getName());
-					((List)this.internalProperties.get(ProjectPropertiesEnum.dependencies)).add(file.toURI().toURL());
-				} catch (MalformedURLException e) {
-					throw new IllegalArgumentException(e);
+					if(!cp.contains(file.toURI().toURL()))	{	
+						cp.add(file.toURI().toURL());
+					}
 				
-				}
 			}			
 		}
+		}
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException(e);
+		
+		}
+		
 	}
 
 	public String getTestSuiteClassName() {
@@ -159,7 +177,7 @@ public class ProjectConfiguration {
 		this.internalProperties.put(ProjectPropertiesEnum.libPath,libPath);
 		String[] s = libPath.split(File.pathSeparator);
 		for (String pathcomp : s) {
-			this.addJarFolderToClasspath(pathcomp);
+			this.addLocationToClasspath(pathcomp);
 		}
 	}
 	

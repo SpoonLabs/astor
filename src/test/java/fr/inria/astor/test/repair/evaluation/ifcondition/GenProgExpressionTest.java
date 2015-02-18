@@ -70,6 +70,14 @@ public class GenProgExpressionTest  extends BaseEvolutionaryTest{
 	}
 	
 	@Test
+	public void testExampleMath280Mutation() throws Exception{
+				
+		 MainIFMutation.main(new String[]{"-bug280"});;
+		
+	}
+	
+	
+	@Test
 	public void testExampleMath309() throws Exception{
 		
 	
@@ -86,7 +94,7 @@ public class GenProgExpressionTest  extends BaseEvolutionaryTest{
 	}
 		
 	@Test
-	public void testExampleMath482() throws Exception{
+	public void testExampleMath428() throws Exception{
 		
 	
 		 MainIFjGenProg.main(new String[]{"-bug428"});;

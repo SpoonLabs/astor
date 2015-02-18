@@ -97,6 +97,23 @@ public class MutationSupporter {
 		}
 
 	}	
+	public void buildModel(String srcPathToBuild, String[] classpath) {
+
+		logger.info("building model: " + srcPathToBuild);
+		try {
+			jdtSpoonModelBuilder.addInputSource(new File(srcPathToBuild));
+			jdtSpoonModelBuilder.setOutputDirectory(new File(srcPathToBuild));
+			jdtSpoonModelBuilder.setSourceClasspath(classpath);
+			jdtSpoonModelBuilder.build();
+			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
+				
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+	}	
 	
 
 	/**

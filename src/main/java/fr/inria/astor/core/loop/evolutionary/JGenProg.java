@@ -1,5 +1,6 @@
 package fr.inria.astor.core.loop.evolutionary;
 
+import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class JGenProg extends EvolutionaryEngine {
 	public void initModel() {
 		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
-		mutatorSupporter.buildModel(codeLocation,classpath);
+		mutatorSupporter.buildModel(codeLocation,classpath.split(File.pathSeparator));
 	}
 
 	/**
