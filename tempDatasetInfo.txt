@@ -1,0 +1,103 @@
+	280--> all
+	288-->mut and par
+	309-->all
+	340-->gp and par
+	428-->gp and par
+	
+	///
+	
+	{ "280", "org.apache.commons.math.distribution.NormalDistributionTest",
++					"org.apache.commons.math.distribution.NormalDistributionTest" }
++			// ----
++			,
++		{ "309", "org.apache.commons.math.random.RandomDataTest", 
++				"org.apache.commons.math.random.RandomDataTest" },//RandomDataImpl-L465
++			//
++			{ "238", "org.apache.commons.math.util.MathUtilsTest", 
++					"org.apache.commons.math.util.MathUtilsTest" },//MathUtils-L412
++			//
++			{ "198", "org.apache.commons.math.complex.ComplexFormatTest",
++					"org.apache.commons.math.complex.ComplexFormatTest","0.2" },//ComplexFormat-L377
++		
++			// ---to see
++			{ "340", "org.apache.commons.math.fraction.BigFractionTest",
++					"org.apache.commons.math.fraction.BigFractionTest", "0.5" },//BigFraction-L903
++
++			// --
++			{ "141473", "org.apache.commons.math.util.MathUtilsTest", "org.apache.commons.math.util.MathUtilsTest" },
++			//MathUtils-L384
++			//---
++			{ "141003", "org.apache.commons.math.stat.univariate.rank.PercentileTest",
++					"org.apache.commons.math.stat.univariate.rank.PercentileTest" },//Percentile-L143
++
++			// ----
++			{ "141217", "org.apache.commons.math.util.MathUtilsTest", "org.apache.commons.math.util.MathUtilsTest" },
++			// ---
++			{ "141408", "org.apache.commons.math.distribution.BinomialDistributionTes"
++					+ "t",
++					"org.apache.commons.math.distribution.BinomialDistributionTest" },//AbstractDiscreteDistribution-L73
++			// -----
++			{ "273", "org.apache.commons.math.optimization.linear.SimplexSolverTest",
++					"org.apache.commons.math.optimization.linear.SimplexSolverTest","0.2"
++					,mvnpath+"junit/junit/4.4/junit-4.4.jar"		
++			},//SimpleTableau-L275
++			//---
++			{ "240", "org.apache.commons.math.util.MathUtilsTest", "org.apache.commons.math.util.MathUtilsTest","0.2" },
++			//MathUtils-L345 
++			//---
++			{ "243", "org.apache.commons.math.util.MathUtilsTest", "org.apache.commons.math.util.MathUtilsTest","0.3" },
++			//--MathUtils-L543 
++			{ "252", "org.apache.commons.math.fraction.FractionTest", "org.apache.commons.math.fraction.FractionTest" },
++			//--Fraction-L259
++			//To see, compilation problems
++			//{ "780", "org.apache.commons.math3.geometry.euclidean.threed.PolyhedronsSetTest", "org.apache.commons.math3.geometry.euclidean.threed.PolyhedronsSetTest","0.8" },
++			//PolygonsSet-L135 
++			//Moved
++			{ "836", 
++				"org.apache.commons.math3.fraction.FractionTest",
++				"org.apache.commons.math3.fraction.FractionTest", "0.3",
++				mvnpath+"junit/junit/4.10/junit-4.10.jar:/home/matmarti/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar"	
++			},//Fraction-l209
++				
++		/*		{ "34230", "org.apache.commons.math.analysis.SplineInterpolatorTest",
++					"org.apache.commons.math.analysis.SplineInterpolatorTest", "0.3" },
++		*/	
++				
++			// /--Second group
++			{ "288", "org.apache.commons.math.optimization.linear.SimplexSolverTest",
++					"org.apache.commons.math.optimization.linear.SimplexSolverTest", "0.2" },
++					//SimplexSolver-L80		
++			
++					{"947","org.apache.commons.math3.linear.SingularValueDecompositionTest","org.apache.commons.math3.linear.SingularValueDecompositionTest","0.5"},
++				
++					{"904", "org.apache.commons.math3.util.FastMathTest","org.apache.commons.math3.util.FastMathTest","0.5"},
++					
++					//Problem with varargs of MessageFormat
++					{ "691", "org.apache.commons.math.stat.descriptive.SummaryStatisticsTest",
++				"org.apache.commons.math.stat.descriptive.SummaryStatisticsTest", "0.2",
++				mvnpath+"junit/junit/4.8.2/junit-4.8.2.jar"},
++				//SummaryStatistics-L158
++					
++				{"780","org.apache.commons.math3.geometry.euclidean.threed.PolyhedronsSetTest","org.apache.commons.math3.geometry.euclidean.threed.PolyhedronsSetTest","0.5"}
++			,
++				{"702","org.apache.commons.math.optimization.direct.CMAESOptimizerTest","org.apache.commons.math.optimization.direct.CMAESOptimizerTest"}
++			,{"722","org.apache.commons.math3.complex.ComplexTest","org.apache.commons.math3.complex.ComplexTest"}
++	// ---
++			,{"644","org.apache.commons.math3.distribution.HypergeometricDistributionTest","org.apache.commons.math3.distribution.HypergeometricDistributionTest","0.5"}
++	// --
++			//LANG: 
++			,{"428","org.apache.commons.lang3.StringUtilsIsTest","org.apache.commons.lang3.StringUtilsIsTest","0.5",
++				mvnpath+"junit/junit/4.7/junit-4.7.jar"+File.pathSeparator+mvnpath+"/org/easymock/easymock/2.5.2/easymock-2.5.2.jar"	
++			}
++			,{"719","org.apache.commons.lang3.time.FastDateFormatTest","org.apache.commons.lang3.time.FastDateFormatTest","0.2",
++				mvnpath+"junit/junit/4.7/junit-4.7.jar:/home/matmarti/.m2/repository/org/easymock/easymock/2.5.2/easymock-2.5.2.jar"}//""org.apache.commons.lang3.timeFastDateFormat""
++			,{"638","org.apache.commons.lang3.math.NumberUtilsTest","org.apache.commons.lang3.math.NumberUtilsTest","0.5",
++				mvnpath+"junit/junit/4.7/junit-4.7.jar:/home/matmarti/.m2/repository/org/easymock/easymock/2.5.2/easymock-2.5.2.jar"}
++			,{"746","org.apache.commons.lang3.math.NumberUtilsTest","org.apache.commons.lang3.math.NumberUtilsTest","0.5",
++				mvnpath+"junit/junit/4.8.2/junit-4.8.2.jar:/home/matmarti/.m2/repository/commons-io/commons-io/2.0.1/commons-io-2.0.1.jar:/home/matmarti/.m2/repository/org/easymock/easymock/2.5.2/easymock-2.5.2.jar"}
++			
++			,/*{"746","org.apache.commons.lang3.StringEscapeUtilsTest","org.apache.commons.lang3.math.NumberUtilsTest","0.5",
++			mvnpath+"junit/junit/4.8.2/junit-4.8.2.jar:/home/matmarti/.m2/repository/commons-io/commons-io/2.0.1/commons-io-2.0.1.jar:/home/matmarti/.m2/repository/org/easymock/easymock/2.5.2/easymock-2.5.2.jar"}
++	*/
++						
++	};
