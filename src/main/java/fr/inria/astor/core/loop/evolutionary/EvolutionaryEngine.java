@@ -31,6 +31,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.util.StringUtil;
 import fr.inria.astor.core.validation.validators.IProgramValidator;
 
 /**
@@ -96,7 +97,7 @@ public abstract class EvolutionaryEngine {
 		while ((!foundsolution || !TransformationProperties.stopAtFirstSolutionFound)
 				&& generation < TransformationProperties.maxGeneration) {
 			generation++;
-			log.debug("----------Running generation " + generation
+			log.info("\n----------Running generation/iteraction " + generation
 					+ ", population size: " + this.variants.size());
 			foundsolution = processGenerations(generation);
 		}
@@ -128,7 +129,7 @@ public abstract class EvolutionaryEngine {
 	 */
 	public boolean processGenerations(int generation) throws Exception {
 
-		log.debug("***** Generation " + generation);
+		log.info("\n***** Generation " + generation);
 		boolean foundSolution = false;
 
 		List<ProgramVariant> temporalInstances = new ArrayList<ProgramVariant>();
@@ -199,7 +200,7 @@ public abstract class EvolutionaryEngine {
 				.currentMutatorIdentifier());
 
 		if (TransformationProperties.saveProgramVariant) {
-			log.debug("-Saving child on disk variant #" + childVariant.getId()
+			log.debug("\n-Saving child on disk variant #" + childVariant.getId()
 					+ " at " + srcOutput);
 			// This method should be refactored, and replace by the
 			// output from memory compilation
@@ -209,7 +210,7 @@ public abstract class EvolutionaryEngine {
 
 		if (childCompiles) {
 
-			log.debug("-The child id " + childVariant.getId() + " compiles: ");
+			log.debug("-The child compiles: id " + childVariant.getId() );
 			currentStat.numberOfRightCompilation++;
 
 			boolean validInstance = validateInstance(childVariant);
@@ -265,7 +266,7 @@ public abstract class EvolutionaryEngine {
 		// This is the copy of the original program
 		ProgramVariant childVariant = variantFactory
 				.createProgramVariantFromAnother(parentVariant, generation);
-		log.debug("--------Child id: " + childVariant.getId());
+		log.debug("\n--Child created id: " + childVariant.getId());
 		// Apply previous mutation
 		applyPreviousMutationsToSpoonModel(childVariant, generation);
 
@@ -318,8 +319,7 @@ public abstract class EvolutionaryEngine {
 				|| instance.getOperations().isEmpty()) {
 			return;
 		}
-		log.debug("--Undoing op of child " + instance.getId() + " "
-				+ instance.getOperations().values());
+	//	log.debug("--Undoing op of child " + instance.getId() + " "	+ instance.getOperations().values());
 		for (Integer generation : instance.getOperations().keySet()) {
 			// For each generation, in reverse order they are generated.
 			undoSingleGeneration(instance, generation);
@@ -332,12 +332,12 @@ public abstract class EvolutionaryEngine {
 		if (operations == null || operations.isEmpty()) {
 			return;
 		}
-		log.debug("--Undoing #operations: " + operations.size()
-				+ " of generation " + genI);
+//		log.debug("--Undoing #operations: " + operations.size()
+//				+ " of generation " + genI);
 
 		for (int i = operations.size() - 1; i >= 0; i--) {
 			GenOperationInstance genOperation = operations.get(i);
-			log.debug("---Undoing: " + genOperation);
+	//		log.debug("---Undoing: " + genOperation);
 			undoOperationToSpoonElement(genOperation);
 		}
 	}
@@ -370,8 +370,8 @@ public abstract class EvolutionaryEngine {
 				// if (VariableResolver.canBeApplied(operationInGen))
 				if (true) {
 					currentStat.numberOfAppliedOp++;
-					log.debug("---gen " + (nroGen++) + " created in "
-							+ (genProgInstance.getRootElement().getSignature()));
+					log.debug("---gen operation " + (nroGen++) + " created in: `"
+							+ StringUtil.trunc((genProgInstance.getRootElement().getSignature()))+"'  ");
 					variant.putGenOperation(generation, operationInGen);
 					operationInGen.setGen(genProgInstance);
 					created = true;
@@ -392,7 +392,7 @@ public abstract class EvolutionaryEngine {
 				currentStat.numberOfGenInmutated++;
 				log.debug("---gen " + (nroGen++)
 						+ " not mutation generated in  "
-						+ (genProgInstance.getRootElement().getSignature()));
+						+ StringUtil.trunc(genProgInstance.getRootElement().getSignature()));
 				notmut++;
 			}
 		}
@@ -400,9 +400,9 @@ public abstract class EvolutionaryEngine {
 		if (created) {
 			updateVariantGenList(variant, generation);
 		}
-		log.debug("--Summary Creation: for variant " + variant
+		log.debug("\n--Summary Creation: for variant " + variant
 				+ " gen mutated: " + mut + " , gen not mut: " + notmut
-				+ ", gen not applied  " + notapplied);
+				+ ", gen not applied  " + notapplied+"\n ");
 		return created;
 	}
 
@@ -458,6 +458,8 @@ public abstract class EvolutionaryEngine {
 	private void updateVariantGenList(ProgramVariant variant, int generation) {
 		List<GenOperationInstance> operations = variant.getOperations().get(
 				generation);
+		log.debug("--Updating Model from Program Variants ");
+				
 		for (GenOperationInstance genOperationInstance : operations) {
 			updateVariantGenList(variant, genOperationInstance);
 		}
@@ -497,9 +499,7 @@ public abstract class EvolutionaryEngine {
 	 */
 	protected void applyPreviousMutationsToSpoonModel(ProgramVariant variant,
 			int currentGeneration) throws IllegalAccessException {
-		// New: for the operation of each generation
-		log.debug("--Apply previous mutations to the model of variant "
-				+ variant);
+		
 		// We do not include the current generation (should be empty)
 		for (int generation_i = TransformationProperties.firstgenerationIndex; generation_i < currentGeneration; generation_i++) {
 
@@ -531,7 +531,7 @@ public abstract class EvolutionaryEngine {
 			int currentGeneration) throws IllegalAccessException {
 		// New: for the operation of each generation
 
-		log.debug("---Apply New mutations to the model of variant " + variant);
+		log.debug("---Apply New mutations to variant: " + variant);
 
 		List<GenOperationInstance> operations = variant.getOperations().get(
 				currentGeneration);
@@ -657,4 +657,5 @@ public abstract class EvolutionaryEngine {
 	public void setCurrentStat(Stats currentStat) {
 		this.currentStat = currentStat;
 	}
+	
 }

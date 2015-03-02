@@ -3,6 +3,7 @@ package fr.inria.astor.core.entities;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtElement;
 import fr.inria.astor.core.entities.taxonomy.MutationOperation;
+import fr.inria.astor.core.util.StringUtil;
 
 /**
  * Mutation Operation Applied to a particular gen
@@ -85,7 +86,7 @@ public class GenOperationInstance {
 	}
 
 	public String toString() {
-		return "(Gen op:" + this.getOperationApplied() + ", in `" + this.original + "` to `" + modified
+		return "(Gen op:" + this.getOperationApplied() + ", in `" + StringUtil.trunc(this.original) + "` to `" + StringUtil.trunc(modified)
 				+ "`)";
 	}
 

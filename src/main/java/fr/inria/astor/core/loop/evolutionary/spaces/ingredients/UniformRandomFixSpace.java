@@ -193,7 +193,7 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 			int ingredients = 0;
 			for (T t : r.keySet()) {
 				List ing = r.get(t);
-				s2+="\t "+t+": ("+ing.size()+") "+ ing + "\n";
+				s2+="\t "+t+": ("+ing.size()+") "+ ing.toString().replace("\n", " ") + "\n";
 				ingredients+= ing.size();
 			}
 			s+= "--> "+l + "(kind ing:"+r.values().size()+", ingrs:"+ingredients+") \n";

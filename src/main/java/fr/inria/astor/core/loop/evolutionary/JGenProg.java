@@ -38,9 +38,7 @@ import fr.inria.astor.core.setup.TransformationProperties;
  */
 public class JGenProg extends EvolutionaryEngine {
 
-	
 	Map<String, List<String>> appliedCache = new HashMap<String, List<String>>();
-
 
 	public JGenProg(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -59,86 +57,86 @@ public class JGenProg extends EvolutionaryEngine {
 			initModel();
 		}
 
-		log.debug("----Starting Mutation: Initial suspicious size: " + suspicious.size());
+		log.info("\n----Starting Mutation: Initial suspicious size: " + suspicious.size());
 		long startT = System.currentTimeMillis();
 
 		initializePopulation(suspicious);
-		
-		if(originalVariant == null){
+
+		if (originalVariant == null) {
 			log.error("Any variant for analyze ");
 			return;
 		}
-		
-		if(originalVariant.getGenList().isEmpty()){
+
+		if (originalVariant.getGenList().isEmpty()) {
 			log.error("Variant with any gen");
 			return;
 		}
-		
-		//Create fix Space
+
+		// Create fix Space
 		List classesForIngredients = retrieveClassesForIngredients();
 		getFixSpace().defineSpace(classesForIngredients);
-		log.info(getFixSpace());		
-		
-		/*URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		URLClassLoader loader = new URLClassLoader(originalURL);
-		Thread.currentThread().setContextClassLoader(loader);
-		*/
-		
+		log.info(getFixSpace());
+
 		boolean validInstance = validateInstance(originalVariant);
 		assert (validInstance);
-		
+
 		for (ProgramVariant initvariant : variants) {
 			initvariant.setFitness(originalVariant.getFitness());
 		}
-	
+
 		startEvolution();
 
 		long endT = System.currentTimeMillis();
 		log.info("Time (ms): " + (endT - startT));
-		currentStat.timeIteraction = ((endT-startT));
-		
+		currentStat.timeIteraction = ((endT - startT));
+
 	}
 
 	protected List retrieveClassesForIngredients() {
-		if(getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL))
+		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL))
 			return originalVariant.getAffectedClasses();
-		
-		if(getFixSpace().strategy().equals(IngredientSpaceStrategy.GLOBAL))
+
+		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.GLOBAL))
 			return this.mutatorSupporter.getFactory().Type().getAll();
-	
+
 		return null;
 	}
 
 	public void initModel() {
 		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
-		mutatorSupporter.buildModel(codeLocation,classpath.split(File.pathSeparator));
+		mutatorSupporter.buildModel(codeLocation, classpath.split(File.pathSeparator));
 	}
 
 	/**
 	 * Creates the variants from the suspicious code
+	 * 
 	 * @param suspicious
 	 * @throws Exception
 	 */
 	public void initializePopulation(List<SuspiciousCode> suspicious) throws Exception {
-		
+
 		variantFactory.setMutatorExecutor(getMutatorSupporter());
-		
+
 		this.variants = variantFactory.createInitialPopulation(suspicious, TransformationProperties.populationSize,
 				populationControler, projectFacade);
 
-		if(variants.isEmpty()){
+		if (variants.isEmpty()) {
 			throw new IllegalArgumentException("Any variant created from list of suspicious");
 		}
 		// We save the first variant
 		this.originalVariant = variants.get(0);
-	//	currentStat.fl_gens_size = this.originalVariant.getGenList().size();
+		// currentStat.fl_gens_size = this.originalVariant.getGenList().size();
 	}
 
 	/**
-	 * This method updates gens of a variant according to a created GenOperationInstance
-	 * @param variant variant to modify the gen information
-	 * @param operationofGen operator to apply in the variant.
+	 * This method updates gens of a variant according to a created
+	 * GenOperationInstance
+	 * 
+	 * @param variant
+	 *            variant to modify the gen information
+	 * @param operationofGen
+	 *            operator to apply in the variant.
 	 */
 	@Override
 	protected void updateVariantGenList(ProgramVariant variant, GenOperationInstance operation) {
@@ -146,7 +144,8 @@ public class JGenProg extends EvolutionaryEngine {
 		GenProgMutationOperation type = (GenProgMutationOperation) operation.getOperationApplied();
 		if (type.equals(GenProgMutationOperation.DELETE) || type.equals(GenProgMutationOperation.REPLACE)) {
 			boolean removed = gens.remove(operation.getGen());
-			log.debug("---updating gen list " + operation + " removed gen? " + removed);
+			if (type.equals(GenProgMutationOperation.DELETE) )
+				log.debug("---updating gen: " + operation + " removed gen? " + removed);
 		}
 		if (!type.equals(GenProgMutationOperation.DELETE)) {
 			Gen existingGen = operation.getGen();
@@ -156,7 +155,7 @@ public class JGenProg extends EvolutionaryEngine {
 			else
 				newGen = variantFactory.cloneGen(existingGen, operation.getModified());
 
-			log.debug("---updating gen list " + operation + " adding gen: " + newGen);
+			log.debug("---updating gen:  " + operation + " adding gen: " + newGen);
 			gens.add(newGen);
 		}
 
@@ -184,44 +183,46 @@ public class JGenProg extends EvolutionaryEngine {
 
 		CtElement targetStmt = genSusp.getRootElement();
 		CtElement cparent = targetStmt.getParent();
-		
+
 		GenOperationInstance operation = new GenOperationInstance();
 		operation.setOriginal(targetStmt);
 		operation.setOperationApplied(operationType);
 		operation.setGen(genSusp);
-		
+
 		if ((cparent != null && (cparent instanceof CtBlock))) {
 			CtBlock parentBlock = (CtBlock) cparent;
 			operation.setParentBlock(parentBlock);
 		}
-		
+
 		CtElement fix = null;
 		if (operationType.equals(GenProgMutationOperation.INSERT_AFTER)
-				|| operationType.equals(GenProgMutationOperation.INSERT_BEFORE)
-				|| (operationType.equals(GenProgMutationOperation.REPLACE))
-					) {
-	
-			//fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName(),
-			//		gen.getRootElement().getClass().getSimpleName());
-			fix = this.getFixIngredient(gen, targetStmt, gen.getRootElement().getClass().getSimpleName());
-			
-			if(fix == null){
-				log.error("fix ingredient null");
-				throw new IllegalAccessError("Not ingredient found");
-			}	
+				|| operationType.equals(GenProgMutationOperation.INSERT_BEFORE)) {
+
+			fix = this.getFixIngredient(gen, targetStmt);
 		}
-		
-		
+
+		if (operationType.equals(GenProgMutationOperation.REPLACE)) {
+			fix = this.getFixIngredient(gen, targetStmt, gen.getRootElement().getClass().getSimpleName());
+		}
+
+		if (fix == null) {
+			log.error("fix ingredient null");
+			// throw new IllegalAccessError("Not ingredient found");
+			return null;
+		}
+
 		operation.setModified(fix);
 
 		return operation;
 	}
-	
+
 	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt) {
-		return this.getFixIngredient(gen, targetStmt,null);
+		return this.getFixIngredient(gen, targetStmt, null);
 	}
+
 	/**
 	 * Return fix ingredient considering cache.
+	 * 
 	 * @param gen
 	 * @param targetStmt
 	 * @param elementsFromFixSpace
@@ -230,39 +231,37 @@ public class JGenProg extends EvolutionaryEngine {
 	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt, String type) {
 		CtElement fix = null;
 		int attempts = 0;
-		
+
 		boolean continueSearching = true;
-	
+
 		int elementsFromFixSpace = 0;
-		
-		if(type == null){
+
+		if (type == null) {
 			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName()).size();
+		} else {
+			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName(), type).size();
 		}
-		else{
-			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName(),type).size();
-		}
-		
-		
-		while(continueSearching && attempts < elementsFromFixSpace){
-			if(type == null){
+
+		while (continueSearching && attempts < elementsFromFixSpace) {
+			if (type == null) {
 				fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName());
+			} else {
+				fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName(), type);
 			}
-			else{
-				fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName(),type);
-			}
-			if(fix == null){
+			if (fix == null) {
 				return null;
 			}
 			attempts++;
-			if (fix.getSignature().equals(targetStmt.getSignature()) ) {
-				log.debug("Discarting operation, replacement is the same than the replaced code");
+			if (fix.getSignature().equals(targetStmt.getSignature())) {
+			//	log.debug("------Discarting operation, replacement is the same than the replaced code");
 				// Discard the operation.
-			}else
-				continueSearching = alreadyApplied(gen.getProgramVariant().getId(),fix.toString(), targetStmt.toString());
-		
-		} 
-		if(continueSearching ){
-			log.debug("All mutations were applied: no mutation left to apply");
+			} else
+				continueSearching = alreadyApplied(gen.getProgramVariant().getId(), fix.toString(),
+						targetStmt.toString());
+
+		}
+		if (continueSearching) {
+			log.debug("--- no mutation left to apply in element "+targetStmt.getSignature());
 			return null;
 		}
 		return fix;
@@ -272,14 +271,15 @@ public class JGenProg extends EvolutionaryEngine {
 		List<AbstractFixSpaceProcessor<?>> processors = this.getVariantFactory().getProcessors();
 		for (AbstractFixSpaceProcessor<?> processor : processors) {
 			ModelTransformator mt = processor.getTransformator();
-			if(mt.canTransform(operation)){
+			if (mt.canTransform(operation)) {
 				try {
 					mt.revert(operation);
 				} catch (Exception e) {
 					e.printStackTrace();
-			}
-			//After the operator instance is processed by one transformator, we break.
-			break;
+				}
+				// After the operator instance is processed by one
+				// transformator, we break.
+				break;
 			}
 		}
 
@@ -303,24 +303,28 @@ public class JGenProg extends EvolutionaryEngine {
 	 */
 	CtExpressionTransformator expTransform = new CtExpressionTransformator();
 	CtStatementTransformator stTransformator = new CtStatementTransformator();
+
+	/**
+	 * 
+	 */
 	protected void applyNewMutationOperationToSpoonElement(GenOperationInstance operation)
 			throws IllegalAccessException {
-				
+
 		List<AbstractFixSpaceProcessor<?>> processors = this.getVariantFactory().getProcessors();
 		for (AbstractFixSpaceProcessor<?> processor : processors) {
 			ModelTransformator mt = processor.getTransformator();
-			if(mt.canTransform(operation)){
+			if (mt.canTransform(operation)) {
 				try {
 					mt.transform(operation);
 				} catch (Exception e) {
 					e.printStackTrace();
-			}
-				//After the operator instance is processed by one transformator, we break.
+				}
+				// After the operator instance is processed by one
+				// transformator, we break.
 				break;
-				
+
 			}
 		}
-		
 
 	}
 
@@ -332,30 +336,32 @@ public class JGenProg extends EvolutionaryEngine {
 
 	/**
 	 * Check if the fix were applied in the location for a program instance
-	 * @param id program instance id.
+	 * 
+	 * @param id
+	 *            program instance id.
 	 * @param fix
 	 * @param location
 	 * @return
 	 */
-	public boolean alreadyApplied(int id, String fix, String location){
-		//we add the instance identifier to the patch.
-		String lockey = location;//+"-"+id;
+	public boolean alreadyApplied(int id, String fix, String location) {
+		// we add the instance identifier to the patch.
+		String lockey = location;// +"-"+id;
 		List<String> prev = appliedCache.get(lockey);
-		//The element does not have any mutation applied
-		if(prev == null){
+		// The element does not have any mutation applied
+		if (prev == null) {
 			prev = new ArrayList<String>();
 			prev.add(fix);
-			appliedCache.put(lockey,prev);
+			appliedCache.put(lockey, prev);
 			return false;
-		}else{
-			//The element has mutation applied
-			if(prev.contains(fix))
+		} else {
+			// The element has mutation applied
+			if (prev.contains(fix))
 				return true;
-			else{
+			else {
 				prev.add(fix);
 				return false;
 			}
 		}
 	}
-	
+
 }

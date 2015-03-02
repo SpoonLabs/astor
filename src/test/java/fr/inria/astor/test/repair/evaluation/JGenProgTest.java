@@ -51,5 +51,20 @@ public class JGenProgTest  extends BaseEvolutionaryTest{
 		
 	}
 	
+	
+	@Test
+	public void testExampleMath0C1() throws Exception{
 		
+		String dependenciespath= "examples/Math-0c1ef/lib/junit-4.11.jar"+File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
+		String folder= "Math-0c1ef";
+		String failing= "org.apache.commons.math3.primes.PrimesTest";
+		File f = new File("examples/Math-0c1ef/");
+		String location = f.getParent();
+		String regression= "org.apache.commons.math3.primes.PrimesTest";
+		String packageToInstrument= "org.apache.commons";
+		double thfl = 0.5;
+
+		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl);
+		
+	}
 }

@@ -49,7 +49,7 @@ public class FitnessPopulationController implements PopulationController{
 			}
 		}
 		
-		log.debug("Solutions found:" +  "--> (" + solutionId + ")");
+		log.debug("\nEnd analysis generation - \nSolutions found:" +  "--> (" + solutionId + ")");
 
 		childVariants.removeAll(genSolutions);
 				

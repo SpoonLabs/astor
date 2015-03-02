@@ -29,7 +29,7 @@ public class TransformationProperties {
 	/**
 	 * Save all program variant generated (even those that do not compile)
 	 */
-	public static boolean saveProgramVariant = false;
+	public static boolean saveProgramVariant = true;
 
 	/**
 	 * Indicates if only one generation is mutated by generation
@@ -58,7 +58,7 @@ public class TransformationProperties {
 	 * Maximun time to validate a program variant
 	 */
 	public static int validationSingleTimeLimit = 60000;
-	public static int validationRegressionTimeLimit = 200000;
+	public static int validationRegressionTimeLimit = 120000;
 	/**
 	 * Introduce an unmodified program variant in each generation
 	 */

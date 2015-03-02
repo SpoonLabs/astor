@@ -49,12 +49,12 @@ public class ProcessValidator implements IProgramValidator {
 					+ projectFacade.getProperties().getFixid();
 
 		
-			log.debug("Running first validation");
+			log.debug("-Running first validation");
 			TestResult trfailing = p.execute(bc, projectFacade.getProperties().getFailingTestCases(),
-					TransformationProperties.validationSingleTimeLimit * 5);
+					TransformationProperties.validationSingleTimeLimit);
 		//	currentStat.passFailingval1++;
 			if (trfailing == null) {
-				log.debug("The validation 1 have not finished well");
+				log.debug("**The validation 1 have not finished well**");
 			//	mutatedVariant.setFitness(Double.MAX_VALUE);
 				return null;
 			} else {
@@ -95,10 +95,10 @@ public class ProcessValidator implements IProgramValidator {
 
 	protected ProgramVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc, JUnitExecutorProcess p,
 			String localPrefix) {
-		log.debug("Test Failing is passing, Executing regression");
+		log.debug("-Test Failing is passing, Executing regression");
 		ProgramVariantValidator validator = new ProgramVariantValidator();
 		TestResult trregression = p.execute(bc, validator.retrieveRegressionTestCases(),
-				TransformationProperties.validationRegressionTimeLimit * 2);
+				TransformationProperties.validationRegressionTimeLimit);
 		if (trregression == null) {
 			return null;
 		} else {
@@ -109,7 +109,7 @@ public class ProcessValidator implements IProgramValidator {
 
 	protected ProgramVariantValidationResult executeRegressionTestingOneByOne(ProgramVariant mutatedVariant, URL[] bc,
 			JUnitExecutorProcess p, String localPrefix) {
-		log.debug("Test Failing is passing, Executing regression");
+		log.debug("-Test Failing is passing, Executing regression");
 		TestResult trregressionall = new TestResult();
 		long t1 = System.currentTimeMillis();
 		ProgramVariantValidator validator = new ProgramVariantValidator();

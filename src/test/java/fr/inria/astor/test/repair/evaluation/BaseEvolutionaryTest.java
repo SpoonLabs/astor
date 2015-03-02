@@ -10,6 +10,7 @@ import org.apache.log4j.RollingFileAppender;
 import org.junit.After;
 import org.junit.Before;
 
+import spoon.support.StandardEnvironment;
 import fr.inria.main.AbstractMain;
 /**
  * 
@@ -36,6 +37,8 @@ public abstract class BaseEvolutionaryTest  {
 		
 		main.createFactory();
 		
+		Logger.getLogger(StandardEnvironment.class).setLevel(Level.ERROR);
+		
 	}
 
 	public abstract AbstractMain createMain();
@@ -55,6 +58,9 @@ public abstract class BaseEvolutionaryTest  {
 		org.apache.log4j.RollingFileAppender rfa = 
 				new RollingFileAppender(new org.apache.log4j.PatternLayout(),file);
 		Logger.getRootLogger().addAppender(rfa);
+		
+	
+		
 	}
 	
 	public Logger createCustomFileLogger(String file) throws IOException {

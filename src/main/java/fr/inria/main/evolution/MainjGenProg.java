@@ -63,10 +63,10 @@ public void run(String location, String projectName, String dependencies, String
 	
 	//Fix Space
 	List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
-	//ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
+	ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 	//ingredientProcessors.add(new LoopExpressionFixSpaceProcessor());
 	//ingredientProcessors.add(new IFExpressionFixSpaceProcessor());
-	ingredientProcessors.add(new MethodInvocationFixSpaceProcessor());
+	//ingredientProcessors.add(new MethodInvocationFixSpaceProcessor());
 	
 	
 	//We analyze 
