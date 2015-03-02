@@ -1,0 +1,527 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+This document is meant as a step-by-step recipe to achieve the release of
+the Commons Math component. Note that more general instructions valid
+for all components, including [math], are available on the Apache Commons
+main site: at "http://commons.apache.org/releases/prepare.html" and
+"http://commons.apache.org/releases/release.html".
+
+The files "settings-security.xml" and "settings.xml" are minimal examples
+of files used by maven to pick up authentication credentials needed to
+connect to remote servers and to cryptographically sign the artifacts.
+
+Since [math] has switched to git as its version control system, release preparation
+can be done easily on the release manager local host in a branch. We will use a
+temporary branch for all release candidates, and delete it afterwards, so the branch
+will be simply named release-candidates. The branch will only be used to store the
+release specific parts (i.e. the pom changes with the version number, the release date
+in the site and so on). Everything else and in particular code change that will remain
+in the component after the release must be committed to the master branch. The release
+candidate branch will be synchronized with master at the start of each new candidate for
+this particular release. Once the release is done, the branch will be merged back to
+master and deleted. Of course, this will not delete the history, only the name
+release-candidates pointing to the head of this branch will disappear and can be reused
+for next version.
+
+The example below show a typical workflow. Just after commit A in the master branch, the
+release-candidate branch is created starting from master. This is shown by the 'b' in the
+second line. Then release candidate specific commits are made on the pom and a few other
+files, leading to a commit which will be tagged as RC1. This release candidate fails, and
+a few corrections need to be made on master, corresponding to commits B and C. Then the
+release candidate branch is synchronized by running a 'git merge' command on the branch.
+This is shown by the 'm' in the second line. A new commit is tagged as RC2. This second
+release candidate also fails, and a new correction is made on master branch, a new merge
+is done on the release branch, a new commit is tagged and a third release candidate is
+create, which succeeds. Then a final tag will be added on the final commit of this branch
+showing the status as released. Then the files are cleaned to prepare for next version
+(pom getting again a SNAPSHOT suffix, changes.xml getting a new placeholder for changes)
+and the cleaned branch is merged back to master. Once the branch has been merged, it is not
+useful anymore so it is deleted, hence the name release-candidate can be used again for
+the release branch of the next version.
+
+
+ ----A-------> B --> C----------> D--------------------------------------m---->    <- master branch
+      \               \            \                                    /
+       b---> RC1 ------m---> RC2 ---m---> RC3/final release --> cleaning --X       <- release-candidates branch
+
+This process allows:
+
+ - to never commit release candidate specific changes to the master
+   branch (so the pom on master always holds a SNAPSHOT version),
+ - to preserve future reference to the release
+ - to allow parallel work on master during the release
+ - if necessary to have multiple release managers or help on the
+   release as the release-candidates branch is shared
+ - to abort a release by deleting the branch early if some
+   larger change is needed on master
+
+
+(0)
+Preliminary checks:
+ * All Java files must contain a license header. The "RAT" maven plugin will
+   generate a report indicating for which files the license is missing.
+ * For a "minor" release, the library must be backward-compatible. Check all
+   the errors reported by the "Clirr" plugin.
+ * Clear all "CheckStyle" warnings.
+ * Make sure that the construct reported by "FindBugs" are intentional.
+ * Mark all fixed issues as such in the bug-tracking system, and add a
+   corresponding entry in "src/changes/changes.xml".
+
+
+(1)
+As a first optional step, you can test that everything works locally, i.e.
+that the build process can create all the necessary artifacts. The command
+
+  $ mvn clean deploy -Prelease -Ptest-deploy
+
+should create the artifacts in the "target/deploy".
+
+
+(2)
+At this point, you will work mainly on the release-candidates branch.
+
+If the release-candidates branch does not exist because it is the first release
+candidate, create it locally starting from the master branch and push it to
+Apache repository (assuming it is called origin), remembering the binding
+between the local and remote origin branches:
+
+  $ git branch release-candidates
+  $ git push -u origin release-candidates
+
+(3)
+Switch to the release candidate branch:
+
+  $ git checkout release-candidates
+
+
+(4)
+If there have been changes committed in the master branch since the creation of
+the release candidate branch, there are two cases:
+
+  (4a)
+  if all these changes must be included in the release-candidate,
+  merge master branch into release-candidates branch:
+
+  $ git merge master
+
+  (4b)
+  if only part of these changes must be included in the release-candidate,
+  cherry-pick the required commits into release-candidates branch:
+
+  $ git cherry-pick commit-SHA
+
+(5)
+Update the release specific files, checking you are really working on the
+release-candidate branch and *not* on the master branch.
+
+In particular:
+ * Update and commit the "src/site/site.xml" file to contain the information
+   about the API docs of the new release.
+ * Estimate a release date (taking into account the release vote delay) and
+   insert it in the "src/changes/changes.xml" file.
+ * Update the "pom.xml" to contain the final version number and not a SNAPSHOT:
+   Assuming that the release version will be "3.4", modify the "<version>" tag to
+   read:
+
+    <version>3.4</version>
+
+   Modify the section of "<properties>" that also refers to version numbers.
+   You should uncomment the "<commons.rc.version>" line and indicate the
+   appropriate numbering of the release candidate: This refers to how many
+   times you will need to repeat this whole release process until it is
+   accepted (by a vote):
+
+  <properties>
+    <!-- ... -->
+    <commons.release.version>3.4</commons.release.version>
+    <commons.rc.version>RC1</commons.rc.version>
+    <!-- ... -->
+  </properties>
+
+
+(6)
+The "download" page template is located at "src/site/xdoc/download_math.xml".
+This file is updated automatically by running the command:
+
+  $ mvn commons:download-page
+
+
+(7)
+The "release notes" file will be created by gathering all the changes
+collected during development in the file "src/changes/changes.xml".
+Create it by running:
+
+  $ mvn -Prelease-notes changes:announcement-generate
+
+Check the file for weird line breaks, and commit the updated file to git:
+
+  $ git add src/site/site.xml \
+            src/changes/changes.xml \
+            pom.xml \
+            src/site/xdoc/download_math.xml \
+            RELEASE-NOTES.txt
+
+Check you did not forget any file:
+
+  $ git status
+
+Commit the changes:
+  $ git commit -m "creating release candidate"
+
+
+(8)
+Create a GPG signed tag that will contain the whole source of this release candidate.
+First, make sure once again that the workspace is up-to-date:
+
+  $ git status
+
+Then, assuming the first candidate, the suffix will be "RC1" (this should
+be the  same as in the "<properties>" in the "pom.xml"), and the command
+will be:
+
+  $ git tag -s -m "Creating Apache Commons Math v3.4 RC1 tag." MATH_3_4_RC1
+
+If you have several GPG keys, you may prefer to use "-u keyId" to select a specific
+key for signing the tag instead of "-s" which select automatically one key
+from the configured e-mail address.
+
+Check the tag GPG signature:
+
+  $ git tag -v MATH_3_4_RC1
+
+You will get something like:
+
+  object cf4a9d70c9ac24dd7196995390171150e4e56451
+  type commit
+  tag MATH_3_4_RC1
+  tagger Luc Maisonobe <luc@apache.org> 1418934614 +0100
+
+  Creating Apache Commons Math v3.4 RC1 tag.
+  gpg: Signature made Thu Dec 18 21:30:14 2014 CET using RSA key ID 02E9F65B
+  gpg: Good signature from "Luc Maisonobe (CODE SIGNING KEY) <luc@apache.org>"
+  gpg:                 aka "Luc Maisonobe <Luc.Maisonobe@c-s.fr>"
+  gpg:                 aka "Luc Maisonobe <Luc.Maisonobe@free.fr>"
+  gpg:                 aka "Luc Maisonobe <luc@orekit.org>"
+
+Remember the commit ID listed in the object line (here cf4a9d70c9ac24dd7196995390171150e4e56451),
+as it is the most stable reference for traceability.
+
+Push everything (including the tag!) on the Apache repository:
+
+  $ git push --tags
+
+(9)
+Switch to a new directory out of your regular workspace, and retrieve
+the official tag from the Apache repository:
+
+  $ cd /tmp
+  $ git clone https://git-wip-us.apache.org/repos/asf/commons-math.git --branch MATH_3_4_RC1
+
+In the command above, the --branch option accepts both branch names and tags names,
+so we specify directly the tag here. Git will warn that the resulting workspace
+is in 'detached HEAD' state and 'git status' commands will warn that you are not
+currently on any branch. This is expected is this situation.
+
+Check that the last commit has the id you noted in the previous step:
+
+  $ git log -1
+
+(10)
+If this is your first release, you might need to add your GPG encryption
+key to the KEYS file. [If you have already done so, skip this section.]
+
+Retrieve the files from the SVN repository:
+
+  $ svn co --depth=immediates \
+    https://__Your_apache_login__@svn.apache.org/repos/asf/commons/trunks-proper
+
+and follow the instructions at the top of the "KEYS" file.
+
+
+(11)
+Create and transfer the artifacts to the Nexus server (a.k.a. "deploy").
+
+Because the artifacts must be cryptographically signed, this step requires that
+a profile named "release" exists in the maven "settings.xml" configuration file
+which will contain the identifier of your GPG key (cf. sample "settings.xml" 
+file).
+
+You can then run
+
+  $ mvn clean deploy -Prelease
+
+which will transfer the artifacts to the Nexus repository located at
+  https://repository.apache.org/index.html#stagingRepositories
+
+This process transfers more files than really needed in the the "staging" (i.e.
+non official) maven repository. The files expected in the repository are
+commons-math3-3.4.pom, commons-math3-3.4.jar, commons-math3-3.4.javadoc,
+commons-math3-3.4.sources, commons-math3-3.4.test-sources commons-math3-3.4.tests,
+the associated fingerprints (<file-name>.md5 and <file-name>.sha1) and the signatures
+<file-name>.asc. Note that Nexus automatically adds "md5" and "sha1" checksums files
+to the "asc" files (cryptographic signature). These fingerprints on signatures are
+spurious and have to be manually removed from Nexus staging area. The process also
+transfers the complete source and binaries distributions files
+commons-math3-3.4.-bin.tar.gz, commons-math3-3.4.-bin.zip, commons-math3-3.4.-src.tar.gz,
+commons-math3-3.4.-src.zip as well as the associated .md5 and .sha1 fingerprints and the
+.asc signatures. These are not really maven artifacts but rather distribution archives,
+and they belong elsewhere, so they must also been removed from the Nexus staging
+repository.
+
+As a measure of sanity check,  repository must be manually "closed" before other
+people review the deliverables just created.
+How to "close" the staging repository is explained at this page:
+  http://books.sonatype.com/nexus-book/reference/staging-repositories.html#staging-sect-closing
+
+(12)
+Upload the other distribution files to the Apache servers.
+
+The archive files have been created during the previous step. They have been put
+in the .m2 local repository. The RELEASE_NOTES.txt file hase been created earlier
+and is still in the checkout directory of the release candidate. The README.html
+file can be copied from the release area of the Apache dist server.
+All these files can be uploaded to the development area of the Apache dist server
+using the following commands:
+
+ $ cd /tmp
+ $ svn cp https://dist.apache.org/repos/dist/release/commons/math/README.html \
+          https://dist.apache.org/repos/dist/dev/commons/math/README.html
+ $ svn checkout https://dist.apache.org/repos/dist/dev/commons/math
+ $ cd math
+
+edit README.html with released version number
+
+ $ cp ~/.m2/repository/org/apache/commons/commons-math3/3.4/*-bin.* binaries
+ $ cp ~/.m2/repository/org/apache/commons/commons-math3/3.4/*-src.* source
+ $ cp <path-to-the-RC-workspace>/RELEASE-NOTES.txt .
+ $ svn add README.html RELEASE-NOTES.txt binaries/* source/*
+ $ svn commit -m "Creating distribution files for 3.4 RC1"
+
+
+(13)
+As the web site staging area is shared among all commons components and therefore
+can be published before vote ends, it is not recommended to use the standard staging
+area for the release candidate. So you will just archive the site and transfer it on
+your apache personal area for review:
+
+  $ mvn site
+  $ cd target
+  $ tar czf site.tar.gz site
+  $ scp site.tar.gz __Your_apache_login__@people.apache.org:~/
+  $ ssh __Your_apache_login__@people.apache.org
+     you@minotaur:~$ tar xzf site.tar.gz
+     you@minotaur:~$ mv site public_html/commons-math-3.4-RC1-site
+     you@minotaur:~$ rm site.tar.gz
+     you@minotaur:~$ logout
+
+(14)
+Call to vote by sending a message to the "dev" ML with subject
+"[VOTE][RC1] Release Commons Math 3.4". You can use the following example as
+a starting point, replacing the URLs with the appropriate ones:
+----------
+This is a [VOTE] for releasing Apache Commons Math 3.4 from release candidate 1.
+
+Tag name:
+  MATH_3_4_RC1 (signature can be checked from git using 'git tag -v')
+
+Tag URL:
+  <https://git-wip-us.apache.org/repos/asf?p=commons-math.git;a=commit;h=cf4a9d70c9ac24dd7196995390171150e4e56451>
+
+Commit ID the tag points at:
+  cf4a9d70c9ac24dd7196995390171150e4e56451
+
+Site:
+  <http://people.apache.org/~__Your_apache_login__/commons-math-3.4-RC1-site>
+
+Distribution files:
+  https://dist.apache.org/repos/dist/dev/commons/math/
+
+Distribution files hashes (SHA1):
+  e02c981d49c1f12b1fc237e69cb551a5620e57b4 commons-math3-3.4-bin.tar.gz
+  11965eb97033d4d6ef0aeb902f1450641f40d3c5 commons-math3-3.4-bin.zip
+  ce3efda70ac8f850f15154b38438bc337adc027a commons-math3-3.4-src.tar.gz
+  d343c885a9d6eea611403f7f92ff580911363681 commons-math3-3.4-src.zip
+
+KEYS file to check signatures:
+  http://www.apache.org/dist/commons/KEYS
+
+Maven artifacts:
+  https://repository.apache.org/content/repositories/orgapachecommons-051/org/apache/commons/commons-math3/3.4/
+
+[ ] +1 Release it.
+[ ] +0 Go ahead; I don't care.
+[ ] -0 There are a few minor glitches: ...
+[ ] -1 No, do not release it because ...
+
+This vote will close in 72 hours, at YYYY-MM-DDThh:mm:ssZ (this is UTC
+time).
+----------
+
+
+(15)
+If some blocking problems have been found in the release deliverables, cancel
+the vote by sending a "[CANCEL][VOTE]" message to the "dev" ML.
+After correcting the problems, you'll likely have to start again from step 3,
+4 or 5.
+
+
+(16)
+After at least 72 hours have elapsed, send a "[VOTE][RESULT]" mail to
+summarize the outcome of the vote. This should tally the votes cast,
+and state which are binding (PMC members).
+
+
+(17)
+The distribution files must be moved from the development area to the release
+area of the Apache dist server:
+
+$ svnmucc -U https://dist.apache.org/repos/dist \
+          rm release/commons/math/README.html \
+          mv dev/commons/math/README.html release/commons/math/README.html \
+          rm release/commons/math/RELEASE-NOTES.txt \
+          mv dev/commons/math/RELEASE-NOTES.txt release/commons/math/RELEASE-NOTES.txt \
+          mv dev/commons/math/binaries/commons-math3-3.4-bin.tar.gz release/commons/math/binaries/commons-math3-3.4-bin.tar.gz \
+          mv dev/commons/math/binaries/commons-math3-3.4-bin.tar.gz.asc release/commons/math/binaries/commons-math3-3.4-bin.tar.gz.asc \
+          mv dev/commons/math/binaries/commons-math3-3.4-bin.tar.gz.md5 release/commons/math/binaries/commons-math3-3.4-bin.tar.gz.md5 \
+          mv dev/commons/math/binaries/commons-math3-3.4-bin.tar.gz.sha1 release/commons/math/binaries/commons-math3-3.4-bin.tar.gz.sha1 \
+          mv dev/commons/math/binaries/commons-math3-3.4-bin.zip release/commons/math/binaries/commons-math3-3.4-bin.zip \
+          mv dev/commons/math/binaries/commons-math3-3.4-bin.zip.asc release/commons/math/binaries/commons-math3-3.4-bin.zip.asc \
+          mv dev/commons/math/binaries/commons-math3-3.4-bin.zip.md5 release/commons/math/binaries/commons-math3-3.4-bin.zip.md5 \
+          mv dev/commons/math/binaries/commons-math3-3.4-bin.zip.sha1 release/commons/math/binaries/commons-math3-3.4-bin.zip.sha1 \
+          mv dev/commons/math/source/commons-math3-3.4-src.tar.gz release/commons/math/source/commons-math3-3.4-src.tar.gz \
+          mv dev/commons/math/source/commons-math3-3.4-src.tar.gz.asc release/commons/math/source/commons-math3-3.4-src.tar.gz.asc \
+          mv dev/commons/math/source/commons-math3-3.4-src.tar.gz.md5 release/commons/math/source/commons-math3-3.4-src.tar.gz.md5 \
+          mv dev/commons/math/source/commons-math3-3.4-src.tar.gz.sha1 release/commons/math/source/commons-math3-3.4-src.tar.gz.sha1 \
+          mv dev/commons/math/source/commons-math3-3.4-src.zip release/commons/math/source/commons-math3-3.4-src.zip \
+          mv dev/commons/math/source/commons-math3-3.4-src.zip.asc release/commons/math/source/commons-math3-3.4-src.zip.asc \
+          mv dev/commons/math/source/commons-math3-3.4-src.zip.md5 release/commons/math/source/commons-math3-3.4-src.zip.md5 \
+          mv dev/commons/math/source/commons-math3-3.4-src.zip.sha1 release/commons/math/source/commons-math3-3.4-src.zip.sha1 \
+          -m "Publish commons-math 3.4 Release"
+
+
+(18)
+Release (a.k.a. "promote") the artifacts on the Nexus server, as shown here:
+  http://books.sonatype.com/nexus-book/reference/staging-repositories.html#staging-sect-releasing
+
+
+(19)
+Publish the web site. This is done by first committing the web site to the staging area, and then
+by publishing the staging area (which is shared among all commons compoents.
+
+In order to commit the web site to the staging area, look at the subversion workspace that was
+automatically checked out during the 'mvn site' command in folder site-content. You can also check
+it out directly by yourself elsewhere:
+
+  svn checkout https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-math site-content
+
+Remove all files there (except .svn folder) and move all the files from the site.
+You may want to adjust manually some parts like fixing broken relative links or
+copying the content of the current apidocs to javadocs/api-3.4.
+
+ $ cd site-content
+ $ rm -fr *
+ $ cp -pR ../target/site/* .
+
+Check for possibly new files:
+ $ svn status
+and "svn add" them if necessary.
+
+Commit the new contents of the web site:
+ $ svn commit -m "updating site after official release of version 3.4"
+
+Beware the commit command may be very long (several hours ...). The web site will be available
+for review at:
+  http://commons.staging.apache.org/proper/commons-math/
+ 
+Publishing the staging web site is done directly from a browser at URL:
+  https://cms.apache.org/commons/publish
+
+(20)
+The javadocs for several version is kept available on the website under the javadocs directory.
+This corresponds to a huge number of files which never changes, so they are not retrieved by
+default in the working copy when running 'svn checkout'. These javadocs must therefore be
+copied manually using server side copy from the apidocs directory after release, in order for
+the links to former versions to work. This is done as follows:
+
+  $ svn cp -m "copying 3.4 apidocs to versioned directory for the long-term links" \
+        https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-math/apidocs \
+        https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-math/javadocs/api-3.4
+
+(21)
+Put the official final tag to point at the same commit as the last release candidate tag:
+
+  $ git tag -s -m "RC1 becomes the 3.4 official version." MATH_3_4 cf4a9d70c9ac24dd7196995390171150e4e56451
+  $ git push --tags
+
+
+(22)
+Clean up files and prepare for next version (here we assume it will be 3.5):
+
+edit "doap_math.rdf" to add the just released version date.
+
+edit "pom.xml" so it contains
+ 
+       <version>3.5-SNAPSHOT</version>
+
+edit "src/changes/changes.xml" to add a new section for the next release, setting
+the release date to "TBD" and the description to the empty string.
+
+Double-check "pom.xml" *really* has a -SNAPSHOT version and commit everything:
+
+  $ git add doap_math.rdf pom.xml src/changes/changes.xml
+  $ git commit -m "preparing next version 3.5"
+  $ git push
+
+
+(23)
+Switch back to master and merge the release-candidate branch
+
+  $ git checkout master
+  $ get merge release-candidates
+  $ git push
+
+
+(24)
+Delete the now useless release-candidates branch locally (i.e. on your machine):
+
+ $ git branch -d release-candidates
+
+Take care at this step to *never* use the "-D" switch, but to use the "-d" switch
+as shown above. The difference is that if you forgot to merge branch release-candidates
+to another still existing branch (here master) as written in the preceding step, git
+will refuse to delete the branch if you use "-d" and will warn you that you are deleting
+a branch that is not merged, but it will delete the branch regardless of its merged
+status if you use "-D".
+
+If you deleted the branch by error without merging it, don't push the deletion to
+Apache repository!
+
+Once you are really sure everything is OK and the tags belong to the ancestors of the
+Apache repository head, you can delete the release-candidates branch also on the
+Apache repository. Beware that deleting a remote branch as a weird syntax, as it
+uses "git push" to push "nothing" (because there is nothing before the colon) into
+the "release-candidates" branch of the "origin" repository):
+
+ $ git push origin :release-candidates
+
+
+(25)
+Allow for the web site mirrors to be updated (possibly several hours); then
+send (from your apache account) a release announcement to the following ML:
+  announce@apache.org
+  dev@commons.apache.org
+  user@commons.apache.org
