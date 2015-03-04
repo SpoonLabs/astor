@@ -10,7 +10,6 @@ import spoon.processing.ProcessingManager;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.FactoryImpl;
-import spoon.support.QueueProcessingManager;
 import spoon.support.RuntimeProcessingManager;
 
 import com.martiansoftware.jsap.JSAPException;

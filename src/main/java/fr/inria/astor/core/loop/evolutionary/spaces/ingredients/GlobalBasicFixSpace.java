@@ -2,7 +2,6 @@ package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 

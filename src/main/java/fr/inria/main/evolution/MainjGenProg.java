@@ -15,9 +15,6 @@ import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationControl
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFExpressionFixSpaceProcessor;
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.MethodInvocationFixSpaceProcessor;
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -101,7 +98,7 @@ public JGenProg define(String location, String projectName, String dependencies,
 	assertNotNull(candidates);
 	assertTrue(candidates.size() > 0);
 	
-	gploop.init(filtercandidates);
+	gploop.setup(filtercandidates);
 	
 return gploop;	
 }

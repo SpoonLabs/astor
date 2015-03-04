@@ -21,7 +21,6 @@ import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerL
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientProcessor;
-import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.UniformRandomFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ProjectRepairFacade;

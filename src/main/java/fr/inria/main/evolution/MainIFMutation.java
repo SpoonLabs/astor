@@ -19,7 +19,6 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandom
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicFixSpace;
-import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.UniformRandomFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
@@ -95,7 +94,7 @@ public class MainIFMutation extends AbstractMain {
 			//	currentStat.fl_size = filtercandidates.size();
 			//	currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
 		}
-				mutloop.init(filtercandidates);
+				mutloop.setup(filtercandidates);
 				
 			} catch (Exception e) {
 				e.printStackTrace();

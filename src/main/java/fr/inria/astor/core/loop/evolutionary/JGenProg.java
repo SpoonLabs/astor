@@ -1,8 +1,6 @@
 package fr.inria.astor.core.loop.evolutionary;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +49,7 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @param suspicious
 	 * @throws Exception
 	 */
-	public void init(List<SuspiciousCode> suspicious) throws Exception {
+	public void setup(List<SuspiciousCode> suspicious) throws Exception {
 
 		if (FactoryImpl.getLauchingFactory().Type().getAll().isEmpty()) {
 			initModel();
@@ -119,7 +117,7 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @param suspicious
 	 * @throws Exception
 	 */
-	public void initializePopulation(List<SuspiciousCode> suspicious) throws Exception {
+	private void initializePopulation(List<SuspiciousCode> suspicious) throws Exception {
 
 		variantFactory.setMutatorExecutor(getMutatorSupporter());
 
@@ -274,7 +272,7 @@ public class JGenProg extends EvolutionaryEngine {
 		return fix;
 	}
 
-	public void undoOperationToSpoonElement(GenOperationInstance operation) {
+	protected void undoOperationToSpoonElement(GenOperationInstance operation) {
 		List<AbstractFixSpaceProcessor<?>> processors = this.getVariantFactory().getProcessors();
 		for (AbstractFixSpaceProcessor<?> processor : processors) {
 			ModelTransformator mt = processor.getTransformator();
@@ -350,7 +348,7 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @param location
 	 * @return
 	 */
-	public boolean alreadyApplied(int id, String fix, String location) {
+	protected boolean alreadyApplied(int id, String fix, String location) {
 		// we add the instance identifier to the patch.
 		String lockey = location;// +"-"+id;
 		List<String> prev = appliedCache.get(lockey);

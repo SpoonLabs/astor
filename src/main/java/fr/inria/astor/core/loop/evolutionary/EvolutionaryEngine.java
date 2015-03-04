@@ -1,7 +1,6 @@
 package fr.inria.astor.core.loop.evolutionary;
 
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Random;
 import org.apache.log4j.Logger;
 
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtElement;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -25,7 +23,6 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightC
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.FixLocationSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.bytecode.classloader.BytecodeClassLoader;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.TransformationProperties;
@@ -259,7 +256,7 @@ public abstract class EvolutionaryEngine {
 	 * @return
 	 * @throws Exception
 	 */
-	public ProgramVariant createMutatedChild(ProgramVariant parentVariant, int generation) throws Exception {
+	protected ProgramVariant createMutatedChild(ProgramVariant parentVariant, int generation) throws Exception {
 		// This is the copy of the original program
 		ProgramVariant childVariant = variantFactory.createProgramVariantFromAnother(parentVariant, generation);
 		log.debug("\n--Child created id: " + childVariant.getId());
@@ -291,7 +288,7 @@ public abstract class EvolutionaryEngine {
 	 * @param variant
 	 * @param generation
 	 */
-	public void reverseMutationInModel(ProgramVariant variant, int generation) {
+	protected void reverseMutationInModel(ProgramVariant variant, int generation) {
 
 		if (variant.getOperations() == null || variant.getOperations().isEmpty()) {
 			return;
@@ -304,20 +301,8 @@ public abstract class EvolutionaryEngine {
 		}
 	}
 
-	public void reverseMutationInModel(ProgramVariant instance) {
 
-		if (instance.getOperations() == null || instance.getOperations().isEmpty()) {
-			return;
-		}
-		// log.debug("--Undoing op of child " + instance.getId() + " " +
-		// instance.getOperations().values());
-		for (Integer generation : instance.getOperations().keySet()) {
-			// For each generation, in reverse order they are generated.
-			undoSingleGeneration(instance, generation);
-		}
-	}
-
-	public void undoSingleGeneration(ProgramVariant instance, int genI) {
+	protected void undoSingleGeneration(ProgramVariant instance, int genI) {
 		List<GenOperationInstance> operations = instance.getOperations().get(genI);
 		if (operations == null || operations.isEmpty()) {
 			return;
@@ -410,7 +395,7 @@ public abstract class EvolutionaryEngine {
 
 	}
 
-	public List<Gen> getWeightGenList(List<Gen> genList) {
+	protected List<Gen> getWeightGenList(List<Gen> genList) {
 		List<Gen> remaining = new ArrayList<Gen>(genList);
 		List<Gen> solution = new ArrayList<Gen>();
 
@@ -606,10 +591,6 @@ public abstract class EvolutionaryEngine {
 
 	public void setProjectFacade(ProjectRepairFacade projectFacade) {
 		this.projectFacade = projectFacade;
-	}
-
-	public Class getClassToManage() {
-		return CtElement.class;
 	}
 
 	public void setVariantFactory(ProgramVariantFactory variantFactory) {

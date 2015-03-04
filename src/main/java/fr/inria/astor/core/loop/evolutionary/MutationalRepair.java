@@ -249,10 +249,6 @@ public class MutationalRepair extends JGenProg {
 	
 	
 
-	@Override
-	public Class getClassToManage() {
-		return CtIf.class;
-	}
 	
 
 }

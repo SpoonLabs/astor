@@ -1,7 +1,5 @@
 package fr.inria.astor.test.repair.evaluation.ifcondition;
 
-import java.io.File;
-
 import org.junit.Test;
 
 import fr.inria.astor.test.repair.evaluation.BaseEvolutionaryTest;

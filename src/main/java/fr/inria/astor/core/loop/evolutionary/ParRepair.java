@@ -20,7 +20,6 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.stats.StatSpaceSize;
 
 /**
  * Extension of Evolutionary loop with GenProgOperations to manage IfConditions
@@ -384,9 +383,6 @@ public class ParRepair extends JGenProg {
 
 	}
 
-	@Override
-	public Class getClassToManage() {
-		return CtIf.class;
-	}
+	
 
 }

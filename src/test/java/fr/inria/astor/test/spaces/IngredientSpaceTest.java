@@ -1,13 +1,15 @@
 package fr.inria.astor.test.spaces;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.internal.compiler.ast.AssertStatement;
 import org.junit.Test;
 
 import spoon.Launcher;

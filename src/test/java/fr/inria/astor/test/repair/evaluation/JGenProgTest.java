@@ -2,8 +2,10 @@ package fr.inria.astor.test.repair.evaluation;
 
 import java.io.File;
 
+import org.junit.Assert;
 import org.junit.Test;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainjGenProg;
@@ -83,7 +85,13 @@ public class JGenProgTest  extends BaseEvolutionaryTest{
 		
 		JGenProg jgp = main.define(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 		
-		jgp.start();
+		Assert.assertEquals(1,jgp.getVariants().size());
+		
+		ProgramVariant variant  = jgp.getVariants().get(0);
+		jgp.processVariant(variant, 1);
+		//jgp.start();
+		
+		
 		
 	}
 	
