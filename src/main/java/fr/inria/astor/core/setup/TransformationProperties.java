@@ -24,12 +24,15 @@ public class TransformationProperties {
 	/**
 	 * Max number of generation
 	 */
-	public static int maxGeneration = 40;
+	public static int maxGeneration = 80;
 
 	/**
 	 * Save all program variant generated (even those that do not compile)
 	 */
-	public static boolean saveProgramVariant = true;
+	public static boolean saveProgramVariant = false;
+	
+	
+	public static boolean saveSolution = false;
 
 	/**
 	 * Indicates if only one generation is mutated by generation

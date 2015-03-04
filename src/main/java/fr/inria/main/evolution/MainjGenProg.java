@@ -42,8 +42,9 @@ public void run(String location, String projectName, String dependencies,  Strin
 	
 }
 
-@Override
-public void run(String location, String projectName, String dependencies, String packageToInstrument,
+
+
+public JGenProg define(String location, String projectName, String dependencies, String packageToInstrument,
 		double thfl, String failing) throws Exception {
 	
 	if(thfl>0)
@@ -99,8 +100,22 @@ public void run(String location, String projectName, String dependencies, String
 	
 	assertNotNull(candidates);
 	assertTrue(candidates.size() > 0);
+	
+	gploop.init(filtercandidates);
+	
+return gploop;	
+}
+
+
+@Override
+public void run(String location, String projectName, String dependencies, String packageToInstrument,
+		double thfl, String failing) throws Exception {
+	
+JGenProg gploop = define(location, projectName, dependencies, packageToInstrument, thfl, failing);
+	
+	
 	try {
-		gploop.start(filtercandidates);
+		gploop.start();
 	} catch (Exception e) {
 		e.printStackTrace();
 		fail(e.getMessage());

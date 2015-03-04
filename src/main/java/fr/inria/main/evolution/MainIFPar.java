@@ -98,7 +98,7 @@ public class MainIFPar extends AbstractMain {
 		assertNotNull(candidates);
 		assertTrue(candidates.size() > 0);
 		try {
-			parloop.start(filtercandidates);
+			parloop.init(filtercandidates);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

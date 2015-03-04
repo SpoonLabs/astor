@@ -49,7 +49,7 @@ import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class MutationSupporter {
 
-	public static  MutationSupporter currentSupporter = null;
+	public static MutationSupporter currentSupporter = null;
 
 	private Logger logger = Logger.getLogger(Thread.currentThread().getName());
 
@@ -57,13 +57,12 @@ public class MutationSupporter {
 	 * 
 	 */
 	private SpoonClassCompiler spoonClassCompiler = null;
-	
+
 	/**
 	 * Spoon model generator
 	 */
 	private JDTBasedSpoonCompiler jdtSpoonModelBuilder = null;
-	
-	
+
 	Factory factory;
 
 	/**
@@ -79,7 +78,6 @@ public class MutationSupporter {
 		this.currentSupporter = this;
 	}
 
-
 	public void buildModel(String srcPathToBuild, String classpath) {
 
 		logger.info("building model: " + srcPathToBuild);
@@ -89,14 +87,15 @@ public class MutationSupporter {
 			jdtSpoonModelBuilder.setSourceClasspath(classpath);
 			jdtSpoonModelBuilder.build();
 			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
-				
+
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 
-	}	
+	}
+
 	public void buildModel(String srcPathToBuild, String[] classpath) {
 
 		logger.info("building model: " + srcPathToBuild);
@@ -106,15 +105,14 @@ public class MutationSupporter {
 			jdtSpoonModelBuilder.setSourceClasspath(classpath);
 			jdtSpoonModelBuilder.build();
 			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
-				
+
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 
-	}	
-	
+	}
 
 	/**
 	 * Load the class name TODO TO BE MODIFIED
@@ -152,29 +150,24 @@ public class MutationSupporter {
 	 * @throws Exception
 	 */
 	public void saveSourceCodeOnDiskProgramVariant(ProgramVariant instance, String srcOutput) throws Exception {
-		//Set up the dir where we save the generated output
+		// Set up the dir where we save the generated output
 		this.getSpoonClassCompiler().updateOutput(srcOutput);
-	
-		//For each class contemplated for the program variant, 
+
+		// For each class contemplated for the program variant,
 		for (CtClass ctclass : instance.getBuiltClasses().values()) {
 			this.generateSourceCodeFromCtClass(ctclass);
 		}
 
 	}
 
-
-	public CompilationResult compileOnMemoryProgramVariant(ProgramVariant instance, URL[] cp)
-	{
+	public CompilationResult compileOnMemoryProgramVariant(ProgramVariant instance, URL[] cp) {
 		List<CtClass> ctClasses = new ArrayList<CtClass>(instance.getBuiltClasses().values());
-	
-		CompilationResult compilation2 = spoonClassCompiler.compileOnMemory(ctClasses,cp);
-	
-	return compilation2;
+
+		CompilationResult compilation2 = spoonClassCompiler.compileOnMemory(ctClasses, cp);
+
+		return compilation2;
 	}
-	
-	
-	
-	
+
 	/**
 	 * Save on disk Source code file Should be configured before:
 	 * .getSpoonClassCompiler().updateOutput(srcOutput);
@@ -186,7 +179,7 @@ public class MutationSupporter {
 		// WorkArround, for cloned
 		SourcePosition sp = type.getPosition();
 		type.setPosition(null);
-	
+
 		if (spoonClassCompiler == null || spoonClassCompiler.getJavaPrinter() == null) {
 			throw new IllegalArgumentException("Spoon compiler must be initialized");
 		}
@@ -199,9 +192,6 @@ public class MutationSupporter {
 		type.setPosition(sp);
 
 	}
-
-		
-
 
 	public CtElement getRoot(CtElement e) {
 		if (e.getParent() == null)
@@ -266,8 +256,6 @@ public class MutationSupporter {
 		return this.spoonClassCompiler;
 	}
 
-
-
 	public Factory getFactory() {
 		return factory;
 	}
@@ -307,15 +295,15 @@ public class MutationSupporter {
 					Attr attr_location = root.createAttribute("location");
 					attr_location.setValue(genOperationInstance.getGen().getCtClass().getQualifiedName());
 					op.setAttributeNode(attr_location);
-					
-					if(genOperationInstance.getGen() instanceof GenSuspicious){
+
+					if (genOperationInstance.getGen() instanceof GenSuspicious) {
 						GenSuspicious gs = (GenSuspicious) genOperationInstance.getGen();
 						int line = gs.getSuspicious().getLineNumber();
 						Attr attr_line = root.createAttribute("line");
 						attr_line.setValue(Integer.toString(line));
 						op.setAttributeNode(attr_line);
 					}
-					
+
 					Attr attr_gen = root.createAttribute("generation");
 					attr_gen.setValue(Integer.toString(i));
 					op.setAttributeNode(attr_gen);
@@ -349,14 +337,52 @@ public class MutationSupporter {
 		}
 	}
 
-	public static CtCodeElement clone(CtCodeElement st){
-		CtCodeElement cloned =  FactoryImpl.getLauchingFactory().Core().clone(st);
-		//--
+	public String getSolutionData(List<ProgramVariant> variants, int generation) {
+		String line = "";
+		
+
+			for (ProgramVariant childVariant : variants) {
+
+				line += "ProgramVariant " + childVariant.getId() + "\n ";
+
+				for (int i = 1; i <= generation; i++) {
+					List<GenOperationInstance> genOperationInstances = childVariant.getOperations().get(i);
+					if (genOperationInstances == null)
+						continue;
+
+					for (GenOperationInstance genOperationInstance : genOperationInstances) {
+
+						line += "\n operation: " + "\nlocation= "
+								+ genOperationInstance.getGen().getCtClass().getQualifiedName();
+
+						if (genOperationInstance.getGen() instanceof GenSuspicious) {
+							GenSuspicious gs = (GenSuspicious) genOperationInstance.getGen();
+							line += "\n line= " + gs.getSuspicious().getLineNumber();
+						}
+
+						line += "\n generation: " + Integer.toString(i);
+
+						line += "\n original: " + genOperationInstance.getOriginal().toString();
+
+						line += "\n modified: " + genOperationInstance.getModified().toString();
+
+						line += "\n ";
+
+					}
+				}
+				line += "\n ----";
+			}
+		return line;
+	}
+
+	public static CtCodeElement clone(CtCodeElement st) {
+		CtCodeElement cloned = FactoryImpl.getLauchingFactory().Core().clone(st);
+		// --
 		cloned.setParent(ROOT_ELEMENT);
-	
+
 		return cloned;
 	}
-	
+
 	public static final CtElement ROOT_ELEMENT = new CtElementImpl() {
 		private static final long serialVersionUID = 1L;
 
@@ -367,6 +393,6 @@ public class MutationSupporter {
 		public CtElement getParent() throws ParentNotInitializedException {
 			return null;
 		};
-		
+
 	};
 }

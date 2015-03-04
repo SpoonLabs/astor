@@ -86,8 +86,8 @@ public class GenOperationInstance {
 	}
 
 	public String toString() {
-		return "(Gen op:" + this.getOperationApplied() + ", in `" + StringUtil.trunc(this.original) + "` to `" + StringUtil.trunc(modified)
-				+ "`)";
+		return "" + this.getOperationApplied() + ": `" + StringUtil.trunc(this.original) + "` ---> `" + StringUtil.trunc(modified)
+				+ "`";
 	}
 
 	public Gen getGen() {

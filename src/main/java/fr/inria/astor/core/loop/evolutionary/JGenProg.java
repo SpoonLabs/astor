@@ -51,15 +51,13 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @param suspicious
 	 * @throws Exception
 	 */
-	public void start(List<SuspiciousCode> suspicious) throws Exception {
+	public void init(List<SuspiciousCode> suspicious) throws Exception {
 
 		if (FactoryImpl.getLauchingFactory().Type().getAll().isEmpty()) {
 			initModel();
 		}
 
-		log.info("\n----Starting Mutation: Initial suspicious size: " + suspicious.size());
-		long startT = System.currentTimeMillis();
-
+		log.info("\n---- Initial suspicious size: " + suspicious.size());
 		initializePopulation(suspicious);
 
 		if (originalVariant == null) {
@@ -83,6 +81,13 @@ public class JGenProg extends EvolutionaryEngine {
 		for (ProgramVariant initvariant : variants) {
 			initvariant.setFitness(originalVariant.getFitness());
 		}
+
+	}	
+	
+	public void start() throws Exception{
+	
+		log.info("\n----Starting Mutation" );
+		long startT = System.currentTimeMillis();
 
 		startEvolution();
 
@@ -145,7 +150,7 @@ public class JGenProg extends EvolutionaryEngine {
 		if (type.equals(GenProgMutationOperation.DELETE) || type.equals(GenProgMutationOperation.REPLACE)) {
 			boolean removed = gens.remove(operation.getGen());
 			if (type.equals(GenProgMutationOperation.DELETE) )
-				log.debug("---updating gen: " + operation + " removed gen? " + removed);
+				log.debug("---" + operation + " removed gen? " + removed);
 		}
 		if (!type.equals(GenProgMutationOperation.DELETE)) {
 			Gen existingGen = operation.getGen();
@@ -155,7 +160,9 @@ public class JGenProg extends EvolutionaryEngine {
 			else
 				newGen = variantFactory.cloneGen(existingGen, operation.getModified());
 
-			log.debug("---updating gen:  " + operation + " adding gen: " + newGen);
+			//log.debug("---updating gen:  " + operation + " adding gen: " + newGen);
+			log.debug("---"+ newGen);
+			log.debug("---"+operation);
 			gens.add(newGen);
 		}
 

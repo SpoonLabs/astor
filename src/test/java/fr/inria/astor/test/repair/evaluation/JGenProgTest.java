@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.junit.Test;
 
+import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainjGenProg;
 /**
@@ -60,11 +61,30 @@ public class JGenProgTest  extends BaseEvolutionaryTest{
 		String failing= "org.apache.commons.math3.primes.PrimesTest";
 		File f = new File("examples/Math-0c1ef/");
 		String location = f.getParent();
-		String regression= "org.apache.commons.math3.primes.PrimesTest";
 		String packageToInstrument= "org.apache.commons";
 		double thfl = 0.5;
 
-		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl);
+		this.generic(location, folder,"" , failing, dependenciespath, packageToInstrument, thfl);
 		
 	}
+	
+	@Test
+	public void aaaatestExampleMath0C1aaaaa() throws Exception{
+		
+		String dependenciespath= "examples/Math-0c1ef/lib/junit-4.11.jar"+File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
+		String folder= "Math-0c1ef";
+		String failing= "org.apache.commons.math3.primes.PrimesTest";
+		File f = new File("examples/Math-0c1ef/");
+		String location = f.getParent();
+		String packageToInstrument= "org.apache.commons";
+		double thfl = 0.5;
+
+		MainjGenProg main = new MainjGenProg();
+		
+		JGenProg jgp = main.define(location, folder, dependenciespath, packageToInstrument, thfl, failing);
+		
+		jgp.start();
+		
+	}
+	
 }

@@ -102,7 +102,7 @@ public class MainIFjGenProg extends AbstractMain {
 		assertNotNull(candidates);
   		assertTrue(candidates.size() > 0);
 		try {
-			gploop.start(filtercandidates);
+			gploop.init(filtercandidates);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

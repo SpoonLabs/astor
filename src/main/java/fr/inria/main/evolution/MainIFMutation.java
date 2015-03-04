@@ -95,7 +95,7 @@ public class MainIFMutation extends AbstractMain {
 			//	currentStat.fl_size = filtercandidates.size();
 			//	currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
 		}
-				mutloop.start(filtercandidates);
+				mutloop.init(filtercandidates);
 				
 			} catch (Exception e) {
 				e.printStackTrace();

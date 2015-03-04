@@ -33,7 +33,8 @@ public class GenSuspicious extends Gen{
 	}
 	
 	public String toString(){
-		return "[gen= line "+suspicious.getLineNumber()+", "+rootElement.getClass().getSimpleName()+", in "+ctClass.getSimpleName()+"]";
+		return "Gen="
+				+ ctClass.getSimpleName() +" line: "+suspicious.getLineNumber()+", el: "+rootElement.getClass().getSimpleName()+"";
 	}
 	
 }
