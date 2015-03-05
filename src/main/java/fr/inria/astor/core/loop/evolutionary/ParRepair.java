@@ -48,7 +48,7 @@ public class ParRepair extends JGenProg {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	protected GenOperationInstance createGenMutationForElement(Gen gen) throws IllegalAccessException {
+	protected GenOperationInstance createOperationForGen(Gen gen) throws IllegalAccessException {
 		// GenSuspicious genSusp = (GenSuspicious) gen;
 		Gen genSusp = gen;
 

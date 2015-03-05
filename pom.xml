@@ -34,7 +34,7 @@
 			<version>4.0-SNAPSHOT</version>
 		</dependency>
 
-	<dependency>
+		<dependency>
 			<groupId>fr.inria.astor</groupId>
 			<artifactId>astor-junit-exec</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
@@ -48,8 +48,9 @@
 			<artifactId>infra</artifactId>
 			<version>0.1</version>
 			<scope>system</scope>
-			<systemPath>${project.build.sourceDirectory}/../../../lib/sacha-infra.jar</systemPath>
-		</dependency>
+			<!-- <systemPath>${project.build.sourceDirectory}/../../../lib/sacha-infra.jar</systemPath> -->
+			<systemPath>${project.build.sourceDirectory}/../../../lib/infra-0.1.jar</systemPath> 
+		</dependency> 
 
 
 

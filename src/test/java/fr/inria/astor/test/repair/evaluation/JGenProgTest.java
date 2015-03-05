@@ -1,98 +1,208 @@
 package fr.inria.astor.test.repair.evaluation;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
+import fr.inria.astor.core.entities.Gen;
+import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
+import fr.inria.astor.core.entities.taxonomy.MutationOperation;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainjGenProg;
+
 /**
- *  This class executes the experiment from our paper if-conditional-dataset-2014.
- * @author Matias Martinez,  matias.martinez@inria.fr
+ * This class executes the experiment from our paper
+ * if-conditional-dataset-2014.
+ * 
+ * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class JGenProgTest  extends BaseEvolutionaryTest{
-		
-	
+public class JGenProgTest extends BaseEvolutionaryTest {
+
 	@Override
-	public void generic(
-			String location,
-			String folder, 
-			String regression, 
-			String failing,
-			String dependenciespath, 
+	public void generic(String location, String folder, String regression, String failing, String dependenciespath,
 			String packageToInstrument, double thfl) throws Exception {
-	
+
 		getMain().run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
-		
+
 	}
 
 	@Override
 	public AbstractMain createMain() {
-		if(main == null){
+		if (main == null) {
 			return new MainjGenProg();
 		}
 		return main;
 	}
-	
+
 	@Test
-	public void testExampleMath280() throws Exception{
-		
-		String dependenciespath= "examples/Math-issue-280/lib/junit-4.4.jar";
-		String folder= "Math-issue-280";
-		String failing= "org.apache.commons.math.distribution.NormalDistributionTest";
+	public void testExampleMath280() throws Exception {
+
+		String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
+		String folder = "Math-issue-280";
+		String failing = "org.apache.commons.math.distribution.NormalDistributionTest";
 		File f = new File("examples/Math-issue-280/");
 		String location = f.getParent();
-		String regression= "org.apache.commons.math.distribution.NormalDistributionTest";
-		String packageToInstrument= "org.apache.commons";
+		String regression = "org.apache.commons.math.distribution.NormalDistributionTest";
+		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
 
 		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl);
-		
+
 	}
-	
-	
+
 	@Test
-	public void testExampleMath0C1() throws Exception{
-		
-		String dependenciespath= "examples/Math-0c1ef/lib/junit-4.11.jar"+File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
-		String folder= "Math-0c1ef";
-		String failing= "org.apache.commons.math3.primes.PrimesTest";
+	public void testExampleMath0C1() throws Exception {
+
+		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
+				+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
+		String folder = "Math-0c1ef";
+		String failing = "org.apache.commons.math3.primes.PrimesTest";
 		File f = new File("examples/Math-0c1ef/");
 		String location = f.getParent();
-		String packageToInstrument= "org.apache.commons";
+		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
 
-		this.generic(location, folder,"" , failing, dependenciespath, packageToInstrument, thfl);
-		
+		this.generic(location, folder, "", failing, dependenciespath, packageToInstrument, thfl);
+
 	}
-	
+
 	@Test
-	public void aaaatestExampleMath0C1aaaaa() throws Exception{
-		
-		String dependenciespath= "examples/Math-0c1ef/lib/junit-4.11.jar"+File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
-		String folder= "Math-0c1ef";
-		String failing= "org.apache.commons.math3.primes.PrimesTest";
+	public void aaaatestExampleMath0C1aaaaa() throws Exception {
+
+		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
+				+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
+		String folder = "Math-0c1ef";
+		String failing = "org.apache.commons.math3.primes.PrimesTest";
 		File f = new File("examples/Math-0c1ef/");
 		String location = f.getParent();
-		String packageToInstrument= "org.apache.commons";
+		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
 
 		MainjGenProg main = new MainjGenProg();
-		
+
 		JGenProg jgp = main.define(location, folder, dependenciespath, packageToInstrument, thfl, failing);
+
+		Assert.assertEquals(1, jgp.getVariants().size());
+
+		ProgramVariant variant = jgp.getVariants().get(0);
+		//
+		int currentGeneration = 1;
+		GenOperationInstance  operation1 = createDummyOperation1(variant, currentGeneration);
+		System.out.println("operation "+operation1);
+		assertNotNull(operation1);
 		
-		Assert.assertEquals(1,jgp.getVariants().size());
+		boolean isSolution = false;
+		//jgp.processCreatedVariant(variant, currentGeneration);
+		//The model has not been changed.
+	//	assertFalse(isSolution);
+		//	
+		jgp.applyNewOperationsToVariantModel(variant,currentGeneration);
 		
-		ProgramVariant variant  = jgp.getVariants().get(0);
-		jgp.processVariant(variant, 1);
-		//jgp.start();
+		//
+		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
+	
+		assertTrue(isSolution);
 		
 		
 		
 	}
+
+	public GenSuspicious searchSuspiciousElement(ProgramVariant variant,String snippet, String fileName, int line) {
+		
+		for(Gen gen: variant.getGenList()){
+			
+			if(gen.getRootElement().toString().equals(snippet)
+					&& gen.getRootElement().getPosition().getLine() == line
+					)
+				return (GenSuspicious) gen;
+		}
+		
+		return null;
+	}
+
+	public CtStatement createPatchStatementCode(String snippet) {
+		
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
+				new StandardEnvironment());
+		CtStatement st = (factory).Code().createCodeSnippetStatement(snippet)
+				.compile();
+		return st;
+	}
+
+	private GenOperationInstance createDummyOperation1(ProgramVariant variant, int currentGeneration) {
 	
+		GenSuspicious genSusp = searchSuspiciousElement(variant,"n += 3" , " " , 95);
+		assertNotNull(genSusp);
+		
+		CtElement targetStmt = genSusp.getRootElement();
+		CtElement fix =  createFix1();
+		assertEquals(fix.toString(),"n += 2" );
+
+		GenOperationInstance operation = new GenOperationInstance();
+
+		operation.setOperationApplied(GenProgMutationOperation.REPLACE);
+		operation.setGen(genSusp);
+		operation.setParentBlock((CtBlock) targetStmt.getParent());
+		operation.setOriginal(targetStmt);
+		operation.setModified(fix);
+	
+		variant.putGenOperation(currentGeneration, operation);
+		operation.setGen(genSusp);
+		
+		return operation;
+	}
+
+	@Test
+	public void testCreateFix1(){
+		assertEquals(createFix1().toString(),"n += 2" );
+		//return fix;
+	}
+	
+	public CtElement createFix1(){
+		CtElement gen =  createPatchStatementCode("int n=0; n += 2");
+		CtElement fix = ((CtBlock)gen.getParent()).getStatement(1);
+		//assertEquals(fix,"n += 2" );
+		return fix;
+	}
+	
+	@Test
+	public void processTest(){
+		int count = 0;
+		 try {
+		        String line;
+		        
+		        String[] cmd = {
+		        		"/bin/sh",
+		        		"-c",
+		        		"ps -ux | grep java"
+		        		};
+		        Process p = Runtime.getRuntime().exec(cmd);
+		        BufferedReader input =
+		                new BufferedReader(new InputStreamReader(p.getInputStream()));
+		        while ((line = input.readLine()) != null) {
+		            System.out.println(line);
+		            count++;
+		        }
+		        input.close();
+		    } catch (Exception err) {
+		        err.printStackTrace();
+		    }
+		System.out.println(count);
+	}
 }

@@ -142,13 +142,13 @@ public abstract class EvolutionaryEngine {
 			log.debug("-Parent Variant: " + parentVariant);
 
 			
-			ProgramVariant newVariant = createMutatedChild(parentVariant, generation);
+			ProgramVariant newVariant = createNewProgramVariant(parentVariant, generation);
 
 			if (newVariant == null) {
 				continue;
 			}
 			
-			processVariant(newVariant, generation);
+			processCreatedVariant(newVariant, generation);
 			
 			if (newVariant.getCompilation().compiles()) {
 				temporalInstances.add(newVariant);
@@ -156,7 +156,7 @@ public abstract class EvolutionaryEngine {
 			}
 			
 			// Finally, reverse the changes done by the child
-			reverseMutationInModel(newVariant, generation);
+			reverseOperationInModel(newVariant, generation);
 		
 			
 			if (foundSolution && TransformationProperties.stopAtFirstSolutionFound) {
@@ -186,12 +186,14 @@ public abstract class EvolutionaryEngine {
 
 	/**
 	 * 
+	 * Compiles and validates a created variant.
+	 * 
 	 * @param parentVariant
 	 * @param generation
-	 * @return
+	 * @return true if the variant is a solution. False otherwise.
 	 * @throws Exception
 	 */
-	public boolean processVariant(ProgramVariant programVariant, int generation) throws Exception {
+	public boolean processCreatedVariant(ProgramVariant programVariant, int generation) throws Exception {
 
 		
 		URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
@@ -256,26 +258,27 @@ public abstract class EvolutionaryEngine {
 	 * @return
 	 * @throws Exception
 	 */
-	protected ProgramVariant createMutatedChild(ProgramVariant parentVariant, int generation) throws Exception {
+	protected ProgramVariant createNewProgramVariant(ProgramVariant parentVariant, int generation) throws Exception {
 		// This is the copy of the original program
 		ProgramVariant childVariant = variantFactory.createProgramVariantFromAnother(parentVariant, generation);
 		log.debug("\n--Child created id: " + childVariant.getId());
-		// Apply previous mutation
-		applyPreviousMutationsToSpoonModel(childVariant, generation);
+		
+		// Apply previous operations (i.e., from previous operators)
+		applyPreviousOperationsToVariantModel(childVariant, generation);
 
-		boolean isChildMutatedInThisGeneration = createGenMutationForModel(childVariant, generation);
+		boolean isChildMutatedInThisGeneration = modifyProgramVariant(childVariant, generation);
 
 		if (!isChildMutatedInThisGeneration) {
 			log.debug("--Not Operation generated in child variant: " + childVariant);
-			reverseMutationInModel(childVariant, generation);
+			reverseOperationInModel(childVariant, generation);
 			return null;
 		}
 
-		boolean appliedOperations = applyNewMutationsToSpoonModel(childVariant, generation);
+		boolean appliedOperations = applyNewOperationsToVariantModel(childVariant, generation);
 
 		if (!appliedOperations) {
 			log.debug("---Not Operation applied in child variant:" + childVariant);
-			reverseMutationInModel(childVariant, generation);
+			reverseOperationInModel(childVariant, generation);
 			return null;
 		}
 
@@ -288,7 +291,7 @@ public abstract class EvolutionaryEngine {
 	 * @param variant
 	 * @param generation
 	 */
-	protected void reverseMutationInModel(ProgramVariant variant, int generation) {
+	protected void reverseOperationInModel(ProgramVariant variant, int generation) {
 
 		if (variant.getOperations() == null || variant.getOperations().isEmpty()) {
 			return;
@@ -328,28 +331,36 @@ public abstract class EvolutionaryEngine {
 	 */
 	Random random = new Random();
 
-	private boolean createGenMutationForModel(ProgramVariant variant, int generation) throws Exception {
-		log.debug("--Creating new mutations operations for variant " + variant);
-		boolean created = false;
+	/**
+	 * Given a program variant, the method generates operations for modifying that variants.
+	 * Each operation is related to one gen of the program variant.
+	 * @param variant
+	 * @param generation
+	 * @return
+	 * @throws Exception
+	 */
+	private boolean modifyProgramVariant(ProgramVariant variant, int generation) throws Exception {
+		
+		log.debug("--Creating new operations for variant " + variant);
+		boolean oneOperationCreated = false;
 		int mut = 0, notmut = 0, notapplied = 0;
 		int nroGen = 0;
+		
+		//For each gen of the program instance
 		List<Gen> gensToProcess = getGenList(variant.getGenList());
 		for (Gen genProgInstance : gensToProcess) {
 
 			genProgInstance.setProgramVariant(variant);
-			GenOperationInstance operationInGen = createGenMutationForElement(genProgInstance);
+			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
 			if (operationInGen != null) {
-				// Verifies if there are compatible variables (not names!)
-				// TODO:
+				
+				// TODO: Verifies if there are compatible variables (not names!)
 				// if (VariableResolver.canBeApplied(operationInGen))
 				if (true) {
 					currentStat.numberOfAppliedOp++;
-					// log.debug("---gen operation " + (nroGen++) +
-					// " created in: `" +
-					// StringUtil.trunc((genProgInstance.getRootElement().getSignature()))+"'  ");
 					variant.putGenOperation(generation, operationInGen);
 					operationInGen.setGen(genProgInstance);
-					created = true;
+					oneOperationCreated = true;
 					mut++;
 					if (TransformationProperties.mutateOnlyOneGenPerGeneration) {
 						break;
@@ -364,18 +375,17 @@ public abstract class EvolutionaryEngine {
 				}
 			} else {// Not gen created
 				currentStat.numberOfGenInmutated++;
-				log.debug("---gen " + (nroGen++) + " not mutation generated in  "
-						+ StringUtil.trunc(genProgInstance.getRootElement().getSignature()));
+				log.debug("---gen " + (nroGen++) + " not mutation generated in  "+ StringUtil.trunc(genProgInstance.getRootElement().getSignature()));
 				notmut++;
 			}
 		}
 
-		if (created) {
+		if (oneOperationCreated) {
 			updateVariantGenList(variant, generation);
 		}
 		log.debug("\n--Summary Creation: for variant " + variant + " gen mutated: " + mut + " , gen not mut: " + notmut
 				+ ", gen not applied  " + notapplied + "\n ");
-		return created;
+		return oneOperationCreated;
 	}
 
 	/**
@@ -452,7 +462,7 @@ public abstract class EvolutionaryEngine {
 	 * @return
 	 * @throws IllegalAccessException
 	 */
-	protected abstract GenOperationInstance createGenMutationForElement(Gen genProgInstance)
+	protected abstract GenOperationInstance createOperationForGen(Gen genProgInstance)
 			throws IllegalAccessException;
 
 	protected abstract void undoOperationToSpoonElement(GenOperationInstance operation);
@@ -464,7 +474,7 @@ public abstract class EvolutionaryEngine {
 	 * @param currentGeneration
 	 * @throws IllegalAccessException
 	 */
-	protected void applyPreviousMutationsToSpoonModel(ProgramVariant variant, int currentGeneration)
+	protected void applyPreviousOperationsToVariantModel(ProgramVariant variant, int currentGeneration)
 			throws IllegalAccessException {
 
 		// We do not include the current generation (should be empty)
@@ -491,7 +501,7 @@ public abstract class EvolutionaryEngine {
 	 * @param currentGeneration
 	 * @throws IllegalAccessException
 	 */
-	protected boolean applyNewMutationsToSpoonModel(ProgramVariant variant, int currentGeneration)
+	public boolean applyNewOperationsToVariantModel(ProgramVariant variant, int currentGeneration)
 			throws IllegalAccessException {
 		// New: for the operation of each generation
 

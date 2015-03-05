@@ -45,7 +45,7 @@ public class JGenProgIfExpression extends JGenProg {
 	 * @throws IllegalAccessException
 	 */
 	@Override
-	protected GenOperationInstance createGenMutationForElement(Gen gen) throws IllegalAccessException {
+	protected GenOperationInstance createOperationForGen(Gen gen) throws IllegalAccessException {
 		Gen genSusp = gen;
 
 		GenProgMutationOperation operationType = GenProgMutationOperation.REPLACE;

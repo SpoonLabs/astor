@@ -176,7 +176,7 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @throws IllegalAccessException
 	 */
 	@Override
-	protected GenOperationInstance createGenMutationForElement(Gen gen) throws IllegalAccessException {
+	protected GenOperationInstance createOperationForGen(Gen gen) throws IllegalAccessException {
 		GenSuspicious genSusp = (GenSuspicious) gen;
 
 		GenProgMutationOperation operationType = (GenProgMutationOperation) repairActionSpace.getNextMutation(genSusp

@@ -66,7 +66,7 @@ public class JUnitExecutorProcess {
 			p = pb.start();
 			
 			String cm2 = command.toString().replace("[", "").replace("]", "").replace(",", " ");
-			log.debug("Executing process: "+cm2);
+			log.debug("Executing process: \n"+cm2);
 				
 			Worker worker = new Worker(p);
 			worker.start();

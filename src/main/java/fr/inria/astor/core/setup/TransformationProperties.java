@@ -61,7 +61,7 @@ public class TransformationProperties {
 	 * Maximun time to validate a program variant
 	 */
 	public static int validationSingleTimeLimit = 60000;
-	public static int validationRegressionTimeLimit = 120000;
+	public static int validationRegressionTimeLimit = 320000;
 	/**
 	 * Introduce an unmodified program variant in each generation
 	 */

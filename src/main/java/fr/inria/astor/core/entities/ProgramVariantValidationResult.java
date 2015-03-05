@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.junit.runner.Result;
 
+import fr.inria.astor.core.entities.taxonomy.ValidationResult;
 import fr.inria.astor.core.validation.entity.TestResult;
 
 /**
@@ -20,7 +21,8 @@ public class ProgramVariantValidationResult {
 
 	boolean regressionExecuted = false;
 
-	//private boolean resultSuccess = false;
+	ValidationResult validatioResult = null;
+
 
 	public ProgramVariantValidationResult() {
 		super();
@@ -104,6 +106,14 @@ public class ProgramVariantValidationResult {
 
 	public void setRegressionExecuted(boolean regressionExecuted) {
 		this.regressionExecuted = regressionExecuted;
+	}
+	
+	public ValidationResult getValidatioResult() {
+		return validatioResult;
+	}
+
+	public void setValidatioResult(ValidationResult validatioResult) {
+		this.validatioResult = validatioResult;
 	}
 
 }
