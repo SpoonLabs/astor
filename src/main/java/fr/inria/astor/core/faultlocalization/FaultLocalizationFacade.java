@@ -17,7 +17,7 @@ import com.gzoltar.core.components.Statement;
 import com.gzoltar.core.instr.testing.TestResult;
 
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
-import fr.inria.astor.core.setup.TransformationProperties;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 
 /**
  * Facade of Fault Localization techniques like GZoltar or own implementations (package {@link org.inria.sacha.faultlocalization}.).
@@ -37,7 +37,8 @@ public class FaultLocalizationFacade {
 	public List<SuspiciousCode> searchGZoltar(String location, List<String> testsToExecute,List<String> toInstrument, HashSet<String> cp) throws FileNotFoundException, IOException {
 		candidates.clear();
 		failingTestCases.clear();
-		logger.info("Gzoltar fault localization: min susp value parameter: "+TransformationProperties.THRESHOLD_SUSPECTNESS);
+		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");
+		logger.info("Gzoltar fault localization: min susp value parameter: "+thr);/*TransformationProperties.THRESHOLD_SUSPECTNESS*/
 		// 1. Instantiate GZoltar
 		// here you need to specify the working directory where the tests will
 		// be run. Can be the full or relative path.
@@ -85,7 +86,7 @@ public class FaultLocalizationFacade {
 			String compName = s.getMethod().getParent().getLabel();
 			String[] seg = compName.split("\\.");
 			String name = seg[seg.length-1];
-			if (s.getSuspiciousness() > TransformationProperties.THRESHOLD_SUSPECTNESS 
+			if (s.getSuspiciousness() > thr 
 					&& !compName.toLowerCase().endsWith("test") 
 					&& !name.toLowerCase().startsWith("test")
 					//

@@ -24,7 +24,6 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.main.AbstractMain;
 /**
@@ -50,9 +49,7 @@ public class MainIFjGenProg extends AbstractMain {
 	public void run(String location, String projectName, String dependencies,  
 			String packageToInstrument,
 			double thfl, String failing) throws Exception {
-		if(thfl>0)
-			TransformationProperties.THRESHOLD_SUSPECTNESS = thfl;
-		
+			
 		List<String> failingList = Arrays.asList(new String[] { failing });
 		String method = this.getClass().getSimpleName();
 		rep = getProject(location, projectName,method , failing, failingList,dependencies,true);

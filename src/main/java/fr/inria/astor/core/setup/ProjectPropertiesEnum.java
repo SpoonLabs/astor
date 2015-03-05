@@ -22,5 +22,6 @@ public enum ProjectPropertiesEnum {
 	fixid,
 	experimentName,
 	packageToInstrument,
+	flthreshold,
 	;
 }

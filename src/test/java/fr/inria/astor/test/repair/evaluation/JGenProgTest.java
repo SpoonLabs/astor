@@ -1,5 +1,10 @@
 package fr.inria.astor.test.repair.evaluation;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -7,7 +12,6 @@ import java.io.InputStreamReader;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
@@ -20,7 +24,6 @@ import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
-import fr.inria.astor.core.entities.taxonomy.MutationOperation;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainjGenProg;
@@ -108,9 +111,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertNotNull(operation1);
 		
 		boolean isSolution = false;
-		//jgp.processCreatedVariant(variant, currentGeneration);
+		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
 		//The model has not been changed.
-	//	assertFalse(isSolution);
+		assertFalse(isSolution);
 		//	
 		jgp.applyNewOperationsToVariantModel(variant,currentGeneration);
 		

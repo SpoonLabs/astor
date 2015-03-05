@@ -20,7 +20,6 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.main.AbstractMain;
 /**
@@ -45,10 +44,7 @@ public class MainIFMutation extends AbstractMain {
 			double thfl, String failing) throws Exception {
 
 			String method = this.getClass().getSimpleName();
-			
-			if(thfl>0)
-				TransformationProperties.THRESHOLD_SUSPECTNESS = thfl;
-				
+						
 			List<String> failingList = Arrays.asList(new String[] { failing });
 			
 			

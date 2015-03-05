@@ -28,4 +28,15 @@ public class ConfigurationProperties {
 		return properties.getProperty(key);
 	}
 	
+	public static Integer getPropertyInt(String key){
+		return Integer.valueOf(properties.getProperty(key));
+	}
+	
+	public static Boolean getPropertyBool(String key){
+		return Boolean.valueOf(properties.getProperty(key));
+	}
+	
+	public static Double getPropertyDouble(String key){
+		return Double.valueOf(properties.getProperty(key));
+	}
 }

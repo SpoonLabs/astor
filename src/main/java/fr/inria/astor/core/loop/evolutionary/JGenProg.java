@@ -25,8 +25,8 @@ import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransfor
 import fr.inria.astor.core.loop.evolutionary.transformators.CtStatementTransformator;
 import fr.inria.astor.core.loop.evolutionary.transformators.ModelTransformator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.setup.TransformationProperties;
 
 /**
  * Extension of Evolutionary loop with GenProgOperations
@@ -121,7 +121,7 @@ public class JGenProg extends EvolutionaryEngine {
 
 		variantFactory.setMutatorExecutor(getMutatorSupporter());
 
-		this.variants = variantFactory.createInitialPopulation(suspicious, TransformationProperties.populationSize,
+		this.variants = variantFactory.createInitialPopulation(suspicious,ConfigurationProperties.getPropertyInt("population"),
 				populationControler, projectFacade);
 
 		if (variants.isEmpty()) {

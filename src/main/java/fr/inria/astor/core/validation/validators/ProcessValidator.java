@@ -11,8 +11,8 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
 
@@ -51,7 +51,7 @@ public class ProcessValidator implements IProgramValidator {
 		
 			log.debug("-Running first validation");
 			TestResult trfailing = p.execute(bc, projectFacade.getProperties().getFailingTestCases(),
-					TransformationProperties.validationSingleTimeLimit);
+					 ConfigurationProperties.getPropertyInt("tmax1"));
 		//	currentStat.passFailingval1++;
 			if (trfailing == null) {
 				log.debug("**The validation 1 have not finished well**");
@@ -62,10 +62,11 @@ public class ProcessValidator implements IProgramValidator {
 				log.debug(trfailing);
 				if (trfailing.wasSuccessful()) {
 					//currentStat.passFailingval2++;
-					if (TransformationProperties.allTestInOneProcess)
-						return executeRegressionTesting(mutatedVariant, bc, p, localPrefix);
-					else
+					if (ConfigurationProperties.getPropertyBool("testbystep"))
 						return executeRegressionTestingOneByOne(mutatedVariant, bc, p, localPrefix);
+					else
+						return executeRegressionTesting(mutatedVariant, bc, p, localPrefix);
+						
 
 				} else {
 				//	mutatedVariant.setFitness(trfailing.getFailures().size());
@@ -98,7 +99,7 @@ public class ProcessValidator implements IProgramValidator {
 		log.debug("-Test Failing is passing, Executing regression");
 		ProgramVariantValidator validator = new ProgramVariantValidator();
 		TestResult trregression = p.execute(bc, validator.retrieveRegressionTestCases(),
-				TransformationProperties.validationRegressionTimeLimit);
+				 ConfigurationProperties.getPropertyInt("tmax2"));
 		if (trregression == null) {
 			return null;
 		} else {
@@ -117,7 +118,7 @@ public class ProcessValidator implements IProgramValidator {
 									
 			List<String> parcial = new ArrayList<String>();
 			parcial.add(tc);
-			TestResult trregression = p.execute(bc, parcial, TransformationProperties.validationRegressionTimeLimit * 2);
+			TestResult trregression = p.execute(bc, parcial, ConfigurationProperties.getPropertyInt("tmax2"));
 			if (trregression == null) {
 				log.debug("The validation 2 have not finished well");
 				return null;

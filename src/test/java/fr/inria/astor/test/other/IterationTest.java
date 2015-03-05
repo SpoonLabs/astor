@@ -14,7 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.XMLStat;
 import fr.inria.astor.test.repair.evaluation.BaseEvolutionaryTest;
@@ -187,8 +186,8 @@ public class IterationTest {
 	
 	public void singleIssue(BaseEvolutionaryTest method,String[] exp) throws NumberFormatException, Exception {
 		int numberExecutions = new Integer(ConfigurationProperties.properties.getProperty("numberExecutions"));
-		TransformationProperties.maxGeneration = new Integer(ConfigurationProperties.properties.getProperty("maxGeneration"));;
-		TransformationProperties.populationSize = new Integer(ConfigurationProperties.properties.getProperty("populationSize"));;
+		//TransformationProperties.maxGeneration = new Integer(ConfigurationProperties.properties.getProperty("maxGeneration"));;
+		//TransformationProperties.populationSize = new Integer(ConfigurationProperties.properties.getProperty("populationSize"));;
 		String out = ConfigurationProperties.properties.getProperty("outputResults") + method.getClass().getSimpleName() + File.separator;
 
 		iterate(out, exp[0], exp[1], exp[2], 

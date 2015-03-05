@@ -4,8 +4,8 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.validation.executors.ValidationDualModeThread;
 
 public class ThreadValidator implements IProgramValidator {
@@ -36,7 +36,7 @@ public class ThreadValidator implements IProgramValidator {
 				try {
 					log.debug("Waiting for validation...");
 					thread.start();
-					thread.wait(TransformationProperties.validationSingleTimeLimit);
+					thread.wait( ConfigurationProperties.getPropertyInt("tmax1"));
 
 				} catch (InterruptedException e) {
 					log.debug("stop validation thread");
@@ -60,7 +60,7 @@ public class ThreadValidator implements IProgramValidator {
 						threadRegression.modeFirst = false;
 						threadRegression.start();
 						log.debug("Thread 2 id " + threadRegression.getId() + " " + threadRegression.getName());
-						threadRegression.wait(TransformationProperties.validationRegressionTimeLimit);
+						threadRegression.wait(ConfigurationProperties.getPropertyInt("tmax2"));
 					} catch (InterruptedException e) {
 						log.debug("stop validation thread");
 						e.printStackTrace();

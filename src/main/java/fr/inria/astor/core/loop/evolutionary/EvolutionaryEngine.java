@@ -24,8 +24,8 @@ import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.FixLocationSpace
 import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.setup.TransformationProperties;
 import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.util.StringUtil;
@@ -38,8 +38,14 @@ import fr.inria.astor.core.validation.validators.IProgramValidator;
  * 
  */
 public abstract class EvolutionaryEngine {
+
 	/**
-	 * Statistic for
+	 * Initial identifier.
+	 */
+	public static int firstgenerationIndex = 1;
+
+	/**
+	 * Statistic
 	 */
 	protected Stats currentStat = new Stats();
 
@@ -90,8 +96,8 @@ public abstract class EvolutionaryEngine {
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
 
-		while ((!foundsolution || !TransformationProperties.stopAtFirstSolutionFound)
-				&& generation < TransformationProperties.maxGeneration) {
+		while ((!foundsolution || !ConfigurationProperties.getPropertyBool("stopfirst"))
+				&& generation < ConfigurationProperties.getPropertyInt("maxGeneration")) {
 			generation++;
 			log.info("\n----------Running generation/iteraction " + generation + ", population size: "
 					+ this.variants.size());
@@ -141,25 +147,23 @@ public abstract class EvolutionaryEngine {
 
 			log.debug("-Parent Variant: " + parentVariant);
 
-			
 			ProgramVariant newVariant = createNewProgramVariant(parentVariant, generation);
 
 			if (newVariant == null) {
 				continue;
 			}
-			
+
 			processCreatedVariant(newVariant, generation);
-			
+
 			if (newVariant.getCompilation().compiles()) {
 				temporalInstances.add(newVariant);
 				foundSolution |= newVariant.isSolution();
 			}
-			
+
 			// Finally, reverse the changes done by the child
 			reverseOperationInModel(newVariant, generation);
-		
-			
-			if (foundSolution && TransformationProperties.stopAtFirstSolutionFound) {
+
+			if (foundSolution && ConfigurationProperties.getPropertyBool("stopfirst")) {
 				break;
 			}
 
@@ -167,9 +171,9 @@ public abstract class EvolutionaryEngine {
 		// After analyze all variant
 		// New population creation:
 		variants = populationControler.selectProgramVariantsForNextGeneration(variants, temporalInstances,
-				this.solutions, TransformationProperties.populationSize);
+				this.solutions, ConfigurationProperties.getPropertyInt("population"));
 
-		if (TransformationProperties.reintroduceOriginalProgram) {
+		if (ConfigurationProperties.getPropertyBool("reintroduce")) {
 			// Create a new variant from the original parent
 			ProgramVariant parentNew = this.variantFactory.createProgramVariantFromAnother(originalVariant, generation);
 			parentNew.getOperations().clear();
@@ -195,7 +199,6 @@ public abstract class EvolutionaryEngine {
 	 */
 	public boolean processCreatedVariant(ProgramVariant programVariant, int generation) throws Exception {
 
-		
 		URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
 		CompilationResult compilation = mutatorSupporter.compileOnMemoryProgramVariant(programVariant, originalURL);
@@ -205,7 +208,7 @@ public abstract class EvolutionaryEngine {
 
 		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier());
 
-		if (TransformationProperties.saveProgramVariant) {
+		if (ConfigurationProperties.getPropertyBool("saveall")) {
 			log.debug("\n-Saving child on disk variant #" + programVariant.getId() + " at " + srcOutput);
 			// This method should be refactored, and replace by the
 			// output from memory compilation
@@ -222,11 +225,11 @@ public abstract class EvolutionaryEngine {
 			if (validInstance) {
 				log.info("-Found Solution, child variant #" + programVariant.getId());
 				saveStaticSucessful(generation);
-				if (TransformationProperties.saveSolution) {
+				if (ConfigurationProperties.getPropertyBool("savesolution")) {
 					mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
 					mutatorSupporter.saveSolutionData(programVariant, srcOutput, generation);
 				}
-			
+
 				return true;
 			}
 		} else {
@@ -235,7 +238,7 @@ public abstract class EvolutionaryEngine {
 
 		}
 		// Finally, reverse the changes done by the child
-		//reverseMutationInModel(programVariant, generation);
+		// reverseMutationInModel(programVariant, generation);
 		return false;
 
 	}
@@ -262,7 +265,7 @@ public abstract class EvolutionaryEngine {
 		// This is the copy of the original program
 		ProgramVariant childVariant = variantFactory.createProgramVariantFromAnother(parentVariant, generation);
 		log.debug("\n--Child created id: " + childVariant.getId());
-		
+
 		// Apply previous operations (i.e., from previous operators)
 		applyPreviousOperationsToVariantModel(childVariant, generation);
 
@@ -304,7 +307,6 @@ public abstract class EvolutionaryEngine {
 		}
 	}
 
-
 	protected void undoSingleGeneration(ProgramVariant instance, int genI) {
 		List<GenOperationInstance> operations = instance.getOperations().get(genI);
 		if (operations == null || operations.isEmpty()) {
@@ -332,28 +334,30 @@ public abstract class EvolutionaryEngine {
 	Random random = new Random();
 
 	/**
-	 * Given a program variant, the method generates operations for modifying that variants.
-	 * Each operation is related to one gen of the program variant.
+	 * Given a program variant, the method generates operations for modifying
+	 * that variants. Each operation is related to one gen of the program
+	 * variant.
+	 * 
 	 * @param variant
 	 * @param generation
 	 * @return
 	 * @throws Exception
 	 */
 	private boolean modifyProgramVariant(ProgramVariant variant, int generation) throws Exception {
-		
+
 		log.debug("--Creating new operations for variant " + variant);
 		boolean oneOperationCreated = false;
 		int mut = 0, notmut = 0, notapplied = 0;
 		int nroGen = 0;
-		
-		//For each gen of the program instance
+
+		// For each gen of the program instance
 		List<Gen> gensToProcess = getGenList(variant.getGenList());
 		for (Gen genProgInstance : gensToProcess) {
 
 			genProgInstance.setProgramVariant(variant);
 			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
 			if (operationInGen != null) {
-				
+
 				// TODO: Verifies if there are compatible variables (not names!)
 				// if (VariableResolver.canBeApplied(operationInGen))
 				if (true) {
@@ -362,7 +366,7 @@ public abstract class EvolutionaryEngine {
 					operationInGen.setGen(genProgInstance);
 					oneOperationCreated = true;
 					mut++;
-					if (TransformationProperties.mutateOnlyOneGenPerGeneration) {
+					if (!ConfigurationProperties.getPropertyBool("allgens")) {
 						break;
 					}
 				} else {// Not applied
@@ -375,7 +379,8 @@ public abstract class EvolutionaryEngine {
 				}
 			} else {// Not gen created
 				currentStat.numberOfGenInmutated++;
-				log.debug("---gen " + (nroGen++) + " not mutation generated in  "+ StringUtil.trunc(genProgInstance.getRootElement().getSignature()));
+				log.debug("---gen " + (nroGen++) + " not mutation generated in  "
+						+ StringUtil.trunc(genProgInstance.getRootElement().getSignature()));
 				notmut++;
 			}
 		}
@@ -394,14 +399,22 @@ public abstract class EvolutionaryEngine {
 	 * @return
 	 */
 	protected List<Gen> getGenList(List<Gen> genList) {
-		if (TransformationProperties.mutateGenInOrder) {
+	
+		String mode = ConfigurationProperties.getProperty("genlistnavigation");
+
+		if ("inorder".equals(mode))
 			return genList;
-		} else if (TransformationProperties.mutateGenRandomlySuspicious) {
+
+		if ("weight".equals(mode))
 			return getWeightGenList(genList);
+
+		if ("random".equals(mode)) {
+			List<Gen> shuffList = new ArrayList<Gen>(genList);
+			Collections.shuffle(shuffList);
+			return shuffList;
 		}
-		List<Gen> shuffList = new ArrayList<Gen>(genList);
-		Collections.shuffle(shuffList);
-		return shuffList;
+
+		return genList;
 
 	}
 
@@ -462,8 +475,7 @@ public abstract class EvolutionaryEngine {
 	 * @return
 	 * @throws IllegalAccessException
 	 */
-	protected abstract GenOperationInstance createOperationForGen(Gen genProgInstance)
-			throws IllegalAccessException;
+	protected abstract GenOperationInstance createOperationForGen(Gen genProgInstance) throws IllegalAccessException;
 
 	protected abstract void undoOperationToSpoonElement(GenOperationInstance operation);
 
@@ -478,7 +490,7 @@ public abstract class EvolutionaryEngine {
 			throws IllegalAccessException {
 
 		// We do not include the current generation (should be empty)
-		for (int generation_i = TransformationProperties.firstgenerationIndex; generation_i < currentGeneration; generation_i++) {
+		for (int generation_i = firstgenerationIndex; generation_i < currentGeneration; generation_i++) {
 
 			List<GenOperationInstance> operations = variant.getOperations().get(generation_i);
 			if (operations == null || operations.isEmpty()) {

@@ -23,8 +23,8 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.setup.TransformationProperties;
 
 /**
  * Creates the initial population of program variants
@@ -78,7 +78,7 @@ public class ProgramVariantFactory {
 			variants.add(v_i);
 			log.info("Creating program variant #" + idCounter + ", " + v_i.toString());
 
-			if (TransformationProperties.saveProgramVariant) {
+			if (ConfigurationProperties.getPropertyBool("saveall")) {
 				String srcOutput = projectFacade.getInDirWithPrefix(v_i.currentMutatorIdentifier());
 				mutatorSupporter.saveSourceCodeOnDiskProgramVariant(v_i, srcOutput);
 			}
@@ -171,9 +171,9 @@ public class ProgramVariantFactory {
 
 		List<CtVariable> contextOfGen = null;
 		// We take the first element for getting the context (as the remaining have the same location, it's not necessary)
-		if (TransformationProperties.analyzeContext) {
-			contextOfGen = VariableResolver.getVariablesFromBlockInScope(ctSuspects.get(0));
-		}
+	
+		contextOfGen = VariableResolver.getVariablesFromBlockInScope(ctSuspects.get(0));
+		
 		
 		//From the suspicious CtElements, there are some of them we are interested in.
 		//We filter them using the processors
