@@ -30,12 +30,17 @@ public abstract class AbstractMain {
 	protected ProjectRepairFacade rep;
 
 	static Options options = new Options();
+	
+	CommandLineParser parser = new BasicParser();
 
 	static {
-		options.addOption("l", true, "Name of the folder that contains program to transform");
-		options.addOption("d", true, "dependencies of the application, separated by char " + File.pathSeparator);
-		options.addOption("p", true, "package to instrument e.g. org.commons.math");
-		options.addOption("t", true, "failing test case");
+		options.addOption("id", true, "(Optional) Name/identified of the project to evaluate (Default: folder name)");
+		options.addOption("mode", true, " (Optional) Mode (Default: Statement Mode)");
+		options.addOption("location", true, "URL of the project to manipulate");
+		options.addOption("dependencies", true, "dependencies of the application, separated by char " + File.pathSeparator);
+		options.addOption("package", true, "package to instrument e.g. org.commons.math");
+		options.addOption("failing", true, "failing test case");
+		options.addOption("out", true, "(Optional) Out dir: place were solutions and intermediate program variants are stored. (Default: ./outputMutation/)");
 		options.addOption("help", false, "print help and usage");
 		options.addOption("bug280", false, "Run the bug 280 from Apache Commons Math");
 		options.addOption("bug288", false, "Run the bug 288 from Apache Commons Math");
@@ -79,8 +84,22 @@ public abstract class AbstractMain {
 				"(Optional) Method to navigate the gen space of a variant: inorder, random, weight random (according to the gen's suspicous value)");
 
 		options.addOption("mutationrate", true,
-				"Value between 0 and 1 that indicates the probability of modify one gen (default: 1)");
+				"(Optional) Value between 0 and 1 that indicates the probability of modify one gen (default: 1)");
+		
+		options.addOption("srcjavafolder", true,
+				"(Optional) folder with the application source code files (default: /src/java/main/)");
 
+		options.addOption("srctestfolder", true,
+				"(Optional) folder with the test cases source code files (default: /src/test/main/)");
+		
+		
+		options.addOption("binjavafolder", true,
+				"(Optional) folder with the application binaries (default: /target/classes/)");
+
+		options.addOption("bintestfolder", true,
+				"(Optional) folder with the test cases binaries (default: /target/test-classes/)");
+
+		
 	}
 
 	public void createFactory() {
@@ -97,15 +116,15 @@ public abstract class AbstractMain {
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
 			double thfl, String failing) throws Exception;
+	
 
-	protected void execute(String[] args) throws Exception {
-
-		CommandLineParser parser = new BasicParser();
+	
+	public boolean processArguments(String[] args) throws Exception {
 
 		CommandLine cmd = parser.parse(options, args);
 		if (cmd.hasOption("help")) {
 			help();
-			return;
+			return false;
 		}
 
 		if (cmd.hasOption("jvm")) {
@@ -115,28 +134,33 @@ public abstract class AbstractMain {
 
 		if (!ProjectConfiguration.validJDK())
 			throw new IllegalArgumentException("jdk folder not found");
+	
 
-		boolean isExample = executeExample(cmd);
-		if (isExample)
-			return;
-
-		String dependenciespath = cmd.getOptionValue("d");
-		String failing = cmd.getOptionValue("t");
-		Stats currentStat = new Stats();
-		String location = cmd.getOptionValue("l");
-		String packageToInstrument = cmd.getOptionValue("p");
+		String dependenciespath = cmd.getOptionValue("dependencies");
+		String failing = cmd.getOptionValue("failing");
+		String location = cmd.getOptionValue("location");
+		String packageToInstrument = cmd.getOptionValue("package");
+	
+		// Process mandatory parameters.
+		if (dependenciespath == null || failing == null || location == null || packageToInstrument == null) {
+			help();
+			return false;
+		}
 
 		ConfigurationProperties.properties.setProperty("dependenciespath", dependenciespath);
 		ConfigurationProperties.properties.setProperty("failing", failing);
 		ConfigurationProperties.properties.setProperty("location", location);
-		ConfigurationProperties.properties.setProperty(packageToInstrument, packageToInstrument);
-
-		// Process mandatory parameters.
-		if (dependenciespath == null || failing == null || location == null || packageToInstrument == null) {
-			help();
-			return;
-		}
-
+		ConfigurationProperties.properties.setProperty("packageToInstrument", packageToInstrument);
+		
+		if (cmd.hasOption("id"))
+			ConfigurationProperties.properties.setProperty("projectIdentifier", cmd.getOptionValue("id"));
+		
+		if (cmd.hasOption("mode"))
+			ConfigurationProperties.properties.setProperty("mode", cmd.getOptionValue("mode"));
+				
+		if (cmd.hasOption("out"))
+			ConfigurationProperties.properties.setProperty("workingDirectory", cmd.getOptionValue("out"));
+		
 		// Process optional values.
 		if (cmd.hasOption("maxgen"))
 			ConfigurationProperties.properties.setProperty("maxGeneration", cmd.getOptionValue("maxgen"));
@@ -147,10 +171,9 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("validation"))
 			ConfigurationProperties.properties.setProperty("validation", cmd.getOptionValue("validation"));
 
-		double thfl = 0.5;
 		if (cmd.hasOption("flthreshold")) {
 			try {
-				thfl = Double.valueOf(cmd.getOptionValue("flthreshold"));
+				double thfl = Double.valueOf(cmd.getOptionValue("flthreshold"));
 				ConfigurationProperties.properties.setProperty("flthreshold", cmd.getOptionValue("flthreshold"));
 
 			} catch (Exception e) {
@@ -190,7 +213,22 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("mutationrate"))
 			ConfigurationProperties.properties.setProperty("mutationrate", cmd.getOptionValue("mutationrate"));
 
-		this.run(location, null, dependenciespath, packageToInstrument, thfl, failing);
+		
+		if (cmd.hasOption("srcjavafolder"))
+			ConfigurationProperties.properties.setProperty("srcjavafolder", cmd.getOptionValue("srcjavafolder"));
+
+		if (cmd.hasOption("srctestfolder"))
+			ConfigurationProperties.properties.setProperty("srcjavafolder", cmd.getOptionValue("srctestfolder"));
+
+
+		if (cmd.hasOption("binjavafolder"))
+			ConfigurationProperties.properties.setProperty("binjavafolder", cmd.getOptionValue("binjavafolder"));
+
+		if (cmd.hasOption("bintestfolder"))
+			ConfigurationProperties.properties.setProperty("binjavafolder", cmd.getOptionValue("bintestfolder"));
+				
+				
+		return false;
 	}
 
 	/**
@@ -200,13 +238,14 @@ public abstract class AbstractMain {
 	 * @return
 	 * @throws Exception
 	 */
-	private boolean executeExample(CommandLine cmd) throws Exception {
+	public boolean executeExample(String[] args) throws Exception {
 
+		CommandLine cmd = parser.parse(options, args);
+		
 		if (cmd.hasOption("bug280")) {
 			String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
 			String folder = "Math-issue-280";
 			String failing = "org.apache.commons.math.distribution.NormalDistributionTest";
-			Stats currentStat = new Stats();
 			File f = new File("examples/Math-issue-280/");
 			String location = f.getParent();
 			String packageToInstrument = "org.apache.commons";
@@ -284,19 +323,19 @@ public abstract class AbstractMain {
 		return facade;
 	}
 
-	protected ProjectRepairFacade getProject(String location, String method, String regressiontest,
+/*	protected ProjectRepairFacade getProject(String location, String method, String regressiontest,
 			List<String> failingTestCases, String dependencies, boolean srcWithMain) throws Exception {
 		File locFile = new File(location);
 		String projectname = locFile.getName();
 
 		return getProject(location, projectname, method, regressiontest, failingTestCases, dependencies, srcWithMain);
-	}
+	}*/
 
 	protected ProjectRepairFacade getProject(String location, String projectIdentifier, String method,
 			String regressionTest, List<String> failingTestCases, String dependencies, boolean srcWithMain)
 			throws Exception {
 
-		if (projectIdentifier == null) {
+		if (projectIdentifier == null || projectIdentifier.equals("")) {
 			File locFile = new File(location);
 			projectIdentifier = locFile.getName();
 		}
@@ -304,7 +343,8 @@ public abstract class AbstractMain {
 		String key = File.separator + method + "-" + projectIdentifier + File.separator;
 		String inResult = ConfigurationProperties.getProperty("workingDirectory") + key + "/src/";
 		String outResult = ConfigurationProperties.getProperty("workingDirectory") + key + "/bin/";
-		String originalProjectRoot = location + File.separator + projectIdentifier + File.separator;
+		String originalProjectRoot = location + File.separator;
+		//location + File.separator + projectIdentifier + File.separator;
 
 		List<String> src = determineMavenFolders(srcWithMain, originalProjectRoot);
 
@@ -316,8 +356,8 @@ public abstract class AbstractMain {
 		properties.setInDir(inResult);
 		properties.setOutDir(outResult);
 		properties.setTestClass(mainClassTest);
-		properties.setOriginalAppBinDir(originalProjectRoot + "/target/classes");
-		properties.setOriginalTestBinDir(originalProjectRoot + "/target/test-classes");
+		properties.setOriginalAppBinDir(originalProjectRoot + File.separator+ ConfigurationProperties.getProperty("binjavafolder"));
+		properties.setOriginalTestBinDir(originalProjectRoot + File.separator+ ConfigurationProperties.getProperty("bintestfolder"));
 		properties.setFixid(projectIdentifier);
 
 		properties.setOriginalProjectRootDir(originalProjectRoot);
@@ -333,12 +373,21 @@ public abstract class AbstractMain {
 	}
 
 	private List<String> determineMavenFolders(boolean srcWithMain, String originalProjectRoot) {
+		
+		File srcdefault = new File(originalProjectRoot + File.separator +ConfigurationProperties.getProperty("srcjavafolder"));
+		if (srcdefault.exists())
+			return Arrays.asList(new String[] { ConfigurationProperties.getProperty("srcjavafolder"), ConfigurationProperties.getProperty("srctestfolder")});
+				
 		File src = new File(originalProjectRoot + File.separator + "src/main/java");
 		if (src.exists())
 			return Arrays.asList(new String[] { "src/main/java", "src/test/java" });
-		else {
+		
+		src = new File(originalProjectRoot + File.separator + "src/java");
+		if (src.exists())
 			return Arrays.asList(new String[] { "src/java", "src/test" });
-		}
+		
+		return Arrays.asList(new String[] { "src", "test" });
+		
 	}
 
 }

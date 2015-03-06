@@ -40,7 +40,7 @@ public class MainIFPar extends AbstractMain {
 	public static void main(String[] args) throws Exception {
 
 		MainIFPar m = new MainIFPar();
-		m.execute(args);
+		m.processArguments(args);
 
 	}
 

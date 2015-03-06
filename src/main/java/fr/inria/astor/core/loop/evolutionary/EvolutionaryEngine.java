@@ -58,6 +58,10 @@ public abstract class EvolutionaryEngine {
 	// INTERNAL
 	protected List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
 	protected List<ProgramVariant> solutions = new ArrayList<ProgramVariant>();
+	public List<ProgramVariant> getSolutions() {
+		return solutions;
+	}
+
 	protected ProgramVariant originalVariant = null;
 
 	// SPACES

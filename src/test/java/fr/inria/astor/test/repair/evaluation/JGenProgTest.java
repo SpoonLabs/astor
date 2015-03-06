@@ -86,7 +86,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	}
 
 	@Test
-	public void aaaatestExampleMath0C1aaaaa() throws Exception {
+	public void testPatchMath0C1() throws Exception {
 
 		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
 				+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
@@ -97,10 +97,14 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
 
+		int processBeforeAll = currentNumberProcess();
+		
 		MainjGenProg main = new MainjGenProg();
 
-		JGenProg jgp = main.define(location, folder, dependenciespath, packageToInstrument, thfl, failing);
+		 main.initProject(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 
+		JGenProg jgp = main.statementMode();
+		
 		Assert.assertEquals(1, jgp.getVariants().size());
 
 		ProgramVariant variant = jgp.getVariants().get(0);
@@ -110,18 +114,29 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		System.out.println("operation "+operation1);
 		assertNotNull(operation1);
 		
+
+		
 		boolean isSolution = false;
 		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
 		//The model has not been changed.
 		assertFalse(isSolution);
+		
+		int afterFirstValidation = currentNumberProcess();
 		//	
 		jgp.applyNewOperationsToVariantModel(variant,currentGeneration);
 		
 		//
 		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
 	
+		int afterPatchValidation = currentNumberProcess();
+		
+		assertEquals("Problems with process",processBeforeAll, afterFirstValidation);
+
+		assertEquals("Problems with process",processBeforeAll, afterPatchValidation);
+		
 		assertTrue(isSolution);
 		
+		jgp.getMutatorSupporter().getSolutionData(jgp.getVariants(), 1);
 		
 		
 	}
@@ -186,6 +201,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	
 	@Test
 	public void processTest(){
+		
+		
+		
+	}
+	public int currentNumberProcess(){
 		int count = 0;
 		 try {
 		        String line;
@@ -199,13 +219,33 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		        BufferedReader input =
 		                new BufferedReader(new InputStreamReader(p.getInputStream()));
 		        while ((line = input.readLine()) != null) {
-		            System.out.println(line);
+		           // System.out.println(line);
 		            count++;
 		        }
 		        input.close();
 		    } catch (Exception err) {
 		        err.printStackTrace();
 		    }
-		System.out.println(count);
+		return count;
 	}
+	
+	@Test
+	public void testHelpMain() throws Exception{
+		MainjGenProg main1 = new MainjGenProg();
+		main1.main(new String[]{"help"});
+	}
+	
+	@SuppressWarnings("static-access")
+	@Test
+	public void testRunMain() throws Exception{
+		MainjGenProg main1 = new MainjGenProg();
+		main1.main(new String[]{
+				"-dependencies","examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
+				//"-id","tttMath-0c1ef",
+				"-failing", "org.apache.commons.math3.primes.PrimesTest",
+				"-location","/home/matias/develop/code/astor/examples/Math-0c1ef",
+				"-package", "org.apache.commons"});
+	
+	}
+	
 }

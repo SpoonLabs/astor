@@ -113,7 +113,7 @@ public class MainIFjGenProg extends AbstractMain {
 	 */
 	public static void main(String[] args) throws Exception  {		
 			MainIFjGenProg m = new MainIFjGenProg();
-			m.execute(args);	
+			m.processArguments(args);	
 		
 		
 	}

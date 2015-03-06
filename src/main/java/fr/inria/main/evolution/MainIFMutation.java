@@ -108,7 +108,7 @@ public class MainIFMutation extends AbstractMain {
 		
 			
 			MainIFMutation m = new MainIFMutation();
-			m.execute(args);	
+			m.processArguments(args);	
 		
 		
 	}
