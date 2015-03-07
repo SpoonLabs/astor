@@ -38,8 +38,8 @@
 			<groupId>fr.inria.astor</groupId>
 			<artifactId>astor-junit-exec</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-				<scope>system</scope>
-			<systemPath>${project.basedir}/lib/astor-junit-exec-0.0.1-SNAPSHOT.jar</systemPath>
+			<scope>compile</scope>
+			<!-- <scope>system</scope> <systemPath>${project.basedir}/lib/astor-junit-exec-0.0.1-SNAPSHOT.jar</systemPath> -->
 		</dependency>
 
 
@@ -47,10 +47,9 @@
 			<groupId>sacha</groupId>
 			<artifactId>infra</artifactId>
 			<version>0.1</version>
-			<scope>system</scope>
-			<!-- <systemPath>${project.build.sourceDirectory}/../../../lib/sacha-infra.jar</systemPath> -->
-			<systemPath>${project.build.sourceDirectory}/../../../lib/infra-0.1.jar</systemPath> 
-		</dependency> 
+			<scope>compile</scope>
+			<!-- <scope>system</scope> <systemPath>${project.build.sourceDirectory}/../../../lib/infra-0.1.jar</systemPath> -->
+		</dependency>
 
 
 
@@ -83,8 +82,8 @@
 			<groupId>com.gzoltar</groupId>
 			<artifactId>gzoltar</artifactId>
 			<version>0.0.7</version>
-			<scope>system</scope>
-			<systemPath>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.0.7-jar-with-dependencies.jar</systemPath>
+			<scope>compile</scope>
+			<!-- <scope>system</scope> <systemPath>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.0.7-jar-with-dependencies.jar</systemPath> -->
 		</dependency>
 
 
@@ -121,19 +120,99 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-			
-			 <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.18</version>
-        <configuration>
-          <excludes>
-            <exclude>**/fr/inria/astor/test/</exclude>
 
-          </excludes>
-        </configuration>
-      </plugin>
-			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18</version>
+				<configuration>
+					<excludes>
+						<exclude>**/fr/inria/astor/test/</exclude>
+
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>fully.qualified.MainClass</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>astor-junit-exec</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>fr.inria.astor</groupId>
+							<artifactId>astor-junit-exec</artifactId>
+							<version>0.0.1-SNAPSHOT</version>
+							<file>${project.basedir}/lib/astor-junit-exec-0.0.1-SNAPSHOT.jar</file>
+							<packaging>jar</packaging>
+							<createChecksum>true</createChecksum>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>sacha-infra</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>sacha</groupId>
+							<artifactId>infra</artifactId>
+							<version>0.1</version>
+							<file>${project.build.sourceDirectory}/../../../lib/infra-0.1.jar</file>
+							<packaging>jar</packaging>
+							<createChecksum>true</createChecksum>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+
+					<execution>
+						<id>gzoltar</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.gzoltar</groupId>
+							<artifactId>gzoltar</artifactId>
+							<version>0.0.7</version>
+							<file>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.0.7-jar-with-dependencies.jar</file>
+							<packaging>jar</packaging>
+							<createChecksum>true</createChecksum>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 

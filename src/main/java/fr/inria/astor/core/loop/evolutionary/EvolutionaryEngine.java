@@ -250,7 +250,7 @@ public abstract class EvolutionaryEngine {
 	protected void saveStaticSucessful(int generation) {
 		currentStat.patches++;
 		currentStat.genPatches.add(new StatPatch(generation, currentStat.passFailingval1, currentStat.passFailingval2));
-		log.debug("-->" + currentStat.passFailingval1 + " - " + currentStat.passFailingval2);
+		//log.debug("-->" + currentStat.passFailingval1 + " - " + currentStat.passFailingval2);
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
 	}

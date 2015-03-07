@@ -1,6 +1,6 @@
 package fr.inria.astor.core.setup;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 /**
  * 
@@ -12,10 +12,10 @@ public class ConfigurationProperties {
 	public	static Properties properties;
 	
 	static{
-		  FileInputStream propFile;
+		  InputStream propFile;
 		try {
 			properties = new Properties();
-			propFile = new FileInputStream("configuration.properties");
+			propFile = ConfigurationProperties.class.getClassLoader().getResourceAsStream("configuration.properties");
 
 				properties.load(propFile);
 				} catch (Exception e) {

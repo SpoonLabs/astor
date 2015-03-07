@@ -1,7 +1,5 @@
 package fr.inria.main.evolution;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -88,9 +86,8 @@ public class MainjGenProg extends AbstractMain {
 			}
 		}
 
-		assertNotNull(candidates);
-		assertTrue(candidates.size() > 0);
-
+		if(candidates == null || candidates.isEmpty())
+			 throw new IllegalArgumentException("No suspicious gen for analyze");
 		gploop.setup(filtercandidates);
 
 		return gploop;
@@ -119,8 +116,12 @@ public class MainjGenProg extends AbstractMain {
 	public static void main(String[] args) throws Exception {
 
 		MainjGenProg m = new MainjGenProg();
-		m.processArguments(args);
-
+		
+		boolean correct = m.processArguments(args);
+		if(!correct){
+			return;
+		}
+		
 		boolean isExample = m.executeExample(args);
 		if (isExample)
 			return;

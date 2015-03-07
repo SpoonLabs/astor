@@ -93,7 +93,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		String folder = "Math-0c1ef";
 		String failing = "org.apache.commons.math3.primes.PrimesTest";
 		File f = new File("examples/Math-0c1ef/");
-		String location = f.getParent();
+		String location = f.getAbsolutePath();//f.getParent();
 		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
 
@@ -136,7 +136,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		
 		assertTrue(isSolution);
 		
-		jgp.getMutatorSupporter().getSolutionData(jgp.getVariants(), 1);
+		System.out.println("\nSolutions:\n"+jgp.getMutatorSupporter().getSolutionData(jgp.getVariants(), 1));
 		
 		
 	}
@@ -244,7 +244,27 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				//"-id","tttMath-0c1ef",
 				"-failing", "org.apache.commons.math3.primes.PrimesTest",
 				"-location","/home/matias/develop/code/astor/examples/Math-0c1ef",
-				"-package", "org.apache.commons"});
+				"-package", "org.apache.commons",
+				"-jvm4testexecution","/home/matias/develop/jdk1.7.0_71/bin"
+				});
+	
+	}
+	
+	@SuppressWarnings("static-access")
+	@Test
+	public void testRunMain2() throws Exception{
+		MainjGenProg main1 = new MainjGenProg();
+		main1.main(new String[]{
+				"-dependencies","examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
+				"-id","tttMath-0c1ef",
+				"-failing", "org.apache.commons.math3.primes.PrimesTest",
+				"-location","/home/matias/develop/code/astor/examples/Math-0c1ef",
+				"-package", "org.apache.commons",
+				"-maxgen","400",
+				"-population","2",
+				"-saveall",
+				//"-flthreshold","0.9"
+		});
 	
 	}
 	
