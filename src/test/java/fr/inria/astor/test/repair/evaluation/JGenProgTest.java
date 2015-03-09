@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,6 +26,7 @@ import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
+import fr.inria.astor.core.util.TimeUtil;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainjGenProg;
 
@@ -266,6 +268,30 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				//"-flthreshold","0.9"
 		});
 	
+	}
+	
+	@SuppressWarnings("static-access")
+	@Test
+	public void testRunMainTime() throws Exception{
+		
+		Date init = new Date();
+		MainjGenProg main1 = new MainjGenProg();
+		main1.main(new String[]{
+				"-dependencies","examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
+				"-id","tttMath-0c1ef",
+				"-failing", "org.apache.commons.math3.primes.PrimesTest",
+				"-location","/home/matias/develop/code/astor/examples/Math-0c1ef",
+				"-package", "org.apache.commons",
+				"-maxgen","400",
+				"-population","2",
+				"-saveall",
+				"-maxtime","1"
+				//"-flthreshold","0.9"
+		});
+		Thread.currentThread().sleep(6100);
+		long t = TimeUtil.delta(init);
+		assertTrue(t>1);//more than one minute
+		assertFalse(t<2);//less than two minutes
 	}
 	
 }

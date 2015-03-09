@@ -3,6 +3,7 @@ package fr.inria.astor.core.loop.evolutionary;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,6 +33,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.util.StringUtil;
+import fr.inria.astor.core.util.TimeUtil;
 import fr.inria.astor.core.validation.validators.IProgramValidator;
 
 /**
@@ -61,6 +63,7 @@ public abstract class EvolutionaryEngine {
 	// INTERNAL
 	protected List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
 	protected List<ProgramVariant> solutions = new ArrayList<ProgramVariant>();
+
 	public List<ProgramVariant> getSolutions() {
 		return solutions;
 	}
@@ -103,8 +106,12 @@ public abstract class EvolutionaryEngine {
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
 
+		Date dateInit = new Date();
+
+		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
+
 		while ((!foundsolution || !ConfigurationProperties.getPropertyBool("stopfirst"))
-				&& generation < ConfigurationProperties.getPropertyInt("maxGeneration")) {
+				&& (generation < ConfigurationProperties.getPropertyInt("maxGeneration") && TimeUtil.delta(dateInit) <= maxMinutes)) {
 			generation++;
 			log.info("\n----------Running generation/iteraction " + generation + ", population size: "
 					+ this.variants.size());
@@ -151,13 +158,13 @@ public abstract class EvolutionaryEngine {
 		currentStat.numberGenerations++;
 
 		for (ProgramVariant parentVariant : variants) {
-		
+
 			log.debug("-Parent Variant: " + parentVariant);
 
 			this.saveOriginalVariant(parentVariant);
 			ProgramVariant newVariant = createNewProgramVariant(parentVariant, generation);
 			this.saveModifVariant(parentVariant);
-			
+
 			if (newVariant == null) {
 				continue;
 			}
@@ -197,36 +204,39 @@ public abstract class EvolutionaryEngine {
 		return foundSolution;
 	}
 
-	Map<String,String> originalModel = new HashedMap();
-	Map<String,String> modifModel = new HashedMap();
-	
-	private void saveOriginalVariant(ProgramVariant variant){
+	Map<String, String> originalModel = new HashedMap();
+	Map<String, String> modifModel = new HashedMap();
+
+	private void saveOriginalVariant(ProgramVariant variant) {
 		originalModel.clear();
-		for(CtSimpleType st :variant.getAffectedClasses()){
+		for (CtSimpleType st : variant.getAffectedClasses()) {
 			originalModel.put(st.getQualifiedName(), st.toString());
 		}
-		
+
 	}
-	private void saveModifVariant(ProgramVariant variant){
+
+	private void saveModifVariant(ProgramVariant variant) {
 		modifModel.clear();
-		for(CtSimpleType st :variant.getAffectedClasses()){
+		for (CtSimpleType st : variant.getAffectedClasses()) {
 			modifModel.put(st.getQualifiedName(), st.toString());
 		}
-		
-	}
-	private void validateReversedOriginalVariant(ProgramVariant variant){
 
-		for(CtSimpleType st :variant.getAffectedClasses()){
+	}
+
+	private void validateReversedOriginalVariant(ProgramVariant variant) {
+
+		for (CtSimpleType st : variant.getAffectedClasses()) {
 			String original = originalModel.get(st.getQualifiedName());
 			boolean idem = original.equals(st.toString());
-			if(!idem){
+			if (!idem) {
 				log.error("Error: the model was not the same from the original after this generation");
-				//throw new IllegalStateException("the model was not the same from the original after this generation");
+				// throw new
+				// IllegalStateException("the model was not the same from the original after this generation");
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * 
 	 * Compiles and validates a created variant.
@@ -285,7 +295,8 @@ public abstract class EvolutionaryEngine {
 	protected void saveStaticSucessful(int generation) {
 		currentStat.patches++;
 		currentStat.genPatches.add(new StatPatch(generation, currentStat.passFailingval1, currentStat.passFailingval2));
-		//log.debug("-->" + currentStat.passFailingval1 + " - " + currentStat.passFailingval2);
+		// log.debug("-->" + currentStat.passFailingval1 + " - " +
+		// currentStat.passFailingval2);
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
 	}
@@ -356,7 +367,7 @@ public abstract class EvolutionaryEngine {
 
 		for (int i = operations.size() - 1; i >= 0; i--) {
 			GenOperationInstance genOperation = operations.get(i);
-			log.debug("---Undoing: gnrtn(" + genI+ "): " + genOperation);
+			log.debug("---Undoing: gnrtn(" + genI + "): " + genOperation);
 			undoOperationToSpoonElement(genOperation);
 		}
 	}
@@ -393,9 +404,10 @@ public abstract class EvolutionaryEngine {
 		List<Gen> gensToProcess = getGenList(variant.getGenList());
 		for (Gen genProgInstance : gensToProcess) {
 
-			if(alreadyModified(genProgInstance,variant.getOperations(), generation))
+			if (!ConfigurationProperties.getPropertyBool("multigenmodif")
+					&& alreadyModified(genProgInstance, variant.getOperations(), generation))
 				continue;
-			
+
 			genProgInstance.setProgramVariant(variant);
 			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
 			if (operationInGen != null) {
@@ -434,19 +446,24 @@ public abstract class EvolutionaryEngine {
 				+ ", gen not applied  " + notapplied + "\n ");
 		return oneOperationCreated;
 	}
+
 	/**
-	 * Return true if the gen passed as parameter was already affected by a previous operator.
+	 * Return true if the gen passed as parameter was already affected by a
+	 * previous operator.
+	 * 
 	 * @param genProgInstance
 	 * @param map
 	 * @param generation
 	 * @return
 	 */
 	private boolean alreadyModified(Gen genProgInstance, Map<Integer, List<GenOperationInstance>> map, int generation) {
-		
-		for(int i = 1; i<=generation;i++){
-		List<GenOperationInstance> ops = map.get(i);
+
+		for (int i = 1; i < generation; i++) {
+			List<GenOperationInstance> ops = map.get(i);
+			if (ops == null)
+				continue;
 			for (GenOperationInstance genOperationInstance : ops) {
-				if(genOperationInstance.getGen() == genProgInstance){
+				if (genOperationInstance.getGen() == genProgInstance) {
 					return true;
 				}
 			}
@@ -460,7 +477,7 @@ public abstract class EvolutionaryEngine {
 	 * @return
 	 */
 	protected List<Gen> getGenList(List<Gen> genList) {
-	
+
 		String mode = ConfigurationProperties.getProperty("genlistnavigation");
 
 		if ("inorder".equals(mode))

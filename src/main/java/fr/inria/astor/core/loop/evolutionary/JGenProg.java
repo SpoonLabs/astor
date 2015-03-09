@@ -227,7 +227,13 @@ public class JGenProg extends EvolutionaryEngine {
 
 		return operation;
 	}
-	
+	/** 
+	 * Return the position of the element in the block. It searches the same object instance
+	 * @param parentBlock
+	 * @param line
+	 * @param element
+	 * @return
+	 */
 	private int locationInParent(CtBlock parentBlock,int line,  CtElement element){
 		int pos = 0;
 		for(CtStatement s : parentBlock.getStatements()){

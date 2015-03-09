@@ -81,10 +81,10 @@ public class CtStatementTransformator implements ModelTransformator {
 		CtBlock parentBlock = operation.getParentBlock();
 
 		if (parentBlock != null) {
-			int locationIndex = parentBlock.getStatements().indexOf(ctst);
+			/*int locationIndex = parentBlock.getStatements().indexOf(ctst);
 			if (locationIndex < 0) {
 				throw new IllegalAccessException("Position in parent is not positive for " + operation);
-			}
+			}*/
 			//
 			GenProgMutationOperation operator = (GenProgMutationOperation) operation.getOperationApplied();
 			try {
@@ -99,7 +99,7 @@ public class CtStatementTransformator implements ModelTransformator {
 					break;
 				case INSERT_AFTER:
 					ctst.insertAfter((CtStatement) fix);
-					operation.setLocationInParent(locationIndex+1);
+					//operation.setLocationInParent(locationIndex+1);
 					successful = true;
 					break;
 				case REPLACE:

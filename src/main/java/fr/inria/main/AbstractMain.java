@@ -59,6 +59,9 @@ public abstract class AbstractMain {
 		options.addOption("maxgen", true, "(Optional) max number of generation a program variant is evolved");
 		options.addOption("population", true,
 				"(Optional)number of population (program variants) that the approach evolves");
+		
+		options.addOption("maxtime", true, "(Optional) maximum time (in minutes) to execute the whole experiment");
+
 		options.addOption("validation", true, "(Optional) type of validation: process|thread|local ");
 		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default 0.5 ");
 
@@ -100,6 +103,11 @@ public abstract class AbstractMain {
 
 		options.addOption("bintestfolder", true,
 				"(Optional) folder with the test cases binaries (default: /target/test-classes/)");
+	
+		options.addOption("multigenmodif", false,
+				"(Optional) An element of a program variant (i.e., gen) can be modified several times in different generation");
+	
+		
 
 	}
 
@@ -235,6 +243,11 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("bintestfolder"))
 			ConfigurationProperties.properties.setProperty("binjavafolder", cmd.getOptionValue("bintestfolder"));
 
+		if (cmd.hasOption("maxtime"))
+			ConfigurationProperties.properties.setProperty("maxtime", cmd.getOptionValue("maxtime"));
+
+		if (cmd.hasOption("multigenmodif"))
+			ConfigurationProperties.properties.setProperty("multigenmodif", "true");
 		return true;
 	}
 
