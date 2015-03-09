@@ -3,6 +3,7 @@ package fr.inria.astor.core.loop.evolutionary;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -193,10 +194,12 @@ public class JGenProg extends EvolutionaryEngine {
 		operation.setOriginal(targetStmt);
 		operation.setOperationApplied(operationType);
 		operation.setGen(genSusp);
-
+		
 		if ((cparent != null && (cparent instanceof CtBlock))) {
 			CtBlock parentBlock = (CtBlock) cparent;
 			operation.setParentBlock(parentBlock);
+			operation.setLocationInParent(locationInParent(parentBlock,genSusp.getSuspicious().getLineNumber(), targetStmt));
+
 		}
 
 		CtElement fix = null;
@@ -204,6 +207,10 @@ public class JGenProg extends EvolutionaryEngine {
 				|| operationType.equals(GenProgMutationOperation.INSERT_BEFORE)) {
 
 			fix = this.getFixIngredient(gen, targetStmt);
+			
+			if(operationType.equals(GenProgMutationOperation.INSERT_AFTER)){
+				operation.setLocationInParent(operation.getLocationInParent()+1);
+			}
 		}
 
 		if (operationType.equals(GenProgMutationOperation.REPLACE)) {
@@ -220,7 +227,21 @@ public class JGenProg extends EvolutionaryEngine {
 
 		return operation;
 	}
-
+	
+	private int locationInParent(CtBlock parentBlock,int line,  CtElement element){
+		int pos = 0;
+		for(CtStatement s : parentBlock.getStatements()){
+			//if(s.getPosition().getLine() == line && s.equals(element))
+			if(s == element)//the same object
+				return pos;
+			pos++;
+		}
+		
+		log.error("Error: parent not found");
+		return -1;
+		
+	}
+	
 	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt) {
 		return this.getFixIngredient(gen, targetStmt, null);
 	}

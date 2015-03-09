@@ -360,12 +360,12 @@ public class MutationSupporter {
 							line += "\n line= " + gs.getSuspicious().getLineNumber();
 						}
 
-						line += "\n generation: " + Integer.toString(i);
+						
+						line += "\n original statement= " + genOperationInstance.getOriginal().toString();
 
-						line += "\n original: " + genOperationInstance.getOriginal().toString();
-
-						line += "\n modified: " + genOperationInstance.getModified().toString();
-
+						line += "\n fixed statement= " + genOperationInstance.getModified().toString();
+						
+						line += "\n generation= " + Integer.toString(i);
 						line += "\n ";
 
 					}

@@ -4,11 +4,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtSimpleType;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -125,7 +128,7 @@ public abstract class EvolutionaryEngine {
 		}
 
 		if (!solutions.isEmpty()) {
-			log.info("Solution details");
+			log.info("\nSolution details");
 			log.info(mutatorSupporter.getSolutionData(solutions, generation));
 
 		}
@@ -148,11 +151,13 @@ public abstract class EvolutionaryEngine {
 		currentStat.numberGenerations++;
 
 		for (ProgramVariant parentVariant : variants) {
-
+		
 			log.debug("-Parent Variant: " + parentVariant);
 
+			this.saveOriginalVariant(parentVariant);
 			ProgramVariant newVariant = createNewProgramVariant(parentVariant, generation);
-
+			this.saveModifVariant(parentVariant);
+			
 			if (newVariant == null) {
 				continue;
 			}
@@ -166,7 +171,7 @@ public abstract class EvolutionaryEngine {
 
 			// Finally, reverse the changes done by the child
 			reverseOperationInModel(newVariant, generation);
-
+			this.validateReversedOriginalVariant(newVariant);
 			if (foundSolution && ConfigurationProperties.getPropertyBool("stopfirst")) {
 				break;
 			}
@@ -192,6 +197,36 @@ public abstract class EvolutionaryEngine {
 		return foundSolution;
 	}
 
+	Map<String,String> originalModel = new HashedMap();
+	Map<String,String> modifModel = new HashedMap();
+	
+	private void saveOriginalVariant(ProgramVariant variant){
+		originalModel.clear();
+		for(CtSimpleType st :variant.getAffectedClasses()){
+			originalModel.put(st.getQualifiedName(), st.toString());
+		}
+		
+	}
+	private void saveModifVariant(ProgramVariant variant){
+		modifModel.clear();
+		for(CtSimpleType st :variant.getAffectedClasses()){
+			modifModel.put(st.getQualifiedName(), st.toString());
+		}
+		
+	}
+	private void validateReversedOriginalVariant(ProgramVariant variant){
+
+		for(CtSimpleType st :variant.getAffectedClasses()){
+			String original = originalModel.get(st.getQualifiedName());
+			boolean idem = original.equals(st.toString());
+			if(!idem){
+				log.error("Error: the model was not the same from the original after this generation");
+				//throw new IllegalStateException("the model was not the same from the original after this generation");
+			}
+		}
+		
+	}
+	
 	/**
 	 * 
 	 * Compiles and validates a created variant.
@@ -321,7 +356,7 @@ public abstract class EvolutionaryEngine {
 
 		for (int i = operations.size() - 1; i >= 0; i--) {
 			GenOperationInstance genOperation = operations.get(i);
-			// log.debug("---Undoing: " + genOperation);
+			log.debug("---Undoing: gnrtn(" + genI+ "): " + genOperation);
 			undoOperationToSpoonElement(genOperation);
 		}
 	}
@@ -358,6 +393,9 @@ public abstract class EvolutionaryEngine {
 		List<Gen> gensToProcess = getGenList(variant.getGenList());
 		for (Gen genProgInstance : gensToProcess) {
 
+			if(alreadyModified(genProgInstance,variant.getOperations(), generation))
+				continue;
+			
 			genProgInstance.setProgramVariant(variant);
 			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
 			if (operationInGen != null) {
@@ -395,6 +433,25 @@ public abstract class EvolutionaryEngine {
 		log.debug("\n--Summary Creation: for variant " + variant + " gen mutated: " + mut + " , gen not mut: " + notmut
 				+ ", gen not applied  " + notapplied + "\n ");
 		return oneOperationCreated;
+	}
+	/**
+	 * Return true if the gen passed as parameter was already affected by a previous operator.
+	 * @param genProgInstance
+	 * @param map
+	 * @param generation
+	 * @return
+	 */
+	private boolean alreadyModified(Gen genProgInstance, Map<Integer, List<GenOperationInstance>> map, int generation) {
+		
+		for(int i = 1; i<=generation;i++){
+		List<GenOperationInstance> ops = map.get(i);
+			for (GenOperationInstance genOperationInstance : ops) {
+				if(genOperationInstance.getGen() == genProgInstance){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**

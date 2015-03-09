@@ -19,7 +19,8 @@ public class CtStatementTransformator implements ModelTransformator {
 	public void revert(GenOperationInstance operation) {
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtStatement fix = (CtStatement) operation.getModified();
-		CtBlock parentBlock = operation.getParentBlock();
+		CtBlock<?> parentBlock = operation.getParentBlock();
+		int position = operation.getLocationInParent();
 		if (parentBlock != null) {
 			GenProgMutationOperation operator = (GenProgMutationOperation) operation.getOperationApplied();
 
@@ -36,10 +37,10 @@ public class CtStatementTransformator implements ModelTransformator {
 				}
 				break;
 			case INSERT_BEFORE:
-				parentBlock.getStatements().remove(fix);
+				remove(parentBlock, fix, position);
 				break;
 			case INSERT_AFTER:
-				parentBlock.getStatements().remove(fix);
+				remove(parentBlock, fix, position);
 				break;
 			case REPLACE:
 				fix.replace((CtStatement) ctst);
@@ -49,7 +50,22 @@ public class CtStatementTransformator implements ModelTransformator {
 			}
 		}
 	}
-
+/**
+ * Remove a statement from the parent block given an integer position
+ * @param parent
+ * @param fix
+ * @param pos
+ */
+	private void remove(CtBlock parent,CtStatement fix, int pos){
+		//parentBlock.getStatements().remove(fix);
+		CtStatement s = parent.getStatement(pos);
+		if(fix.equals(s)){//To be sure that the position has the element we want to remove
+			parent.getStatements().remove(pos);
+		}
+		else{
+			throw new IllegalStateException("Undo: Not valid fix position");
+		}
+	}
 	/**
 	 * Apply a given Mutation to the node referenced by the operation
 	 * 
@@ -69,7 +85,6 @@ public class CtStatementTransformator implements ModelTransformator {
 			if (locationIndex < 0) {
 				throw new IllegalAccessException("Position in parent is not positive for " + operation);
 			}
-			operation.setLocationInParent(locationIndex);
 			//
 			GenProgMutationOperation operator = (GenProgMutationOperation) operation.getOperationApplied();
 			try {
@@ -84,6 +99,7 @@ public class CtStatementTransformator implements ModelTransformator {
 					break;
 				case INSERT_AFTER:
 					ctst.insertAfter((CtStatement) fix);
+					operation.setLocationInParent(locationIndex+1);
 					successful = true;
 					break;
 				case REPLACE:
