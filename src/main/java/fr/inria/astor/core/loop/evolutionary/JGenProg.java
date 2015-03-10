@@ -217,7 +217,7 @@ public class JGenProg extends EvolutionaryEngine {
 			fix = this.getFixIngredient(gen, targetStmt, gen.getRootElement().getClass().getSimpleName());
 		}
 
-		if (fix == null) {
+		if (!operationType.equals(GenProgMutationOperation.DELETE) && fix == null) {
 			log.error("fix ingredient null");
 			// throw new IllegalAccessError("Not ingredient found");
 			return null;
