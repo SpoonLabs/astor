@@ -111,7 +111,7 @@ public abstract class EvolutionaryEngine {
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 
 		while ((!foundsolution || !ConfigurationProperties.getPropertyBool("stopfirst"))
-				&& (generation < ConfigurationProperties.getPropertyInt("maxGeneration") && TimeUtil.delta(dateInit) <= maxMinutes)) {
+				&& (generation < ConfigurationProperties.getPropertyInt("maxGeneration") && continueOperating(dateInit, maxMinutes))) {
 			generation++;
 			log.info("\n----------Running generation/iteraction " + generation + ", population size: "
 					+ this.variants.size());
@@ -138,6 +138,21 @@ public abstract class EvolutionaryEngine {
 			log.info("\nSolution details");
 			log.info(mutatorSupporter.getSolutionData(solutions, generation));
 
+		}
+	}
+	/**
+	 * Check whether the program has passed the maximum time for operating
+	 * @param dateInit start date of execution
+	 * @param maxMinutes max minutes for operating
+	 * @return
+	 */
+	private boolean continueOperating(Date dateInit, int maxMinutes) {
+		if( TimeUtil.delta(dateInit) <= maxMinutes){
+			return true;
+		}
+		else{
+			log.info("\n No more time for operating");
+			return false;
 		}
 	}
 
@@ -194,11 +209,15 @@ public abstract class EvolutionaryEngine {
 			ProgramVariant parentNew = this.variantFactory.createProgramVariantFromAnother(originalVariant, generation);
 			parentNew.getOperations().clear();
 			parentNew.setParent(null);
+			ProgramVariant removedVariant = null;
 			if (variants.size() != 0) {
 				// now replace for the "worse" child
-				variants.remove(variants.size() - 1);
+				removedVariant = variants.remove(variants.size() - 1);
+				
 			}
 			variants.add(parentNew);
+			log.debug("Introducing original variant instead of variant "+((removedVariant!=null)?removedVariant.getId():""));
+		
 		}
 
 		return foundSolution;

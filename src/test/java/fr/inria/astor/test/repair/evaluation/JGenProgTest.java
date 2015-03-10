@@ -265,6 +265,26 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-maxgen","400",
 				"-population","2",
 				"-saveall",
+				
+				//"-flthreshold","0.9"
+		});
+	
+	}
+	
+	@SuppressWarnings("static-access")
+	@Test
+	public void testRunMainRemove() throws Exception{
+		MainjGenProg main1 = new MainjGenProg();
+		main1.main(new String[]{
+				"-dependencies","examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
+				"-id","tttMath-0c1ef",
+				"-failing", "org.apache.commons.math3.primes.PrimesTest",
+				"-location","/home/matias/develop/code/astor/examples/Math-0c1ef",
+				"-package", "org.apache.commons",
+				"-maxgen","400",
+				"-population","2",
+				"-saveall",
+				"-mode","statement-remove"
 				//"-flthreshold","0.9"
 		});
 	
@@ -288,7 +308,6 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-maxtime","1"
 				//"-flthreshold","0.9"
 		});
-		Thread.currentThread().sleep(6100);
 		long t = TimeUtil.delta(init);
 		assertTrue(t>1);//more than one minute
 		assertFalse(t<2);//less than two minutes

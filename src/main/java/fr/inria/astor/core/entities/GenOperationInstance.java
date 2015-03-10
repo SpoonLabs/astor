@@ -86,7 +86,7 @@ public class GenOperationInstance {
 	}
 
 	public String toString() {
-		return "" + this.getOperationApplied() + ": `" + StringUtil.trunc(this.original) + " ` ---> `" + StringUtil.trunc(modified) +" at pos "+getLocationInParent()+" of parent "+ StringUtil.trunc(parentBlock)
+		return "" + this.getOperationApplied() + ": `" + StringUtil.trunc(this.original) + " ` ---> `" + StringUtil.trunc(modified) +"` at pos "+getLocationInParent()+" of parent `"+ StringUtil.trunc(parentBlock)
 				+ "`";
 	}
 

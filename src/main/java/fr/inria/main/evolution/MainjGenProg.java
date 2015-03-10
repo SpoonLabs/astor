@@ -13,6 +13,7 @@ import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.RemoveRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.SingleStatementFixSpaceProcessor;
@@ -46,8 +47,17 @@ public class MainjGenProg extends AbstractMain {
 		rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
 	}
-
 	public JGenProg statementMode() throws Exception {
+		return statementMode(false);
+	}
+	
+	/**
+	 * 
+	 * @param removeMode
+	 * @return
+	 * @throws Exception
+	 */
+	public JGenProg statementMode(boolean removeMode) throws Exception {
 
 		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 		JGenProg gploop = new JGenProg(mutSupporter, rep);
@@ -68,7 +78,10 @@ public class MainjGenProg extends AbstractMain {
 		// ---
 
 		// Repair Space
-		gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
+		if(removeMode)
+			gploop.setRepairActionSpace(new RemoveRepairOperatorSpace());
+		else
+			gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
 
 		// Pop controller
 		gploop.setPopulationControler(new FitnessPopulationController());
@@ -98,8 +111,19 @@ public class MainjGenProg extends AbstractMain {
 			String failing) throws Exception {
 
 		initProject(location, projectName, dependencies, packageToInstrument, thfl, failing);
-		JGenProg gploop = statementMode();
+		JGenProg gploop = null;
+		String mode = ConfigurationProperties.getProperty("mode");
+		if("statement".equals(mode))
+			gploop = statementMode();
 
+		else if("statement-remove".equals(mode))
+			gploop = statementMode(true);
+		else{
+			System.out.println("Unknown mode");
+			return;
+		}
+
+		
 		try {
 			gploop.start();
 		} catch (Exception e) {
