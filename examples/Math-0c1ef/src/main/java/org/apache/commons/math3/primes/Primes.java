@@ -90,9 +90,7 @@ public class Primes {
         // n should not be a multiple of 3
         final int rem = n % 3;
         if (0 == rem) { // if n % 3 == 0
-        	//MM Injected bug.
-        	//n += 2; // n % 3 == 2
-        	n += 3; // n % 3 == 2
+          	n += 3;////MM Injected bug in original line n += 2; // n % 3 == 2
         } else if (1 == rem) { // if n % 3 == 1
             // if (isPrime(n)) return n;
             n += 4; // n % 3 == 2
