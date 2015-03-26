@@ -235,7 +235,7 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("srcjavafolder", cmd.getOptionValue("srcjavafolder"));
 
 		if (cmd.hasOption("srctestfolder"))
-			ConfigurationProperties.properties.setProperty("srcjavafolder", cmd.getOptionValue("srctestfolder"));
+			ConfigurationProperties.properties.setProperty("srctestfolder", cmd.getOptionValue("srctestfolder"));
 
 		if (cmd.hasOption("binjavafolder"))
 			ConfigurationProperties.properties.setProperty("binjavafolder", cmd.getOptionValue("binjavafolder"));
@@ -400,7 +400,11 @@ public abstract class AbstractMain {
 
 		File srcdefault = new File(originalProjectRoot + File.separator
 				+ ConfigurationProperties.getProperty("srcjavafolder"));
-		if (srcdefault.exists())
+		
+		File testdefault = new File(originalProjectRoot + File.separator
+				+ ConfigurationProperties.getProperty("srctestfolder"));
+		
+		if (srcdefault.exists() && testdefault.exists())
 			return Arrays.asList(new String[] { ConfigurationProperties.getProperty("srcjavafolder"),
 					ConfigurationProperties.getProperty("srctestfolder") });
 
