@@ -70,7 +70,7 @@ public class ProgramVariantValidator {
 	 */
 
 	public ProgramVariantValidationResult validateVariantFirstPhases(
-			List<String> failingCases, String testSuiteClassName)
+			List<String> failingCases)
 			throws FileNotFoundException, ClassNotFoundException,
 			InitializationError {
 
@@ -112,14 +112,14 @@ public class ProgramVariantValidator {
 	 * @throws InitializationError
 	 */
 	public ProgramVariantValidationResult validateVariantTwoPhases(
-			List<String> failingCases, String testSuiteClassName)
+			List<String> TestCases)
 			throws FileNotFoundException, ClassNotFoundException,
 			InitializationError {
 
 		LogManager.getRootLogger().setLevel(Level.INFO);// OFF
 		JUnitTestExecutor muTestEx = new JUnitTestExecutor();
 
-		ProgramVariantValidationResult validation = validateVariantFirstPhases(failingCases, testSuiteClassName);
+		ProgramVariantValidationResult validation = validateVariantFirstPhases(TestCases);
 
 		// Then, Regression test
 		if (!validation.wasSuccessful()) {

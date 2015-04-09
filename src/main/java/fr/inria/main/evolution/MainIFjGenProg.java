@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,10 +50,11 @@ public class MainIFjGenProg extends AbstractMain {
 	public void run(String location, String projectName, String dependencies,  
 			String packageToInstrument,
 			double thfl, String failing) throws Exception {
-			
-		List<String> failingList = Arrays.asList(new String[] { failing });
+		
+		String[] failTestS = failing.split(File.pathSeparator);
+		List<String> failingList = Arrays.asList(failTestS);
 		String method = this.getClass().getSimpleName();
-		rep = getProject(location, projectName,method , failing, failingList,dependencies,true);
+		rep = getProject(location, projectName,method , failingList,dependencies,true);
 		rep.getProperties().setExperimentName(this.getClass().getSimpleName());
 				
 		rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);

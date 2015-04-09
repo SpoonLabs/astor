@@ -354,7 +354,7 @@ public abstract class AbstractMain {
 	 */
 
 	protected ProjectRepairFacade getProject(String location, String projectIdentifier, String method,
-			String regressionTest, List<String> failingTestCases, String dependencies, boolean srcWithMain)
+			List<String> failingTestCases, String dependencies, boolean srcWithMain)
 			throws Exception {
 
 		if (projectIdentifier == null || projectIdentifier.equals("")) {
@@ -372,12 +372,11 @@ public abstract class AbstractMain {
 
 		String libdir = dependencies;
 
-		String mainClassTest = regressionTest;
+		//String mainClassTest = regressionTest;
 
 		ProjectConfiguration properties = new ProjectConfiguration();
 		properties.setInDir(inResult);
 		properties.setOutDir(outResult);
-		properties.setTestClass(mainClassTest);
 		properties.setOriginalAppBinDir(originalProjectRoot + File.separator
 				+ ConfigurationProperties.getProperty("binjavafolder"));
 		properties.setOriginalTestBinDir(originalProjectRoot + File.separator

@@ -8,9 +8,11 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.validators.ProgramVariantValidator;
+
 /**
  * This thread executes the test and set the fitness value.
- * @author Matias Martinez,  matias.martinez@inria.fr
+ * 
+ * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
 public class ValidationDualModeThread extends Thread {
@@ -18,19 +20,19 @@ public class ValidationDualModeThread extends Thread {
 	private Logger log = Logger.getLogger(ValidationDualModeThread.class.getName());
 
 	public boolean sucessfull = false;
-	
+
 	ProjectRepairFacade projectFacade;
-	
+
 	ProgramVariantValidator programVariantValidator = new ProgramVariantValidator();
-	
+
 	ProgramVariant mutatedVariant;
-	
+
 	public boolean modeFirst;
-	
+
 	public boolean finish = false;
-	
+
 	public ProgramVariantValidationResult result = null;
-	
+
 	/**
 	 * 
 	 * @param projectFacade
@@ -45,44 +47,34 @@ public class ValidationDualModeThread extends Thread {
 	}
 
 	@Override
-	    public void run(){
-		
-				sucessfull = false;
-				//fitness in advance
-			//	mutatedVariant.setFitness(Double.MAX_VALUE);
-				
-				//Get test cases to execute.
-				List<String> failingCases = projectFacade.getProperties().getFailingTestCases();
-				String testSuiteClassName = projectFacade.getProperties().getTestSuiteClassName();
-			
-				result = new ProgramVariantValidationResult();
-				try {
-				if(modeFirst){
-					result = this.programVariantValidator.validateVariantFirstPhases(failingCases,testSuiteClassName);
-				}
-				else{
-					//Use this one
-					result = this.programVariantValidator.validateVariantTwoPhases(failingCases,testSuiteClassName);
-					
-				}
-	
-			
-			/*	log.info("Fitness of instance #" + mutatedVariant.getId() + ": " + fitness + " (Totals: "
-						+ result.getRunCount() + ", failed: " + result.getFailureCount() + ")");
-*/
-				sucessfull =  result.wasSuccessful();
-				
-				}
-				catch (Throwable e) {
-					
-					e.printStackTrace();
-				}
-	            finish = true;
-				synchronized(this){
-					 notify();
-				 }
-         
-	        }
+	public void run() {
 
-	
+		sucessfull = false;
+		// fitness in advance
+		// mutatedVariant.setFitness(Double.MAX_VALUE);
+
+		// Get test cases to execute.
+		List<String> failingCases = projectFacade.getProperties().getFailingTestCases();
+
+		result = new ProgramVariantValidationResult();
+		try {
+			if (modeFirst) {
+				result = this.programVariantValidator.validateVariantFirstPhases(failingCases);
+			} else {
+				result = this.programVariantValidator.validateVariantTwoPhases(failingCases);
+			}
+
+			sucessfull = result.wasSuccessful();
+
+		} catch (Throwable e) {
+
+			e.printStackTrace();
+		}
+		finish = true;
+		synchronized (this) {
+			notify();
+		}
+
+	}
+
 }

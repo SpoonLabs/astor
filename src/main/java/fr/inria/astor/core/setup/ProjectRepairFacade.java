@@ -142,9 +142,7 @@ public class ProjectRepairFacade {
 		//bin
 		URL urlBin = new File(getOutDirWithPrefix(currentMutatorIdentifier)).toURI().toURL();
 		classpath.add(urlBin);
-		//src
-	//	URL urlSrc = new File(getInDirWithPrefix(currentMutatorIdentifier)).toURI().toURL();
-	//	classpath.add(urlSrc);//
+
 		URL[] cp = classpath.toArray(new URL[0]);
 		return cp;
 	}
@@ -155,15 +153,13 @@ public class ProjectRepairFacade {
 	 * */
 	public List<SuspiciousCode> getSuspicious(String packageToInst, String mutatorIdentifier) throws FileNotFoundException, IOException {
 
-		if (getProperties().getTestSuiteClassName() == null
-				|| "".equals(getProperties().getTestSuiteClassName().trim())) {
+		if (getProperties().getFailingTestCases() == null
+				|| "".equals(getProperties().getFailingTestCases().isEmpty())) {
 			new IllegalArgumentException("Test Class can not be empty");
 		}
 		logger.info("Getting Suspicious from: " + getOutDirWithPrefix(mutatorIdentifier) + " from test "
-				+ getProperties().getTestSuiteClassName());
-		// FaultLocalizationFacade candFault = new FaultLocalizationFacade();
-		List<String> listTOtest = new ArrayList<String>();
-		listTOtest.add(getProperties().getTestSuiteClassName());
+				+ getProperties().getFailingTestCases());
+		
 
 		List<String> listTOInst = new ArrayList<String>();
 		listTOInst.add(packageToInst);
@@ -172,15 +168,14 @@ public class ProjectRepairFacade {
 		hs.add(getOutDirWithPrefix(mutatorIdentifier));
 
 		List<SuspiciousCode> suspiciousStatemens = faultLocalizationFacade.searchGZoltar(
-				getOutDirWithPrefix(mutatorIdentifier), listTOtest, listTOInst, hs);
+				getOutDirWithPrefix(mutatorIdentifier), getProperties().getFailingTestCases(), listTOInst, hs);
 		return suspiciousStatemens;
 	}
 
 	public void premutationSetupDirs(String srcInput) throws Exception {
 		this.cleanMutationResultDirectories(srcInput);
 		this.copyOriginalCode(srcInput);
-		//this.setupDirs(srcInput);
-	
+		
 	}
 	/**
 	 * 
@@ -188,15 +183,12 @@ public class ProjectRepairFacade {
 	 * @throws IOException
 	 */
 	public void setupDirProgramVariable(String mutatorIdentifier) throws IOException {
-		// Set the number of instance
-		//this.setMutationId(instance.getId());
 		this.copyOriginalCode(mutatorIdentifier);// NEW ADDED
 		// TODO: modify, only create directory, empty
 		this.copyOriginalBin(getProperties().getOriginalAppBinDir(),mutatorIdentifier);// NEW ADDED
 	    this.copyOriginalBin(getProperties().getOriginalTestBinDir(),mutatorIdentifier);// NEW ADDED
 		this.copyData(mutatorIdentifier);
-		//this.setupDirs(mutatorIdentifier);
-		//this.createClassLoadInCurrentThread();
+
 	}
 	
 	public ProjectConfiguration getProperties() {
@@ -216,7 +208,7 @@ public class ProjectRepairFacade {
 		Factory factory = new FactoryImpl(new DefaultCoreFactory(), env);
 
 		// environment initialization
-		env.setComplianceLevel(6);// 6//7//4
+		env.setComplianceLevel(6);
 		env.setVerbose(false);
 		env.setDebug(true);// false
 		env.setTabulationSize(5);

@@ -150,6 +150,49 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 
 	}
+	
+	@Test
+	public void testPatchMath0C1TwoFailing() throws Exception {
+		//Recompile the example project before executing it.
+		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
+				+ "examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
+		String folder = "Math-0c1ef";
+		//Only the first one fails
+		String failing = "org.apache.commons.math3.primes.PrimesTest"+
+				File.pathSeparator+"org.apache.commons.math3.random.BitsStreamGeneratorTest";
+		
+		File f = new File("examples/Math-0c1ef/");
+		String location = f.getAbsolutePath();
+		String packageToInstrument = "org.apache.commons";
+		double thfl = 0.5;
+
+		int processBeforeAll = ProcessUtil.currentNumberProcess();
+
+		MainjGenProg main = new MainjGenProg();
+
+		main.initProject(location, folder, dependenciespath, packageToInstrument, thfl, failing);
+
+		JGenProg jgp = main.statementMode();
+
+		Assert.assertEquals(1, jgp.getVariants().size());
+
+		ProgramVariant variant = jgp.getVariants().get(0);
+		//
+		int currentGeneration = 1;
+		GenOperationInstance operation1 = createDummyOperation1(variant, currentGeneration);
+		System.out.println("operation " + operation1);
+		assertNotNull(operation1);
+
+		boolean isSolution = false;
+		//
+		jgp.applyNewOperationsToVariantModel(variant, currentGeneration);
+		//
+		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
+		assertTrue(isSolution);
+
+	}
+
+	
 
 	public GenSuspicious searchSuspiciousElement(ProgramVariant variant, String snippet, String fileName, int line) {
 

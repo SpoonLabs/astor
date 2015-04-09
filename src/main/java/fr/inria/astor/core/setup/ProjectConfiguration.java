@@ -145,14 +145,7 @@ public class ProjectConfiguration {
 		
 	}
 
-	public String getTestSuiteClassName() {
-		return (String) this.internalProperties.get(ProjectPropertiesEnum.testSuiteClassName);
-	}
-
-	public void setTestClass(String testClass) {
-		this.internalProperties.put(ProjectPropertiesEnum.testSuiteClassName,testClass);
-	}
-
+	
 	public String getOriginalAppBinDir() {
 		return (String) this.internalProperties.get(ProjectPropertiesEnum.originalAppBinDir);
 	}

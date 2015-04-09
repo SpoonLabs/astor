@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,10 +46,10 @@ public class MainIFMutation extends AbstractMain {
 
 			String method = this.getClass().getSimpleName();
 						
-			List<String> failingList = Arrays.asList(new String[] { failing });
+			List<String> failingList = Arrays.asList(failing.split(File.pathSeparator));
 			
 			
-			rep = getProject(location, projectName,method, failing, failingList,dependencies,false);
+			rep = getProject(location, projectName,method, failingList,dependencies,false);
 			rep.getProperties().setExperimentName(this.getClass().getSimpleName());
 			
 			rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);

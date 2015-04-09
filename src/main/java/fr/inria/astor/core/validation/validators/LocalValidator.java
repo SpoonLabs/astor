@@ -20,10 +20,8 @@ public class LocalValidator implements IProgramValidator{
 			// Load version (variant) in new thread to execute it
 			// Get test cases to execute.
 			List<String> failingCases = projectFacade.getProperties().getFailingTestCases();
-			String testSuiteClassName = projectFacade.getProperties().getTestSuiteClassName();
-
-			ProgramVariantValidationResult result = this.programVariantValidator.validateVariantTwoPhases(failingCases,
-					testSuiteClassName);
+			
+			ProgramVariantValidationResult result = this.programVariantValidator.validateVariantTwoPhases(failingCases);
 
 			// putting fitness into program variant
 			//double fitness = populationControler.getFitnessValue(mutatedVariant, result);
