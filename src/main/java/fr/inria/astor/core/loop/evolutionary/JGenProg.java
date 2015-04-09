@@ -52,7 +52,7 @@ public class JGenProg extends EvolutionaryEngine {
 	 */
 	public void setup(List<SuspiciousCode> suspicious) throws Exception {
 
-		if (FactoryImpl.getLauchingFactory().Type().getAll().isEmpty()) {
+		if (MutationSupporter.getFactory().Type().getAll().isEmpty()) {
 			initModel();
 		}
 

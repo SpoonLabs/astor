@@ -56,12 +56,9 @@ public class MainIFjGenProg extends AbstractMain {
 		rep.getProperties().setExperimentName(this.getClass().getSimpleName());
 				
 		rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		Factory facade = FactoryImpl.getLauchingFactory();
-		if(facade == null){
-			facade = rep.createFactory();
-			FactoryImpl.getLauchingFactory().getEnvironment().setDebug(true);
-		}
-		MutationSupporter mutSupporter = new MutationSupporter(facade);
+	
+		
+		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 		JGenProgIfExpression gploop = new JGenProgIfExpression(mutSupporter,rep);
 
 		//This processor collects the If for creating a population of suspicious ifs.

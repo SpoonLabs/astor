@@ -26,6 +26,7 @@ import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
+import fr.inria.astor.core.util.ProcessUtil;
 import fr.inria.astor.core.util.TimeUtil;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainjGenProg;
@@ -73,9 +74,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	@Test
 	public void testExampleMath0C1() throws Exception {
-
+		//Recompile the example project before executing it.
 		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
-				+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
+				+ "examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
 		String folder = "Math-0c1ef";
 		String failing = "org.apache.commons.math3.primes.PrimesTest";
 		File f = new File("examples/Math-0c1ef/");
@@ -89,90 +90,93 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	@Test
 	public void testPatchMath0C1() throws Exception {
-
+		//Recompile the example project before executing it.
 		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
-				+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
+				+ "examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
 		String folder = "Math-0c1ef";
 		String failing = "org.apache.commons.math3.primes.PrimesTest";
 		File f = new File("examples/Math-0c1ef/");
-		String location = f.getAbsolutePath();//f.getParent();
+		String location = f.getAbsolutePath();// f.getParent();
 		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
 
-		int processBeforeAll = currentNumberProcess();
-		
+		int processBeforeAll = ProcessUtil.currentNumberProcess();
+
 		MainjGenProg main = new MainjGenProg();
 
-		 main.initProject(location, folder, dependenciespath, packageToInstrument, thfl, failing);
+		main.initProject(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 
 		JGenProg jgp = main.statementMode();
-		
+
 		Assert.assertEquals(1, jgp.getVariants().size());
 
 		ProgramVariant variant = jgp.getVariants().get(0);
 		//
 		int currentGeneration = 1;
-		GenOperationInstance  operation1 = createDummyOperation1(variant, currentGeneration);
-		System.out.println("operation "+operation1);
+		GenOperationInstance operation1 = createDummyOperation1(variant, currentGeneration);
+		System.out.println("operation " + operation1);
 		assertNotNull(operation1);
-		
 
-		
 		boolean isSolution = false;
 		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
-		//The model has not been changed.
+		// The model has not been changed.
 		assertFalse(isSolution);
-		
-		int afterFirstValidation = currentNumberProcess();
-		//	
-		jgp.applyNewOperationsToVariantModel(variant,currentGeneration);
-		
+
+		int afterFirstValidation = ProcessUtil.currentNumberProcess();
+		//
+		jgp.applyNewOperationsToVariantModel(variant, currentGeneration);
+
 		//
 		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
-	
-		int afterPatchValidation = currentNumberProcess();
-		
-		assertEquals("Problems with process",processBeforeAll, afterFirstValidation);
 
-		assertEquals("Problems with process",processBeforeAll, afterPatchValidation);
+		int afterPatchValidation = ProcessUtil.currentNumberProcess();
 		
 		assertTrue(isSolution);
 		
-		System.out.println("\nSolutions:\n"+jgp.getMutatorSupporter().getSolutionData(jgp.getVariants(), 1));
+		System.out.println("\nSolutions:\n" + jgp.getMutatorSupporter().getSolutionData(jgp.getVariants(), 1));
+		
+
+		jgp.prepareNextGeneration(jgp.getVariants(), 1);
+		
+		assertNotNull(jgp.getSolutions());
+		
+		assertFalse(jgp.getSolutions().isEmpty());
 		
 		
+		assertEquals("Problems with process", processBeforeAll, afterFirstValidation);
+		
+		assertEquals("Problems with process", processBeforeAll, afterPatchValidation);
+
+
+
 	}
 
-	public GenSuspicious searchSuspiciousElement(ProgramVariant variant,String snippet, String fileName, int line) {
-		
-		for(Gen gen: variant.getGenList()){
-			
-			if(gen.getRootElement().toString().equals(snippet)
-					&& gen.getRootElement().getPosition().getLine() == line
-					)
+	public GenSuspicious searchSuspiciousElement(ProgramVariant variant, String snippet, String fileName, int line) {
+
+		for (Gen gen : variant.getGenList()) {
+
+			if (gen.getRootElement().toString().equals(snippet) && gen.getRootElement().getPosition().getLine() == line)
 				return (GenSuspicious) gen;
 		}
-		
+
 		return null;
 	}
 
 	public CtStatement createPatchStatementCode(String snippet) {
-		
-		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
-				new StandardEnvironment());
-		CtStatement st = (factory).Code().createCodeSnippetStatement(snippet)
-				.compile();
+
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		CtStatement st = (factory).Code().createCodeSnippetStatement(snippet).compile();
 		return st;
 	}
 
 	private GenOperationInstance createDummyOperation1(ProgramVariant variant, int currentGeneration) {
-	
-		GenSuspicious genSusp = searchSuspiciousElement(variant,"n += 3" , " " , 93);
+
+		GenSuspicious genSusp = searchSuspiciousElement(variant, "n += 3", " ", 93);//TODO: is 93 or 95
 		assertNotNull(genSusp);
-		
+
 		CtElement targetStmt = genSusp.getRootElement();
-		CtElement fix =  createFix1();
-		assertEquals(fix.toString(),"n += 2" );
+		CtElement fix = createFix1();
+		assertEquals(fix.toString(), "n += 2");
 
 		GenOperationInstance operation = new GenOperationInstance();
 
@@ -181,154 +185,141 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		operation.setParentBlock((CtBlock) targetStmt.getParent());
 		operation.setOriginal(targetStmt);
 		operation.setModified(fix);
-	
+
 		variant.putGenOperation(currentGeneration, operation);
 		operation.setGen(genSusp);
-		
+
 		return operation;
 	}
 
 	@Test
-	public void testCreateFix1(){
-		assertEquals(createFix1().toString(),"n += 2" );
-		//return fix;
+	public void testCreateFix1() {
+		assertEquals(createFix1().toString(), "n += 2");
+		// return fix;
 	}
-	
-	public CtElement createFix1(){
-		CtElement gen =  createPatchStatementCode("int n=0; n += 2");
-		CtElement fix = ((CtBlock)gen.getParent()).getStatement(1);
-		//assertEquals(fix,"n += 2" );
+
+	public CtElement createFix1() {
+		CtElement gen = createPatchStatementCode("int n=0; n += 2");
+		CtElement fix = ((CtBlock) gen.getParent()).getStatement(1);
+		// assertEquals(fix,"n += 2" );
 		return fix;
 	}
-	
+
 	@Test
-	public void processTest(){
-		
-		
-		
-	}
-	public int currentNumberProcess(){
-		int count = 0;
-		 try {
-		        String line;
-		        
-		        String[] cmd = {
-		        		"/bin/sh",
-		        		"-c",
-		        		"ps -ux | grep java"
-		        		};
-		        Process p = Runtime.getRuntime().exec(cmd);
-		        BufferedReader input =
-		                new BufferedReader(new InputStreamReader(p.getInputStream()));
-		        while ((line = input.readLine()) != null) {
-		           // System.out.println(line);
-		            count++;
-		        }
-		        input.close();
-		    } catch (Exception err) {
-		        err.printStackTrace();
-		    }
-		return count;
-	}
-	
-	@Test
-	public void testHelpMain() throws Exception{
+	public void testHelpMain() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
-		main1.main(new String[]{"help"});
+		main1.main(new String[] { "help" });
 	}
-	
+
 	@SuppressWarnings("static-access")
 	@Test
-	public void testRunMain() throws Exception{
+	public void testRunMain() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
-		main1.main(new String[]{
-				"-dependencies","examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
-				//"-id","tttMath-0c1ef",
-				"-failing", "org.apache.commons.math3.primes.PrimesTest",
-				"-location","/home/matias/develop/code/astor/examples/Math-0c1ef",
-				"-package", "org.apache.commons",
-				"-jvm4testexecution","/home/matias/develop/jdk1.7.0_71/bin"
-				});
-	
+		main1.main(new String[] {
+				"-dependencies",
+				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
+						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
+				// "-id","tttMath-0c1ef",
+				"-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
+				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin" });
+
 	}
-	
+
 	@SuppressWarnings("static-access")
 	@Test
-	public void testRunMain2() throws Exception{
+	public void testRunMain2() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
-		main1.main(new String[]{
-				"-dependencies","examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
-				"-id","tttMath-0c1ef",
-				"-failing", "org.apache.commons.math3.primes.PrimesTest",
-				"-location","/home/matias/develop/code/astor/examples/Math-0c1ef",
-				"-package", "org.apache.commons",
-				"-maxgen","400",
-				"-population","2",
-				"-saveall",
-				
-				//"-flthreshold","0.9"
+		main1.main(new String[] {
+				"-dependencies",
+				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
+						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar", "-id",
+				"tttMath-0c1ef", "-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
+				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons", "-maxgen",
+				"400", "-population", "2", "-saveall",
+
+		// "-flthreshold","0.9"
 		});
-	
+
 	}
-	
+
 	@SuppressWarnings("static-access")
 	@Test
-	public void testRunMainRemove() throws Exception{
+	public void testRunMainRemove() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
-		main1.main(new String[]{
-				"-dependencies","examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
-				"-id","tttMath-0c1ef",
-				"-failing", "org.apache.commons.math3.primes.PrimesTest",
-				"-location","/home/matias/develop/code/astor/examples/Math-0c1ef",
-				"-package", "org.apache.commons",
-				"-maxgen","400",
-				"-population","2",
-				"-saveall",
-				"-mode","statement-remove"
-				//"-flthreshold","0.9"
+		main1.main(new String[] {
+				"-dependencies",
+				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
+						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar", "-id",
+				"tttMath-0c1ef", "-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
+				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons", "-maxgen",
+				"400", "-population", "2", "-saveall", "-mode", "statement-remove"
+		// "-flthreshold","0.9"
 		});
-	
+
 	}
-	
+
 	@SuppressWarnings("static-access")
 	@Test
-	public void testRunMainTime() throws Exception{
-		
+	public void testRunMainTime() throws Exception {
+
 		Date init = new Date();
 		MainjGenProg main1 = new MainjGenProg();
-		main1.main(new String[]{
-				"-dependencies","examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
-				"-id","tttMath-0c1ef",
-				"-failing", "org.apache.commons.math3.primes.PrimesTest",
-				"-location","/home/matias/develop/code/astor/examples/Math-0c1ef",
-				"-package", "org.apache.commons",
-				"-maxgen","400",
-				"-population","2",
-				"-saveall",
-				"-maxtime","1"
-				//"-flthreshold","0.9"
+		main1.main(new String[] {
+				"-dependencies",
+				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
+						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar", "-id",
+				"tttMath-0c1ef", "-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
+				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons", "-maxgen",
+				"400", "-population", "2", "-saveall", "-maxtime", "1"
+		// "-flthreshold","0.9"
 		});
 		long t = TimeUtil.delta(init);
-		assertTrue(t>1);//more than one minute
-		assertFalse(t<2);//less than two minutes
+		assertTrue(t > 1);// more than one minute
+		assertFalse(t < 2);// less than two minutes
 	}
-	
-	
+
 	@SuppressWarnings("static-access")
 	@Test
-	public void testRunMainSrcTestFolder() throws Exception{
+	public void testRunMainSrcTestFolder() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
-		main1.main(new String[]{
-				"-dependencies","examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
-				//"-id","tttMath-0c1ef",
-				"-failing", "org.apache.commons.math3.primes.PrimesTest",
-				"-location","/home/matias/develop/code/astor/examples/Math-0c1ef",
-				"-package", "org.apache.commons",
-				"-jvm4testexecution","/home/matias/develop/jdk1.7.0_71/bin",
-				"-srcjavafolder","/src/main/java/",
-				"-srctestfolder","/src/test/java/"
-				});
-	
+		main1.main(new String[] {
+				"-dependencies",
+				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
+						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
+				// "-id","tttMath-0c1ef",
+				"-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
+				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin", "-srcjavafolder", "/src/main/java/",
+				"-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes" });
+
 	}
-	
+
+	@SuppressWarnings("static-access")
+	@Test
+	public void testMath2Example() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		// java -cp astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar
+		// fr.inria.main.evolution.MainjGenProg -mode statement-remove -location
+		// . -dependencies lib/ -failing $failingTest -package
+		// org.apache.commons -jvm4testexecution
+		// /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -maxgen 1000000
+		// -population 2 -srcjavafolder src/main/java/ -srctestfolder
+		// src/test/java/ -binjavafolder target/classes/ -bintestfolder
+		// target/test-classes/
+		main1.main(new String[] {
+				"-dependencies","examples/math_2/lib/" + File.pathSeparator +
+				// "-id","tttMath-0c1ef",
+				"-mode","statement-remove"+
+				"-failing", "", "-location",
+				"examples/math_2/", "-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin", 
+				"-srcjavafolder", "/src/main/java/",
+				"-srctestfolder", "/src/test/java/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes" });
+
+	}
+
 }

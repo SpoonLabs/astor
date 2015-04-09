@@ -184,13 +184,17 @@ public abstract class EvolutionaryEngine {
 				continue;
 			}
 
-			processCreatedVariant(newVariant, generation);
+			boolean solution = processCreatedVariant(newVariant, generation);
 
 			if (newVariant.getCompilation().compiles()) {
 				temporalInstances.add(newVariant);
-				foundSolution |= newVariant.isSolution();
+				
 			}
-
+			if(solution){
+				foundSolution = true;
+				//this.solutions.add(newVariant);
+			}
+			
 			// Finally, reverse the changes done by the child
 			reverseOperationInModel(newVariant, generation);
 			this.validateReversedOriginalVariant(newVariant);
@@ -199,6 +203,12 @@ public abstract class EvolutionaryEngine {
 			}
 
 		}
+		prepareNextGeneration(temporalInstances, generation);
+
+		return foundSolution;
+	}
+
+	public void prepareNextGeneration(List<ProgramVariant> temporalInstances, int generation) {
 		// After analyze all variant
 		// New population creation:
 		variants = populationControler.selectProgramVariantsForNextGeneration(variants, temporalInstances,
@@ -216,11 +226,9 @@ public abstract class EvolutionaryEngine {
 				
 			}
 			variants.add(parentNew);
-			log.debug("Introducing original variant instead of variant "+((removedVariant!=null)?removedVariant.getId():""));
+			log.debug("Introducing original variant"+((removedVariant!=null)?"instead of variant "+removedVariant.getId():""));
 		
 		}
-
-		return foundSolution;
 	}
 
 	Map<String, String> originalModel = new HashedMap();
@@ -297,7 +305,6 @@ public abstract class EvolutionaryEngine {
 					mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
 					mutatorSupporter.saveSolutionData(programVariant, srcOutput, generation);
 				}
-
 				return true;
 			}
 		} else {

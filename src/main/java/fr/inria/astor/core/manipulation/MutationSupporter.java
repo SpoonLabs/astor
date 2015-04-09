@@ -63,7 +63,7 @@ public class MutationSupporter {
 	 */
 	private JDTBasedSpoonCompiler jdtSpoonModelBuilder = null;
 
-	Factory factory;
+	public static Factory factory;
 
 	/**
 	 * Receives the properties and set up the dirs.
@@ -88,8 +88,6 @@ public class MutationSupporter {
 			jdtSpoonModelBuilder.build();
 			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -106,8 +104,6 @@ public class MutationSupporter {
 			jdtSpoonModelBuilder.build();
 			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -256,7 +252,7 @@ public class MutationSupporter {
 		return this.spoonClassCompiler;
 	}
 
-	public Factory getFactory() {
+	public static Factory getFactory() {
 		return factory;
 	}
 
@@ -376,7 +372,7 @@ public class MutationSupporter {
 	}
 
 	public static CtCodeElement clone(CtCodeElement st) {
-		CtCodeElement cloned = FactoryImpl.getLauchingFactory().Core().clone(st);
+		CtCodeElement cloned = factory.Core().clone(st);
 		// --
 		cloned.setParent(ROOT_ELEMENT);
 
@@ -395,4 +391,8 @@ public class MutationSupporter {
 		};
 
 	};
+
+	public static void setFactory(Factory factory) {
+		MutationSupporter.factory = factory;
+	}
 }

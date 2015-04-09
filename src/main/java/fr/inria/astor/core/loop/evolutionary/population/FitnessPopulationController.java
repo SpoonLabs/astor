@@ -36,23 +36,22 @@ public class FitnessPopulationController implements PopulationController{
 		
 		List<ProgramVariant> genSolutions = new ArrayList<ProgramVariant>();
 		
-		//Sort the population according to fitness		
 		Collections.sort(childVariants, comparator);
 		
 		String variantsIds = "",solutionId="";
+		
 		for (ProgramVariant programVariant : childVariants) {
 			variantsIds += programVariant.getId()+"(f="+programVariant.getFitness()+")" + ", ";
-			//if(programVariant.getFitness() == 0){
 			if(programVariant.isSolution()){	
 				genSolutions.add(programVariant);
-				solutionId += programVariant.getId()+"(f="+programVariant.getFitness()+")" + ", ";
+				solutionId += programVariant.getId()+"(SOLUTION)(f="+programVariant.getFitness()+")" + ", ";
 			}
 		}
 		
 		log.debug("\nEnd analysis generation - \nSolutions found:" +  "--> (" + solutionId + ")");
 
-		childVariants.removeAll(genSolutions);
-				
+		boolean removed = childVariants.removeAll(genSolutions);
+						
 		log.debug("Variants to next generation from: " + totalInstances + "-->IDs: (" + variantsIds + ")");
 
 		

@@ -11,6 +11,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 /**
  * 
  * @author Matias Martinez
@@ -32,7 +33,7 @@ public class CtExpressionTransformator implements ModelTransformator{
 
 	@Override
 	public void transform(GenOperationInstance operation) throws Exception {
-		Factory factory = FactoryImpl.getLauchingFactory();
+		Factory factory = MutationSupporter.getFactory();
 		
 		CtExpression rightTerm = null, leftTerm = null;
 		try {

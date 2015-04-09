@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtExecutableReference;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 
 public class MethodCallParameterProcessor extends AbstractProcessor<CtMethod<?>> {
@@ -80,10 +81,10 @@ public class MethodCallParameterProcessor extends AbstractProcessor<CtMethod<?>>
 	}
 
 	public void putInSwitch(List elements, int pos, List[] result) {
-		CtCodeSnippetStatement exp = FactoryImpl.getLauchingFactory().Code()
+		CtCodeSnippetStatement exp = MutationSupporter.getFactory().Code()
 				.createCodeSnippetStatement("int s = 0");
-		CtSwitch ct = FactoryImpl.getLauchingFactory().Core().createSwitch();
-		ct.setSelector(FactoryImpl.getLauchingFactory().Code().createCodeSnippetExpression("s"));
+		CtSwitch ct = MutationSupporter.getFactory().Core().createSwitch();
+		ct.setSelector(MutationSupporter.getFactory().Code().createCodeSnippetExpression("s"));
 		List cases = new ArrayList();
 		ct.setCases(cases);
 		//parent.getStatements().add(exp);
@@ -94,8 +95,8 @@ public class MethodCallParameterProcessor extends AbstractProcessor<CtMethod<?>>
 		result[pos] = lo;
 		
 		for (Object object : elements) {
-			CtCase cas = FactoryImpl.getLauchingFactory().Core().createCase();
-			cas.setCaseExpression(FactoryImpl.getLauchingFactory().Code().createCodeSnippetExpression("1"));
+			CtCase cas = MutationSupporter.getFactory().Core().createCase();
+			cas.setCaseExpression(MutationSupporter.getFactory().Code().createCodeSnippetExpression("1"));
 			//logger.info(ct.toString());
 			List stms = new ArrayList();
 			cas.setStatements(stms);
@@ -111,7 +112,7 @@ public class MethodCallParameterProcessor extends AbstractProcessor<CtMethod<?>>
 		for (int i = 0; i < cinv.getArguments().size(); i++) {
 
 			CtExpression arg = (CtExpression) cinv.getArguments().get(i);
-			CtInvocation cloneInv = (CtInvocation) FactoryImpl.getLauchingFactory().Core().clone(cinv);
+			CtInvocation cloneInv = (CtInvocation) MutationSupporter.getFactory().Core().clone(cinv);
 			cloneInv.getArguments().remove(i);
 
 			if (checkValidInvocation(cloneInv)) {
@@ -132,10 +133,10 @@ public class MethodCallParameterProcessor extends AbstractProcessor<CtMethod<?>>
 			for (CtVariable lv : localVars)
 				if ((lv.getType().equals(arg.getType()) || lv.getType().isSubtypeOf(arg.getType()))
 						&& !lv.getSimpleName().equals(arg.getSignature())) {
-					CtInvocation cloneInv = (CtInvocation) FactoryImpl.getLauchingFactory().Core().clone(cinv);
+					CtInvocation cloneInv = (CtInvocation) MutationSupporter.getFactory().Core().clone(cinv);
 					CtExpression paricloned = (CtExpression) cloneInv.getArguments().get(i);
 					logger.info("Replacing: " + lv.getSignature() + " --> " + arg.getSignature());
-					CtVariableAccess varacces = FactoryImpl.getLauchingFactory().Code()
+					CtVariableAccess varacces = MutationSupporter.getFactory().Code()
 							.createVariableAccess(lv.getReference(), false);
 					paricloned.replace(varacces);
 					if (checkValidInvocation(cloneInv)) {

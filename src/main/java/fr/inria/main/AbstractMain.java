@@ -115,7 +115,7 @@ public abstract class AbstractMain {
 
 		if (factory == null) {
 			factory = ProjectRepairFacade.createFactory();
-			FactoryImpl.getLauchingFactory().getEnvironment().setDebug(true);
+			factory.getEnvironment().setDebug(true);
 		}
 		mutSupporter = new MutationSupporter(factory);
 	}
@@ -241,7 +241,7 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("binjavafolder", cmd.getOptionValue("binjavafolder"));
 
 		if (cmd.hasOption("bintestfolder"))
-			ConfigurationProperties.properties.setProperty("binjavafolder", cmd.getOptionValue("bintestfolder"));
+			ConfigurationProperties.properties.setProperty("bintestfolder", cmd.getOptionValue("bintestfolder"));
 
 		if (cmd.hasOption("maxtime"))
 			ConfigurationProperties.properties.setProperty("maxtime", cmd.getOptionValue("maxtime"));
@@ -334,13 +334,13 @@ public abstract class AbstractMain {
 	}
 
 	protected Factory getFactory() {
-		Factory facade = FactoryImpl.getLauchingFactory();
+		//Factory facade = FactoryImpl.getLauchingFactory();
 
-		if (facade == null) {
-			facade = rep.createFactory();
-			FactoryImpl.getLauchingFactory().getEnvironment().setDebug(true);
+		if (factory == null) {
+			factory = rep.createFactory();
+			factory.getEnvironment().setDebug(true);
 		}
-		return facade;
+		return factory;
 	}
 
 	/*

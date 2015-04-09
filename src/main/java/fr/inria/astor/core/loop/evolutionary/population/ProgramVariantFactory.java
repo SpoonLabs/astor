@@ -120,10 +120,11 @@ public class ProgramVariantFactory {
 			List<GenSuspicious> gens = createGens(suspiciousCode, progInstance);
 			if(gens!= null)
 				progInstance.getGenList().addAll(gens);
+			else{
+				log.info("-no gen created for suspicios "+suspiciousCode);  	
+			}
 
 		}
-		// Stats.getCurrentStats().fl_gens_size =
-		// progInstance.getGenList().size();
 		log.info("Total suspicious from FL: " + suspiciousList.size() + ",  " + progInstance.getGenList().size());
 		log.info("Total Gens created: " + progInstance.getGenList().size());
 		return progInstance;
@@ -162,12 +163,12 @@ public class ProgramVariantFactory {
 		if (ctSuspects.isEmpty()) {
 			return null;
 		}
-		//TODO: move
+	/*	//TODO: move
 		boolean onlyParent = false;
 		//
 		if(onlyParent){
 			ctSuspects = ctSuspects.subList(0, 1);
-		}
+		}*/
 
 		List<CtVariable> contextOfGen = null;
 		// We take the first element for getting the context (as the remaining have the same location, it's not necessary)
@@ -292,7 +293,7 @@ public class ProgramVariantFactory {
 
 		//log.debug("Analyzing candidate " + candidate.getClassName() + " , line " + candidate.getLineNumber() + " susp "+ candidate.getSuspiciousValue());
 
-		SpoonLocationPointerLauncher muSpoonLaucher = new SpoonLocationPointerLauncher(FactoryImpl.getLauchingFactory());
+		SpoonLocationPointerLauncher muSpoonLaucher = new SpoonLocationPointerLauncher(MutationSupporter.getFactory());
 		List<CtElement> susp = muSpoonLaucher.run(ctclass, candidate.getLineNumber());
 
 		return susp;

@@ -136,7 +136,7 @@ public class ProgramVariant {
 	}
 	
 	public String toString(){
-		return "[Variant id: "+this.id+", #gens: "+this.getGenList().size()+ ", #ops: "+this.operations.values().size()+", parent:"+((this.parent==null)?"-":this.parent.id)+"]";
+		return "[Variant id: "+this.id+(this.isSolution()?" (SOL) ":"") +", #gens: "+this.getGenList().size()+ ", #ops: "+this.operations.values().size()+", parent:"+((this.parent==null)?"-":this.parent.id)+"]";
 	}
 	
 	public String currentMutatorIdentifier() {
