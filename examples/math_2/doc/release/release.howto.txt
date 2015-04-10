@@ -1,0 +1,331 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+This document is meant as a step-by-step recipe to achieve the release of
+the Commons Math component. Note that more general instructions valid
+for all components, including [math], are available on the Apache Commons
+main site: at "http://commons.apache.org/releases/prepare.html" and
+"http://commons.apache.org/releases/release.html".
+
+The files "settings-security.xml" and "settings.xml" are minimal examples
+of files used by maven to pick up authentication credentials needed to
+connect to remote servers and to cryptographically sign the artefacts.
+
+(0)
+Preliminary checks:
+ * All Java files must contain a license header. The "RAT" maven plugin will
+   generate a report indicating for which files the license is missing.
+ * For a "minor" release, the library must be backward-compatible. Check all
+   the errors reported by the "Clirr" plugin.
+ * Clear all "CheckStyle" warnings.
+ * Make sure that the construct reported by "FindBugs" are intentional.
+ * Mark all fixed issues as such in the bug-tracking system, and add a
+   corresponding entry in "src/changes/changes.xml".
+
+
+(1)
+As a first optional step, you can test that everything works locally, i.e.
+that the build process can create all the necessary artefacts. The command
+
+  $ mvn clean deploy -Prelease -Ptest-deploy
+
+should create the artefacts in the "target/deploy".
+
+
+(2)
+At this point, you should commit everything that will be part of the release.
+
+In particular:
+ * Update and commit the "src/site/site.xml" file to contain the information
+   about the API docs of the new release.
+ * Estimate a release date (taking into account the release vote delay) and
+   insert it in the "src/changes/changes.xml" file.
+
+From now on, be especially careful to the "svn commit" commands that will be
+indicated below: Only the selected file(s) should be committed but not the
+"pom.xml" that will be modified now.
+
+The "pom.xml" on the SVN server must always be in a state for creating snapshot
+versions of the library, i.e. the tag "<version>" should end with the string
+"-SNAPSHOT":
+
+    <version>3.2-SNAPSHOT</version>
+
+Assuming that the release version will be "3.2", modify the "<version>" tag to
+read:
+
+    <version>3.2</version>
+
+Modify the section of "<properties>" that also refers to version numbers.
+You should uncomment the "<commons.rc.version>" line and indicate the
+appropriate numbering of the release candidate: This refers to how many
+times you will need to repeat this whole release process until it is
+accepted (by a vote):
+
+  <properties>
+    <!-- ... -->
+    <commons.release.version>3.2</commons.release.version>
+    <commons.rc.version>RC1</commons.rc.version>
+    <!-- ... -->
+  </properties>
+
+[Note: From now on, the "pom.xml" file must not be committed anymore
+to the SVN repository. Once the release process is over, you can do a
+"revert" to cancel the local changes.]
+
+
+(3)
+The "download" page template is located at "src/site/xdoc/download_math.xml".
+This file is updated automatically by running the command:
+
+  $ mvn commons:download-page
+
+
+(4)
+The "release notes" file will be created by gathering all the changes
+collected during development in the file "src/changes/changes.xml".
+Create it by running:
+
+  $ mvn changes:announcement-generate \
+     -Dchanges.template=release-notes.vm \
+     -Dchanges.templateDirectory=src/changes
+
+It will generate the release text in "target/announcement/release-notes.vm",
+which you must now copy to the appropriate location:
+
+  $ cp -i target/announcement/release-notes.vm RELEASE-NOTES.txt
+
+Alternately to the above two commands, you can rely on the "release-notes"
+profile defined in the "commons-parent" project (which is inherited by the
+"commons-math project) and run the following command, which will directly create
+the RELEASE-NOTES.txt file:
+
+  $ mvn -Prelease-notes changes:announcement-generate
+
+Check the file for weird line breaks, and commit the updated file to SVN:
+
+  $ svn commit RELEASE-NOTES.txt
+
+
+(5)
+Create the tag that will contain the whole source of this release candidate.
+First, make sure that the workspace is up-to-date:
+
+  $ svn up
+
+Then, assuming the first candidate, the suffix will be "RC1" (this should
+be the  same as in the "<properties>" in the "pom.xml"), and the command
+will be:
+
+  $ svn copy . \
+    -m"Creating Commons Math v3.2 RC1 tag." \
+    https://svn.apache.org/repos/asf/commons/proper/math/tags/MATH_3_2_RC1
+
+The tag will then be accessible at
+  https://svn.apache.org/repos/asf/commons/proper/math/tags/
+
+
+(6)
+Check out the tagged code and change into the newly created directory:
+
+  $ svn co https://svn.apache.org/repos/asf/commons/proper/math/tags/MATH_3_2_RC1
+  $ cd MATH_3_2_RC1
+
+
+(7)
+If this is your first release, you might need to add your GPG encryption
+key to the KEYS file. [If you have already done so, skip this section.]
+
+Retrieve the files from the SVN repository:
+
+  $ svn co --depth=immediates \
+    https://__Your_apache_login__@svn.apache.org/repos/asf/commons/trunks-proper
+
+and follow the instructions at the top of the "KEYS" file.
+
+
+(8)
+Create and transfer the artifacts to the Nexus server (a.k.a. "deploy").
+
+Because the artifacts must be cryptographically signed, this step requires that
+a profile named "release" exists in the maven "settings.xml" configuration file
+which will contain the identifier of your GPG key (cf. sample "settings.xml" 
+file).
+
+You can then run
+
+  $ mvn clean deploy -Prelease
+
+which will transfer the artifacts to the Nexus repository located at
+  https://repository.apache.org/index.html#stagingRepositories
+
+This process transfers more files than really needed in the the "staging" (i.e.
+non official) maven repository. The files expected in the repository are
+commons-math3-3.2.pom, commons-math3-3.2.jar, commons-math3-3.2.javadoc,
+commons-math3-3.2.sources, commons-math3-3.2.test-sources commons-math3-3.2.tests,
+the associated fingerprints (<file-name>.md5 and <file-name>.sha1) and the signatures
+<file-name>.asc. Note that Nexus automatically adds "md5" and "sha1" checksums files
+to the "asc" files (cryptographic signature). These fingerprints on signatures are
+spurious and have to be manually removed from Nexus staging area. The process also
+transfers the complete source and binaries distributions files
+commons-math3-3.2.-bin.tar.gz, commons-math3-3.2.-bin.zip, commons-math3-3.2.-src.tar.gz,
+commons-math3-3.2.-src.zip as well as the associated .md5 and .sha1 fingerprints and the
+.asc signatures. These are not really maven artifacts but rather distribution archives,
+and they belong elsewhere, so they must also been removed from the Nexus staging
+repository.
+
+As a measure of sanity check,  repository must be manually "closed" before other
+people review the deliverables just created.
+How to "close" the staging repository it is explained at this page:
+  https://docs.sonatype.org/display/Repository/Closing+a+Staging+Repository
+
+(9)
+Upload the other distribution files to the Apache servers.
+
+The archive files have been created during the previous step. They have been put
+in the .m2 local repository. The RELEASE_NOTES.txt file hase been created earlier
+and is still in the checkout directory of the release candidate. All these files
+can be uploaded to the development area of the Apache dist server using the
+following commands:
+
+ $ cd /tmp
+ $ svn checkout https://dist.apache.org/repos/dist/dev/commons/math
+ $ cp /.m2/repository/org/apache/commons/commons-math/3.2*-bin.* binaries
+ $ cp /.m2/repository/org/apache/commons/commons-math/3.2*-src.* source
+ $ cp <path-to-the-RC-workspace>/RELEASE-NOTES.txt .
+ $ svn commit -m "Creating distribution files for 3.2 RC1"
+
+
+(10)
+Web site testing (a.k.a "staging") of the generated web site (containing the
+API documentation, etc.)
+
+This step requires a "<server>" with an identifier set to "stagingSite" and
+that the remote server is set up to accept no-password ssh authentification
+(cf. sample "settings.xml" file).
+
+Execute the commands (assuming the release candidate is "RC1"):
+
+  $ mvn site 
+
+and
+
+ $ mvn site:stage-deploy \
+     -DstagingDirectory=src/site \
+     -DstagingSiteURL=scp://__Your_apache_login__@people.apache.org:/www/people.apache.org/builds/commons/math/3.2/RC1
+
+The web site will be available for review at:
+  http://people.apache.org/builds/commons/math/3.2/RC1
+
+
+(11)
+Call to vote by sending a message to the "dev" ML with subject
+"[VOTE][RC1] Release Commons Math 3.2". You can use the following example as
+a starting point, replacing the URLs with the appropriate ones:
+----------
+Tag:
+  https://svn.apache.org/repos/asf/commons/proper/math/tags/MATH_3_2_RC1/
+
+Site:
+  http://people.apache.org/builds/commons/math/3.2/RC1/
+
+Distribution files:
+  https://dist.apache.org/repos/dist/dev/commons/math/
+
+Maven artifacts:
+  https://repository.apache.org/content/repositories/orgapachecommons-051/org/apache/commons/commons-math3/3.2/
+
+[ ] +1 Release it.
+[ ] +0 Go ahead; I don't care.
+[ ] -0 There are a few minor glitches: ...
+[ ] -1 No, do not release it because ...
+
+This vote will close in 72 hours.
+----------
+
+
+(12)
+If some blocking problems have been found in the release deliverables, cancel
+the vote by sending a "[CANCEL][VOTE]" message to the "dev" ML.
+After correcting the problems, you'll likely have to start again from step 3,
+4 or 5.
+
+
+(13)
+After at least 72 hours have elapsed, send a "[VOTE][RESULT]" mail to
+summarize the outcome of the vote. This should tally the votes cast,
+and state which are binding (PMC members).
+
+
+(14)
+The distribution files must be moved from the development area to the release
+area of the Apache dist server:
+
+$ svnmucc -U https://dist.apache.org/repos/dist \
+          mv dev/commons/math/RELEASE-NOTES.txt release/commons/math/RELEASE-NOTES.txt \
+          mv dev/commons/math/binaries/commons-math-3.2-bin.tar.gz release/commons/math/binaries/commons-math-3.2-bin.tar.gz \
+          mv dev/commons/math/binaries/commons-math-3.2-bin.tar.gz.asc release/commons/math/binaries/commons-math-3.2-bin.tar.gz.asc \
+          mv dev/commons/math/binaries/commons-math-3.2-bin.tar.gz.md5 release/commons/math/binaries/commons-math-3.2-bin.tar.gz.md5 \
+          mv dev/commons/math/binaries/commons-math-3.2-bin.tar.gz.sha1 release/commons/math/binaries/commons-math-3.2-bin.tar.gz.sha1 \
+          mv dev/commons/math/binaries/commons-math-3.2-bin.zip release/commons/math/binaries/commons-math-3.2-bin.zip \
+          mv dev/commons/math/binaries/commons-math-3.2-bin.zip.asc release/commons/math/binaries/commons-math-3.2-bin.zip.asc \
+          mv dev/commons/math/binaries/commons-math-3.2-bin.zip.md5 release/commons/math/binaries/commons-math-3.2-bin.zip.md5 \
+          mv dev/commons/math/binaries/commons-math-3.2-bin.zip.sha1 release/commons/math/binaries/commons-math-3.2-bin.zip.sha1 \
+          mv dev/commons/math/source/commons-math-3.2-src.tar.gz release/commons/math/source/commons-math-3.2-src.tar.gz \
+          mv dev/commons/math/source/commons-math-3.2-src.tar.gz.asc release/commons/math/source/commons-math-3.2-src.tar.gz.asc \
+          mv dev/commons/math/source/commons-math-3.2-src.tar.gz.md5 release/commons/math/source/commons-math-3.2-src.tar.gz.md5 \
+          mv dev/commons/math/source/commons-math-3.2-src.tar.gz.sha1 release/commons/math/source/commons-math-3.2-src.tar.gz.sha1 \
+          mv dev/commons/math/source/commons-math-3.2-src.zip release/commons/math/source/commons-math-3.2-src.zip \
+          mv dev/commons/math/source/commons-math-3.2-src.zip.asc release/commons/math/source/commons-math-3.2-src.zip.asc \
+          mv dev/commons/math/source/commons-math-3.2-src.zip.md5 release/commons/math/source/commons-math-3.2-src.zip.md5 \
+          mv dev/commons/math/source/commons-math-3.2-src.zip.sha1 release/commons/math/source/commons-math-3.2-src.zip.sha1 \
+          -m "Publish commons-math 3.2 Release"
+
+
+(15)
+Release (a.k.a. "promote") the artifacts on the Nexus server, as shown here:
+  https://docs.sonatype.org/display/Repository/Releasing+a+Staging+Repository
+
+
+(16)
+Publish the web site. From your local working copy of the tag, run the command:
+
+  $ mvn site-deploy
+
+You may want to adjust manually some parts like fixing broken relative links or
+copying the content of the current apidocs to javadocs/api-3.2. In order to do
+this, you have to check out the production site using svn, make your changes locally
+and commit the changes back to the server.
+
+$ svn checkout https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-math
+$ <fix the site>
+$ svn commit -m "fixing broken links"
+
+
+(17)
+Copy the the final RC tag to the official tag:
+  $ svn copy \
+    https://svn.apache.org/repos/asf/commons/proper/math/tags/MATH_3_2_RC1 \
+    -m"RC1 becomes the 3.2 official version." \
+    https://svn.apache.org/repos/asf/commons/proper/math/tags/MATH_3_2
+
+
+(18)
+Allow for the web site mirrors to be updated (possibly several hours); then
+send (from your apache account) a release announcement to the following ML:
+  announce@apache.org
+  dev@commons.apache.org
+  user@commons.apache.org
