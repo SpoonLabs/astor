@@ -310,7 +310,12 @@ public class MutationSupporter {
 
 					Element mod = root.createElement("modified");
 					op.appendChild(mod);
-					mod.setTextContent(genOperationInstance.getModified().toString());
+					if(genOperationInstance.getModified() != null)
+						mod.setTextContent("\n fixed statement= \"" +  genOperationInstance.getModified().toString()+"\"");
+					else{
+						mod.setTextContent("\n fix (remove original statement)= \""+ genOperationInstance.getOriginal().toString()+"\"");
+					}
+		
 
 				}
 			}
@@ -359,7 +364,11 @@ public class MutationSupporter {
 						
 						line += "\n original statement= " + genOperationInstance.getOriginal().toString();
 
-						line += "\n fixed statement= " + genOperationInstance.getModified().toString();
+						if(genOperationInstance.getModified() != null)
+							line += "\n fixed statement= \"" +  genOperationInstance.getModified().toString()+"\"";
+						else{
+							line += "\n fix (remove original statement) \""+ genOperationInstance.getOriginal().toString()+"\"";
+						}
 						
 						line += "\n generation= " + Integer.toString(i);
 						line += "\n ";

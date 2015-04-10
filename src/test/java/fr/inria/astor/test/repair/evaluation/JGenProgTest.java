@@ -352,11 +352,12 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		// src/test/java/ -binjavafolder target/classes/ -bintestfolder
 		// target/test-classes/
 		main1.main(new String[] {
-				"-dependencies","examples/math_2/lib/" + File.pathSeparator +
+				"-dependencies","examples/math_2/lib/" , //File.pathSeparator +
 				// "-id","tttMath-0c1ef",
-				"-mode","statement-remove"+
-				"-failing", "", "-location",
-				"examples/math_2/", "-package", "org.apache.commons",
+				"-mode","statement-remove",
+				"-failing", "org.apache.commons.math3.distribution.HypergeometricDistributionTest", 
+				"-location",	"examples/math_2/", 
+				"-package", "org.apache.commons",
 				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin", 
 				"-srcjavafolder", "/src/main/java/",
 				"-srctestfolder", "/src/test/java/", 
