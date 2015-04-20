@@ -41,7 +41,7 @@ public abstract class AbstractMain {
 		options.addOption("dependencies", true, "dependencies of the application, separated by char "
 				+ File.pathSeparator);
 		options.addOption("package", true, "package to instrument e.g. org.commons.math");
-		options.addOption("failing", true, "failing test case");
+		options.addOption("failing", true, "failing test cases, separated by Path separator char (: in linux/mac  and ; in windows)");
 		options.addOption("out", true,
 				"(Optional) Out dir: place were solutions and intermediate program variants are stored. (Default: ./outputMutation/)");
 		options.addOption("help", false, "print help and usage");

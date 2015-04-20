@@ -168,7 +168,8 @@ public class ProjectRepairFacade {
 		hs.add(getOutDirWithPrefix(mutatorIdentifier));
 
 		List<SuspiciousCode> suspiciousStatemens = faultLocalizationFacade.searchGZoltar(
-				getOutDirWithPrefix(mutatorIdentifier), getProperties().getFailingTestCases(), listTOInst, hs);
+				getOutDirWithPrefix(mutatorIdentifier), getProperties().getFailingTestCases(), listTOInst, hs, 
+				ConfigurationProperties.getProperty("location")+"/"+ConfigurationProperties.getProperty("srcjavafolder"));
 		return suspiciousStatemens;
 	}
 

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Assert;
@@ -74,13 +75,13 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	@Test
 	public void testExampleMath0C1() throws Exception {
-		//Recompile the example project before executing it.
+		
 		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
 				+ "examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
 		String folder = "Math-0c1ef";
 		String failing = "org.apache.commons.math3.primes.PrimesTest";
 		File f = new File("examples/Math-0c1ef/");
-		String location = f.getParent();
+		String location =  f.getAbsolutePath();
 		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
 
@@ -258,14 +259,15 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testRunMain() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
-		main1.main(new String[] {
+		String[] args = new String[] {
 				"-dependencies",
 				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
 						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
-				// "-id","tttMath-0c1ef",
 				"-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
 				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons",
-				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin" });
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin" };
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
 
 	}
 

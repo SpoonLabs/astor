@@ -226,7 +226,7 @@ public abstract class EvolutionaryEngine {
 				
 			}
 			variants.add(parentNew);
-			log.debug("Introducing original variant"+((removedVariant!=null)?"instead of variant "+removedVariant.getId():""));
+			//log.debug("Introducing original variant"+((removedVariant!=null)?"instead of variant "+removedVariant.getId():""));
 		
 		}
 	}

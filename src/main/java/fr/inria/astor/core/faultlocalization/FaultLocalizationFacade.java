@@ -34,7 +34,7 @@ public class FaultLocalizationFacade {
 	
 	static boolean EXCLUDE_TEST = true;
 		
-	public List<SuspiciousCode> searchGZoltar(String location, List<String> testsToExecute,List<String> toInstrument, HashSet<String> cp) throws FileNotFoundException, IOException {
+	public List<SuspiciousCode> searchGZoltar(String location, List<String> testsToExecute,List<String> toInstrument, HashSet<String> cp, String srcFolder) throws FileNotFoundException, IOException {
 		candidates.clear();
 		failingTestCases.clear();
 		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");
@@ -84,13 +84,9 @@ public class FaultLocalizationFacade {
 		DecimalFormat df = new DecimalFormat( "#.###" );
 		for (Statement s : gz.getSuspiciousStatements()) {
 			String compName = s.getMethod().getParent().getLabel();
-			String[] seg = compName.split("\\.");
-			String name = seg[seg.length-1];
+			
 			if (s.getSuspiciousness() > thr 
-					&& !compName.toLowerCase().endsWith("test") 
-					&& !name.toLowerCase().startsWith("test")
-					//
-					&& !name.toLowerCase().startsWith("validate")
+					&& isSource(compName, srcFolder)
 					) {
 				logger.debug("Suspicious: line " + compName + " l: " + s.getLineNumber() + ", susp "
 						+ df.format(s.getSuspiciousness()));
@@ -103,6 +99,21 @@ public class FaultLocalizationFacade {
 		return candidates;
 	}
 
+	protected boolean isSource(String compName , String srcFolder){
+		String clRoot = compName.split("\\$")[0];
+		String[] segmentationName = clRoot.split("\\.");
+		String simpleClassName = segmentationName[segmentationName.length-1];
+		
+		File root = new File(srcFolder+"/"+clRoot.replace(".", "/")+".java");
+		
+		return  root.exists()
+				&& !compName.toLowerCase().endsWith("test")
+				&& !compName.toLowerCase().endsWith("tests") 
+				&& !simpleClassName.toLowerCase().startsWith("test")
+				&& !simpleClassName.toLowerCase().startsWith("validate");
+		
+	}
+	
 	public class ComparatorCandidates implements Comparator<SuspiciousCode>{
 
 		@Override
