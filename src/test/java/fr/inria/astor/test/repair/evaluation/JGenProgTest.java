@@ -367,5 +367,27 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-bintestfolder","/target/test-classes" });
 
 	}
+	
+	@SuppressWarnings("static-access")
+	@Test
+	public void testRunMainLang55() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String[] args = new String[] {
+				"-dependencies","/home/matias/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar",
+				"-failing", "org.apache.commons.lang.time.StopWatchTest", 
+				"-location","/home/matias/develop/code/astor/examples/lang_55/", 
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.8.0_31/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel","5", 
+				"-alternativecompliancelevel","5" 
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
 
 }

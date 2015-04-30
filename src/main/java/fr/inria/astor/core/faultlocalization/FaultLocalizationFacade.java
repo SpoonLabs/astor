@@ -104,10 +104,11 @@ public class FaultLocalizationFacade {
 		String[] segmentationName = clRoot.split("\\.");
 		String simpleClassName = segmentationName[segmentationName.length-1];
 		
-		File root = new File(srcFolder+"/"+clRoot.replace(".", "/")+".java");
+		//File root = new File(srcFolder+"/"+clRoot.replace(".", "/")+".java");
 		
-		return  root.exists()
-				&& !compName.toLowerCase().endsWith("test")
+		return // root.exists()
+				//&& 
+				!compName.toLowerCase().endsWith("test")
 				&& !compName.toLowerCase().endsWith("tests") 
 				&& !simpleClassName.toLowerCase().startsWith("test")
 				&& !simpleClassName.toLowerCase().startsWith("validate");

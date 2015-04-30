@@ -27,77 +27,73 @@ import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.main.AbstractMain;
+
 /**
- *   Main for version of jGenProg that repairs If conditions
- * @author Matias Martinez,  matias.martinez@inria.fr
+ * Main for version of jGenProg that repairs If conditions
+ * 
+ * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
 public class MainIFjGenProg extends AbstractMain {
 
 	@Override
-	public void run(String location, String projectName, String dependencies,  String packageToMine)
-			throws Exception {
-	
+	public void run(String location, String projectName, String dependencies, String packageToMine) throws Exception {
 
 	}
 
-	
-	public  MainIFjGenProg(){
-	}	
-	
-		
+	public MainIFjGenProg() {
+	}
+
 	@Override
-	public void run(String location, String projectName, String dependencies,  
-			String packageToInstrument,
-			double thfl, String failing) throws Exception {
-		
+	public void run(String location, String projectName, String dependencies, String packageToInstrument, double thfl,
+			String failing) throws Exception {
+
 		String[] failTestS = failing.split(File.pathSeparator);
 		List<String> failingList = Arrays.asList(failTestS);
 		String method = this.getClass().getSimpleName();
-		rep = getProject(location, projectName,method , failingList,dependencies,true);
-		rep.getProperties().setExperimentName(this.getClass().getSimpleName());
-				
-		rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-	
-		
-		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
-		JGenProgIfExpression gploop = new JGenProgIfExpression(mutSupporter,rep);
+		projectFacade = getProject(location, projectName, method, failingList, dependencies, true);
+		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
 
-		//This processor collects the If for creating a population of suspicious ifs.
+		projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+
+		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
+		JGenProgIfExpression gploop = new JGenProgIfExpression(mutSupporter, projectFacade);
+
+		// This processor collects the If for creating a population of
+		// suspicious ifs.
 		List<AbstractFixSpaceProcessor<?>> procCondition = new ArrayList<AbstractFixSpaceProcessor<?>>();
 		procCondition.add(new IFConditionFixSpaceProcessor());
 		gploop.setVariantFactory(new ProgramVariantFactory(procCondition));
-	
-		//Now, we focus on the fix space i.e. ingredients for the fix.
+
+		// Now, we focus on the fix space i.e. ingredients for the fix.
 		List<AbstractFixSpaceProcessor<?>> procFix = new ArrayList<AbstractFixSpaceProcessor<?>>();
 		procFix.add(new LoopExpressionFixSpaceProcessor());
 		procFix.add(new IFExpressionFixSpaceProcessor());
 		gploop.setFixspace(new BasicFixSpace(procFix));
-		
+
 		//
 		gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
 		gploop.setPopulationControler(new FitnessPopulationController());
-		
+
 		gploop.setProgramValidator(new ProcessValidator());
-		
-		List<SuspiciousCode> candidates = rep.getSuspicious(
-				packageToInstrument,
+
+		List<SuspiciousCode> candidates = projectFacade.getSuspicious(packageToInstrument,
 				ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
 		for (SuspiciousCode suspiciousCode : candidates) {
-			if(!suspiciousCode.getClassName().endsWith("Exception") 
-								){
+			if (!suspiciousCode.getClassName().endsWith("Exception")) {
 				filtercandidates.add(suspiciousCode);
 			}
 		}
-		//currentStat.fl_size = filtercandidates.size();
-		//currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
-		
+		// currentStat.fl_size = filtercandidates.size();
+		// currentStat.fl_threshold =
+		// TransformationProperties.THRESHOLD_SUSPECTNESS ;
+
 		assertNotNull(candidates);
-  		assertTrue(candidates.size() > 0);
+		assertTrue(candidates.size() > 0);
 		try {
-			gploop.setup(filtercandidates);
+			gploop.initPopulation(filtercandidates);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -107,17 +103,13 @@ public class MainIFjGenProg extends AbstractMain {
 
 	/**
 	 * @param args
-	 * @throws Exception 
-	 * @throws ParseException 
+	 * @throws Exception
+	 * @throws ParseException
 	 */
-	public static void main(String[] args) throws Exception  {		
-			MainIFjGenProg m = new MainIFjGenProg();
-			m.processArguments(args);	
-		
-		
+	public static void main(String[] args) throws Exception {
+		MainIFjGenProg m = new MainIFjGenProg();
+		m.processArguments(args);
+
 	}
-	
-
-
 
 }

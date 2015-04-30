@@ -49,13 +49,13 @@ public class MainIFMutation extends AbstractMain {
 			List<String> failingList = Arrays.asList(failing.split(File.pathSeparator));
 			
 			
-			rep = getProject(location, projectName,method, failingList,dependencies,false);
-			rep.getProperties().setExperimentName(this.getClass().getSimpleName());
+			projectFacade = getProject(location, projectName,method, failingList,dependencies,false);
+			projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
 			
-			rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+			projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 			MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 			
-			MutationalRepair mutloop = new MutationalRepair(mutSupporter,rep);
+			MutationalRepair mutloop = new MutationalRepair(mutSupporter,projectFacade);
 			mutloop.setFixspace(new BasicFixSpace());
 			
 			mutloop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
@@ -70,8 +70,8 @@ public class MainIFMutation extends AbstractMain {
 			
 			try {
 				if(filtercandidates == null){
-				List<SuspiciousCode> candidates = rep.getSuspicious(
-						rep.getProperties().getPackageToInstrument()
+				List<SuspiciousCode> candidates = projectFacade.getSuspicious(
+						projectFacade.getProperties().getPackageToInstrument()
 						,ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
 				
@@ -91,7 +91,7 @@ public class MainIFMutation extends AbstractMain {
 			//	currentStat.fl_size = filtercandidates.size();
 			//	currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS ;
 		}
-				mutloop.setup(filtercandidates);
+				mutloop.initPopulation(filtercandidates);
 				
 			} catch (Exception e) {
 				e.printStackTrace();

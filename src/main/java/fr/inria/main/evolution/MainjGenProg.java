@@ -32,20 +32,16 @@ import fr.inria.main.AbstractMain;
  */
 public class MainjGenProg extends AbstractMain {
 
-	@Override
-	public void run(String location, String projectName, String dependencies, String packageToMine) throws Exception {
-
-	}
-
+	
 	public void initProject(String location, String projectName, String dependencies, String packageToInstrument,
 			double thfl, String failing) throws Exception {
 			
 		List<String> failingList = Arrays.asList(failing.split(File.pathSeparator));
 		String method = this.getClass().getSimpleName();
-		rep = getProject(location, projectName, method, failingList, dependencies, true);
-		rep.getProperties().setExperimentName(this.getClass().getSimpleName());
+		projectFacade = getProject(location, projectName, method, failingList, dependencies, true);
+		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
 
-		rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
 	}
 	public JGenProg statementMode() throws Exception {
@@ -61,7 +57,7 @@ public class MainjGenProg extends AbstractMain {
 	public JGenProg statementMode(boolean removeMode) throws Exception {
 
 		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
-		JGenProg gploop = new JGenProg(mutSupporter, rep);
+		JGenProg gploop = new JGenProg(mutSupporter, projectFacade);
 
 		// Fix Space
 		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
@@ -90,7 +86,7 @@ public class MainjGenProg extends AbstractMain {
 		gploop.setProgramValidator(new ProcessValidator());
 
 		// Suspicious
-		List<SuspiciousCode> candidates = rep.getSuspicious(ConfigurationProperties.getProperty("packageToInstrument"),
+		List<SuspiciousCode> candidates = projectFacade.getSuspicious(ConfigurationProperties.getProperty("packageToInstrument"),
 				ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
@@ -102,7 +98,8 @@ public class MainjGenProg extends AbstractMain {
 
 		if(candidates == null || candidates.isEmpty())
 			 throw new IllegalArgumentException("No suspicious gen for analyze");
-		gploop.setup(filtercandidates);
+		
+		gploop.initPopulation(filtercandidates);
 
 		return gploop;
 	}
@@ -160,6 +157,12 @@ public class MainjGenProg extends AbstractMain {
 
 		m.run(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
+	}
+	@Override
+	public void run(String location, String projectName, String dependencies, String packageToInstrument)
+			throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

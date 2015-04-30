@@ -44,7 +44,7 @@ public class ProjectRepairFacade {
 	 * @param currentMutatorIdentifier
 	 * @throws IOException
 	 */
-	public synchronized void init(String currentMutatorIdentifier) throws IOException {
+	public synchronized void setupTempDirectories(String currentMutatorIdentifier) throws IOException {
 		
 		cleanMutationResultDirectories();
 		
@@ -202,21 +202,6 @@ public class ProjectRepairFacade {
 
 	public FaultLocalizationFacade getFaultLocalizationFacade() {
 		return faultLocalizationFacade;
-	}
-
-	public static Factory createFactory() {
-		StandardEnvironment env = new StandardEnvironment();
-		Factory factory = new FactoryImpl(new DefaultCoreFactory(), env);
-
-		// environment initialization
-		env.setComplianceLevel(6);
-		env.setVerbose(false);
-		env.setDebug(true);// false
-		env.setTabulationSize(5);
-		env.useTabulations(true);
-		env.useSourceCodeFragments(false);
-
-		return factory;
 	}
 
 }

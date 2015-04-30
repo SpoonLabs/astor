@@ -53,15 +53,15 @@ public class MainIFPar extends AbstractMain {
 		
 		List<String> failingList = Arrays.asList(failing.split(File.pathSeparator));
 
-		rep = getProject(location, projectName, method,  failingList, dependencies, false);
+		projectFacade = getProject(location, projectName, method,  failingList, dependencies, false);
 
-		rep.getProperties().setExperimentName(this.getClass().getSimpleName());
+		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
 
-		rep.init(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		
 		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 				
-		ParRepair parloop = new ParRepair(mutSupporter, rep);
+		ParRepair parloop = new ParRepair(mutSupporter, projectFacade);
 		//parloop.setCurrentStat(currentStat);
 		
 		List<AbstractFixSpaceProcessor<?>> suspiciousProcessor = new ArrayList<AbstractFixSpaceProcessor<?>>();
@@ -77,7 +77,7 @@ public class MainIFPar extends AbstractMain {
 		parloop.setRepairActionSpace(new ParUniformRandomRepairOperatorSpace());
 		parloop.setPopulationControler(new FitnessPopulationController());
 				
-		List<SuspiciousCode> candidates = rep.getSuspicious(rep.getProperties().getPackageToInstrument(),
+		List<SuspiciousCode> candidates = projectFacade.getSuspicious(projectFacade.getProperties().getPackageToInstrument(),
 				ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
@@ -95,7 +95,7 @@ public class MainIFPar extends AbstractMain {
 		assertNotNull(candidates);
 		assertTrue(candidates.size() > 0);
 		try {
-			parloop.setup(filtercandidates);
+			parloop.initPopulation(filtercandidates);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

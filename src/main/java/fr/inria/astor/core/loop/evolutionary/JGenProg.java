@@ -50,7 +50,7 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @param suspicious
 	 * @throws Exception
 	 */
-	public void setup(List<SuspiciousCode> suspicious) throws Exception {
+	public void initPopulation(List<SuspiciousCode> suspicious) throws Exception {
 
 		if (MutationSupporter.getFactory().Type().getAll().isEmpty()) {
 			initModel();
@@ -109,7 +109,17 @@ public class JGenProg extends EvolutionaryEngine {
 	public void initModel() {
 		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
-		mutatorSupporter.buildModel(codeLocation, classpath.split(File.pathSeparator));
+		String[] cpArray = classpath.split(File.pathSeparator);
+		
+		try{
+			mutatorSupporter.buildModel(codeLocation, cpArray);
+		}
+		catch(Exception e){
+			log.error("Problem compiling the model with compliance level "+ConfigurationProperties.getPropertyInt("javacompliancelevel"));
+			log.error(e.getMessage());
+			mutatorSupporter.getFactory().getEnvironment().setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
+			mutatorSupporter.buildModel(codeLocation, cpArray);
+		}
 	}
 
 	/**

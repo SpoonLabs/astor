@@ -126,8 +126,9 @@ public abstract class EvolutionaryEngine {
 		} else {
 			log.info("End Repair Loops: NOT Found solution");
 		}
+		log.info("Number solutions:"+this.solutions.size());
 		for (ProgramVariant variant : solutions) {
-			log.info("f (sol) " + variant.getFitness() + ", " + variant);
+			log.info("f (sol): " + variant.getFitness() + ", " + variant);
 		}
 		log.info("All variants:");
 		for (ProgramVariant variant : variants) {

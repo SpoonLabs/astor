@@ -13,6 +13,8 @@ import org.apache.commons.cli.UnrecognizedOptionException;
 
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
@@ -28,7 +30,7 @@ public abstract class AbstractMain {
 
 	protected MutationSupporter mutSupporter;
 	protected Factory factory;
-	protected ProjectRepairFacade rep;
+	protected ProjectRepairFacade projectFacade;
 
 	static Options options = new Options();
 
@@ -107,18 +109,23 @@ public abstract class AbstractMain {
 		options.addOption("multigenmodif", false,
 				"(Optional) An element of a program variant (i.e., gen) can be modified several times in different generation");
 	
-		
+		options.addOption("javacompliancelevel", true,
+				"(Optional) Compliance level (e.g., 7 for java 1.7, 6 for java 1.6). Default Java 1.7");
+	
+		options.addOption("alternativecompliancelevel", true,
+				"(Optional) Alternative compliance level. Default Java 1.4. Used after Astor tries to compile to the complicance level and fails.");
+	
 
 	}
 
-	public void createFactory() {
+/*	public void createFactory() {
 
 		if (factory == null) {
 			factory = ProjectRepairFacade.createFactory();
 			factory.getEnvironment().setDebug(true);
 		}
 		mutSupporter = new MutationSupporter(factory);
-	}
+	}*/
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument)
 			throws Exception;
@@ -248,6 +255,14 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("multigenmodif"))
 			ConfigurationProperties.properties.setProperty("multigenmodif", "true");
+		
+		if (cmd.hasOption("javacompliancelevel"))
+			ConfigurationProperties.properties.setProperty("javacompliancelevel", cmd.getOptionValue("javacompliancelevel"));
+	
+		if (cmd.hasOption("alternativecompliancelevel"))
+			ConfigurationProperties.properties.setProperty("alternativecompliancelevel", cmd.getOptionValue("alternativecompliancelevel"));
+	
+		
 		return true;
 	}
 
@@ -334,10 +349,9 @@ public abstract class AbstractMain {
 	}
 
 	protected Factory getFactory() {
-		//Factory facade = FactoryImpl.getLauchingFactory();
-
+	
 		if (factory == null) {
-			factory = rep.createFactory();
+			factory = createFactory();
 			factory.getEnvironment().setDebug(true);
 		}
 		return factory;
@@ -419,4 +433,17 @@ public abstract class AbstractMain {
 
 	}
 
+	public static Factory createFactory() {
+		StandardEnvironment env = new StandardEnvironment();
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(), env);
+		// environment initialization
+		env.setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
+		env.setVerbose(false);
+		env.setDebug(true);// false
+		env.setTabulationSize(5);
+		env.useTabulations(true);
+		env.useSourceCodeFragments(false);
+
+		return factory;
+	}
 }

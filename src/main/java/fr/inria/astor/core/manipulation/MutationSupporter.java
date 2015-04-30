@@ -1,7 +1,6 @@
 package fr.inria.astor.core.manipulation;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -30,7 +29,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.reflect.declaration.CtElementImpl;
 import fr.inria.astor.core.entities.GenOperationInstance;
@@ -73,40 +71,20 @@ public class MutationSupporter {
 	public MutationSupporter(Factory factory) {
 		super();
 		this.factory = factory;
-		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
 		spoonClassCompiler = new SpoonClassCompiler(factory);
 		this.currentSupporter = this;
 	}
 
-	public void buildModel(String srcPathToBuild, String classpath) {
-
-		logger.info("building model: " + srcPathToBuild);
-		try {
-			jdtSpoonModelBuilder.addInputSource(new File(srcPathToBuild));
-			jdtSpoonModelBuilder.setOutputDirectory(new File(srcPathToBuild));
-			jdtSpoonModelBuilder.setSourceClasspath(classpath);
-			jdtSpoonModelBuilder.build();
-			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
-
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
-	}
-
 	public void buildModel(String srcPathToBuild, String[] classpath) {
 
-		logger.info("building model: " + srcPathToBuild);
-		try {
-			jdtSpoonModelBuilder.addInputSource(new File(srcPathToBuild));
-			jdtSpoonModelBuilder.setOutputDirectory(new File(srcPathToBuild));
-			jdtSpoonModelBuilder.setSourceClasspath(classpath);
-			jdtSpoonModelBuilder.build();
-			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
-
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		logger.info("building model: " + srcPathToBuild + ", compliance level: "
+				+ factory.getEnvironment().getComplianceLevel());
+		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
+		jdtSpoonModelBuilder.addInputSource(new File(srcPathToBuild));
+		jdtSpoonModelBuilder.setOutputDirectory(new File(srcPathToBuild));
+		jdtSpoonModelBuilder.setSourceClasspath(classpath);
+		jdtSpoonModelBuilder.build();
+		jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 
 	}
 
@@ -310,12 +288,13 @@ public class MutationSupporter {
 
 					Element mod = root.createElement("modified");
 					op.appendChild(mod);
-					if(genOperationInstance.getModified() != null)
-						mod.setTextContent("\n fixed statement= \"" +  genOperationInstance.getModified().toString()+"\"");
-					else{
-						mod.setTextContent("\n fix (remove original statement)= \""+ genOperationInstance.getOriginal().toString()+"\"");
+					if (genOperationInstance.getModified() != null)
+						mod.setTextContent("\n fixed statement= \"" + genOperationInstance.getModified().toString()
+								+ "\"");
+					else {
+						mod.setTextContent("\n fix (remove original statement)= \""
+								+ genOperationInstance.getOriginal().toString() + "\"");
 					}
-		
 
 				}
 			}
@@ -340,43 +319,42 @@ public class MutationSupporter {
 
 	public String getSolutionData(List<ProgramVariant> variants, int generation) {
 		String line = "";
-		
 
-			for (ProgramVariant childVariant : variants) {
+		for (ProgramVariant childVariant : variants) {
 
-				line += "ProgramVariant " + childVariant.getId() + "\n ";
+			line += "ProgramVariant " + childVariant.getId() + "\n ";
 
-				for (int i = 1; i <= generation; i++) {
-					List<GenOperationInstance> genOperationInstances = childVariant.getOperations().get(i);
-					if (genOperationInstances == null)
-						continue;
+			for (int i = 1; i <= generation; i++) {
+				List<GenOperationInstance> genOperationInstances = childVariant.getOperations().get(i);
+				if (genOperationInstances == null)
+					continue;
 
-					for (GenOperationInstance genOperationInstance : genOperationInstances) {
+				for (GenOperationInstance genOperationInstance : genOperationInstances) {
 
-						line += "\n operation: " + "\nlocation= "
-								+ genOperationInstance.getGen().getCtClass().getQualifiedName();
+					line += "\n operation: " + "\nlocation= "
+							+ genOperationInstance.getGen().getCtClass().getQualifiedName();
 
-						if (genOperationInstance.getGen() instanceof GenSuspicious) {
-							GenSuspicious gs = (GenSuspicious) genOperationInstance.getGen();
-							line += "\n line= " + gs.getSuspicious().getLineNumber();
-						}
-
-						
-						line += "\n original statement= " + genOperationInstance.getOriginal().toString();
-
-						if(genOperationInstance.getModified() != null)
-							line += "\n fixed statement= \"" +  genOperationInstance.getModified().toString()+"\"";
-						else{
-							line += "\n fix (remove original statement) \""+ genOperationInstance.getOriginal().toString()+"\"";
-						}
-						
-						line += "\n generation= " + Integer.toString(i);
-						line += "\n ";
-
+					if (genOperationInstance.getGen() instanceof GenSuspicious) {
+						GenSuspicious gs = (GenSuspicious) genOperationInstance.getGen();
+						line += "\n line= " + gs.getSuspicious().getLineNumber();
 					}
+
+					line += "\n original statement= " + genOperationInstance.getOriginal().toString();
+
+					if (genOperationInstance.getModified() != null)
+						line += "\n fixed statement= \"" + genOperationInstance.getModified().toString() + "\"";
+					else {
+						line += "\n fix (remove original statement) \"" + genOperationInstance.getOriginal().toString()
+								+ "\"";
+					}
+
+					line += "\n generation= " + Integer.toString(i);
+					line += "\n ";
+
 				}
-				line += "\n ----";
 			}
+			line += "\n ----";
+		}
 		return line;
 	}
 
