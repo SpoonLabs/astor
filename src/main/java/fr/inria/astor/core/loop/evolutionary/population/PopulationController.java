@@ -23,4 +23,7 @@ public interface PopulationController {
 
 
 	public double getFitnessValue(ProgramVariant variant ,ProgramVariantValidationResult valResult );
+
+
+	public double getMaxFitnessValue();
 }

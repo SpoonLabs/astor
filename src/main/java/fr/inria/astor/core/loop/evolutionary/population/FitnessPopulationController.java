@@ -81,7 +81,13 @@ public class FitnessPopulationController implements PopulationController {
 	@Override
 	public double getFitnessValue(ProgramVariant variant, ProgramVariantValidationResult result) {
 
-		return /* result.getRunCount() - */result.getFailureCount();
+		return result.getFailureCount();
+	}
+	
+	@Override
+	public double getMaxFitnessValue() {
+
+		return Double.MAX_VALUE;
 	}
 
 	/**
@@ -103,4 +109,6 @@ public class FitnessPopulationController implements PopulationController {
 		}
 
 	}
+
+
 }

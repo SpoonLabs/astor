@@ -211,8 +211,8 @@ public abstract class EvolutionaryEngine {
 
 			if (newVariant.getCompilation().compiles()) {
 				temporalInstances.add(newVariant);
-
 			}
+				
 			if (solution) {
 				foundSolution = true;
 			}
@@ -332,6 +332,7 @@ public abstract class EvolutionaryEngine {
 		} else {
 			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: " + "");
 			currentStat.numberOfFailingCompilation++;
+			programVariant.setFitness(this.populationControler.getMaxFitnessValue());
 
 		}
 		// Finally, reverse the changes done by the child

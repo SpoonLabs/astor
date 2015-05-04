@@ -40,7 +40,7 @@ public class ProgramVariant {
 	/**
 	 * Fitness value of the variant	
 	 */
-	protected double fitness = 0;
+	protected double fitness = Double.MAX_VALUE;
 	
 	/**
 	 * Parent Variant

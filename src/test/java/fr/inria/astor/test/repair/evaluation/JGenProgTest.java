@@ -343,7 +343,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	@SuppressWarnings("static-access")
 	@Test
-	public void testMath2Example() throws Exception {
+	public void testMath2ExampleRemoveMode() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
 		// java -cp astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar
 		// fr.inria.main.evolution.MainjGenProg -mode statement-remove -location
@@ -355,7 +355,6 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		// target/test-classes/
 		main1.main(new String[] {
 				"-dependencies","examples/math_2/lib/" , //File.pathSeparator +
-				// "-id","tttMath-0c1ef",
 				"-mode","statement-remove",
 				"-failing", "org.apache.commons.math3.distribution.HypergeometricDistributionTest", 
 				"-location",	"examples/math_2/", 
