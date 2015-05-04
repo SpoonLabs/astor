@@ -8,7 +8,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 
-public class LocalValidator implements IProgramValidator{
+public class LocalValidator extends ProgramValidator{
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 

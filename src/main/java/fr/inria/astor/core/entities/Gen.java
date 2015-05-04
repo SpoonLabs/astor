@@ -23,17 +23,13 @@ public class Gen {
 	
 	List<CtVariable> contextOfGen;
 
+	public int identified = 0;
 	// TODO: to set a value.
 	protected int generation = -1;
 
 	public Gen() {
 	}
 
-	public Gen(CtElement rootElement, CtClass clonedClass) {
-		super();
-		this.rootElement = rootElement;
-		this.ctClass = clonedClass;
-	}
 
 	public Gen(CtElement rootElement, CtClass ctClass, List<CtVariable> contextOfGen) {
 		super();

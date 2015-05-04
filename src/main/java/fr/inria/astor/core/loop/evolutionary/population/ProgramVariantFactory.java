@@ -46,13 +46,14 @@ public class ProgramVariantFactory {
 	protected List<AbstractFixSpaceProcessor<?>> processors = null;
 
 	
-	
+	protected boolean resetOperations; 
 	
 	public ProgramVariantFactory() {
 		super();
 	}
 
 	public ProgramVariantFactory(List<AbstractFixSpaceProcessor<?>> processors) {
+		this();
 		this.processors = processors;
 	}
 /**
@@ -182,6 +183,7 @@ public class ProgramVariantFactory {
 
 		List<CtElement> filteredTypeByLine = intersection(filterByType, ctSuspects ); 
 		//For each filtered element, we create a Gen. 
+		int id = 0;
 		for (CtElement ctElement : filteredTypeByLine) {
 			GenSuspicious gen = new GenSuspicious();
 			gen.setSuspicious(suspiciousCode);
@@ -274,7 +276,10 @@ public class ProgramVariantFactory {
 		childVariant.setGenerationSource(generation);
 		childVariant.setParent(parentVariant);
 		childVariant.getGenList().addAll(parentVariant.getGenList());
-		childVariant.getOperations().putAll(parentVariant.getOperations());
+		
+		if(!ConfigurationProperties.getPropertyBool("resetoperations"))
+			childVariant.getOperations().putAll(parentVariant.getOperations());
+		childVariant.setLastGenAnalyzed(parentVariant.getLastGenAnalyzed());
 		childVariant.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
 		childVariant.setFitness(parentVariant.getFitness());
 		return childVariant;

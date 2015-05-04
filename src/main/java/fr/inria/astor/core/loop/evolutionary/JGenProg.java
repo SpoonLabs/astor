@@ -82,20 +82,7 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 
 	}	
-	
-	public void start() throws Exception{
-	
-		log.info("\n----Starting Mutation" );
-		long startT = System.currentTimeMillis();
-
-		startEvolution();
-
-		long endT = System.currentTimeMillis();
-		log.info("Time (ms): " + (endT - startT));
-		currentStat.timeIteraction = ((endT - startT));
-
-	}
-
+		
 	protected List retrieveClassesForIngredients() {
 		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL))
 			return originalVariant.getAffectedClasses();
@@ -229,7 +216,6 @@ public class JGenProg extends EvolutionaryEngine {
 
 		if (!operationType.equals(GenProgMutationOperation.DELETE) && fix == null) {
 			log.error("fix ingredient null");
-			// throw new IllegalAccessError("Not ingredient found");
 			return null;
 		}
 
@@ -385,7 +371,7 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @param location
 	 * @return
 	 */
-	protected boolean alreadyApplied(int id, String fix, String location) {
+	protected boolean alreadyApplied(int id2, String fix, String location) {
 		// we add the instance identifier to the patch.
 		String lockey = location;// +"-"+id;
 		List<String> prev = appliedCache.get(lockey);

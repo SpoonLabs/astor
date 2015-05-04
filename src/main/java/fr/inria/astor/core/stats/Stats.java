@@ -33,6 +33,9 @@ public class Stats {
 	public int numberOfFailingCompilation = 0;
 	public  int numberOfFailingTestCaseExecution = 0;
 	public int numberOfRegressionTestExecution = 0;
+	public  int numberOfFailingTestCase = 0;
+	public int numberOfRegressionTestCases = 0;
+	
 	public  int numberGenerations = 0;
 	
 	public  int patches = 0;
@@ -53,22 +56,35 @@ public class Stats {
 	public int passFailingval1 = 0;
 	public int passFailingval2 = 0;
 	
+	public int numberOfTestcasesExecutedval1 = 0;
+	public int numberOfTestcasesExecutedval2 = 0;
 	
 	public void printStats(){
+		log.info(toString());
+	}
 	
-		log.info("--spaces> ["+this.sizeSpace.size()+"]: "+this.sizeSpace);
-		log.info("-->time val1 ["+this.time1Validation.size()+"]: "+this.time1Validation);
-		log.info("-->time val2 ["+this.time2Validation.size()+"]: "+this.time2Validation);
-		log.info("-->#gen "+this.numberGenerations);
-		log.info("-->#patches "+this.patches);
-		log.info("numberOfRightCompilation "+this.numberOfRightCompilation);
-		log.info("numberOfWrongCompilation "+this.numberOfFailingCompilation);
-		log.info("numberOfFailingTestCaseExecution "+this.numberOfFailingTestCaseExecution);
-		log.info("numberOfRegressionTestExecution "+this.numberOfRegressionTestExecution );
+	public String toString(){
+		String s = "";
+		s+=("\nspaces: ["+this.sizeSpace.size()+"]: "+this.sizeSpace);
+		s+=("\ntime val1 ["+this.time1Validation.size()+"]: "+this.time1Validation);
+		s+=("\ntime val2 ["+this.time2Validation.size()+"]: "+this.time2Validation);
+		s+=("\n#gen: "+this.numberGenerations);
+		s+=("\n#patches: "+this.patches);
+		s+=("\n#RightCompilation: "+this.numberOfRightCompilation);
+		s+=("\n#WrongCompilation: "+this.numberOfFailingCompilation);
+		s+=("\n#FailingTestCaseExecution: "+this.numberOfFailingTestCaseExecution);
+		s+=("\n#RegressionTestExecution: "+this.numberOfRegressionTestExecution );
+		s+=("\n#TestcasesExecutedval1: "+this.numberOfTestcasesExecutedval1);
+		s+=("\n#TestcasesExecutedval2: "+this.numberOfTestcasesExecutedval2);
+	
+		s+=("\n#FailingTestCase: "+this.numberOfFailingTestCase);
+		s+=("\n#RegressionTestCases: "+this.numberOfRegressionTestCases);
+	
 		
-		log.info("numberOfOfAppliedOp "+this.numberOfAppliedOp);
-		log.info("numberOfNotAppliedOp "+this.numberOfNotAppliedOp);
-		log.info("numberOfInmutatedGen "+this.numberOfGenInmutated);
+		s+=("\n#OfAppliedOp: "+this.numberOfAppliedOp);
+		s+=("\n#NotAppliedOp: "+this.numberOfNotAppliedOp);
+		s+=("\n#InmutatedGen: "+this.numberOfGenInmutated);
+		return s;
 	}
 	
 }

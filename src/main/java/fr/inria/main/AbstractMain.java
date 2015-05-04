@@ -10,6 +10,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.apache.log4j.Logger;
 
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -19,7 +20,6 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.stats.Stats;
 
 /**
  * 
@@ -28,6 +28,8 @@ import fr.inria.astor.core.stats.Stats;
  */
 public abstract class AbstractMain {
 
+	protected Logger log = Logger.getLogger(AbstractMain.class);
+	
 	protected MutationSupporter mutSupporter;
 	protected Factory factory;
 	protected ProjectRepairFacade projectFacade;
@@ -68,7 +70,11 @@ public abstract class AbstractMain {
 		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default 0.5 ");
 
 		options.addOption("reintroduce", true,
-				"(Optional) indicates whether it reintroduces the original program in each generation (default:true)");
+			//	"(Optional) indicates whether it reintroduces the original program in each generation (default:true)");
+				"(Optional) indicates whether it reintroduces the original program in each generation (value: original), "
+				+ " introduces parent variant in next generation (value: parents), "
+				+ "introduces origina and parents (value: original-parents) or none (value: none). (default: original-parents)");
+		
 		options.addOption("tmax1", true,
 				"(Optional) maximum time (in miliseconds) for validating the failing test case ");
 		options.addOption("tmax2", true,
@@ -109,6 +115,11 @@ public abstract class AbstractMain {
 		options.addOption("multigenmodif", false,
 				"(Optional) An element of a program variant (i.e., gen) can be modified several times in different generation");
 	
+		
+		options.addOption("resetoperations", false,
+				"(Optional) The program variants do not pass the operators throughs the generations");
+	
+		
 		options.addOption("javacompliancelevel", true,
 				"(Optional) Compliance level (e.g., 7 for java 1.7, 6 for java 1.6). Default Java 1.7");
 	
@@ -261,6 +272,9 @@ public abstract class AbstractMain {
 	
 		if (cmd.hasOption("alternativecompliancelevel"))
 			ConfigurationProperties.properties.setProperty("alternativecompliancelevel", cmd.getOptionValue("alternativecompliancelevel"));
+	
+		if (cmd.hasOption("resetoperations"))
+			ConfigurationProperties.properties.setProperty("resetoperations", "true");
 	
 		
 		return true;

@@ -75,11 +75,16 @@ public class MainjGenProg extends AbstractMain {
 		// ---
 
 		// Repair Space
-		if(removeMode)
+		if(removeMode){
 			gploop.setRepairActionSpace(new RemoveRepairOperatorSpace());
-		else
+			ConfigurationProperties.properties.setProperty("resetoperations", "true");
+			ConfigurationProperties.properties.setProperty("reintroduce","none");	
+			ConfigurationProperties.properties.setProperty("genlistnavigation", "sequence");
+		}
+		else{
 			gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
-
+		}
+		
 		// Pop controller
 		gploop.setPopulationControler(new FitnessPopulationController());
 
@@ -107,7 +112,8 @@ public class MainjGenProg extends AbstractMain {
 	@Override
 	public void run(String location, String projectName, String dependencies, String packageToInstrument, double thfl,
 			String failing) throws Exception {
-
+				
+		long startT = System.currentTimeMillis();
 		initProject(location, projectName, dependencies, packageToInstrument, thfl, failing);
 		JGenProg gploop = null;
 		String mode = ConfigurationProperties.getProperty("mode");
@@ -123,11 +129,13 @@ public class MainjGenProg extends AbstractMain {
 
 		
 		try {
-			gploop.start();
+			gploop.startEvolution();
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
+		long endT = System.currentTimeMillis();
+		log.info("Time Total(ms): " + (endT - startT));
 	}
 
 	/**
@@ -156,7 +164,8 @@ public class MainjGenProg extends AbstractMain {
 		String projectName = ConfigurationProperties.getProperty("projectIdentifier");
 
 		m.run(location, projectName, dependencies, packageToInstrument, thfl, failing);
-
+		
+		
 	}
 	@Override
 	public void run(String location, String projectName, String dependencies, String packageToInstrument)

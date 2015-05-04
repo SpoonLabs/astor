@@ -34,7 +34,7 @@ import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.util.StringUtil;
 import fr.inria.astor.core.util.TimeUtil;
-import fr.inria.astor.core.validation.validators.IProgramValidator;
+import fr.inria.astor.core.validation.validators.ProgramValidator;
 
 /**
  * Evolutionary program transformation Loop
@@ -58,7 +58,7 @@ public abstract class EvolutionaryEngine {
 
 	protected ProgramVariantFactory variantFactory;
 
-	protected IProgramValidator programValidator;
+	protected ProgramValidator programValidator;
 
 	// INTERNAL
 	protected List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
@@ -98,24 +98,32 @@ public abstract class EvolutionaryEngine {
 	 */
 	public void startEvolution() throws Exception {
 
+		log.info("\n----Starting Mutation" );
+		long startT = System.currentTimeMillis();
+	
+		
 		int generation = 0;
-		boolean foundsolution = false;
+		boolean stop = false;
 
 		log.debug("FIXSPACE:" + this.getFixSpace());
 
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
-
+		
+		
+		
 		Date dateInit = new Date();
 
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 
-		while ((!foundsolution || !ConfigurationProperties.getPropertyBool("stopfirst"))
-				&& (generation < ConfigurationProperties.getPropertyInt("maxGeneration") && continueOperating(dateInit, maxMinutes))) {
+		while ( !this.variants.isEmpty() &&
+				(!stop || !ConfigurationProperties.getPropertyBool("stopfirst"))
+				&& (generation < ConfigurationProperties.getPropertyInt("maxGeneration") && continueOperating(dateInit,
+						maxMinutes))) {
 			generation++;
 			log.info("\n----------Running generation/iteraction " + generation + ", population size: "
 					+ this.variants.size());
-			foundsolution = processGenerations(generation);
+			stop = processGenerations(generation);
 		}
 		// At the end
 
@@ -126,7 +134,7 @@ public abstract class EvolutionaryEngine {
 		} else {
 			log.info("End Repair Loops: NOT Found solution");
 		}
-		log.info("Number solutions:"+this.solutions.size());
+		log.info("Number solutions:" + this.solutions.size());
 		for (ProgramVariant variant : solutions) {
 			log.info("f (sol): " + variant.getFitness() + ", " + variant);
 		}
@@ -140,18 +148,31 @@ public abstract class EvolutionaryEngine {
 			log.info(mutatorSupporter.getSolutionData(solutions, generation));
 
 		}
+		
+
+		long endT = System.currentTimeMillis();
+		log.info("Time Evolution(ms): " + (endT - startT));
+		currentStat.timeIteraction = ((endT - startT));
+		
+		
+		log.info("\n----stats: ");
+		log.info(currentStat);
+		
 	}
+
 	/**
 	 * Check whether the program has passed the maximum time for operating
-	 * @param dateInit start date of execution
-	 * @param maxMinutes max minutes for operating
+	 * 
+	 * @param dateInit
+	 *            start date of execution
+	 * @param maxMinutes
+	 *            max minutes for operating
 	 * @return
 	 */
 	private boolean continueOperating(Date dateInit, int maxMinutes) {
-		if( TimeUtil.delta(dateInit) <= maxMinutes){
+		if (TimeUtil.delta(dateInit) <= maxMinutes) {
 			return true;
-		}
-		else{
+		} else {
 			log.info("\n No more time for operating");
 			return false;
 		}
@@ -172,9 +193,10 @@ public abstract class EvolutionaryEngine {
 		List<ProgramVariant> temporalInstances = new ArrayList<ProgramVariant>();
 
 		currentStat.numberGenerations++;
-
+		
 		for (ProgramVariant parentVariant : variants) {
 
+						
 			log.debug("-Parent Variant: " + parentVariant);
 
 			this.saveOriginalVariant(parentVariant);
@@ -189,13 +211,12 @@ public abstract class EvolutionaryEngine {
 
 			if (newVariant.getCompilation().compiles()) {
 				temporalInstances.add(newVariant);
-				
+
 			}
-			if(solution){
+			if (solution) {
 				foundSolution = true;
-				//this.solutions.add(newVariant);
 			}
-			
+
 			// Finally, reverse the changes done by the child
 			reverseOperationInModel(newVariant, generation);
 			this.validateReversedOriginalVariant(newVariant);
@@ -215,7 +236,7 @@ public abstract class EvolutionaryEngine {
 		variants = populationControler.selectProgramVariantsForNextGeneration(variants, temporalInstances,
 				this.solutions, ConfigurationProperties.getPropertyInt("population"));
 
-		if (ConfigurationProperties.getPropertyBool("reintroduce")) {
+		if (ConfigurationProperties.getProperty("reintroduce").contains("original")) {
 			// Create a new variant from the original parent
 			ProgramVariant parentNew = this.variantFactory.createProgramVariantFromAnother(originalVariant, generation);
 			parentNew.getOperations().clear();
@@ -224,11 +245,11 @@ public abstract class EvolutionaryEngine {
 			if (variants.size() != 0) {
 				// now replace for the "worse" child
 				removedVariant = variants.remove(variants.size() - 1);
-				
+
 			}
 			variants.add(parentNew);
-			//log.debug("Introducing original variant"+((removedVariant!=null)?"instead of variant "+removedVariant.getId():""));
-		
+			// log.debug("Introducing original variant"+((removedVariant!=null)?"instead of variant "+removedVariant.getId():""));
+
 		}
 	}
 
@@ -424,40 +445,44 @@ public abstract class EvolutionaryEngine {
 
 		log.debug("--Creating new operations for variant " + variant);
 		boolean oneOperationCreated = false;
-		int mut = 0, notmut = 0, notapplied = 0;
+		int genMutated = 0, notmut = 0, notapplied = 0;
 		int nroGen = 0;
 
 		// For each gen of the program instance
-		List<Gen> gensToProcess = getGenList(variant.getGenList());
+		List<Gen> gensToProcess = getGenList(variant);
 		for (Gen genProgInstance : gensToProcess) {
-
-			if (!ConfigurationProperties.getPropertyBool("multigenmodif")
-					&& alreadyModified(genProgInstance, variant.getOperations(), generation))
+			//tp refactor
+			genProgInstance.identified = variant.getGenList().indexOf(genProgInstance);
+			log.debug("---analyzing gen position: "+genProgInstance.identified );
+			
+			//A gen can be modified several time in the evolution
+			boolean multiGenmutation = ConfigurationProperties.getPropertyBool("multigenmodif");
+			if (!multiGenmutation && alreadyModified(genProgInstance, variant.getOperations(), generation))
 				continue;
 
 			genProgInstance.setProgramVariant(variant);
 			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
+			
+			/*if(alreadyApplied(variant,operationInGen)){
+				log.debug("---Operation already applied to the gen");
+				continue;
+			}*/
+			
 			if (operationInGen != null) {
 
 				// TODO: Verifies if there are compatible variables (not names!)
 				// if (VariableResolver.canBeApplied(operationInGen))
-				if (true) {
-					currentStat.numberOfAppliedOp++;
-					variant.putGenOperation(generation, operationInGen);
-					operationInGen.setGen(genProgInstance);
-					oneOperationCreated = true;
-					mut++;
-					if (!ConfigurationProperties.getPropertyBool("allgens")) {
-						break;
-					}
-				} else {// Not applied
-					currentStat.numberOfNotAppliedOp++;
-					log.debug("---gen " + (nroGen++) + " not scope for the mutation in  "
-							+ (genProgInstance.getRootElement().getSignature()) + "/ fix: "
-							+ operationInGen.getModified());
-					// Not Applied
-					notapplied++;
+				log.debug("operation "+operationInGen);
+				currentStat.numberOfAppliedOp++;
+				variant.putGenOperation(generation, operationInGen);
+				operationInGen.setGen(genProgInstance);
+				oneOperationCreated = true;
+				genMutated++;
+				//We analyze all gens
+				if (!ConfigurationProperties.getPropertyBool("allgens")) {
+					break;
 				}
+
 			} else {// Not gen created
 				currentStat.numberOfGenInmutated++;
 				log.debug("---gen " + (nroGen++) + " not mutation generated in  "
@@ -465,13 +490,27 @@ public abstract class EvolutionaryEngine {
 				notmut++;
 			}
 		}
-
-		if (oneOperationCreated) {
+		
+		if (oneOperationCreated && !ConfigurationProperties.getPropertyBool("resetoperations")) {
 			updateVariantGenList(variant, generation);
 		}
-		log.debug("\n--Summary Creation: for variant " + variant + " gen mutated: " + mut + " , gen not mut: " + notmut
+		log.debug("\n--Summary Creation: for variant " + variant + " gen mutated: " + genMutated + " , gen not mut: " + notmut
 				+ ", gen not applied  " + notapplied + "\n ");
 		return oneOperationCreated;
+	}
+
+	private boolean alreadyApplied(ProgramVariant variant, GenOperationInstance operationNew) {
+		for(List<GenOperationInstance> listOperations :variant.getOperations().values()){
+			for(GenOperationInstance opExisting:listOperations){
+				if(opExisting.getGen().identified == operationNew.getGen().identified//the same object
+						&& opExisting.getOperationApplied().equals(operationNew.getOperationApplied())
+						&& (opExisting.getModified() != null && operationNew.getModified() != null && opExisting.getModified().toString().equals(operationNew.getModified().toString()))
+						){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -500,11 +539,12 @@ public abstract class EvolutionaryEngine {
 
 	/**
 	 * 
+	 * @param variant 
 	 * @param genList
 	 * @return
 	 */
-	protected List<Gen> getGenList(List<Gen> genList) {
-
+	protected List<Gen> getGenList(ProgramVariant variant) {
+		List<Gen> genList = variant.getGenList();
 		String mode = ConfigurationProperties.getProperty("genlistnavigation");
 
 		if ("inorder".equals(mode))
@@ -517,6 +557,15 @@ public abstract class EvolutionaryEngine {
 			List<Gen> shuffList = new ArrayList<Gen>(genList);
 			Collections.shuffle(shuffList);
 			return shuffList;
+		}
+		
+		if("sequence".equals(mode)){
+			int i = variant.getLastGenAnalyzed();
+			if(i< genList.size()){
+				variant.setLastGenAnalyzed(i+1);	
+				return genList.subList(i,i+1);
+			}
+			return Collections.EMPTY_LIST;
 		}
 
 		return genList;
@@ -666,6 +715,7 @@ public abstract class EvolutionaryEngine {
 
 	protected boolean validateInstance(ProgramVariant variant) {
 		ProgramVariantValidationResult result;
+		
 		if ((result = programValidator.validate(variant, projectFacade)) != null) {
 			double fitness = this.populationControler.getFitnessValue(variant, result);
 			variant.setFitness(fitness);
@@ -724,12 +774,13 @@ public abstract class EvolutionaryEngine {
 		this.variantFactory = variantFactory;
 	}
 
-	public IProgramValidator getProgramValidator() {
+	public ProgramValidator getProgramValidator() {
 		return programValidator;
 	}
 
-	public void setProgramValidator(IProgramValidator programValidator) {
+	public void setProgramValidator(ProgramValidator programValidator) {
 		this.programValidator = programValidator;
+		this.programValidator.setStats(currentStat);
 	}
 
 	public Stats getCurrentStat() {

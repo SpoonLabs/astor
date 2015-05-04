@@ -47,7 +47,7 @@ public class ProgramVariant {
 	 */
 	protected ProgramVariant parent = null;
 	/**
-	 * Number of the generation this variant born
+	 * Id of the generation this variant born
 	 */
 	protected int generationSource = 0;
 
@@ -55,6 +55,11 @@ public class ProgramVariant {
 	protected CompilationResult compilationResult = null;
 
 	protected boolean isSolution = false;	
+	/**
+	 * When we want to analyze one gen per generation, 
+	 * we need to track the last gen analyzed
+	 */
+	protected int lastGenAnalyzed = 0;
 
 	public ProgramVariant(){
 		genList = new ArrayList<Gen>();
@@ -152,5 +157,17 @@ public class ProgramVariant {
 
 	public void setIsSolution(boolean solution) {
 		this.isSolution = solution;
+	}
+	
+	public void resetOperations(){
+		this.operations.clear();
+	}
+
+	public int getLastGenAnalyzed() {
+		return lastGenAnalyzed;
+	}
+
+	public void setLastGenAnalyzed(int lastGenAnalyzed) {
+		this.lastGenAnalyzed = lastGenAnalyzed;
 	}
 }

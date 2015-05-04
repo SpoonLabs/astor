@@ -16,7 +16,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
 
-public class ProcessValidator implements IProgramValidator {
+public class ProcessValidator extends ProgramValidator {
 	
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 
@@ -50,18 +50,27 @@ public class ProcessValidator implements IProgramValidator {
 
 		
 			log.debug("-Running first validation");
+			
+			currentStats.numberOfFailingTestCaseExecution++;
+			
+			long t1 = System.currentTimeMillis();
 			TestResult trfailing = p.execute(bc, projectFacade.getProperties().getFailingTestCases(),
 					 ConfigurationProperties.getPropertyInt("tmax1"));
-		//	currentStat.passFailingval1++;
+			long t2 = System.currentTimeMillis();
+			currentStats.time1Validation.add((t2 - t1));
+		
+			currentStats.passFailingval1++;
 			if (trfailing == null) {
 				log.debug("**The validation 1 have not finished well**");
-			//	mutatedVariant.setFitness(Double.MAX_VALUE);
 				return null;
 			} else {
 				// If it is successful, execute regression
+				currentStats.numberOfTestcasesExecutedval1 += trfailing.casesExecuted;
+				currentStats.numberOfFailingTestCase = trfailing.casesExecuted;
 				log.debug(trfailing);
 				if (trfailing.wasSuccessful()) {
-					//currentStat.passFailingval2++;
+					currentStats.numberOfRegressionTestExecution++;
+					currentStats.passFailingval2++;
 					if (ConfigurationProperties.getPropertyBool("testbystep"))
 						return executeRegressionTestingOneByOne(mutatedVariant, bc, p, localPrefix);
 					else
@@ -69,8 +78,6 @@ public class ProcessValidator implements IProgramValidator {
 						
 
 				} else {
-				//	mutatedVariant.setFitness(trfailing.getFailures().size());
-					//return trfailing.wasSuccessful();// false
 					ProgramVariantValidationResult r = new ProgramVariantValidationResult(trfailing,false,false);
 					return r;
 				}
@@ -97,13 +104,20 @@ public class ProcessValidator implements IProgramValidator {
 	protected ProgramVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc, JUnitExecutorProcess p,
 			String localPrefix) {
 		log.debug("-Test Failing is passing, Executing regression");
+		long t1 = System.currentTimeMillis();
 		ProgramVariantValidator validator = new ProgramVariantValidator();
 		TestResult trregression = p.execute(bc, validator.retrieveRegressionTestCases(),
 				 ConfigurationProperties.getPropertyInt("tmax2"));
+		
+		long t2 = System.currentTimeMillis();
+		currentStats.time2Validation.add((t2 - t1));
+		
 		if (trregression == null) {
 			return null;
 		} else {
 			log.debug(trregression);
+			currentStats.numberOfTestcasesExecutedval2+= trregression.casesExecuted;
+			currentStats.numberOfRegressionTestCases = trregression.casesExecuted;
 			return new ProgramVariantValidationResult(trregression);
 		}
 	}
@@ -131,7 +145,9 @@ public class ProcessValidator implements IProgramValidator {
 			}
 		}
 		long t2 = System.currentTimeMillis();
-		//currentStat.time2Validation.add((t2 - t1));
+		currentStats.time2Validation.add((t2 - t1));
+		currentStats.numberOfTestcasesExecutedval2+= trregressionall.casesExecuted;
+		currentStats.numberOfRegressionTestCases = trregressionall.casesExecuted;
 		log.debug(trregressionall);
 		return new ProgramVariantValidationResult(trregressionall, true, trregressionall.wasSuccessful());
 
