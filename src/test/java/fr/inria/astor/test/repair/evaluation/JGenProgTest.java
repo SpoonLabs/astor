@@ -366,7 +366,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-binjavafolder", "/target/classes", 
 				"-bintestfolder","/target/test-classes",
 				"-flthreshold","0.50",
-				"-maxsuspcandidates","10"
+				"-stopfirst", "false"
+				//"-maxsuspcandidates","10"
 				});
 
 	}

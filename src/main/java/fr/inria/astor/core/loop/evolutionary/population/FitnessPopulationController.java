@@ -21,55 +21,45 @@ public class FitnessPopulationController implements PopulationController {
 
 	private Logger log = Logger.getLogger(Thread.currentThread().getName());
 
-	protected FitnessComparator comparator = new FitnessComparator();
+	public FitnessComparator comparator = new FitnessComparator();
 
 	/**
 	 * Select the program instances that will pass to the next generation. The
-	 * rest are discarded.
+	 * rest are discarted.
 	 * 
 	 * @param instances2
 	 * @param childVariants
 	 */
 	public List<ProgramVariant> selectProgramVariantsForNextGeneration(List<ProgramVariant> parentVariants,
-			List<ProgramVariant> childVariants, List<ProgramVariant> allSolutions, int maxNumberInstances) {
+			List<ProgramVariant> childVariants, int maxNumberInstances) {
 		
+		List<ProgramVariant> currentVariants = new ArrayList<>(childVariants);
 		if (ConfigurationProperties.getProperty("reintroduce").contains("parents")) {
-			childVariants.addAll(parentVariants);
+			currentVariants.addAll(parentVariants);
 		}
-		int totalInstances = childVariants.size();
+		int totalInstances = currentVariants.size();
 
 		List<ProgramVariant> newPop = new ArrayList<ProgramVariant>();
 
-		List<ProgramVariant> genSolutions = new ArrayList<ProgramVariant>();
+		Collections.sort(currentVariants, comparator);
 
-		Collections.sort(childVariants, comparator);
+		String variantsIds = "";
 
-		String variantsIds = "", solutionId = "";
-
-		for (ProgramVariant programVariant : childVariants) {
+		for (ProgramVariant programVariant : currentVariants) {
 			variantsIds += programVariant.getId() + "(f=" + programVariant.getFitness() + ")" + ", ";
-			if (programVariant.isSolution()) {
-				genSolutions.add(programVariant);
-				solutionId += programVariant.getId() + "(SOLUTION)(f=" + programVariant.getFitness() + ")" + ", ";
-			}
+			
 		}
-
-		log.debug("\nEnd analysis generation - \nSolutions found:" + "--> (" + solutionId + ")");
-
-		boolean removed = childVariants.removeAll(genSolutions);
-
 		log.debug("Variants to next generation from: " + totalInstances + "-->IDs: (" + variantsIds + ")");
 
-		int min = (childVariants.size() > maxNumberInstances) ? maxNumberInstances : childVariants.size();
-		newPop.addAll(childVariants.subList(0, min));
+		int min = (currentVariants.size() > maxNumberInstances) ? maxNumberInstances : currentVariants.size();
+		newPop.addAll(currentVariants.subList(0, min));
 
 		variantsIds = "";
 		for (ProgramVariant programVariant : newPop) {
 			variantsIds += programVariant.getId() + "(f=" + programVariant.getFitness() + ")" + ", ";
 		}
 		log.debug("Selected to next generation: IDs" + totalInstances + "--> (" + variantsIds + ")");
-
-		allSolutions.addAll(genSolutions);
+			
 		return newPop;
 
 	}

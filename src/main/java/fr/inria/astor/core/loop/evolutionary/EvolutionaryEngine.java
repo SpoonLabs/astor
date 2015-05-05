@@ -21,6 +21,7 @@ import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.PopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightCtElement;
@@ -233,24 +234,46 @@ public abstract class EvolutionaryEngine {
 	public void prepareNextGeneration(List<ProgramVariant> temporalInstances, int generation) {
 		// After analyze all variant
 		// New population creation:
-		variants = populationControler.selectProgramVariantsForNextGeneration(variants, temporalInstances,
-				this.solutions, ConfigurationProperties.getPropertyInt("population"));
+		//show all and search solutions:
+		List<ProgramVariant> solutionsFromGeneration = new ArrayList<ProgramVariant>();
+		List<ProgramVariant> currentVariants = new ArrayList<>();
 
-		if (ConfigurationProperties.getProperty("reintroduce").contains("original")) {
+		//We filter the solution from the rest
+		String solutionId = "";
+		for (ProgramVariant programVariant : temporalInstances) {
+			if (programVariant.isSolution()) {
+				solutionsFromGeneration.add(programVariant);
+				solutionId += programVariant.getId() + "(SOLUTION)(f=" + programVariant.getFitness() + ")" + ", ";
+			}else{
+				currentVariants.add(programVariant);
+			}
+		}
+		log.debug("\nEnd analysis generation - \nSolutions found:" + "--> (" + solutionId + ")");
+
+		this.solutions.addAll(solutionsFromGeneration);
+		
+		
+		variants = populationControler.selectProgramVariantsForNextGeneration(variants, temporalInstances,
+				 ConfigurationProperties.getPropertyInt("population"));
+
+		if (ConfigurationProperties.getProperty("reintroduce").contains("original")
+				//We add the case we do not have variants because all are solution, be we want continue searching new ones
+				|| (variants.isEmpty() && !solutionsFromGeneration.isEmpty() && !ConfigurationProperties.getPropertyBool("stopfirst"))
+				) {
 			// Create a new variant from the original parent
 			ProgramVariant parentNew = this.variantFactory.createProgramVariantFromAnother(originalVariant, generation);
 			parentNew.getOperations().clear();
 			parentNew.setParent(null);
-			ProgramVariant removedVariant = null;
-			if (variants.size() != 0) {
+			if (!variants.isEmpty()) {
 				// now replace for the "worse" child
-				removedVariant = variants.remove(variants.size() - 1);
+				variants.remove(variants.size() - 1);
 
 			}
 			variants.add(parentNew);
 			// log.debug("Introducing original variant"+((removedVariant!=null)?"instead of variant "+removedVariant.getId():""));
 
 		}
+
 	}
 
 	Map<String, String> originalModel = new HashedMap();

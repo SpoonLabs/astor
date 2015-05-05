@@ -100,7 +100,7 @@ public class FaultLocalizationFacade {
 		
 		Collections.sort(candidates, new ComparatorCandidates());
 		
-		logger.info("GZOLTAR found: "+candidates.size()+" with susp > "+thr+"we consider: "+max);
+		logger.info("GZOLTAR found: "+candidates.size()+" with susp > "+thr+", we consider: "+max);
 		
 		candidates = candidates.subList(0, max);
 		

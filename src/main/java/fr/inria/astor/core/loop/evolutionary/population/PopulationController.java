@@ -19,7 +19,7 @@ public interface PopulationController {
 	 * @return 
 	 */
 	public List<ProgramVariant> selectProgramVariantsForNextGeneration(List<ProgramVariant> parentVariants,
-			List<ProgramVariant> childVariants,List<ProgramVariant> solutions,int maxNumberInstances);
+			List<ProgramVariant> childVariants,int maxNumberInstances);
 
 
 	public double getFitnessValue(ProgramVariant variant ,ProgramVariantValidationResult valResult );
