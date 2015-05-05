@@ -365,7 +365,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-srctestfolder", "/src/test/java/", 
 				"-binjavafolder", "/target/classes", 
 				"-bintestfolder","/target/test-classes",
-				"-flthreshold","0.50"});
+				"-flthreshold","0.50",
+				"-maxsuspcandidates","10"
+				});
 
 	}
 	
@@ -378,7 +380,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-failing", "org.apache.commons.lang.time.StopWatchTest", 
 				"-location","/home/matias/develop/code/astor/examples/lang_55/", 
 				"-package", "org.apache.commons",
-				"-jvm4testexecution", "/home/matias/develop/jdk1.8.0_31/bin",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/",
 				"-srctestfolder", "/src/test/", 
 				"-binjavafolder", "/target/classes", 
@@ -401,7 +403,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-failing", "org.apache.commons.lang.time.StopWatchTest", 
 				"-location","/home/matias/develop/code/astor/examples/lang_55/", 
 				"-package", "org.apache.commons",
-				"-jvm4testexecution", "/home/matias/develop/jdk1.8.0_31/bin",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/",
 				"-srctestfolder", "/src/test/", 
 				"-binjavafolder", "/target/classes", 

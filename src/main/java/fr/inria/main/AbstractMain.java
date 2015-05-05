@@ -67,10 +67,10 @@ public abstract class AbstractMain {
 		options.addOption("maxtime", true, "(Optional) maximum time (in minutes) to execute the whole experiment");
 
 		options.addOption("validation", true, "(Optional) type of validation: process|thread|local ");
-		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default 0.5 ");
+		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default:"+ConfigurationProperties.properties.getProperty("flthreshold"));
+		options.addOption("maxsuspcandidates", true, "(Optional) Maximun number of suspicious statement considered. Default: "+ConfigurationProperties.properties.getProperty("maxsuspcandidates"));
 
 		options.addOption("reintroduce", true,
-			//	"(Optional) indicates whether it reintroduces the original program in each generation (default:true)");
 				"(Optional) indicates whether it reintroduces the original program in each generation (value: original), "
 				+ " introduces parent variant in next generation (value: parents), "
 				+ "introduces origina and parents (value: original-parents) or none (value: none). (default: original-parents)");
@@ -129,14 +129,6 @@ public abstract class AbstractMain {
 
 	}
 
-/*	public void createFactory() {
-
-		if (factory == null) {
-			factory = ProjectRepairFacade.createFactory();
-			factory.getEnvironment().setDebug(true);
-		}
-		mutSupporter = new MutationSupporter(factory);
-	}*/
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument)
 			throws Exception;
@@ -205,7 +197,10 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("validation"))
 			ConfigurationProperties.properties.setProperty("validation", cmd.getOptionValue("validation"));
-
+			
+		if (cmd.hasOption("maxsuspcandidates"))
+			ConfigurationProperties.properties.setProperty("maxsuspcandidates", cmd.getOptionValue("maxsuspcandidates"));
+			
 		if (cmd.hasOption("flthreshold")) {
 			try {
 				double thfl = Double.valueOf(cmd.getOptionValue("flthreshold"));

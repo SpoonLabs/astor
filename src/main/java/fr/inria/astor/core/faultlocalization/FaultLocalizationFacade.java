@@ -54,7 +54,6 @@ public class FaultLocalizationFacade {
 			gz.addPackageToInstrument(to);
 		}
 		if(cp!=null || !cp.isEmpty()){
-			//gz.setClassPaths(cp);
 			logger.info("Current classpath: "+System.getProperty("java.class.path"));
 			logger.info("Adding classpath: "+cp);
 			gz.getClasspaths().addAll(cp);
@@ -82,6 +81,7 @@ public class FaultLocalizationFacade {
 		logger.info("Test Result Total:"+sum[0]+", fails: "+sum[1] + ", GZoltar suspicious "+gz.getSuspiciousStatements().size());
 		
 		DecimalFormat df = new DecimalFormat( "#.###" );
+		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
 		for (Statement s : gz.getSuspiciousStatements()) {
 			String compName = s.getMethod().getParent().getLabel();
 			
@@ -92,12 +92,19 @@ public class FaultLocalizationFacade {
 						+ df.format(s.getSuspiciousness()));
 				SuspiciousCode c = new SuspiciousCode(compName,s.getMethod().toString(), s.getLineNumber(), s.getSuspiciousness());
 				candidates.add(c);
+				
 			}
+			
 		}
+		int max = (candidates.size()<maxSuspCandidates)?candidates.size():maxSuspCandidates;
 		
 		Collections.sort(candidates, new ComparatorCandidates());
 		
-		logger.info("GZOLTAR found "+candidates.size()+" with susp > "+thr);
+		logger.info("GZOLTAR found: "+candidates.size()+" with susp > "+thr+"we consider: "+max);
+		
+		candidates = candidates.subList(0, max);
+		
+	
 		return candidates;
 	}
 
