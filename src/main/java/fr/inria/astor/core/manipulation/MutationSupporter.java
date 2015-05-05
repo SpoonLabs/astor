@@ -136,7 +136,6 @@ public class MutationSupporter {
 
 	public CompilationResult compileOnMemoryProgramVariant(ProgramVariant instance, URL[] cp) {
 		List<CtClass> ctClasses = new ArrayList<CtClass>(instance.getBuiltClasses().values());
-
 		CompilationResult compilation2 = spoonClassCompiler.compileOnMemory(ctClasses, cp);
 
 		return compilation2;

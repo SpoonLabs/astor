@@ -354,16 +354,18 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		// src/test/java/ -binjavafolder target/classes/ -bintestfolder
 		// target/test-classes/
 		main1.main(new String[] {
-				"-dependencies","examples/math_2/lib/" , //File.pathSeparator +
+				"-dependencies","examples/math_2/libmvn/" , //File.pathSeparator +
 				"-mode","statement-remove",
-				"-failing", "org.apache.commons.math3.distribution.HypergeometricDistributionTest", 
+				"-failing", "org.apache.commons.math3.distribution.HypergeometricDistributionTest",//org.apache.commons.math3.util.FastMathTest 
 				"-location",	"examples/math_2/", 
 				"-package", "org.apache.commons",
-				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin", 
+				//"-jvm4testexecution", "/home/matias/develop/jdk1.8.0_31/bin",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/main/java/",
 				"-srctestfolder", "/src/test/java/", 
 				"-binjavafolder", "/target/classes", 
-				"-bintestfolder","/target/test-classes" });
+				"-bintestfolder","/target/test-classes",
+				"-flthreshold","0.50"});
 
 	}
 	

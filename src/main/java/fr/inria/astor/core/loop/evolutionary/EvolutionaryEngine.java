@@ -209,9 +209,9 @@ public abstract class EvolutionaryEngine {
 
 			boolean solution = processCreatedVariant(newVariant, generation);
 
-			if (newVariant.getCompilation().compiles()) {
+			//if (newVariant.getCompilation().compiles()) {
 				temporalInstances.add(newVariant);
-			}
+			//}
 				
 			if (solution) {
 				foundSolution = true;

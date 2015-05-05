@@ -79,13 +79,13 @@ public class FaultLocalizationFacade {
 			}
 					
 		}
-		logger.info("Test Result Total:"+sum[0]+", fails: "+sum[1] + ", suspicious "+gz.getSuspiciousStatements().size());
+		logger.info("Test Result Total:"+sum[0]+", fails: "+sum[1] + ", GZoltar suspicious "+gz.getSuspiciousStatements().size());
 		
 		DecimalFormat df = new DecimalFormat( "#.###" );
 		for (Statement s : gz.getSuspiciousStatements()) {
 			String compName = s.getMethod().getParent().getLabel();
 			
-			if (s.getSuspiciousness() > thr 
+			if (s.getSuspiciousness() >= thr 
 					&& isSource(compName, srcFolder)
 					) {
 				logger.debug("Suspicious: line " + compName + " l: " + s.getLineNumber() + ", susp "
@@ -96,6 +96,8 @@ public class FaultLocalizationFacade {
 		}
 		
 		Collections.sort(candidates, new ComparatorCandidates());
+		
+		logger.info("GZOLTAR found "+candidates.size()+" with susp > "+thr);
 		return candidates;
 	}
 
