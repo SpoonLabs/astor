@@ -60,6 +60,7 @@ public class FaultLocalizationFacade {
 		}
 		for (String test : testsToExecute) {
 			gz.addTestToExecute(test);
+			gz.addClassNotToInstrument(test);//new
 		}
 		gz.run();
 		

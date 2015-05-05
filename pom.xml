@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>com.gzoltar</groupId>
 			<artifactId>gzoltar</artifactId>
-			<version>0.0.7</version>
+			<version>0.1.1</version>
 			<scope>compile</scope>
 			<!-- <scope>system</scope> <systemPath>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.0.7-jar-with-dependencies.jar</systemPath> -->
 		</dependency>
@@ -203,8 +203,8 @@
 						<configuration>
 							<groupId>com.gzoltar</groupId>
 							<artifactId>gzoltar</artifactId>
-							<version>0.0.7</version>
-							<file>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.0.7-jar-with-dependencies.jar</file>
+							<version>0.1.1</version>
+							<file>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.1.1-jar-with-dependencies.jar</file>
 							<packaging>jar</packaging>
 							<createChecksum>true</createChecksum>
 							<generatePom>true</generatePom>

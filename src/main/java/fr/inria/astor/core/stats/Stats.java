@@ -58,6 +58,8 @@ public class Stats {
 	
 	public int numberOfTestcasesExecutedval1 = 0;
 	public int numberOfTestcasesExecutedval2 = 0;
+
+	public int unfinishValidation = 0;
 	
 	public void printStats(){
 		log.info(toString());
@@ -84,6 +86,8 @@ public class Stats {
 		s+=("\n#OfAppliedOp: "+this.numberOfAppliedOp);
 		s+=("\n#NotAppliedOp: "+this.numberOfNotAppliedOp);
 		s+=("\n#InmutatedGen: "+this.numberOfGenInmutated);
+		s+=("\n#unfinishValidation: "+this.unfinishValidation);
+	
 		return s;
 	}
 	

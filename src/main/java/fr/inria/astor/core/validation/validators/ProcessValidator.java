@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -106,13 +107,19 @@ public class ProcessValidator extends ProgramValidator {
 		log.debug("-Test Failing is passing, Executing regression");
 		long t1 = System.currentTimeMillis();
 		ProgramVariantValidator validator = new ProgramVariantValidator();
-		TestResult trregression = p.execute(bc, validator.retrieveRegressionTestCases(),
+		List<String> testCasesRegression = (validator.retrieveRegressionTestCases());
+		//Collections.sort(testCasesRegression);
+		//List<String> testCasesRegression2 = java.util.Arrays.asList(ConfigurationProperties.getProperty("regressionTest").split(File.pathSeparator));
+		//Collections.sort(testCasesRegression2);
+		TestResult trregression = p.execute(bc,  
+				testCasesRegression,
 				 ConfigurationProperties.getPropertyInt("tmax2"));
 		
 		long t2 = System.currentTimeMillis();
 		currentStats.time2Validation.add((t2 - t1));
 		
 		if (trregression == null) {
+			currentStats.unfinishValidation++;
 			return null;
 		} else {
 			log.debug(trregression);

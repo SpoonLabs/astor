@@ -199,6 +199,16 @@ public class ProjectConfiguration {
 	public void setFailingTestCases(List<String> failingTestCases) {
 		this.internalProperties.put(ProjectPropertiesEnum.failingTestCases,failingTestCases);
 	}
+	
+	
+	public List<String> getRegressionTestCases() {
+		return (List<String>) this.internalProperties.get(ProjectPropertiesEnum.regressionTestCases);
+	}
+
+	public void setRegressionCases(List<String> rTestCases) {
+		this.internalProperties.put(ProjectPropertiesEnum.regressionTestCases,rTestCases);
+	}
+	
 
 	public void setSpoonFactory(Factory factory) {
 		this.internalProperties.put(ProjectPropertiesEnum.spoonFactory,factory);

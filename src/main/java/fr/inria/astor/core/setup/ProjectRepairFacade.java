@@ -6,18 +6,21 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import sacha.finder.main.TestClassFinder;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationFacade;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.entity.TestClassesFinder;
 /**
  *  
  * @author Matias Martinez, matias.martinez@inria.fr
@@ -157,18 +160,31 @@ public class ProjectRepairFacade {
 				|| "".equals(getProperties().getFailingTestCases().isEmpty())) {
 			new IllegalArgumentException("Test Class can not be empty");
 		}
-		logger.info("Getting Suspicious from: " + getOutDirWithPrefix(mutatorIdentifier) + " from test "
+		
+		String classPath = getOutDirWithPrefix(mutatorIdentifier);
+		logger.info("Getting Suspicious from: " + classPath+ " from test "
 				+ getProperties().getFailingTestCases());
 		
+		List<String> testcasesToExecute = null;
+				
+		if(ConfigurationProperties.getPropertyBool("regressionforfaultlocalization")){
+			testcasesToExecute = getProperties().getRegressionTestCases();
+		}
+		else{
+			testcasesToExecute = getProperties().getFailingTestCases();
+		}
+	
 
 		List<String> listTOInst = new ArrayList<String>();
 		listTOInst.add(packageToInst);
 
 		HashSet<String> hs = new HashSet<String>();
-		hs.add(getOutDirWithPrefix(mutatorIdentifier));
+		hs.add(classPath);
 
+		
+		
 		List<SuspiciousCode> suspiciousStatemens = faultLocalizationFacade.searchGZoltar(
-				getOutDirWithPrefix(mutatorIdentifier), getProperties().getFailingTestCases(), listTOInst, hs, 
+				classPath, testcasesToExecute, listTOInst, hs, 
 				ConfigurationProperties.getProperty("location")+"/"+ConfigurationProperties.getProperty("srcjavafolder"));
 		return suspiciousStatemens;
 	}
@@ -203,5 +219,39 @@ public class ProjectRepairFacade {
 	public FaultLocalizationFacade getFaultLocalizationFacade() {
 		return faultLocalizationFacade;
 	}
+	public static URL[] classpathFrom(String classpath) {
+		String[] folderNames = classpath.split(File.pathSeparator);
+		URL[] folders = new URL[folderNames.length];
+		int index = 0;
+		for (String folderName : folderNames) {
+			folders[index] = urlFrom(folderName);
+			index += 1;
+		}
+		return folders;
+	}
+	
+	public static URL urlFrom(String path) {
+		URL url = null;
+		try {
+			url = new File(path).toURI().toURL();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return url;
+	}
 
+
+	public void calculateRegression(String defaultVariant) {
+		String classPath = getOutDirWithPrefix(defaultVariant);
+		String[] testClassesRegression = new TestClassesFinder().findIn(classpathFrom(classPath), false);
+		System.out.println("-->"+Arrays.toString(testClassesRegression));
+		List<String> tr = new ArrayList<>();
+		String s = "";
+		for (String tcr : testClassesRegression) {
+			s+=tcr+File.pathSeparator;
+			tr.add(tcr);
+		}
+		ConfigurationProperties.properties.setProperty("regressionTest", s);
+		getProperties().setRegressionCases(tr);
+	}
 }

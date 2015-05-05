@@ -17,6 +17,7 @@ public enum ProjectPropertiesEnum {
 	originalProjectRootDir,
 	dataFolder ,
 	failingTestCases,
+	regressionTestCases,
 	spoonFactory,
 	fixid,
 	experimentName,

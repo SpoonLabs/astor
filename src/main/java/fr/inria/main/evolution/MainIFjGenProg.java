@@ -49,7 +49,9 @@ public class MainIFjGenProg extends AbstractMain {
 			String failing) throws Exception {
 
 		String[] failTestS = failing.split(File.pathSeparator);
+		
 		List<String> failingList = Arrays.asList(failTestS);
+				
 		String method = this.getClass().getSimpleName();
 		projectFacade = getProject(location, projectName, method, failingList, dependencies, true);
 		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());

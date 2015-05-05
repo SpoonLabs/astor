@@ -42,7 +42,9 @@ public class MainjGenProg extends AbstractMain {
 		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
 
 		projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-
+		
+		projectFacade.calculateRegression(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		
 	}
 	public JGenProg statementMode() throws Exception {
 		return statementMode(false);
@@ -80,6 +82,8 @@ public class MainjGenProg extends AbstractMain {
 			ConfigurationProperties.properties.setProperty("resetoperations", "true");
 			ConfigurationProperties.properties.setProperty("reintroduce","none");	
 			ConfigurationProperties.properties.setProperty("genlistnavigation", "sequence");
+			ConfigurationProperties.properties.setProperty("stopfirst", "false");
+			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization","true");
 		}
 		else{
 			gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());

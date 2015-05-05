@@ -120,6 +120,9 @@ public abstract class AbstractMain {
 				"(Optional) The program variants do not pass the operators throughs the generations");
 	
 		
+		options.addOption("regressionforfaultlocalization", false,
+				"(Optional) Use the regression for fault localization. Default: It uses failing test case");
+		
 		options.addOption("javacompliancelevel", true,
 				"(Optional) Compliance level (e.g., 7 for java 1.7, 6 for java 1.6). Default Java 1.7");
 	
@@ -271,6 +274,10 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("resetoperations"))
 			ConfigurationProperties.properties.setProperty("resetoperations", "true");
 	
+		if (cmd.hasOption("regressionforfaultlocalization"))
+			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
+		
+		
 		
 		return true;
 	}

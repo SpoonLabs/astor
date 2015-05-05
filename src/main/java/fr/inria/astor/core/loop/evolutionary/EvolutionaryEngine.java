@@ -252,14 +252,15 @@ public abstract class EvolutionaryEngine {
 
 		this.solutions.addAll(solutionsFromGeneration);
 		
+		//We add the case we do not have variants because all are solution, be we want continue searching new ones
+		if(currentVariants.isEmpty() && !solutionsFromGeneration.isEmpty() && !ConfigurationProperties.getPropertyBool("stopfirst")){
+			currentVariants.addAll(solutionsFromGeneration);
+		} 
 		
-		variants = populationControler.selectProgramVariantsForNextGeneration(variants, temporalInstances,
+		variants = populationControler.selectProgramVariantsForNextGeneration(variants, currentVariants,
 				 ConfigurationProperties.getPropertyInt("population"));
 
-		if (ConfigurationProperties.getProperty("reintroduce").contains("original")
-				//We add the case we do not have variants because all are solution, be we want continue searching new ones
-				|| (variants.isEmpty() && !solutionsFromGeneration.isEmpty() && !ConfigurationProperties.getPropertyBool("stopfirst"))
-				) {
+		if (ConfigurationProperties.getProperty("reintroduce").contains("original")){
 			// Create a new variant from the original parent
 			ProgramVariant parentNew = this.variantFactory.createProgramVariantFromAnother(originalVariant, generation);
 			parentNew.getOperations().clear();
