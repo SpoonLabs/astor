@@ -95,7 +95,7 @@ public class FitnessPopulationController implements PopulationController {
 			if (fitness != 0)
 				return fitness;
 			//inversed, we prefer have child variant first
-			return Integer.compare(o2.getId(), o1.getId());
+			return Integer.compare(o1.getId(), o2.getId());
 		}
 
 	}
