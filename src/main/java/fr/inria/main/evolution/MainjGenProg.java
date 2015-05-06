@@ -84,6 +84,7 @@ public class MainjGenProg extends AbstractMain {
 			ConfigurationProperties.properties.setProperty("genlistnavigation", "sequence");
 			ConfigurationProperties.properties.setProperty("stopfirst", "false");
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization","true");
+			ConfigurationProperties.properties.setProperty("population","1");
 		}
 		else{
 			gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());

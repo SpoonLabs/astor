@@ -443,9 +443,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-javacompliancelevel","7", 
 				"-alternativecompliancelevel","4",
 				"-regressionforfaultlocalization","true",
-				"-stopfirst", "false",
-				"-maxgen","1000",
-				"-population","2",
+				//"-stopfirst", "false",
+				"-maxgen","500",
+				//"-population","2",
 				
 				};
 		System.out.println(Arrays.toString(args));

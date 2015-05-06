@@ -485,20 +485,24 @@ public abstract class EvolutionaryEngine {
 
 			genProgInstance.setProgramVariant(variant);
 			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
-			
-			/*if(alreadyApplied(variant,operationInGen)){
-				log.debug("---Operation already applied to the gen");
-				continue;
-			}*/
-			
+		
 			if (operationInGen != null) {
 
+				operationInGen.setGen(genProgInstance);
+				
+				if(ConfigurationProperties.getPropertyBool("uniqueoptogen") 
+						&& alreadyApplied(operationInGen)){
+					log.debug("---Operation already applied to the gen "+operationInGen);
+					continue;
+				}
+				
+				
 				// TODO: Verifies if there are compatible variables (not names!)
 				// if (VariableResolver.canBeApplied(operationInGen))
 				log.debug("operation "+operationInGen);
 				currentStat.numberOfAppliedOp++;
 				variant.putGenOperation(generation, operationInGen);
-				operationInGen.setGen(genProgInstance);
+				
 				oneOperationCreated = true;
 				genMutated++;
 				//We analyze all gens
@@ -522,18 +526,18 @@ public abstract class EvolutionaryEngine {
 		return oneOperationCreated;
 	}
 
-	private boolean alreadyApplied(ProgramVariant variant, GenOperationInstance operationNew) {
-		for(List<GenOperationInstance> listOperations :variant.getOperations().values()){
-			for(GenOperationInstance opExisting:listOperations){
-				if(opExisting.getGen().identified == operationNew.getGen().identified//the same object
-						&& opExisting.getOperationApplied().equals(operationNew.getOperationApplied())
-						&& (opExisting.getModified() != null && operationNew.getModified() != null && opExisting.getModified().toString().equals(operationNew.getModified().toString()))
-						){
-					return true;
-				}
-			}
+	Map<Gen,List<GenOperationInstance>> operationGenerated = new HashedMap();
+	
+	private boolean alreadyApplied(GenOperationInstance operationNew) {
+		
+		List<GenOperationInstance> ops = operationGenerated.get(operationNew.getGen());
+		if(ops == null){
+			ops = new ArrayList<>();
+			operationGenerated.put(operationNew.getGen(), ops);
+			ops.add(operationNew);
+			return false;
 		}
-		return false;
+		return ops.contains(operationNew);
 	}
 
 	/**

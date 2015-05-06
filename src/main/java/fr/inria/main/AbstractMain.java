@@ -118,6 +118,8 @@ public abstract class AbstractMain {
 		options.addOption("multigenmodif", false,
 				"(Optional) An element of a program variant (i.e., gen) can be modified several times in different generation");
 	
+		options.addOption("uniqueoptogen", true,
+				"(Optional) An operation can be applied only once to a gen, even this operation is in other variant.");
 		
 		options.addOption("resetoperations", false,
 				"(Optional) The program variants do not pass the operators throughs the generations");
@@ -282,6 +284,10 @@ public abstract class AbstractMain {
 		
 		if (cmd.hasOption("probagenmutation"))
 			ConfigurationProperties.properties.setProperty("probagenmutation", "true");
+		
+		
+		if (cmd.hasOption("uniqueoptogen"))
+			ConfigurationProperties.properties.setProperty("uniqueoptogen", cmd.getOptionValue("uniqueoptogen"));
 		
 		
 		
