@@ -87,28 +87,27 @@ public class CtStatementTransformator implements ModelTransformator {
 			}*/
 			//
 			GenProgMutationOperation operator = (GenProgMutationOperation) operation.getOperationApplied();
+			successful = true;
 			try {
 				switch (operator) {
 				case DELETE:
 					parentBlock.getStatements().remove(ctst);
-					successful = true;
 					break;
 				case INSERT_BEFORE:
 					ctst.insertBefore((CtStatement) fix);
-					successful = true;
+					fix.setParent(parentBlock );
 					break;
 				case INSERT_AFTER:
 					ctst.insertAfter((CtStatement) fix);
-					//operation.setLocationInParent(locationIndex+1);
-					successful = true;
+					fix.setParent(parentBlock );
 					break;
 				case REPLACE:
 					ctst.replace((CtStatement) fix);
-					successful = true;
+					fix.setParent(parentBlock );
 					break;
-
 				default:
 					log.error("Unknow Mutation Type");
+					successful = false;
 					break;
 				}
 				operation.setSuccessfulyApplied(successful);
