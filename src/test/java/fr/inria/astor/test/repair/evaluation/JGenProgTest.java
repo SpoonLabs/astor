@@ -425,4 +425,32 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 	
+	@SuppressWarnings("static-access")
+	@Test
+	public void testMath73ModeStatement() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String[] args = new String[] {
+				"-dependencies","/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
+				"-mode","statement",
+				"-failing", "org.apache.commons.math.analysis.solvers.BrentSolverTest", 
+				"-location","/home/matias/develop/code/astor/examples/math_73/", 
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel","7", 
+				"-alternativecompliancelevel","4",
+				"-regressionforfaultlocalization","true",
+				"-stopfirst", "false",
+				"-maxgen","1000",
+				"-population","2",
+				
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
+	
 }

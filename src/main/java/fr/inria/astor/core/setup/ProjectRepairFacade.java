@@ -162,8 +162,7 @@ public class ProjectRepairFacade {
 		}
 		
 		String classPath = getOutDirWithPrefix(mutatorIdentifier);
-		logger.info("Getting Suspicious from: " + classPath+ " from test "
-				+ getProperties().getFailingTestCases());
+		
 		
 		List<String> testcasesToExecute = null;
 				
@@ -173,7 +172,8 @@ public class ProjectRepairFacade {
 		else{
 			testcasesToExecute = getProperties().getFailingTestCases();
 		}
-	
+		logger.info("-Executing Gzoltar classpath: " + classPath+ " from "+
+				+ testcasesToExecute.size() +" classes with test cases");
 
 		List<String> listTOInst = new ArrayList<String>();
 		listTOInst.add(packageToInst);
@@ -244,7 +244,7 @@ public class ProjectRepairFacade {
 	public void calculateRegression(String defaultVariant) {
 		String classPath = getOutDirWithPrefix(defaultVariant);
 		String[] testClassesRegression = new TestClassesFinder().findIn(classpathFrom(classPath), false);
-		System.out.println("-->"+Arrays.toString(testClassesRegression));
+		//System.out.println("-->"+Arrays.toString(testClassesRegression));
 		List<String> tr = new ArrayList<>();
 		String s = "";
 		for (String tcr : testClassesRegression) {

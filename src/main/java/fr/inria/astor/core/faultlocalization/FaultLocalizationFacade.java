@@ -44,7 +44,7 @@ public class FaultLocalizationFacade {
 		// be run. Can be the full or relative path.
 		//Example: GZoltar gz = new GZoltar("C:\\Personal\\develop\\workspaceEvolution\\testProject\\target\\classes");
 
-		logger.info(new File(location).getAbsolutePath());
+		//logger.info(new File(location).getAbsolutePath());
 		GZoltar gz = new GZoltar(new File(location).getAbsolutePath());
 		
 		// 2. Add Package/Class names to instrument
@@ -54,8 +54,8 @@ public class FaultLocalizationFacade {
 			gz.addPackageToInstrument(to);
 		}
 		if(cp!=null || !cp.isEmpty()){
-			logger.info("Current classpath: "+System.getProperty("java.class.path"));
-			logger.info("Adding classpath: "+cp);
+			logger.info("-gz-Current classpath: "+System.getProperty("java.class.path"));
+			logger.info("-gz-Adding classpath: "+cp);
 			gz.getClasspaths().addAll(cp);
 		}
 		for (String test : testsToExecute) {
@@ -67,7 +67,7 @@ public class FaultLocalizationFacade {
 		int[] sum= new int[2];
 		for( TestResult tr : gz.getTestResults()){
 			sum[0]++;
-			logger.debug("Test "+tr.getName()+", success: "+ tr.wasSuccessful());
+			//logger.debug("Test "+tr.getName()+", success: "+ tr.wasSuccessful());
 			sum[1]+=tr.wasSuccessful()?0:1;
 			if(!tr.wasSuccessful()){
 				logger.info("Test failt: "+tr.getName());
@@ -79,7 +79,7 @@ public class FaultLocalizationFacade {
 			}
 					
 		}
-		logger.info("Test Result Total:"+sum[0]+", fails: "+sum[1] + ", GZoltar suspicious "+gz.getSuspiciousStatements().size());
+		logger.info("Gzoltar Test Result Total:"+sum[0]+", fails: "+sum[1] + ", GZoltar suspicious "+gz.getSuspiciousStatements().size());
 		
 		DecimalFormat df = new DecimalFormat( "#.###" );
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
@@ -101,7 +101,7 @@ public class FaultLocalizationFacade {
 		
 		Collections.sort(candidates, new ComparatorCandidates());
 		
-		logger.info("GZOLTAR found: "+candidates.size()+" with susp > "+thr+", we consider: "+max);
+		logger.info("Gzoltar found: "+candidates.size()+" with susp > "+thr+", we consider: "+max);
 		
 		candidates = candidates.subList(0, max);
 		

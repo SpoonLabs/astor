@@ -28,6 +28,7 @@ import fr.inria.astor.core.loop.evolutionary.transformators.ModelTransformator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.stats.StatSpaceSize;
 
 /**
  * Extension of Evolutionary loop with GenProgOperations
@@ -181,6 +182,7 @@ public class JGenProg extends EvolutionaryEngine {
 				.getSuspicious().getSuspiciousValue());
 
 		if (operationType == null) {
+			log.debug("Operation Null");
 			return null;
 		}
 
@@ -197,6 +199,8 @@ public class JGenProg extends EvolutionaryEngine {
 			operation.setParentBlock(parentBlock);
 			operation.setLocationInParent(locationInParent(parentBlock,genSusp.getSuspicious().getLineNumber(), targetStmt));
 
+		}else{
+			log.error("Parent diferent to block");
 		}
 
 		CtElement fix = null;
@@ -215,7 +219,7 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 
 		if (!operationType.equals(GenProgMutationOperation.DELETE) && fix == null) {
-			log.error("fix ingredient null");
+			log.error("***fix ingredient null");
 			return null;
 		}
 
@@ -269,7 +273,8 @@ public class JGenProg extends EvolutionaryEngine {
 		} else {
 			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName(), type).size();
 		}
-
+		currentStat.sizeSpace.add(new StatSpaceSize(0, elementsFromFixSpace));
+		
 		while (continueSearching && attempts < elementsFromFixSpace) {
 			if (type == null) {
 				fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName());

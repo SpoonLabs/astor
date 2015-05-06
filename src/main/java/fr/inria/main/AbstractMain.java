@@ -99,6 +99,9 @@ public abstract class AbstractMain {
 
 		options.addOption("mutationrate", true,
 				"(Optional) Value between 0 and 1 that indicates the probability of modify one gen (default: 1)");
+		
+		options.addOption("probagenmutation", false,
+				"(Optional) Mutates a gen according to its suspicious value. Default: always mutates gen.");
 
 		options.addOption("srcjavafolder", true,
 				"(Optional) folder with the application source code files (default: /src/java/main/)");
@@ -276,6 +279,9 @@ public abstract class AbstractMain {
 	
 		if (cmd.hasOption("regressionforfaultlocalization"))
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", cmd.getOptionValue("regressionforfaultlocalization"));
+		
+		if (cmd.hasOption("probagenmutation"))
+			ConfigurationProperties.properties.setProperty("probagenmutation", "true");
 		
 		
 		

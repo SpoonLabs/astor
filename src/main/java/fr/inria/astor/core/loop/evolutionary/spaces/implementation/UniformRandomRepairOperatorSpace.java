@@ -24,7 +24,7 @@ public class UniformRandomRepairOperatorSpace implements RepairOperatorSpace {
 	@Override
 	public MutationOperation getNextMutation(double suspiciousValue) {
 		double randomVal = random.nextDouble();
-		if(( suspiciousValue * ConfigurationProperties.getPropertyDouble("mutationrate") ) >= randomVal ){
+		if(	!ConfigurationProperties.getPropertyBool("probagenmutation") || ( suspiciousValue * ConfigurationProperties.getPropertyDouble("mutationrate") ) >= randomVal ){
 			return this.getNextMutation();
 		}
 		//As we use a mutation rate to indicate the prob of mutation, if there is not mutation , return null

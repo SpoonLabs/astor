@@ -198,7 +198,7 @@ public abstract class EvolutionaryEngine {
 		for (ProgramVariant parentVariant : variants) {
 
 						
-			log.debug("-Parent Variant: " + parentVariant);
+			log.debug("\n**\n*-Parent Variant: " + parentVariant);
 
 			this.saveOriginalVariant(parentVariant);
 			ProgramVariant newVariant = createNewProgramVariant(parentVariant, generation);
@@ -359,8 +359,6 @@ public abstract class EvolutionaryEngine {
 			programVariant.setFitness(this.populationControler.getMaxFitnessValue());
 
 		}
-		// Finally, reverse the changes done by the child
-		// reverseMutationInModel(programVariant, generation);
 		return false;
 
 	}

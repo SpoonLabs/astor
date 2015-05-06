@@ -49,7 +49,7 @@ public class ConfigurationProperties {
 		log.info("----------------------------");
 		log.info("---Configuration properties:---Execution values");
 		for(String key :properties.stringPropertyNames()){
-			log.info("p:"+key+" "+properties.getProperty(key));
+			log.info("p:"+key+"= "+properties.getProperty(key));
 		}
 		log.info("----------------------------");
 	}

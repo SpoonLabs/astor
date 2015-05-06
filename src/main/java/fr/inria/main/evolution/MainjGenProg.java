@@ -131,7 +131,7 @@ public class MainjGenProg extends AbstractMain {
 			return;
 		}
 
-		
+		ConfigurationProperties.print();
 		try {
 			gploop.startEvolution();
 		} catch (Exception e) {

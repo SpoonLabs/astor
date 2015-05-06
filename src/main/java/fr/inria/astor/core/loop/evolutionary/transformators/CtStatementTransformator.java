@@ -57,7 +57,7 @@ public class CtStatementTransformator implements ModelTransformator {
  * @param pos
  */
 	private void remove(CtBlock parent,CtStatement fix, int pos){
-		//parentBlock.getStatements().remove(fix);
+	
 		CtStatement s = parent.getStatement(pos);
 		if(fix.equals(s)){//To be sure that the position has the element we want to remove
 			parent.getStatements().remove(pos);
@@ -81,11 +81,7 @@ public class CtStatementTransformator implements ModelTransformator {
 		CtBlock parentBlock = operation.getParentBlock();
 
 		if (parentBlock != null) {
-			/*int locationIndex = parentBlock.getStatements().indexOf(ctst);
-			if (locationIndex < 0) {
-				throw new IllegalAccessException("Position in parent is not positive for " + operation);
-			}*/
-			//
+			
 			GenProgMutationOperation operator = (GenProgMutationOperation) operation.getOperationApplied();
 			successful = true;
 			try {

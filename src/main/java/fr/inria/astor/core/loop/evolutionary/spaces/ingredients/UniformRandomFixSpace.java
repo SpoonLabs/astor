@@ -165,11 +165,7 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 		List<I> elements = types.get(type);
 		return elements;
 	}
-	
-	/*public String toString(){
-		return fixSpaceByLocation.toString();
-	}*/
-
+		
 	@Override
 	public I getElementFromSpace(L rootCloned, T type) {
 		List elements = getFixSpace(rootCloned, type);
@@ -177,13 +173,7 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 			return null;
 		return getRandomStatementFromSpace(elements);
 	}
-	
-/*	@Override
-	public void defineSpace(List<CtSimpleType<?>> affected) {
-		throw new IllegalArgumentException("Not Implemented");
-		
-	}
-*/
+
 	public String toString(){
 		String s ="--Space: "+this.strategy() +"\n";
 		for (L l : this.fixSpaceByLocationType.keySet()) {
