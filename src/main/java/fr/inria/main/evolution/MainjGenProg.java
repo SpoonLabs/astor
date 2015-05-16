@@ -149,17 +149,18 @@ public class MainjGenProg extends AbstractMain {
 	 * @throws ParseException
 	 */
 	public static void main(String[] args) throws Exception {
-
+		System.out.println("Arguments: "+ Arrays.toString(args).replace(",", " "));
 		MainjGenProg m = new MainjGenProg();
 		
 		boolean correct = m.processArguments(args);
 		if(!correct){
+			System.err.println("Problems with commands arguments");
 			return;
 		}
 		
-		boolean isExample = m.executeExample(args);
+		/*boolean isExample = m.executeExample(args);
 		if (isExample)
-			return;
+			return;*/
 
 		String dependencies = ConfigurationProperties.getProperty("dependenciespath");
 		String failing = ConfigurationProperties.getProperty("failing");

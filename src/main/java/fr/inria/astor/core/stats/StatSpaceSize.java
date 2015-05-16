@@ -34,6 +34,6 @@ public class StatSpaceSize {
 
 	@Override
 	public String toString() {
-		return "("+Integer.toString(this.size())+" -op "+operations+" ing "+ingredients+"-)" ;
+		return /*"("+*/Integer.toString(this.size())/*+" -op "+operations+" ing "+ingredients+"-)"*/ ;
 	}
 }

@@ -424,7 +424,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		main1.main(args);
 
 	}
-	
+	/**
+	 * We find a repair for this bug (Replacement mehotd invocation)
+	 * @throws Exception
+	 */
 	@SuppressWarnings("static-access")
 	@Test
 	public void testMath73ModeStatement() throws Exception {
@@ -440,13 +443,156 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-srctestfolder", "/src/test/", 
 				"-binjavafolder", "/target/classes", 
 				"-bintestfolder","/target/test-classes",
-				"-javacompliancelevel","7", 
-				"-alternativecompliancelevel","4",
-				"-regressionforfaultlocalization","true",
-				//"-stopfirst", "false",
-				"-maxgen","500",
-				//"-population","2",
-				
+		};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
+	
+	@Test
+	public void testLang2ModeStatement() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.11/junit-4.11.jar"+File.pathSeparator
+		+"/home/matias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"+File.pathSeparator
+		+"/home/matias/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar"+File.pathSeparator
+		+"/home/matias/.m2/repository/org/easymock/easymock/3.1/easymock-3.1.jar"+File.pathSeparator
+		+"/home/matias/.m2/repository/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar"+File.pathSeparator
+		+"/home/matias/.m2/repository/org/objenesis/objenesis/1.2/objenesis-1.2.jar";
+		
+		//java -cp /home/tdurieux/astor/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location . -dependencies lib/ -failing org.apache.commons.lang3.LocaleUtilsTest: -package org.apache.commons -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -javacompliancelevel 5 -maxgen 1000000 -population 1 -srcjavafolder src/main/java/ -srctestfolder src/test/java/ -binjavafolder target/classes/ -bintestfolder target/tests/;
+		String[] args = new String[] {
+				"-dependencies", dep,
+				"-mode","statement",
+				"-failing", "org.apache.commons.lang3.LocaleUtilsTest", 
+				"-location","/tmp/lang_2/", 
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel", "6" //-maxgen 1000000 -population 1
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
+	@Test
+	public void testMath92ModeStatement() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		
+		//java -cp /home/tdurieux/astor/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location . -dependencies lib/ -failing org.apache.commons.lang3.LocaleUtilsTest: -package org.apache.commons -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -javacompliancelevel 5 -maxgen 1000000 -population 1 -srcjavafolder src/main/java/ -srctestfolder src/test/java/ -binjavafolder target/classes/ -bintestfolder target/tests/;
+		String[] args = new String[] {
+				"-dependencies", dep,
+				"-mode","statement",
+				"-failing", "org.apache.commons.math.util.MathUtilsTest", 
+				"-location","/tmp/math_92/", 
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel", "6"
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
+	@Test
+	public void testMath93ModeStatement() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		
+		//java -cp /home/tdurieux/astor/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location . -dependencies lib/ -failing org.apache.commons.lang3.LocaleUtilsTest: -package org.apache.commons -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -javacompliancelevel 5 -maxgen 1000000 -population 1 -srcjavafolder src/main/java/ -srctestfolder src/test/java/ -binjavafolder target/classes/ -bintestfolder target/tests/;
+		String[] args = new String[] {
+				"-dependencies", dep,
+				"-mode","statement",
+				"-failing", "org.apache.commons.math.util.MathUtilsTest", 
+				"-location","/tmp/math_93/", 
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+			//	"-javacompliancelevel", "5"
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
+	
+	@Test
+	public void testMath1ModeStatement() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.11/junit-4.11.jar"+File.pathSeparator
+				+"/home/matias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar";
+		
+		//java -cp /home/tdurieux/astor/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location . -dependencies lib/ -failing org.apache.commons.lang3.LocaleUtilsTest: -package org.apache.commons -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -javacompliancelevel 5 -maxgen 1000000 -population 1 -srcjavafolder src/main/java/ -srctestfolder src/test/java/ -binjavafolder target/classes/ -bintestfolder target/tests/;
+		String[] args = new String[] {
+				"-dependencies", dep,
+				"-mode","statement",
+				"-failing", "org.apache.commons.math3.fraction.BigFractionTest", 
+				"-location","/tmp/math_1/", 
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+			//	"-javacompliancelevel", "5"
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
+	
+	
+	@Test
+	public void testMath20ModeStatement() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.10/junit-4.10.jar"+File.pathSeparator
+				+"/home/matias/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar";
+		
+		//java -cp /home/tdurieux/astor/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location . -dependencies lib/ -failing org.apache.commons.lang3.LocaleUtilsTest: -package org.apache.commons -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -javacompliancelevel 5 -maxgen 1000000 -population 1 -srcjavafolder src/main/java/ -srctestfolder src/test/java/ -binjavafolder target/classes/ -bintestfolder target/tests/;
+		String[] args = new String[] {
+				"-dependencies", dep,
+				"-mode","statement",
+				"-failing", "org.apache.commons.math3.optimization.direct.CMAESOptimizerTest", 
+				"-location","/tmp/math_20/", 
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel", "7"
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
+	
+	@Test
+	public void testMath40ModeStatement() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		
+		//java -cp /home/tdurieux/astor/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location . -dependencies lib/ -failing org.apache.commons.lang3.LocaleUtilsTest: -package org.apache.commons -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -javacompliancelevel 5 -maxgen 1000000 -population 1 -srcjavafolder src/main/java/ -srctestfolder src/test/java/ -binjavafolder target/classes/ -bintestfolder target/tests/;
+		String[] args = new String[] {
+				"-dependencies", dep,
+				"-mode","statement",
+				"-failing", "org.apache.commons.math.analysis.solvers.BracketingNthOrderBrentSolverTest", 
+				"-location","/tmp/math_40/", 
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel", "7"
 				};
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
