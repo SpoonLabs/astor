@@ -108,6 +108,12 @@
 			<id>inria</id>
 			<url>http://spoon.gforge.inria.fr/repositories/releases/</url>
 		</repository>
+	<repository>
+		<id>gforge.inria.fr-snapshot</id>
+		<name>Maven Repository for Spoon Snapshot</name>
+		<url>http://spoon.gforge.inria.fr/repositories/snapshots/</url>
+		<snapshots />
+	</repository>
 	</repositories>
 
 	<build>

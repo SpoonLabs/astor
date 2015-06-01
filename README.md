@@ -19,7 +19,9 @@ Getting started
 To compile using maven:
 mvn install
 
-See configuration file "configuration.properties" for configuring, for instance, the output folder location or jvm dir.
+Note that this project requires the use of Java 1.7; it does not build (on OS X 10.10.3) with Java 1.8.
+
+See configuration file "configuration.properties" for configuring, for instance, the output folder location or jvm dir.  This is a required step; look for jvm4testexecution and be sure it is accurate for your environment.
 
 **Evolutionary**
 
@@ -33,15 +35,15 @@ fr.inria.main.evolution.MainIFPar
 
 The option -help shows the usage of them.
 
-Additionally, the distribution contains a version of Apache commons Math with a real defect (reported in issue 280 https://issues.apache.org/jira/browse/MATH-280).
-To run it using GenProg, type: java fr.inria.main.evolution.MainIFGenProg -bug280
 
-Use Java 1.7
 
 B) jGenProg:
 We provide an implementation of GenProg repair algorithm.
 The class to run it is:
 fr.inria.main.evolution.MainjGenProg
+
+Additionally, the distribution contains a version of Apache commons Math with a real defect (reported in issue 280 https://issues.apache.org/jira/browse/MATH-280).
+To run it using GenProg, type: java fr.inria.main.evolution.MainjGenProg -bug280
 
 This implementations applies the GenProg's operators over 1) statements in a code block, 2) conditions in if and boucle.
 After the execution, Astor writes in the output folder (property 'workingDirectory'in the mentioned file), a folder with all the variants that fulfill the goals i.e., repair the bugs.
