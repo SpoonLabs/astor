@@ -35,15 +35,15 @@ fr.inria.main.evolution.MainIFPar
 
 The option -help shows the usage of them.
 
-Additionally, the distribution contains a version of Apache commons Math with a real defect (reported in issue 280 https://issues.apache.org/jira/browse/MATH-280).
-To run it using GenProg, type: java fr.inria.main.evolution.MainIFGenProg -bug280
-
 
 
 B) jGenProg:
 We provide an implementation of GenProg repair algorithm.
 The class to run it is:
 fr.inria.main.evolution.MainjGenProg
+
+Additionally, the distribution contains a version of Apache commons Math with a real defect (reported in issue 280 https://issues.apache.org/jira/browse/MATH-280).
+To run it using GenProg, type: java fr.inria.main.evolution.MainjGenProg -bug280
 
 This implementations applies the GenProg's operators over 1) statements in a code block, 2) conditions in if and boucle.
 After the execution, Astor writes in the output folder (property 'workingDirectory'in the mentioned file), a folder with all the variants that fulfill the goals i.e., repair the bugs.
