@@ -151,15 +151,15 @@ public class MainjGenProg extends AbstractMain {
 	public static void main(String[] args) throws Exception {
 		System.out.println("Arguments: "+ Arrays.toString(args).replace(",", " "));
 		MainjGenProg m = new MainjGenProg();
-		boolean isExample = m.executeExample(args);
-		if (isExample)
-			return;
-		
 		boolean correct = m.processArguments(args);
 		if(!correct){
 			System.err.println("Problems with commands arguments");
 			return;
 		}
+        if(m.isExample(args)) {
+            m.executeExample(args);
+            return;
+        }
 		
 
 		String dependencies = ConfigurationProperties.getProperty("dependenciespath");

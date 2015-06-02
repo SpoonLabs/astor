@@ -149,6 +149,34 @@ public abstract class AbstractMain {
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
 			double thfl, String failing) throws Exception;
 
+    // CLG notes that this slightly modifies the semantics of example execution,
+    // such that it now will execute examples for non-GenProg tools as well.
+    // This may not be desired, but it was easier to implement this way, for
+    // several reasons, and she can't see a reason that the examples *wouldn't*
+    // work for the other tools. 
+    private boolean isExample(CommandLine cmd) {
+        String[] examples = { "bug280", "bug288", "bug340", "bug428" } ; 
+        for (String example : examples ) {
+            if(cmd.hasOption(example)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isExample(String [] args) {
+		CommandLine cmd = null;
+		try {
+			cmd = parser.parse(options, args);
+            return isExample(cmd);
+		} catch (Exception e) { // generic exceptions are bad practice, but Java
+                                // is also the worst.
+			System.out.println("Error: " + e.getMessage());
+			help();
+			return false;
+		}
+    }
+
 	public boolean processArguments(String[] args) throws Exception {
 
 		CommandLine cmd = null;
@@ -176,22 +204,26 @@ public abstract class AbstractMain {
 		}
 			//throw new IllegalArgumentException("jdk folder not found");
 
-		String dependenciespath = cmd.getOptionValue("dependencies");
-		String failing = cmd.getOptionValue("failing");
-		String location = cmd.getOptionValue("location");
-		String packageToInstrument = cmd.getOptionValue("package");
+        // check if example execution; if so, the "required arguments" are not
 
-		// Process mandatory parameters.
-		if (dependenciespath == null || failing == null || location == null || packageToInstrument == null) {
-			help();
-			return false;
-		}
+         
+        if(!this.isExample(cmd)) {   
+            String dependenciespath = cmd.getOptionValue("dependencies");
+            String failing = cmd.getOptionValue("failing");
+            String location = cmd.getOptionValue("location");
+            String packageToInstrument = cmd.getOptionValue("package");
+            
+            // Process mandatory parameters.
+            if (dependenciespath == null || failing == null || location == null || packageToInstrument == null) {
+                help();
+                return false;
+            }
 
-		ConfigurationProperties.properties.setProperty("dependenciespath", dependenciespath);
-		ConfigurationProperties.properties.setProperty("failing", failing);
-		ConfigurationProperties.properties.setProperty("location", location);
-		ConfigurationProperties.properties.setProperty("packageToInstrument", packageToInstrument);
-
+            ConfigurationProperties.properties.setProperty("dependenciespath", dependenciespath);
+            ConfigurationProperties.properties.setProperty("failing", failing);
+            ConfigurationProperties.properties.setProperty("location", location);
+            ConfigurationProperties.properties.setProperty("packageToInstrument", packageToInstrument);
+        }
 		if (cmd.hasOption("id"))
 			ConfigurationProperties.properties.setProperty("projectIdentifier", cmd.getOptionValue("id"));
 
