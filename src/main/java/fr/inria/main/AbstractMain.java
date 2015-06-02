@@ -21,6 +21,8 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 
+import fr.inria.astor.core.setup.RandomManager;
+
 /**
  * 
  * @author Matias Martinez
@@ -133,6 +135,9 @@ public abstract class AbstractMain {
 	
 		options.addOption("alternativecompliancelevel", true,
 				"(Optional) Alternative compliance level. Default Java 1.4. Used after Astor tries to compile to the complicance level and fails.");
+
+		options.addOption("seed", true,
+                          "(Optional) Random seed, for reproducible runs.  Default is whatever java.util.Random uses when not explicitly initialized.");
 	
 
 	}
@@ -289,8 +294,9 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("uniqueoptogen"))
 			ConfigurationProperties.properties.setProperty("uniqueoptogen", cmd.getOptionValue("uniqueoptogen"));
 		
-		
-		
+        // CLG believes, but is not totally confident in her belief, that this
+        // is a reasonable place to initialize the random number generator.		
+		RandomManager.initialize();
 		return true;
 	}
 
