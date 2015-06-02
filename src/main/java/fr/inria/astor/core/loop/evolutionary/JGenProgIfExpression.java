@@ -1,7 +1,6 @@
 package fr.inria.astor.core.loop.evolutionary;
 
 import java.util.List;
-import java.util.Random;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
@@ -17,6 +16,7 @@ import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.ExpressionRevolver;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.setup.RandomManager;
 
 /**
  * Extension of Evolutionary loop with GenProgOperations to manage IfConditions
@@ -26,8 +26,6 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
  */
 public class JGenProgIfExpression extends JGenProg {
 
-	
-	Random random = new Random();
 	
 	public JGenProgIfExpression(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
@@ -90,7 +88,7 @@ public class JGenProgIfExpression extends JGenProg {
 		if(ctExp == null || ctExp.isEmpty())
 			return fullIfCondition;
 		
-		int index = random.nextInt(ctExp.size());		
+		int index = RandomManager.nextInt(ctExp.size());		
 		return ctExp.get(index);
 	}
 

@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
@@ -30,6 +29,7 @@ import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpac
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
@@ -442,17 +442,6 @@ public abstract class EvolutionaryEngine {
 			undoOperationToSpoonElement(genOperation);
 		}
 	}
-
-	/**
-	 * For each gen of the variant, create a mutation. These are stored in the
-	 * program variant.
-	 * 
-	 * @param variant
-	 * @param generation
-	 * @return if at least one gen mutation is created
-	 * @throws Exception
-	 */
-	Random random = new Random();
 
 	/**
 	 * Given a program variant, the method generates operations for modifying

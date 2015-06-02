@@ -1,7 +1,6 @@
 package fr.inria.astor.core.loop.evolutionary;
 
 import java.util.List;
-import java.util.Random;
 
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -20,6 +19,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.setup.RandomManager;
 
 /**
  * Extension of Evolutionary loop with GenProgOperations to manage IfConditions
@@ -170,8 +170,7 @@ public class ParRepair extends JGenProg {
 	 * @return
 	 */
 	private BinaryOperatorKind getBinaryOperator() {
-		Random r = new Random();
-		double d = r.nextDouble();
+		double d = RandomManager.nextDouble();
 		if (d > 0.5d)
 			return BinaryOperatorKind.AND;
 		else

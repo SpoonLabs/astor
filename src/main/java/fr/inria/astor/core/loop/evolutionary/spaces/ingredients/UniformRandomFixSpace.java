@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -15,6 +14,8 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+
+import fr.inria.astor.core.setup.RandomManager;
 
 /**
  * This Fix Space takes uniform randomly elements from the the search space.
@@ -41,8 +42,6 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	
 	
 	private  IngredientProcessor<L, I> ingredientProcessor;
-	
-	private Random random = new Random();
 	
 	public UniformRandomFixSpace() throws JSAPException {
 		super();
@@ -137,7 +136,7 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	 */
 	protected I getRandomStatementFromSpace(List<I> fixSpace) {
 		int size = fixSpace.size();
-		int index = random.nextInt(size);
+		int index = RandomManager.nextInt(size);
 		return fixSpace.get(index);
 
 	}
