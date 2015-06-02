@@ -29,6 +29,13 @@ public class ConfigurationProperties {
 
 	}
 	
+    public static boolean hasProperty(String key) {
+        if(properties.getProperty(key) == null) {
+            return false;
+        } 
+        return true;
+    }
+
 	public static String getProperty(String key){
 		return properties.getProperty(key);
 	}

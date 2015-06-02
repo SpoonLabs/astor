@@ -1,7 +1,5 @@
 package fr.inria.astor.core.loop.evolutionary.transformators;
 
-import java.util.Random;
-
 import org.apache.log4j.Logger;
 
 import spoon.reflect.code.BinaryOperatorKind;
@@ -12,6 +10,9 @@ import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+
+import fr.inria.astor.core.setup.RandomManager;
+
 /**
  * 
  * @author Matias Martinez
@@ -105,8 +106,7 @@ public class CtExpressionTransformator implements ModelTransformator{
 	}
 	
 	private BinaryOperatorKind getBinaryOperator() {
-		Random r = new Random();
-		double d = r.nextDouble();
+		double d = RandomManager.nextDouble();
 		if (d > 0.5d)
 			return BinaryOperatorKind.AND;
 		else

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
@@ -24,6 +23,8 @@ import fr.inria.astor.core.loop.mutation.mutants.operators.RelationalBinaryOpera
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatSpaceSize;
+
+import fr.inria.astor.core.setup.RandomManager;
 
 /**
  * Mutational evolution.
@@ -121,7 +122,7 @@ public class MutationalRepair extends JGenProg {
 	}
 
 	protected CtElement uniformRandom(List<MutantCtElement> mutations) {
-		return mutations.get((new Random()).nextInt(mutations.size())).getElement();
+		return mutations.get(RandomManager.nextInt(mutations.size())).getElement();
 	}
 	/**
 	 * 

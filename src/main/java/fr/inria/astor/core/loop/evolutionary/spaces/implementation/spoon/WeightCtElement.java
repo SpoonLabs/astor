@@ -3,9 +3,10 @@ package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
+
+import fr.inria.astor.core.setup.RandomManager;
 
 public class WeightCtElement {
 
@@ -50,8 +51,7 @@ public class WeightCtElement {
 
 	public static WeightCtElement selectElementWeightBalanced(List<WeightCtElement> we) {
 		WeightCtElement selected = null;
-		Random r = new Random();
-		double d = r.nextDouble();
+		double d = RandomManager.nextDouble();
 		
 		for (int i = 0; (selected == null && i < we.size()); i++) {
 			if (d <= we.get(i).accum) {
