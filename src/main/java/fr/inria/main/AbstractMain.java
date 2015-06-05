@@ -326,6 +326,10 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("uniqueoptogen"))
 			ConfigurationProperties.properties.setProperty("uniqueoptogen", cmd.getOptionValue("uniqueoptogen"));
 		
+		if (cmd.hasOption("seed"))
+			ConfigurationProperties.properties.setProperty("seed", cmd.getOptionValue("seed"));
+		
+		
         // CLG believes, but is not totally confident in her belief, that this
         // is a reasonable place to initialize the random number generator.		
 		RandomManager.initialize();
