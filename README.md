@@ -17,7 +17,7 @@ Getting started
 
 
 To compile using maven:
-mvn install
+First execute 'mvn clean' and  then 'mvn install'
 
 Note that this project requires the use of Java 1.7; it does not build (on OS X 10.10.3) with Java 1.8.
 
