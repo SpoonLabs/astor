@@ -351,9 +351,7 @@ public abstract class AbstractMain {
 			String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
 			String folder = "Math-issue-280";
 			String failing = "org.apache.commons.math.distribution.NormalDistributionTest";
-			File f = new File("examples/Math-issue-280/");
-            //			String location = f.getParent();
-            String location = "examples/Math-issue-280/";
+			String location = "examples/math_85/"; //"examples/Math-issue-280/";
 			String packageToInstrument = "org.apache.commons";
 			double thfl = 0.5;
 			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
