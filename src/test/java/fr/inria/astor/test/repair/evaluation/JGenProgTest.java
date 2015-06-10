@@ -5,9 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -63,7 +61,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
 		String folder = "Math-issue-280";
 		String failing = "org.apache.commons.math.distribution.NormalDistributionTest";
-		File f = new File("examples/Math-issue-280/");
+		File f = new File("examples/math_85//");
 		String location = f.getParent();
 		String regression = "org.apache.commons.math.distribution.NormalDistributionTest";
 		String packageToInstrument = "org.apache.commons";
@@ -72,7 +70,20 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		this.generic(location, folder, regression, failing, dependenciespath, packageToInstrument, thfl);
 
 	}
+	@Test
+	public void testExample280CommandLine() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+			
+		String[] args = new String[] {
+				"-bug280",	
+				"-jvm4testexecution", 
+				"/home/matias/develop/jdk1.7.0_71/bin",
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
 
+	}
 	@Test
 	public void testExampleMath0C1() throws Exception {
 		
@@ -259,12 +270,13 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testRunMain() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
+		String pathExample = new File("./examples/Math-0c1ef").getAbsolutePath();
 		String[] args = new String[] {
 				"-dependencies",
 				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
-						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
+						+pathExample+File.separator+ "/lib/hamcrest-core-1.3.jar",
 				"-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
-				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons",
+				pathExample, "-package", "org.apache.commons",
 				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin" };
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
@@ -275,12 +287,14 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testRunMain2() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
+		String pathExample = new File("./examples/Math-0c1ef").getAbsolutePath();
+		
 		main1.main(new String[] {
 				"-dependencies",
 				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
-						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar", "-id",
+						+ pathExample+File.separator+"/lib/hamcrest-core-1.3.jar", "-id",
 				"tttMath-0c1ef", "-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
-				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons", "-maxgen",
+				pathExample, "-package", "org.apache.commons", "-maxgen",
 				"400", "-population", "2", "-saveall",
 
 
@@ -292,12 +306,13 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testRunMainRemove() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
+		String pathExample = new File("./examples/Math-0c1ef").getAbsolutePath();
 		main1.main(new String[] {
 				"-dependencies",
 				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
-						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar", "-id",
+				+ pathExample+File.separator+"lib/hamcrest-core-1.3.jar", "-id",
 				"tttMath-0c1ef", "-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
-				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons", "-maxgen",
+				pathExample, "-package", "org.apache.commons", "-maxgen",
 				"400", "-population", "2", "-saveall", "-mode", "statement-remove"
 	
 		});
@@ -310,14 +325,14 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		Date init = new Date();
 		MainjGenProg main1 = new MainjGenProg();
+		String pathExample = new File("./examples/Math-0c1ef").getAbsolutePath();
 		main1.main(new String[] {
 				"-dependencies",
 				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
-						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar", "-id",
+				+ pathExample+File.separator+"lib/hamcrest-core-1.3.jar", "-id",
 				"tttMath-0c1ef", "-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
-				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons", "-maxgen",
+				pathExample, "-package", "org.apache.commons", "-maxgen",
 				"400", "-population", "2", "-saveall", "-maxtime", "1"
-		// "-flthreshold","0.9"
 		});
 		long t = TimeUtil.delta(init);
 		assertTrue(t > 1);// more than one minute
@@ -328,12 +343,13 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testRunMainSrcTestFolder() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
+		String pathExample = new File("./examples/Math-0c1ef").getAbsolutePath();
 		main1.main(new String[] {
 				"-dependencies",
 				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
-						+ "/home/matias/develop/code/astor/examples/Math-0c1ef/lib/hamcrest-core-1.3.jar",
+						+  pathExample+File.separator+"lib/hamcrest-core-1.3.jar",
 						"-failing", "org.apache.commons.math3.primes.PrimesTest", "-location",
-				"/home/matias/develop/code/astor/examples/Math-0c1ef", "-package", "org.apache.commons",
+				pathExample, "-package", "org.apache.commons",
 				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin", "-srcjavafolder", "/src/main/java/",
 				"-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes" });
@@ -371,10 +387,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testRunMainLang55() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
+		String pathExample = new File("./examples/lang_55").getAbsolutePath();
 		String[] args = new String[] {
-				"-dependencies","/home/matias/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar",
+				"-dependencies",pathExample+File.separator+"junit-3.8.1.jar",
 				"-failing", "org.apache.commons.lang.time.StopWatchTest", 
-				"-location","/home/matias/develop/code/astor/examples/lang_55/", 
+				"-location",pathExample, 
 				"-package", "org.apache.commons",
 				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/",
@@ -394,10 +411,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testRunMainLang55FormDefects4j() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
+		String pathExample = new File("./examples/lang_55").getAbsolutePath();
 		String[] args = new String[] {
-				"-dependencies","/home/matias/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar",
+				"-dependencies",pathExample+File.separator+"lib"+File.separator+"junit-3.8.1.jar",
 				"-failing", "org.apache.commons.lang.time.StopWatchTest", 
-				"-location","/home/matias/develop/code/defects4j-fw/extr/lang_55/", 
+				"-location",pathExample, 
 				"-package", "org.apache.commons",
 				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/",
@@ -418,11 +436,12 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testRunMainLang55Remove() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
+		String pathExample = new File("./examples/lang_55").getAbsolutePath().replace(".", "");
 		String[] args = new String[] {
-				"-dependencies","/home/matias/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar",
+				"-dependencies",pathExample+File.separator+"lib"+File.separator+"junit-3.8.1.jar",
 				"-failing", 
 				"org.apache.commons.lang.ArrayUtilsAddTest:org.apache.commons.lang.ArrayUtilsRemoveTest:org.apache.commons.lang.ArrayUtilsTest:org.apache.commons.lang.BitFieldTest:org.apache.commons.lang.BooleanUtilsTest:org.apache.commons.lang.CharEncodingTest:org.apache.commons.lang.CharRangeTest:org.apache.commons.lang.CharSetTest:org.apache.commons.lang.CharSetUtilsTest:org.apache.commons.lang.CharUtilsTest:org.apache.commons.lang.ClassUtilsTest:org.apache.commons.lang.EntitiesPerformanceTest:org.apache.commons.lang.EntitiesTest:org.apache.commons.lang.IllegalClassExceptionTest:org.apache.commons.lang.IncompleteArgumentExceptionTest:org.apache.commons.lang.IntHashMapTest:org.apache.commons.lang.LocaleUtilsTest:org.apache.commons.lang.NotImplementedExceptionTest:org.apache.commons.lang.NullArgumentExceptionTest:org.apache.commons.lang.NumberRangeTest:org.apache.commons.lang.NumberUtilsTest:org.apache.commons.lang.ObjectUtilsTest:org.apache.commons.lang.RandomStringUtilsTest:org.apache.commons.lang.SerializationUtilsTest:org.apache.commons.lang.StringEscapeUtilsTest:org.apache.commons.lang.StringUtilsEqualsIndexOfTest:org.apache.commons.lang.StringUtilsIsTest:org.apache.commons.lang.StringUtilsSubstringTest:org.apache.commons.lang.StringUtilsTest:org.apache.commons.lang.StringUtilsTrimEmptyTest:org.apache.commons.lang.SystemUtilsTest:org.apache.commons.lang.UnhandledExceptionTest:org.apache.commons.lang.ValidateTest:org.apache.commons.lang.WordUtilsTest:org.apache.commons.lang.builder.CompareToBuilderTest:org.apache.commons.lang.builder.DefaultToStringStyleTest:org.apache.commons.lang.builder.EqualsBuilderTest:org.apache.commons.lang.builder.HashCodeBuilderAndEqualsBuilderTest:org.apache.commons.lang.builder.HashCodeBuilderTest:org.apache.commons.lang.builder.MultiLineToStringStyleTest:org.apache.commons.lang.builder.NoFieldNamesToStringStyleTest:org.apache.commons.lang.builder.ReflectionToStringBuilderExcludeTest:org.apache.commons.lang.builder.ShortPrefixToStringStyleTest:org.apache.commons.lang.builder.SimpleToStringStyleTest:org.apache.commons.lang.builder.StandardToStringStyleTest:org.apache.commons.lang.builder.ToStringBuilderTest:org.apache.commons.lang.builder.ToStringStyleTest:org.apache.commons.lang.enum.EnumTest:org.apache.commons.lang.enum.EnumUtilsTest:org.apache.commons.lang.enum.ValuedEnumTest:org.apache.commons.lang.enums.EnumEqualsTest:org.apache.commons.lang.enums.EnumTest:org.apache.commons.lang.enums.EnumUtilsTest:org.apache.commons.lang.enums.ValuedEnumTest:org.apache.commons.lang.exception.ExceptionUtilsTestCase:org.apache.commons.lang.exception.NestableDelegateTestCase:org.apache.commons.lang.exception.NestableErrorTestCase:org.apache.commons.lang.exception.NestableExceptionTestCase:org.apache.commons.lang.exception.NestableRuntimeExceptionTestCase:org.apache.commons.lang.math.DoubleRangeTest:org.apache.commons.lang.math.FloatRangeTest:org.apache.commons.lang.math.FractionTest:org.apache.commons.lang.math.IntRangeTest:org.apache.commons.lang.math.LongRangeTest:org.apache.commons.lang.math.NumberRangeTest:org.apache.commons.lang.math.NumberUtilsTest:org.apache.commons.lang.math.RandomUtilsTest:org.apache.commons.lang.math.RangeTest:org.apache.commons.lang.mutable.MutableBooleanTest:org.apache.commons.lang.mutable.MutableByteTest:org.apache.commons.lang.mutable.MutableDoubleTest:org.apache.commons.lang.mutable.MutableFloatTest:org.apache.commons.lang.mutable.MutableIntTest:org.apache.commons.lang.mutable.MutableLongTest:org.apache.commons.lang.mutable.MutableObjectTest:org.apache.commons.lang.mutable.MutableShortTest:org.apache.commons.lang.text.CompositeFormatTest:org.apache.commons.lang.text.StrBuilderAppendInsertTest:org.apache.commons.lang.text.StrBuilderTest:org.apache.commons.lang.text.StrLookupTest:org.apache.commons.lang.text.StrMatcherTest:org.apache.commons.lang.text.StrSubstitutorTest:org.apache.commons.lang.text.StrTokenizerTest:org.apache.commons.lang.time.DateFormatUtilsTest:org.apache.commons.lang.time.DateUtilsTest:org.apache.commons.lang.time.DurationFormatUtilsTest:org.apache.commons.lang.time.FastDateFormatTest:org.apache.commons.lang.time.StopWatchTest",
-				"-location","/home/matias/develop/code/astor/examples/lang_55/", 
+				"-location",pathExample, 
 				"-package", "org.apache.commons",
 				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/",
@@ -452,11 +471,12 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testMath73ModeStatement() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
+		String pathExample = new File("./examples/math_73").getAbsolutePath().replace(".", "");
 		String[] args = new String[] {
-				"-dependencies","/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
+				"-dependencies",pathExample+File.separator+"lib"+File.separator+"junit-4.4.jar",
 				"-mode","statement",
 				"-failing", "org.apache.commons.math.analysis.solvers.BrentSolverTest", 
-				"-location","/home/matias/develop/code/astor/examples/math_73/", 
+				"-location",pathExample, 
 				"-package", "org.apache.commons",
 				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/",
@@ -500,14 +520,13 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testMath92ModeStatement() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
-		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
-		
+		String pathExample = new File("./examples/math_92").getAbsolutePath().replace(".", "");
 		//java -cp /home/tdurieux/astor/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location . -dependencies lib/ -failing org.apache.commons.lang3.LocaleUtilsTest: -package org.apache.commons -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -javacompliancelevel 5 -maxgen 1000000 -population 1 -srcjavafolder src/main/java/ -srctestfolder src/test/java/ -binjavafolder target/classes/ -bintestfolder target/tests/;
 		String[] args = new String[] {
-				"-dependencies", dep,
+				"-dependencies",pathExample+File.separator+"lib"+File.separator+"junit-4.4.jar",
 				"-mode","statement",
 				"-failing", "org.apache.commons.math.util.MathUtilsTest", 
-				"-location","/tmp/math_92/", 
+				"-location",pathExample, 
 				"-package", "org.apache.commons",
 				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/",
@@ -523,14 +542,15 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testMath93ModeStatement() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
-		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		//String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		String pathExample = new File("./examples/math_92").getAbsolutePath().replace(".", "");
 		
 		//java -cp /home/tdurieux/astor/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location . -dependencies lib/ -failing org.apache.commons.lang3.LocaleUtilsTest: -package org.apache.commons -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -javacompliancelevel 5 -maxgen 1000000 -population 1 -srcjavafolder src/main/java/ -srctestfolder src/test/java/ -binjavafolder target/classes/ -bintestfolder target/tests/;
 		String[] args = new String[] {
-				"-dependencies", dep,
+				"-dependencies",pathExample+File.separator+"lib"+File.separator+"junit-4.4.jar",
 				"-mode","statement",
 				"-failing", "org.apache.commons.math.util.MathUtilsTest", 
-				"-location","/tmp/math_93/", 
+				"-location",pathExample, 
 				"-package", "org.apache.commons",
 				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/",
@@ -549,6 +569,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		MainjGenProg main1 = new MainjGenProg();
 		String dep = "/home/matias/.m2/repository/junit/junit/4.11/junit-4.11.jar"+File.pathSeparator
 				+"/home/matias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar";
+		
+		String pathExample = new File("./examples/math_92").getAbsolutePath().replace(".", "");
+		
 		
 		//java -cp /home/tdurieux/astor/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location . -dependencies lib/ -failing org.apache.commons.lang3.LocaleUtilsTest: -package org.apache.commons -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -javacompliancelevel 5 -maxgen 1000000 -population 1 -srcjavafolder src/main/java/ -srctestfolder src/test/java/ -binjavafolder target/classes/ -bintestfolder target/tests/;
 		String[] args = new String[] {
@@ -618,5 +641,31 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		main1.main(args);
 
 	}
+	
+	@Test
+	public void testMath85issue280() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+			
+		String[] args = new String[] {
+				"-dependencies", dep,
+				"-mode","statement",
+				"-failing", "org.apache.commons.math.distribution.NormalDistributionTest", 
+				"-location",new File("./examples/math_85").getAbsolutePath(),							
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel", "7",
+				"-flthreshold","0.5",
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
+	
+
 	
 }
