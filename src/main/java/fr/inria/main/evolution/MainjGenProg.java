@@ -73,7 +73,10 @@ public class MainjGenProg extends AbstractMain {
 		// --
 
 		// The ingredients for build the patches
+		//gploop.setFixspace(new LocalFixSpace(ingredientProcessors));
 		gploop.setFixspace(new BasicFixSpace(ingredientProcessors));
+		//gploop.setFixspace(new GlobalBasicFixSpace(ingredientProcessors));
+		
 		// ---
 
 		// Repair Space

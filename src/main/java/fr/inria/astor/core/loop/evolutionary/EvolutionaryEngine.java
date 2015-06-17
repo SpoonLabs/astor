@@ -11,6 +11,8 @@ import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -72,7 +74,7 @@ public abstract class EvolutionaryEngine {
 	protected ProgramVariant originalVariant = null;
 
 	// SPACES
-	protected FixLocationSpace<String, CtCodeElement, String> fixspace = null;
+	protected FixLocationSpace<CtElement/*String*/, CtCodeElement, String> fixspace = null;
 
 	protected RepairOperatorSpace repairActionSpace = null;
 

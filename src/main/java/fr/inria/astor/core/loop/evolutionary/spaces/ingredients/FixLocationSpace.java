@@ -9,6 +9,9 @@ import spoon.reflect.declaration.CtSimpleType;
  * Representation of Fix Location Space.
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
+ *L is the location
+ *I the ingredient
+ *T type
  */
 public interface FixLocationSpace<L extends Object,I extends CtElement, T extends Object > {
 	

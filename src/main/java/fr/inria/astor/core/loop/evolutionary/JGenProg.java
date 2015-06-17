@@ -269,16 +269,16 @@ public class JGenProg extends EvolutionaryEngine {
 		int elementsFromFixSpace = 0;
 
 		if (type == null) {
-			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName()).size();
+			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getRootElement()).size();
 		} else {
-			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName(), type).size();
+			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getRootElement(), type).size();
 		}
 		
 		while (continueSearching && attempts < elementsFromFixSpace) {
 			if (type == null) {
-				fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName());
+				fix = this.fixspace.getElementFromSpace(gen.getRootElement());
 			} else {
-				fix = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName(), type);
+				fix = this.fixspace.getElementFromSpace(gen.getRootElement(), type);
 			}
 			if (fix == null) {
 				return null;

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtElement;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -38,7 +39,7 @@ public class GlobalBasicFixSpace extends BasicFixSpace {
 	}
 
 	@Override
-	public CtCodeElement getElementFromSpace(String rootClass) {
+	public CtCodeElement getElementFromSpace(CtElement element) {
 		CtCodeElement originalPicked = getRandomStatementFromSpace(getFixSpace(null));
 		return MutationSupporter.clone(originalPicked);
 
@@ -48,7 +49,7 @@ public class GlobalBasicFixSpace extends BasicFixSpace {
 	 * Ignored the class
 	 */
 	@Override
-	public List<CtCodeElement> getFixSpace(String rootClass) {
+	public List<CtCodeElement> getFixSpace(CtElement element) {
 		List result = 	new ArrayList();
 		for(String type : fixSpaceByType.keySet()){
 			result.addAll(this.fixSpaceByType.get(type));
@@ -58,14 +59,14 @@ public class GlobalBasicFixSpace extends BasicFixSpace {
 	}
 
 	@Override
-	public List<CtCodeElement> getFixSpace(String rootClass, String type) {
+	public List<CtCodeElement> getFixSpace(CtElement element, String type) {
 
 		return this.fixSpaceByType.get(type);
 
 	}
 
 	@Override
-	public CtCodeElement getElementFromSpace(String rootCloned, String type) {
+	public CtCodeElement getElementFromSpace(CtElement element, String type) {
 		CtCodeElement originalPicked = getRandomStatementFromSpace(getFixSpace(
 				null, type));
 		return MutationSupporter.clone(originalPicked);

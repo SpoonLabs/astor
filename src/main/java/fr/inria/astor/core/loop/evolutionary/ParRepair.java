@@ -88,7 +88,7 @@ public class ParRepair extends JGenProg {
 		operation.setGen(genSusp);
 		
 		//--
-		int elementsFromFixSpace = this.fixspace.getFixSpace(genSusp.getCtClass().getQualifiedName()).size();
+		int elementsFromFixSpace = this.fixspace.getFixSpace(genSusp.getRootElement()).size();
 		CtElement fix = null;
 		//
 		
@@ -100,7 +100,7 @@ public class ParRepair extends JGenProg {
 			if (!operationType.equals(ParMutationOperation.DELETE_BEFORE)
 					&& !operationType.equals(ParMutationOperation.DELETE_AFTER)) {
 			
-				fixingredient = this.fixspace.getElementFromSpace(gen.getCtClass().getQualifiedName());
+				fixingredient = this.fixspace.getElementFromSpace(gen.getRootElement());
 				if(fixingredient == null){
 					continue;
 				}

@@ -24,7 +24,7 @@ import fr.inria.astor.core.setup.RandomManager;
  * @param <I>
  *
  */
-public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeElement, T extends Object> 
+public abstract class UniformRandomFixSpace<L extends Object, K extends Object,  I extends CtCodeElement, T extends Object> 
 	implements FixLocationSpace <L, I , T>{
 	
 	
@@ -35,8 +35,8 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	 * 
 	 */
 	//I keep this structure for optimization (to avoid creating a list )
-	protected Map<L,List<I>> fixSpaceByLocation = new HashMap<L,List<I>> ();
-	protected Map<L,Map<T, List<I>>> fixSpaceByLocationType = new HashMap<L,Map<T,List<I>>> ();
+	protected Map<K,List<I>> fixSpaceByLocation = new HashMap<K,List<I>> ();
+	protected Map<K,Map<T, List<I>>> fixSpaceByLocationType = new HashMap<K,Map<T,List<I>>> ();
 	protected Map<T,List<I>> fixSpaceByType = new HashMap<T,List<I>> ();
 	
 	
@@ -68,7 +68,7 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	}
 
 	
-	protected Map<L, List<I>> getFixSpace() {
+	protected Map<K, List<I>> getFixSpace() {
 		return fixSpaceByLocation;
 	}
 	
@@ -81,8 +81,8 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	 * 
 	 * @param root
 	 */
-	public void createFixSpaceFromAClass(L key, CtSimpleType root) {
-		
+	public void createFixSpaceFromAClass(L key1, CtSimpleType root) {
+		K key = convertKey(key1);
 		if (!getFixSpace().containsKey(key)) {
 			List<I> ingredientsToProcess = this.ingredientProcessor.createFixSpace(root);
 			AbstractFixSpaceProcessor.mustClone = true;
@@ -92,14 +92,18 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	
 		}
 	}
+	/**
+	 * Each space decides with dimension it wants
+	 * @param original
+	 * @return
+	 */
+	protected abstract K convertKey(L original);
 	
-	
-	
-	private void splitByType(L location, List<I> ingredients) {
-		Map<T, List<I>> typesFromLocation = this.fixSpaceByLocationType.get(location);
+	private void splitByType(K keyLocation, List<I> ingredients) {
+			Map<T, List<I>> typesFromLocation = this.fixSpaceByLocationType.get(keyLocation);
 		if(typesFromLocation == null){
 			typesFromLocation = new HashMap<>();
-			this.fixSpaceByLocationType.put(location, typesFromLocation);
+			this.fixSpaceByLocationType.put(keyLocation, typesFromLocation);
 		}
 		for (I element : ingredients) {
 			T type = getType(element);
@@ -118,8 +122,7 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 			listType.add(element);
 			
 		}
-		//fixSpaceByType.putAll(typesFromLocation);
-		
+			
 	}
 	protected T getType(I element) {
 		
@@ -141,18 +144,21 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	 * @return 
 	 */
 	@Override
-	public  I getElementFromSpace(L rootClass) {
+	public  I getElementFromSpace(L rootClass1) {
+		K rootClass = convertKey(rootClass1);
 		I originalPicked = getRandomStatementFromSpace(this.getFixSpace().get(rootClass));
 		I cloned =  (I) MutationSupporter.clone(originalPicked);
 		return cloned;
 	}
 	@Override
-	public List<I> getFixSpace(L rootClass){
-		return getFixSpace().get(rootClass);
+	public List<I> getFixSpace(L location){
+		K key = convertKey(location);
+		return getFixSpace().get(key);
 	}
 	
 	@Override
-	public List<I> getFixSpace(L rootClass, T type){
+	public List<I> getFixSpace(L rootClass1, T type){
+		K rootClass = convertKey(rootClass1);
 		Map<T, List<I>> types =  this.fixSpaceByLocationType.get(rootClass);
 		if(types == null)
 			return null;
@@ -162,8 +168,9 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	}
 		
 	@Override
-	public I getElementFromSpace(L rootCloned, T type) {
-		List elements = getFixSpace(rootCloned, type);
+	public I getElementFromSpace(L location, T type) {
+		//K key = convertKey(rootCloned);	
+		List<I> elements = getFixSpace(location, type);
 		if(elements == null)
 			return null;
 		return getRandomStatementFromSpace(elements);
@@ -171,7 +178,7 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 
 	public String toString(){
 		String s ="--Space: "+this.strategy() +"\n";
-		for (L l : this.fixSpaceByLocationType.keySet()) {
+		for (K l : this.fixSpaceByLocationType.keySet()) {
 			
 			Map<T, List<I>> r = this.fixSpaceByLocationType.get(l);
 			String s2 = "";
