@@ -43,7 +43,7 @@ public class BasicFixSpace extends UniformRandomFixSpace<String, CtCodeElement,S
 	@Override
 	protected String getType(CtCodeElement element) {
 		
-		return element.getClass().getSimpleName();//.getName();
+		return element.getClass().getSimpleName();
 	}
 
 	@Override

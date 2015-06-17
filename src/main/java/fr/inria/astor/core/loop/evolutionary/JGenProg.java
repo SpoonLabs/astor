@@ -273,7 +273,6 @@ public class JGenProg extends EvolutionaryEngine {
 		} else {
 			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getCtClass().getQualifiedName(), type).size();
 		}
-		currentStat.sizeSpace.add(new StatSpaceSize(0, elementsFromFixSpace));
 		
 		while (continueSearching && attempts < elementsFromFixSpace) {
 			if (type == null) {
@@ -293,6 +292,13 @@ public class JGenProg extends EvolutionaryEngine {
 						targetStmt.toString());
 
 		}
+		
+		currentStat.sizeSpace.add(new StatSpaceSize(
+				gen.getProgramVariant().getId(),
+				gen.getRootElement().getClass().getSimpleName(), elementsFromFixSpace
+				, fix.getClass().getSimpleName()));
+		
+		
 		if (continueSearching) {
 			log.debug("--- no mutation left to apply in element "+targetStmt.getSignature());
 			return null;

@@ -341,7 +341,7 @@ public abstract class EvolutionaryEngine {
 
 			log.debug("-The child compiles: id " + programVariant.getId());
 			currentStat.numberOfRightCompilation++;
-
+			currentStat.setCompiles(programVariant.getId());
 			boolean validInstance = validateInstance(programVariant);
 			log.debug("-Valid?: " + validInstance + ", fitness " + programVariant.getFitness());
 			if (validInstance) {
@@ -356,6 +356,7 @@ public abstract class EvolutionaryEngine {
 		} else {
 			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: " + "");
 			currentStat.numberOfFailingCompilation++;
+			currentStat.setNotCompiles(programVariant.getId());
 			programVariant.setFitness(this.populationControler.getMaxFitnessValue());
 
 		}
@@ -472,6 +473,8 @@ public abstract class EvolutionaryEngine {
 			if (!multiGenmutation && alreadyModified(genProgInstance, variant.getOperations(), generation))
 				continue;
 
+			this.currentStat.kindOfElementsSelected.add(genProgInstance.getRootElement().getClass().getSimpleName());
+			
 			genProgInstance.setProgramVariant(variant);
 			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
 		
@@ -482,6 +485,7 @@ public abstract class EvolutionaryEngine {
 				if(ConfigurationProperties.getPropertyBool("uniqueoptogen") 
 						&& alreadyApplied(operationInGen)){
 					log.debug("---Operation already applied to the gen "+operationInGen);
+					currentStat.setAlreadyApplied(variant.getId());
 					continue;
 				}
 				

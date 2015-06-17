@@ -18,7 +18,6 @@ public interface FixLocationSpace<L extends Object,I extends CtElement, T extend
 	 *@param all corresponds to all types from the program under analysis.
 	 */
 	public void defineSpace(List<CtSimpleType<?>> affected );
-	//public void createFixSpaceFromAClass(L key,CtSimpleType<?> rootCloned);
 	public I getElementFromSpace(L rootCloned) ;
 	public I getElementFromSpace(L rootCloned, T type) ;
 	public List<I> getFixSpace(L rootClass);

@@ -9,14 +9,35 @@ public class StatSpaceSize {
 	int id = -1;
 	int operations = 0;
 	int ingredients = 0;
+	String genType = "";
+	String ingredientType = "";
+	public TYPES states; 
 	
-	public StatSpaceSize(int id, int operations, int ingredients) {
+	public enum TYPES { compiles, notcompiles, alreadyanalyzed }
+	
+	
+	public StatSpaceSize(String type, int ingredients) {
 		super();
-		this.id = id;
-		this.operations = operations;
+		this.genType = type;
 		this.ingredients = ingredients;
 	}
-
+	
+	public StatSpaceSize(String type, int ingredients, String ingType) {
+		super();
+		this.genType = type;
+		this.ingredients = ingredients;
+		this.ingredientType = ingType;
+	}
+	
+	public StatSpaceSize(
+			int id,String type, int ingredients, String ingType) {
+		super();
+		this.id = id;
+		this.genType = type;
+		this.ingredients = ingredients;
+		this.ingredientType = ingType;
+	}
+	
 	public StatSpaceSize(int operations, int ingredients) {
 		super();
 		this.operations = operations;
@@ -34,6 +55,6 @@ public class StatSpaceSize {
 
 	@Override
 	public String toString() {
-		return /*"("+*/Integer.toString(this.size())/*+" -op "+operations+" ing "+ingredients+"-)"*/ ;
+		return "(id:"+id+", "+genType+", size: "+Integer.toString(this.size())/*+" -op "+operations+" ing "+ingredients+*/+", "+states+") " ;
 	}
 }

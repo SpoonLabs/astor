@@ -55,7 +55,6 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	 */
 	public UniformRandomFixSpace(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
 		super();
-		//this.addProcessor();
 		ingredientProcessor = new IngredientProcessor<L, I>(processor);
 	}
 	/**
@@ -65,9 +64,6 @@ public abstract class UniformRandomFixSpace<L extends Object, I extends CtCodeEl
 	 */
 	public UniformRandomFixSpace(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
 		super();
-		/*for (AbstractFixSpaceProcessor<?> abstractFixSpaceProcessor : processors) {
-			this.addProcessor(abstractFixSpaceProcessor.getClass().getName() );
-		}*/
 		ingredientProcessor = new IngredientProcessor<L, I>(processors);
 	}
 
