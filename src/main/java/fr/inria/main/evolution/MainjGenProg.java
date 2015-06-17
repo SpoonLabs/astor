@@ -18,7 +18,7 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.RemoveRepairO
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.SingleStatementFixSpaceProcessor;
-import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicFixSpace;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.LocalFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
@@ -74,7 +74,7 @@ public class MainjGenProg extends AbstractMain {
 
 		// The ingredients for build the patches
 		//gploop.setFixspace(new LocalFixSpace(ingredientProcessors));
-		gploop.setFixspace(new BasicFixSpace(ingredientProcessors));
+		gploop.setFixspace(new LocalFixSpace(ingredientProcessors));
 		//gploop.setFixspace(new GlobalBasicFixSpace(ingredientProcessors));
 		
 		// ---

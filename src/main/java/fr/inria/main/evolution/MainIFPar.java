@@ -21,7 +21,7 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
-import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicFixSpace;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.LocalFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.main.AbstractMain;
@@ -73,7 +73,7 @@ public class MainIFPar extends AbstractMain {
 		ingredientsProcessors.add(new IFExpressionFixSpaceProcessor());
 		
 		// We include the new location fix space
-		parloop.setFixspace(new BasicFixSpace(ingredientsProcessors));
+		parloop.setFixspace(new LocalFixSpace(ingredientsProcessors));
 		parloop.setRepairActionSpace(new ParUniformRandomRepairOperatorSpace());
 		parloop.setPopulationControler(new FitnessPopulationController());
 				

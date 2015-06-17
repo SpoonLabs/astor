@@ -14,19 +14,19 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.process
  * @author Matias Martinez
  *
  */
-public class BasicFixSpace extends UniformRandomFixSpace<CtElement,String, CtCodeElement,String>{
+public class LocalFixSpace extends UniformRandomFixSpace<CtElement,String, CtCodeElement,String>{
 
-	public BasicFixSpace(AbstractFixSpaceProcessor<?> processor)
+	public LocalFixSpace(AbstractFixSpaceProcessor<?> processor)
 			throws JSAPException {
 		super(processor);
 	}
 
-	public BasicFixSpace(List<AbstractFixSpaceProcessor<?>> processors)
+	public LocalFixSpace(List<AbstractFixSpaceProcessor<?>> processors)
 			throws JSAPException {
 		super(processors);
 	}
 
-	public BasicFixSpace() throws JSAPException {
+	public LocalFixSpace() throws JSAPException {
 		super();
 	
 	}

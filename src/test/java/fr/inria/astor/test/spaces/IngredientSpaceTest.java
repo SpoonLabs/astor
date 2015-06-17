@@ -26,7 +26,7 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
-import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicFixSpace;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.LocalFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.FixLocationSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.GlobalBasicFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientAnalyzer;
@@ -47,7 +47,7 @@ public class IngredientSpaceTest {
 		procFix.add(new IFExpressionFixSpaceProcessor());
 		
 		
-		 FixLocationSpace ingredientSpace = new BasicFixSpace(procFix);
+		 FixLocationSpace ingredientSpace = new LocalFixSpace(procFix);
 		 List classes = getScenario1Classes();
 		 assertTrue(classes.size() == 2);
 		 ingredientSpace.defineSpace(classes);
@@ -200,7 +200,7 @@ public class IngredientSpaceTest {
 		procFix.add(new IFExpressionFixSpaceProcessor());
 		
 		
-		 FixLocationSpace ingredientSpace = new BasicFixSpace(procFix);
+		 FixLocationSpace ingredientSpace = new LocalFixSpace(procFix);
 		 List classes = getScenario2Classes();
 		 assertTrue(classes.size() == 2);
 		 ingredientSpace.defineSpace(classes);

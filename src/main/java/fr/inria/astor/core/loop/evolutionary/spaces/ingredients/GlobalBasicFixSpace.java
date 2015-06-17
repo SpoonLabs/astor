@@ -21,7 +21,7 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class GlobalBasicFixSpace extends BasicFixSpace {
+public class GlobalBasicFixSpace extends LocalFixSpace {
 
 	private Logger logger = Logger.getLogger(GlobalBasicFixSpace.class
 			.getName());
