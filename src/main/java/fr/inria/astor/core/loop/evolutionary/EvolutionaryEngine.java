@@ -11,7 +11,6 @@ import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
 
@@ -22,7 +21,6 @@ import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
-import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.PopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightCtElement;
@@ -30,8 +28,8 @@ import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.FixLocationSpace
 import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
@@ -493,6 +491,8 @@ public abstract class EvolutionaryEngine {
 				
 				
 				// TODO: Verifies if there are compatible variables (not names!)
+				boolean compatible = VariableResolver.canBeApplied(operationInGen);
+				System.out.println("-compatible-"+compatible);
 				// if (VariableResolver.canBeApplied(operationInGen))
 				log.debug("operation "+operationInGen);
 				currentStat.numberOfAppliedOp++;

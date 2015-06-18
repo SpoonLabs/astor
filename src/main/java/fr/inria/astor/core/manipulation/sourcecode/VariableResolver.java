@@ -16,6 +16,8 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
@@ -65,6 +67,7 @@ public class VariableResolver {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static List<CtVariable> compatiblesSubType(List<CtVariable> varContext, CtTypeReference typeToFind) {
+	
 		List<CtVariable> result = new ArrayList<CtVariable>();
 
 		for (CtVariable ctVariable_i : varContext) {
@@ -76,6 +79,24 @@ public class VariableResolver {
 			}
 
 		}
+		return result;
+	}
+	
+	
+	protected static List<CtVariable> existSameVariable(List<CtVariable> vars, CtVariableAccess vartofind) {
+
+		List<CtVariable> result = new ArrayList<CtVariable>();
+		CtTypeReference typeToFind = vartofind.getType();
+		for (CtVariable ctVariable_i : vars) {
+
+			CtTypeReference typeref_i = ctVariable_i.getType();
+
+			if (typeref_i.equals((typeToFind))
+					&& ctVariable_i.getSimpleName().equals(vartofind.getVariable().getSimpleName())) {
+				//return true;
+				result.add(ctVariable_i);
+			}
+		}//return false
 		return result;
 	}
 /**
@@ -140,25 +161,21 @@ public class VariableResolver {
 		if(element instanceof CtLiteral){
 			return true;
 		}
-		logger.error("Undefined case "+element.getClass().getSimpleName());
+			
 		
+		logger.error("Undefined case "+element.getClass().getSimpleName());
+				
 		return false;
 	}
-
-	@Deprecated
-	private static boolean existVariable(List<CtVariable> vars, CtVariableAccess vartofind) {
-
-		CtTypeReference typeToFind = vartofind.getType();
-		for (CtVariable ctVariable_i : vars) {
-
-			CtTypeReference typeref_i = ctVariable_i.getType();
-
-			if (typeref_i.equals((typeToFind))
-					&& ctVariable_i.getSimpleName().equals(vartofind.getVariable().getSimpleName())) {
-				return true;
-			}
-
+	
+	@SuppressWarnings("rawtypes")
+	public static boolean fitInPlace(List<CtVariable> varContext, CtStatement element) {
+		
+		if(element instanceof CtReturn<?>){
+			return fitInPlace(varContext, ((CtReturn) element).getReturnedExpression());
 		}
+		//TODO:
+		
 		return false;
 	}
 
@@ -211,7 +228,7 @@ public class VariableResolver {
 	 * Return the local variables of a block from the begining until the element
 	 * located at positionEl.
 	 * 
-	 * @param positionEl
+	 * @param positionEl analyze variables from the block until that position.
 	 * @param pb
 	 * @return
 	 */
@@ -229,10 +246,15 @@ public class VariableResolver {
 
 	public static boolean canBeApplied(GenOperationInstance operationInGen) {
 		// If is an expression
-		if (operationInGen.getModified() != null && operationInGen.getModified() instanceof CtExpression)
-			return fitInPlace(operationInGen.getGen().getContextOfGen(), (CtExpression) operationInGen.getModified());
-
-		logger.info("--> Context not analyzed " );
+		if (operationInGen.getModified() != null){
+			if(operationInGen.getModified() instanceof CtExpression)
+				return fitInPlace(operationInGen.getGen().getContextOfGen(), (CtExpression) operationInGen.getModified());
+		
+					
+		System.out.println("--->Reject Analysis: "+operationInGen.getModified().getClass().getName() +  " "+operationInGen.getModified());
+			
+		}
+		logger.debug("--> Context not analyzed ");
 		// If is a CtLoop
 		// TODO:
 
@@ -246,7 +268,7 @@ public class VariableResolver {
 	 * @param varScope
 	 * @param compatibleReturning
 	 * @return 
-	 */
+	 */@Deprecated
 	@SuppressWarnings("unused")
 	public static List<MethodInstantialization> compatibleMethodInvocationInScope(CtVariable target,List<CtVariable> varScope, CtTypeReference compatibleReturning){
 		List<MethodInstantialization> instant = new ArrayList<MethodInstantialization>();
