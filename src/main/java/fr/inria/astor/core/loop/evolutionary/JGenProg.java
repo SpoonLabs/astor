@@ -267,10 +267,10 @@ public class JGenProg extends EvolutionaryEngine {
 		boolean continueSearching = true;
 
 		int elementsFromFixSpace = 0;
-
+		//Here, search in the space an element witout type preference
 		if (type == null) {
 			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getRootElement()).size();
-		} else {
+		} else {//We search for ingredients of one particular type
 			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getRootElement(), type).size();
 		}
 		

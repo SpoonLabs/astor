@@ -139,7 +139,10 @@ public abstract class AbstractMain {
 		options.addOption("seed", true,
                           "(Optional) Random seed, for reproducible runs.  Default is whatever java.util.Random uses when not explicitly initialized.");
 	
+		options.addOption("scope", true,
+                "(Optional) Scope of the ingredient seach space: Local (same class), package (classes from the same package) or global (all classes from the application under analysis). Default: local.");
 
+		
 	}
 
 
@@ -328,6 +331,9 @@ public abstract class AbstractMain {
 		
 		if (cmd.hasOption("seed"))
 			ConfigurationProperties.properties.setProperty("seed", cmd.getOptionValue("seed"));
+		
+		if (cmd.hasOption("scope"))
+			ConfigurationProperties.properties.setProperty("scope", cmd.getOptionValue("scope"));
 		
 		
         // CLG believes, but is not totally confident in her belief, that this

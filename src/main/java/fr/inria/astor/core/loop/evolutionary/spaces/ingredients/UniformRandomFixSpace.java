@@ -83,14 +83,18 @@ public abstract class UniformRandomFixSpace<L extends Object, K extends Object, 
 	 */
 	public void createFixSpaceFromAClass(L key1, CtSimpleType root) {
 		K key = convertKey(key1);
-		if (!getFixSpace().containsKey(key)) {
+		//if (!getFixSpace().containsKey(key)) {
 			List<I> ingredientsToProcess = this.ingredientProcessor.createFixSpace(root);
 			AbstractFixSpaceProcessor.mustClone = true;
 			//logger.debug("Fix space size " + ingredientsToProcess.size());
-			getFixSpace().put(key, ingredientsToProcess);
+			if(getFixSpace().containsKey(key)){
+				getFixSpace().get(key).addAll(ingredientsToProcess);
+			}else
+				getFixSpace().put(key, ingredientsToProcess);
+			
 			splitByType(key,ingredientsToProcess);
 	
-		}
+		//}
 	}
 	/**
 	 * Each space decides with dimension it wants
@@ -100,7 +104,8 @@ public abstract class UniformRandomFixSpace<L extends Object, K extends Object, 
 	protected abstract K convertKey(L original);
 	
 	private void splitByType(K keyLocation, List<I> ingredients) {
-			Map<T, List<I>> typesFromLocation = this.fixSpaceByLocationType.get(keyLocation);
+		
+		Map<T, List<I>> typesFromLocation = this.fixSpaceByLocationType.get(keyLocation);
 		if(typesFromLocation == null){
 			typesFromLocation = new HashMap<>();
 			this.fixSpaceByLocationType.put(keyLocation, typesFromLocation);

@@ -18,7 +18,9 @@ import fr.inria.astor.core.loop.evolutionary.spaces.implementation.RemoveRepairO
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.SingleStatementFixSpaceProcessor;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.GlobalBasicFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.LocalFixSpace;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.PackageBasicFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
@@ -73,12 +75,16 @@ public class MainjGenProg extends AbstractMain {
 		// --
 
 		// The ingredients for build the patches
-		//gploop.setFixspace(new LocalFixSpace(ingredientProcessors));
-		gploop.setFixspace(new LocalFixSpace(ingredientProcessors));
-		//gploop.setFixspace(new GlobalBasicFixSpace(ingredientProcessors));
+		String scope = ConfigurationProperties.properties.getProperty("scope").toLowerCase();
+		if("global".equals(scope)){
+			gploop.setFixspace(new GlobalBasicFixSpace(ingredientProcessors));
+		}else if("package".equals(scope)){
+			gploop.setFixspace(new PackageBasicFixSpace(ingredientProcessors));
+		}
+		else{
+			gploop.setFixspace(new LocalFixSpace(ingredientProcessors));
+		}
 		
-		// ---
-
 		// Repair Space
 		if(removeMode){
 			gploop.setRepairActionSpace(new RemoveRepairOperatorSpace());

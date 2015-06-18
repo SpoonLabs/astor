@@ -660,6 +660,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-bintestfolder","/target/test-classes",
 				"-javacompliancelevel", "7",
 				"-flthreshold","0.5",
+				"-scope","package"
 				};
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
