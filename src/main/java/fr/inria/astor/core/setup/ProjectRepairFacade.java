@@ -161,7 +161,7 @@ public class ProjectRepairFacade {
 			new IllegalArgumentException("Test Class can not be empty");
 		}
 		
-		String classPath = getOutDirWithPrefix(mutatorIdentifier);
+		String pathOutDir = getOutDirWithPrefix(mutatorIdentifier);
 		
 		
 		List<String> testcasesToExecute = null;
@@ -172,19 +172,21 @@ public class ProjectRepairFacade {
 		else{
 			testcasesToExecute = getProperties().getFailingTestCases();
 		}
-		logger.info("-Executing Gzoltar classpath: " + classPath+ " from "+
+		logger.info("-Executing Gzoltar classpath: " + pathOutDir+ " from "+
 				+ testcasesToExecute.size() +" classes with test cases");
 
 		List<String> listTOInst = new ArrayList<String>();
 		listTOInst.add(packageToInst);
 
-		HashSet<String> hs = new HashSet<String>();
-		hs.add(classPath);
-
+		HashSet<String> classPathForGZoltar = new HashSet<String>();
+		classPathForGZoltar.add(pathOutDir);
+		for(URL dep : getProperties().getDependencies()){
+			classPathForGZoltar.add(dep.getPath());
+		};
 		
 		
 		List<SuspiciousCode> suspiciousStatemens = faultLocalizationFacade.searchGZoltar(
-				classPath, testcasesToExecute, listTOInst, hs, 
+				pathOutDir, testcasesToExecute, listTOInst, classPathForGZoltar, 
 				ConfigurationProperties.getProperty("location")+"/"+ConfigurationProperties.getProperty("srcjavafolder"));
 		return suspiciousStatemens;
 	}

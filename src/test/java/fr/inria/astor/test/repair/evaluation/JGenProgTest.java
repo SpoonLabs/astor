@@ -667,6 +667,31 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 	
-
-	
+	@Test
+	public void testSeedExample() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		//java -cp astor.jar fr.inria.main.evolution.MainjGenProg 
+		//-location IntMax -dependencies . -failing mooctest.TestSuite_all#test1_1:mooctest.TestSuite_all#test1_2:mooctest.TestSuite_all#test1_3 -package mooctest -maxgen 1000000 -population 2 -
+		//srcjavafolder src/ -srctestfolder junit/ -binjavafolder bin/ -bintestfolder testbin/ -flthreshold 0
+		String[] args = new String[] {
+				"-dependencies", new File("./examples/IntMax").getAbsolutePath(),
+				//"-mode","statement",
+				"-failing", 
+				"mooctest.TestSuite_all", 
+				//"mooctest.TestSuite_all#test1_1:mooctest.TestSuite_all#test1_2:mooctest.TestSuite_all#test1_3", 
+				"-location",new File("./examples/IntMax").getAbsolutePath(),							
+				"-package", "mooctest",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/",
+				"-srctestfolder", "/junit/", 
+				"-binjavafolder", "/bin/", 
+				"-bintestfolder","/testbin",
+				//"-javacompliancelevel", "7",
+				"-flthreshold","0.0",
+				//"-scope","local"//"package"
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+		
+	}
 }

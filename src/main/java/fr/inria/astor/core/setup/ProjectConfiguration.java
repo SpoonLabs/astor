@@ -126,6 +126,7 @@ public class ProjectConfiguration {
 		}
 		else{
 	
+		cp.add(location.toURI().toURL());
 		
 		for (File file : location.listFiles()) {
 			if(file.getName().endsWith(".jar")){
