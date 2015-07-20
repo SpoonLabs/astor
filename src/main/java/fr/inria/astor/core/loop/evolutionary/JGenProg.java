@@ -70,10 +70,12 @@ public class JGenProg extends EvolutionaryEngine {
 			return;
 		}
 
-		// Create fix Space
-		List classesForIngredients = retrieveClassesForIngredients();
-		getFixSpace().defineSpace(classesForIngredients);
-		log.info(getFixSpace());
+	
+		if (getFixSpace() != null) {
+			List classesForIngredients = retrieveClassesForIngredients();
+			getFixSpace().defineSpace(classesForIngredients);
+			log.info(getFixSpace());
+		}
 
 		boolean validInstance = validateInstance(originalVariant);
 		assert (validInstance);
@@ -82,8 +84,8 @@ public class JGenProg extends EvolutionaryEngine {
 			initvariant.setFitness(originalVariant.getFitness());
 		}
 
-	}	
-		
+	}
+
 	protected List retrieveClassesForIngredients() {
 		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL))
 			return originalVariant.getAffectedClasses();
@@ -94,18 +96,19 @@ public class JGenProg extends EvolutionaryEngine {
 		return null;
 	}
 
-	public void initModel() {
+	private void initModel() {
 		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
 		String[] cpArray = classpath.split(File.pathSeparator);
-		
-		try{
+
+		try {
 			mutatorSupporter.buildModel(codeLocation, cpArray);
-		}
-		catch(Exception e){
-			log.error("Problem compiling the model with compliance level "+ConfigurationProperties.getPropertyInt("javacompliancelevel"));
+		} catch (Exception e) {
+			log.error("Problem compiling the model with compliance level "
+					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 			log.error(e.getMessage());
-			mutatorSupporter.getFactory().getEnvironment().setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
+			mutatorSupporter.getFactory().getEnvironment()
+					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
 			mutatorSupporter.buildModel(codeLocation, cpArray);
 		}
 	}
@@ -120,8 +123,8 @@ public class JGenProg extends EvolutionaryEngine {
 
 		variantFactory.setMutatorExecutor(getMutatorSupporter());
 
-		this.variants = variantFactory.createInitialPopulation(suspicious,ConfigurationProperties.getPropertyInt("population"),
-				populationControler, projectFacade);
+		this.variants = variantFactory.createInitialPopulation(suspicious,
+				ConfigurationProperties.getPropertyInt("population"), populationControler, projectFacade);
 
 		if (variants.isEmpty()) {
 			throw new IllegalArgumentException("Any variant created from list of suspicious");
@@ -146,7 +149,7 @@ public class JGenProg extends EvolutionaryEngine {
 		GenProgMutationOperation type = (GenProgMutationOperation) operation.getOperationApplied();
 		if (type.equals(GenProgMutationOperation.DELETE) || type.equals(GenProgMutationOperation.REPLACE)) {
 			boolean removed = gens.remove(operation.getGen());
-			if (type.equals(GenProgMutationOperation.DELETE) )
+			if (type.equals(GenProgMutationOperation.DELETE))
 				log.debug("---" + operation + " removed gen? " + removed);
 		}
 		if (!type.equals(GenProgMutationOperation.DELETE)) {
@@ -157,9 +160,10 @@ public class JGenProg extends EvolutionaryEngine {
 			else
 				newGen = variantFactory.cloneGen(existingGen, operation.getModified());
 
-			//log.debug("---updating gen:  " + operation + " adding gen: " + newGen);
-			log.debug("---"+ newGen);
-			log.debug("---"+operation);
+			// log.debug("---updating gen:  " + operation + " adding gen: " +
+			// newGen);
+			log.debug("---" + newGen);
+			log.debug("---" + operation);
 			gens.add(newGen);
 		}
 
@@ -187,30 +191,22 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 
 		CtElement targetStmt = genSusp.getRootElement();
-		CtElement cparent = targetStmt.getParent();
-
+		
 		GenOperationInstance operation = new GenOperationInstance();
 		operation.setOriginal(targetStmt);
 		operation.setOperationApplied(operationType);
 		operation.setGen(genSusp);
-		
-		if ((cparent != null && (cparent instanceof CtBlock))) {
-			CtBlock parentBlock = (CtBlock) cparent;
-			operation.setParentBlock(parentBlock);
-			operation.setLocationInParent(locationInParent(parentBlock,genSusp.getSuspicious().getLineNumber(), targetStmt));
 
-		}else{
-			log.error("Parent diferent to block");
-		}
+		setParentToGenOperator(operation, genSusp);
 
 		CtElement fix = null;
 		if (operationType.equals(GenProgMutationOperation.INSERT_AFTER)
 				|| operationType.equals(GenProgMutationOperation.INSERT_BEFORE)) {
 
 			fix = this.getFixIngredient(gen, targetStmt);
-			
-			if(operationType.equals(GenProgMutationOperation.INSERT_AFTER)){
-				operation.setLocationInParent(operation.getLocationInParent()+1);
+
+			if (operationType.equals(GenProgMutationOperation.INSERT_AFTER)) {
+				operation.setLocationInParent(operation.getLocationInParent() + 1);
 			}
 		}
 
@@ -227,27 +223,44 @@ public class JGenProg extends EvolutionaryEngine {
 
 		return operation;
 	}
-	/** 
-	 * Return the position of the element in the block. It searches the same object instance
+
+	protected void setParentToGenOperator(GenOperationInstance operation, GenSuspicious genSusp) {
+		CtElement targetStmt = genSusp.getRootElement();
+		CtElement cparent = targetStmt.getParent();
+		if ((cparent != null && (cparent instanceof CtBlock))) {
+			CtBlock parentBlock = (CtBlock) cparent;
+			operation.setParentBlock(parentBlock);
+			operation.setLocationInParent(locationInParent(parentBlock, genSusp.getSuspicious().getLineNumber(),
+					targetStmt));
+
+		} else {
+			log.error("Parent diferent to block");
+		}
+	}
+
+	/**
+	 * Return the position of the element in the block. It searches the same
+	 * object instance
+	 * 
 	 * @param parentBlock
 	 * @param line
 	 * @param element
 	 * @return
 	 */
-	private int locationInParent(CtBlock parentBlock,int line,  CtElement element){
+	private int locationInParent(CtBlock parentBlock, int line, CtElement element) {
 		int pos = 0;
-		for(CtStatement s : parentBlock.getStatements()){
-			//if(s.getPosition().getLine() == line && s.equals(element))
-			if(s == element)//the same object
+		for (CtStatement s : parentBlock.getStatements()) {
+			// if(s.getPosition().getLine() == line && s.equals(element))
+			if (s == element)// the same object
 				return pos;
 			pos++;
 		}
-		
+
 		log.error("Error: parent not found");
 		return -1;
-		
+
 	}
-	
+
 	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt) {
 		return this.getFixIngredient(gen, targetStmt, null);
 	}
@@ -267,13 +280,15 @@ public class JGenProg extends EvolutionaryEngine {
 		boolean continueSearching = true;
 
 		int elementsFromFixSpace = 0;
-		//Here, search in the space an element witout type preference
+		// Here, search in the space an element witout type preference
+		List<?> ingredients = null;
 		if (type == null) {
-			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getRootElement()).size();
-		} else {//We search for ingredients of one particular type
-			elementsFromFixSpace = this.fixspace.getFixSpace(gen.getRootElement(), type).size();
+			ingredients = this.fixspace.getFixSpace(gen.getRootElement());
+		} else {// We search for ingredients of one particular type
+			ingredients =  this.fixspace.getFixSpace(gen.getRootElement(), type);
 		}
-		
+		elementsFromFixSpace = (ingredients == null)? 0: ingredients.size();
+
 		while (continueSearching && attempts < elementsFromFixSpace) {
 			if (type == null) {
 				fix = this.fixspace.getElementFromSpace(gen.getRootElement());
@@ -285,22 +300,21 @@ public class JGenProg extends EvolutionaryEngine {
 			}
 			attempts++;
 			if (fix.getSignature().equals(targetStmt.getSignature())) {
-			//	log.debug("------Discarting operation, replacement is the same than the replaced code");
+				// log.debug("------Discarting operation, replacement is the same than the replaced code");
 				// Discard the operation.
 			} else
 				continueSearching = alreadyApplied(gen.getProgramVariant().getId(), fix.toString(),
 						targetStmt.toString());
 
 		}
-		
-		currentStat.sizeSpace.add(new StatSpaceSize(
-				gen.getProgramVariant().getId(),
-				gen.getRootElement().getClass().getSimpleName(), elementsFromFixSpace
-				, fix.getClass().getSimpleName()));
-		
-		
+
+		currentStat.sizeSpace.add(new StatSpaceSize(gen.getProgramVariant().getId(), gen.getRootElement().getClass()
+				.getSimpleName(), elementsFromFixSpace, 
+				(fix!=null)?fix.getClass().getSimpleName():"null"
+				));
+
 		if (continueSearching) {
-			log.debug("--- no mutation left to apply in element "+targetStmt.getSignature());
+			log.debug("--- no mutation left to apply in element " + targetStmt.getSignature());
 			return null;
 		}
 		return fix;
@@ -367,7 +381,8 @@ public class JGenProg extends EvolutionaryEngine {
 
 	}
 
-	public boolean isSuccessApplied(String previous, CtStatement sts) {
+	@Deprecated
+	private boolean isSuccessApplied(String previous, CtStatement sts) {
 		CtBlock parent = (CtBlock) sts.getParent();
 		return !parent.toString().equals(previous);
 

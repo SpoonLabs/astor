@@ -186,7 +186,7 @@ public abstract class EvolutionaryEngine {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean processGenerations(int generation) throws Exception {
+	private boolean processGenerations(int generation) throws Exception {
 
 		log.info("\n***** Generation " + generation);
 		boolean foundSolution = false;

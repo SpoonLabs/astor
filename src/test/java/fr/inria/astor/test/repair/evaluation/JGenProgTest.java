@@ -461,6 +461,34 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 	
+	@SuppressWarnings("static-access")
+	@Test
+	public void testRunMainLang55RemoveKali() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String pathExample = new File("./examples/lang_55_kali").getAbsolutePath().replace(".", "");
+		String[] args = new String[] {
+				"-dependencies",pathExample+File.separator+"lib"+File.separator+"junit-3.8.1.jar",
+				"-failing", 
+				"org.apache.commons.lang.ArrayUtilsAddTest:org.apache.commons.lang.ArrayUtilsRemoveTest:org.apache.commons.lang.ArrayUtilsTest:org.apache.commons.lang.BitFieldTest:org.apache.commons.lang.BooleanUtilsTest:org.apache.commons.lang.CharEncodingTest:org.apache.commons.lang.CharRangeTest:org.apache.commons.lang.CharSetTest:org.apache.commons.lang.CharSetUtilsTest:org.apache.commons.lang.CharUtilsTest:org.apache.commons.lang.ClassUtilsTest:org.apache.commons.lang.EntitiesPerformanceTest:org.apache.commons.lang.EntitiesTest:org.apache.commons.lang.IllegalClassExceptionTest:org.apache.commons.lang.IncompleteArgumentExceptionTest:org.apache.commons.lang.IntHashMapTest:org.apache.commons.lang.LocaleUtilsTest:org.apache.commons.lang.NotImplementedExceptionTest:org.apache.commons.lang.NullArgumentExceptionTest:org.apache.commons.lang.NumberRangeTest:org.apache.commons.lang.NumberUtilsTest:org.apache.commons.lang.ObjectUtilsTest:org.apache.commons.lang.RandomStringUtilsTest:org.apache.commons.lang.SerializationUtilsTest:org.apache.commons.lang.StringEscapeUtilsTest:org.apache.commons.lang.StringUtilsEqualsIndexOfTest:org.apache.commons.lang.StringUtilsIsTest:org.apache.commons.lang.StringUtilsSubstringTest:org.apache.commons.lang.StringUtilsTest:org.apache.commons.lang.StringUtilsTrimEmptyTest:org.apache.commons.lang.SystemUtilsTest:org.apache.commons.lang.UnhandledExceptionTest:org.apache.commons.lang.ValidateTest:org.apache.commons.lang.WordUtilsTest:org.apache.commons.lang.builder.CompareToBuilderTest:org.apache.commons.lang.builder.DefaultToStringStyleTest:org.apache.commons.lang.builder.EqualsBuilderTest:org.apache.commons.lang.builder.HashCodeBuilderAndEqualsBuilderTest:org.apache.commons.lang.builder.HashCodeBuilderTest:org.apache.commons.lang.builder.MultiLineToStringStyleTest:org.apache.commons.lang.builder.NoFieldNamesToStringStyleTest:org.apache.commons.lang.builder.ReflectionToStringBuilderExcludeTest:org.apache.commons.lang.builder.ShortPrefixToStringStyleTest:org.apache.commons.lang.builder.SimpleToStringStyleTest:org.apache.commons.lang.builder.StandardToStringStyleTest:org.apache.commons.lang.builder.ToStringBuilderTest:org.apache.commons.lang.builder.ToStringStyleTest:org.apache.commons.lang.enum.EnumTest:org.apache.commons.lang.enum.EnumUtilsTest:org.apache.commons.lang.enum.ValuedEnumTest:org.apache.commons.lang.enums.EnumEqualsTest:org.apache.commons.lang.enums.EnumTest:org.apache.commons.lang.enums.EnumUtilsTest:org.apache.commons.lang.enums.ValuedEnumTest:org.apache.commons.lang.exception.ExceptionUtilsTestCase:org.apache.commons.lang.exception.NestableDelegateTestCase:org.apache.commons.lang.exception.NestableErrorTestCase:org.apache.commons.lang.exception.NestableExceptionTestCase:org.apache.commons.lang.exception.NestableRuntimeExceptionTestCase:org.apache.commons.lang.math.DoubleRangeTest:org.apache.commons.lang.math.FloatRangeTest:org.apache.commons.lang.math.FractionTest:org.apache.commons.lang.math.IntRangeTest:org.apache.commons.lang.math.LongRangeTest:org.apache.commons.lang.math.NumberRangeTest:org.apache.commons.lang.math.NumberUtilsTest:org.apache.commons.lang.math.RandomUtilsTest:org.apache.commons.lang.math.RangeTest:org.apache.commons.lang.mutable.MutableBooleanTest:org.apache.commons.lang.mutable.MutableByteTest:org.apache.commons.lang.mutable.MutableDoubleTest:org.apache.commons.lang.mutable.MutableFloatTest:org.apache.commons.lang.mutable.MutableIntTest:org.apache.commons.lang.mutable.MutableLongTest:org.apache.commons.lang.mutable.MutableObjectTest:org.apache.commons.lang.mutable.MutableShortTest:org.apache.commons.lang.text.CompositeFormatTest:org.apache.commons.lang.text.StrBuilderAppendInsertTest:org.apache.commons.lang.text.StrBuilderTest:org.apache.commons.lang.text.StrLookupTest:org.apache.commons.lang.text.StrMatcherTest:org.apache.commons.lang.text.StrSubstitutorTest:org.apache.commons.lang.text.StrTokenizerTest:org.apache.commons.lang.time.DateFormatUtilsTest:org.apache.commons.lang.time.DateUtilsTest:org.apache.commons.lang.time.DurationFormatUtilsTest:org.apache.commons.lang.time.FastDateFormatTest:org.apache.commons.lang.time.StopWatchTest",
+				"-location",pathExample, 
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel","7", 
+				"-alternativecompliancelevel","4",
+				"-mode","statement-remove",
+				"-population","1",
+				"-saveall",
+				"-flthreshold","0.05",
+						
+		};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
 	
 	
 	/**
@@ -694,4 +722,30 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		main1.main(args);
 		
 	}
+	
+	@Test
+	public void testSeedExampleKali() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String[] args = new String[] {
+				"-dependencies", new File("/home/matias/develop/workspace/testKali3/lib/").getAbsolutePath(),
+				"-mode","statement-remove",
+				"-failing", 
+				"mooctest.TestSuite_all", 
+				//"mooctest.TestSuite_all#test1_1:mooctest.TestSuite_all#test1_2:mooctest.TestSuite_all#test1_3", 
+				"-location",new File("/home/matias/develop/workspace/testKali3/").getAbsolutePath(),							
+				"-package", "mooctest",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/",
+				"-srctestfolder", "/junit/", 
+				"-binjavafolder", "/bin/", 
+				"-bintestfolder","/bin/",
+				//"-javacompliancelevel", "7",
+				"-flthreshold","0.1",
+				//"-scope","local"//"package"
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+		
+	}
+	
 }

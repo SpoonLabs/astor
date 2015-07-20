@@ -112,6 +112,8 @@ public class CtStatementTransformator implements ModelTransformator {
 				operation.setExceptionAtApplied(ex);
 				operation.setSuccessfulyApplied(false);
 			}
+		}else{
+			log.error("Operation not applied. Parent null ");
 		}
 	}
 

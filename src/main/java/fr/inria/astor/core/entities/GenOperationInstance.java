@@ -44,6 +44,16 @@ public class GenOperationInstance {
 	 */
 	private Exception exceptionAtApplied = null;
 	private boolean successfulyApplied = true;
+	
+	public GenOperationInstance (){}
+	
+	public GenOperationInstance(Gen gen, MutationOperation operationApplied, CtElement original, CtElement modified) {
+		super();
+		this.gen = gen;
+		this.operationApplied = operationApplied;
+		this.original = original;
+		this.modified = modified;		
+	}
 
 	public CtElement getOriginal() {
 		return original;
