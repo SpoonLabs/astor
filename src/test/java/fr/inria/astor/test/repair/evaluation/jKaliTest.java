@@ -1,4 +1,4 @@
-package fr.inria.astor.test.repair.evaluation.ifcondition;
+package fr.inria.astor.test.repair.evaluation;
 
 import java.io.File;
 import java.util.Arrays;
