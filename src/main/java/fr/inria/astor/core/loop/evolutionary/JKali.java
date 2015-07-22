@@ -3,8 +3,10 @@ package fr.inria.astor.core.loop.evolutionary;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
@@ -24,14 +26,14 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
- * Extension of Evolutionary loop with GenProgOperations
+ * Extension of Evolutionary loop for kali implementation
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
 public class JKali extends JGenProg {
 
-	Map<String, List<String>> appliedCache = new HashMap<String, List<String>>();
+	final Set<String> prim = new HashSet<String>(Arrays.asList("byte", "long", "int", "float", "double", "sort"));
 
 	public JKali(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -39,52 +41,47 @@ public class JKali extends JGenProg {
 
 	@Override
 	public void startEvolution() throws Exception {
-
+		// We don't evolve variants, so the generation is always one.
+		final int generation = 1;
+		// For each variant (in kali mode is enough having only one)
 		for (ProgramVariant parentVariant : variants) {
-
+			// We analyze each Gen of the variant i.e. suspicious statement
 			for (Gen gen : parentVariant.getGenList()) {
+				// We create all kali operators to apply in the gen
 				List<GenOperationInstance> genOperations = createKaliOperators((GenSuspicious) gen);
+
 				for (GenOperationInstance genOperation : genOperations) {
 
 					log.info("--> " + genOperation);
-					// parentVariant.getOperations().put(0, genOperation);
-					applyNewMutationOperationToSpoonElement(genOperation);
-					//
-					parentVariant.getOperations().put(1, Arrays.asList(genOperation));
+															
+					// We validate the variant after applying the operator
+					ProgramVariant solutionVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
+							generation);
+					solutionVariant.getOperations().put(generation, Arrays.asList(genOperation));
 
-					boolean solution = processCreatedVariant(parentVariant, 0);
+					applyNewMutationOperationToSpoonElement(genOperation);
+					
+					boolean solution = processCreatedVariant(solutionVariant, generation);
 
 					if (solution) {
-						ProgramVariant solutionVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
-								0);
 						this.solutions.add(solutionVariant);
 					}
-					//
+
+					// We undo the operator (for try the next one)
 					undoOperationToSpoonElement(genOperation);
-					parentVariant.getOperations().clear();
 				}
 			}
 		}
-		// Print solutions
-		if (!this.solutions.isEmpty()) {
-			log.info("End Repair Loops: Found solution");
-			log.info("Solution stored at: " + projectFacade.getProperties().getInDir());
-
-		} else {
-			log.info("End Repair Loops: NOT Found solution");
-		}
-		log.info("Number solutions:" + this.solutions.size());
-		for (ProgramVariant variant : solutions) {
-			log.info("f (sol): " + variant.getFitness() + ", " + variant);
-		}
-		if (!solutions.isEmpty()) {
-			log.info("\nSolution details");
-			log.info(mutatorSupporter.getSolutionData(solutions, 1));
-
-		}
-
+		showResults(generation);
 	}
 
+	/**
+	 * Creates the Kali operators 1) Delete statement 2) Insert return 3) change
+	 * if condition to true/false.
+	 * 
+	 * @param gen
+	 * @return
+	 */
 	private List<GenOperationInstance> createKaliOperators(GenSuspicious gen) {
 		List<GenOperationInstance> ops = new ArrayList<>();
 
@@ -100,20 +97,29 @@ public class JKali extends JGenProg {
 
 		if (gen.getRootElement() instanceof CtIf) {
 			GenOperationInstance opChangeIftrue = new GenOperationInstance(gen, GenProgMutationOperation.REPLACE,
-					gen.getRootElement(), createIf(gen.getRootElement(), true));
+					gen.getRootElement(), createIf((CtIf) gen.getRootElement(), true));
 			setParentToGenOperator(opChangeIftrue, gen);
 			ops.add(opChangeIftrue);
 
 			GenOperationInstance opChangeIffalse = new GenOperationInstance(gen, GenProgMutationOperation.REPLACE,
-					gen.getRootElement(), createIf(gen.getRootElement(), false));
+					gen.getRootElement(), createIf((CtIf) gen.getRootElement(), false));
 			setParentToGenOperator(opChangeIffalse, gen);
 			ops.add(opChangeIffalse);
 		}
 		return ops;
 	}
 
-	private CtIf createIf(CtElement rootElement, boolean thenBranch) {
-		CtIf ifElement = (CtIf) rootElement;
+	/**
+	 * Creates a new if from that one passed as parammeter. The next if has a
+	 * condition expression expression true or false according to the variable
+	 * <b>thenBranch</b>
+	 * 
+	 * @param ifElement
+	 * @param thenBranch
+	 * @return
+	 */
+	@SuppressWarnings({ "static-access", "rawtypes", "unchecked", })
+	private CtIf createIf(CtIf ifElement, boolean thenBranch) {
 
 		CtIf clonedIf = this.mutatorSupporter.getFactory().Core().clone(ifElement);
 		CtExpression ifExpression = this.mutatorSupporter.getFactory().Code()
@@ -124,16 +130,26 @@ public class JKali extends JGenProg {
 		return clonedIf;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked", "static-access" })
 	private CtElement createReturn(CtElement rootElement) {
 		CtMethod method = rootElement.getParent(CtMethod.class);
-		List prim = Arrays.asList("byte", "long", "int", "float", "double", "sort");
-		CtReturn<?> patch = null;
-		if (method != null) {
 
-			CtTypeReference typeR = method.getType();
-			if (typeR == null || "void".equals(typeR.toString())) {
-				return this.mutatorSupporter.getFactory().Core().createReturn();
-			}
+		if (method == null) {
+			log.info("Element without method parent");
+			return null;
+		}
+		// We create the "if(true)"{}
+		CtIf ifReturn = this.mutatorSupporter.getFactory().Core().createIf();
+		CtExpression ifTrueExpression = this.mutatorSupporter.getFactory().Code().createCodeSnippetExpression("true")
+				.compile();
+		ifReturn.setCondition(ifTrueExpression);
+
+		// Now we create the return statement
+		CtReturn<?> returnStatement = null;
+		CtTypeReference typeR = method.getType();
+		if (typeR == null || "void".equals(typeR.toString())) {
+			returnStatement = this.mutatorSupporter.getFactory().Core().createReturn();
+		} else {
 			String codeExpression = "";
 			if (prim.contains(typeR.toString())) {
 				codeExpression = "0";
@@ -142,11 +158,13 @@ public class JKali extends JGenProg {
 			}
 			CtExpression returnExpression = this.mutatorSupporter.getFactory().Code()
 					.createCodeSnippetExpression(codeExpression).compile();
-			patch = this.mutatorSupporter.getFactory().Core().createReturn();
-			patch.setReturnedExpression(returnExpression);
+			returnStatement = this.mutatorSupporter.getFactory().Core().createReturn();
+			returnStatement.setReturnedExpression(returnExpression);
 		}
+		// Now, we associate if(true){return [...]}
+		ifReturn.setThenStatement(returnStatement);
+		return ifReturn;
 
-		return patch;
 	}
 
 }

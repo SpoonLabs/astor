@@ -723,29 +723,5 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		
 	}
 	
-	@Test
-	public void testSeedExampleKali() throws Exception {
-		MainjGenProg main1 = new MainjGenProg();
-		String[] args = new String[] {
-				"-dependencies", new File("/home/matias/develop/workspace/testKali3/lib/").getAbsolutePath(),
-				"-mode","statement-remove",
-				"-failing", 
-				"mooctest.TestSuite_all", 
-				//"mooctest.TestSuite_all#test1_1:mooctest.TestSuite_all#test1_2:mooctest.TestSuite_all#test1_3", 
-				"-location",new File("/home/matias/develop/workspace/testKali3/").getAbsolutePath(),							
-				"-package", "mooctest",
-				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
-				"-srcjavafolder", "/src/",
-				"-srctestfolder", "/junit/", 
-				"-binjavafolder", "/bin/", 
-				"-bintestfolder","/bin/",
-				//"-javacompliancelevel", "7",
-				"-flthreshold","0.1",
-				//"-scope","local"//"package"
-				};
-		System.out.println(Arrays.toString(args));
-		main1.main(args);
-		
-	}
 	
 }
