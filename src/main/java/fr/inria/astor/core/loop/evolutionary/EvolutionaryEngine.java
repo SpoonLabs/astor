@@ -128,6 +128,19 @@ public abstract class EvolutionaryEngine {
 		}
 		// At the end
 
+		showResults(generation);
+
+		long endT = System.currentTimeMillis();
+		log.info("Time Evolution(ms): " + (endT - startT));
+		currentStat.timeIteraction = ((endT - startT));
+		
+		
+
+		
+	}
+
+	protected void showResults(int generation) {
+		log.info("\n-------");
 		if (!this.solutions.isEmpty()) {
 			log.info("End Repair Loops: Found solution");
 			log.info("Solution stored at: " + projectFacade.getProperties().getInDir());
@@ -135,11 +148,11 @@ public abstract class EvolutionaryEngine {
 		} else {
 			log.info("End Repair Loops: NOT Found solution");
 		}
-		log.info("Number solutions:" + this.solutions.size());
+		log.info("\nNumber solutions:" + this.solutions.size());
 		for (ProgramVariant variant : solutions) {
 			log.info("f (sol): " + variant.getFitness() + ", " + variant);
 		}
-		log.info("All variants:");
+		log.info("\nAll variants:");
 		for (ProgramVariant variant : variants) {
 			log.info("f " + variant.getFitness() + ", " + variant);
 		}
@@ -150,15 +163,8 @@ public abstract class EvolutionaryEngine {
 
 		}
 		
-
-		long endT = System.currentTimeMillis();
-		log.info("Time Evolution(ms): " + (endT - startT));
-		currentStat.timeIteraction = ((endT - startT));
-		
-		
 		log.info("\n----stats: ");
 		log.info(currentStat);
-		
 	}
 
 	/**

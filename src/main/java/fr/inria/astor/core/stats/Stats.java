@@ -93,7 +93,7 @@ public class Stats {
 		s += ("\n#InmutatedGen: " + this.numberOfGenInmutated);
 		s += ("\n#unfinishValidation: " + this.unfinishValidation);
 
-		s += ("\n ing " + this.kindOfElementsSelected);
+		s += ("\n#ing " + this.kindOfElementsSelected);
 		return s;
 	}
 

@@ -318,9 +318,9 @@ public class MutationSupporter {
 
 	public String getSolutionData(List<ProgramVariant> variants, int generation) {
 		String line = "";
-
+		line += "\n --SOLUTIONS DESCRIPTION--\n";
 		for (ProgramVariant childVariant : variants) {
-
+			line += "\n ----\n";
 			line += "ProgramVariant " + childVariant.getId() + "\n ";
 
 			for (int i = 1; i <= generation; i++) {
@@ -330,29 +330,30 @@ public class MutationSupporter {
 
 				for (GenOperationInstance genOperationInstance : genOperationInstances) {
 
-					line += "\n operation: " + "\nlocation= "
+					line += "\noperation: " +genOperationInstance.getOperationApplied().toString()
+							+ "\nlocation= "
 							+ genOperationInstance.getGen().getCtClass().getQualifiedName();
 
 					if (genOperationInstance.getGen() instanceof GenSuspicious) {
 						GenSuspicious gs = (GenSuspicious) genOperationInstance.getGen();
-						line += "\n line= " + gs.getSuspicious().getLineNumber();
+						line += "\nline= " + gs.getSuspicious().getLineNumber();
 					}
 
-					line += "\n original statement= " + genOperationInstance.getOriginal().toString();
+					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
 
 					if (genOperationInstance.getModified() != null)
-						line += "\n fixed statement= \"" + genOperationInstance.getModified().toString() + "\"";
+						line += "\nfixed statement= \"" + genOperationInstance.getModified().toString() + "\"";
 					else {
 						line += "\n fix (remove original statement) \"" + genOperationInstance.getOriginal().toString()
 								+ "\"";
 					}
 
-					line += "\n generation= " + Integer.toString(i);
+					line += "\ngeneration= " + Integer.toString(i);
 					line += "\n ";
 
 				}
 			}
-			line += "\n ----";
+		
 		}
 		return line;
 	}
