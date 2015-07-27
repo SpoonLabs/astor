@@ -72,7 +72,7 @@ public class JGenProg extends EvolutionaryEngine {
 
 	
 		if (getFixSpace() != null) {
-			List classesForIngredients = retrieveClassesForIngredients();
+			List<?> classesForIngredients = retrieveClassesForIngredients();
 			getFixSpace().defineSpace(classesForIngredients);
 			log.info(getFixSpace());
 		}

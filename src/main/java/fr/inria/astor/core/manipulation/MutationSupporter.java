@@ -340,11 +340,11 @@ public class MutationSupporter {
 					}
 
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
-
+					line += "\nfixed statement= \"" ;
 					if (genOperationInstance.getModified() != null)
-						line += "\nfixed statement= \"" + genOperationInstance.getModified().toString() + "\"";
+						line +=  genOperationInstance.getModified().toString() + "\"";
 					else {
-						line += "\n fix (remove original statement) \"" + genOperationInstance.getOriginal().toString()
+						line += genOperationInstance.getOriginal().toString()
 								+ "\"";
 					}
 

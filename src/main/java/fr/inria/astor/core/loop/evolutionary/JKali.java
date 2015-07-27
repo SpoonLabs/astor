@@ -33,7 +33,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
  */
 public class JKali extends JGenProg {
 
-	final Set<String> prim = new HashSet<String>(Arrays.asList("byte", "long", "int", "float", "double", "sort"));
+	final Set<String> prim = new HashSet<String>(Arrays.asList("byte","Byte", "long","Long", "int","Integer", "float","Float",  "double","Double", "short","Short", "char", "Character"));
 
 	public JKali(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -147,12 +147,14 @@ public class JKali extends JGenProg {
 		// Now we create the return statement
 		CtReturn<?> returnStatement = null;
 		CtTypeReference typeR = method.getType();
-		if (typeR == null || "void".equals(typeR.toString())) {
+		if (typeR == null || "void".equals(typeR.getSimpleName())) {
 			returnStatement = this.mutatorSupporter.getFactory().Core().createReturn();
 		} else {
 			String codeExpression = "";
-			if (prim.contains(typeR.toString())) {
-				codeExpression = "0";
+			if (prim.contains(typeR.getSimpleName())) {
+				codeExpression = getZeroValue(typeR.getSimpleName().toLowerCase());
+			} else if(typeR.getSimpleName().toLowerCase().equals("boolean")){
+				codeExpression = "false";
 			} else {
 				codeExpression = "null";
 			}
@@ -165,6 +167,16 @@ public class JKali extends JGenProg {
 		ifReturn.setThenStatement(returnStatement);
 		return ifReturn;
 
+	}
+
+	private String getZeroValue(String simpleName) {
+		if("float".equals(simpleName))
+			return "0f";
+		if("long".equals(simpleName))
+			return "0l";
+		if("double".equals(simpleName))
+			return "0d";
+		return "0";
 	}
 
 }
