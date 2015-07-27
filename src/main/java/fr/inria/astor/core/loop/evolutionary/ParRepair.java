@@ -119,7 +119,7 @@ public class ParRepair extends JGenProg {
 			if (includeClause(condit, fix, operationType)) {
 				//log.info("Discarting: Clause Included");
 			}else
-			continueSearching = alreadyApplied(gen.getProgramVariant().getId(),fix.toString(), targetIF.getCondition().toString());
+			continueSearching = alreadyApplied(gen,fix,operationType);
 		
 		} 
 		if(continueSearching ){

@@ -360,7 +360,7 @@ public abstract class EvolutionaryEngine {
 				return true;
 			}
 		} else {
-			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: " + "");
+			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: " /*+ compilation.getErrorList()*/);
 			currentStat.numberOfFailingCompilation++;
 			currentStat.setNotCompiles(programVariant.getId());
 			programVariant.setFitness(this.populationControler.getMaxFitnessValue());
@@ -497,8 +497,8 @@ public abstract class EvolutionaryEngine {
 				
 				
 				// TODO: Verifies if there are compatible variables (not names!)
-				boolean compatible = VariableResolver.canBeApplied(operationInGen);
-				System.out.println("-compatible-"+compatible);
+				//boolean compatible = VariableResolver.canBeApplied(operationInGen);
+				//System.out.println("-compatible-"+compatible);
 				// if (VariableResolver.canBeApplied(operationInGen))
 				log.debug("operation "+operationInGen);
 				currentStat.numberOfAppliedOp++;

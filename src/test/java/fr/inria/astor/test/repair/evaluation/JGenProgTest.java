@@ -696,6 +696,33 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	}
 	
 	@Test
+	public void testMath70() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+			
+		String[] args = new String[] {
+				"-dependencies", dep,
+				"-mode","statement",
+				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest", 
+				"-location",new File("./examples/math_70").getAbsolutePath(),							
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel", "7",
+				"-flthreshold","0.5",
+				"-scope","local",//"package"
+				"-seed","10"
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+
+	}
+	
+	
+	@Test
 	public void testSeedExample() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
 		//java -cp astor.jar fr.inria.main.evolution.MainjGenProg 

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.stats.StatSpaceSize.TYPES;
+import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 
 /**
  * 
@@ -98,18 +98,18 @@ public class Stats {
 	}
 
 	public void setAlreadyApplied(int i) {
-		setState(i,TYPES.alreadyanalyzed);
+		setState(i,INGREDIENT_STATUS.alreadyanalyzed);
 	}
 
 	public void setCompiles(int i) {
-		setState(i,TYPES.compiles);
+		setState(i,INGREDIENT_STATUS.compiles);
 	}
 
 	public void setNotCompiles(int i) {
-		setState(i,TYPES.notcompiles);
+		setState(i,INGREDIENT_STATUS.notcompiles);
 	}
 
-	private void setState(int i, TYPES t) {
+	private void setState(int i, INGREDIENT_STATUS t) {
 		if (this.sizeSpace.size() > 0) {
 			StatSpaceSize sp = this.sizeSpace.get(sizeSpace.size() - 1);
 			if (sp.id == i)

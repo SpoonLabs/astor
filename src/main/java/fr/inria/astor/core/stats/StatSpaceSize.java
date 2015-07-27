@@ -11,31 +11,19 @@ public class StatSpaceSize {
 	int ingredients = 0;
 	String genType = "";
 	String ingredientType = "";
-	public TYPES states; 
+	public INGREDIENT_STATUS states; 
 	
-	public enum TYPES { compiles, notcompiles, alreadyanalyzed }
+	public enum INGREDIENT_STATUS { compiles, notcompiles, alreadyanalyzed }
 	
-	
-	public StatSpaceSize(String type, int ingredients) {
-		super();
-		this.genType = type;
-		this.ingredients = ingredients;
-	}
-	
-	public StatSpaceSize(String type, int ingredients, String ingType) {
-		super();
-		this.genType = type;
-		this.ingredients = ingredients;
-		this.ingredientType = ingType;
-	}
-	
+
 	public StatSpaceSize(
-			int id,String type, int ingredients, String ingType) {
+			int id,String type, int ingredients, String ingType,INGREDIENT_STATUS states) {
 		super();
 		this.id = id;
 		this.genType = type;
 		this.ingredients = ingredients;
 		this.ingredientType = ingType;
+		this.states = states;
 	}
 	
 	public StatSpaceSize(int operations, int ingredients) {

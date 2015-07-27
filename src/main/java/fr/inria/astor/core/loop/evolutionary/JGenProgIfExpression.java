@@ -72,7 +72,7 @@ public class JGenProgIfExpression extends JGenProg {
 		operation.setGen(genSusp);
 
 		
-		CtElement fix = getFixIngredient(gen, targetExpression);
+		CtElement fix = getFixIngredient(gen, targetExpression,operationType);
 		if (fix == null) {
 			return null;
 		}
