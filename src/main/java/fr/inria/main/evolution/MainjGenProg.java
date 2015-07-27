@@ -66,7 +66,9 @@ public class MainjGenProg extends AbstractMain {
 
 		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
-
+		// Fix Space
+		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
+		
 		JGenProg gploop = null;
 
 		if (removeMode) {
@@ -97,9 +99,6 @@ public class MainjGenProg extends AbstractMain {
 		
 		// Pop controller
 		gploop.setPopulationControler(new FitnessPopulationController());
-		
-		// Fix Space
-		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 		//
 		gploop.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 
