@@ -86,23 +86,23 @@ public class JKali extends JGenProg {
 		List<GenOperationInstance> ops = new ArrayList<>();
 
 		GenOperationInstance opRemove = new GenOperationInstance(gen, GenProgMutationOperation.DELETE,
-				gen.getRootElement(), null);
+				gen.getCodeElement(), null);
 		setParentToGenOperator(opRemove, gen);
 		ops.add(opRemove);
 
 		GenOperationInstance opInsertReturn = new GenOperationInstance(gen, GenProgMutationOperation.INSERT_BEFORE,
-				gen.getRootElement(), createReturn(gen.getRootElement()));
+				gen.getCodeElement(), createReturn(gen.getCodeElement()));
 		setParentToGenOperator(opInsertReturn, gen);
 		ops.add(opInsertReturn);
 
-		if (gen.getRootElement() instanceof CtIf) {
+		if (gen.getCodeElement() instanceof CtIf) {
 			GenOperationInstance opChangeIftrue = new GenOperationInstance(gen, GenProgMutationOperation.REPLACE,
-					gen.getRootElement(), createIf((CtIf) gen.getRootElement(), true));
+					gen.getCodeElement(), createIf((CtIf) gen.getCodeElement(), true));
 			setParentToGenOperator(opChangeIftrue, gen);
 			ops.add(opChangeIftrue);
 
 			GenOperationInstance opChangeIffalse = new GenOperationInstance(gen, GenProgMutationOperation.REPLACE,
-					gen.getRootElement(), createIf((CtIf) gen.getRootElement(), false));
+					gen.getCodeElement(), createIf((CtIf) gen.getCodeElement(), false));
 			setParentToGenOperator(opChangeIffalse, gen);
 			ops.add(opChangeIffalse);
 		}

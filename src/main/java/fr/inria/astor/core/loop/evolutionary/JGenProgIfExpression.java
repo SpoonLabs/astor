@@ -48,11 +48,11 @@ public class JGenProgIfExpression extends JGenProg {
 
 		GenProgMutationOperation operationType = GenProgMutationOperation.REPLACE;
 
-		if (!(genSusp.getRootElement() instanceof CtIf)) {
+		if (!(genSusp.getCodeElement() instanceof CtIf)) {
 			// logger.error(".....The pointed Element is Not a statement");
 			return null;
 		}
-		CtIf targetIF = (CtIf) genSusp.getRootElement();
+		CtIf targetIF = (CtIf) genSusp.getCodeElement();
 
 		CtElement cpar = targetIF.getParent();
 		

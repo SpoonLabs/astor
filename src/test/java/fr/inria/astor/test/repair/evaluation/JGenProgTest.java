@@ -210,7 +210,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		for (Gen gen : variant.getGenList()) {
 
-			if (gen.getRootElement().toString().equals(snippet) && gen.getRootElement().getPosition().getLine() == line)
+			if (gen.getCodeElement().toString().equals(snippet) && gen.getCodeElement().getPosition().getLine() == line)
 				return (GenSuspicious) gen;
 		}
 
@@ -229,7 +229,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		GenSuspicious genSusp = searchSuspiciousElement(variant, "n += 3", " ", 93);//TODO: is 93 or 95
 		assertNotNull(genSusp);
 
-		CtElement targetStmt = genSusp.getRootElement();
+		CtElement targetStmt = genSusp.getCodeElement();
 		CtElement fix = createFix1();
 		assertEquals(fix.toString(), "n += 2");
 

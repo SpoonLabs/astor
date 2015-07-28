@@ -53,11 +53,11 @@ public class ParRepair extends JGenProg {
 		Gen genSusp = gen;
 
 		
-		if (!(genSusp.getRootElement() instanceof CtIf)) {
+		if (!(genSusp.getCodeElement() instanceof CtIf)) {
 			// logger.error(".....The pointed Element is Not a statement");
 			return null;
 		}
-		CtIf targetIF = (CtIf) genSusp.getRootElement();
+		CtIf targetIF = (CtIf) genSusp.getCodeElement();
 
 		CtElement cpar = targetIF.getParent();
 
@@ -88,7 +88,7 @@ public class ParRepair extends JGenProg {
 		operation.setGen(genSusp);
 		
 		//--
-		int elementsFromFixSpace = this.fixspace.getFixSpace(genSusp.getRootElement()).size();
+		int elementsFromFixSpace = this.fixspace.getFixSpace(genSusp.getCodeElement()).size();
 		CtElement fix = null;
 		//
 		
@@ -100,7 +100,7 @@ public class ParRepair extends JGenProg {
 			if (!operationType.equals(ParMutationOperation.DELETE_BEFORE)
 					&& !operationType.equals(ParMutationOperation.DELETE_AFTER)) {
 			
-				fixingredient = this.fixspace.getElementFromSpace(gen.getRootElement());
+				fixingredient = this.fixspace.getElementFromSpace(gen.getCodeElement());
 				if(fixingredient == null){
 					continue;
 				}

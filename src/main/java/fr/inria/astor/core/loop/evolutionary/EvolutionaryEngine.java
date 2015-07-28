@@ -479,7 +479,7 @@ public abstract class EvolutionaryEngine {
 			if (!multiGenmutation && alreadyModified(genProgInstance, variant.getOperations(), generation))
 				continue;
 
-			this.currentStat.kindOfElementsSelected.add(genProgInstance.getRootElement().getClass().getSimpleName());
+			this.currentStat.kindOfElementsSelected.add(genProgInstance.getCodeElement().getClass().getSimpleName());
 			
 			genProgInstance.setProgramVariant(variant);
 			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
@@ -514,7 +514,7 @@ public abstract class EvolutionaryEngine {
 			} else {// Not gen created
 				currentStat.numberOfGenInmutated++;
 				log.debug("---gen " + (nroGen++) + " not mutation generated in  "
-						+ StringUtil.trunc(genProgInstance.getRootElement().getSignature()));
+						+ StringUtil.trunc(genProgInstance.getCodeElement().getSignature()));
 				notmut++;
 			}
 		}

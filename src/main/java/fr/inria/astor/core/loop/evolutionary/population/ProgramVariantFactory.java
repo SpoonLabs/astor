@@ -188,7 +188,7 @@ public class ProgramVariantFactory {
 			GenSuspicious gen = new GenSuspicious();
 			gen.setSuspicious(suspiciousCode);
 			gen.setClonedClass(ctclasspointed);
-			gen.setRootElement(ctElement);
+			gen.setCodeElement(ctElement);
 			gen.setContextOfGen(contextOfGen);
 			suspGen.add(gen);
 			log.info("--Gen:" + ctElement.getClass().getSimpleName()  + ", suspValue "

@@ -192,7 +192,7 @@ public class JGenProg extends EvolutionaryEngine {
 			return null;
 		}
 
-		CtElement targetStmt = genSusp.getRootElement();
+		CtElement targetStmt = genSusp.getCodeElement();
 
 		GenOperationInstance operation = new GenOperationInstance();
 		operation.setOriginal(targetStmt);
@@ -213,7 +213,7 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 
 		if (operationType.equals(GenProgMutationOperation.REPLACE)) {
-			fix = this.getFixIngredient(gen, targetStmt, gen.getRootElement().getClass().getSimpleName(),operationType);
+			fix = this.getFixIngredient(gen, targetStmt, gen.getCodeElement().getClass().getSimpleName(),operationType);
 		}
 
 		if (!operationType.equals(GenProgMutationOperation.DELETE) && fix == null) {
@@ -227,7 +227,7 @@ public class JGenProg extends EvolutionaryEngine {
 	}
 
 	protected void setParentToGenOperator(GenOperationInstance operation, GenSuspicious genSusp) {
-		CtElement targetStmt = genSusp.getRootElement();
+		CtElement targetStmt = genSusp.getCodeElement();
 		CtElement cparent = targetStmt.getParent();
 		if ((cparent != null && (cparent instanceof CtBlock))) {
 			CtBlock parentBlock = (CtBlock) cparent;
@@ -286,17 +286,17 @@ public class JGenProg extends EvolutionaryEngine {
 		// Here, search in the space an element witout type preference
 		List<?> ingredients = null;
 		if (type == null) {
-			ingredients = this.fixspace.getFixSpace(gen.getRootElement());
+			ingredients = this.fixspace.getFixSpace(gen.getCodeElement());
 		} else {// We search for ingredients of one particular type
-			ingredients = this.fixspace.getFixSpace(gen.getRootElement(), type);
+			ingredients = this.fixspace.getFixSpace(gen.getCodeElement(), type);
 		}
 		elementsFromFixSpace = (ingredients == null) ? 0 : ingredients.size();
 
 		while (continueSearching && attempts < elementsFromFixSpace) {
 			if (type == null) {
-				fix = this.fixspace.getElementFromSpace(gen.getRootElement());
+				fix = this.fixspace.getElementFromSpace(gen.getCodeElement());
 			} else {
-				fix = this.fixspace.getElementFromSpace(gen.getRootElement(), type);
+				fix = this.fixspace.getElementFromSpace(gen.getCodeElement(), type);
 			}
 			if (fix == null) {
 				return null;
@@ -318,7 +318,7 @@ public class JGenProg extends EvolutionaryEngine {
 			else
 				fixStat = INGREDIENT_STATUS.alreadyanalyzed;
 			
-			currentStat.sizeSpace.add(new StatSpaceSize(gen.getProgramVariant().getId(), gen.getRootElement().getClass()
+			currentStat.sizeSpace.add(new StatSpaceSize(gen.getProgramVariant().getId(), gen.getCodeElement().getClass()
 					.getSimpleName(), 
 					elementsFromFixSpace, 
 					(fix != null) ? fix.getClass().getSimpleName() : "null",
@@ -415,7 +415,7 @@ public class JGenProg extends EvolutionaryEngine {
 	 */
 	protected boolean alreadyApplied(Gen gen, CtElement fixElement,MutationOperation operator) {
 		// we add the instance identifier to the patch.
-		String lockey = gen.getRootElement() +"-"+operator.toString();
+		String lockey = gen.getCodeElement() +"-"+operator.toString();
 		String fix = fixElement.toString();
 		List<String> prev = appliedCache.get(lockey);
 		// The element does not have any mutation applied

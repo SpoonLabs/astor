@@ -34,7 +34,7 @@ public class GenSuspicious extends Gen{
 	
 	public String toString(){
 		return "Gen="
-				+ ctClass.getSimpleName() +" line: "+suspicious.getLineNumber()+", el: "+rootElement.getClass().getSimpleName()+"";
+				+ ctClass.getSimpleName() +" line: "+suspicious.getLineNumber()+", el: "+codeElement.getClass().getSimpleName()+"";
 	}
 	
 }

@@ -17,7 +17,7 @@ public class Gen {
 
 	protected ProgramVariant programVariant;
 	
-	protected CtElement rootElement;
+	protected CtElement codeElement;
 
 	protected CtClass ctClass;
 	
@@ -33,17 +33,17 @@ public class Gen {
 
 	public Gen(CtElement rootElement, CtClass ctClass, List<CtVariable> contextOfGen) {
 		super();
-		this.rootElement = rootElement;
+		this.codeElement = rootElement;
 		this.ctClass = ctClass;
 		this.contextOfGen = contextOfGen;
 	}
 
-	public CtElement getRootElement() {
-		return rootElement;
+	public CtElement getCodeElement() {
+		return codeElement;
 	}
 
-	public void setRootElement(CtElement rootElement) {
-		this.rootElement = rootElement;
+	public void setCodeElement(CtElement rootElement) {
+		this.codeElement = rootElement;
 	}
 
 	public CtClass getCtClass() {
@@ -55,7 +55,7 @@ public class Gen {
 	}
 
 	public String toString() {
-		return "[" + rootElement.getClass().getSimpleName() + ", in " + ctClass.getSimpleName() + "]";
+		return "[" + codeElement.getClass().getSimpleName() + ", in " + ctClass.getSimpleName() + "]";
 	}
 
 	public List<CtVariable> getContextOfGen() {
