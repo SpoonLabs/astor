@@ -280,6 +280,10 @@ public class MutationSupporter {
 					Attr attr_gen = root.createAttribute("generation");
 					attr_gen.setValue(Integer.toString(i));
 					op.setAttributeNode(attr_gen);
+					
+					Attr attr_type = root.createAttribute("type");
+					attr_type.setValue(genOperationInstance.getOperationApplied().toString());
+					op.setAttributeNode(attr_type);
 
 					Element original = root.createElement("original");
 					op.appendChild(original);
