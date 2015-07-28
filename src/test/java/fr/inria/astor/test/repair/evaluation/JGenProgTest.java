@@ -694,12 +694,17 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		main1.main(args);
 
 	}
-	
+	/**
+	 * Math 70 bug can be fixed by replacing a method invocation.
+	 * +        return solve(f, min, max);
+	 * -      return solve(min, max);
+	 * @throws Exception
+	 */
 	@Test
 	public void testMath70() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
 		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
-			
+		File out = 	new File("./outputMutation/");
 		String[] args = new String[] {
 				"-dependencies", dep,
 				"-mode","statement",
@@ -713,15 +718,18 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-bintestfolder","/target/test-classes",
 				"-javacompliancelevel", "7",
 				"-flthreshold","0.5",
-				"-scope","local",//"package"
+				"-out",out.getAbsolutePath(),
+				"-scope","package",//"local",//"package"
 				"-seed","10"
 				};
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
-
+		
+		validatePatchExistence(out+File.separator+"MainjGenProg-math_70/");
+		
 	}
-	
-	
+		
+
 	@Test
 	public void testSeedExample() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();

@@ -1,5 +1,8 @@
 package fr.inria.astor.test.repair.evaluation;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.log4j.ConsoleAppender;
@@ -85,6 +88,15 @@ public abstract class BaseEvolutionaryTest  {
 		
 	}
 
+	public static void validatePatchExistence(String dir) {
+		File out = new File(dir+File.separator+"src");
+		assertTrue(out.listFiles().length > 1);
+		boolean isSol = false;
+		for (File sol : out.listFiles()) {
+			 isSol|= sol.getName().startsWith("variant-");
+		}
+		assertTrue(isSol);
+	}
 	
 	public abstract void generic(
 			String location,

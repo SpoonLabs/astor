@@ -43,6 +43,6 @@ public class StatSpaceSize {
 
 	@Override
 	public String toString() {
-		return "(id:"+id+", "+genType+", size: "+Integer.toString(this.size())/*+" -op "+operations+" ing "+ingredients+*/+", "+states+") " ;
+		return "(id:"+id+"| "+genType+"| size: "+Integer.toString(this.size())/*+" -op "+operations+" ing "+ingredients+*/+"| "+states+") " ;
 	}
 }
