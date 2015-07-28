@@ -249,7 +249,7 @@ public class VariableResolver {
 		}
 		
 		if(element instanceof CtForEach){
-			CtFor el = (CtFor) element;
+			CtForEach el = (CtForEach) element;
 			boolean fitTarget = fitInPlace(varContext, el.getExpression());
 			if(fitTarget){
 				fitInPlace(varContext, el.getBody());
@@ -258,8 +258,8 @@ public class VariableResolver {
 		}
 		
 		if(element instanceof CtDo){
-			CtFor el = (CtFor) element;
-			boolean fitTarget = fitInPlace(varContext, el.getExpression());
+			CtDo el = (CtDo) element;
+			boolean fitTarget = fitInPlace(varContext, el.getLoopingExpression());
 			if(fitTarget){
 				fitInPlace(varContext, el.getBody());
 			}
