@@ -17,6 +17,7 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.entities.Gen;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.entities.taxonomy.MutationOperation;
@@ -202,11 +203,11 @@ public class JGenProg extends EvolutionaryEngine {
 
 		setParentToGenOperator(operation, genSusp);
 
-		CtElement fix = null;
+		Ingredient fix = null;
 		if (operationType.equals(GenProgMutationOperation.INSERT_AFTER)
 				|| operationType.equals(GenProgMutationOperation.INSERT_BEFORE)) {
 
-			fix = this.getFixIngredient(gen, targetStmt,operationType);
+			fix = this.getFixIngredient(gen, targetStmt, operationType);
 
 			if (operationType.equals(GenProgMutationOperation.INSERT_AFTER)) {
 				operation.setLocationInParent(operation.getLocationInParent() + 1);
@@ -214,7 +215,8 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 
 		if (operationType.equals(GenProgMutationOperation.REPLACE)) {
-			fix = this.getFixIngredient(gen, targetStmt, gen.getCodeElement().getClass().getSimpleName(),operationType);
+			fix = this
+					.getFixIngredient(gen, targetStmt, gen.getCodeElement().getClass().getSimpleName(), operationType);
 		}
 
 		if (!operationType.equals(GenProgMutationOperation.DELETE) && fix == null) {
@@ -222,7 +224,11 @@ public class JGenProg extends EvolutionaryEngine {
 			return null;
 		}
 
-		operation.setModified(fix);
+		if (fix != null) {
+			// TODO: Next we associate Operation with Ingredients
+			operation.setModified(fix.getCode());
+			operation.setIngredientScope(fix.getScope());
+		}
 
 		return operation;
 	}
@@ -264,8 +270,8 @@ public class JGenProg extends EvolutionaryEngine {
 
 	}
 
-	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt, GenProgMutationOperation operationType) {
-		return this.getFixIngredient(gen, targetStmt, null,operationType);
+	protected Ingredient getFixIngredient(Gen gen, CtElement targetStmt, GenProgMutationOperation operationType) {
+		return this.getFixIngredient(gen, targetStmt, null, operationType);
 	}
 
 	/**
@@ -273,12 +279,13 @@ public class JGenProg extends EvolutionaryEngine {
 	 * 
 	 * @param gen
 	 * @param targetStmt
-	 * @param operationType 
+	 * @param operationType
 	 * @param elementsFromFixSpace
 	 * @return
 	 */
-	protected CtElement getFixIngredient(Gen gen, CtElement targetStmt, String type, GenProgMutationOperation operationType) {
-		CtElement fix = null;
+	protected Ingredient getFixIngredient(Gen gen, CtElement targetStmt, String type,
+			GenProgMutationOperation operationType) {
+
 		int attempts = 0;
 
 		boolean continueSearching = true;
@@ -294,6 +301,7 @@ public class JGenProg extends EvolutionaryEngine {
 		elementsFromFixSpace = (ingredients == null) ? 0 : ingredients.size();
 
 		while (continueSearching && attempts < elementsFromFixSpace) {
+			CtElement fix = null;
 			if (type == null) {
 				fix = this.fixspace.getElementFromSpace(gen.getCodeElement());
 			} else {
@@ -305,33 +313,34 @@ public class JGenProg extends EvolutionaryEngine {
 
 			attempts++;
 			INGREDIENT_STATUS fixStat = null;
-			
-			boolean alreadyApplied = alreadyApplied(gen,fix, operationType), ccompatibleNameTypes = false;
-			
-			if(!alreadyApplied && !fix.getSignature().equals(targetStmt.getSignature())){
-						
+
+			boolean alreadyApplied = alreadyApplied(gen, fix, operationType), ccompatibleNameTypes = false;
+
+			if (!alreadyApplied && !fix.getSignature().equals(targetStmt.getSignature())) {
+
 				ccompatibleNameTypes = VariableResolver.fitInPlace(gen.getContextOfGen(), fix);
-			//	log.info("Fix " + " can be applied? " + ccompatibleNameTypes);
-				continueSearching = !ccompatibleNameTypes;//if can be applied, we stop the loop
-				fixStat = (ccompatibleNameTypes)?INGREDIENT_STATUS.compiles : INGREDIENT_STATUS.notcompiles;
-			}
-			else{
+				continueSearching = !ccompatibleNameTypes;
+				fixStat = (ccompatibleNameTypes) ? INGREDIENT_STATUS.compiles : INGREDIENT_STATUS.notcompiles;
+			} else {
 				fixStat = INGREDIENT_STATUS.alreadyanalyzed;
 			}
-			currentStat.sizeSpace.add(new StatSpaceSize(gen.getProgramVariant().getId(), gen.getCodeElement().getClass()
-					.getSimpleName(), 
-					elementsFromFixSpace, 
-					((fix != null) ? fix.getClass().getSimpleName():"null"),
-					fixStat,
-					((fix != null) ? determine(gen.getCodeElement(), fix):IngredientSpaceStrategy.GLOBAL)
-					));
-			
+
+			IngredientSpaceStrategy scope = (fix != null) ? determineIngredientScope(gen.getCodeElement(), fix,
+					ingredients) : IngredientSpaceStrategy.GLOBAL;
+
+			currentStat.sizeSpace.add(new StatSpaceSize(gen.getProgramVariant().getId(), gen.getCodeElement()
+					.getClass().getSimpleName(), elementsFromFixSpace, ((fix != null) ? fix.getClass().getSimpleName()
+					: "null"), fixStat, scope));
+
+			if (!continueSearching) {
+				return new Ingredient(fix, scope);
+			}
+
 		}
-		if (continueSearching) {
-			log.debug("--- no mutation left to apply in element " + targetStmt.getSignature());
-			return null;
-		}
-		return fix;
+
+		log.debug("--- no mutation left to apply in element " + targetStmt.getSignature());
+		return null;
+
 	}
 
 	protected void undoOperationToSpoonElement(GenOperationInstance operation) {
@@ -402,7 +411,6 @@ public class JGenProg extends EvolutionaryEngine {
 
 	}
 
-	
 	/**
 	 * Check if the fix were applied in the location for a program instance
 	 * 
@@ -412,9 +420,9 @@ public class JGenProg extends EvolutionaryEngine {
 	 * @param location
 	 * @return
 	 */
-	protected boolean alreadyApplied(Gen gen, CtElement fixElement,MutationOperation operator) {
+	protected boolean alreadyApplied(Gen gen, CtElement fixElement, MutationOperation operator) {
 		// we add the instance identifier to the patch.
-		String lockey = gen.getCodeElement() +"-"+operator.toString();
+		String lockey = gen.getCodeElement() + "-" + operator.toString();
 		String fix = fixElement.toString();
 		List<String> prev = appliedCache.get(lockey);
 		// The element does not have any mutation applied
@@ -434,17 +442,38 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 	}
 
-	protected IngredientSpaceStrategy determine(CtElement ingredient, CtElement fix){
+	protected IngredientSpaceStrategy determineIngredientScope(CtElement ingredient, CtElement fix,
+			List<?> ingredients) {
+
+		IngredientSpaceStrategy orig = determineIngredientScope(ingredient, fix);
+		
+		String fixStr = fix.toString();
+		for (Object ing : ingredients) {
+			if(ing.toString().equals(fixStr)){
+				IngredientSpaceStrategy n= determineIngredientScope(ingredient, (CtElement) ing);
+				if(n.ordinal() < orig.ordinal()){
+					orig = n;
+					if(IngredientSpaceStrategy.values()[0].equals(orig))
+						return orig;
+				}
+				
+			}
+		}
+		return orig;
+	}
+
+	protected IngredientSpaceStrategy determineIngredientScope(CtElement ingredient, CtElement fix) {
+
 		File ingp = ingredient.getPosition().getFile();
 		File fixp = fix.getPosition().getFile();
-		
-		if(ingp.getAbsolutePath().equals(fixp.getAbsolutePath())){
+
+		if (ingp.getAbsolutePath().equals(fixp.getAbsolutePath())) {
 			return IngredientSpaceStrategy.LOCAL;
 		}
-		if(ingp.getParentFile().getAbsolutePath().equals(fixp.getParentFile().getAbsolutePath())){
+		if (ingp.getParentFile().getAbsolutePath().equals(fixp.getParentFile().getAbsolutePath())) {
 			return IngredientSpaceStrategy.PACKAGE;
 		}
 		return IngredientSpaceStrategy.GLOBAL;
 	}
-	
+
 }

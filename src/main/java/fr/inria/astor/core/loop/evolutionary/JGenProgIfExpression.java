@@ -12,6 +12,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.Gen;
 import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.ExpressionRevolver;
@@ -72,11 +73,11 @@ public class JGenProgIfExpression extends JGenProg {
 		operation.setGen(genSusp);
 
 		
-		CtElement fix = getFixIngredient(gen, targetExpression,operationType);
+		Ingredient fix = getFixIngredient(gen, targetExpression,operationType);
 		if (fix == null) {
 			return null;
 		}
-		operation.setModified(fix);
+		operation.setModified(fix.getCode());
 	
 		return operation;
 	}

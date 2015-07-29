@@ -3,6 +3,7 @@ package fr.inria.astor.core.entities;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtElement;
 import fr.inria.astor.core.entities.taxonomy.MutationOperation;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
 import fr.inria.astor.core.util.StringUtil;
 
 /**
@@ -44,6 +45,8 @@ public class GenOperationInstance {
 	 */
 	private Exception exceptionAtApplied = null;
 	private boolean successfulyApplied = true;
+	
+	private IngredientSpaceStrategy ingredientScope = null;
 	
 	public GenOperationInstance (){}
 	
@@ -167,4 +170,13 @@ public class GenOperationInstance {
 		return true;
 	}
 
+	public IngredientSpaceStrategy getIngredientScope() {
+		return ingredientScope;
+	}
+
+	public void setIngredientScope(IngredientSpaceStrategy ingredientScope) {
+		this.ingredientScope = ingredientScope;
+	}
+
+	
 }

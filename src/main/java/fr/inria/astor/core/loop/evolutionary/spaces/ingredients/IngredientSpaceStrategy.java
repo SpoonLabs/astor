@@ -5,6 +5,7 @@ package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
  *
  */
 public enum IngredientSpaceStrategy {
+	//Order from most restrictive to less
 	LOCAL,
 	PACKAGE,
 	GLOBAL;

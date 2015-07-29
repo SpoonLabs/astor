@@ -291,12 +291,16 @@ public class MutationSupporter {
 
 					Element mod = root.createElement("modified");
 					op.appendChild(mod);
-					if (genOperationInstance.getModified() != null)
-						mod.setTextContent("\n fixed statement= \"" + genOperationInstance.getModified().toString()
-								+ "\"");
+									
+					if (genOperationInstance.getModified() != null){
+						mod.setTextContent( genOperationInstance.getModified().toString());
+						Attr attr_ing = root.createAttribute("scope");
+						attr_ing.setValue(genOperationInstance.getIngredientScope().toString());
+						mod.setAttributeNode(attr_ing);
+						
+					}
 					else {
-						mod.setTextContent("\n fix (remove original statement)= \""
-								+ genOperationInstance.getOriginal().toString() + "\"");
+						mod.setTextContent(genOperationInstance.getOriginal().toString());
 					}
 
 				}
@@ -353,6 +357,7 @@ public class MutationSupporter {
 					}
 
 					line += "\ngeneration= " + Integer.toString(i);
+					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope()!=null)? genOperationInstance.getIngredientScope():"-");
 					line += "\n ";
 
 				}
