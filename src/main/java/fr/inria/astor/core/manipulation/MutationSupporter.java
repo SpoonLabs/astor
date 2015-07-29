@@ -348,12 +348,11 @@ public class MutationSupporter {
 					}
 
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
-					line += "\nfixed statement= \"" ;
+					line += "\nfixed statement= " ;
 					if (genOperationInstance.getModified() != null)
-						line +=  genOperationInstance.getModified().toString() + "\"";
+						line +=  genOperationInstance.getModified().toString();
 					else {
-						line += genOperationInstance.getOriginal().toString()
-								+ "\"";
+						line += genOperationInstance.getOriginal().toString();
 					}
 
 					line += "\ngeneration= " + Integer.toString(i);
