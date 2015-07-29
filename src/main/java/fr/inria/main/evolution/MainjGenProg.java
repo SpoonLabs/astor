@@ -90,7 +90,7 @@ public class MainjGenProg extends AbstractMain {
 				gploop.setFixspace(new GlobalBasicFixSpace(ingredientProcessors));
 			} else if ("package".equals(scope)) {
 				gploop.setFixspace(new PackageBasicFixSpace(ingredientProcessors));
-			} else {
+			} else {//Default
 				gploop.setFixspace(new LocalFixSpace(ingredientProcessors));
 			}
 

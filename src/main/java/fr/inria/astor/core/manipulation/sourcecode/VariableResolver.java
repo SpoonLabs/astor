@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
@@ -105,6 +106,8 @@ public class VariableResolver {
 				result.add(ctVariable_i);
 			}
 			}catch(Exception e){
+				if(typeref_i.getDeclaration().getQualifiedName().equals(typeToFind.getDeclaration().getQualifiedName()))
+					result.add(ctVariable_i);
 				//sometimes is not possible to get the subtype
 			//	e.printStackTrace();
 			}
@@ -124,7 +127,6 @@ public class VariableResolver {
 
 			if (typeref_i.equals((typeToFind))
 					&& ctVariable_i.getSimpleName().equals(vartofind.getVariable().getSimpleName())) {
-				//return true;
 				result.add(ctVariable_i);
 			}
 		}//return false
@@ -150,7 +152,14 @@ public class VariableResolver {
 		if (element instanceof CtVariableAccess) {
 			return matchVariable(varContext,(CtVariableAccess) element);
 		}
-		
+		if (element instanceof CtArrayAccess) {
+			CtArrayAccess el = (CtArrayAccess) element;
+			boolean fitTarget = fitInPlace(varContext,	el.getIndexExpression());
+			if(fitTarget)
+				fitTarget = fitInPlace(varContext, el.getTarget());
+			return fitTarget;
+		}
+
 
 		//**********If the element is not a variable access, the analyze each case.
 		

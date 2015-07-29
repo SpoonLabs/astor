@@ -111,8 +111,6 @@ public abstract class EvolutionaryEngine {
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
 		
-		
-		
 		Date dateInit = new Date();
 
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
@@ -258,7 +256,7 @@ public abstract class EvolutionaryEngine {
 
 		this.solutions.addAll(solutionsFromGeneration);
 		
-		//We add the case we do not have variants because all are solution, be we want continue searching new ones
+		//We add the case that we do not have variants because all are solution, be we want continue searching new ones
 		if(currentVariants.isEmpty() && !solutionsFromGeneration.isEmpty() && !ConfigurationProperties.getPropertyBool("stopfirst")){
 			currentVariants.addAll(solutionsFromGeneration);
 		} 
@@ -494,12 +492,7 @@ public abstract class EvolutionaryEngine {
 					currentStat.setAlreadyApplied(variant.getId());
 					continue;
 				}
-				
-				
-				// TODO: Verifies if there are compatible variables (not names!)
-				//boolean compatible = VariableResolver.canBeApplied(operationInGen);
-				//System.out.println("-compatible-"+compatible);
-				// if (VariableResolver.canBeApplied(operationInGen))
+		
 				log.debug("operation "+operationInGen);
 				currentStat.numberOfAppliedOp++;
 				variant.putGenOperation(generation, operationInGen);

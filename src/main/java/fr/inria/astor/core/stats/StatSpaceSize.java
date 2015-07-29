@@ -1,4 +1,7 @@
 package fr.inria.astor.core.stats;
+
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
+
 /**
  * 
  * @author Matias Martinez,  matias.martinez@inria.fr
@@ -12,18 +15,20 @@ public class StatSpaceSize {
 	String genType = "";
 	String ingredientType = "";
 	public INGREDIENT_STATUS states; 
+	IngredientSpaceStrategy ingredientSpaceStrategy;
 	
 	public enum INGREDIENT_STATUS { compiles, notcompiles, alreadyanalyzed }
 	
 
 	public StatSpaceSize(
-			int id,String type, int ingredients, String ingType,INGREDIENT_STATUS states) {
+			int id,String type, int ingredients, String ingType,INGREDIENT_STATUS states, IngredientSpaceStrategy ingredientSpaceStrategy) {
 		super();
 		this.id = id;
 		this.genType = type;
 		this.ingredients = ingredients;
 		this.ingredientType = ingType;
 		this.states = states;
+		this.ingredientSpaceStrategy = ingredientSpaceStrategy;
 	}
 	
 	public StatSpaceSize(int operations, int ingredients) {
@@ -43,6 +48,7 @@ public class StatSpaceSize {
 
 	@Override
 	public String toString() {
-		return "(id:"+id+"| "+genType+"| size: "+Integer.toString(this.size())/*+" -op "+operations+" ing "+ingredients+*/+"| "+states+") " ;
+		return "(id:"+id+"| "+genType+"| size: "+Integer.toString(this.size())/*+" -op "+operations+" ing "+ingredients+*/
+				+"| "+states+"| "+ingredientSpaceStrategy.toString()+") " ;
 	}
 }

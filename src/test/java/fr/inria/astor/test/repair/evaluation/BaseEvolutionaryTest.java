@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 
 import spoon.support.StandardEnvironment;
@@ -96,6 +97,16 @@ public abstract class BaseEvolutionaryTest  {
 			 isSol|= sol.getName().startsWith("variant-");
 		}
 		assertTrue(isSol);
+	}
+	
+	public static void validatePatchExistence(String dir, int numberSolution) {
+		File out = new File(dir+File.separator+"src");
+		assertTrue(out.listFiles().length > 1);
+		int cantSol = 0;
+		for (File sol : out.listFiles()) {
+			cantSol += (sol.getName().startsWith("variant-"))?1:0;
+		}
+		Assert.assertEquals(numberSolution,cantSol);
 	}
 	
 	public abstract void generic(

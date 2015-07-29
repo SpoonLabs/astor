@@ -92,7 +92,8 @@ public class JGenProg extends EvolutionaryEngine {
 		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL))
 			return originalVariant.getAffectedClasses();
 
-		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.GLOBAL))
+		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.GLOBAL)
+				|| getFixSpace().strategy().equals(IngredientSpaceStrategy.PACKAGE))
 			return this.mutatorSupporter.getFactory().Type().getAll();
 
 		return null;
@@ -310,24 +311,22 @@ public class JGenProg extends EvolutionaryEngine {
 			if(!alreadyApplied && !fix.getSignature().equals(targetStmt.getSignature())){
 						
 				ccompatibleNameTypes = VariableResolver.fitInPlace(gen.getContextOfGen(), fix);
-				log.info("Fix " + " can be applied? " + ccompatibleNameTypes);
+			//	log.info("Fix " + " can be applied? " + ccompatibleNameTypes);
 				continueSearching = !ccompatibleNameTypes;//if can be applied, we stop the loop
 				fixStat = (ccompatibleNameTypes)?INGREDIENT_STATUS.compiles : INGREDIENT_STATUS.notcompiles;
-				
 			}
-			else
+			else{
 				fixStat = INGREDIENT_STATUS.alreadyanalyzed;
-			
+			}
 			currentStat.sizeSpace.add(new StatSpaceSize(gen.getProgramVariant().getId(), gen.getCodeElement().getClass()
 					.getSimpleName(), 
 					elementsFromFixSpace, 
-					(fix != null) ? fix.getClass().getSimpleName() : "null",
-					fixStat));
+					((fix != null) ? fix.getClass().getSimpleName():"null"),
+					fixStat,
+					((fix != null) ? determine(gen.getCodeElement(), fix):IngredientSpaceStrategy.GLOBAL)
+					));
 			
 		}
-		/*currentStat.sizeSpace.add(new StatSpaceSize(gen.getProgramVariant().getId(), gen.getRootElement().getClass()
-				.getSimpleName(), elementsFromFixSpace, (fix != null) ? fix.getClass().getSimpleName() : "null"));*/
-
 		if (continueSearching) {
 			log.debug("--- no mutation left to apply in element " + targetStmt.getSignature());
 			return null;
@@ -435,4 +434,17 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 	}
 
+	protected IngredientSpaceStrategy determine(CtElement ingredient, CtElement fix){
+		File ingp = ingredient.getPosition().getFile();
+		File fixp = fix.getPosition().getFile();
+		
+		if(ingp.getAbsolutePath().equals(fixp.getAbsolutePath())){
+			return IngredientSpaceStrategy.LOCAL;
+		}
+		if(ingp.getParentFile().getAbsolutePath().equals(fixp.getParentFile().getAbsolutePath())){
+			return IngredientSpaceStrategy.PACKAGE;
+		}
+		return IngredientSpaceStrategy.GLOBAL;
+	}
+	
 }
