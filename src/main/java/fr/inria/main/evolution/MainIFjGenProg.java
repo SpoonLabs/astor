@@ -88,10 +88,7 @@ public class MainIFjGenProg extends AbstractMain {
 				filtercandidates.add(suspiciousCode);
 			}
 		}
-		// currentStat.fl_size = filtercandidates.size();
-		// currentStat.fl_threshold =
-		// TransformationProperties.THRESHOLD_SUSPECTNESS ;
-
+	
 		assertNotNull(candidates);
 		assertTrue(candidates.size() > 0);
 		try {

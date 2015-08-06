@@ -2,6 +2,7 @@ package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 
 
 import java.util.List;
+import java.util.Map;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
@@ -26,5 +27,6 @@ public interface FixLocationSpace<L extends Object,I extends CtElement, T extend
 	public List<I> getFixSpace(L rootClass);
 	public List<I> getFixSpace(L rootClass, T type);
 	public IngredientSpaceStrategy strategy();
+	public Map<?, List<?>> getSpace();
 	
 }

@@ -88,7 +88,7 @@ public class MutationalRepair extends JGenProg {
 		
 		List<MutantCtElement> mutations = getMutants(targetIF);
 		
-		currentStat.sizeSpace.add(new StatSpaceSize(mutations.size(),0));
+		//currentStat.sizeSpace.add(new StatSpaceSize(mutations.size(),0));
 		
 		log.debug("mutations: ("+mutations.size()+") "+mutations);
 		if(mutations == null || mutations.size() == 0){

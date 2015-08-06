@@ -77,7 +77,7 @@ public class JGenProg extends EvolutionaryEngine {
 		if (getFixSpace() != null) {
 			List<?> classesForIngredients = retrieveClassesForIngredients();
 			getFixSpace().defineSpace(classesForIngredients);
-			log.info(getFixSpace());
+			//log.info(getFixSpace());
 		}
 
 		boolean validInstance = validateInstance(originalVariant);
@@ -328,9 +328,9 @@ public class JGenProg extends EvolutionaryEngine {
 			IngredientSpaceStrategy scope = (fix != null) ? determineIngredientScope(gen.getCodeElement(), fix,
 					ingredients) : IngredientSpaceStrategy.GLOBAL;
 
-			currentStat.sizeSpace.add(new StatSpaceSize(gen.getProgramVariant().getId(), gen.getCodeElement()
+			currentStat.sizeSpaceOfVariant.add(new StatSpaceSize(gen.getProgramVariant().getId(), gen.getCodeElement()
 					.getClass().getSimpleName(), elementsFromFixSpace, ((fix != null) ? fix.getClass().getSimpleName()
-					: "null"), fixStat, scope));
+					: "null"), fixStat, scope,operationType));
 
 			if (!continueSearching) {
 				return new Ingredient(fix, scope);

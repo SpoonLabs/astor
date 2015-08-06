@@ -72,7 +72,10 @@ public abstract class UniformRandomFixSpace<L extends Object, K extends Object, 
 		return fixSpaceByLocation;
 	}
 	
-
+	@Override
+	public Map getSpace() {
+		return fixSpaceByLocationType;
+	}
 		
 
 

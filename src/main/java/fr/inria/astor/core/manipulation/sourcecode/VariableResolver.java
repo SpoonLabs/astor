@@ -106,10 +106,16 @@ public class VariableResolver {
 				result.add(ctVariable_i);
 			}
 			}catch(Exception e){
-				if(typeref_i.getDeclaration().getQualifiedName().equals(typeToFind.getDeclaration().getQualifiedName()))
-					result.add(ctVariable_i);
 				//sometimes is not possible to get the subtype
-			//	e.printStackTrace();
+				//	e.printStackTrace();
+				//try{
+				//if(typeref_i.getDeclaration().getQualifiedName().equals(typeToFind.getDeclaration().getQualifiedName()))
+					result.add(ctVariable_i);
+				//}catch(Exception e2){
+				//	e2.printStackTrace();
+				//	System.out.println("--"+typeref_i+" "+typeToFind);
+				//}
+	
 			}
 
 		}

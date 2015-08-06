@@ -1,5 +1,6 @@
 package fr.inria.astor.core.stats;
 
+import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
 
 /**
@@ -16,12 +17,13 @@ public class StatSpaceSize {
 	String ingredientType = "";
 	public INGREDIENT_STATUS states; 
 	IngredientSpaceStrategy ingredientSpaceStrategy;
+	GenProgMutationOperation operationType;
 	
 	public enum INGREDIENT_STATUS { compiles, notcompiles, alreadyanalyzed }
 	
 
 	public StatSpaceSize(
-			int id,String type, int ingredients, String ingType,INGREDIENT_STATUS states, IngredientSpaceStrategy ingredientSpaceStrategy) {
+			int id,String type, int ingredients, String ingType,INGREDIENT_STATUS states, IngredientSpaceStrategy ingredientSpaceStrategy, GenProgMutationOperation operationType) {
 		super();
 		this.id = id;
 		this.genType = type;
@@ -29,6 +31,7 @@ public class StatSpaceSize {
 		this.ingredientType = ingType;
 		this.states = states;
 		this.ingredientSpaceStrategy = ingredientSpaceStrategy;
+		this.operationType = operationType;
 	}
 	
 	public StatSpaceSize(int operations, int ingredients) {
@@ -48,7 +51,11 @@ public class StatSpaceSize {
 
 	@Override
 	public String toString() {
-		return "(id:"+id+"| "+genType+"| size: "+Integer.toString(this.size())/*+" -op "+operations+" ing "+ingredients+*/
-				+"| "+states+"| "+ingredientSpaceStrategy.toString()+") " ;
+		return "("
+				//+ "id:"+id+"| "
+				+genType+"| size: "+Integer.toString(this.size())/*+" -op "+operations+" ing "+ingredients+*/
+				+"| "+states+"| "+ingredientSpaceStrategy.toString()
+				+ "| "+operationType
+				+") " ;
 	}
 }

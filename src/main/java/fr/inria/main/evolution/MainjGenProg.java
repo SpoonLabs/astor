@@ -82,8 +82,6 @@ public class MainjGenProg extends AbstractMain {
 			gploop = new JGenProg(mutSupporter, projectFacade);
 			gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
 
-		
-
 			// The ingredients for build the patches
 			String scope = ConfigurationProperties.properties.getProperty("scope").toLowerCase();
 			if ("global".equals(scope)) {

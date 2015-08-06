@@ -18,18 +18,15 @@ public class Stats {
 
 	public static Stats currentStat = null;
 
-	public static Stats getCurrentStats() {
-
-		if (currentStat == null) {
-			currentStat = new Stats();
-		}
-		return currentStat;
-	}
-
 	public int id = 0;
 
 	public int numberOfElementsToMutate = 0;
-	public List<StatSpaceSize> sizeSpace = new ArrayList<StatSpaceSize>();
+	public StatCounter<String> sizeSpace = new StatCounter<String>();
+	public List<StatSpaceSize> sizeSpaceOfVariant = new ArrayList<StatSpaceSize>();
+	public StatCounter<Integer> attemptsPerVariant = new StatCounter<Integer>();
+	
+	public StatCounter<String> typeOfElementsSelectedForModifying = new StatCounter<String>();
+	public List<StatPatch> genPatches = new ArrayList<StatPatch>();
 
 	public int numberOfRightCompilation = 0;
 	public int numberOfFailingCompilation = 0;
@@ -41,7 +38,6 @@ public class Stats {
 	public int numberGenerations = 0;
 
 	public int patches = 0;
-	public List<StatPatch> genPatches = new ArrayList<StatPatch>();
 
 	public int numberOfAppliedOp = 0;
 	public int numberOfNotAppliedOp = 0;
@@ -68,14 +64,14 @@ public class Stats {
 	public void printStats() {
 		log.info(toString());
 	}
-
-	public List<String> kindOfElementsSelected = new ArrayList<>();
-
+	
 	public String toString() {
 		String s = "";
-		s += ("\nspaces: [" + this.sizeSpace.size() + "]: " + this.sizeSpace);
-		s += ("\ntime val1 [" + this.time1Validation.size() + "]: " + this.time1Validation);
-		s += ("\ntime val2 [" + this.time2Validation.size() + "]: " + this.time2Validation);
+		s += ("\nspaces navigation: [" + this.sizeSpace.getStructure().size() + "]: " + this.sizeSpace);
+		// s += ("\ntime val1 [" + this.time1Validation.size() + "]: " +
+		// this.time1Validation);
+		// s += ("\ntime val2 [" + this.time2Validation.size() + "]: " +
+		// this.time2Validation);
 		s += ("\n#gen: " + this.numberGenerations);
 		s += ("\n#patches: " + this.patches);
 		s += ("\n#RightCompilation: " + this.numberOfRightCompilation);
@@ -93,28 +89,47 @@ public class Stats {
 		s += ("\n#InmutatedGen: " + this.numberOfGenInmutated);
 		s += ("\n#unfinishValidation: " + this.unfinishValidation);
 
-		s += ("\n#ing " + this.kindOfElementsSelected);
+		s += ("\n#ing " + this.typeOfElementsSelectedForModifying);
+		s += ("\n#untilcompile " + this.attemptsPerVariant);
 		return s;
 	}
 
 	public void setAlreadyApplied(int i) {
-		setState(i,INGREDIENT_STATUS.alreadyanalyzed);
+		setState(i, INGREDIENT_STATUS.alreadyanalyzed);
 	}
 
 	public void setCompiles(int i) {
-		setState(i,INGREDIENT_STATUS.compiles);
+		setState(i, INGREDIENT_STATUS.compiles);
 	}
 
 	public void setNotCompiles(int i) {
-		setState(i,INGREDIENT_STATUS.notcompiles);
+		setState(i, INGREDIENT_STATUS.notcompiles);
 	}
 
 	private void setState(int i, INGREDIENT_STATUS t) {
-		if (this.sizeSpace.size() > 0) {
-			StatSpaceSize sp = this.sizeSpace.get(sizeSpace.size() - 1);
+		if (this.sizeSpaceOfVariant.size() > 0) {
+			StatSpaceSize sp = this.sizeSpaceOfVariant.get(sizeSpaceOfVariant.size() - 1);
 			if (sp.id == i)
 				sp.states = t;
 		}
 	}
 
+
+	public static Stats getCurrentStats() {
+
+		if (currentStat == null) {
+			currentStat = new Stats();
+		}
+		return currentStat;
+	}
+
+	public void saveStats() {
+		if(sizeSpaceOfVariant.isEmpty())
+			return;
+		
+		for (StatSpaceSize statSpaceSize : sizeSpaceOfVariant) {
+			this.sizeSpace.add(statSpaceSize.toString());
+		}
+		this.attemptsPerVariant.add(sizeSpaceOfVariant.size());
+	}
 }

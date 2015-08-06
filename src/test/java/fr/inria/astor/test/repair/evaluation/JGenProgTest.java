@@ -674,6 +674,34 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		main1.main(args);
 		validatePatchExistence(out.getPath()+File.separator+"MainjGenProg-math_40",1);
 	}
+	
+	
+	@Test
+	public void testMath64ModeStatement() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		File out = 	new File("./outputMutation/");
+		String[] args = new String[] {
+				"-dependencies", dep,
+				"-mode","statement",
+				"-failing", "org.apache.commons.math.optimization.general.MinpackTest", 
+				"-location",new File("./examples/math_64/").getAbsolutePath(), 
+				"-package", "org.apache.commons",
+				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/main/java/",
+				"-srctestfolder", "/src/test/java/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel", "7",
+				"-seed","10",
+				"-maxgen","200",
+				"-out",out.getAbsolutePath(),
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+		validatePatchExistence(out.getPath()+File.separator+"MainjGenProg-math_64",1);
+	}
+	
 	/**
 	 * The fix is a replacement of an return statement
 	 * @throws Exception
@@ -740,7 +768,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		validatePatchExistence(out+File.separator+"MainjGenProg-math_70/");
 		
 	}
-	
+	/**
+	 * One solution with local, other with package
+	 * @throws Exception
+	 */
 	@Test
 	public void testMath70TwoSolutions() throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
@@ -752,7 +783,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest", 
 				"-location",new File("./examples/math_70").getAbsolutePath(),							
 				"-package", "org.apache.commons",
-				"-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin",
+				"-jvm4testexecution", "/usr/lib/jvm/java-7-openjdk-amd64/bin/", //"/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/",
 				"-srctestfolder", "/src/test/", 
 				"-binjavafolder", "/target/classes", 
@@ -761,10 +792,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-flthreshold","0.5",
 				"-out",out.getAbsolutePath(),
 				//NEW ARGUMENT FOR TEST: package scope
-				"-scope","package",
+				//"-scope","global",//"package",
 				"-seed","10",
-				"-stopfirst","false",
-				"-maxgen", "100",
+				//"-stopfirst","false",
+				"-maxgen", "200",
+				//"-maxtime", "1",
 				};
 		System.out.println(Arrays.toString(args));
 		main1.main(args);

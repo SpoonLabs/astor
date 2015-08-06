@@ -133,10 +133,10 @@ public class XMLStat {
 				Element sp = root.createElement("spaces");
 				run.appendChild(sp);
 
-				Attr s3 = root.createAttribute("size");
+			/*	Attr s3 = root.createAttribute("size");
 				s3.setValue(Integer.toString(statIteration.sizeSpace.size()));
 				sp.setAttributeNode(s3);
-
+*/
 				Attr fl = root.createAttribute("fl_size");
 				fl.setValue(Integer.toString(statIteration.fl_size));
 				sp.setAttributeNode(fl);
@@ -149,7 +149,7 @@ public class XMLStat {
 				minsusp.setValue(df.format(statIteration.fl_threshold));
 				sp.setAttributeNode(minsusp);
 
-				for (StatSpaceSize l : statIteration.sizeSpace) {
+			/*	for (StatSpaceSize l : statIteration.sizeSpace) {
 					Element v = root.createElement("space");
 					sp.appendChild(v);
 					// v.setTextContent(Long.toString(l));
@@ -165,7 +165,7 @@ public class XMLStat {
 					Attr attr3 = root.createAttribute("size");
 					attr3.setValue(Integer.toString(l.size()));
 					v.setAttributeNode(attr3);
-				}
+				}*/
 
 			}
 

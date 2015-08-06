@@ -106,7 +106,7 @@ public abstract class EvolutionaryEngine {
 		int generation = 0;
 		boolean stop = false;
 
-		log.debug("FIXSPACE:" + this.getFixSpace());
+		//log.debug("FIXSPACE:" + this.getFixSpace());
 
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
@@ -138,7 +138,7 @@ public abstract class EvolutionaryEngine {
 	}
 
 	protected void showResults(int generation) {
-		log.info("\n-------");
+		log.info("\n----SUMMARY_EXECUTION---");
 		if (!this.solutions.isEmpty()) {
 			log.info("End Repair Loops: Found solution");
 			log.info("Solution stored at: " + projectFacade.getProperties().getInDir());
@@ -160,7 +160,25 @@ public abstract class EvolutionaryEngine {
 			log.info(mutatorSupporter.getSolutionData(solutions, generation));
 
 		}
+		//-----
+		FixLocationSpace space = this.getFixSpace();
+	
+			String s ="--Space: "+ space.strategy() +"\n";
+			for (Object l : space.getSpace().keySet()) {
+				int ing = 0;
+				Map r = (Map) space.getSpace().get(l);
+				//s+=l+"="+r.size()+",";
+				String ty =""; 
+				for(Object t :r.keySet()){
+					List ingredients = (List) r.get(t);
+					ing+=ingredients.size();
+					//ty+=t+":"+ingredients.size()+";";
+				}
+				s+=l+"="+ing+"|"+ty+ ",";
+			}
+		log.info(s);
 		
+		///////-------------
 		log.info("\n----stats: ");
 		log.info(currentStat);
 	}
@@ -464,7 +482,9 @@ public abstract class EvolutionaryEngine {
 		boolean oneOperationCreated = false;
 		int genMutated = 0, notmut = 0, notapplied = 0;
 		int nroGen = 0;
-
+		
+		this.currentStat.sizeSpaceOfVariant.clear();
+		
 		// For each gen of the program instance
 		List<Gen> gensToProcess = getGenList(variant);
 		for (Gen genProgInstance : gensToProcess) {
@@ -477,7 +497,7 @@ public abstract class EvolutionaryEngine {
 			if (!multiGenmutation && alreadyModified(genProgInstance, variant.getOperations(), generation))
 				continue;
 
-			this.currentStat.kindOfElementsSelected.add(genProgInstance.getCodeElement().getClass().getSimpleName());
+			this.currentStat.typeOfElementsSelectedForModifying.add(genProgInstance.getCodeElement().getClass().getSimpleName());
 			
 			genProgInstance.setProgramVariant(variant);
 			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
@@ -517,6 +537,9 @@ public abstract class EvolutionaryEngine {
 		}
 		log.debug("\n--Summary Creation: for variant " + variant + " gen mutated: " + genMutated + " , gen not mut: " + notmut
 				+ ", gen not applied  " + notapplied + "\n ");
+		
+		currentStat.saveStats();
+		
 		return oneOperationCreated;
 	}
 

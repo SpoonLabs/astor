@@ -36,7 +36,10 @@ public class LocalFixSpace extends UniformRandomFixSpace<CtElement,String, CtCod
 	public void defineSpace(List<CtSimpleType<?>> affected) {
 
 			for (CtSimpleType<?> ctSimpleType : affected) {
-				this.createFixSpaceFromAClass(ctSimpleType, ctSimpleType);
+				if(!ctSimpleType.getSimpleName().toLowerCase().startsWith("test")
+						&& !ctSimpleType.getSimpleName().toLowerCase().endsWith("test")){
+					this.createFixSpaceFromAClass(ctSimpleType, ctSimpleType);
+				}
 			}
 				
 	}
