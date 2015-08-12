@@ -72,7 +72,7 @@ public abstract class EvolutionaryEngine {
 	protected ProgramVariant originalVariant = null;
 
 	// SPACES
-	protected FixLocationSpace<CtElement/*String*/, CtCodeElement, String> fixspace = null;
+	protected FixLocationSpace<CtElement/* String */, CtCodeElement, String> fixspace = null;
 
 	protected RepairOperatorSpace repairActionSpace = null;
 
@@ -99,24 +99,23 @@ public abstract class EvolutionaryEngine {
 	 */
 	public void startEvolution() throws Exception {
 
-		log.info("\n----Starting Mutation" );
+		log.info("\n----Starting Mutation");
 		long startT = System.currentTimeMillis();
-	
-		
+
 		int generation = 0;
 		boolean stop = false;
 
-		//log.debug("FIXSPACE:" + this.getFixSpace());
+		// log.debug("FIXSPACE:" + this.getFixSpace());
 
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
-		
+
 		Date dateInit = new Date();
 
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 
-		while ( !this.variants.isEmpty() &&
-				(!stop || !ConfigurationProperties.getPropertyBool("stopfirst"))
+		while (!this.variants.isEmpty()
+				&& (!stop || !ConfigurationProperties.getPropertyBool("stopfirst"))
 				&& (generation < ConfigurationProperties.getPropertyInt("maxGeneration") && continueOperating(dateInit,
 						maxMinutes))) {
 			generation++;
@@ -131,10 +130,7 @@ public abstract class EvolutionaryEngine {
 		long endT = System.currentTimeMillis();
 		log.info("Time Evolution(ms): " + (endT - startT));
 		currentStat.timeIteraction = ((endT - startT));
-		
-		
 
-		
 	}
 
 	protected void showResults(int generation) {
@@ -160,25 +156,26 @@ public abstract class EvolutionaryEngine {
 			log.info(mutatorSupporter.getSolutionData(solutions, generation));
 
 		}
-		//-----
-		FixLocationSpace space = this.getFixSpace();
-	
-			String s ="--Space: "+ space.strategy() +"\n";
+		// -----
+		if (this.getFixSpace() != null) {
+			FixLocationSpace space = this.getFixSpace();
+
+			String s = "--Space: " + space.strategy() + "\n";
 			for (Object l : space.getSpace().keySet()) {
 				int ing = 0;
 				Map r = (Map) space.getSpace().get(l);
-				//s+=l+"="+r.size()+",";
-				String ty =""; 
-				for(Object t :r.keySet()){
+				// s+=l+"="+r.size()+",";
+				String ty = "";
+				for (Object t : r.keySet()) {
 					List ingredients = (List) r.get(t);
-					ing+=ingredients.size();
-					//ty+=t+":"+ingredients.size()+";";
+					ing += ingredients.size();
+					// ty+=t+":"+ingredients.size()+";";
 				}
-				s+=l+"="+ing+"|"+ty+ ",";
+				s += l + "=" + ing + "|" + ty + ",";
 			}
-		log.info(s);
-		
-		///////-------------
+			log.info(s);
+		}
+		// /////-------------
 		log.info("\n----stats: ");
 		log.info(currentStat);
 	}
@@ -216,10 +213,9 @@ public abstract class EvolutionaryEngine {
 		List<ProgramVariant> temporalInstances = new ArrayList<ProgramVariant>();
 
 		currentStat.numberGenerations++;
-		
+
 		for (ProgramVariant parentVariant : variants) {
 
-						
 			log.debug("\n**\n*-Parent Variant: " + parentVariant);
 
 			this.saveOriginalVariant(parentVariant);
@@ -232,10 +228,10 @@ public abstract class EvolutionaryEngine {
 
 			boolean solution = processCreatedVariant(newVariant, generation);
 
-			//if (newVariant.getCompilation().compiles()) {
-				temporalInstances.add(newVariant);
-			//}
-				
+			// if (newVariant.getCompilation().compiles()) {
+			temporalInstances.add(newVariant);
+			// }
+
 			if (solution) {
 				foundSolution = true;
 			}
@@ -256,33 +252,35 @@ public abstract class EvolutionaryEngine {
 	public void prepareNextGeneration(List<ProgramVariant> temporalInstances, int generation) {
 		// After analyze all variant
 		// New population creation:
-		//show all and search solutions:
+		// show all and search solutions:
 		List<ProgramVariant> solutionsFromGeneration = new ArrayList<ProgramVariant>();
 		List<ProgramVariant> currentVariants = new ArrayList<>();
 
-		//We filter the solution from the rest
+		// We filter the solution from the rest
 		String solutionId = "";
 		for (ProgramVariant programVariant : temporalInstances) {
 			if (programVariant.isSolution()) {
 				solutionsFromGeneration.add(programVariant);
 				solutionId += programVariant.getId() + "(SOLUTION)(f=" + programVariant.getFitness() + ")" + ", ";
-			}else{
+			} else {
 				currentVariants.add(programVariant);
 			}
 		}
 		log.debug("\nEnd analysis generation - \nSolutions found:" + "--> (" + solutionId + ")");
 
 		this.solutions.addAll(solutionsFromGeneration);
-		
-		//We add the case that we do not have variants because all are solution, be we want continue searching new ones
-		if(currentVariants.isEmpty() && !solutionsFromGeneration.isEmpty() && !ConfigurationProperties.getPropertyBool("stopfirst")){
-			currentVariants.addAll(solutionsFromGeneration);
-		} 
-		
-		variants = populationControler.selectProgramVariantsForNextGeneration(variants, currentVariants,
-				 ConfigurationProperties.getPropertyInt("population"));
 
-		if (ConfigurationProperties.getProperty("reintroduce").contains("original")){
+		// We add the case that we do not have variants because all are
+		// solution, be we want continue searching new ones
+		if (currentVariants.isEmpty() && !solutionsFromGeneration.isEmpty()
+				&& !ConfigurationProperties.getPropertyBool("stopfirst")) {
+			currentVariants.addAll(solutionsFromGeneration);
+		}
+
+		variants = populationControler.selectProgramVariantsForNextGeneration(variants, currentVariants,
+				ConfigurationProperties.getPropertyInt("population"));
+
+		if (ConfigurationProperties.getProperty("reintroduce").contains("original")) {
 			// Create a new variant from the original parent
 			ProgramVariant parentNew = this.variantFactory.createProgramVariantFromAnother(originalVariant, generation);
 			parentNew.getOperations().clear();
@@ -376,7 +374,14 @@ public abstract class EvolutionaryEngine {
 				return true;
 			}
 		} else {
-			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: " /*+ compilation.getErrorList()*/);
+			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: " /*
+																							 * +
+																							 * compilation
+																							 * .
+																							 * getErrorList
+																							 * (
+																							 * )
+																							 */);
 			currentStat.numberOfFailingCompilation++;
 			currentStat.setNotCompiles(programVariant.getId());
 			programVariant.setFitness(this.populationControler.getMaxFitnessValue());
@@ -482,44 +487,44 @@ public abstract class EvolutionaryEngine {
 		boolean oneOperationCreated = false;
 		int genMutated = 0, notmut = 0, notapplied = 0;
 		int nroGen = 0;
-		
+
 		this.currentStat.sizeSpaceOfVariant.clear();
-		
+
 		// For each gen of the program instance
 		List<Gen> gensToProcess = getGenList(variant);
 		for (Gen genProgInstance : gensToProcess) {
-			//tp refactor
+			// tp refactor
 			genProgInstance.identified = variant.getGenList().indexOf(genProgInstance);
-			log.debug("---analyzing gen position: "+genProgInstance.identified );
-			
-			//A gen can be modified several time in the evolution
+			log.debug("---analyzing gen position: " + genProgInstance.identified);
+
+			// A gen can be modified several time in the evolution
 			boolean multiGenmutation = ConfigurationProperties.getPropertyBool("multigenmodif");
 			if (!multiGenmutation && alreadyModified(genProgInstance, variant.getOperations(), generation))
 				continue;
 
-			this.currentStat.typeOfElementsSelectedForModifying.add(genProgInstance.getCodeElement().getClass().getSimpleName());
-			
+			this.currentStat.typeOfElementsSelectedForModifying.add(genProgInstance.getCodeElement().getClass()
+					.getSimpleName());
+
 			genProgInstance.setProgramVariant(variant);
 			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
-		
+
 			if (operationInGen != null) {
 
 				operationInGen.setGen(genProgInstance);
-				
-				if(ConfigurationProperties.getPropertyBool("uniqueoptogen") 
-						&& alreadyApplied(operationInGen)){
-					log.debug("---Operation already applied to the gen "+operationInGen);
+
+				if (ConfigurationProperties.getPropertyBool("uniqueoptogen") && alreadyApplied(operationInGen)) {
+					log.debug("---Operation already applied to the gen " + operationInGen);
 					currentStat.setAlreadyApplied(variant.getId());
 					continue;
 				}
-		
-				log.debug("operation "+operationInGen);
+
+				log.debug("operation " + operationInGen);
 				currentStat.numberOfAppliedOp++;
 				variant.putGenOperation(generation, operationInGen);
-				
+
 				oneOperationCreated = true;
 				genMutated++;
-				//We analyze all gens
+				// We analyze all gens
 				if (!ConfigurationProperties.getPropertyBool("allgens")) {
 					break;
 				}
@@ -531,24 +536,24 @@ public abstract class EvolutionaryEngine {
 				notmut++;
 			}
 		}
-		
+
 		if (oneOperationCreated && !ConfigurationProperties.getPropertyBool("resetoperations")) {
 			updateVariantGenList(variant, generation);
 		}
-		log.debug("\n--Summary Creation: for variant " + variant + " gen mutated: " + genMutated + " , gen not mut: " + notmut
-				+ ", gen not applied  " + notapplied + "\n ");
-		
+		log.debug("\n--Summary Creation: for variant " + variant + " gen mutated: " + genMutated + " , gen not mut: "
+				+ notmut + ", gen not applied  " + notapplied + "\n ");
+
 		currentStat.saveStats();
-		
+
 		return oneOperationCreated;
 	}
 
-	Map<Gen,List<GenOperationInstance>> operationGenerated = new HashedMap();
-	
+	Map<Gen, List<GenOperationInstance>> operationGenerated = new HashedMap();
+
 	private boolean alreadyApplied(GenOperationInstance operationNew) {
-		
+
 		List<GenOperationInstance> ops = operationGenerated.get(operationNew.getGen());
-		if(ops == null){
+		if (ops == null) {
 			ops = new ArrayList<>();
 			operationGenerated.put(operationNew.getGen(), ops);
 			ops.add(operationNew);
@@ -583,7 +588,7 @@ public abstract class EvolutionaryEngine {
 
 	/**
 	 * 
-	 * @param variant 
+	 * @param variant
 	 * @param genList
 	 * @return
 	 */
@@ -602,12 +607,12 @@ public abstract class EvolutionaryEngine {
 			Collections.shuffle(shuffList);
 			return shuffList;
 		}
-		
-		if("sequence".equals(mode)){
+
+		if ("sequence".equals(mode)) {
 			int i = variant.getLastGenAnalyzed();
-			if(i< genList.size()){
-				variant.setLastGenAnalyzed(i+1);	
-				return genList.subList(i,i+1);
+			if (i < genList.size()) {
+				variant.setLastGenAnalyzed(i + 1);
+				return genList.subList(i, i + 1);
 			}
 			return Collections.EMPTY_LIST;
 		}
@@ -759,7 +764,7 @@ public abstract class EvolutionaryEngine {
 
 	protected boolean validateInstance(ProgramVariant variant) {
 		ProgramVariantValidationResult result;
-		
+
 		if ((result = programValidator.validate(variant, projectFacade)) != null) {
 			double fitness = this.populationControler.getFitnessValue(variant, result);
 			variant.setFitness(fitness);
