@@ -791,12 +791,47 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-javacompliancelevel", "7",
 				"-flthreshold","0.5",
 				"-out",out.getAbsolutePath(),
+				"-scope","package",
+			//	"-maxsuspcandidates","2",
+				"-seed","10",
+				//"-stopfirst","false",
+				"-maxgen", "200",
+				};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+		
+		validatePatchExistence(out+File.separator+"MainjGenProg-math_70/",2);
+		
+	}
+	
+	/**
+	 * JDT problem
+	 * @throws Exception
+	 */
+	@Test
+	public void testMath20() throws Exception {
+		MainjGenProg main1 = new MainjGenProg();
+		String dep = "/home/matias/.m2/repository/junit/junit/4.10/junit-4.10.jar";
+		File out = 	new File("./outputMutation/");
+		String[] args = new String[] {
+				"-dependencies", dep,
+				"-mode","statement",
+				"-failing", "org.apache.commons.math3.optimization.direct.CMAESOptimizerTest", //math 6"org.apache.commons.math.analysis.solvers.RegulaFalsiSolverTest", 
+				"-location",new File("./examples/math_20").getAbsolutePath(),							
+				"-package", "org.apache.commons",
+				"-jvm4testexecution","/home/matias/develop/jdk1.7.0_71/bin",
+				"-srcjavafolder", "/src/main/java/",
+				"-srctestfolder", "/src/test/java/", 
+				"-binjavafolder", "/target/classes", 
+				"-bintestfolder","/target/test-classes",
+				"-javacompliancelevel", "7",
+				"-flthreshold","0.5",
+				"-out",out.getAbsolutePath(),
 				//NEW ARGUMENT FOR TEST: package scope
 				//"-scope","global",//"package",
 				"-seed","10",
 				//"-stopfirst","false",
 				"-maxgen", "200",
-				//"-maxtime", "1",
 				};
 		System.out.println(Arrays.toString(args));
 		main1.main(args);

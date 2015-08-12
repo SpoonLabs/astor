@@ -70,6 +70,7 @@ public abstract class AbstractMain {
 
 		options.addOption("validation", true, "(Optional) type of validation: process|thread|local ");
 		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default:"+ConfigurationProperties.properties.getProperty("flthreshold"));
+		
 		options.addOption("maxsuspcandidates", true, "(Optional) Maximun number of suspicious statement considered. Default: "+ConfigurationProperties.properties.getProperty("maxsuspcandidates"));
 
 		options.addOption("reintroduce", true,

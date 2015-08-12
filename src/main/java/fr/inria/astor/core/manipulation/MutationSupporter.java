@@ -280,7 +280,7 @@ public class MutationSupporter {
 					Attr attr_gen = root.createAttribute("generation");
 					attr_gen.setValue(Integer.toString(i));
 					op.setAttributeNode(attr_gen);
-					
+
 					Attr attr_type = root.createAttribute("type");
 					attr_type.setValue(genOperationInstance.getOperationApplied().toString());
 					op.setAttributeNode(attr_type);
@@ -291,15 +291,15 @@ public class MutationSupporter {
 
 					Element mod = root.createElement("modified");
 					op.appendChild(mod);
-									
-					if (genOperationInstance.getModified() != null){
-						mod.setTextContent( genOperationInstance.getModified().toString());
-						Attr attr_ing = root.createAttribute("scope");
-						attr_ing.setValue(genOperationInstance.getIngredientScope().toString());
-						mod.setAttributeNode(attr_ing);
-						
-					}
-					else {
+
+					if (genOperationInstance.getModified() != null) {
+						mod.setTextContent(genOperationInstance.getModified().toString());
+						if (genOperationInstance.getIngredientScope() != null) {
+							Attr attr_ing = root.createAttribute("scope");
+							attr_ing.setValue(genOperationInstance.getIngredientScope().toString());
+							mod.setAttributeNode(attr_ing);
+						}
+					} else {
 						mod.setTextContent(genOperationInstance.getOriginal().toString());
 					}
 
@@ -338,8 +338,7 @@ public class MutationSupporter {
 
 				for (GenOperationInstance genOperationInstance : genOperationInstances) {
 
-					line += "\noperation: " +genOperationInstance.getOperationApplied().toString()
-							+ "\nlocation= "
+					line += "\noperation: " + genOperationInstance.getOperationApplied().toString() + "\nlocation= "
 							+ genOperationInstance.getGen().getCtClass().getQualifiedName();
 
 					if (genOperationInstance.getGen() instanceof GenSuspicious) {
@@ -348,20 +347,22 @@ public class MutationSupporter {
 					}
 
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
-					line += "\nfixed statement= " ;
+					line += "\nfixed statement= ";
 					if (genOperationInstance.getModified() != null)
-						line +=  genOperationInstance.getModified().toString();
+						line += genOperationInstance.getModified().toString();
 					else {
 						line += genOperationInstance.getOriginal().toString();
 					}
 
 					line += "\ngeneration= " + Integer.toString(i);
-					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope()!=null)? genOperationInstance.getIngredientScope():"-");
+					line += "\ningredientScope= "
+							+ ((genOperationInstance.getIngredientScope() != null) ? genOperationInstance
+									.getIngredientScope() : "-");
 					line += "\n ";
 
 				}
 			}
-		
+
 		}
 		return line;
 	}

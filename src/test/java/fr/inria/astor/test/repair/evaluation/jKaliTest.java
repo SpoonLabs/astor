@@ -5,13 +5,15 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.MainjGenProg;
 /**
  * Execution of multiples kali scenarios.
  * @author Matias Martinez matias.martinez@inria.fr
  *
  */
-public class jKaliTest {
+public class jKaliTest extends BaseEvolutionaryTest{
 
 	protected void testSeedExampleKali(String projectpath) throws Exception {
 		MainjGenProg main1 = new MainjGenProg();
@@ -37,20 +39,38 @@ public class jKaliTest {
 	@Test
 	public void testSeedExampleKaliRemove() throws Exception{
 		this.testSeedExampleKali("./examples/testKaliRemoveStatement");
+		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"MainjGenProg-testKaliRemoveStatement/",1);
 	}
 	@Test
 	public void testSeedExampleKaliIfFalse() throws Exception{
 		this.testSeedExampleKali("./examples/testKaliIfFalse");
+		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"MainjGenProg-testKaliIfFalse/",1);
+		
 	}
 	
 	@Test
 	public void testSeedExampleKaliAddReturnInt() throws Exception{
 		this.testSeedExampleKali("./examples/testKaliAddReturnPrimitive");
+		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"MainjGenProg-testKaliAddReturnPrimitive/",6);
+		
 	}
 	
 	@Test
 	public void testSeedExampleKaliAddReturnVoid() throws Exception{
 		this.testSeedExampleKali("./examples/testKaliAddReturnVoid");
+		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"MainjGenProg-testKaliAddReturnVoid/",3);
+		
+	}
+	
+	
+	@Override
+	public AbstractMain createMain() {
+			return null;
+	}
+	@Override
+	public void generic(String location, String folder, String regression, String failing, String dependenciespath,
+			String packageToInstrument, double thfl) throws Exception {
+		
 	}
 	
 	
