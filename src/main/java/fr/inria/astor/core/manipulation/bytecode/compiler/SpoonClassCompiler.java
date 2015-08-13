@@ -113,7 +113,7 @@ public class SpoonClassCompiler {
 			e.printStackTrace();
 			List<String> errors = new ArrayList<String>();
 			errors.add(e.getMessage());
-			CompilationResult rbc = new CompilationResult(null, true, errors);
+			CompilationResult rbc = new CompilationResult(null,errors);
 			return rbc;
 		}
 		List<String> cps = new ArrayList<>();
