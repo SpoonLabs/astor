@@ -374,14 +374,8 @@ public abstract class EvolutionaryEngine {
 				return true;
 			}
 		} else {
-			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: " /*
-																							 * +
-																							 * compilation
-																							 * .
-																							 * getErrorList
-																							 * (
-																							 * )
-																							 */);
+			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "
+					+ compilation.getErrorList());
 			currentStat.numberOfFailingCompilation++;
 			currentStat.setNotCompiles(programVariant.getId());
 			programVariant.setFitness(this.populationControler.getMaxFitnessValue());
@@ -636,16 +630,22 @@ public abstract class EvolutionaryEngine {
 				we.add(w);
 			}
 
-			for (WeightCtElement weightCtElement : we) {
-				weightCtElement.weight = weightCtElement.weight / sum;
+			if (sum != 0) {
+
+				for (WeightCtElement weightCtElement : we) {
+					weightCtElement.weight = weightCtElement.weight / sum;
+				}
+
+				WeightCtElement.feedAccumulative(we);
+				WeightCtElement selected = WeightCtElement.selectElementWeightBalanced(we);
+
+				Gen selectedg = (Gen) selected.element;
+				remaining.remove(selectedg);
+				solution.add(selectedg);
+			} else {
+				solution.addAll(remaining);
+				break;
 			}
-
-			WeightCtElement.feedAccumulative(we);
-			WeightCtElement selected = WeightCtElement.selectElementWeightBalanced(we);
-
-			Gen selectedg = (Gen) selected.element;
-			remaining.remove(selectedg);
-			solution.add(selectedg);
 		}
 		return solution;
 
