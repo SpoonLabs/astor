@@ -1,9 +1,12 @@
 package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtStatementTransformator;
@@ -29,7 +32,9 @@ public class SingleStatementFixSpaceProcessor  extends AbstractFixSpaceProcessor
 	public void process(CtStatement element) {
 		if(!(element instanceof CtBlock  || element instanceof CtClass 
 				|| element instanceof CtMethod || element instanceof CtTry || element instanceof CtCatch)
-				&& (element.getParent() instanceof CtBlock)){
+				&& //We check parents
+				((element.getParent() instanceof CtBlock) || (element.getParent() instanceof CtCase)
+						|| (element.getParent() instanceof CtIf) || (element.getParent() instanceof CtWhile))){
 			add(element);
 		}
 	}
