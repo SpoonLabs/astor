@@ -80,7 +80,7 @@ public class JUnitExecutorProcess {
 			log.debug("Execution time "+((t_end-t_start)/1000)+ " seconds");
 			
 			return tr;
-		} catch (IllegalThreadStateException|IOException | InterruptedException ex) {
+		} catch (IllegalArgumentException|IOException | InterruptedException ex) {
 			log.error("The validation thread continues working " + ex.getMessage());
 			if (p != null)
 				p.destroy();
