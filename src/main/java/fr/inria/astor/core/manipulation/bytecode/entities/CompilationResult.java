@@ -10,14 +10,11 @@ import java.util.Map;
 public class CompilationResult {
 
 	private Map<String, byte[]> byteCodes;
-	
-	private boolean errors= false;
-	
+
 	private List<String> errorList = null;
 	
-	public CompilationResult(Map<String, byte[]> bytecodes2, boolean errors,List<String> errorList) {
+	public CompilationResult(Map<String, byte[]> bytecodes2,List<String> errorList) {
 		byteCodes = bytecodes2;
-		this.errors = errors;
 		this.errorList = errorList; 
 	}
 
@@ -29,18 +26,10 @@ public class CompilationResult {
 		this.byteCodes = byteCodes;
 	}
 
-	public boolean isErrors() {
-		return errors;
-	}
-
 	public boolean compiles() {
-		return !errors;
+		return errorList == null || errorList.isEmpty();
 	}
 	
-	public void setErrors(boolean errors) {
-		this.errors = errors;
-	}
-
 	@Override
 	public String toString() {
 		return "CompilationResult: byteCodes=" + byteCodes.size()+" errors (" + errorList.size()+ ") "+errorList + "]";
@@ -54,7 +43,4 @@ public class CompilationResult {
 		this.errorList = errorList;
 	}
 
-	
-	
-	
 }
