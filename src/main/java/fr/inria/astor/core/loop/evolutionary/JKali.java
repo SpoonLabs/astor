@@ -52,8 +52,10 @@ public class JKali extends JGenProg {
 
 				for (GenOperationInstance genOperation : genOperations) {
 
-					log.info("--> " + genOperation);
-															
+					try{
+						log.info("--> " + genOperation);
+					}catch(Exception e){}
+					
 					// We validate the variant after applying the operator
 					ProgramVariant solutionVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
 							generation);
@@ -123,7 +125,7 @@ public class JKali extends JGenProg {
 
 		CtIf clonedIf = this.mutatorSupporter.getFactory().Core().clone(ifElement);
 		CtExpression ifExpression = this.mutatorSupporter.getFactory().Code()
-				.createCodeSnippetExpression(Boolean.toString(thenBranch)).compile();
+				.createCodeSnippetExpression(Boolean.toString(thenBranch));
 
 		clonedIf.setCondition(ifExpression);
 
@@ -140,8 +142,8 @@ public class JKali extends JGenProg {
 		}
 		// We create the "if(true)"{}
 		CtIf ifReturn = this.mutatorSupporter.getFactory().Core().createIf();
-		CtExpression ifTrueExpression = this.mutatorSupporter.getFactory().Code().createCodeSnippetExpression("true")
-				.compile();
+		CtExpression ifTrueExpression = this.mutatorSupporter.getFactory().Code()
+				.createCodeSnippetExpression("true");
 		ifReturn.setCondition(ifTrueExpression);
 
 		// Now we create the return statement
@@ -159,7 +161,7 @@ public class JKali extends JGenProg {
 				codeExpression = "null";
 			}
 			CtExpression returnExpression = this.mutatorSupporter.getFactory().Code()
-					.createCodeSnippetExpression(codeExpression).compile();
+					.createCodeSnippetExpression(codeExpression);
 			returnStatement = this.mutatorSupporter.getFactory().Core().createReturn();
 			returnStatement.setReturnedExpression(returnExpression);
 		}
