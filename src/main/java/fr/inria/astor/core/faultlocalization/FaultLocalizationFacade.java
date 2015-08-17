@@ -63,22 +63,29 @@ public class FaultLocalizationFacade {
 			gz.addClassNotToInstrument(test);//new
 		}
 		gz.run();
-		
+		List<String> alltest = new ArrayList<>();
+		String casesTest = "";
 		int[] sum= new int[2];
 		for( TestResult tr : gz.getTestResults()){
 			sum[0]++;
 			//logger.debug("Test "+tr.getName()+", success: "+ tr.wasSuccessful());
 			sum[1]+=tr.wasSuccessful()?0:1;
+			String testName = tr.getName().split("#")[0];
 			if(!tr.wasSuccessful()){
 				logger.info("Test failt: "+tr.getName());
 			//	logger.info(tr.getTrace());
-				failingTestCases.add(tr.getName().split("#")[0]);
+				failingTestCases.add(testName);
 			}
 			if(tr.getTrace() != null){
 				//logger.info(tr.getTrace());
 			}
-					
+			if(!alltest.contains(testName)){
+				alltest.add(testName);
+				casesTest+=testName+";";
+			}		
 		}
+		
+		ConfigurationProperties.properties.setProperty("testcasesregression",casesTest);
 		logger.info("Gzoltar Test Result Total:"+sum[0]+", fails: "+sum[1] + ", GZoltar suspicious "+gz.getSuspiciousStatements().size());
 		
 		DecimalFormat df = new DecimalFormat( "#.###" );

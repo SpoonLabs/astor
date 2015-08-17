@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.junit.runner.Result;
 import org.junit.runners.model.InitializationError;
 
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ModifierKind;
@@ -168,11 +169,21 @@ public class ProgramVariantValidator {
 		return failing;
 	}
 
+	
+	public List<String> retrieveRegressionTestCases() {
+		String casesTest = ConfigurationProperties.properties.getProperty("testcasesregression");
+		String[] cases = casesTest.split(";");
+		return 	Arrays.asList(cases);
+		
+	
+	}
+	
 	/**
 	 * Feed the list of test cases according to the definition POM/build.xml
 	 * @return 
 	 */
-	public List<String> retrieveRegressionTestCases() {
+	@Deprecated
+	public List<String> retrieveRegressionTestCasesOLD() {
 			List<String> regressionCases = new ArrayList<String>();
 			List<String> ignoreTestcases = retriveIgnoreTestCases();
 			regressionCases = new ArrayList<String>();
@@ -184,6 +195,7 @@ public class ProgramVariantValidator {
 						.endsWith("TestPermutations"))
 						&& (!type.getModifiers().contains(ModifierKind.ABSTRACT))
 						&& !(type instanceof CtInterface) 
+					//	&& isValidConstructor(type)
 						&& !(isIgnoredTestCase(name, ignoreTestcases)))
 				{
 					regressionCases.add(type.getQualifiedName());
@@ -194,6 +206,15 @@ public class ProgramVariantValidator {
 			return regressionCases;
 	}
 	
+	@Deprecated
+	private boolean isValidConstructor(CtSimpleType<?> type) {
+		if(type instanceof CtClass<?>) {
+			return ((CtClass<?>)type).getConstructor() != null ||
+			((CtClass<?>)type).getConstructor(type.getFactory().Class().createReference(String.class)) != null;
+		}
+		return false;
+	}
+
 	private List<String> retriveIgnoreTestCases() {
 		String list = ConfigurationProperties.getProperty("ignoredTestCases");
 		String[] cases = list.split(";");
