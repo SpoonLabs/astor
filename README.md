@@ -32,21 +32,35 @@ Each variant folder contains the files that Astor have analyzed (and eventually 
 
 
 **jGenProg**
+
 We present an command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help. Default values are stored in file "configuration.properties".
 
 java  -cp <location>/astor.jar fr.inria.main.evolution.MainjGenProg 
+
 -mode statement 
+
 -location <location of the project to repair> 
+
 -dependencies <folder with the dependencies of the application to repair> 
+
 -failing <failing test case>: -package <package to manipulate> 
+
 -jvm4testexecution <jdklocation>/java-1.7.0/bin/ 
+
 -javacompliancelevel <compliance level of source code e.g. 5> 
+
 -stopfirst true 
+
 -flthreshold <minimun suspicious value for fault localization e.g. 0.1>
+
 -srcjavafolder <source code folder>
+
 -srctestfolder <test folder> 
+
 -binjavafolder <class folder> 
+
 -bintestfolder <test class folder> 
+
 
 
 **jKali**
@@ -58,8 +72,11 @@ java  -cp astor.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove 
 **Bug Example**
 
 The distribution contains a version of Apache commons Math with a real defect (reported in issue 280 https://issues.apache.org/jira/browse/MATH-280).
+
 To run it using jGenProg, type: java fr.inria.main.evolution.MainjGenProg -bug280
+
 or 
+
 java -cp <jar_location>/astor-x.y.z-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -bug280
 
 
