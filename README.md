@@ -35,31 +35,31 @@ Each variant folder contains the files that Astor have analyzed (and eventually 
 
 We present an command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help. Default values are stored in file "configuration.properties".
 
-java  -cp <location>/astor.jar fr.inria.main.evolution.MainjGenProg 
+java  -cp "location"/astor.jar fr.inria.main.evolution.MainjGenProg 
 
 -mode statement 
 
--location <location of the project to repair> 
+-location "location of the project to repair" 
 
--dependencies <folder with the dependencies of the application to repair> 
+-dependencies "folder with the dependencies of the application to repair" 
 
--failing <failing test case>: -package <package to manipulate> 
+-failing "failing test case>: -package <package to manipulate"
 
--jvm4testexecution <jdklocation>/java-1.7.0/bin/ 
+-jvm4testexecution "jdklocation"/java-1.7.0/bin/ 
 
--javacompliancelevel <compliance level of source code e.g. 5> 
+-javacompliancelevel "compliance level of source code e.g. 5"
 
 -stopfirst true 
 
--flthreshold <minimun suspicious value for fault localization e.g. 0.1>
+-flthreshold "minimun suspicious value for fault localization e.g. 0.1"
 
--srcjavafolder <source code folder>
+-srcjavafolder "source code folder"
 
--srctestfolder <test folder> 
+-srctestfolder "test folder"
 
--binjavafolder <class folder> 
+-binjavafolder "class folder" 
 
--bintestfolder <test class folder> 
+-bintestfolder "test class folder" 
 
 
 
@@ -77,7 +77,7 @@ To run it using jGenProg, type: java fr.inria.main.evolution.MainjGenProg -bug28
 
 or 
 
-java -cp <jar_location>/astor-x.y.z-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -bug280
+java -cp "jar_location"/astor-x.y.z-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -bug280
 
 
 Contacts
