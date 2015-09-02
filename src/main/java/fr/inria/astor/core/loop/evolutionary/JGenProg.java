@@ -77,7 +77,6 @@ public class JGenProg extends EvolutionaryEngine {
 		if (getFixSpace() != null) {
 			List<?> classesForIngredients = retrieveClassesForIngredients();
 			getFixSpace().defineSpace(classesForIngredients);
-			//log.info(getFixSpace());
 		}
 
 		boolean validInstance = validateInstance(originalVariant);

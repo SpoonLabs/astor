@@ -53,9 +53,10 @@ public class JKali extends JGenProg {
 				for (GenOperationInstance genOperation : genOperations) {
 
 					try{
+						log.info("gen "+((GenSuspicious)gen).getSuspicious());
 						log.info("--> " + genOperation);
 					}catch(Exception e){}
-					
+																		
 					// We validate the variant after applying the operator
 					ProgramVariant solutionVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
 							generation);

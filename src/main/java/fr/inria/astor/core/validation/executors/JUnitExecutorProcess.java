@@ -62,8 +62,10 @@ public class JUnitExecutorProcess {
 			ProcessBuilder pb = new ProcessBuilder(command.toArray(new String[command.size()]));
 			pb.redirectOutput();
 			pb.redirectErrorStream(true);
+			pb.directory(new File((ConfigurationProperties.getProperty("location"))));
 			long t_start = System.currentTimeMillis();
 			p = pb.start();
+		
 			
 			String cm2 = command.toString().replace("[", "").replace("]", "").replace(",", " ");
 			log.debug("Executing process: \n"+cm2);

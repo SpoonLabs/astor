@@ -20,130 +20,135 @@ import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 
 /**
- * Facade of Fault Localization techniques like GZoltar or own implementations (package {@link org.inria.sacha.faultlocalization}.).
- * @author Matias Martinez,  matias.martinez@inria.fr
+ * Facade of Fault Localization techniques like GZoltar or own implementations
+ * (package {@link org.inria.sacha.faultlocalization}.).
+ * 
+ * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
 public class FaultLocalizationFacade {
 
-	
 	Logger logger = Logger.getLogger(FaultLocalizationFacade.class.getName());
 
 	List<SuspiciousCode> candidates = new ArrayList<SuspiciousCode>();
 	List<String> failingTestCases = new ArrayList<String>();
-	
+
 	static boolean EXCLUDE_TEST = true;
-		
-	public List<SuspiciousCode> searchGZoltar(String location, List<String> testsToExecute,List<String> toInstrument, HashSet<String> cp, String srcFolder) throws FileNotFoundException, IOException {
+
+	public List<SuspiciousCode> searchGZoltar(String location, List<String> testsToExecute, List<String> toInstrument,
+			HashSet<String> cp, String srcFolder) throws FileNotFoundException, IOException {
 		candidates.clear();
 		failingTestCases.clear();
 		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");
-		logger.info("Gzoltar fault localization: min susp value parameter: "+thr);/*TransformationProperties.THRESHOLD_SUSPECTNESS*/
+		logger.info("Gzoltar fault localization: min susp value parameter: " + thr);
 		// 1. Instantiate GZoltar
 		// here you need to specify the working directory where the tests will
 		// be run. Can be the full or relative path.
-		//Example: GZoltar gz = new GZoltar("C:\\Personal\\develop\\workspaceEvolution\\testProject\\target\\classes");
+		// Example: GZoltar gz = new
+		// GZoltar("C:\\Personal\\develop\\workspaceEvolution\\testProject\\target\\classes");
 
-		//logger.info(new File(location).getAbsolutePath());
-		GZoltar gz = new GZoltar(new File(location).getAbsolutePath());
-		
+		// logger.info(new File(location).getAbsolutePath());
+		GZoltar gz = new GZoltar(new File(ConfigurationProperties.getProperty("location")).getAbsolutePath());
+
 		// 2. Add Package/Class names to instrument
 		// 3. Add Package/Test Case/Test Suite names to execute
-		//Example: gz.addPackageToInstrument("org.test1.Person");
-		for(String to: toInstrument){
+		// Example: gz.addPackageToInstrument("org.test1.Person");
+		for (String to : toInstrument) {
 			gz.addPackageToInstrument(to);
 		}
-		if(cp!=null || !cp.isEmpty()){
-			logger.info("-gz-Current classpath: "+System.getProperty("java.class.path"));
-			logger.info("-gz-Adding classpath: "+cp);
+		if (cp != null || !cp.isEmpty()) {
+			logger.info("-gz-Current classpath: " + System.getProperty("java.class.path"));
+			logger.info("-gz-Adding classpath: " + cp);
 			gz.getClasspaths().addAll(cp);
 		}
 		for (String test : testsToExecute) {
 			gz.addTestToExecute(test);
-			gz.addClassNotToInstrument(test);//new
+			gz.addClassNotToInstrument(test);// new
 		}
+		gz.addTestPackageNotToExecute("junit.framework");
+		gz.addPackageNotToInstrument("junit.framework");
 		gz.run();
 		List<String> alltest = new ArrayList<>();
 		String casesTest = "";
-		int[] sum= new int[2];
-		for( TestResult tr : gz.getTestResults()){
-			sum[0]++;
-			//logger.debug("Test "+tr.getName()+", success: "+ tr.wasSuccessful());
-			sum[1]+=tr.wasSuccessful()?0:1;
+		int[] sum = new int[2];
+		for (TestResult tr : gz.getTestResults()) {
 			String testName = tr.getName().split("#")[0];
-			if(!tr.wasSuccessful()){
-				logger.info("Test failt: "+tr.getName());
-			//	logger.info(tr.getTrace());
+			if (testName.startsWith("junit")) {
+				continue;
+			}
+			sum[0]++;
+			// logger.debug("Test "+tr.getName()+", success: "+
+			// tr.wasSuccessful());
+			sum[1] += tr.wasSuccessful() ? 0 : 1;
+			if (!tr.wasSuccessful()) {
+				logger.info("Test failt: " + tr.getName());
+				// logger.info(tr.getTrace());
 				failingTestCases.add(testName);
 			}
-			if(tr.getTrace() != null){
-				//logger.info(tr.getTrace());
+			if (tr.getTrace() != null) {
+				// logger.info(tr.getTrace());
 			}
-			if(!alltest.contains(testName)){
+			if (!alltest.contains(testName)) {
 				alltest.add(testName);
-				casesTest+=testName+";";
-			}		
+				casesTest += testName + ";";
+			}
 		}
-		
-		ConfigurationProperties.properties.setProperty("testcasesregression",casesTest);
-		logger.info("Gzoltar Test Result Total:"+sum[0]+", fails: "+sum[1] + ", GZoltar suspicious "+gz.getSuspiciousStatements().size());
-		
-		DecimalFormat df = new DecimalFormat( "#.###" );
+
+		ConfigurationProperties.properties.setProperty("testcasesregression", casesTest);
+		logger.info("Gzoltar Test Result Total:" + sum[0] + ", fails: " + sum[1] + ", GZoltar suspicious "
+				+ gz.getSuspiciousStatements().size());
+
+		DecimalFormat df = new DecimalFormat("#.###");
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
 		for (Statement s : gz.getSuspiciousStatements()) {
 			String compName = s.getMethod().getParent().getLabel();
-			
-			if (s.getSuspiciousness() >= thr 
-					&& isSource(compName, srcFolder)
-					) {
+
+			if (s.getSuspiciousness() >= thr && isSource(compName, srcFolder)) {
 				logger.debug("Suspicious: line " + compName + " l: " + s.getLineNumber() + ", susp "
 						+ df.format(s.getSuspiciousness()));
-				SuspiciousCode c = new SuspiciousCode(compName,s.getMethod().toString(), s.getLineNumber(), s.getSuspiciousness());
+				SuspiciousCode c = new SuspiciousCode(compName, s.getMethod().toString(), s.getLineNumber(),
+						s.getSuspiciousness());
 				candidates.add(c);
 				
 			}
-			
+
 		}
-		int max = (candidates.size()<maxSuspCandidates)?candidates.size():maxSuspCandidates;
-		
+		int max = (candidates.size() < maxSuspCandidates) ? candidates.size() : maxSuspCandidates;
+
 		Collections.sort(candidates, new ComparatorCandidates());
-		
-		logger.info("Gzoltar found: "+candidates.size()+" with susp > "+thr+", we consider: "+max);
-		
+
+		logger.info("Gzoltar found: " + candidates.size() + " with susp > " + thr + ", we consider: " + max);
+
 		candidates = candidates.subList(0, max);
-		
-	
+
 		return candidates;
 	}
 
-	protected boolean isSource(String compName , String srcFolder){
+	protected boolean isSource(String compName, String srcFolder) {
 		String clRoot = compName.split("\\$")[0];
 		String[] segmentationName = clRoot.split("\\.");
-		String simpleClassName = segmentationName[segmentationName.length-1];
-		
-		//File root = new File(srcFolder+"/"+clRoot.replace(".", "/")+".java");
-		
+		String simpleClassName = segmentationName[segmentationName.length - 1];
+
+		// File root = new File(srcFolder+"/"+clRoot.replace(".", "/")+".java");
+
 		return // root.exists()
-				//&& 
-				!compName.toLowerCase().endsWith("test")
-				&& !compName.toLowerCase().endsWith("tests") 
+				// &&
+		!compName.toLowerCase().endsWith("test") && !compName.toLowerCase().endsWith("tests")
 				&& !simpleClassName.toLowerCase().startsWith("test")
 				&& !simpleClassName.toLowerCase().startsWith("validate");
-		
+
 	}
-	
-	public class ComparatorCandidates implements Comparator<SuspiciousCode>{
+
+	public class ComparatorCandidates implements Comparator<SuspiciousCode> {
 
 		@Override
 		public int compare(SuspiciousCode o1, SuspiciousCode o2) {
-			if(o1 == null || o2 == null ){
+			if (o1 == null || o2 == null) {
 				return 0;
 			}
-		return Double.compare(o2.getSuspiciousValue(),o1.getSuspiciousValue());	
+			return Double.compare(o2.getSuspiciousValue(), o1.getSuspiciousValue());
 		}
 
-	
-		
 	}
-	
+
 }

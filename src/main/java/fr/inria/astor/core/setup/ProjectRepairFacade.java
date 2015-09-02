@@ -6,18 +6,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
-import sacha.finder.main.TestClassFinder;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationFacade;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.faultlocalization.entity.TestClassesFinder;
@@ -246,7 +240,6 @@ public class ProjectRepairFacade {
 	public void calculateRegression(String defaultVariant) {
 		String classPath = getOutDirWithPrefix(defaultVariant);
 		String[] testClassesRegression = new TestClassesFinder().findIn(classpathFrom(classPath), false);
-		//System.out.println("-->"+Arrays.toString(testClassesRegression));
 		List<String> tr = new ArrayList<>();
 		String s = "";
 		for (String tcr : testClassesRegression) {
