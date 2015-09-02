@@ -1,6 +1,7 @@
 package fr.inria.astor.core.entities;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,11 @@ public class ProgramVariant {
 	 * we need to track the last gen analyzed
 	 */
 	protected int lastGenAnalyzed = 0;
+	
+	/**
+	 * Date the variant were born
+	 */
+	protected Date bornDate = null; 
 
 	public ProgramVariant(){
 		genList = new ArrayList<Gen>();
@@ -169,5 +175,13 @@ public class ProgramVariant {
 
 	public void setLastGenAnalyzed(int lastGenAnalyzed) {
 		this.lastGenAnalyzed = lastGenAnalyzed;
+	}
+
+	public Date getBornDate() {
+		return bornDate;
+	}
+
+	public void setBornDate(Date bornDate) {
+		this.bornDate = bornDate;
 	}
 }

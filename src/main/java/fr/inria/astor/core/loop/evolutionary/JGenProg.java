@@ -49,7 +49,7 @@ public class JGenProg extends EvolutionaryEngine {
 	}
 
 	/**
-	 * By default, init the spoon model. It should not be created before.
+	 * By default, it initializes  the spoon model. It should not be created before.
 	 * Otherwise, an exception occurs.
 	 * 
 	 * @param suspicious

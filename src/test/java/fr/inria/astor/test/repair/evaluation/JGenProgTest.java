@@ -145,7 +145,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		assertTrue(isSolution);
 
-		System.out.println("\nSolutions:\n" + jgp.getMutatorSupporter().getSolutionData(jgp.getVariants(), 1));
+		System.out.println("\nSolutions:\n" + jgp.getSolutionData(jgp.getVariants(), 1));
 
 		jgp.prepareNextGeneration(jgp.getVariants(), 1);
 

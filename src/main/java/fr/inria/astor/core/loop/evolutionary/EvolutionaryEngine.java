@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
@@ -83,7 +84,7 @@ public abstract class EvolutionaryEngine {
 
 	protected ProjectRepairFacade projectFacade = null;
 
-	protected Date dateInit = null;
+	protected Date dateInitEvolution = null;
 	
 	/**
 	 * 
@@ -108,13 +109,13 @@ public abstract class EvolutionaryEngine {
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
 
-		dateInit = new Date();
+		dateInitEvolution = new Date();
 
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 
 		while (!this.variants.isEmpty()
 				&& (!stop || !ConfigurationProperties.getPropertyBool("stopfirst"))
-				&& (generation < ConfigurationProperties.getPropertyInt("maxGeneration") && continueOperating(dateInit,
+				&& (generation < ConfigurationProperties.getPropertyInt("maxGeneration") && continueOperating(dateInitEvolution,
 						maxMinutes))) {
 			generation++;
 			log.info("\n----------Running generation/iteraction " + generation + ", population size: "
@@ -125,7 +126,7 @@ public abstract class EvolutionaryEngine {
 
 		showResults(generation);
 
-		long startT = dateInit.getTime();
+		long startT = dateInitEvolution.getTime();
 		long endT = System.currentTimeMillis();
 		log.info("Time Evolution(ms): " + (endT - startT));
 		currentStat.timeIteraction = ((endT - startT));
@@ -152,7 +153,7 @@ public abstract class EvolutionaryEngine {
 
 		if (!solutions.isEmpty()) {
 			log.info("\nSolution details");
-			log.info(mutatorSupporter.getSolutionData(solutions, generation));
+			log.info(getSolutionData(solutions, generation));
 
 		}
 		// -----
@@ -233,6 +234,7 @@ public abstract class EvolutionaryEngine {
 
 			if (solution) {
 				foundSolution = true;
+				newVariant.setBornDate(new Date());
 			}
 
 			// Finally, reverse the changes done by the child
@@ -839,4 +841,49 @@ public abstract class EvolutionaryEngine {
 		this.currentStat = currentStat;
 	}
 
+	public String getSolutionData(List<ProgramVariant> variants, int generation) {
+		String line = "";
+		line += "\n --SOLUTIONS DESCRIPTION--\n";
+		for (ProgramVariant solutionVariant : variants) {
+			line += "\n ----\n";
+			line += "ProgramVariant " + solutionVariant.getId() + "\n ";
+			line+="\ntime(millisec)= "+ TimeUtil.getDateDiff(this.dateInitEvolution, solutionVariant.getBornDate() ,TimeUnit.MILLISECONDS);
+			
+			for (int i = 1; i <= generation; i++) {
+				List<GenOperationInstance> genOperationInstances = solutionVariant.getOperations().get(i);
+				if (genOperationInstances == null)
+					continue;
+
+				for (GenOperationInstance genOperationInstance : genOperationInstances) {
+
+					line += "\noperation: " + genOperationInstance.getOperationApplied().toString() + "\nlocation= "
+							+ genOperationInstance.getGen().getCtClass().getQualifiedName();
+
+					if (genOperationInstance.getGen() instanceof GenSuspicious) {
+						GenSuspicious gs = (GenSuspicious) genOperationInstance.getGen();
+						line += "\nline= " + gs.getSuspicious().getLineNumber();
+					}
+
+					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
+					line += "\nfixed statement= ";
+					if (genOperationInstance.getModified() != null)
+						line += genOperationInstance.getModified().toString();
+					else {
+						line += genOperationInstance.getOriginal().toString();
+					}
+
+					line += "\ngeneration= " + Integer.toString(i);
+					line += "\ningredientScope= "
+							+ ((genOperationInstance.getIngredientScope() != null) ? genOperationInstance
+									.getIngredientScope() : "-");
+					line += "\n ";
+				
+
+				}
+			}
+
+		}
+		return line;
+	}
+	
 }

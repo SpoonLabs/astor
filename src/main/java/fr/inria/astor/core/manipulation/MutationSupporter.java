@@ -324,48 +324,7 @@ public class MutationSupporter {
 		}
 	}
 
-	public String getSolutionData(List<ProgramVariant> variants, int generation) {
-		String line = "";
-		line += "\n --SOLUTIONS DESCRIPTION--\n";
-		for (ProgramVariant childVariant : variants) {
-			line += "\n ----\n";
-			line += "ProgramVariant " + childVariant.getId() + "\n ";
 
-			for (int i = 1; i <= generation; i++) {
-				List<GenOperationInstance> genOperationInstances = childVariant.getOperations().get(i);
-				if (genOperationInstances == null)
-					continue;
-
-				for (GenOperationInstance genOperationInstance : genOperationInstances) {
-
-					line += "\noperation: " + genOperationInstance.getOperationApplied().toString() + "\nlocation= "
-							+ genOperationInstance.getGen().getCtClass().getQualifiedName();
-
-					if (genOperationInstance.getGen() instanceof GenSuspicious) {
-						GenSuspicious gs = (GenSuspicious) genOperationInstance.getGen();
-						line += "\nline= " + gs.getSuspicious().getLineNumber();
-					}
-
-					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
-					line += "\nfixed statement= ";
-					if (genOperationInstance.getModified() != null)
-						line += genOperationInstance.getModified().toString();
-					else {
-						line += genOperationInstance.getOriginal().toString();
-					}
-
-					line += "\ngeneration= " + Integer.toString(i);
-					line += "\ningredientScope= "
-							+ ((genOperationInstance.getIngredientScope() != null) ? genOperationInstance
-									.getIngredientScope() : "-");
-					line += "\n ";
-
-				}
-			}
-
-		}
-		return line;
-	}
 
 	public static CtCodeElement clone(CtCodeElement st) {
 		CtCodeElement cloned = factory.Core().clone(st);

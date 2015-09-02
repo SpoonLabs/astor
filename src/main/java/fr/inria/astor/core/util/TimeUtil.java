@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeUtil {
 
-	public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
-	    long diffInMillies = date2.getTime() - date1.getTime();
+	public static long getDateDiff(Date dateInit, Date dateEnd, TimeUnit timeUnit) {
+	    long diffInMillies = dateEnd.getTime() - dateInit.getTime();
 	    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
 	}
 	
