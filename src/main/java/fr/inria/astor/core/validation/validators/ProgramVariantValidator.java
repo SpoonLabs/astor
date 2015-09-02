@@ -22,7 +22,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.junitexec.JUnitTestExecutor;
 
 /**
- * Validates a program instance using different criterials i.e. test unit
+ * Validates a program instance using different criteria i.e. test unit
  * results.
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
@@ -173,7 +173,7 @@ public class ProgramVariantValidator {
 	public List<String> retrieveRegressionTestCases() {
 		String casesTest = ConfigurationProperties.properties.getProperty("testcasesregression");
 		String[] cases = casesTest.split(";");
-		return 	Arrays.asList(cases);
+		return 	retrieveRegressionTestCases(Arrays.asList(cases));
 		
 	
 	}
@@ -182,33 +182,33 @@ public class ProgramVariantValidator {
 	 * Feed the list of test cases according to the definition POM/build.xml
 	 * @return 
 	 */
-	@Deprecated
-	public List<String> retrieveRegressionTestCasesOLD() {
+
+	public List<String> retrieveRegressionTestCases(List<String> allTest) {
 			List<String> regressionCases = new ArrayList<String>();
 			List<String> ignoreTestcases = retriveIgnoreTestCases();
-			regressionCases = new ArrayList<String>();
-			for (CtSimpleType<?> type : MutationSupporter.getFactory().Type()
-					.getAll()) {
-				String name = type.getQualifiedName();
+			
+			for (String candidateTest : allTest) {
+				CtSimpleType<?> type = MutationSupporter.getFactory().Type().get(candidateTest);
 				
-				if ((name.endsWith("Test") || name.endsWith("TestBinary") || name
-						.endsWith("TestPermutations"))
-						&& (!type.getModifiers().contains(ModifierKind.ABSTRACT))
+				if (type != null && (!type.getModifiers().contains(ModifierKind.ABSTRACT))
 						&& !(type instanceof CtInterface) 
-					//	&& isValidConstructor(type)
-						&& !(isIgnoredTestCase(name, ignoreTestcases)))
+						&& isValidConstructor(type)
+						&& !(isIgnoredTestCase(type.getQualifiedName(), ignoreTestcases)))
 				{
 					regressionCases.add(type.getQualifiedName());
 				}
-
+				
 			}
-	
+				
 			return regressionCases;
 	}
 	
-	@Deprecated
 	private boolean isValidConstructor(CtSimpleType<?> type) {
 		if(type instanceof CtClass<?>) {
+			CtClass<?> ctClass = ((CtClass<?>)type);
+			if (ctClass.getSuperclass() == null || !ctClass.getSuperclass().getSimpleName().equals("TestCase")){
+				return true;
+			}
 			return ((CtClass<?>)type).getConstructor() != null ||
 			((CtClass<?>)type).getConstructor(type.getFactory().Class().createReference(String.class)) != null;
 		}
