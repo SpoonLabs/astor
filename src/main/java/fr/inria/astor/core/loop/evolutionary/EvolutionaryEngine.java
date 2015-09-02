@@ -72,7 +72,7 @@ public abstract class EvolutionaryEngine {
 	protected ProgramVariant originalVariant = null;
 
 	// SPACES
-	protected FixLocationSpace<CtElement/* String */, CtCodeElement, String> fixspace = null;
+	protected FixLocationSpace<CtElement, CtCodeElement, String> fixspace = null;
 
 	protected RepairOperatorSpace repairActionSpace = null;
 
@@ -83,6 +83,8 @@ public abstract class EvolutionaryEngine {
 
 	protected ProjectRepairFacade projectFacade = null;
 
+	protected Date dateInit = null;
+	
 	/**
 	 * 
 	 * @param mutatorExecutor
@@ -100,17 +102,13 @@ public abstract class EvolutionaryEngine {
 	public void startEvolution() throws Exception {
 
 		log.info("\n----Starting Mutation");
-		long startT = System.currentTimeMillis();
-
 		int generation = 0;
 		boolean stop = false;
-
-		// log.debug("FIXSPACE:" + this.getFixSpace());
 
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
 
-		Date dateInit = new Date();
+		dateInit = new Date();
 
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 
@@ -127,6 +125,7 @@ public abstract class EvolutionaryEngine {
 
 		showResults(generation);
 
+		long startT = dateInit.getTime();
 		long endT = System.currentTimeMillis();
 		log.info("Time Evolution(ms): " + (endT - startT));
 		currentStat.timeIteraction = ((endT - startT));
@@ -190,7 +189,7 @@ public abstract class EvolutionaryEngine {
 	 * @return
 	 */
 	private boolean continueOperating(Date dateInit, int maxMinutes) {
-		if (TimeUtil.delta(dateInit) <= maxMinutes) {
+		if (TimeUtil.deltaInMinutes(dateInit) <= maxMinutes) {
 			return true;
 		} else {
 			log.info("\n No more time for operating");

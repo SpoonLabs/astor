@@ -326,7 +326,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 						+ "lib/hamcrest-core-1.3.jar", "-id", "tttMath-0c1ef", "-failing",
 				"org.apache.commons.math3.primes.PrimesTest", "-location", pathExample, "-package",
 				"org.apache.commons", "-maxgen", "400", "-population", "2", "-saveall", "-maxtime", "1" });
-		long t = TimeUtil.delta(init);
+		long t = TimeUtil.deltaInMinutes(init);
 		assertTrue(t > 1);// more than one minute
 		assertFalse(t < 2);// less than two minutes
 	}

@@ -14,7 +14,7 @@ public class TimeUtil {
 	    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
 	}
 	
-	public static long delta(Date date){
+	public static long deltaInMinutes(Date date){
 		return getDateDiff(date,new Date(),TimeUnit.MINUTES);
 	}
 	
