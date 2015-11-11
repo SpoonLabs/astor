@@ -37,8 +37,7 @@
 		<dependency>
 			<groupId>fr.inria.astor</groupId>
 			<artifactId>astor-junit-exec</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>compile</scope>
+			<version>0.0.2-SNAPSHOT</version>
 			<!-- <scope>system</scope> <systemPath>${project.basedir}/lib/astor-junit-exec-0.0.1-SNAPSHOT.jar</systemPath> -->
 		</dependency>
 
