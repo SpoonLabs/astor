@@ -65,7 +65,7 @@ public class ProgramVariant {
 	/**
 	 * Date the variant were born
 	 */
-	protected Date bornDate = null; 
+	protected Date bornDate = new Date(); 
 
 	public ProgramVariant(){
 		genList = new ArrayList<Gen>();
