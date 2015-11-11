@@ -13,7 +13,7 @@ import org.apache.commons.cli.ParseException;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
-import fr.inria.astor.core.loop.evolutionary.MutationalRepair;
+import fr.inria.astor.core.loop.evolutionary.MutationalEvolutionaryRepair;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
@@ -55,7 +55,7 @@ public class MainIFMutation extends AbstractMain {
 			projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 			MutationSupporter mutSupporter = new MutationSupporter(getFactory());
 			
-			MutationalRepair mutloop = new MutationalRepair(mutSupporter,projectFacade);
+			MutationalEvolutionaryRepair mutloop = new MutationalEvolutionaryRepair(mutSupporter,projectFacade);
 			mutloop.setFixspace(new LocalFixSpace());
 			
 			mutloop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());

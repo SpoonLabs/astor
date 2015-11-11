@@ -2,10 +2,9 @@ package fr.inria.astor.core.loop.evolutionary;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import spoon.reflect.code.CtExpression;
@@ -26,57 +25,21 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
- * Extension of Evolutionary loop for kali implementation
+ * jKali: implementation of Kali approach
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class JKali extends JGenProg {
+public class JKali extends ExhaustiveSearchEngine {
 
 	final Set<String> prim = new HashSet<String>(Arrays.asList("byte","Byte", "long","Long", "int","Integer", "float","Float",  "double","Double", "short","Short", "char", "Character"));
 
+	
 	public JKali(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
 	}
 
-	@Override
-	public void startEvolution() throws Exception {
-		// We don't evolve variants, so the generation is always one.
-		final int generation = 1;
-		// For each variant (in kali mode is enough having only one)
-		for (ProgramVariant parentVariant : variants) {
-			// We analyze each Gen of the variant i.e. suspicious statement
-			for (Gen gen : parentVariant.getGenList()) {
-				// We create all kali operators to apply in the gen
-				List<GenOperationInstance> genOperations = createKaliOperators((GenSuspicious) gen);
-
-				for (GenOperationInstance genOperation : genOperations) {
-
-					try{
-						log.info("gen "+((GenSuspicious)gen).getSuspicious());
-						log.info("--> " + genOperation);
-					}catch(Exception e){}
-																		
-					// We validate the variant after applying the operator
-					ProgramVariant solutionVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
-							generation);
-					solutionVariant.getOperations().put(generation, Arrays.asList(genOperation));
-
-					applyNewMutationOperationToSpoonElement(genOperation);
-					
-					boolean solution = processCreatedVariant(solutionVariant, generation);
-
-					if (solution) {
-						this.solutions.add(solutionVariant);
-					}
-
-					// We undo the operator (for try the next one)
-					undoOperationToSpoonElement(genOperation);
-				}
-			}
-		}
-		showResults(generation);
-	}
+	
 
 	/**
 	 * Creates the Kali operators 1) Delete statement 2) Insert return 3) change
@@ -85,7 +48,7 @@ public class JKali extends JGenProg {
 	 * @param gen
 	 * @return
 	 */
-	private List<GenOperationInstance> createKaliOperators(GenSuspicious gen) {
+	protected List<GenOperationInstance> createOperators(GenSuspicious gen) {
 		List<GenOperationInstance> ops = new ArrayList<>();
 
 		GenOperationInstance opRemove = new GenOperationInstance(gen, GenProgMutationOperation.DELETE,

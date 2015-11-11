@@ -22,16 +22,14 @@ import fr.inria.astor.core.loop.mutation.mutants.operators.NegationUnaryOperator
 import fr.inria.astor.core.loop.mutation.mutants.operators.RelationalBinaryOperatorMutator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.stats.StatSpaceSize;
-
 import fr.inria.astor.core.setup.RandomManager;
 
 /**
- * Mutational evolution.
+ * Mutational evolution: Evolutionary engine that applies changes in If conditions
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class MutationalRepair extends JGenProg {
+public class MutationalEvolutionaryRepair extends JGenProg {
 
 	public static boolean uniformRandom = true;
 	
@@ -42,7 +40,7 @@ public class MutationalRepair extends JGenProg {
 	
 	
 	@SuppressWarnings("unchecked")
-	public MutationalRepair(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+	public MutationalEvolutionaryRepair(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		this.mutatorBinary =  new MutatorComposite(mutatorExecutor.getFactory());
@@ -56,6 +54,7 @@ public class MutationalRepair extends JGenProg {
 	 * Create a Gen Mutation for a given CtElement
 	 * 
 	 * @param ctElementPointed
+	 * 
 	 * @param className
 	 * @param suspValue
 	 * @return
@@ -169,26 +168,7 @@ public class MutationalRepair extends JGenProg {
 		}
 		return mutations;
 	}
-	/**
-	 * 
-	 * @param target
-	 * @return
-	 */
-	public List<MutantCtElement> getMutants(CtElement element) {
 		
-		CtExpression target = getExpressionFromElement(element); 
-				
-		List<MutantCtElement> mutations = null;
-		if(this.mutantsCache.containsKey(target.getSignature())){
-			 mutations = clone(this.mutantsCache.get(target.getSignature()));
-		}
-		else{
-			mutations = this.mutatorBinary.execute(target);
-			mutantsCache.put(target.getSignature(), mutations);
-		}
-		return mutations;
-	}
-	
 
 	private CtExpression getExpressionFromElement(CtElement element) {
 		
