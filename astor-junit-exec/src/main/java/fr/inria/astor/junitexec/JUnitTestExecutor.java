@@ -37,7 +37,9 @@ public class JUnitTestExecutor {
 		int count = 0;
 		try {
 			for (Failure f : r.getFailures()) {
-				out += failureMessage(f) + "-,";
+				String s = failureMessage(f);
+				//if(s.startsWith("warning"))
+				out += s + "-,";
 				count++;
 				if (count > 10) {
 					out += "...and " + (r.getFailureCount() - 10) + " failures more,";

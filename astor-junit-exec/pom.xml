@@ -4,7 +4,7 @@
 
 	<groupId>fr.inria.astor</groupId>
 	<artifactId>astor-junit-exec</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>astor-junit-exec</name>
