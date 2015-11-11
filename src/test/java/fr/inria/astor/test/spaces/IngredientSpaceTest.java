@@ -26,10 +26,10 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFExpressionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.LoopExpressionFixSpaceProcessor;
-import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.LocalFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.FixLocationSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.GlobalBasicFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientAnalyzer;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.LocalFixSpace;
 
 /**
  * 

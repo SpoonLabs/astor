@@ -1,7 +1,7 @@
 package fr.inria.astor.core.entities;
 
-import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
 import spoon.reflect.declaration.CtElement;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
 
 /**
  * 

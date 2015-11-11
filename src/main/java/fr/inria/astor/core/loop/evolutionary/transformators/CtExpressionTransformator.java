@@ -6,11 +6,9 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-
 import fr.inria.astor.core.setup.RandomManager;
 
 /**

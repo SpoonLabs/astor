@@ -15,7 +15,6 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -37,7 +36,6 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
-import fr.inria.astor.core.entities.Gen;
 import fr.inria.astor.core.entities.GenOperationInstance;
 
 /**

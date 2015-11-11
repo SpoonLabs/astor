@@ -1,7 +1,6 @@
 package fr.inria.astor.core.setup;
 
 import java.util.Random;
-import fr.inria.astor.core.setup.ConfigurationProperties;
 
 /**
  * 

@@ -3,12 +3,13 @@ package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.martiansoftware.jsap.JSAPException;
-
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
+
+import com.martiansoftware.jsap.JSAPException;
+
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 
 /**
  * 

@@ -15,7 +15,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.FactoryImpl;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;

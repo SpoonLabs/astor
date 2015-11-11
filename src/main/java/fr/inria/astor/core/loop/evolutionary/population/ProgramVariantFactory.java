@@ -10,7 +10,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.factory.FactoryImpl;
 
 import com.martiansoftware.jsap.JSAPException;
 

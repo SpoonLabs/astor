@@ -2,11 +2,10 @@ package fr.inria.astor.core.loop.mutation.mutants.processor;
 
 import java.util.List;
 
-import fr.inria.astor.core.manipulation.MutationSupporter;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.factory.FactoryImpl;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 
 
 

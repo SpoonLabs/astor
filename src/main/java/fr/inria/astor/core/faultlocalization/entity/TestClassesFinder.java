@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggerFactory;
 
 import sacha.finder.classes.impl.ClassloaderFinder;
 import sacha.finder.filters.impl.TestFilter;
