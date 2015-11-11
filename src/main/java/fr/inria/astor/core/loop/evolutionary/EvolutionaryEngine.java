@@ -29,7 +29,6 @@ import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.FixLocationSpace
 import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
-import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatPatch;
@@ -103,6 +102,9 @@ public abstract class EvolutionaryEngine {
 	public void startEvolution() throws Exception {
 
 		log.info("\n----Starting Mutation");
+		
+		log.debug("FIXSPACE:" + this.getFixSpace());
+		
 		int generation = 0;
 		boolean stop = false;
 

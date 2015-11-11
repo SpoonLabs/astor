@@ -57,7 +57,7 @@ public class FaultLocalizationFacade {
 			gz.addPackageToInstrument(to);
 		}
 		if (cp != null || !cp.isEmpty()) {
-			logger.info("-gz-Current classpath: " + System.getProperty("java.class.path"));
+			//logger.info("-gz-Current classpath: " + System.getProperty("java.class.path"));
 			logger.info("-gz-Adding classpath: " + cp);
 			gz.getClasspaths().addAll(cp);
 		}
