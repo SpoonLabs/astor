@@ -14,7 +14,6 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-
 import fr.inria.astor.core.setup.RandomManager;
 
 /**
@@ -200,6 +199,15 @@ public abstract class UniformRandomFixSpace<L extends Object, K extends Object, 
 			s+=s2;
 			
 		}
+		s+="----------";
+		
+		for(T t : fixSpaceByType.keySet() )	{
+			List<I> ing = fixSpaceByType.get(t);
+			
+			s+=t+" ing: "+ing.size()+ " \n";			
+		}	
+				
+		s+="----------";
 		return s;
 	}
 	

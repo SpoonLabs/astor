@@ -3,14 +3,12 @@ package fr.inria.astor.core.loop.evolutionary;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.FactoryImpl;
 
 import com.martiansoftware.jsap.JSAPException;
 
