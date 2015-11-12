@@ -233,9 +233,15 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("mode"))
 			ConfigurationProperties.properties.setProperty("mode", cmd.getOptionValue("mode"));
 
-		if (cmd.hasOption("out"))
-			ConfigurationProperties.properties.setProperty("workingDirectory", cmd.getOptionValue("out"));
-
+		String outputPath = "";
+		if (cmd.hasOption("out")){
+			outputPath =  cmd.getOptionValue("out");
+		}else{
+			outputPath = ConfigurationProperties.properties.getProperty("workingDirectory");
+		}
+		ConfigurationProperties.properties.setProperty("workingDirectory", (new File(outputPath)).getAbsolutePath());
+		
+			
 		// Process optional values.
 		if (cmd.hasOption("maxgen"))
 			ConfigurationProperties.properties.setProperty("maxGeneration", cmd.getOptionValue("maxgen"));
