@@ -21,6 +21,7 @@ import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.RemoveRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.GlobalBasicFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.LocalFixSpace;
@@ -55,6 +56,8 @@ public class AstorMain extends AbstractMain {
 
 
 	/**
+	 * It creates an repair engine according to an execution mode.
+	 * 
 	 * 
 	 * @param removeMode
 	 * @return
@@ -98,7 +101,8 @@ public class AstorMain extends AbstractMain {
 			ConfigurationProperties.properties.setProperty("stopfirst", "false");
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
-
+			ingredientProcessors.clear();
+			ingredientProcessors.add(new IFConditionFixSpaceProcessor());
 		}
 		//Now we define the commons properties
 		
