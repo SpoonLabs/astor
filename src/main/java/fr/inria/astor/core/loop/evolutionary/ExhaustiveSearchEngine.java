@@ -39,6 +39,9 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 				// We create all operators to apply in the gen
 				List<GenOperationInstance> genOperations = createOperators((GenSuspicious) gen);
 
+				if(genOperations == null || genOperations.isEmpty())
+					continue;
+				
 				for (GenOperationInstance genOperation : genOperations) {
 
 					try{
