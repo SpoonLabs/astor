@@ -87,11 +87,12 @@ public class JGenProg extends EvolutionaryEngine {
 	}
 
 	protected List retrieveClassesForIngredients() {
-		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL))
+		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL) 
+				|| getFixSpace().strategy().equals(IngredientSpaceStrategy.PACKAGE))
 			return originalVariant.getAffectedClasses();
 
 		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.GLOBAL)
-				|| getFixSpace().strategy().equals(IngredientSpaceStrategy.PACKAGE))
+				)
 			return this.mutatorSupporter.getFactory().Type().getAll();
 
 		return null;
@@ -217,7 +218,7 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 
 		if (!operationType.equals(GenProgMutationOperation.DELETE) && fix == null) {
-			log.error("***fix ingredient null");
+			log.debug("***fix ingredient null");
 			return null;
 		}
 
