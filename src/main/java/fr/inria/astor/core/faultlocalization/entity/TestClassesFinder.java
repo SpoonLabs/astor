@@ -27,9 +27,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import sacha.finder.classes.impl.ClassloaderFinder;
-import sacha.finder.filters.impl.TestFilter;
-import sacha.finder.processor.Processor;
+import fr.inria.astor.core.faultlocalization.entity.runtestsuite.*;
+
 
 
 /**
