@@ -29,7 +29,7 @@ import fr.inria.astor.core.setup.RandomManager;
  */
 public abstract class AbstractMain {
 
-	protected Logger log = Logger.getLogger(AbstractMain.class);
+	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 	
 	protected MutationSupporter mutSupporter;
 	protected Factory factory;
@@ -214,10 +214,10 @@ public abstract class AbstractMain {
             String dependenciespath = cmd.getOptionValue("dependencies");
             String failing = cmd.getOptionValue("failing");
             String location = cmd.getOptionValue("location");
-            String packageToInstrument = cmd.getOptionValue("package");
+          
             
             // Process mandatory parameters.
-            if (dependenciespath == null || failing == null || location == null || packageToInstrument == null) {
+            if (failing == null || location == null) {
                 help();
                 return false;
             }
@@ -225,8 +225,13 @@ public abstract class AbstractMain {
             ConfigurationProperties.properties.setProperty("dependenciespath", dependenciespath);
             ConfigurationProperties.properties.setProperty("failing", failing);
             ConfigurationProperties.properties.setProperty("location", location);
-            ConfigurationProperties.properties.setProperty("packageToInstrument", packageToInstrument);
+           // ConfigurationProperties.properties.setProperty("packageToInstrument", packageToInstrument);
         }
+      
+        if (cmd.hasOption("package"))
+			ConfigurationProperties.properties.setProperty("packageToInstrument", cmd.getOptionValue("package"));
+        
+        
 		if (cmd.hasOption("id"))
 			ConfigurationProperties.properties.setProperty("projectIdentifier", cmd.getOptionValue("id"));
 
