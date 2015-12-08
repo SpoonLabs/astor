@@ -712,14 +712,14 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/usr/lib/jvm/java-7-openjdk-amd64/bin/", // "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
 				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package",
+				out.getAbsolutePath(), "-scope" , "package",//"local",// "global",//"local",//"package",
 				// "-maxsuspcandidates","2",
 				"-seed", "10",
-				// "-stopfirst","false",
-				"-maxgen", "200", };
+				 "-stopfirst","true",
+				"-maxgen", "50", };
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
-
+		//Last minute comment: I suspect Math-70 has flaky test cases, so, number of solutions discovered can be different
 		validatePatchExistence(out + File.separator + "AstorMain-math_70/", 2);
 
 	}
@@ -900,8 +900,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/classes/",
 				 "/target/test-classes/");
 	}
-
-	private void execM50() throws Exception {
+	
+	@Test
+	public void execM50() throws Exception {
 		System.out.println("Running 50");
 		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.8.2/junit-4.8.2.jar",
 				"/home/matias/develop/code/defects4j-fw/extr/math_50/",
@@ -909,7 +910,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/src/main/java/", 
 				 "/src/test/java/", 
 				"/target/classes/",
-				 "/target/test-classes/");
+				 "/target/test-classes/"
+				);
 	}
 
 	private void execM49() throws Exception {
@@ -988,7 +990,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-out",
 				out.getAbsolutePath(), "-scope", "local",//"package",
 				"-seed", "10",
-				"-maxgen", "200",//runn 
+				"-maxgen", "400",//runn 
 				};
 		System.out.println(Arrays.toString(args));
 		main1.main(args);

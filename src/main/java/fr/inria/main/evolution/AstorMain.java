@@ -164,7 +164,7 @@ public class AstorMain extends AbstractMain {
 			fail(e.getMessage());
 		}
 		long endT = System.currentTimeMillis();
-		log.info("Time Total(ms): " + (endT - startT));
+		log.info("Time Total(s): " + (endT - startT)/1000d);
 	}
 
 	/**
