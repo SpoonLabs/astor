@@ -41,15 +41,8 @@
 			<!-- <scope>system</scope> <systemPath>${project.basedir}/lib/astor-junit-exec-0.0.1-SNAPSHOT.jar</systemPath> -->
 		</dependency>
 
-
-		<dependency>
-			<groupId>sacha</groupId>
-			<artifactId>infra</artifactId>
-			<version>0.1</version>
-			<scope>compile</scope>
-			<!-- <scope>system</scope> <systemPath>${project.build.sourceDirectory}/../../../lib/infra-0.1.jar</systemPath> -->
-		</dependency>
-
+		<!-- <dependency> <groupId>sacha</groupId> <artifactId>infra</artifactId> 
+			<version>0.1</version> <scope>compile</scope> </dependency> -->
 
 
 		<dependency>
@@ -81,8 +74,6 @@
 			<groupId>com.gzoltar</groupId>
 			<artifactId>gzoltar</artifactId>
 			<version>0.1.1</version>
-			<scope>compile</scope>
-			<!-- <scope>system</scope> <systemPath>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.0.7-jar-with-dependencies.jar</systemPath> -->
 		</dependency>
 
 
@@ -107,12 +98,12 @@
 			<id>inria</id>
 			<url>http://spoon.gforge.inria.fr/repositories/releases/</url>
 		</repository>
-	<repository>
-		<id>gforge.inria.fr-snapshot</id>
-		<name>Maven Repository for Spoon Snapshot</name>
-		<url>http://spoon.gforge.inria.fr/repositories/snapshots/</url>
-		<snapshots />
-	</repository>
+		<repository>
+			<id>gforge.inria.fr-snapshot</id>
+			<name>Maven Repository for Spoon Snapshot</name>
+			<url>http://spoon.gforge.inria.fr/repositories/snapshots/</url>
+			<snapshots />
+		</repository>
 	</repositories>
 
 	<build>
@@ -173,31 +164,19 @@
 						<configuration>
 							<groupId>fr.inria.astor</groupId>
 							<artifactId>astor-junit-exec</artifactId>
-							<version>0.0.1-SNAPSHOT</version>
-							<file>${project.basedir}/lib/astor-junit-exec-0.0.1-SNAPSHOT.jar</file>
+							<version>0.0.2-SNAPSHOT</version>
+							<file>${project.basedir}/lib/astor-junit-exec-0.0.2-SNAPSHOT.jar</file>
 							<packaging>jar</packaging>
 							<createChecksum>true</createChecksum>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
 
-					<execution>
-						<id>sacha-infra</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>sacha</groupId>
-							<artifactId>infra</artifactId>
-							<version>0.1</version>
-							<file>${project.build.sourceDirectory}/../../../lib/infra-0.1.jar</file>
-							<packaging>jar</packaging>
-							<createChecksum>true</createChecksum>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution>
-
+					<!-- <execution> <id>sacha-infra</id> <phase>clean</phase> <goals> <goal>install-file</goal> 
+						</goals> <configuration> <groupId>sacha</groupId> <artifactId>infra</artifactId> 
+						<version>0.1</version> <file>${project.build.sourceDirectory}/../../../lib/infra-0.1.jar</file> 
+						<packaging>jar</packaging> <createChecksum>true</createChecksum> <generatePom>true</generatePom> 
+						</configuration> </execution> -->
 
 					<execution>
 						<id>gzoltar</id>

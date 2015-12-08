@@ -23,12 +23,13 @@
 		</dependency>
 
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>sacha</groupId>
 			<artifactId>infra</artifactId>
 			<version>0.1</version>
 			<scope>test</scope>
 		</dependency>
+		 -->
 
 	</dependencies>
 </project>
