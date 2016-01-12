@@ -18,10 +18,12 @@ Getting started
 
 Note that this project requires the use of **Java 1.7**; it does not build or does not run (on OS X 10.10.3) with Java 1.8. Please install a JDK 1.7 and configure Maven or your IDE to use it. Fill property jvm4testexecution in `src/main/resources/configuration.properties`.
 
-To compile using maven:
-First execute 'mvn clean' and  then 'mvn install'
+To compile using maven, first execute:
 
-We recommend to remove all package-info.java files from the project to repair (You can use command: find . -name "package-info.java" -type f -delete).
+    mvn clean
+    mvn compile
+
+We recommend to remove all package-info.java files from the project to repair (You can use command: `find . -name "package-info.java" -type f -delete`).
 
 
 We provide an implementation of GenProg repair algorithm called jGenProg.The class to run it is:

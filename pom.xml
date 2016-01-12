@@ -35,17 +35,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>fr.inria.astor</groupId>
-			<artifactId>astor-junit-exec</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
-			<!-- <scope>system</scope> <systemPath>${project.basedir}/lib/astor-junit-exec-0.0.1-SNAPSHOT.jar</systemPath> -->
-		</dependency>
-
-		<!-- <dependency> <groupId>sacha</groupId> <artifactId>infra</artifactId> 
-			<version>0.1</version> <scope>compile</scope> </dependency> -->
-
-
-		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
@@ -104,6 +93,12 @@
 			<url>http://spoon.gforge.inria.fr/repositories/snapshots/</url>
 			<snapshots />
 		</repository>
+                <repository>
+                    <id>gforge.inria.fr-release</id>
+                    <name>Maven Repository for Spoon Release</name>
+                    <url>http://sachaproject.gforge.inria.fr/repositories/releases/</url>
+                    <snapshots/>
+                </repository>
 	</repositories>
 
 	<build>
@@ -151,53 +146,7 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>astor-junit-exec</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>fr.inria.astor</groupId>
-							<artifactId>astor-junit-exec</artifactId>
-							<version>0.0.2-SNAPSHOT</version>
-							<file>${project.basedir}/lib/astor-junit-exec-0.0.2-SNAPSHOT.jar</file>
-							<packaging>jar</packaging>
-							<createChecksum>true</createChecksum>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution>
-
-					<!-- <execution> <id>sacha-infra</id> <phase>clean</phase> <goals> <goal>install-file</goal> 
-						</goals> <configuration> <groupId>sacha</groupId> <artifactId>infra</artifactId> 
-						<version>0.1</version> <file>${project.build.sourceDirectory}/../../../lib/infra-0.1.jar</file> 
-						<packaging>jar</packaging> <createChecksum>true</createChecksum> <generatePom>true</generatePom> 
-						</configuration> </execution> -->
-
-					<execution>
-						<id>gzoltar</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>com.gzoltar</groupId>
-							<artifactId>gzoltar</artifactId>
-							<version>0.1.1</version>
-							<file>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.1.1-jar-with-dependencies.jar</file>
-							<packaging>jar</packaging>
-							<createChecksum>true</createChecksum>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 
 		</plugins>
 	</build>
-
 </project>
