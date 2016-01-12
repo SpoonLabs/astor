@@ -16,10 +16,10 @@ Astor is an evolutionary Automatic Software Repair framework that contains imple
 Getting started
 -------
 
+Note that this project requires the use of **Java 1.7**; it does not build or does not run (on OS X 10.10.3) with Java 1.8. Please install a JDK 1.7 and configure Maven or your IDE to use it. Fill property jvm4testexecution in `src/main/resources/configuration.properties`.
+
 To compile using maven:
 First execute 'mvn clean' and  then 'mvn install'
-
-Note that this project requires the use of Java 1.7; it does not build (on OS X 10.10.3) with Java 1.8.
 
 We recommend to remove all package-info.java files from the project to repair (You can use command: find . -name "package-info.java" -type f -delete).
 
@@ -35,31 +35,31 @@ Each variant folder contains the files that Astor have analyzed (and eventually 
 
 We present an command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help. Default values are stored in file "configuration.properties".
 
-java  -cp "location"/astor.jar fr.inria.main.evolution.MainjGenProg 
+    java  -cp "location"/astor.jar fr.inria.main.evolution.MainjGenProg 
 
--mode statement 
+    -mode statement 
 
--location "location of the project to repair" 
+    -location "location of the project to repair" 
 
--dependencies "folder with the dependencies of the application to repair" 
+    -dependencies "folder with the dependencies of the application to repair" 
 
--failing "failing test case>: -package <package to manipulate"
+    -failing "failing test case>: -package <package to manipulate"
 
--jvm4testexecution "jdklocation"/java-1.7.0/bin/ 
+    -jvm4testexecution "jdklocation"/java-1.7.0/bin/ 
 
--javacompliancelevel "compliance level of source code e.g. 5"
+    -javacompliancelevel "compliance level of source code e.g. 5"
 
--stopfirst true 
+    -stopfirst true 
 
--flthreshold "minimun suspicious value for fault localization e.g. 0.1"
+    -flthreshold "minimun suspicious value for fault localization e.g. 0.1"
 
--srcjavafolder "source code folder"
+    -srcjavafolder "source code folder"
 
--srctestfolder "test folder"
+    -srctestfolder "test folder"
 
--binjavafolder "class folder" 
+    -binjavafolder "class folder" 
 
--bintestfolder "test class folder" 
+    -bintestfolder "test class folder" 
 
 
 
