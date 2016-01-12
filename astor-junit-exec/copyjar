@@ -1,2 +1,0 @@
- #!/bin/bash
-cp  /home/matias/develop/code/astor-junit-exec/target/astor-junit-exec-0.0.1-SNAPSHOT.jar /home/matias/develop/code/astor/lib/
