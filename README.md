@@ -33,9 +33,19 @@ Each variant folder contains the files that Astor have analyzed (and eventually 
 
 **jGenProg**
 
-We present an command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help. Default values are stored in file "configuration.properties".
+We present an command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help are listed below. They arguments can also be changed  in "configuration.properties".
+
+Minimum arguments:
+
 
     java  -cp "location"/astor.jar fr.inria.main.evolution.MainjGenProg 
+      -srcjavafolder "source code folder"
+      -srctestfolder "test source code folder"
+      -binjavafolder "class folder" 
+      -bintestfolder "test class folder" 
+
+    
+Other options:
 
     -mode statement 
 
@@ -53,31 +63,25 @@ We present an command line with the required arguments for executing jGenProg.  
 
     -flthreshold "minimun suspicious value for fault localization e.g. 0.1"
 
-    -srcjavafolder "source code folder"
-
-    -srctestfolder "test folder"
-
-    -binjavafolder "class folder" 
-
-    -bintestfolder "test class folder" 
 
 
 
 **jKali**
 
-For executing Astor in jKali mode, we use the option -mode statement-remove. jKali and jGenProg share the same arguments.
-java  -cp astor.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location <>......
+For executing Astor in jKali mode, we use the option `-mode statement-remove`. jKali and jGenProg share the same arguments.
+
+    java  -cp astor.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location <>......
 
 
 **Bug Example**
 
 The distribution contains a version of Apache commons Math with a real defect (reported in issue 280 https://issues.apache.org/jira/browse/MATH-280).
 
-To run it using jGenProg, type: java fr.inria.main.evolution.MainjGenProg -bug280
+To run it using jGenProg, type: `java fr.inria.main.evolution.MainjGenProg -bug280`
 
 or 
 
-java -cp "jar_location"/astor-x.y.z-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -bug280
+    java -cp "jar_location"/astor-x.y.z-jar-with-dependencies.jar fr.inria.main.evolution.MainjGenProg -bug280
 
 
 Contacts
