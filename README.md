@@ -90,5 +90,5 @@ or
 
 Contacts
 --------
-matias.martinez@inria.fr
+matias.sebastian.martinez@usi.ch
 martin.monperrus@univ-lille1.fr
