@@ -60,7 +60,7 @@ public abstract class AbstractMain {
 		options.addOption(
 				"jvm4testexecution",
 				true,
-				"(Optional) location of JVM that executes the mutated version of a program (Folder that contains java script ). For the examples, run jdk 6");
+				"(Optional) location of JVM that executes the mutated version of a program (Folder that contains java script, such as /bin/ ). For the examples, run jdk 6");
 		options.addOption("maxgen", true, "(Optional) max number of generation a program variant is evolved");
 		options.addOption("population", true,
 				"(Optional)number of population (program variants) that the approach evolves");
@@ -199,8 +199,22 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties
 					.setProperty("jvm4testexecution", cmd.getOptionValue("jvm4testexecution"));
 
-		}
+		}else{
+			String javahome = System.getProperty("java.home");
+			File location = new File(javahome);
+			if(location.getName().equals("jre")){
+				javahome = location.getParent() + File.separator + "bin";
+				File javalocationbin = new File(javahome);
+				if(!javalocationbin.exists()){
+					System.err.println("Problems to generate java jdk path");
+					return false;
+				}
+			}
+			ConfigurationProperties.properties
+			.setProperty("jvm4testexecution", javahome);
 
+		}
+	
 		if (!ProjectConfiguration.validJDK()){
 			System.out.println("Error: invalid jdk folder");
 			return false;
@@ -443,15 +457,7 @@ public abstract class AbstractMain {
 		return factory;
 	}
 
-	/*
-	 * protected ProjectRepairFacade getProject(String location, String method,
-	 * String regressiontest, List<String> failingTestCases, String
-	 * dependencies, boolean srcWithMain) throws Exception { File locFile = new
-	 * File(location); String projectname = locFile.getName();
-	 * 
-	 * return getProject(location, projectname, method, regressiontest,
-	 * failingTestCases, dependencies, srcWithMain); }
-	 */
+	
 
 	protected ProjectRepairFacade getProject(String location, String projectIdentifier, String method,
 			List<String> failingTestCases, String dependencies, boolean srcWithMain)

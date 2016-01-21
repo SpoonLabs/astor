@@ -18,6 +18,7 @@ import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.util.ProcessUtil;
 import fr.inria.astor.core.util.TimeUtil;
 import fr.inria.main.AbstractMain;
@@ -708,13 +709,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package",
 				"org.apache.commons",
-				"-jvm4testexecution",
-				"/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin",
-				//"/usr/lib/jvm/java-7-openjdk-amd64/bin/", // "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
 				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope" , "package",//"local",// "global",//"local",//"package",
-				// "-maxsuspcandidates","2",
+			
 				"-seed", "10",
 				 "-stopfirst","true",
 				"-maxgen", "50", 
@@ -722,8 +720,35 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
 		//Last minute comment: I suspect Math-70 has flaky test cases, so, number of solutions discovered can be different
-		validatePatchExistence(out + File.separator + "AstorMain-math_70/", 2);
+		validatePatchExistence(out + File.separator + "AstorMain-math_70/", 1);
 
+	}
+	
+	@Test
+	public void testArguments() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar";
+		File out = new File("./outputMutation/");
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package",
+				"org.apache.commons",
+				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope" , "package",
+				"-seed", "10",
+				 "-stopfirst","true",
+				"-maxgen", "50", 
+				"-saveall","false"};
+		boolean correct = main1.processArguments(args);
+		assertTrue(correct);
+		
+		String javahome = ConfigurationProperties.properties
+		.getProperty("jvm4testexecution");
+	
+		assertNotNull(javahome);
+		
+		assertTrue(javahome.endsWith("bin"));
 	}
 	
 	
@@ -996,6 +1021,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				 "/target/test-classes/");
 	}
 
+	
+	
 	@Test
 	public void execM8() throws Exception {
 		System.out.println("Running 8");
