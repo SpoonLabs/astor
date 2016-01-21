@@ -55,7 +55,9 @@ Other options:
 
     -dependencies "folder with the dependencies of the application to repair" 
 
-    -failing "failing test case>: -package <package to manipulate"
+    -failing "failing test case>"
+    
+    -package "package to manipulate" (only the statements from this package are manipulated to find a patch)
 
     -jvm4testexecution "jdklocation"/java-1.7.0/bin/ 
 
