@@ -1,5 +1,6 @@
 package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor;
 
+import fr.inria.astor.core.loop.evolutionary.transformators.CtStatementTransformator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
@@ -9,7 +10,6 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import fr.inria.astor.core.loop.evolutionary.transformators.CtStatementTransformator;
 
 /**
  * Processor that retrieves Statements, but excludes blocks, class method and class.

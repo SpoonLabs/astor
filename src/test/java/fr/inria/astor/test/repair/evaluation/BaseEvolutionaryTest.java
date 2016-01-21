@@ -14,8 +14,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
-import spoon.support.StandardEnvironment;
 import fr.inria.main.AbstractMain;
+import spoon.support.StandardEnvironment;
 /**
  * 
  * @author Matias Martinez,  matias.martinez@inria.fr
@@ -98,7 +98,12 @@ public abstract class BaseEvolutionaryTest  {
 		}
 		assertTrue(isSol);
 	}
-	
+	/**
+	 * This method asserts the number of variants that where store in the disk.
+	 * The option "saveall" must be false (with true value it saves solution and not solution variants)
+	 * @param dir
+	 * @param numberSolution
+	 */
 	public static void validatePatchExistence(String dir, int numberSolution) {
 		File out = new File(dir+File.separator+"src");
 		assertTrue(out.listFiles().length > 1);

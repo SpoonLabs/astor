@@ -1,18 +1,13 @@
 package fr.inria.astor.core.loop.evolutionary;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import spoon.reflect.code.CtIf;
-import spoon.reflect.declaration.CtElement;
 
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.Gen;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
-import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
 import fr.inria.astor.core.loop.mutation.mutants.operators.LogicalBinaryOperatorMutator;
@@ -21,6 +16,8 @@ import fr.inria.astor.core.loop.mutation.mutants.operators.NegationUnaryOperator
 import fr.inria.astor.core.loop.mutation.mutants.operators.RelationalBinaryOperatorMutator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * Extension of Evolutionary loop for kali implementation

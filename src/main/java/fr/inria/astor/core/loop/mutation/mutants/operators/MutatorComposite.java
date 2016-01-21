@@ -3,9 +3,9 @@ package fr.inria.astor.core.loop.mutation.mutants.operators;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.astor.core.loop.mutation.mutants.core.SpoonMutator;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import fr.inria.astor.core.loop.mutation.mutants.core.SpoonMutator;
 
 /**
  * This mutator executes a list of mutant operations.

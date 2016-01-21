@@ -27,7 +27,9 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.faultlocalization.entity.runtestsuite.*;
+import fr.inria.astor.core.faultlocalization.entity.runtestsuite.ClassloaderFinder;
+import fr.inria.astor.core.faultlocalization.entity.runtestsuite.Processor;
+import fr.inria.astor.core.faultlocalization.entity.runtestsuite.TestFilter;
 
 
 

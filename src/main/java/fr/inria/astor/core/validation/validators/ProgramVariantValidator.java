@@ -11,14 +11,14 @@ import org.apache.log4j.Logger;
 import org.junit.runner.Result;
 import org.junit.runners.model.InitializationError;
 
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.ModifierKind;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.junitexec.JUnitTestExecutor;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 
 /**
  * Validates a program instance using different criteria i.e. test unit
@@ -187,7 +187,7 @@ public class ProgramVariantValidator {
 			List<String> ignoreTestcases = retriveIgnoreTestCases();
 			
 			for (String candidateTest : allTest) {
-				CtSimpleType<?> type = MutationSupporter.getFactory().Type().get(candidateTest);
+				CtType<?> type = MutationSupporter.getFactory().Type().get(candidateTest);
 				
 				if (type != null && (!type.getModifiers().contains(ModifierKind.ABSTRACT))
 						&& !(type instanceof CtInterface) 
@@ -202,7 +202,7 @@ public class ProgramVariantValidator {
 			return regressionCases;
 	}
 	
-	private boolean isValidConstructor(CtSimpleType<?> type) {
+	private boolean isValidConstructor(CtType<?> type) {
 		if(type instanceof CtClass<?>) {
 			CtClass<?> ctClass = ((CtClass<?>)type);
 			if (ctClass.getSuperclass() == null || !ctClass.getSuperclass().getSimpleName().equals("TestCase")){

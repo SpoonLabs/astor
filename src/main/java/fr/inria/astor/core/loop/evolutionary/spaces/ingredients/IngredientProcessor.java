@@ -5,16 +5,15 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.martiansoftware.jsap.JSAPException;
+
+import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import spoon.Launcher;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.RuntimeProcessingManager;
-
-import com.martiansoftware.jsap.JSAPException;
-
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
-import fr.inria.astor.core.manipulation.MutationSupporter;
 
 /**
  *

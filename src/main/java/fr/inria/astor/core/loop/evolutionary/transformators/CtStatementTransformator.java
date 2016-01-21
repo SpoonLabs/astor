@@ -2,10 +2,10 @@ package fr.inria.astor.core.loop.evolutionary.transformators;
 
 import org.apache.log4j.Logger;
 
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtStatement;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
 
 /**
  * 

@@ -2,27 +2,23 @@ package fr.inria.astor.core.loop.evolutionary;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.martiansoftware.jsap.JSAPException;
+
+import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.GenSuspicious;
+import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.ProjectRepairFacade;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
-
-import com.martiansoftware.jsap.JSAPException;
-
-import fr.inria.astor.core.entities.Gen;
-import fr.inria.astor.core.entities.GenOperationInstance;
-import fr.inria.astor.core.entities.GenSuspicious;
-import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
-import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
  * jKali: implementation of Kali approach

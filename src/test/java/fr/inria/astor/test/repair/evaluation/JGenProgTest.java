@@ -12,13 +12,6 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
 import fr.inria.astor.core.entities.Gen;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
@@ -30,6 +23,13 @@ import fr.inria.astor.core.util.TimeUtil;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 
 /**
  * This class executes the experiment from our paper
@@ -75,7 +75,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testExample280CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
-		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		String dep = "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar";
 
 		String[] args = new String[] { "-bug280", "-jvm4testexecution", "/home/matias/develop/jdk1.7.0_71/bin", };
 		System.out.println(Arrays.toString(args));
@@ -528,7 +528,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	public void testMath93ModeStatement() throws Exception {
 		AstorMain main1 = new AstorMain();
 		// String dep =
-		// "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		// "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar";
 		String pathExample = new File("./examples/math_92").getAbsolutePath().replace(".", "");
 
 		// java -cp
@@ -585,7 +585,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testMath20ModeStatement() throws Exception {
 		AstorMain main1 = new AstorMain();
-		String dep = "/home/matias/.m2/repository/junit/junit/4.10/junit-4.10.jar" + File.pathSeparator
+		String dep = "/Users/matias/develop/code/astor/examples/math_2/libmvn/junit-4.10.jar" + File.pathSeparator
 				+ "/home/matias/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar";
 
 		// java -cp
@@ -631,7 +631,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testMath64ModeStatement() throws Exception {
 		AstorMain main1 = new AstorMain();
-		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		String dep = "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar";
 		File out = new File("./outputMutation/");
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 				"org.apache.commons.math.optimization.general.MinpackTest", "-location",
@@ -653,7 +653,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testMath85issue280() throws Exception {
 		AstorMain main1 = new AstorMain();
-		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		String dep = "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar";
 
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
@@ -676,7 +676,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testMath70() throws Exception {
 		AstorMain main1 = new AstorMain();
-		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		String dep = "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar";
 		File out = new File("./outputMutation/");
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
@@ -702,21 +702,65 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	public void testMath70TwoSolutions() throws Exception {
 		System.out.println(System.getProperty("java.class.path"));
 		AstorMain main1 = new AstorMain();
-		String dep = "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar";
+		String dep = "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar";
 		File out = new File("./outputMutation/");
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package",
 				"org.apache.commons",
 				"-jvm4testexecution",
-				"/usr/lib/jvm/java-7-openjdk-amd64/bin/", // "/home/matias/develop/jdk1.7.0_71/bin",
+				"/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin",
+				//"/usr/lib/jvm/java-7-openjdk-amd64/bin/", // "/home/matias/develop/jdk1.7.0_71/bin",
 				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
 				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope" , "package",//"local",// "global",//"local",//"package",
 				// "-maxsuspcandidates","2",
 				"-seed", "10",
 				 "-stopfirst","true",
-				"-maxgen", "50", };
+				"-maxgen", "50", 
+				"-saveall","false"};
+		System.out.println(Arrays.toString(args));
+		main1.main(args);
+		//Last minute comment: I suspect Math-70 has flaky test cases, so, number of solutions discovered can be different
+		validatePatchExistence(out + File.separator + "AstorMain-math_70/", 2);
+
+	}
+	
+	
+	@Test
+	public void testIntroClass() throws Exception {
+		System.out.println(System.getProperty("java.class.path"));
+		AstorMain main1 = new AstorMain();
+		String dep = "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar";
+		File out = new File("./outputMutation/");
+		String[] args = new String[] {/* "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package",
+				"org.apache.commons",
+				"-jvm4testexecution",
+				"/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin",
+				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope" , "package",//"local",// "global",//"local",//"package",
+				// "-maxsuspcandidates","2",
+				 * 
+				 */
+				"-seed", "10",
+				 "-stopfirst","true",
+				"-maxgen", "50", 
+				//-----
+				"-jvm4testexecution",
+				"/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin",
+				"-srcjavafolder",  "/Users/matias/develop/wsastor/IntroClassJava/dataset/syllables/2af3c4163b40679ef94bbbbc863c4fa3785c6e164281f5e8850d9e4ffa387e5b162ceb37449ecca33961ff162d861c8d98ff702e723755b6c37c95d5cfaf1c40/003/src/main/java",
+				"-srctestfolder",  "/Users/matias/develop/wsastor/IntroClassJava/dataset/syllables/2af3c4163b40679ef94bbbbc863c4fa3785c6e164281f5e8850d9e4ffa387e5b162ceb37449ecca33961ff162d861c8d98ff702e723755b6c37c95d5cfaf1c40/003/src/test/java",  
+				"-binjavafolder",  "target/classes",  
+				"-bintestfolder",  "target/test-classes" ,
+				"-failing",  "introclassJava.syllables_2af3c416_003WhiteboxTest" , 
+				"-dependencies",  "/Users/matias/develop/code/astor/examples/Lang-issue-428/lib/junit-4.7.jar",  
+				"-location" ,  "/Users/matias/develop/wsastor/IntroClassJava/dataset/syllables/2af3c4163b40679ef94bbbbc863c4fa3785c6e164281f5e8850d9e4ffa387e5b162ceb37449ecca33961ff162d861c8d98ff702e723755b6c37c95d5cfaf1c40/003"
+				//,"-package", "introclassJava"
+		
+		};
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
 		//Last minute comment: I suspect Math-70 has flaky test cases, so, number of solutions discovered can be different
@@ -768,8 +812,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	private void execM2() throws Exception {
 		System.out.println("Running 2");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.10/junit-4.10.jar",
-		"/home/matias/develop/code/defects4j-fw/extr/math_2/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_2/libmvn/junit-4.10.jar",
+		DEFECTS4J_Home+"/math_2/",
 		"org.apache.commons.math3.distribution.HypergeometricDistributionTest", 
 		"/src/main/java/", 
 		 "/src/test/java/", 
@@ -779,8 +823,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	private void execM95() throws Exception {
 		System.out.println("Running 95");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_95/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar",
+				DEFECTS4J_Home+"/math_95/",
 				"org.apache.commons.math.distribution.FDistributionTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -790,8 +834,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	private void execM85() throws Exception {
 		System.out.println("Running 85");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_85/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar",
+				DEFECTS4J_Home+"/math_85/",
 				"org.apache.commons.math.distribution.NormalDistributionTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -801,19 +845,19 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	private void execM84() throws Exception {
 		System.out.println("Running 84");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_84/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar",
+				DEFECTS4J_Home+"/math_84/",
 				"org.apache.commons.math.optimization.direct.MultiDirectionalTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
 				"/target/classes/",
 				 "/target/test-classes/");
 	}
-
-	private void execM82() throws Exception {
+	@Test
+	public void execM82() throws Exception {
 		System.out.println("Running 82");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_82/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar",
+				DEFECTS4J_Home+"/math_82/",
 				"org.apache.commons.math.optimization.linear.SimplexSolverTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -824,8 +868,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void execM81() throws Exception {
 		System.out.println("Running 81");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_81/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar",
+				DEFECTS4J_Home+"/math_81/",
 				"org.apache.commons.math.linear.EigenDecompositionImplTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -836,8 +880,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void execM80() throws Exception {
 		System.out.println("Running 80");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_80/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar",
+				DEFECTS4J_Home+"/math_80/",
 				"org.apache.commons.math.linear.EigenDecompositionImplTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -847,8 +891,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	private void execM78() throws Exception {
 		System.out.println("Running 78");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_78/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar",
+				DEFECTS4J_Home+"/math_78/",
 				"org.apache.commons.math.ode.events.EventStateTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -859,8 +903,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void execM73() throws Exception {
 		System.out.println("Running 73");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
-				//"/home/matias/develop/code/defects4j-fw/extr/math_73/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar",
+				//DEFECTS4J_Home+"/math_73/",
 				"/home/matias/develop/code/astor/examples/math_73/",
 				"org.apache.commons.math.analysis.solvers.BrentSolverTest", 
 				"/src/main/java/",
@@ -871,18 +915,19 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	
 	private void execM71() throws Exception {
 		System.out.println("Running 71");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_71/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar",
+				DEFECTS4J_Home+"/math_71/",
 				"org.apache.commons.math.ode.nonstiff.ClassicalRungeKuttaIntegratorTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
 				"/target/classes/",
 				 "/target/test-classes/");
 	}
-	private void execM70() throws Exception {
+	@Test
+	public void execM70() throws Exception {
 		System.out.println("Running 70");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.4/junit-4.4.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_70/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_85/libs/junit-4.4.jar",
+				"/Users/matias/develop/code/defects4j-fw/extr/math_70/",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", 
 				"/src/java/", 
 				 "/src/test/", 
@@ -893,7 +938,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	private void execM53() throws Exception {
 		System.out.println("Running 53");
 		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.8.2/junit-4.8.2.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_53/",
+				DEFECTS4J_Home+"/math_53/",
 				"org.apache.commons.math.complex.ComplexTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -904,8 +949,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void execM50() throws Exception {
 		System.out.println("Running 50");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.8.2/junit-4.8.2.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_50/",
+		testMathSpaceAnalysis( 
+				"/Users/matias/.m2/repository/junit/junit/4.8.2/junit-4.8.2.jar",
+				"/Users/matias/develop/code/defects4j-fw/extr/math_50",
 				"org.apache.commons.math.analysis.solvers.RegulaFalsiSolverTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -917,7 +963,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	private void execM49() throws Exception {
 		System.out.println("Running 49");
 		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.8.2/junit-4.8.2.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_49/",
+				DEFECTS4J_Home+"/math_49/",
 				"org.apache.commons.math.linear.SparseRealVectorTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -928,19 +974,21 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void execM40() throws Exception {
 		System.out.println("Running 40");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.10/junit-4.10.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_40/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_2/libmvn/junit-4.10.jar",
+				DEFECTS4J_Home+"/math_40/",
 				"org.apache.commons.math.analysis.solvers.BracketingNthOrderBrentSolverTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
 				"/target/classes/",
 				 "/target/test-classes/");
 	}
-
-	private void execM24() throws Exception {
+	String DEFECTS4J_Home = "/Users/matias/develop/code/defects4j-fw/extr/";
+	@Test
+	public void execM24() throws Exception {
 		System.out.println("Running 24");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.10/junit-4.10.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_24/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_2/libmvn/junit-4.10.jar",
+				//DEFECTS4J_Home+"/math_24/",
+				DEFECTS4J_Home+"/math_24/",
 				"org.apache.commons.math3.optimization.univariate.BrentOptimizerTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -951,8 +999,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void execM8() throws Exception {
 		System.out.println("Running 8");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.10/junit-4.10.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_8/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_2/libmvn/junit-4.10.jar"
+		//+File.pathSeparator+ "/Users/matias/develop/code/astor/examples/math_2/libmvn/hamcrest-core-1.1.jar"
+				,
+				DEFECTS4J_Home+"/math_8/",
 				"org.apache.commons.math3.distribution.DiscreteRealDistributionTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -962,8 +1012,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	private void execM5() throws Exception {
 		System.out.println("Running 5");
-		testMathSpaceAnalysis( "/home/matias/.m2/repository/junit/junit/4.10/junit-4.10.jar",
-				"/home/matias/develop/code/defects4j-fw/extr/math_5/",
+		testMathSpaceAnalysis( "/Users/matias/develop/code/astor/examples/math_2/libmvn/junit-4.10.jar",
+				DEFECTS4J_Home+"/math_5/",
 				"org.apache.commons.math3.complex.ComplexTest", 
 				"/src/main/java/", 
 				 "/src/test/java/", 
@@ -981,17 +1031,20 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File(locat).getAbsolutePath(), "-package",
 				"org.apache.commons",
 				"-jvm4testexecution",
-				"/usr/lib/jvm/java-7-openjdk-amd64/bin/", 
+				"/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin", 
 				"-srcjavafolder", srcj, 
 				"-srctestfolder", srct, 
 				"-binjavafolder", clj,
 				"-bintestfolder", clt, 
-				"-javacompliancelevel", "5", "-flthreshold", "0.00001", 
+				"-javacompliancelevel", "7", 
+				"-flthreshold", "0.1",//"0.00001", 
 				"-out",
 				out.getAbsolutePath(), "-scope", "local",//"package",
 				"-seed", "10",
-				"-maxgen", "400",//runn 
-				};
+				"-maxgen", "400",
+				"-maxtime","60",
+				"-stopfirst","true",
+		};
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
 
@@ -1007,7 +1060,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testMath20() throws Exception {
 		AstorMain main1 = new AstorMain();
-		String dep = "/home/matias/.m2/repository/junit/junit/4.10/junit-4.10.jar";
+		String dep = "/Users/matias/develop/code/astor/examples/math_2/libmvn/junit-4.10.jar";
 		File out = new File("./outputMutation/");
 		String[] args = new String[] { "-dependencies",
 				dep,

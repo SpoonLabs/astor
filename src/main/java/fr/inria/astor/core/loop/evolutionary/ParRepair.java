@@ -2,15 +2,6 @@ package fr.inria.astor.core.loop.evolutionary;
 
 import java.util.List;
 
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.declaration.CtElement;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.Gen;
@@ -20,6 +11,14 @@ import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * Extension of Evolutionary loop with GenProgOperations to manage IfConditions

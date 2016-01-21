@@ -5,10 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.declaration.CtElement;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.Gen;
@@ -22,9 +18,10 @@ import fr.inria.astor.core.loop.mutation.mutants.operators.NegationUnaryOperator
 import fr.inria.astor.core.loop.mutation.mutants.operators.RelationalBinaryOperatorMutator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.stats.StatSpaceSize;
-
 import fr.inria.astor.core.setup.RandomManager;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * Mutational evolution.

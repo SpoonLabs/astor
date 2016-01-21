@@ -1,12 +1,13 @@
 package fr.inria.astor.core.faultlocalization.entity.runtestsuite;
 
-import java.lang.reflect.*;
-import java.util.*;
-
-import junit.framework.TestCase;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import junit.framework.TestCase;
 
 
 /**

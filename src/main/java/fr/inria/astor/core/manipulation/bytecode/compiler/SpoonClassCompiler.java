@@ -10,17 +10,17 @@ import java.util.Map;
 
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 
+import fr.inria.astor.core.manipulation.bytecode.compiler.tools.JavaXToolsCompiler;
+import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import spoon.compiler.Environment;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.RuntimeProcessingManager;
 import spoon.support.StandardEnvironment;
-import fr.inria.astor.core.manipulation.bytecode.compiler.tools.JavaXToolsCompiler;
-import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 
 /**
  * Compiles a Spoon Class. It keeps the compilation result (bytecode) in memory.
@@ -93,7 +93,7 @@ public class SpoonClassCompiler {
 
 	public CompilationResult compileOnMemory(Collection<CtClass> ctClassList,
 			URL[] cp) {
-		//
+		
 		Map<String, String> toCompile = new HashMap<String, String>();
 		prettyPrinter = new DefaultJavaPrettyPrinter(getEnvironment());
 
@@ -131,11 +131,12 @@ public class SpoonClassCompiler {
 
 
 	protected synchronized String sourceForModelledClass(
-			CtSimpleType<?> modelledClass) {
+			CtType<?> modelledClass) {
 		prettyPrinter.scan(modelledClass);
-		String sourceCode = modelledClass.getPackage().toString()
+		String sourceCode = "package "+modelledClass.getPackage().toString()+ ";"
 				+ System.getProperty("line.separator")
-				+ prettyPrinter.toString();
+				+ 
+				prettyPrinter.toString();
 		prettyPrinter.reset();
 		return sourceCode;
 	}

@@ -3,8 +3,8 @@ package fr.inria.astor.core.loop.mutation.repairSpace;
 import java.util.HashMap;
 import java.util.Map;
 
-import spoon.reflect.declaration.CtElement;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import spoon.reflect.declaration.CtElement;
 /**
  * Return the result of a mutation of a Candidate
  * @author Matias Martinez,  matias.martinez@inria.fr

@@ -3,13 +3,12 @@ package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 import java.util.ArrayList;
 import java.util.List;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtSimpleType;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 
 /**
  * 
@@ -35,16 +34,16 @@ public class PackageBasicFixSpace extends LocalFixSpace {
 	}
 
 	@Override
-	public void defineSpace(List<CtSimpleType<?>> affected) {
+	public void defineSpace(List<CtType<?>> affected) {
 
 		List<CtPackage> packageAnalyzed = new ArrayList<>();
-		for (CtSimpleType<?> ing : affected) {
+		for (CtType<?> ing : affected) {
 
 			CtPackage p = ing.getParent(CtPackage.class);
 			if (!packageAnalyzed.contains(p)) {
 				packageAnalyzed.add(p);
-				List<CtSimpleType<?>> sts = new ArrayList<>();
-				for(CtSimpleType<?> t : p.getTypes()){
+				List<CtType<?>> sts = new ArrayList<>();
+				for(CtType<?> t : p.getTypes()){
 					if(!t.getQualifiedName().toLowerCase().contains("test")){
 						sts.add(t);
 					}

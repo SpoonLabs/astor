@@ -3,14 +3,14 @@ package fr.inria.astor.core.loop.mutation.mutants.operators;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
+import fr.inria.astor.core.loop.mutation.mutants.core.SpoonMutator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.factory.Factory;
-import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
-import fr.inria.astor.core.loop.mutation.mutants.core.SpoonMutator;
 
 /**
  * Negates or undo a negation for CtExpression of boolean type.

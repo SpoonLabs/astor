@@ -5,13 +5,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtElement;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * This Fix Space takes uniform randomly elements from the the search space. It
@@ -46,7 +45,7 @@ public class GlobalBasicFixSpace extends LocalFixSpace {
 	}
 
 	/**
-	 * Ignored the class
+	 * Ignored the class, returns all elements from the space
 	 */
 	@Override
 	public List<CtCodeElement> getFixSpace(CtElement element) {
@@ -57,7 +56,9 @@ public class GlobalBasicFixSpace extends LocalFixSpace {
 		
 		return result;
 	}
-
+	/**
+	 * Ignores the element, returns all types
+	 */
 	@Override
 	public List<CtCodeElement> getFixSpace(CtElement element, String type) {
 
@@ -78,12 +79,14 @@ public class GlobalBasicFixSpace extends LocalFixSpace {
 	}
 
 	public String toString() {
-		String s = "";
+		String s ="--Space: "+this.strategy() +"\n";
+		int totalIng = 0;	
 		for (String l : this.fixSpaceByType.keySet()) {
 			List ing = this.fixSpaceByType.get(l);
-			s += "\t " + l + ": (" + ing.size() + ") " + ing + "\n";
-
+			s += "\t " + l + ": (" + ing.size() + ") " +/* ing +*/ "\n";
+			totalIng += ing.size();
 		}
+		s = " All ingredients: "+totalIng + s;
 		return s;
 	}
 

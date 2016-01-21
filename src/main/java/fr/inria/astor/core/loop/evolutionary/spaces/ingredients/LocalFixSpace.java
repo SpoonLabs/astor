@@ -2,13 +2,12 @@ package fr.inria.astor.core.loop.evolutionary.spaces.ingredients;
 
 import java.util.List;
 
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtSimpleType;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 /**
  * 
  * @author Matias Martinez
@@ -33,12 +32,12 @@ public class LocalFixSpace extends UniformRandomFixSpace<CtElement,String, CtCod
 	
 
 	@Override
-	public void defineSpace(List<CtSimpleType<?>> affected) {
+	public void defineSpace(List<CtType<?>> affected) {
 
-			for (CtSimpleType<?> ctSimpleType : affected) {
-				if(!ctSimpleType.getSimpleName().toLowerCase().startsWith("test")
-						&& !ctSimpleType.getSimpleName().toLowerCase().endsWith("test")){
-					this.createFixSpaceFromAClass(ctSimpleType, ctSimpleType);
+			for (CtType<?> CtType : affected) {
+				if(!CtType.getSimpleName().toLowerCase().startsWith("test")
+						&& !CtType.getSimpleName().toLowerCase().endsWith("test")){
+					this.createFixSpaceFromAClass(CtType, CtType);
 				}
 			}
 				
@@ -58,9 +57,9 @@ public class LocalFixSpace extends UniformRandomFixSpace<CtElement,String, CtCod
 	@Override
 	protected String convertKey(CtElement original) {
 		
-		if(original instanceof CtSimpleType<?>)
-			return ((CtSimpleType) original).getQualifiedName();
-		return original.getParent(CtSimpleType.class).getQualifiedName();
+		if(original instanceof CtType<?>)
+			return ((CtType) original).getQualifiedName();
+		return original.getParent(CtType.class).getQualifiedName();
 		//return original.getSignature();
 	}
 	

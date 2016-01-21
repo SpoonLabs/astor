@@ -2,12 +2,12 @@ package fr.inria.astor.core.loop.mutation.mutants.operators;
 
 import java.util.List;
 
+import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
+import fr.inria.astor.core.loop.mutation.mutants.core.SpoonMutator;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.factory.Factory;
-import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
-import fr.inria.astor.core.loop.mutation.mutants.core.SpoonMutator;
 
 /**
  * Mutator made only for test. It replaces the return expression per NULL.

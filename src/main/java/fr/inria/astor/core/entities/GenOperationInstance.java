@@ -1,10 +1,10 @@
 package fr.inria.astor.core.entities;
 
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.declaration.CtElement;
 import fr.inria.astor.core.entities.taxonomy.MutationOperation;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
 import fr.inria.astor.core.util.StringUtil;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * Mutation Operation Applied to a particular gen

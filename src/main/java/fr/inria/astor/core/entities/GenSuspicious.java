@@ -2,10 +2,10 @@ package fr.inria.astor.core.entities;
 
 import java.util.List;
 
+import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
-import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 /**
  * Gen created from a Suspicious code. 
  * That means, the gen is a suspicious to have a bug.

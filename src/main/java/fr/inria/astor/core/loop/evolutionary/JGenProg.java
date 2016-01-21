@@ -6,10 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.Gen;
@@ -31,6 +27,9 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatSpaceSize;
 import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * Extension of Evolutionary loop with GenProgOperations
@@ -447,6 +446,10 @@ public class JGenProg extends EvolutionaryEngine {
 		
 		String fixStr = fix.toString();
 		for (Object ing : ingredients) {
+			try{ing.toString();}catch(Exception e){
+				e.printStackTrace();
+				continue;
+			}
 			if(ing.toString().equals(fixStr)){
 				IngredientSpaceStrategy n= determineIngredientScope(ingredient, (CtElement) ing);
 				if(n.ordinal() < orig.ordinal()){

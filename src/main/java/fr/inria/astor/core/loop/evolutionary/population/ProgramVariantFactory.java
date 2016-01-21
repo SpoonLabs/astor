@@ -6,11 +6,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.CtVariable;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.Gen;
@@ -24,6 +19,10 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 
 /**
  * Creates the initial population of program variants
@@ -305,7 +304,7 @@ public class ProgramVariantFactory {
 
 	public CtClass getCtClassCloned(SuspiciousCode candidate) {
 		String className = candidate.getClassName();
-		CtSimpleType ct = mutatorSupporter.getFactory().Type().get(className);
+		CtType ct = mutatorSupporter.getFactory().Type().get(className);
 		if (!(ct instanceof CtClass)) {
 			return null;
 		}

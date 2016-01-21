@@ -2,14 +2,14 @@ package fr.inria.astor.core.loop.evolutionary.transformators;
 
 import org.apache.log4j.Logger;
 
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.factory.Factory;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.RandomManager;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.factory.Factory;
 
 /**
  * 

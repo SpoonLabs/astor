@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
 
 /**
  *Comparison binary operation

@@ -2,9 +2,9 @@ package fr.inria.astor.core.util;
 
 import java.util.Date;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
+
+import junit.framework.Assert;
 /**
  * 
  * @author matias

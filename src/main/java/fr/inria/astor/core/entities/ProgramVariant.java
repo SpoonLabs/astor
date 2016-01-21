@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtSimpleType;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 /**
  * Representation of a Program Variant (Genotype)
  * The program is represented by a list of Gens. 
@@ -154,8 +154,8 @@ public class ProgramVariant {
 		return (id >= 0)? ( "variant-" + id) : DEFAULT_ORIGINAL_VARIANT;
 	}
 	
-	public List<CtSimpleType> getAffectedClasses(){
-		return new ArrayList<CtSimpleType>(loadClasses.values());
+	public List<CtType> getAffectedClasses(){
+		return new ArrayList<CtType>(loadClasses.values());
 	}
 	public boolean isSolution() {
 		return isSolution;

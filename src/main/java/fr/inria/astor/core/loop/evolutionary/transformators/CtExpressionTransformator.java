@@ -2,11 +2,11 @@ package fr.inria.astor.core.loop.evolutionary.transformators;
 
 import org.apache.log4j.Logger;
 
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.factory.Factory;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.factory.Factory;
 
 /**
  * Transformator of CtExpression.

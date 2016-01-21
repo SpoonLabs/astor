@@ -21,21 +21,20 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import spoon.OutputType;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.factory.Factory;
-import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
-import spoon.support.reflect.declaration.CtElementImpl;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.manipulation.sourcecode.ROOTTYPE;
+import spoon.OutputType;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 /**
  * This class carries out all supporter task: e.g. creation of directories, copy
@@ -81,7 +80,9 @@ public class MutationSupporter {
 				+ factory.getEnvironment().getComplianceLevel());
 		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
 		jdtSpoonModelBuilder.addInputSource(new File(srcPathToBuild));
-		jdtSpoonModelBuilder.setOutputDirectory(new File(srcPathToBuild));
+		//Original
+		//jdtSpoonModelBuilder.setOutputDirectory(new File(srcPathToBuild));
+		jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
 		jdtSpoonModelBuilder.setSourceClasspath(classpath);
 		jdtSpoonModelBuilder.build();
 		jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
@@ -148,7 +149,7 @@ public class MutationSupporter {
 	 * @param type
 	 * @return
 	 */
-	public void generateSourceCodeFromCtClass(CtSimpleType<?> type) {
+	public void generateSourceCodeFromCtClass(CtType<?> type) {
 		// WorkArround, for cloned
 		SourcePosition sp = type.getPosition();
 		type.setPosition(null);
@@ -177,7 +178,7 @@ public class MutationSupporter {
 		// String className = candidate.getClassName();
 		// TODO: MODIFY TO BUILD ONLY THE CANDIDATE CLASS (Instead of previously
 		// create it)
-		CtSimpleType ct = mirror(classref);
+		CtType ct = mirror(classref);
 		CtClass ctclass = (CtClass) ct;
 		return ctclass;
 	}
@@ -213,7 +214,7 @@ public class MutationSupporter {
 	 * @return the reflective instance of the class with the given qualified
 	 *         name
 	 */
-	public <T> CtSimpleType<T> mirror(String binDirPath, String qualifiedName) {
+	public <T> CtType<T> mirror(String binDirPath, String qualifiedName) {
 		Class<T> clazz = load(binDirPath, qualifiedName);
 		return mirror(clazz);
 	}
@@ -221,7 +222,7 @@ public class MutationSupporter {
 	/**
 	 * @return the reflective instance of the given class
 	 */
-	public <T> CtSimpleType<T> mirror(Class<T> clazz) {
+	public <T> CtType<T> mirror(Class<T> clazz) {
 		return factory.Type().get(clazz);
 	}
 
@@ -235,10 +236,10 @@ public class MutationSupporter {
 
 	public Map<String, CtClass> getBuiltCtClasses() {
 		Map<String, CtClass> result = new HashMap<String, CtClass>();
-		List<CtSimpleType<?>> ct = factory.Class().getAll();
-		for (CtSimpleType<?> ctSimpleType : ct) {
-			if (ctSimpleType instanceof CtClass) {
-				result.put(ctSimpleType.getQualifiedName(), (CtClass) ctSimpleType);
+		List<CtType<?>> ct = factory.Class().getAll();
+		for (CtType<?> CtType : ct) {
+			if (CtType instanceof CtClass) {
+				result.put(CtType.getQualifiedName(), (CtClass) CtType);
 			}
 		}
 		return result;
@@ -334,7 +335,8 @@ public class MutationSupporter {
 		return cloned;
 	}
 
-	public static final CtElement ROOT_ELEMENT = new CtElementImpl() {
+	public static final CtElement ROOT_ELEMENT = new ROOTTYPE();
+		/*	new CtTypeImpl(){//CtElementImpl() {
 		private static final long serialVersionUID = 1L;
 
 		public void accept(spoon.reflect.visitor.CtVisitor visitor) {
@@ -345,7 +347,7 @@ public class MutationSupporter {
 			return null;
 		};
 
-	};
+	};*/
 
 	public static void setFactory(Factory factory) {
 		MutationSupporter.factory = factory;

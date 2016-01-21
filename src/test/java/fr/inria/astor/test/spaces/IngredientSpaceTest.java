@@ -12,15 +12,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.factory.Factory;
-import spoon.support.compiler.VirtualFile;
-import spoon.support.compiler.jdt.JDTSnippetCompiler;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
@@ -30,6 +21,14 @@ import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.FixLocationSpace
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.GlobalBasicFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientAnalyzer;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.LocalFixSpace;
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.support.compiler.VirtualFile;
+import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 /**
  * 
@@ -124,7 +123,7 @@ public class IngredientSpaceTest {
 	
 	
 	
-	public List<CtSimpleType<?>> getScenario1Classes(){
+	public List<CtType<?>> getScenario1Classes(){
 		Factory factory = new Launcher().createFactory();
 
 	
@@ -158,7 +157,7 @@ public class IngredientSpaceTest {
 		return factory.Type().getAll();
 	}
 	
-	public List<CtSimpleType<?>> getScenario2Classes(){
+	public List<CtType<?>> getScenario2Classes(){
 		Factory factory = new Launcher().createFactory();
 
 	

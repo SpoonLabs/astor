@@ -2,8 +2,8 @@ package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.proces
 
 import org.apache.log4j.Logger;
 
-import spoon.reflect.code.CtIf;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransformator;
+import spoon.reflect.code.CtIf;
 /**
  * Retrieves the if conditions
  * @author Matias Martinez,  matias.martinez@inria.fr

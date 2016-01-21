@@ -11,10 +11,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtSimpleType;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.Gen;
@@ -22,6 +18,7 @@ import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.loop.evolutionary.population.PopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightCtElement;
@@ -36,6 +33,9 @@ import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.util.StringUtil;
 import fr.inria.astor.core.util.TimeUtil;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 
 /**
  * Evolutionary program transformation Loop
@@ -95,15 +95,12 @@ public abstract class EvolutionaryEngine {
 		this.projectFacade = projFacade;
 	}
 
-	/**
-	 * 
-	 * @throws Exception
-	 */
+	
 	public void startEvolution() throws Exception {
 
-		log.info("\n----Starting Mutation");
+		log.info("\n----Starting Solution Search");
 		
-		log.debug("FIXSPACE:" + this.getFixSpace());
+		//log.debug("FIXSPACE:" + this.getFixSpace());
 		
 		int generation = 0;
 		boolean stop = false;
@@ -120,7 +117,7 @@ public abstract class EvolutionaryEngine {
 				&& (generation < ConfigurationProperties.getPropertyInt("maxGeneration") && continueOperating(dateInitEvolution,
 						maxMinutes))) {
 			generation++;
-			log.info("\n----------Running generation/iteraction " + generation + ", population size: "
+			log.debug("\n----------Running generation/iteraction " + generation + ", population size: "
 					+ this.variants.size());
 			stop = processGenerations(generation);
 		}
@@ -130,7 +127,7 @@ public abstract class EvolutionaryEngine {
 
 		long startT = dateInitEvolution.getTime();
 		long endT = System.currentTimeMillis();
-		log.info("Time Evolution(ms): " + (endT - startT));
+		log.info("Time Repair Loop (s): " + (endT - startT)/1000d);
 		currentStat.timeIteraction = ((endT - startT));
 
 	}
@@ -138,19 +135,19 @@ public abstract class EvolutionaryEngine {
 	protected void showResults(int generation) {
 		log.info("\n----SUMMARY_EXECUTION---");
 		if (!this.solutions.isEmpty()) {
-			log.info("End Repair Loops: Found solution");
-			log.info("Solution stored at: " + projectFacade.getProperties().getInDir());
+			log.debug("End Repair Loops: Found solution");
+			log.debug("Solution stored at: " + projectFacade.getProperties().getInDir());
 
 		} else {
-			log.info("End Repair Loops: NOT Found solution");
+			log.debug("End Repair Loops: NOT Found solution");
 		}
-		log.info("\nNumber solutions:" + this.solutions.size());
+		log.debug("\nNumber solutions:" + this.solutions.size());
 		for (ProgramVariant variant : solutions) {
-			log.info("f (sol): " + variant.getFitness() + ", " + variant);
+			log.debug("f (sol): " + variant.getFitness() + ", " + variant);
 		}
-		log.info("\nAll variants:");
+		log.debug("\nAll variants:");
 		for (ProgramVariant variant : variants) {
-			log.info("f " + variant.getFitness() + ", " + variant);
+			log.debug("f " + variant.getFitness() + ", " + variant);
 		}
 
 		if (!solutions.isEmpty()) {
@@ -161,27 +158,46 @@ public abstract class EvolutionaryEngine {
 		// -----
 		if (this.getFixSpace() != null) {
 			FixLocationSpace space = this.getFixSpace();
-
-			String s = "--Space: " + space.strategy() + "\n";
-			for (Object l : space.getSpace().keySet()) {
+			log.debug(space);
+		}
+		// /////-------------
+		//log.debug("\n----stats: ");
+		//log.debug(currentStat);
+	}
+	public String print(FixLocationSpace space){
+		
+		String s = "--Space: " + space.strategy() + "\n";
+			for (Object l : space.getSpace().keySet()) {//Locations
 				int ing = 0;
 				Map r = (Map) space.getSpace().get(l);
 				// s+=l+"="+r.size()+",";
 				String ty = "";
-				for (Object t : r.keySet()) {
+				for (Object t : r.keySet()) {//Types
 					List ingredients = (List) r.get(t);
 					ing += ingredients.size();
-					// ty+=t+":"+ingredients.size()+";";
 				}
 				s += l + "=" + ing + "|" + ty + ",";
 			}
-			log.info(s);
+			return s;
 		}
-		// /////-------------
-		log.info("\n----stats: ");
-		log.info(currentStat);
-	}
 
+	public String print2(FixLocationSpace space){
+		
+		String s = "--Space: " + space.strategy() + "\n";
+			for (Object l : space.locationsConsidered()) {//Locations
+				int ing = 0;
+				Map r = (Map) space.getSpace().get(l);
+				// s+=l+"="+r.size()+",";
+				String ty = Integer.toString(space.getFixSpace(l).size());
+				/*for (Object t : r.keySet()) {//Types
+					List ingredients = (List) r.get(t);
+					ing += ingredients.size();
+				}*/
+				s += l + "=" + ing + "|" + ty + ",";
+			}
+			return s;
+		}
+	
 	/**
 	 * Check whether the program has passed the maximum time for operating
 	 * 
@@ -209,7 +225,7 @@ public abstract class EvolutionaryEngine {
 	 */
 	private boolean processGenerations(int generation) throws Exception {
 
-		log.info("\n***** Generation " + generation);
+		log.debug("\n***** Generation " + generation);
 		boolean foundSolution = false;
 
 		List<ProgramVariant> temporalInstances = new ArrayList<ProgramVariant>();
@@ -305,7 +321,7 @@ public abstract class EvolutionaryEngine {
 
 	private void saveOriginalVariant(ProgramVariant variant) {
 		originalModel.clear();
-		for (CtSimpleType st : variant.getAffectedClasses()) {
+		for (CtType st : variant.getAffectedClasses()) {
 			originalModel.put(st.getQualifiedName(), st.toString());
 		}
 
@@ -313,7 +329,7 @@ public abstract class EvolutionaryEngine {
 
 	private void saveModifVariant(ProgramVariant variant) {
 		modifModel.clear();
-		for (CtSimpleType st : variant.getAffectedClasses()) {
+		for (CtType st : variant.getAffectedClasses()) {
 			modifModel.put(st.getQualifiedName(), st.toString());
 		}
 
@@ -321,7 +337,7 @@ public abstract class EvolutionaryEngine {
 
 	private void validateReversedOriginalVariant(ProgramVariant variant) {
 
-		for (CtSimpleType st : variant.getAffectedClasses()) {
+		for (CtType st : variant.getAffectedClasses()) {
 			String original = originalModel.get(st.getQualifiedName());
 			boolean idem = original.equals(st.toString());
 			if (!idem) {
@@ -489,6 +505,7 @@ public abstract class EvolutionaryEngine {
 
 		// For each gen of the program instance
 		List<Gen> gensToProcess = getGenList(variant);
+		log.debug("gensToProcess "+gensToProcess);
 		for (Gen genProgInstance : gensToProcess) {
 			// tp refactor
 			genProgInstance.identified = variant.getGenList().indexOf(genProgInstance);
@@ -849,7 +866,7 @@ public abstract class EvolutionaryEngine {
 		for (ProgramVariant solutionVariant : variants) {
 			line += "\n ----\n";
 			line += "ProgramVariant " + solutionVariant.getId() + "\n ";
-			line+="\ntime(millisec)= "+ TimeUtil.getDateDiff(this.dateInitEvolution, solutionVariant.getBornDate() ,TimeUnit.MILLISECONDS);
+			line+="\ntime(sec)= "+ TimeUtil.getDateDiff(this.dateInitEvolution, solutionVariant.getBornDate() ,TimeUnit.SECONDS);
 			
 			for (int i = 1; i <= generation; i++) {
 				List<GenOperationInstance> genOperationInstances = solutionVariant.getOperations().get(i);
@@ -878,6 +895,21 @@ public abstract class EvolutionaryEngine {
 					line += "\ningredientScope= "
 							+ ((genOperationInstance.getIngredientScope() != null) ? genOperationInstance
 									.getIngredientScope() : "-");
+					//Ingredients space size
+					List<?> ingredients = null;
+					if(genOperationInstance.getOperationApplied().equals(GenProgMutationOperation.REPLACE)){
+						ingredients = getFixSpace().getFixSpace(genOperationInstance.getOriginal()
+								, genOperationInstance.getOriginal().getClass().getSimpleName());
+					};
+					if(genOperationInstance.getOperationApplied().equals(GenProgMutationOperation.INSERT_AFTER)
+							|| genOperationInstance.getOperationApplied().equals(GenProgMutationOperation.INSERT_BEFORE )){
+						ingredients = getFixSpace().getFixSpace(genOperationInstance.getOriginal());
+						
+					};
+					if(ingredients != null){
+						line += "\ningredients= "+ingredients.size();
+					}
+					
 					line += "\n ";
 				
 

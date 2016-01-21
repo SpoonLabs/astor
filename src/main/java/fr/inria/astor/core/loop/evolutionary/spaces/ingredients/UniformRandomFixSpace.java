@@ -7,14 +7,13 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtSimpleType;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.RandomManager;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtType;
 
 /**
  * This Fix Space takes uniform randomly elements from the the search space.
@@ -37,7 +36,7 @@ public abstract class UniformRandomFixSpace<L extends Object, K extends Object, 
 	protected Map<K,List<I>> fixSpaceByLocation = new HashMap<K,List<I>> ();
 	protected Map<K,Map<T, List<I>>> fixSpaceByLocationType = new HashMap<K,Map<T,List<I>>> ();
 	protected Map<T,List<I>> fixSpaceByType = new HashMap<T,List<I>> ();
-	
+	protected List<L> locationsConsidered = new ArrayList<>();
 	
 	
 	private  IngredientProcessor<L, I> ingredientProcessor;
@@ -83,8 +82,9 @@ public abstract class UniformRandomFixSpace<L extends Object, K extends Object, 
 	 * 
 	 * @param root
 	 */
-	public void createFixSpaceFromAClass(L key1, CtSimpleType root) {
+	public void createFixSpaceFromAClass(L key1, CtType root) {
 		K key = convertKey(key1);
+		locationsConsidered.add(key1);
 		//if (!getFixSpace().containsKey(key)) {
 			List<I> ingredientsToProcess = this.ingredientProcessor.createFixSpace(root);
 			AbstractFixSpaceProcessor.mustClone = true;
@@ -183,6 +183,10 @@ public abstract class UniformRandomFixSpace<L extends Object, K extends Object, 
 		return getRandomStatementFromSpace(elements);
 	}
 
+	public List<L> locationsConsidered(){
+		return locationsConsidered;
+	}
+	
 	public String toString(){
 		String s ="--Space: "+this.strategy() +"\n";
 		for (K l : this.fixSpaceByLocationType.keySet()) {
@@ -192,7 +196,7 @@ public abstract class UniformRandomFixSpace<L extends Object, K extends Object, 
 			int ingredients = 0;
 			for (T t : r.keySet()) {
 				List ing = r.get(t);
-				s2+="\t "+t+": ("+ing.size()+") "+ ing.toString().replace("\n", " ") + "\n";
+				s2+="\t "+t+": ("+ing.size()+") "+ /*ing.toString().replace("\n", " ") +*/  "\n";
 				ingredients+= ing.size();
 			}
 			s+= "--> "+l + "(kind ing:"+r.values().size()+", ingrs:"+ingredients+") \n";
@@ -210,5 +214,5 @@ public abstract class UniformRandomFixSpace<L extends Object, K extends Object, 
 		s+="----------";
 		return s;
 	}
-	
+
 }

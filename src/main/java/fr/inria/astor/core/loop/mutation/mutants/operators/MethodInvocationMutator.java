@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.loop.mutation.mutants.core.SpoonMutator;
+import fr.inria.astor.core.loop.mutation.mutants.processor.MethodCallParameterProcessor;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
-import fr.inria.astor.core.loop.mutation.mutants.core.SpoonMutator;
-import fr.inria.astor.core.loop.mutation.mutants.processor.MethodCallParameterProcessor;
-import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 
 public class MethodInvocationMutator extends SpoonMutator{
 

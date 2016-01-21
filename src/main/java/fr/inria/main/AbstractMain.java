@@ -12,15 +12,15 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Logger;
 
-import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 
 /**
  * 
@@ -438,7 +438,7 @@ public abstract class AbstractMain {
 	
 		if (factory == null) {
 			factory = createFactory();
-			factory.getEnvironment().setDebug(true);
+			factory.getEnvironment().setLevel("OFF");
 		}
 		return factory;
 	}
@@ -528,7 +528,7 @@ public abstract class AbstractMain {
 		env.setDebug(true);// false
 		env.setTabulationSize(5);
 		env.useTabulations(true);
-		env.useSourceCodeFragments(false);
+		//env.useSourceCodeFragments(false);
 
 		return factory;
 	}

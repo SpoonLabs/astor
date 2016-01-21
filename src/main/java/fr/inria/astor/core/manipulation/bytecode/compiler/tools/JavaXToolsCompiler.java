@@ -74,7 +74,7 @@ public class JavaXToolsCompiler {
 	protected JavaFileObject addCompilationUnit(String qualifiedName, String sourceContent) {
 		String simpleClassName = StringLibrary.lastAfterSplit(qualifiedName, '.');
 		String packageName = stripEnd(qualifiedName, '.' + simpleClassName);
-		SourceCodeFileObject sourceFile = new SourceCodeFileObject(simpleClassName, sourceContent);
+		SourceCodeFileObject sourceFile = new SourceCodeFileObject(simpleClassName, sourceContent);//This is the original statement
 		fileManager.addSourceFile(StandardLocation.SOURCE_PATH, packageName, simpleClassName, sourceFile);
 		return sourceFile;
 	}
@@ -102,6 +102,7 @@ public class JavaXToolsCompiler {
 		return bytecodes;
 	}
 
+	
 	private String topClassName(String qualifiedName) {
 		return qualifiedName.split("[$]")[0];
 	}

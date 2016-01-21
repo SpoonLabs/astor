@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCodeSnippetStatement;
@@ -19,8 +21,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtExecutableReference;
-import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 
 public class MethodCallParameterProcessor extends AbstractProcessor<CtMethod<?>> {
 
@@ -135,8 +135,11 @@ public class MethodCallParameterProcessor extends AbstractProcessor<CtMethod<?>>
 					CtInvocation cloneInv = (CtInvocation) MutationSupporter.getFactory().Core().clone(cinv);
 					CtExpression paricloned = (CtExpression) cloneInv.getArguments().get(i);
 					logger.info("Replacing: " + lv.getSignature() + " --> " + arg.getSignature());
+					//CHECK: During the spoon migration to 4.3 I change the method inv to create var read
 					CtVariableAccess varacces = MutationSupporter.getFactory().Code()
-							.createVariableAccess(lv.getReference(), false);
+							.createVariableRead(lv.getReference(), false);
+					/*	CtVariableAccess varacces = MutationSupporter.getFactory().Code()
+							.createVariableAccess(lv.getReference(), false);*/
 					paricloned.replace(varacces);
 					if (checkValidInvocation(cloneInv)) {
 						result.add(cloneInv);
