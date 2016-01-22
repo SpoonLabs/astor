@@ -382,7 +382,7 @@ public abstract class AbstractMain {
 			String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
 			String folder = "Math-issue-280";
 			String failing = "org.apache.commons.math.distribution.NormalDistributionTest";
-			String location = "examples/math_85/"; //"examples/Math-issue-280/";
+			String location = "examples/Math-issue-280/";
 			String packageToInstrument = "org.apache.commons";
 			double thfl = 0.5;
 			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
@@ -393,8 +393,7 @@ public abstract class AbstractMain {
 			String dependenciespath = "examples/Math-issue-288/lib/junit-4.4.jar";
 			String folder = "Math-issue-288";
 			String failing = "org.apache.commons.math.optimization.linear.SimplexSolverTest";
-			File f = new File("examples/Math-issue-288/");
-			String location = f.getParent();
+			String location = "examples/Math-issue-288/";
 			String packageToInstrument = "org.apache.commons";
 			double thfl = 0.2;
 			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
@@ -404,8 +403,7 @@ public abstract class AbstractMain {
 			String dependenciespath = "examples/Math-issue-309/lib/junit-4.4.jar";
 			String folder = "Math-issue-309";
 			String failing = "org.apache.commons.math.random.RandomDataTest";
-			File f = new File("examples/Math-issue-309/");
-			String location = f.getParent();
+			String location =("examples/Math-issue-309/");
 			String packageToInstrument = "org.apache.commons";
 			double thfl = 0.5;
 			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
@@ -415,8 +413,7 @@ public abstract class AbstractMain {
 			String dependenciespath = "examples/Math-issue-340/lib/junit-4.4.jar";
 			String folder = "Math-issue-340";
 			String failing = "org.apache.commons.math.fraction.BigFractionTest";
-			File f = new File("examples/Math-issue-340/");
-			String location = f.getParent();
+			String location =("examples/Math-issue-340/");
 			String packageToInstrument = "org.apache.commons";
 			double thfl = 0.5;
 			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
@@ -427,8 +424,7 @@ public abstract class AbstractMain {
 					+ "examples/Lang-issue-428/lib/junit-4.7.jar";
 			String folder = "Lang-issue-428";
 			String failing = "org.apache.commons.lang3.StringUtilsIsTest";
-			File f = new File("examples/Lang-issue-428/");
-			String location = f.getParent();
+			String location =("examples/Lang-issue-428/");
 			String packageToInstrument = "org.apache.commons";
 			double thfl = 0.5;
 			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
