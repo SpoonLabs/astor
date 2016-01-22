@@ -10,6 +10,8 @@ package fr.inria.main.evolution;
  */@Deprecated
 public class MainjGenProg extends AstorMain {
 
-	
+	public static void main(String[] args) throws Exception {
+		AstorMain.main(args);
+	}
 
 }
