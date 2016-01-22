@@ -2,6 +2,7 @@ package fr.inria.astor.core.loop.evolutionary;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -340,6 +341,7 @@ public class JGenProg extends EvolutionaryEngine {
 
 	}
 
+	@Override
 	protected void undoOperationToSpoonElement(GenOperationInstance operation) {
 		List<AbstractFixSpaceProcessor<?>> processors = this.getVariantFactory().getProcessors();
 		for (AbstractFixSpaceProcessor<?> processor : processors) {
@@ -380,6 +382,7 @@ public class JGenProg extends EvolutionaryEngine {
 	/**
 	 * 
 	 */
+	@Override
 	protected void applyNewMutationOperationToSpoonElement(GenOperationInstance operation)
 			throws IllegalAccessException {
 
@@ -447,6 +450,7 @@ public class JGenProg extends EvolutionaryEngine {
 		String fixStr = fix.toString();
 		for (Object ing : ingredients) {
 			try{ing.toString();}catch(Exception e){
+				log.error(e.toString());
 				e.printStackTrace();
 				continue;
 			}

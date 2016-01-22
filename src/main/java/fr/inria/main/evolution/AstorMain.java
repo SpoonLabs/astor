@@ -157,12 +157,9 @@ public class AstorMain extends AbstractMain {
 		}
 		definePopulation(gploop);
 		ConfigurationProperties.print();
-		try {
-			gploop.startEvolution();
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
+
+		gploop.startEvolution();
+		
 		long endT = System.currentTimeMillis();
 		log.info("Time Total(s): " + (endT - startT)/1000d);
 	}
