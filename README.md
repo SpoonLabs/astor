@@ -84,6 +84,7 @@ For executing Astor in jKali mode, we use the option `-mode statement-remove`. j
 The distribution contains a version of Apache commons Math with a real defect (reported in issue 280 https://issues.apache.org/jira/browse/MATH-280).
 
 To run it using jGenProg, type: 
+
      java -version # it is JDK 7?
      cd examples/Math-issue-280
      mvn test 
