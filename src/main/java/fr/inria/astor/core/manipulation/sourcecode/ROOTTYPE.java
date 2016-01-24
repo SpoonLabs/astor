@@ -11,6 +11,12 @@ public class ROOTTYPE extends CtTypeImpl {
 		
 	}
 
+	@Override
+	public String getSimpleName() {
+		
+		return "";
+	}
+
 	
 
 }
