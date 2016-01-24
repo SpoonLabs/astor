@@ -105,13 +105,18 @@ public abstract class BaseEvolutionaryTest  {
 	 * @param numberSolution
 	 */
 	public static void validatePatchExistence(String dir, int numberSolution) {
+		int cantSol = numberSolutions(dir);
+		Assert.assertEquals(numberSolution,cantSol);
+	}
+
+	protected static int numberSolutions(String dir) {
 		File out = new File(dir+File.separator+"src");
 		assertTrue(out.listFiles().length > 1);
 		int cantSol = 0;
 		for (File sol : out.listFiles()) {
 			cantSol += (sol.getName().startsWith("variant-"))?1:0;
 		}
-		Assert.assertEquals(numberSolution,cantSol);
+		return cantSol;
 	}
 	
 	public abstract void generic(

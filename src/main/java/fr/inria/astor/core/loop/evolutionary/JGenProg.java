@@ -47,8 +47,8 @@ public class JGenProg extends EvolutionaryEngine {
 	}
 
 	/**
-	 * By default, it initializes  the spoon model. It should not be created before.
-	 * Otherwise, an exception occurs.
+	 * By default, it initializes the spoon model. It should not be created
+	 * before. Otherwise, an exception occurs.
 	 * 
 	 * @param suspicious
 	 * @throws Exception
@@ -87,12 +87,11 @@ public class JGenProg extends EvolutionaryEngine {
 	}
 
 	protected List retrieveClassesForIngredients() {
-		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL) 
+		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL)
 				|| getFixSpace().strategy().equals(IngredientSpaceStrategy.PACKAGE))
 			return originalVariant.getAffectedClasses();
 
-		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.GLOBAL)
-				)
+		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.GLOBAL))
 			return this.mutatorSupporter.getFactory().Type().getAll();
 
 		return null;
@@ -162,7 +161,7 @@ public class JGenProg extends EvolutionaryEngine {
 			else
 				newGen = variantFactory.cloneGen(existingGen, operation.getModified());
 
-			// log.debug("---updating gen:  " + operation + " adding gen: " +
+			// log.debug("---updating gen: " + operation + " adding gen: " +
 			// newGen);
 			log.debug("---" + newGen);
 			log.debug("---" + operation);
@@ -184,8 +183,8 @@ public class JGenProg extends EvolutionaryEngine {
 	protected GenOperationInstance createOperationForGen(Gen gen) throws IllegalAccessException {
 		GenSuspicious genSusp = (GenSuspicious) gen;
 
-		GenProgMutationOperation operationType = (GenProgMutationOperation) repairActionSpace.getNextMutation(genSusp
-				.getSuspicious().getSuspiciousValue());
+		GenProgMutationOperation operationType = (GenProgMutationOperation) repairActionSpace
+				.getNextMutation(genSusp.getSuspicious().getSuspiciousValue());
 
 		if (operationType == null) {
 			log.debug("Operation Null");
@@ -213,8 +212,8 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 
 		if (operationType.equals(GenProgMutationOperation.REPLACE)) {
-			fix = this
-					.getFixIngredient(gen, targetStmt, gen.getCodeElement().getClass().getSimpleName(), operationType);
+			fix = this.getFixIngredient(gen, targetStmt, gen.getCodeElement().getClass().getSimpleName(),
+					operationType);
 		}
 
 		if (!operationType.equals(GenProgMutationOperation.DELETE) && fix == null) {
@@ -237,8 +236,8 @@ public class JGenProg extends EvolutionaryEngine {
 		if ((cparent != null && (cparent instanceof CtBlock))) {
 			CtBlock parentBlock = (CtBlock) cparent;
 			operation.setParentBlock(parentBlock);
-			operation.setLocationInParent(locationInParent(parentBlock, genSusp.getSuspicious().getLineNumber(),
-					targetStmt));
+			operation.setLocationInParent(
+					locationInParent(parentBlock, genSusp.getSuspicious().getLineNumber(), targetStmt));
 
 		} else {
 			log.error("Parent diferent to block");
@@ -323,12 +322,12 @@ public class JGenProg extends EvolutionaryEngine {
 				fixStat = INGREDIENT_STATUS.alreadyanalyzed;
 			}
 
-			IngredientSpaceStrategy scope = (fix != null) ? determineIngredientScope(gen.getCodeElement(), fix,
-					ingredients) : IngredientSpaceStrategy.GLOBAL;
+			IngredientSpaceStrategy scope = (fix != null)
+					? determineIngredientScope(gen.getCodeElement(), fix, ingredients) : IngredientSpaceStrategy.GLOBAL;
 
-			currentStat.sizeSpaceOfVariant.add(new StatSpaceSize(gen.getProgramVariant().getId(), gen.getCodeElement()
-					.getClass().getSimpleName(), elementsFromFixSpace, ((fix != null) ? fix.getClass().getSimpleName()
-					: "null"), fixStat, scope,operationType));
+			currentStat.sizeSpaceOfVariant.add(new StatSpaceSize(gen.getProgramVariant().getId(),
+					gen.getCodeElement().getClass().getSimpleName(), elementsFromFixSpace,
+					((fix != null) ? fix.getClass().getSimpleName() : "null"), fixStat, scope, operationType));
 
 			if (!continueSearching) {
 				return new Ingredient(fix, scope);
@@ -423,7 +422,13 @@ public class JGenProg extends EvolutionaryEngine {
 	protected boolean alreadyApplied(Gen gen, CtElement fixElement, MutationOperation operator) {
 		// we add the instance identifier to the patch.
 		String lockey = gen.getCodeElement() + "-" + operator.toString();
-		String fix = fixElement.toString();
+		String fix = "";
+		try {
+			fix = fixElement.toString();
+		}
+		catch (Exception e) {
+			log.error("to string fails");
+		}
 		List<String> prev = appliedCache.get(lockey);
 		// The element does not have any mutation applied
 		if (prev == null) {
@@ -446,22 +451,24 @@ public class JGenProg extends EvolutionaryEngine {
 			List<?> ingredients) {
 
 		IngredientSpaceStrategy orig = determineIngredientScope(ingredient, fix);
-		
+
 		String fixStr = fix.toString();
 		for (Object ing : ingredients) {
-			try{ing.toString();}catch(Exception e){
+			try {
+				ing.toString();
+			} catch (Exception e) {
 				log.error(e.toString());
-				e.printStackTrace();
+				//e.printStackTrace();
 				continue;
 			}
-			if(ing.toString().equals(fixStr)){
-				IngredientSpaceStrategy n= determineIngredientScope(ingredient, (CtElement) ing);
-				if(n.ordinal() < orig.ordinal()){
+			if (ing.toString().equals(fixStr)) {
+				IngredientSpaceStrategy n = determineIngredientScope(ingredient, (CtElement) ing);
+				if (n.ordinal() < orig.ordinal()) {
 					orig = n;
-					if(IngredientSpaceStrategy.values()[0].equals(orig))
+					if (IngredientSpaceStrategy.values()[0].equals(orig))
 						return orig;
 				}
-				
+
 			}
 		}
 		return orig;

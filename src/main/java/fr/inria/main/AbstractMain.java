@@ -90,7 +90,7 @@ public abstract class AbstractMain {
 
 		options.addOption("savesolution", false,
 				"(Optional) Save on disk intermediate program variants (even those that do not compile)");
-		options.addOption("saveall", false, "(Optional) Save on disk the solution variants");
+		options.addOption("saveall", false, "(Optional) Save on disk all program variants generated");
 
 		options.addOption("testbystep", false, "(Optional) Executes each test cases in a separate process.");
 
@@ -198,7 +198,6 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("jvm4testexecution")) {
 			ConfigurationProperties.properties
 					.setProperty("jvm4testexecution", cmd.getOptionValue("jvm4testexecution"));
-
 		}else{
 			String javahome = System.getProperty("java.home");
 			File location = new File(javahome);
@@ -377,12 +376,12 @@ public abstract class AbstractMain {
 	public boolean executeExample(String[] args) throws Exception {
 
 		CommandLine cmd = parser.parse(options, args);
-
+		ConfigurationProperties.properties.setProperty("stopfirst", "true");
 		if (cmd.hasOption("bug280")) {
-			String dependenciespath = "examples/Math-issue-280/lib/junit-4.4.jar";
+			String dependenciespath = "examples/math_85/libs/junit-4.4.jar";
 			String folder = "Math-issue-280";
 			String failing = "org.apache.commons.math.distribution.NormalDistributionTest";
-			String location = "examples/Math-issue-280/";
+			String location = "examples/math_85/";//"examples/Math-issue-280/";
 			String packageToInstrument = "org.apache.commons";
 			double thfl = 0.5;
 			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
