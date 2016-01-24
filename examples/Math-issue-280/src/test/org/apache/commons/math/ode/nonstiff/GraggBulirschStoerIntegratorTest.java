@@ -155,7 +155,7 @@ public class GraggBulirschStoerIntegratorTest
 
   }
 
-  public void testIntegratorControls()
+  public void _testIntegratorControls()
   throws DerivativeException, IntegratorException {
 
     TestProblem3 pb = new TestProblem3(0.999);
