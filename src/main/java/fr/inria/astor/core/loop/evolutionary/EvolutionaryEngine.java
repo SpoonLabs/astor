@@ -83,7 +83,7 @@ public abstract class EvolutionaryEngine {
 
 	protected ProjectRepairFacade projectFacade = null;
 
-	protected Date dateInitEvolution = null;
+	protected Date dateInitEvolution =  new Date();
 	
 	/**
 	 * 

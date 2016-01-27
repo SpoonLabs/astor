@@ -23,7 +23,12 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-
+/**
+ * This test cases aims at validating the mechanism of patch validation 
+ * (We manually generate the candidate patches)
+ * @author Matias Martinez
+ *
+ */
 public class PatchValidationTest {
 
 	@Test
@@ -31,25 +36,38 @@ public class PatchValidationTest {
 		// Recompile the example project before executing it.
 		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
 				+ "examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
-		String folder = "Math-0c1ef";
+		String projectId = "Math-0c1ef";
 		String failing = "org.apache.commons.math3.primes.PrimesTest";
-		File f = new File("examples/Math-0c1ef/");
-		String location = f.getAbsolutePath();// f.getParent();
+		File exampleLocation = new File("examples/Math-0c1ef/");
+		String location = exampleLocation.getAbsolutePath();
 		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
+		
+		String[] command = new String[]{"-dependencies",dependenciespath,"-location",location,
+				"-flthreshold",Double.toString(thfl),
+				"-package",packageToInstrument,
+				"-failing", failing,
+				"-id",projectId,
+				"-population","1"};
+		
 
 		int processBeforeAll = ProcessUtil.currentNumberProcess();
 
 		AstorMain main = new AstorMain();
-
-		main.initProject(location, folder, dependenciespath, packageToInstrument, thfl, failing);
+		
+		boolean correctArguments = main.processArguments(command);
+		assertTrue(correctArguments);
+		
+		main.initProject(location, projectId, dependenciespath, packageToInstrument, thfl, failing);
 
 		JGenProg jgp = main.createEngine(ExecutionMode.JGenProg);
-
+		
+		jgp.createInitialPopulation();
+		
 		Assert.assertEquals(1, jgp.getVariants().size());
 
 		ProgramVariant variant = jgp.getVariants().get(0);
-		//
+	
 		int currentGeneration = 1;
 		GenOperationInstance operation1 = createDummyOperation1(variant, currentGeneration);
 		System.out.println("operation " + operation1);
@@ -61,10 +79,10 @@ public class PatchValidationTest {
 		assertFalse(isSolution);
 
 		int afterFirstValidation = ProcessUtil.currentNumberProcess();
-		//
+		
 		jgp.applyNewOperationsToVariantModel(variant, currentGeneration);
 
-		//
+		
 		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
 
 		int afterPatchValidation = ProcessUtil.currentNumberProcess();
@@ -95,30 +113,42 @@ public class PatchValidationTest {
 		String failing = "org.apache.commons.math3.primes.PrimesTest" + File.pathSeparator
 				+ "org.apache.commons.math3.random.BitsStreamGeneratorTest";
 
-		File f = new File("examples/Math-0c1ef/");
-		String location = f.getAbsolutePath();
+		File projectId = new File("examples/Math-0c1ef/");
+		String location = projectId.getAbsolutePath();
 		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
+		
+		String[] command = new String[]{"-dependencies",dependenciespath,"-location",location,
+				"-flthreshold",Double.toString(thfl),
+				"-package",packageToInstrument,
+				"-failing", failing,
+				"-id",projectId.getName(),
+				"-population","1"};
+		
 
 		AstorMain main = new AstorMain();
-
+		
+		boolean correctArguments = main.processArguments(command);
+		assertTrue(correctArguments);
+		
 		main.initProject(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 
 		JGenProg jgp = main.createEngine(ExecutionMode.JGenProg);
-
+		jgp.createInitialPopulation();
+		
 		Assert.assertEquals(1, jgp.getVariants().size());
 
 		ProgramVariant variant = jgp.getVariants().get(0);
-		//
+		
 		int currentGeneration = 1;
 		GenOperationInstance operation1 = createDummyOperation1(variant, currentGeneration);
 		System.out.println("operation " + operation1);
 		assertNotNull(operation1);
 
 		boolean isSolution = false;
-		//
+	
 		jgp.applyNewOperationsToVariantModel(variant, currentGeneration);
-		//
+		
 		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
 		assertTrue(isSolution);
 
