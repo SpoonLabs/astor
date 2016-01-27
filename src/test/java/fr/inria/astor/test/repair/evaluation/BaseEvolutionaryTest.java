@@ -111,7 +111,6 @@ public abstract class BaseEvolutionaryTest  {
 
 	protected static int numberSolutions(String dir) {
 		File out = new File(dir+File.separator+"src");
-		assertTrue(out.listFiles().length > 1);
 		int cantSol = 0;
 		for (File sol : out.listFiles()) {
 			cantSol += (sol.getName().startsWith("variant-"))?1:0;
