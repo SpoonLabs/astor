@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
+import fr.inria.astor.core.entities.taxonomy.MutationExpression;
+import fr.inria.astor.core.entities.taxonomy.MutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.factory.Factory;
@@ -36,11 +38,11 @@ public class CtExpressionTransformator implements ModelTransformator{
 			CtExpression ctst = (CtExpression) operation.getOriginal();
 			CtExpression fix = (CtExpression) operation.getModified();
 			
-			if (operation.getOperationApplied() == GenProgMutationOperation.REPLACE) {
+			if (operation.getOperationApplied() == GenProgMutationOperation.REPLACE
+				||	operation.getOperationApplied() == MutationExpression.REPLACE ) {
 				ctst.replace((CtExpression) fix);
 				successful = true;
 				operation.setSuccessfulyApplied((successful));
-				// return;
 			}
 			
 			log.debug(" applied: " + ctst.getParent().getSignature());

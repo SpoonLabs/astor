@@ -10,6 +10,8 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.entities.Gen;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
+import fr.inria.astor.core.entities.taxonomy.MutationExpression;
+import fr.inria.astor.core.entities.taxonomy.MutationOperation;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightCtElement;
 import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
 import fr.inria.astor.core.loop.mutation.mutants.operators.LogicalBinaryOperatorMutator;
@@ -28,6 +30,7 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
+@Deprecated
 public class MutationalRepair extends JGenProg {
 
 	public static boolean uniformRandom = true;
@@ -62,7 +65,7 @@ public class MutationalRepair extends JGenProg {
 	protected GenOperationInstance createOperationForGen(Gen gen) throws IllegalAccessException {
 		Gen genSusp =  gen;
 							
-		GenProgMutationOperation operationType = GenProgMutationOperation.REPLACE;
+		MutationOperation operationType = MutationExpression.REPLACE;
 		
 		if (!(genSusp.getCodeElement() instanceof CtIf)) {
 			// logger.error(".....The pointed Element is Not a statement");
@@ -85,7 +88,6 @@ public class MutationalRepair extends JGenProg {
 		
 		List<MutantCtElement> mutations = getMutants(targetIF);
 		
-		//currentStat.sizeSpace.add(new StatSpaceSize(mutations.size(),0));
 		
 		log.debug("mutations: ("+mutations.size()+") "+mutations);
 		if(mutations == null || mutations.size() == 0){

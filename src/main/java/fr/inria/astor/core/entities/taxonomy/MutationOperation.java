@@ -6,4 +6,5 @@ package fr.inria.astor.core.entities.taxonomy;
  */
 public interface MutationOperation {
 
+	
 }

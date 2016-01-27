@@ -8,7 +8,8 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.entities.Gen;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
-import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
+import fr.inria.astor.core.entities.taxonomy.MutationExpression;
+import fr.inria.astor.core.entities.taxonomy.MutationOperation;
 import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
 import fr.inria.astor.core.loop.mutation.mutants.operators.LogicalBinaryOperatorMutator;
 import fr.inria.astor.core.loop.mutation.mutants.operators.MutatorComposite;
@@ -20,7 +21,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
 
 /**
- * Extension of Evolutionary loop for kali implementation
+ * New version of MutRepair, extending from the ExhaustiveSearchEngine
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
@@ -82,7 +83,7 @@ public class MutRepair extends ExhaustiveSearchEngine {
 	protected GenOperationInstance createOperationForGen(Gen gen, MutantCtElement fix) throws IllegalAccessException {
 		Gen genSusp = gen;
 
-		GenProgMutationOperation operationType = GenProgMutationOperation.REPLACE;
+		MutationOperation operationType = MutationExpression.REPLACE;
 
 		if (!(genSusp.getCodeElement() instanceof CtIf)) {
 			// logger.error(".....The pointed Element is Not a statement");
@@ -92,8 +93,7 @@ public class MutRepair extends ExhaustiveSearchEngine {
 
 		CtElement cpar = targetIF.getParent();
 
-		// TODO: the parent not always is a block.. and we should manage them...
-		if ((cpar == null /* || !(cpar instanceof CtBlock) */)) {
+		if ((cpar == null)) {
 			return null;
 		}
 
@@ -103,8 +103,6 @@ public class MutRepair extends ExhaustiveSearchEngine {
 		operation.setGen(genSusp);
 
 		List<MutantCtElement> mutations = getMutants(targetIF);
-
-		// currentStat.sizeSpace.add(new StatSpaceSize(mutations.size(),0));
 
 		log.debug("mutations: (" + mutations.size() + ") " + mutations);
 		if (mutations == null || mutations.size() == 0) {

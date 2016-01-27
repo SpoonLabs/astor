@@ -93,7 +93,6 @@ public class AstorMain extends AbstractMain {
 		}else
 		if (ExecutionMode.MutRepair.equals(mode)) {
 			gploop = new MutRepair(mutSupporter, projectFacade);
-			//gploop.setRepairActionSpace(new RemoveRepairOperatorSpace());
 			ConfigurationProperties.properties.setProperty("stopfirst", "false");
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
@@ -173,7 +172,7 @@ public class AstorMain extends AbstractMain {
 	@Override
 	public void run(String location, String projectName, String dependencies, String packageToInstrument)
 			throws Exception {
-		// TODO Auto-generated method stub
+
 
 	}
 
