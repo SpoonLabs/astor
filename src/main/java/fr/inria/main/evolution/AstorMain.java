@@ -1,10 +1,7 @@
 package fr.inria.main.evolution;
 
-import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +9,6 @@ import java.util.List;
 import org.apache.commons.cli.ParseException;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.astor.core.loop.evolutionary.JKali;
 import fr.inria.astor.core.loop.evolutionary.MutRepair;
@@ -116,25 +112,6 @@ public class AstorMain extends AbstractMain {
 		return gploop;
 
 	}
-
-	private void definePopulation(JGenProg gploop) throws FileNotFoundException, IOException, Exception {
-		// Suspicious
-		List<SuspiciousCode> candidates = projectFacade.getSuspicious(
-				ConfigurationProperties.getProperty("packageToInstrument"), ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
-
-		for (SuspiciousCode suspiciousCode : candidates) {
-			if (!suspiciousCode.getClassName().endsWith("Exception")) {
-				filtercandidates.add(suspiciousCode);
-			}
-		}
-
-		if (candidates == null || candidates.isEmpty())
-			throw new IllegalArgumentException("No suspicious gen for analyze");
-
-		gploop.initPopulation(filtercandidates);
-	}
-
 	
 	@Override
 	public void run(String location, String projectName, String dependencies, String packageToInstrument, double thfl,
@@ -155,7 +132,7 @@ public class AstorMain extends AbstractMain {
 			System.err.println("Unknown mode of execution (neither JKali nor JGenProg)");
 			return;
 		}
-		definePopulation(gploop);
+		gploop.createInitialPopulation();
 		ConfigurationProperties.print();
 
 		gploop.startEvolution();

@@ -46,6 +46,10 @@ public class JGenProg extends EvolutionaryEngine {
 		super(mutatorExecutor, projFacade);
 	}
 
+	public void createInitialPopulation() throws Exception {
+		this.initPopulation(projectFacade.getSuspicious());
+	}
+	
 	/**
 	 * By default, it initializes the spoon model. It should not be created
 	 * before. Otherwise, an exception occurs.

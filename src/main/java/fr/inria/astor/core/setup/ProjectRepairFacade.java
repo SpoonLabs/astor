@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationFacade;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.faultlocalization.entity.TestClassesFinder;
@@ -149,10 +150,13 @@ public class ProjectRepairFacade {
 		return cp;
 	}
 	
+	public List<SuspiciousCode> getSuspicious() throws FileNotFoundException, IOException{
+		List<SuspiciousCode> candidates = this.getSuspicious(
+				ConfigurationProperties.getProperty("packageToInstrument"), ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		return candidates;
+	}
 	
-	/**
-	 * TODO: maybe we can filter some of them. Only the Parent?
-	 * */
+	
 	public List<SuspiciousCode> getSuspicious(String packageToInst, String mutatorIdentifier) throws FileNotFoundException, IOException {
 
 		if (getProperties().getFailingTestCases() == null
@@ -187,7 +191,19 @@ public class ProjectRepairFacade {
 		List<SuspiciousCode> suspiciousStatemens = faultLocalizationFacade.searchGZoltar(
 				pathOutDir, testcasesToExecute, listTOInst, classPathForGZoltar, 
 				ConfigurationProperties.getProperty("location")+"/"+ConfigurationProperties.getProperty("srcjavafolder"));
-		return suspiciousStatemens;
+		
+		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
+
+		if (suspiciousStatemens == null || suspiciousStatemens.isEmpty())
+			throw new IllegalArgumentException("No suspicious gen for analyze");
+		
+		for (SuspiciousCode suspiciousCode : suspiciousStatemens) {
+			if (!suspiciousCode.getClassName().endsWith("Exception")) {
+				filtercandidates.add(suspiciousCode);
+			}
+		}
+		
+		return filtercandidates;
 	}
 
 	public void premutationSetupDirs(String srcInput) throws Exception {
