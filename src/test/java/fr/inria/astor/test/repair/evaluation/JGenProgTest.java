@@ -52,7 +52,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
 	}
 	
-	@Test
+	//@Test
 	public void testExample288CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String[] args = new String[] { "-bug288"};
@@ -68,7 +68,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		validatePatchExistence(out + File.separator + "Math-issue-340/");
 	}
 	
-	@Test
+	//@Test
 	public void testExample309CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String[] args = new String[] { "-bug309"};
@@ -81,7 +81,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+	//@Test
 	public void testMath85issue280() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
