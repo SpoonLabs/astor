@@ -85,6 +85,7 @@ public abstract class EvolutionaryEngine {
 
 	protected Date dateInitEvolution = new Date();
 
+	int generationsExecuted = 0;
 	/**
 	 * 
 	 * @param mutatorExecutor
@@ -101,7 +102,7 @@ public abstract class EvolutionaryEngine {
 
 		// log.debug("FIXSPACE:" + this.getFixSpace());
 
-		int generation = 0;
+		generationsExecuted = 0;
 		boolean stop = false;
 
 		currentStat.passFailingval1 = 0;
@@ -112,17 +113,14 @@ public abstract class EvolutionaryEngine {
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 
 		while (!this.variants.isEmpty() && (!stop || !ConfigurationProperties.getPropertyBool("stopfirst"))
-				&& (generation < ConfigurationProperties.getPropertyInt("maxGeneration")
+				&& (generationsExecuted < ConfigurationProperties.getPropertyInt("maxGeneration")
 						&& continueOperating(dateInitEvolution, maxMinutes))) {
-			generation++;
-			log.debug("\n----------Running generation/iteraction " + generation + ", population size: "
+			generationsExecuted++;
+			log.debug("\n----------Running generation/iteraction " + generationsExecuted + ", population size: "
 					+ this.variants.size());
-			stop = processGenerations(generation);
+			stop = processGenerations(generationsExecuted);
 		}
 		// At the end
-
-		showResults(generation);
-
 		long startT = dateInitEvolution.getTime();
 		long endT = System.currentTimeMillis();
 		log.info("Time Repair Loop (s): " + (endT - startT) / 1000d);
@@ -130,7 +128,7 @@ public abstract class EvolutionaryEngine {
 
 	}
 
-	protected void showResults(int generation) {
+	public void showResults() {
 		log.info("\n----SUMMARY_EXECUTION---");
 		if (!this.solutions.isEmpty()) {
 			log.debug("End Repair Loops: Found solution");
@@ -150,7 +148,7 @@ public abstract class EvolutionaryEngine {
 
 		if (!solutions.isEmpty()) {
 			log.info("\nSolution details");
-			log.info(getSolutionData(solutions, generation));
+			log.info(getSolutionData(solutions, generationsExecuted));
 
 		}
 		// -----

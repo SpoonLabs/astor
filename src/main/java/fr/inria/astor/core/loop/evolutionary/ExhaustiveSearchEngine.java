@@ -32,10 +32,11 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 		
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
-		final int generation = 1;
+		generationsExecuted = 1;
 		// For each variant (one is enough)
-		outerloop:
+	
 		for (ProgramVariant parentVariant : variants) {
+		
 			// We analyze each Gen of the variant i.e. suspicious statement
 			for (Gen gen : parentVariant.getGenList()) {
 				// We create all operators to apply in the gen
@@ -53,17 +54,17 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 																		
 					// We validate the variant after applying the operator
 					ProgramVariant solutionVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
-							generation);
-					solutionVariant.getOperations().put(generation, Arrays.asList(genOperation));
+							generationsExecuted);
+					solutionVariant.getOperations().put(generationsExecuted, Arrays.asList(genOperation));
 
 					applyNewMutationOperationToSpoonElement(genOperation);
 					
-					boolean solution = processCreatedVariant(solutionVariant, generation);
+					boolean solution = processCreatedVariant(solutionVariant, generationsExecuted);
 
 					if (solution) {
 						this.solutions.add(solutionVariant);
 						if(ConfigurationProperties.getPropertyBool("stopfirst"))
-							break;
+							return;
 					}
 
 					// We undo the operator (for try the next one)
@@ -71,7 +72,7 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 				}
 			}
 		}
-		showResults(generation);
+		
 	}
 
 	protected abstract List<GenOperationInstance> createOperators(GenSuspicious gen) ;
