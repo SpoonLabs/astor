@@ -11,6 +11,7 @@ import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
@@ -33,6 +34,7 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 		// We don't evolve variants, so the generation is always one.
 		final int generation = 1;
 		// For each variant (one is enough)
+		outerloop:
 		for (ProgramVariant parentVariant : variants) {
 			// We analyze each Gen of the variant i.e. suspicious statement
 			for (Gen gen : parentVariant.getGenList()) {
@@ -60,6 +62,8 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 
 					if (solution) {
 						this.solutions.add(solutionVariant);
+						if(ConfigurationProperties.getPropertyBool("stopfirst"))
+							break;
 					}
 
 					// We undo the operator (for try the next one)
