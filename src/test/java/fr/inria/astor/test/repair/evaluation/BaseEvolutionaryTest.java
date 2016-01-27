@@ -119,14 +119,14 @@ public abstract class BaseEvolutionaryTest  {
 		return cantSol;
 	}
 	
-	public abstract void generic(
+	public void generic(
 			String location,
 			String folder,
 			String regression,
 			String failing, 
 			String dependenciespath,
 			String packageToInstrument, 
-			double thfl) throws Exception;
+			double thfl) throws Exception{};
 	
 	protected AbstractMain getMain(){
 		return this.main;
