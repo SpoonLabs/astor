@@ -9,7 +9,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.AstorMain;
 /**
- * MutRepair test
+ * Test for MutRepair engine. (it mutates if conditions)
  * @author Matias Martinez matias.martinez@inria.fr
  *
  */
@@ -42,25 +42,24 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		File out = new File("./outputMutation/");
 			String[] args = new String[] {
-				"-dependencies", new File("examples/lib/junit-4.4.jar").getAbsolutePath(),
+				"-dependencies", new File("examples/libs/junit-4.4.jar").getAbsolutePath(),
 				"-mode","mutation",
 				"-failing", 
 				"org.apache.commons.math.optimization.linear.SimplexSolverTest", 
-				"-package", "org",
 				"-location",new File("./examples/Math-issue-288/").getAbsolutePath(),							
 				"-srcjavafolder", "/src/main/java/",
 				"-srctestfolder", "/src/test/java/", 
 				"-binjavafolder", "/target/classes/", 
 				"-bintestfolder","/target/test-classes/",
-				"-flthreshold","0.5",
+				"-flthreshold","0.1",
 				"-out",out.getAbsolutePath(),
 				"-stopfirst", "true",
 				"-seed","10"
 				};
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
-		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"MainjGenProg-Math-issue-280/",1);
-		
+		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")
+				+File.separator+"AstorMain-Math-issue-288/");
 	}
 	
 	@Override
