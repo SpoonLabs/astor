@@ -35,11 +35,7 @@ public abstract class BaseEvolutionaryTest  {
 	public void setUp() throws Exception {
 
 	
-	//	createFileLogger("c:/tmp/outs/log.txt");
-		
 		main = createMain();
-		
-		main.createFactory();
 		
 		Logger.getLogger(StandardEnvironment.class).setLevel(Level.ERROR);
 		
