@@ -66,7 +66,7 @@ public class jKaliTest extends BaseEvolutionaryTest{
 	@Test
 	public void testSeedExampleKaliAddReturnVoid() throws Exception{
 		this.testSeedExampleKali("./examples/testKaliAddReturnVoid");
-		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"AstorMain-testKaliAddReturnVoid/",3);
+		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"AstorMain-testKaliAddReturnVoid/");
 		
 	}
 	
@@ -94,7 +94,7 @@ public class jKaliTest extends BaseEvolutionaryTest{
 				"-stopfirst","true",
 		});
 		main1.main(args);
-		int numberSolution = numberSolutions(out + File.separator + "math_2");
+		int numberSolution = numberSolutions(out + File.separator + "AstorMain-math_2");
 		//As  'stopfirst' is true, kali must return 1 solution
 		assertEquals(1,numberSolution);
 	}
@@ -112,7 +112,7 @@ public class jKaliTest extends BaseEvolutionaryTest{
 				"-stopfirst","false",
 		});
 		main1.main(args);
-		int numberSolution = numberSolutions(out + File.separator + "math_2");
+		int numberSolution = numberSolutions(out + File.separator + "AstorMain-math_2");
 		//As  'stopfirst' is false, kali must return more than 1 solution
 		assertTrue(numberSolution > 1);
 	}
