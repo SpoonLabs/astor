@@ -59,7 +59,7 @@ public class MainIFPar extends AbstractMain {
 
 		projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		
-		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
+		MutationSupporter mutSupporter = new MutationSupporter();
 				
 		ParRepair parloop = new ParRepair(mutSupporter, projectFacade);
 		//parloop.setCurrentStat(currentStat);

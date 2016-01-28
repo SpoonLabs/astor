@@ -56,7 +56,7 @@ public class MainIFjGenProg extends AbstractMain {
 
 		projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
-		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
+		MutationSupporter mutSupporter = new MutationSupporter();
 		JGenProgIfExpression gploop = new JGenProgIfExpression(mutSupporter, projectFacade);
 
 		// This processor collects the If for creating a population of

@@ -53,7 +53,7 @@ public class MainIFMutation extends AbstractMain {
 			projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
 			
 			projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-			MutationSupporter mutSupporter = new MutationSupporter(getFactory());
+			MutationSupporter mutSupporter = new MutationSupporter();
 			
 			MutationalEvolutionaryRepair mutloop = new MutationalEvolutionaryRepair(mutSupporter,projectFacade);
 			mutloop.setFixspace(new LocalFixSpace());

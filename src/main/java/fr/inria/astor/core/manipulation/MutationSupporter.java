@@ -27,6 +27,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.manipulation.sourcecode.ROOTTYPE;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.OutputType;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.cu.SourcePosition;
@@ -34,6 +35,9 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 /**
@@ -62,13 +66,13 @@ public class MutationSupporter {
 
 	public static Factory factory;
 
-	/**
-	 * Receives the properties and set up the dirs.
-	 * 
-	 * @param properties
-	 */
+
+	public MutationSupporter() {
+		this(getFactory());
+	}
+
+	
 	public MutationSupporter(Factory factory) {
-		super();
 		this.factory = factory;
 		spoonClassCompiler = new SpoonClassCompiler(factory);
 		this.currentSupporter = this;
@@ -231,8 +235,14 @@ public class MutationSupporter {
 	}
 
 	public static Factory getFactory() {
+		
+		if (factory == null) {
+			factory = createFactory();
+			factory.getEnvironment().setLevel("OFF");
+		}
 		return factory;
 	}
+
 
 	public Map<String, CtClass> getBuiltCtClasses() {
 		Map<String, CtClass> result = new HashMap<String, CtClass>();
@@ -325,31 +335,31 @@ public class MutationSupporter {
 		}
 	}
 
+	public static final CtElement ROOT_ELEMENT = new ROOTTYPE();
 
 
 	public static CtCodeElement clone(CtCodeElement st) {
 		CtCodeElement cloned = factory.Core().clone(st);
-		// --
+	
 		cloned.setParent(ROOT_ELEMENT);
 
 		return cloned;
 	}
 
-	public static final CtElement ROOT_ELEMENT = new ROOTTYPE();
-		/*	new CtTypeImpl(){//CtElementImpl() {
-		private static final long serialVersionUID = 1L;
 
-		public void accept(spoon.reflect.visitor.CtVisitor visitor) {
-		}
+	
+	public static Factory createFactory() {
+		StandardEnvironment env = new StandardEnvironment();
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(), env);
+		// environment initialization
+		env.setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
+		env.setVerbose(false);
+		env.setDebug(true);// false
+		env.setTabulationSize(5);
+		env.useTabulations(true);
+		//env.useSourceCodeFragments(false);
 
-		@Override
-		public CtElement getParent() throws ParentNotInitializedException {
-			return null;
-		};
-
-	};*/
-
-	public static void setFactory(Factory factory) {
-		MutationSupporter.factory = factory;
+		return factory;
 	}
+	
 }

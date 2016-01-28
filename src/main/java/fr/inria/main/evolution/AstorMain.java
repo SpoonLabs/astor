@@ -62,7 +62,7 @@ public class AstorMain extends AbstractMain {
 
 	public JGenProg createEngine(ExecutionMode mode) throws Exception {
 
-		MutationSupporter mutSupporter = new MutationSupporter(getFactory());
+		MutationSupporter mutSupporter = new MutationSupporter();
 		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
 		// Fix Space
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());

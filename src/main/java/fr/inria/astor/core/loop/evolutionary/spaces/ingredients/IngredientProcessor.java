@@ -26,11 +26,12 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	
 	
 	private Logger logger = Logger.getLogger(IngredientProcessor.class.getName());
-	private ProcessingManager processing = 
-				new RuntimeProcessingManager(MutationSupporter.getFactory());
+	
+	private ProcessingManager processing = null;
 			
 	public IngredientProcessor() throws JSAPException {
 		super();
+		this.processing = new RuntimeProcessingManager(MutationSupporter.getFactory());
 		
 	}
 	/**
@@ -39,8 +40,7 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	 * @throws JSAPException
 	 */
 	public IngredientProcessor(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
-		super();
-		//this.addProcessor(processor.getClass().getName());
+		this();
 		processing.addProcessor(processor.getClass().getName());
 
 	}
@@ -50,7 +50,7 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	 * @throws JSAPException
 	 */
 	public IngredientProcessor(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
-		super();
+		this();
 		for (AbstractFixSpaceProcessor<?> abstractFixSpaceProcessor : processors) {
 			processing.addProcessor(abstractFixSpaceProcessor.getClass().getName() );
 		}

@@ -443,15 +443,7 @@ public abstract class AbstractMain {
 
 	}
 
-	protected Factory getFactory() {
 	
-		if (factory == null) {
-			factory = createFactory();
-			factory.getEnvironment().setLevel("OFF");
-		}
-		return factory;
-	}
-
 	
 
 	protected ProjectRepairFacade getProject(String location, String projectIdentifier, String method,
@@ -520,17 +512,4 @@ public abstract class AbstractMain {
 
 	}
 
-	public static Factory createFactory() {
-		StandardEnvironment env = new StandardEnvironment();
-		Factory factory = new FactoryImpl(new DefaultCoreFactory(), env);
-		// environment initialization
-		env.setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
-		env.setVerbose(false);
-		env.setDebug(true);// false
-		env.setTabulationSize(5);
-		env.useTabulations(true);
-		//env.useSourceCodeFragments(false);
-
-		return factory;
-	}
 }
