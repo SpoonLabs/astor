@@ -107,7 +107,7 @@ public class jKaliTest extends BaseEvolutionaryTest{
 		String[] args = (new String[] { "-dependencies", "examples/math_2/libmvn/",
 				"-mode", "statement-remove",
 				"-failing", "org.apache.commons.math3.distribution.HypergeometricDistributionTest", "-location",
-				"examples/math_2/", "-package", "org.apache.commons", "-stopfirst", "true", "-srcjavafolder", "/src/main/java/", "-srctestfolder",
+				"examples/math_2/", "-package", "org.apache.commons", "-srcjavafolder", "/src/main/java/", "-srctestfolder",
 				"/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder", "/target/test-classes",
 				"-stopfirst","false",
 		});
