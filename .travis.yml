@@ -1,0 +1,10 @@
+language: java
+
+sudo: false
+
+install: "./.travis_install.sh"
+
+script: mvn test
+
+jdk:
+  - oraclejdk7

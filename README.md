@@ -1,3 +1,8 @@
+ASTOR
+=====
+
+[![Build Status](https://travis-ci.org/SpoonLabs/astor.svg?branch=master)](https://travis-ci.org/SpoonLabs/astor)
+
 If you use Astor, please cite this technical report:
 
 Matias Martinez, Martin Monperrus. "ASTOR: Evolutionary Automatic Software Repair for Java". Technical Report hal-01075976, Inria; 2014. 
