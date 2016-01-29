@@ -81,8 +81,10 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 
 		boolean validInstance = validateInstance(originalVariant);
-		assert (validInstance);
-
+		if(validInstance){
+			throw new IllegalStateException("The application under repair has not failling test cases");
+		}
+		
 		for (ProgramVariant initvariant : variants) {
 			initvariant.setFitness(originalVariant.getFitness());
 		}

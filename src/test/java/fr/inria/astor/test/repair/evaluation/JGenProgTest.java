@@ -81,7 +81,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 * 
 	 * @throws Exception
 	 */
-	//@Test
+	@Test
 	public void testMath85issue280() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
@@ -91,10 +91,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-srcjavafolder", "/src/java/",
 				"-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package" };
+				"-maxgen", "100", "-scope", "package", "-seed","10" };
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
-		validatePatchExistence(out + File.separator + "AstorMain-math_85/", 5);
+		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
 	}
 	
 	/**
