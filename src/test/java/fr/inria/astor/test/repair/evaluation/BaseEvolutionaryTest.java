@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -23,7 +24,7 @@ import spoon.support.StandardEnvironment;
  */
 public abstract class BaseEvolutionaryTest  {
 
-	public Logger log = Logger.getLogger(Thread.currentThread().getName());
+	public static Logger log = Logger.getLogger(Thread.currentThread().getName());
 	
 	protected AbstractMain main;
 	
@@ -86,13 +87,8 @@ public abstract class BaseEvolutionaryTest  {
 	}
 
 	public static void validatePatchExistence(String dir) {
-		File out = new File(dir+File.separator+"src");
-		assertTrue(out.listFiles().length > 1);
-		boolean isSol = false;
-		for (File sol : out.listFiles()) {
-			 isSol|= sol.getName().startsWith("variant-");
-		}
-		assertTrue(isSol);
+		int cantSol = numberSolutions(dir);
+		assertTrue(cantSol > 0);
 	}
 	/**
 	 * This method asserts the number of variants that where store in the disk.
@@ -107,6 +103,12 @@ public abstract class BaseEvolutionaryTest  {
 
 	protected static int numberSolutions(String dir) {
 		File out = new File(dir+File.separator+"src");
+		log.info("Searching for stored variants at "+out.getParent());
+		assertTrue(out.exists());
+		//src folder has a folder with the buggy variant, 
+		//and zero or more of solution variants
+		assertTrue(out.listFiles().length > 1);
+		log.info("Stored variants: "+Arrays.toString(out.listFiles()));
 		int cantSol = 0;
 		for (File sol : out.listFiles()) {
 			cantSol += (sol.getName().startsWith("variant-"))?1:0;
