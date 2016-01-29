@@ -8,3 +8,10 @@ script: mvn test
 
 jdk:
   - oraclejdk7
+
+notifications:
+  email:
+    - martin.monperrus@univ-lille1.fr
+    - matias.sebastian.martinez@usi.ch
+
+
