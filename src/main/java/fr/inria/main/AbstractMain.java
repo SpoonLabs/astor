@@ -18,9 +18,6 @@ import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
 
 /**
  * 

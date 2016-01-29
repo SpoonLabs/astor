@@ -107,9 +107,7 @@ public class ProcessValidator extends ProgramValidator {
 		long t1 = System.currentTimeMillis();
 		ProgramVariantValidator validator = new ProgramVariantValidator();
 		List<String> testCasesRegression = (validator.retrieveRegressionTestCases());
-		//Collections.sort(testCasesRegression);
-		//List<String> testCasesRegression2 = java.util.Arrays.asList(ConfigurationProperties.getProperty("regressionTest").split(File.pathSeparator));
-		//Collections.sort(testCasesRegression2);
+		
 		TestResult trregression = p.execute(bc,  
 				testCasesRegression,
 				 ConfigurationProperties.getPropertyInt("tmax2"));
