@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.commons.math3.random.RandomDataGeneratorTest
+-------------------------------------------------------------------------------
+Tests run: 49, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.513 sec

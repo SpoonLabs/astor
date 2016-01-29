@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite failures="0" time="5.453" errors="0" skipped="0" tests="62" name="org.apache.commons.math3.random.RandomGeneratorFactoryTest">
+  <properties>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64"/>
+    <property name="java.vm.version" value="24.75-b04"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="path.separator" value=":"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value="unknown"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="/home/matias/develop/repositories/versions/math-0c1ef"/>
+    <property name="java.runtime.version" value="1.7.0_75-b13"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
+    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/endorsed"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="os.name" value="Linux"/>
+    <property name="classworlds.conf" value="/usr/share/maven2/bin/m2.conf"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="51.0"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="3.16.0-31-generic"/>
+    <property name="user.home" value="/home/matias"/>
+    <property name="user.timezone" value="Europe/Paris"/>
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.specification.version" value="1.7"/>
+    <property name="user.name" value="matias"/>
+    <property name="java.class.path" value="/usr/share/maven2/boot/classworlds.jar"/>
+    <property name="java.vm.specification.version" value="1.7"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.home" value="/usr/lib/jvm/java-7-openjdk-amd64/jre"/>
+    <property name="sun.java.command" value="org.codehaus.classworlds.Launcher &quot;install&quot;"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.language" value="en"/>
+    <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.7.0_75"/>
+    <property name="java.ext.dirs" value="/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext:/usr/java/packages/lib/ext"/>
+    <property name="securerandom.source" value="file:/dev/./urandom"/>
+    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/resources.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jsse.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/charsets.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rhino.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jfr.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/classes"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="maven.home" value="/usr/share/maven2"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.desktop" value="gnome"/>
+    <property name="sun.cpu.isalist" value=""/>
+  </properties>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextIntIAE2"/>
+  <testcase time="0.747" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextIntDirect"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextFloatDirect"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextBooleanDirect"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextLongDirect"/>
+  <testcase time="0.003" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNexBoolean2"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testFloatDirect"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testSeeding"/>
+  <testcase time="0.002" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testDoubleDirect"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextLong2"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextIntNeg"/>
+  <testcase time="0.017" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNexBytes"/>
+  <testcase time="0.002" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextInt2"/>
+  <testcase time="0.005" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextPascal"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextSample"/>
+  <testcase time="0.006" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextLongNegativeRange"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextIntNegativeToPositiveRange"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextIntExtremeValues"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextUniformExclusiveEndpoints"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextGaussian"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextUniformExtremeValues"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextSecureLongIAE"/>
+  <testcase time="0.019" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextF"/>
+  <testcase time="0.013" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextT"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextSecureIntNegativeToPositiveRange"/>
+  <testcase time="0.026" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextChiSquare"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextSecureHex"/>
+  <testcase time="3.785" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextPoissonConsistency"/>
+  <testcase time="0.003" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextHypergeometric"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextSecureLongPositiveRange"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextSecureIntPositiveRange"/>
+  <testcase time="0.002" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextLongNegativeToPositiveRange"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextUniformUniformMaximalInterval"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextLongExtremeValues"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextExponential"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextSecureLongNegativeRange"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextSecureIntNegativeRange"/>
+  <testcase time="0.006" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextPoisson"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextUniformUniformNegativeToPositiveBounds"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextPermutation"/>
+  <testcase time="0.003" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextIntPositiveRange"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextSecureIntIAE"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextUniformIAE"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextUniformUniformNegaiveBounds"/>
+  <testcase time="0.004" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextBinomial"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextLongIAE"/>
+  <testcase time="0.002" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testConfig"/>
+  <testcase time="0.042" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextIntWideRange"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextSecureLongNegativeToPositiveRange"/>
+  <testcase time="0.002" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextIntNegativeRange"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextInversionDeviate"/>
+  <testcase time="0.017" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextHex"/>
+  <testcase time="0.686" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextLongWideRange"/>
+  <testcase time="0.006" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextLongPositiveRange"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testReseed"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextCauchy"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextUniformUniformPositiveBounds"/>
+  <testcase time="0.002" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextGamma"/>
+  <testcase time="0.001" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextWeibull"/>
+  <testcase time="0" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextIntIAE"/>
+  <testcase time="0.01" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextBeta"/>
+  <testcase time="0.015" classname="org.apache.commons.math3.random.RandomGeneratorFactoryTest" name="testNextZipf"/>
+</testsuite>

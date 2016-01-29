@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.commons.math3.linear.RealVectorTest
+-------------------------------------------------------------------------------
+Tests run: 105, Failures: 0, Errors: 0, Skipped: 24, Time elapsed: 0.124 sec

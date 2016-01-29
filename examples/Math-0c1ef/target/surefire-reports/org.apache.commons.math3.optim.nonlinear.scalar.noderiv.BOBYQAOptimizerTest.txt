@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.commons.math3.optim.nonlinear.scalar.noderiv.BOBYQAOptimizerTest
+-------------------------------------------------------------------------------
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 4.894 sec

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.commons.math3.random.RandomGeneratorFactoryTest
+-------------------------------------------------------------------------------
+Tests run: 62, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.453 sec

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <jar destfile="/home/matias/develop/repositories/versions/math-0c1ef/target/commons-math3-3.5-SNAPSHOT-tools.jar">
+    <metainf dir="/home/matias/develop/repositories/versions/math-0c1ef" includes="NOTICE.txt,LICENSE.txt"/>
+    <manifest>
+      <attribute name="Specification-Title" value="Apache Commons Math Tools"/>
+      <attribute name="Implementation-Title" value="Apache Commons Math Tools"/>
+      <attribute name="Implementation-Vendor" value="${project.organization.name}"/>
+      <attribute name="Implementation-Version" value="3.5-SNAPSHOT"/>
+      <attribute name="Implementation-Vendor-Id" value="org.apache"/>
+      <attribute name="Implementation-Build" value="${git.revision}; 20150302-1012"/>
+      <attribute name="X-Compile-Source-JDK" value="1.5"/>
+      <attribute name="X-Compile-Target-JDK" value="1.5"/>
+    </manifest>
+    <fileset dir="/home/matias/develop/repositories/versions/math-0c1ef/target/test-classes" includes="org/apache/commons/math3/PerfTestUtils*"/>
+  </jar>
+</target>
+</project>
