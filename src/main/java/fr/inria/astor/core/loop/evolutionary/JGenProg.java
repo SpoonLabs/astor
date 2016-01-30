@@ -61,7 +61,7 @@ public class JGenProg extends EvolutionaryEngine {
 		if (MutationSupporter.getFactory().Type().getAll().isEmpty()) {
 			initModel();
 		}else{
-			log.error("The Spoon Model was already built: \n"+MutationSupporter.getFactory().Type().getAll());
+			log.error("The Spoon Model was already built");
 		}
 
 		log.info("\n---- Initial suspicious size: " + suspicious.size());
