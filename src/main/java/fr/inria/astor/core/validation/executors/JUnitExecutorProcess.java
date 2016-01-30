@@ -3,6 +3,7 @@ package fr.inria.astor.core.validation.executors;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -128,7 +129,9 @@ public class JUnitExecutorProcess {
 		if (success)
 			return tr;
 		else {
-			log.error("Error reading the validation process output: \n"+out);
+			log.error("Error reading the validation process\n output: \n"+
+		getProcessError(p.getInputStream())+" \n error: "+getProcessError(p.getErrorStream()));
+			
 			return null;
 		}
 	}
@@ -141,7 +144,21 @@ public class JUnitExecutorProcess {
 		}
 		return s;
 	}
-
+	private String getProcessError(InputStream str){
+		String out = "";
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(str));
+			String line;
+			while ((line = in.readLine()) != null) {
+				out += line + "\n";
+				
+			}
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return out;
+	}
 	private static class Worker extends Thread {
 		private final Process process;
 		private Integer exit;
