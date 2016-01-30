@@ -104,7 +104,7 @@ public abstract class BaseEvolutionaryTest  {
 	protected static int numberSolutions(String dir) {
 		File out = new File(dir+File.separator+"src");
 		log.info("Searching for stored variants at "+out.getParent());
-		assertTrue(out.exists());
+		assertTrue("The directory that store results does not exist: "+out.getAbsolutePath(),out.exists());
 		//src folder has a folder with the buggy variant, 
 		//and zero or more of solution variants
 		assertTrue(out.listFiles().length > 1);

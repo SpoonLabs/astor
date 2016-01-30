@@ -60,6 +60,8 @@ public class JGenProg extends EvolutionaryEngine {
 
 		if (MutationSupporter.getFactory().Type().getAll().isEmpty()) {
 			initModel();
+		}else{
+			log.error("The Spoon Model was already built: \n"+MutationSupporter.getFactory().Type().getAll());
 		}
 
 		log.info("\n---- Initial suspicious size: " + suspicious.size());
@@ -109,6 +111,7 @@ public class JGenProg extends EvolutionaryEngine {
 
 		try {
 			mutatorSupporter.buildModel(codeLocation, cpArray);
+			log.debug("Spoon Model built from location: "+codeLocation);
 		} catch (Exception e) {
 			log.error("Problem compiling the model with compliance level "
 					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
@@ -137,7 +140,6 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 		// We save the first variant
 		this.originalVariant = variants.get(0);
-		// currentStat.fl_gens_size = this.originalVariant.getGenList().size();
 	}
 
 	/**
@@ -166,8 +168,6 @@ public class JGenProg extends EvolutionaryEngine {
 			else
 				newGen = variantFactory.cloneGen(existingGen, operation.getModified());
 
-			// log.debug("---updating gen: " + operation + " adding gen: " +
-			// newGen);
 			log.debug("---" + newGen);
 			log.debug("---" + operation);
 			gens.add(newGen);
@@ -408,13 +408,6 @@ public class JGenProg extends EvolutionaryEngine {
 
 	}
 
-	@Deprecated
-	private boolean isSuccessApplied(String previous, CtStatement sts) {
-		CtBlock parent = (CtBlock) sts.getParent();
-		return !parent.toString().equals(previous);
-
-	}
-
 	/**
 	 * Check if the fix were applied in the location for a program instance
 	 * 
@@ -463,7 +456,6 @@ public class JGenProg extends EvolutionaryEngine {
 				ing.toString();
 			} catch (Exception e) {
 				log.error(e.toString());
-				//e.printStackTrace();
 				continue;
 			}
 			if (ing.toString().equals(fixStr)) {
