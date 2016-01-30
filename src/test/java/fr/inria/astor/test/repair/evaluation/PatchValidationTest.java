@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,8 +32,13 @@ import spoon.support.StandardEnvironment;
  */
 public class PatchValidationTest {
 
+	protected Logger log = Logger.getLogger(PatchValidationTest.class.getName());
+	
 	@Test
 	public void testPatchMath0C1() throws Exception {
+		
+		log.debug("\nInit test with one failing TC");
+		
 		// Recompile the example project before executing it.
 		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
 				+ "examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
@@ -105,6 +111,7 @@ public class PatchValidationTest {
 
 	@Test
 	public void testPatchMath0C1TwoFailing() throws Exception {
+		log.debug("\nInit test with two failing TC");
 		// Recompile the example project before executing it.
 		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
 				+ "examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
