@@ -242,7 +242,14 @@ public class MutationSupporter {
 		}
 		return factory;
 	}
-
+	/**
+	 * Creates a new spoon factory.
+	 * @return
+	 */
+	public static Factory cleanFactory(){
+		factory = null;
+		return getFactory();
+	}
 
 	public Map<String, CtClass> getBuiltCtClasses() {
 		Map<String, CtClass> result = new HashMap<String, CtClass>();
@@ -348,7 +355,7 @@ public class MutationSupporter {
 
 
 	
-	public static Factory createFactory() {
+	private static Factory createFactory() {
 		StandardEnvironment env = new StandardEnvironment();
 		Factory factory = new FactoryImpl(new DefaultCoreFactory(), env);
 		// environment initialization

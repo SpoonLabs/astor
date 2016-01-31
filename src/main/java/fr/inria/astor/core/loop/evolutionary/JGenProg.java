@@ -30,6 +30,7 @@ import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 
 /**
  * Extension of Evolutionary loop with GenProgOperations
@@ -58,11 +59,13 @@ public class JGenProg extends EvolutionaryEngine {
 	 */
 	public void initPopulation(List<SuspiciousCode> suspicious) throws Exception {
 
-		if (MutationSupporter.getFactory().Type().getAll().isEmpty()) {
-			initModel();
-		}else{
-			log.error("The Spoon Model was already built");
+		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
+			Factory fcurrent = MutationSupporter.getFactory();
+			log.error("The Spoon Model was already built.");
+			Factory fnew = MutationSupporter.cleanFactory();
+			log.error("New factory created? "+fnew.equals(fcurrent));
 		}
+		initModel();
 
 		log.info("\n---- Initial suspicious size: " + suspicious.size());
 		initializePopulation(suspicious);
@@ -140,6 +143,7 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 		// We save the first variant
 		this.originalVariant = variants.get(0);
+		
 	}
 
 	/**
