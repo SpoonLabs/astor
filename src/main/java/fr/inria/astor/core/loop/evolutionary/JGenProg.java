@@ -143,7 +143,10 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 		// We save the first variant
 		this.originalVariant = variants.get(0);
-		
+	
+		if (originalVariant.getGenList().isEmpty()) {
+			throw new IllegalStateException("Variant without gens. It must have at least one.");
+		}
 	}
 
 	/**
