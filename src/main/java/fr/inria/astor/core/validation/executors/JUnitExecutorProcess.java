@@ -130,7 +130,7 @@ public class JUnitExecutorProcess {
 			return tr;
 		else {
 			log.error("Error reading the validation process\n output: \n"+
-		getProcessError(p.getInputStream())+" \n error: "+getProcessError(p.getErrorStream()));
+			out +" \n error: "+getProcessError(p.getErrorStream()));
 			
 			return null;
 		}
@@ -151,7 +151,6 @@ public class JUnitExecutorProcess {
 			String line;
 			while ((line = in.readLine()) != null) {
 				out += line + "\n";
-				
 			}
 			in.close();
 		} catch (Exception e) {
