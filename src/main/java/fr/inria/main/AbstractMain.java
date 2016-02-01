@@ -178,7 +178,9 @@ public abstract class AbstractMain {
     }
 
 	public boolean processArguments(String[] args) throws Exception {
-
+		
+		ConfigurationProperties.clear();
+		
 		CommandLine cmd = null;
 		try {
 			cmd = parser.parse(options, args);
@@ -215,10 +217,6 @@ public abstract class AbstractMain {
 			System.out.println("Error: invalid jdk folder");
 			return false;
 		}
-			//throw new IllegalArgumentException("jdk folder not found");
-
-        // check if example execution; if so, the "required arguments" are not
-
          
         if(!this.isExample(cmd)) {   
             String dependenciespath = cmd.getOptionValue("dependencies");
@@ -235,7 +233,6 @@ public abstract class AbstractMain {
             ConfigurationProperties.properties.setProperty("dependenciespath", dependenciespath);
             ConfigurationProperties.properties.setProperty("failing", failing);
             ConfigurationProperties.properties.setProperty("location", location);
-           // ConfigurationProperties.properties.setProperty("packageToInstrument", packageToInstrument);
         }
       
         if (cmd.hasOption("package"))
