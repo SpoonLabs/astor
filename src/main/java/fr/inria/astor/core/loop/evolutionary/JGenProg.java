@@ -61,9 +61,9 @@ public class JGenProg extends EvolutionaryEngine {
 
 		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
 			Factory fcurrent = MutationSupporter.getFactory();
-			log.error("The Spoon Model was already built.");
+			log.debug("The Spoon Model was already built.");
 			Factory fnew = MutationSupporter.cleanFactory();
-			log.error("New factory created? "+fnew.equals(fcurrent));
+			log.debug("New factory created? "+!fnew.equals(fcurrent));
 		}
 		initModel();
 
