@@ -75,13 +75,13 @@ public class JUnitExecutorProcess {
 			long t_end = System.currentTimeMillis();
 			// worker.interrupt();
 			// ---
-			int exitvalue = p.exitValue();
+			p.exitValue();
 			TestResult tr = getTestResult(p);
 			p.destroy();
 			log.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
 
 			return tr;
-		} catch ( IOException |InterruptedException ex) {
+		} catch ( IOException |InterruptedException |IllegalThreadStateException  ex) {
 			log.error("The Process that runs JUnit test cases had problems: " + ex.getMessage());
 			if (p != null)
 				p.destroy();
