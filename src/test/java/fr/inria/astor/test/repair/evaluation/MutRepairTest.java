@@ -42,7 +42,7 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		File out = new File("./outputMutation/");
 			String[] args = new String[] {
-				"-dependencies", new File("examples/libs/junit-4.4.jar").getAbsolutePath(),
+				"-dependencies", new File("./examples/libs/junit-4.4.jar").getAbsolutePath(),
 				"-mode","mutation",
 				"-failing", 
 				"org.apache.commons.math.optimization.linear.SimplexSolverTest", 

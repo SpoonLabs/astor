@@ -39,12 +39,12 @@ public class PatchValidationTest {
 		
 		log.debug("\nInit test with one failing TC");
 		
-		// Recompile the example project before executing it.
-		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
-				+ "examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
+		String dependenciespath = new File("./examples/Math-0c1ef/lib/junit-4.11.jar").getAbsolutePath() 
+				+ File.pathSeparator
+				+ new File("./examples/Math-0c1ef/lib/hamcrest-core-1.3.jar").getAbsolutePath();
 		String projectId = "Math-0c1ef";
 		String failing = "org.apache.commons.math3.primes.PrimesTest";
-		File exampleLocation = new File("examples/Math-0c1ef/");
+		File exampleLocation = new File("./examples/Math-0c1ef/");
 		String location = exampleLocation.getAbsolutePath();
 		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
@@ -82,7 +82,7 @@ public class PatchValidationTest {
 		boolean isSolution = false;
 		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
 		// The model has not been changed.
-		assertFalse(isSolution);
+		assertFalse("Any solution was expected here", isSolution);
 
 		int afterFirstValidation = ProcessUtil.currentNumberProcess();
 		
@@ -93,34 +93,34 @@ public class PatchValidationTest {
 
 		int afterPatchValidation = ProcessUtil.currentNumberProcess();
 
-		assertTrue(isSolution);
+		assertTrue("The variant must be a solution",isSolution);
 
 		System.out.println("\nSolutions:\n" + jgp.getSolutionData(jgp.getVariants(), 1));
 
 		jgp.prepareNextGeneration(jgp.getVariants(), 1);
 
-		assertNotNull(jgp.getSolutions());
+		assertNotNull("Any solution found",jgp.getSolutions());
 
-		assertFalse(jgp.getSolutions().isEmpty());
+		assertFalse("Solution set must be not empty",jgp.getSolutions().isEmpty());
 
-		assertEquals("Problems with process", processBeforeAll, afterFirstValidation);
+		assertEquals("Problems with number of process", processBeforeAll, afterFirstValidation);
 
-		assertEquals("Problems with process", processBeforeAll, afterPatchValidation);
+		assertEquals("Problems with number of  process", processBeforeAll, afterPatchValidation);
 
 	}
 
 	@Test
 	public void testPatchMath0C1TwoFailing() throws Exception {
 		log.debug("\nInit test with two failing TC");
-		// Recompile the example project before executing it.
-		String dependenciespath = "examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator
-				+ "examples/Math-0c1ef/lib/hamcrest-core-1.3.jar";
+		String dependenciespath = new File("./examples/Math-0c1ef/lib/junit-4.11.jar").getAbsolutePath() 
+				+ File.pathSeparator
+				+ new File("./examples/Math-0c1ef/lib/hamcrest-core-1.3.jar").getAbsolutePath();
 		String folder = "Math-0c1ef";
 		// Only the first one fails
 		String failing = "org.apache.commons.math3.primes.PrimesTest" + File.pathSeparator
 				+ "org.apache.commons.math3.random.BitsStreamGeneratorTest";
 
-		File projectId = new File("examples/Math-0c1ef/");
+		File projectId = new File("./examples/Math-0c1ef/");
 		String location = projectId.getAbsolutePath();
 		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
@@ -136,7 +136,7 @@ public class PatchValidationTest {
 		AstorMain main = new AstorMain();
 		
 		boolean correctArguments = main.processArguments(command);
-		assertTrue(correctArguments);
+		assertTrue("Problems with arguments",correctArguments);
 		
 		main.initProject(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 
@@ -149,7 +149,6 @@ public class PatchValidationTest {
 		
 		int currentGeneration = 1;
 		GenOperationInstance operation1 = createDummyOperation1(variant, currentGeneration);
-		System.out.println("operation " + operation1);
 		assertNotNull(operation1);
 
 		boolean isSolution = false;
@@ -157,16 +156,12 @@ public class PatchValidationTest {
 		jgp.applyNewOperationsToVariantModel(variant, currentGeneration);
 		
 		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
-		assertTrue(isSolution);
+		assertTrue("A solution is attended",isSolution);
 
 	}
 	private GenOperationInstance createDummyOperation1(ProgramVariant variant, int currentGeneration) {
 
-		GenSuspicious genSusp = searchSuspiciousElement(variant, "n += 3", " ", 93);// TODO:
-																					// is
-																					// 93
-																					// or
-																					// 95
+		GenSuspicious genSusp = searchSuspiciousElement(variant, "n += 3", " ", 93);
 		assertNotNull(genSusp);
 
 		CtElement targetStmt = genSusp.getCodeElement();
@@ -190,7 +185,6 @@ public class PatchValidationTest {
 	@Test
 	public void testCreateFix1() {
 		assertEquals(createFix1().toString(), "n += 2");
-		
 	}
 
 	public CtElement createFix1() {
