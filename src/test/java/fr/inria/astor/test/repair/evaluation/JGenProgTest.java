@@ -1,17 +1,14 @@
 package fr.inria.astor.test.repair.evaluation;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.util.TimeUtil;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.AstorMain;
 
@@ -136,29 +133,6 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	
 	
 
-	/**
-	 * Test to assert the max time argument (which it does not includes the Fault localization step)
-	 * @throws Exception
-	 */
-	@SuppressWarnings("static-access")
-	@Test
-	public void testRunMainTime() throws Exception {
-
-		Date init = new Date();
-		AstorMain main1 = new AstorMain();
-		String pathExample = new File("./examples/Math-0c1ef").getAbsolutePath();
-		main1.main(new String[] {
-				"-dependencies",
-				"examples/Math-0c1ef/lib/junit-4.11.jar" + File.pathSeparator + pathExample + File.separator
-						+ "lib/hamcrest-core-1.3.jar", "-id", "tttMath-0c1ef", "-failing",
-				"org.apache.commons.math3.primes.PrimesTest", "-location", pathExample, "-package",
-				"org.apache.commons", "-maxgen", "400", "-population", "2", "-saveall", "-maxtime", "1" });
-		long t = TimeUtil.deltaInMinutes(init);
-		assertTrue(t > 1);// more than one minute
-		assertFalse(t < 2);// less than two minutes
-	}
-
-	
 	
 	@Test
 	public void testArguments() throws Exception {
