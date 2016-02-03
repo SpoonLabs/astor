@@ -86,10 +86,11 @@ public class jKaliTest extends BaseEvolutionaryTest{
 	public void testMath2ExampleRemoveModeOneSolution() throws Exception {
 		AstorMain main1 = new AstorMain();
 
-		String[] args = (new String[] { "-dependencies", "./examples/math_2/libmvn/",
+		String[] args = (new String[] { 
+				"-dependencies", "./examples/math_2/libmvn/",
 				"-mode", "statement-remove",
 				"-failing", "org.apache.commons.math3.distribution.HypergeometricDistributionTest", "-location",
-				"examples/math_2/", "-package", "org.apache.commons", "-stopfirst", "true", "-srcjavafolder", "/src/main/java/", "-srctestfolder",
+				"./examples/math_2/", "-package", "org.apache.commons", "-stopfirst", "true", "-srcjavafolder", "/src/main/java/", "-srctestfolder",
 				"/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder", "/target/test-classes",
 				"-stopfirst","true",
 		});
@@ -104,7 +105,8 @@ public class jKaliTest extends BaseEvolutionaryTest{
 	public void testMath2ExampleRemoveModeManySolutions() throws Exception {
 		AstorMain main1 = new AstorMain();
 
-		String[] args = (new String[] { "-dependencies", "./examples/math_2/libmvn/",
+		String[] args = (new String[] { 
+				"-dependencies", "./examples/math_2/libmvn/",
 				"-mode", "statement-remove",
 				"-failing", "org.apache.commons.math3.distribution.HypergeometricDistributionTest", 
 				"-location",
