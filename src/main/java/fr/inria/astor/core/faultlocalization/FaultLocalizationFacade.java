@@ -47,8 +47,12 @@ public class FaultLocalizationFacade {
 		// Example: GZoltar gz = new
 		// GZoltar("C:\\Personal\\develop\\workspaceEvolution\\testProject\\target\\classes");
 
-		// logger.info(new File(location).getAbsolutePath());
-		GZoltar gz = new GZoltar(new File(ConfigurationProperties.getProperty("location")).getAbsolutePath());
+		File projLocationFile =  new File(ConfigurationProperties.getProperty("location"));
+		String projLocation =projLocationFile.getAbsolutePath();
+		logger.debug("Gzoltar run over: "+projLocation + " , does it exist? "+projLocationFile.exists());
+		
+		
+		GZoltar gz = new GZoltar(projLocation);
 
 		// 2. Add Package/Class names to instrument
 		// 3. Add Package/Test Case/Test Suite names to execute
