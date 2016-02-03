@@ -16,3 +16,8 @@ cd ../../
 cd examples/Math-issue-288/
 mvn test -DskipTests
 cd ../../
+
+
+cd examples/math_2/
+mvn test -DskipTests
+cd ../../
