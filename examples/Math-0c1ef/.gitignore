@@ -3,12 +3,9 @@
 .settings
 .checkstyle
 bin
-target
 /build
-/lib
 /site-content
 .ekstazi
-*.class
 *.iml
 *.ipr
 *.iws
