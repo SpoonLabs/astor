@@ -77,10 +77,12 @@ Other options:
 
 **Output**:
 
+The Astor's output is located in folder "./outputMutation". You can change it through command line argument '-out'. Inside the folder "/src/" Astor stores the source code of the solutions that it found.
+
 Folder “default” contains the original program, without any modification. It's a sanity check, it’s the output of spoon without applying any processor over the spoon model of the application under repair.
 
 Each folder "variant-x" is a valid solution to the repair problem (passes all tests). There is an command line argument `saveall` that allows you to save all variants that Astor generates, even they are not solution.
-
+For each variant x that is solution, Astor sumarizes all changes applied to variant x inside the file '/variant-x/patch.xml'.
 
 **jKali**
 
