@@ -18,6 +18,7 @@ import fr.inria.astor.core.entities.taxonomy.MutationOperation;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
+import fr.inria.astor.core.loop.evolutionary.transformators.BlockReificationScanner;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransformator;
 import fr.inria.astor.core.loop.evolutionary.transformators.CtStatementTransformator;
 import fr.inria.astor.core.loop.evolutionary.transformators.ModelTransformator;
@@ -30,6 +31,7 @@ import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 
 /**
@@ -107,7 +109,7 @@ public class JGenProg extends EvolutionaryEngine {
 		return null;
 	}
 
-	private void initModel() {
+	private void initModel() throws Exception {
 		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
 		String[] cpArray = classpath.split(File.pathSeparator);
@@ -123,6 +125,13 @@ public class JGenProg extends EvolutionaryEngine {
 					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
 			mutatorSupporter.buildModel(codeLocation, cpArray);
 		}
+	
+		BlockReificationScanner visitor = new BlockReificationScanner();
+		for(CtType c : mutatorSupporter.getFactory().Type().getAll()){
+			c.accept(visitor);
+		}
+		
+		
 	}
 
 	/**

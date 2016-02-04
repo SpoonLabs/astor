@@ -162,12 +162,7 @@ public class ProgramVariantFactory {
 		if (ctSuspects.isEmpty()) {
 			return null;
 		}
-	/*	//TODO: move
-		boolean onlyParent = false;
-		//
-		if(onlyParent){
-			ctSuspects = ctSuspects.subList(0, 1);
-		}*/
+	
 
 		List<CtVariable> contextOfGen = null;
 		// We take the first element for getting the context (as the remaining have the same location, it's not necessary)
