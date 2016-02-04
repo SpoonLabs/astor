@@ -66,15 +66,16 @@ public class JUnitExecutorProcess {
 			long t_start = System.currentTimeMillis();
 			p = pb.start();
 
-			String cm2 = command.toString().replace("[", "").replace("]", "").replace(",", " ");
-			log.debug("Executing process: \n" + cm2);
+			String commandString = command.toString().replace("[", "").replace("]", "").replace(",", " ");
+			int trunk = ConfigurationProperties.getPropertyInt("commandTrunk");
+			String commandToPrint = (trunk !=0 && commandString.length() > trunk )? (commandString.substring(0, trunk)+"..AND "+(commandString.length() - trunk)+" CHARS MORE..."):commandString;
+			log.debug("Executing process: \n" + commandToPrint);
 
 			Worker worker = new Worker(p);
 			worker.start();
 			worker.join(waitTime);
 			long t_end = System.currentTimeMillis();
-			// worker.interrupt();
-			// ---
+			
 			p.exitValue();
 			TestResult tr = getTestResult(p);
 			p.destroy();
