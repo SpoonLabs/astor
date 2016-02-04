@@ -75,6 +75,11 @@ Other options:
     -flthreshold "minimun suspicious value for fault localization e.g. 0.1"
 
 
+**Output**:
+
+Folder “default” contains the original program, without any modification. It's a sanity check, it’s the output of spoon without applying any processor over the spoon model of the application under repair.
+
+Each folder "variant-x" is a valid solution to the repair problem (passes all tests). There is an command line argument `saveall` that allows you to save all variants that Astor generates, even they are not solution.
 
 
 **jKali**
