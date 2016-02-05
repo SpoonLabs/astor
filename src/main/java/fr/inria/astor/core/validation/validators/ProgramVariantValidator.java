@@ -1,5 +1,6 @@
 package fr.inria.astor.core.validation.validators;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +32,7 @@ public class ProgramVariantValidator {
 
 	private Logger logger = Logger.getLogger(Thread.currentThread().getName());
 	
-	
+	@Deprecated
 	public ProgramVariantValidationResult validateVariantSecondPhaseSingle(
 			List<String> failingCases, String testSuiteClassName)
 			throws FileNotFoundException, ClassNotFoundException,
@@ -169,11 +170,10 @@ public class ProgramVariantValidator {
 	}
 
 	
-	public List<String> retrieveRegressionTestCases() {
+	public static List<String> retrieveRegressionTestCases() {
 		String casesTest = ConfigurationProperties.properties.getProperty("testcasesregression");
-		String[] cases = casesTest.split(";");
+		String[] cases = casesTest.split(File.pathSeparator);
 		return 	retrieveRegressionTestCases(Arrays.asList(cases));
-		
 	
 	}
 	
@@ -182,7 +182,7 @@ public class ProgramVariantValidator {
 	 * @return 
 	 */
 
-	public List<String> retrieveRegressionTestCases(List<String> allTest) {
+	public static List<String> retrieveRegressionTestCases(List<String> allTest) {
 			List<String> regressionCases = new ArrayList<String>();
 			List<String> ignoreTestcases = retriveIgnoreTestCases();
 			
@@ -202,7 +202,7 @@ public class ProgramVariantValidator {
 			return regressionCases;
 	}
 	
-	private boolean isValidConstructor(CtType<?> type) {
+	private static boolean isValidConstructor(CtType<?> type) {
 		if(type instanceof CtClass<?>) {
 			CtClass<?> ctClass = ((CtClass<?>)type);
 			if (ctClass.getSuperclass() == null || !ctClass.getSuperclass().getSimpleName().equals("TestCase")){
@@ -214,13 +214,13 @@ public class ProgramVariantValidator {
 		return false;
 	}
 
-	private List<String> retriveIgnoreTestCases() {
+	private static List<String> retriveIgnoreTestCases() {
 		String list = ConfigurationProperties.getProperty("ignoredTestCases");
 		String[] cases = list.split(";");
 		return 	Arrays.asList(cases);
 	}
 
-	private boolean isIgnoredTestCase(String nameTestCase, List<String> ignoredList ){
+	private static boolean isIgnoredTestCase(String nameTestCase, List<String> ignoredList ){
 		
 		for (String ignoreTC : ignoredList) {
 			

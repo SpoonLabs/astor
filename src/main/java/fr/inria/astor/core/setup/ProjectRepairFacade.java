@@ -267,7 +267,7 @@ public class ProjectRepairFacade {
 			s+=tcr+File.pathSeparator;
 			tr.add(tcr);
 		}
-		ConfigurationProperties.properties.setProperty("regressionTest", s);
+		ConfigurationProperties.properties.setProperty("testcasesregression", s);
 		getProperties().setRegressionCases(tr);
 	}
 }

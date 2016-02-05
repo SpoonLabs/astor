@@ -94,7 +94,7 @@ public class FaultLocalizationFacade {
 			}
 			if (!alltest.contains(testName)) {
 				alltest.add(testName);
-				casesTest += testName + ";";
+				casesTest += testName + File.pathSeparator;
 			}
 		}
 
