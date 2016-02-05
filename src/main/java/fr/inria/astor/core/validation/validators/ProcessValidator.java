@@ -105,8 +105,7 @@ public class ProcessValidator extends ProgramValidator {
 			String localPrefix) {
 		log.debug("-Test Failing is passing, Executing regression");
 		long t1 = System.currentTimeMillis();
-		ProgramVariantValidator validator = new ProgramVariantValidator();
-		List<String> testCasesRegression = (validator.retrieveRegressionTestCases());
+		List<String> testCasesRegression = (MutationSupporter.retrieveRegressionTestCases());
 		
 		TestResult trregression = p.execute(bc,  
 				testCasesRegression,
@@ -131,8 +130,8 @@ public class ProcessValidator extends ProgramValidator {
 		log.debug("-Test Failing is passing, Executing regression");
 		TestResult trregressionall = new TestResult();
 		long t1 = System.currentTimeMillis();
-		ProgramVariantValidator validator = new ProgramVariantValidator();
-		for (String tc : validator.retrieveRegressionTestCases()) {
+	
+		for (String tc : MutationSupporter.retrieveRegressionTestCases()) {
 									
 			List<String> parcial = new ArrayList<String>();
 			parcial.add(tc);

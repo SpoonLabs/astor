@@ -19,7 +19,6 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.validation.validators.ProgramVariantValidator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -138,7 +137,7 @@ public class ProgramVariantFactory {
 	private List<GenSuspicious> createGens(ProgramVariant progInstance) {
 
 		List<GenSuspicious> suspGen = new ArrayList<>();
-		List<String> testcases = ProgramVariantValidator.retrieveRegressionTestCases();
+		List<String> testcases = MutationSupporter.retrieveRegressionTestCases();
 		List<CtType<?>> types = MutationSupporter.getFactory().Class().getAll();
 
 		for (CtType<?> ctType : types) {

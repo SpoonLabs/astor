@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,9 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
@@ -367,6 +370,67 @@ public class MutationSupporter {
 		//env.useSourceCodeFragments(false);
 
 		return factory;
+	}
+	
+	public static List<String> retrieveRegressionTestCases() {
+		String casesTest = ConfigurationProperties.properties.getProperty("testcasesregression");
+		String[] cases = casesTest.split(File.pathSeparator);
+		return 	retrieveRegressionTestCases(Arrays.asList(cases));
+	
+	}
+	
+	/**
+	 * Feed the list of test cases according to the definition POM/build.xml
+	 * @return 
+	 */
+
+	public static List<String> retrieveRegressionTestCases(List<String> allTest) {
+			List<String> regressionCases = new ArrayList<String>();
+			List<String> ignoreTestcases = retriveIgnoreTestCases();
+			
+			for (String candidateTest : allTest) {
+				CtType<?> type = MutationSupporter.getFactory().Type().get(candidateTest);
+				
+				if (type != null && (!type.getModifiers().contains(ModifierKind.ABSTRACT))
+						&& !(type instanceof CtInterface) 
+						&& isValidConstructor(type)
+						&& !(isIgnoredTestCase(type.getQualifiedName(), ignoreTestcases)))
+				{
+					regressionCases.add(type.getQualifiedName());
+				}
+				
+			}
+				
+			return regressionCases;
+	}
+	
+	private static boolean isValidConstructor(CtType<?> type) {
+		if(type instanceof CtClass<?>) {
+			CtClass<?> ctClass = ((CtClass<?>)type);
+			if (ctClass.getSuperclass() == null || !ctClass.getSuperclass().getSimpleName().equals("TestCase")){
+				return true;
+			}
+			return ((CtClass<?>)type).getConstructor() != null ||
+			((CtClass<?>)type).getConstructor(type.getFactory().Class().createReference(String.class)) != null;
+		}
+		return false;
+	}
+
+	private static List<String> retriveIgnoreTestCases() {
+		String list = ConfigurationProperties.getProperty("ignoredTestCases");
+		String[] cases = list.split(";");
+		return 	Arrays.asList(cases);
+	}
+
+	private static boolean isIgnoredTestCase(String nameTestCase, List<String> ignoredList ){
+		
+		for (String ignoreTC : ignoredList) {
+			
+			if(nameTestCase.startsWith(ignoreTC)){
+				return true;
+			};
+		}
+		return false;
 	}
 	
 }
