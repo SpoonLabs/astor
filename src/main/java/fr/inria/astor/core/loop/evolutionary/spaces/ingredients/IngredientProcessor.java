@@ -72,6 +72,7 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	 * @param mustClone
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<T> createFixSpace(CtElement ctelement, boolean mustClone ) {
 		AbstractFixSpaceProcessor.mustClone = mustClone;
 		AbstractFixSpaceProcessor.spaceElements.clear();

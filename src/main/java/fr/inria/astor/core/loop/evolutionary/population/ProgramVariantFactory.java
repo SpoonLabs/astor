@@ -40,12 +40,11 @@ public class ProgramVariantFactory {
 	protected int idCounter = 0;
 
 	protected MutationSupporter mutatorSupporter = null;
-	
+
 	protected List<AbstractFixSpaceProcessor<?>> processors = null;
 
-	
-	protected boolean resetOperations; 
-	
+	protected boolean resetOperations;
+
 	public ProgramVariantFactory() {
 		super();
 	}
@@ -54,19 +53,19 @@ public class ProgramVariantFactory {
 		this();
 		this.processors = processors;
 	}
-/**
- * Create a list of Program Variant from a list of suspicious code. 
- * @param suspiciousList
- * @param maxNumberInstances
- * @param populationControler
- * @param projectFacade
- * @return
- * @throws Exception
- */
-	public List<ProgramVariant> createInitialPopulation(List<SuspiciousCode> suspiciousList, 
-			int maxNumberInstances,
-			PopulationController populationControler,
-			ProjectRepairFacade projectFacade) throws Exception {
+
+	/**
+	 * Create a list of Program Variant from a list of suspicious code.
+	 * 
+	 * @param suspiciousList
+	 * @param maxNumberInstances
+	 * @param populationControler
+	 * @param projectFacade
+	 * @return
+	 * @throws Exception
+	 */
+	public List<ProgramVariant> createInitialPopulation(List<SuspiciousCode> suspiciousList, int maxNumberInstances,
+			PopulationController populationControler, ProjectRepairFacade projectFacade) throws Exception {
 
 		List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
 
@@ -81,14 +80,11 @@ public class ProgramVariantFactory {
 				String srcOutput = projectFacade.getInDirWithPrefix(v_i.currentMutatorIdentifier());
 				mutatorSupporter.saveSourceCodeOnDiskProgramVariant(v_i, srcOutput);
 			}
-			
+
 		}
 
 		return variants;
 	}
-
-
-
 
 	public CtClass getCtClassFromCtElement(CtElement element) {
 
@@ -101,8 +97,8 @@ public class ProgramVariantFactory {
 	}
 
 	/**
-	 * A Program instances is created from the list of suspicious. 
-	 * For each suspiciuos a list of gens is created.
+	 * A Program instances is created from the list of suspicious. For each
+	 * suspiciuos a list of gens is created.
 	 * 
 	 * @param suspiciousList
 	 * @param idProgramInstance
@@ -114,24 +110,80 @@ public class ProgramVariantFactory {
 
 		log.debug("Creating variant " + idProgramInstance);
 
-		for (SuspiciousCode suspiciousCode : suspiciousList) {
-			//For each suspicious code, we create one or more Gens (when it is possible)
-			List<GenSuspicious> gens = createGens(suspiciousCode, progInstance);
-			if(gens!= null)
-				progInstance.getGenList().addAll(gens);
-			else{
-				log.info("-no gen created for suspicios "+suspiciousCode);  	
-			}
+		if (!suspiciousList.isEmpty()) {
+			for (SuspiciousCode suspiciousCode : suspiciousList) {
+				// For each suspicious code, we create one or more Gens (when it
+				// is possible)
+				List<GenSuspicious> gens = createGens(suspiciousCode, progInstance);
+				if (gens != null)
+					progInstance.getGenList().addAll(gens);
+				else {
+					log.info("-no gen created for suspicios " + suspiciousCode);
+				}
 
+			}
+			log.info("Total suspicious from FL: " + suspiciousList.size() + ",  " + progInstance.getGenList().size());
+		} else {
+			// We do not have suspicious, so, we create gens for each statement
+
+			List<GenSuspicious> gensFromAllStatements = createGens(progInstance);
+			progInstance.getGenList().addAll(gensFromAllStatements);
 		}
-		log.info("Total suspicious from FL: " + suspiciousList.size() + ",  " + progInstance.getGenList().size());
 		log.info("Total Gens created: " + progInstance.getGenList().size());
 		return progInstance;
 	}
 
+	@SuppressWarnings("rawtypes")
+	private List<GenSuspicious> createGens(ProgramVariant progInstance) {
+
+		List<GenSuspicious> suspGen = new ArrayList<>();
+
+		List<CtType<?>> types = MutationSupporter.getFactory().Class().getAll();
+
+		for (CtType<?> ctType : types) {
+
+			if (!(ctType instanceof CtClass)) {
+				continue;
+			}
+
+			CtClass ctclasspointed = (CtClass) ctType;
+			
+			if (!progInstance.getBuiltClasses().containsKey(ctclasspointed.getQualifiedName())) {
+				//TODO: clone or not?
+				//CtClass ctclasspointed = getCtClassCloned(className);
+				progInstance.getBuiltClasses().put(ctclasspointed.getQualifiedName(), ctclasspointed);
+			}
+
+			List<CtElement> classesToProcess = new ArrayList<>();
+			classesToProcess.add(ctclasspointed);
+			List<CtElement> extractedElements = extractChildElements(classesToProcess, processors);
+
+			for (CtElement suspiciousElement : extractedElements) {
+
+				List<CtVariable> contextOfGen = VariableResolver.getVariablesFromBlockInScope(suspiciousElement);
+
+				GenSuspicious gen = new GenSuspicious();
+				gen.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
+						suspiciousElement.getPosition().getLine(), 0d));
+				gen.setClonedClass(ctclasspointed);
+				gen.setCodeElement(suspiciousElement);
+				gen.setContextOfGen(contextOfGen);
+				suspGen.add(gen);
+				log.info("--Gen:" + suspiciousElement.getClass().getSimpleName() + ", suspValue "
+						+ gen.getSuspicious().getSuspiciousValue() + ", line "
+						+ suspiciousElement.getPosition().getLine() + ", file "
+						+ suspiciousElement.getPosition().getFile().getName());
+			}
+
+		}
+		return suspGen;
+
+	}
 
 	/**
-	 * It receives a suspicious code (a line) and it create a list of Gens from than suspicious line when it's possible.
+	 * It receives a suspicious code (a line) and it create a list of Gens from
+	 * than suspicious line when it's possible.
+	 * 
 	 * @param suspiciousCode
 	 * @param progInstance
 	 * @return
@@ -140,42 +192,41 @@ public class ProgramVariantFactory {
 
 		List<GenSuspicious> suspGen = new ArrayList<GenSuspicious>();
 
-		CtClass ctclasspointed = resolveCtClass(suspiciousCode, progInstance);
+		CtClass ctclasspointed = resolveCtClass(suspiciousCode.getClassName(), progInstance);
 		if (ctclasspointed == null) {
 			log.info(" Not ctClass for suspicious code " + suspiciousCode);
 			return null;
 		}
-		//this.fixspace.createFixSpaceFromAClass(ctclasspointed.getQualifiedName(), ctclasspointed);
 
 		List<CtElement> ctSuspects = null;
 		try {
-			ctSuspects = retrieveCtModelOfSuspect(suspiciousCode, ctclasspointed);
-			//The parent first, so I inverse the order 
+			ctSuspects = retrieveCtElementForSuspectCode(suspiciousCode, ctclasspointed);
+			// The parent first, so I inverse the order
 			Collections.reverse(ctSuspects);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		
-		//if we are not able to retrieve suspicious CtElements, we return
+
+		// if we are not able to retrieve suspicious CtElements, we return
 		if (ctSuspects.isEmpty()) {
 			return null;
 		}
-	
 
 		List<CtVariable> contextOfGen = null;
-		// We take the first element for getting the context (as the remaining have the same location, it's not necessary)
-	
-		contextOfGen = VariableResolver.getVariablesFromBlockInScope(ctSuspects.get(0));
-		
-		
-		//From the suspicious CtElements, there are some of them we are interested in.
-		//We filter them using the processors
-		List<CtElement> filterByType = getMatchedElementsToProcess(ctSuspects, processors);
+		// We take the first element for getting the context (as the remaining
+		// have the same location, it's not necessary)
 
-		List<CtElement> filteredTypeByLine = intersection(filterByType, ctSuspects ); 
-		//For each filtered element, we create a Gen. 
+		contextOfGen = VariableResolver.getVariablesFromBlockInScope(ctSuspects.get(0));
+
+		// From the suspicious CtElements, there are some of them we are
+		// interested in.
+		// We filter them using the processors
+		List<CtElement> filterByType = extractChildElements(ctSuspects, processors);
+
+		List<CtElement> filteredTypeByLine = intersection(filterByType, ctSuspects);
+		// For each filtered element, we create a Gen.
 		int id = 0;
 		for (CtElement ctElement : filteredTypeByLine) {
 			GenSuspicious gen = new GenSuspicious();
@@ -184,22 +235,23 @@ public class ProgramVariantFactory {
 			gen.setCodeElement(ctElement);
 			gen.setContextOfGen(contextOfGen);
 			suspGen.add(gen);
-			log.info("--Gen:" + ctElement.getClass().getSimpleName()  + ", suspValue "
-					+ suspiciousCode.getSuspiciousValue()
-					+", line "+  ctElement.getPosition().getLine()
-					+", file "+ctElement.getPosition().getFile().getName());
+			log.info("--Gen:" + ctElement.getClass().getSimpleName() + ", suspValue "
+					+ suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
+					+ ctElement.getPosition().getFile().getName());
 		}
 		return suspGen;
 	}
 
 	/**
-	 * Retrieve the ct elements we want to represent in our model
+	 * Retrieve the ct elements we want to consider in our model, for instance,
+	 * some approach are interested only in repair If conditions.
 	 * 
 	 * @param ctSuspects
 	 * @param processors
 	 * @return
 	 */
-	private List<CtElement> getMatchedElementsToProcess(List<CtElement> ctSuspects,
+	@SuppressWarnings(value = { "unchecked", "rawtypes" })
+	private List<CtElement> extractChildElements(List<CtElement> ctSuspects,
 			List<AbstractFixSpaceProcessor<?>> processors) {
 
 		if (processors == null || processors.isEmpty()) {
@@ -212,9 +264,12 @@ public class ProgramVariantFactory {
 			IngredientProcessor spaceProcessor = new IngredientProcessor(processors);
 			for (CtElement element : ctSuspects) {
 				List<CtElement> result = spaceProcessor.createFixSpace(element, false);
-				//ctMatching.addAll(result);
+
 				for (CtElement ctElement : result) {
-					if(!ctMatching.contains(ctElement))
+					if(ctElement.toString().equals("super()")){
+						continue;
+					}
+					if (!ctMatching.contains(ctElement))
 						ctMatching.add(ctElement);
 				}
 			}
@@ -235,18 +290,18 @@ public class ProgramVariantFactory {
 	 * @param progInstance
 	 * @return
 	 */
-	public CtClass resolveCtClass(SuspiciousCode suspiciousCode, ProgramVariant progInstance) {
+	public CtClass resolveCtClass(String className,  ProgramVariant progInstance) {
 
 		// if the ctclass exists in the cache, return it.
-		if (progInstance.getBuiltClasses().containsKey(suspiciousCode.getClassName())) {
-			return progInstance.getBuiltClasses().get(suspiciousCode.getClassName());
+		if (progInstance.getBuiltClasses().containsKey(className)) {
+			return progInstance.getBuiltClasses().get(className);
 		}
 
-		CtClass ctclasspointed = getCtClassCloned(suspiciousCode);
+		CtClass ctclasspointed = getCtClassCloned(className);
 		if (ctclasspointed == null)
 			return null;
 		// Save the CtClass in cache
-		progInstance.getBuiltClasses().put(suspiciousCode.getClassName(), ctclasspointed);
+		progInstance.getBuiltClasses().put(className, ctclasspointed);
 
 		return ctclasspointed;
 	}
@@ -269,8 +324,8 @@ public class ProgramVariantFactory {
 		childVariant.setGenerationSource(generation);
 		childVariant.setParent(parentVariant);
 		childVariant.getGenList().addAll(parentVariant.getGenList());
-		
-		if(!ConfigurationProperties.getPropertyBool("resetoperations"))
+
+		if (!ConfigurationProperties.getPropertyBool("resetoperations"))
 			childVariant.getOperations().putAll(parentVariant.getOperations());
 		childVariant.setLastGenAnalyzed(parentVariant.getLastGenAnalyzed());
 		childVariant.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
@@ -287,9 +342,8 @@ public class ProgramVariantFactory {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<CtElement> retrieveCtModelOfSuspect(SuspiciousCode candidate, CtElement ctclass) throws Exception {
-
-		//log.debug("Analyzing candidate " + candidate.getClassName() + " , line " + candidate.getLineNumber() + " susp "+ candidate.getSuspiciousValue());
+	public List<CtElement> retrieveCtElementForSuspectCode(SuspiciousCode candidate, CtElement ctclass)
+			throws Exception {
 
 		SpoonLocationPointerLauncher muSpoonLaucher = new SpoonLocationPointerLauncher(MutationSupporter.getFactory());
 		List<CtElement> susp = muSpoonLaucher.run(ctclass, candidate.getLineNumber());
@@ -297,8 +351,8 @@ public class ProgramVariantFactory {
 		return susp;
 	}
 
-	public CtClass getCtClassCloned(SuspiciousCode candidate) {
-		String className = candidate.getClassName();
+	public CtClass getCtClassCloned(String className) {
+		
 		CtType ct = mutatorSupporter.getFactory().Type().get(className);
 		if (!(ct instanceof CtClass)) {
 			return null;
@@ -335,21 +389,22 @@ public class ProgramVariantFactory {
 		return newGen;
 
 	}
-	 public <T> List<T> intersection(List<T> list1, List<T> list2) {
-	        List<T> list = new ArrayList<T>();
 
-	        for (T t : list1) {
-	        	try{
-	            if(list2.contains(t)) {
-	                list.add(t);
-	            }
-	        }catch(Exception ex){
-	        	ex.printStackTrace();
-	        }
-	        }
+	public <T> List<T> intersection(List<T> list1, List<T> list2) {
+		List<T> list = new ArrayList<T>();
 
-	        return list;
-	    }
+		for (T t : list1) {
+			try {
+				if (list2.contains(t)) {
+					list.add(t);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		return list;
+	}
 
 	public List<AbstractFixSpaceProcessor<?>> getProcessors() {
 		return processors;

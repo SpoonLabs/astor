@@ -49,9 +49,14 @@ public class JGenProg extends EvolutionaryEngine {
 	}
 
 	public void createInitialPopulation() throws Exception {
-		this.initPopulation(projectFacade.getSuspicious());
+		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
+			// We dont use FL, so at this point the do not have suspicious
+			this.initPopulation(new ArrayList<SuspiciousCode>());
+		} else {
+			this.initPopulation(projectFacade.getSuspicious());
+		}
 	}
-	
+
 	/**
 	 * By default, it initializes the spoon model. It should not be created
 	 * before. Otherwise, an exception occurs.
@@ -65,7 +70,7 @@ public class JGenProg extends EvolutionaryEngine {
 			Factory fcurrent = MutationSupporter.getFactory();
 			log.debug("The Spoon Model was already built.");
 			Factory fnew = MutationSupporter.cleanFactory();
-			log.debug("New factory created? "+!fnew.equals(fcurrent));
+			log.debug("New factory created? " + !fnew.equals(fcurrent));
 		}
 		initModel();
 
@@ -88,10 +93,10 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 
 		boolean validInstance = validateInstance(originalVariant);
-		if(validInstance){
+		if (validInstance) {
 			throw new IllegalStateException("The application under repair has not failling test cases");
 		}
-		
+
 		for (ProgramVariant initvariant : variants) {
 			initvariant.setFitness(originalVariant.getFitness());
 		}
@@ -116,7 +121,7 @@ public class JGenProg extends EvolutionaryEngine {
 
 		try {
 			mutatorSupporter.buildModel(codeLocation, cpArray);
-			log.debug("Spoon Model built from location: "+codeLocation);
+			log.debug("Spoon Model built from location: " + codeLocation);
 		} catch (Exception e) {
 			log.error("Problem compiling the model with compliance level "
 					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
@@ -125,13 +130,12 @@ public class JGenProg extends EvolutionaryEngine {
 					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
 			mutatorSupporter.buildModel(codeLocation, cpArray);
 		}
-	
+
 		BlockReificationScanner visitor = new BlockReificationScanner();
-		for(CtType c : mutatorSupporter.getFactory().Type().getAll()){
+		for (CtType c : mutatorSupporter.getFactory().Type().getAll()) {
 			c.accept(visitor);
 		}
-		
-		
+
 	}
 
 	/**
@@ -152,7 +156,7 @@ public class JGenProg extends EvolutionaryEngine {
 		}
 		// We save the first variant
 		this.originalVariant = variants.get(0);
-	
+
 		if (originalVariant.getGenList().isEmpty()) {
 			throw new IllegalStateException("Variant without gens. It must have at least one.");
 		}
@@ -439,8 +443,7 @@ public class JGenProg extends EvolutionaryEngine {
 		String fix = "";
 		try {
 			fix = fixElement.toString();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("to string fails");
 		}
 		List<String> prev = appliedCache.get(lockey);

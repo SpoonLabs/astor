@@ -139,6 +139,9 @@ public abstract class AbstractMain {
 		options.addOption("scope", true,
                 "(Optional) Scope of the ingredient seach space: Local (same class), package (classes from the same package) or global (all classes from the application under analysis). Default: local.");
 
+		options.addOption("skipfaultlocalization", false,
+				"The fault localization is skipped and all statements are considered");
+	
 		
 	}
 
@@ -343,6 +346,9 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("probagenmutation"))
 			ConfigurationProperties.properties.setProperty("probagenmutation", "true");
 		
+		if (cmd.hasOption("skipfaultlocalization"))
+			ConfigurationProperties.properties.setProperty("skipfaultlocalization", "true");
+	
 		
 		if (cmd.hasOption("uniqueoptogen"))
 			ConfigurationProperties.properties.setProperty("uniqueoptogen", cmd.getOptionValue("uniqueoptogen"));
