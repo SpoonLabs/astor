@@ -34,11 +34,7 @@ import fr.inria.main.AbstractMain;
  */
 public class MainIFjGenProg extends AbstractMain {
 
-	@Override
-	public void run(String location, String projectName, String dependencies, String packageToMine) throws Exception {
-
-	}
-
+	
 	public MainIFjGenProg() {
 	}
 

@@ -171,11 +171,4 @@ public class AstorMain extends AbstractMain {
 
 	}
 
-	@Override
-	public void run(String location, String projectName, String dependencies, String packageToInstrument)
-			throws Exception {
-
-
-	}
-
 }

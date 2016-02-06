@@ -30,12 +30,7 @@ import fr.inria.main.AbstractMain;
  */
 public class MainIFMutation extends AbstractMain {
 	static List<SuspiciousCode> filtercandidates = null;
-	@Override
-	public void run(String location, String projectName, String dependencies, String packageToMine)
-			throws Exception {
-		throw new IllegalArgumentException("Functionality not provided");
-
-	}
+	
 
 	@Override
 	public void run(String location, 

@@ -146,9 +146,6 @@ public abstract class AbstractMain {
 	}
 
 
-	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument)
-			throws Exception;
-
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
 			double thfl, String failing) throws Exception;
 

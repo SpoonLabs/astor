@@ -89,8 +89,6 @@ public class MainIFPar extends AbstractMain {
 				filtercandidates.add(suspiciousCode);
 			}
 		}
-	//	currentStat.fl_size = filtercandidates.size();
-	//	currentStat.fl_threshold = TransformationProperties.THRESHOLD_SUSPECTNESS;
 
 		assertNotNull(candidates);
 		assertTrue(candidates.size() > 0);
@@ -100,15 +98,9 @@ public class MainIFPar extends AbstractMain {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
-		// currentStat.printStats();
+	
 
 	}
 
-	@Override
-	public void run(String location, String projectName, String dependencies,  String packageToMine)
-			throws Exception {
-		throw new IllegalArgumentException("Functionality not provided");
-
-	}
 
 }
