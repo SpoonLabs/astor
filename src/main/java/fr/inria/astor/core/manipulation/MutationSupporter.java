@@ -164,8 +164,6 @@ public class MutationSupporter {
 		if (spoonClassCompiler == null || spoonClassCompiler.getJavaPrinter() == null) {
 			throw new IllegalArgumentException("Spoon compiler must be initialized");
 		}
-		// ProgramVariantCompilationResult compResult =
-		// spoonClassCompiler.compileSpoonClassElement((CtClass) type);
 		spoonClassCompiler.saveSourceCode((CtClass) type);
 
 		// --
@@ -174,21 +172,8 @@ public class MutationSupporter {
 
 	}
 
-	public CtElement getRoot(CtElement e) {
-		if (e.getParent() == null)
-			return e;
-		else
-			return getRoot(e.getParent());
-	}
 
-	public CtClass getCtClass(Class classref) {
-		// String className = candidate.getClassName();
-		// TODO: MODIFY TO BUILD ONLY THE CANDIDATE CLASS (Instead of previously
-		// create it)
-		CtType ct = mirror(classref);
-		CtClass ctclass = (CtClass) ct;
-		return ctclass;
-	}
+	
 
 	/**
 	 * @return the class with the given qualified name.
@@ -196,7 +181,7 @@ public class MutationSupporter {
 	@SuppressWarnings("unchecked")
 	public <T> Class<T> load(String binDirPath, String qualifiedName) {
 		try {
-			URL url = new File(binDirPath/* modelBinDir */).toURI().toURL();
+			URL url = new File(binDirPath).toURI().toURL();
 			URLClassLoader cl = new URLClassLoader(new URL[] { url });
 			Thread.currentThread().setContextClassLoader(cl);
 			return (Class<T>) (cl.loadClass(qualifiedName));
@@ -217,21 +202,7 @@ public class MutationSupporter {
 		}
 	}
 
-	/**
-	 * @return the reflective instance of the class with the given qualified
-	 *         name
-	 */
-	public <T> CtType<T> mirror(String binDirPath, String qualifiedName) {
-		Class<T> clazz = load(binDirPath, qualifiedName);
-		return mirror(clazz);
-	}
-
-	/**
-	 * @return the reflective instance of the given class
-	 */
-	public <T> CtType<T> mirror(Class<T> clazz) {
-		return factory.Type().get(clazz);
-	}
+	
 
 	public SpoonClassCompiler getSpoonClassCompiler() {
 		return this.spoonClassCompiler;
@@ -364,11 +335,9 @@ public class MutationSupporter {
 		// environment initialization
 		env.setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 		env.setVerbose(false);
-		env.setDebug(true);// false
+		env.setDebug(true);
 		env.setTabulationSize(5);
 		env.useTabulations(true);
-		//env.useSourceCodeFragments(false);
-
 		return factory;
 	}
 	
