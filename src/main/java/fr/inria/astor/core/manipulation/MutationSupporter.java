@@ -66,7 +66,11 @@ public class MutationSupporter {
 	 * Spoon model generator
 	 */
 	private JDTBasedSpoonCompiler jdtSpoonModelBuilder = null;
+	
+	private List<CtClass> classes = new ArrayList<>();
+	private List<CtClass> testClasses = new ArrayList<>();
 
+	
 	public static Factory factory;
 
 
@@ -341,65 +345,13 @@ public class MutationSupporter {
 		return factory;
 	}
 	
-	public static List<String> retrieveRegressionTestCases() {
-		String casesTest = ConfigurationProperties.properties.getProperty("testcasesregression");
-		String[] cases = casesTest.split(File.pathSeparator);
-		return 	retrieveRegressionTestCases(Arrays.asList(cases));
-	
-	}
-	
-	/**
-	 * Feed the list of test cases according to the definition POM/build.xml
-	 * @return 
-	 */
-
-	public static List<String> retrieveRegressionTestCases(List<String> allTest) {
-			List<String> regressionCases = new ArrayList<String>();
-			List<String> ignoreTestcases = retriveIgnoreTestCases();
-			
-			for (String candidateTest : allTest) {
-				CtType<?> type = MutationSupporter.getFactory().Type().get(candidateTest);
-				
-				if (type != null && (!type.getModifiers().contains(ModifierKind.ABSTRACT))
-						&& !(type instanceof CtInterface) 
-						&& isValidConstructor(type)
-						&& !(isIgnoredTestCase(type.getQualifiedName(), ignoreTestcases)))
-				{
-					regressionCases.add(type.getQualifiedName());
-				}
-				
-			}
-				
-			return regressionCases;
-	}
-	
-	private static boolean isValidConstructor(CtType<?> type) {
-		if(type instanceof CtClass<?>) {
-			CtClass<?> ctClass = ((CtClass<?>)type);
-			if (ctClass.getSuperclass() == null || !ctClass.getSuperclass().getSimpleName().equals("TestCase")){
-				return true;
-			}
-			return ((CtClass<?>)type).getConstructor() != null ||
-			((CtClass<?>)type).getConstructor(type.getFactory().Class().createReference(String.class)) != null;
-		}
-		return false;
+	public List<CtClass> getClasses() {
+		return classes;
 	}
 
-	private static List<String> retriveIgnoreTestCases() {
-		String list = ConfigurationProperties.getProperty("ignoredTestCases");
-		String[] cases = list.split(";");
-		return 	Arrays.asList(cases);
-	}
 
-	private static boolean isIgnoredTestCase(String nameTestCase, List<String> ignoredList ){
-		
-		for (String ignoreTC : ignoredList) {
-			
-			if(nameTestCase.startsWith(ignoreTC)){
-				return true;
-			};
-		}
-		return false;
+	public List<CtClass> getTestClasses() {
+		return testClasses;
 	}
 	
 }

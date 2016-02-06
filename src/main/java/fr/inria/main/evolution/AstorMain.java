@@ -24,6 +24,7 @@ import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.LocalFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.PackageBasicFixSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
@@ -46,7 +47,8 @@ public class AstorMain extends AbstractMain {
 
 		projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
-		projectFacade.calculateRegression(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		FinderTestCases.findTestCasesForRegression(projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT),
+				projectFacade);
 
 	}
 

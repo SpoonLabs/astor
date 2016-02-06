@@ -236,38 +236,10 @@ public class ProjectRepairFacade {
 	public FaultLocalizationFacade getFaultLocalizationFacade() {
 		return faultLocalizationFacade;
 	}
-	public static URL[] classpathFrom(String classpath) {
-		String[] folderNames = classpath.split(File.pathSeparator);
-		URL[] folders = new URL[folderNames.length];
-		int index = 0;
-		for (String folderName : folderNames) {
-			folders[index] = urlFrom(folderName);
-			index += 1;
-		}
-		return folders;
-	}
+
 	
-	public static URL urlFrom(String path) {
-		URL url = null;
-		try {
-			url = new File(path).toURI().toURL();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		return url;
-	}
 
 
-	public void calculateRegression(String defaultVariant) {
-		String classPath = getOutDirWithPrefix(defaultVariant);
-		String[] testClassesRegression = new TestClassesFinder().findIn(classpathFrom(classPath), false);
-		List<String> tr = new ArrayList<>();
-		String s = "";
-		for (String tcr : testClassesRegression) {
-			s+=tcr+File.pathSeparator;
-			tr.add(tcr);
-		}
-		ConfigurationProperties.properties.setProperty("testcasesregression", s);
-		getProperties().setRegressionCases(tr);
-	}
+
+	
 }

@@ -137,20 +137,9 @@ public class ProgramVariantFactory {
 	private List<GenSuspicious> createGens(ProgramVariant progInstance) {
 
 		List<GenSuspicious> suspGen = new ArrayList<>();
-		List<String> testcases = MutationSupporter.retrieveRegressionTestCases();
-		List<CtType<?>> types = MutationSupporter.getFactory().Class().getAll();
-
-		for (CtType<?> ctType : types) {
-
-			if (!(ctType instanceof CtClass)) {
-				continue;
-			}
-			//We do not consider classes that correspond to Test cases.
-			if(testcases.contains(ctType.getQualifiedName())){
-				continue;
-			}
-
-			CtClass ctclasspointed = (CtClass) ctType;
+		List<CtClass> classesFromModel = mutatorSupporter.getClasses();
+			
+		for (CtClass ctclasspointed : classesFromModel) {
 			
 			if (!progInstance.getBuiltClasses().containsKey(ctclasspointed.getQualifiedName())) {
 				//TODO: clone or not?

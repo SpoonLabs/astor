@@ -25,11 +25,13 @@ import fr.inria.astor.core.loop.evolutionary.transformators.ModelTransformator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatSpaceSize;
 import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -130,12 +132,33 @@ public class JGenProg extends EvolutionaryEngine {
 					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
 			mutatorSupporter.buildModel(codeLocation, cpArray);
 		}
-
+		
+		/////ONCE ASTOR HAS BUILT THE MODEL,
+		/////We apply different processes and manipulation over it.
+		
+		//We process the model to add blocks as parent of statement which are not contained in a block
 		BlockReificationScanner visitor = new BlockReificationScanner();
 		for (CtType c : mutatorSupporter.getFactory().Type().getAll()) {
 			c.accept(visitor);
 		}
+		//We divide the CtClasses from the model in two set:
+		//One that represents test cases, the other 'normal' classes (not test cases)
+		List<String> testcases = projectFacade.getProperties().getRegressionTestCases();
+		List<CtType<?>> types = mutatorSupporter.getFactory().Class().getAll();
+		
+		for (CtType<?> ctType : types) {
 
+			if (!(ctType instanceof CtClass)) {
+				continue;
+			}
+			if(testcases.contains(ctType.getQualifiedName())){
+				mutatorSupporter.getTestClasses().add((CtClass) ctType);
+			}else{
+				mutatorSupporter.getClasses().add((CtClass) ctType);
+			}
+		}
+		//Finally, we update the list of test cases
+		FinderTestCases.updateRegressionTestCases(projectFacade);
 	}
 
 	/**

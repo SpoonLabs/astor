@@ -1,0 +1,125 @@
+package fr.inria.astor.core.setup;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import fr.inria.astor.core.faultlocalization.entity.TestClassesFinder;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
+
+/**
+ * Class for manipulating information related to test cases.
+ * @author Matias
+ *
+ */
+public class FinderTestCases {
+	
+	protected static Logger log = Logger.getLogger(FinderTestCases.class.getName());
+	
+	public  static void findTestCasesForRegression(String classPath, ProjectRepairFacade projectFacade) {
+		String[] testClassesRegression = new TestClassesFinder().findIn(classpathFrom(classPath), false);
+		List<String> tr = new ArrayList<>();
+		String s = "";
+		for (String tcr : testClassesRegression) {
+			s+=tcr+File.pathSeparator;
+			tr.add(tcr);
+		}
+		//ConfigurationProperties.properties.setProperty("testcasesregression", s);
+		projectFacade.getProperties().setRegressionCases(tr);
+	}
+
+	private static URL[] classpathFrom(String classpath) {
+		String[] folderNames = classpath.split(File.pathSeparator);
+		URL[] folders = new URL[folderNames.length];
+		int index = 0;
+		for (String folderName : folderNames) {
+			folders[index] = urlFrom(folderName);
+			index += 1;
+		}
+		return folders;
+	}
+	
+	private static URL urlFrom(String path) {
+		URL url = null;
+		try {
+			url = new File(path).toURI().toURL();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return url;
+	}
+	
+	
+	public static void updateRegressionTestCases(ProjectRepairFacade projectConfig) {
+		List<String> original = projectConfig.getProperties().getRegressionTestCases();
+		List<String> refined =	refineListofRegressionTestCases(original);
+		projectConfig.getProperties().setRegressionCases(refined);
+		log.debug("Refining list of test cases: original= "+original.size() 
+			+", refined= "+refined.size());
+	}
+	
+	/**
+	 * This method refine the list of test cases received as parameter.
+	 * I analyze each model of each test to validate whether is a test or not. 
+	 */
+
+	public static List<String> refineListofRegressionTestCases(List<String> allTest) {
+			List<String> regressionCases = new ArrayList<String>();
+			List<String> ignoreTestcases = retriveIgnoreTestCases();
+			
+			for (String candidateTest : allTest) {
+				CtType<?> type = MutationSupporter.getFactory().Type().get(candidateTest);
+				
+				if (type != null && (!type.getModifiers().contains(ModifierKind.ABSTRACT))
+						&& !(type instanceof CtInterface) 
+						&& isValidConstructor(type)
+						&& !(isIgnoredTestCase(type.getQualifiedName(), ignoreTestcases)))
+				{
+					regressionCases.add(type.getQualifiedName());
+				}
+				
+			}
+				
+			return regressionCases;
+	}
+	
+	private static boolean isValidConstructor(CtType<?> type) {
+		if(type instanceof CtClass<?>) {
+			CtClass<?> ctClass = ((CtClass<?>)type);
+			if (ctClass.getSuperclass() == null || !ctClass.getSuperclass().getSimpleName().equals("TestCase")){
+				return true;
+			}
+			return ((CtClass<?>)type).getConstructor() != null ||
+			((CtClass<?>)type).getConstructor(type.getFactory().Class().createReference(String.class)) != null;
+		}
+		return false;
+	}
+
+	private static List<String> retriveIgnoreTestCases() {
+		String list = ConfigurationProperties.getProperty("ignoredTestCases");
+		String[] cases = list.split(";");
+		return 	Arrays.asList(cases);
+	}
+
+	private static boolean isIgnoredTestCase(String nameTestCase, List<String> ignoredList ){
+		
+		for (String ignoreTC : ignoredList) {
+			
+			if(nameTestCase.startsWith(ignoreTC)){
+				return true;
+			};
+		}
+		return false;
+	}
+	
+	
+}
