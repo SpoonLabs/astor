@@ -1,14 +1,12 @@
 package fr.inria.astor.core.faultlocalization;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -26,17 +24,18 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class FaultLocalizationFacade {
+public class FaultLocalizationFacade implements IFaultLocalization{
 
 	Logger logger = Logger.getLogger(FaultLocalizationFacade.class.getName());
 
-	List<SuspiciousCode> candidates = new ArrayList<SuspiciousCode>();
-	List<String> failingTestCases = new ArrayList<String>();
+	
+	public List<SuspiciousCode> searchSuspicious(String location, List<String> testsToExecute, List<String> toInstrument,
+			Set<String> cp, String srcFolder) throws Exception {
+	
+		List<SuspiciousCode> candidates = new ArrayList<SuspiciousCode>();
+		List<String> failingTestCases = new ArrayList<String>();
 
-	static boolean EXCLUDE_TEST = true;
-
-	public List<SuspiciousCode> searchGZoltar(String location, List<String> testsToExecute, List<String> toInstrument,
-			HashSet<String> cp, String srcFolder) throws FileNotFoundException, IOException {
+		
 		candidates.clear();
 		failingTestCases.clear();
 		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");

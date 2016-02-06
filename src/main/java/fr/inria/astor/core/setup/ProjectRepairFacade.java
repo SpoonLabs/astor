@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -150,47 +151,60 @@ public class ProjectRepairFacade {
 		return cp;
 	}
 	
-	public List<SuspiciousCode> getSuspicious() throws FileNotFoundException, IOException{
+	public List<SuspiciousCode> getSuspicious() throws Exception{
 		List<SuspiciousCode> candidates = this.getSuspicious(
-				ConfigurationProperties.getProperty("packageToInstrument"), ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+				ConfigurationProperties.getProperty("location")+File.separator+ConfigurationProperties.getProperty("srcjavafolder"),
+				getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT),
+				ConfigurationProperties.getProperty("packageToInstrument"), 
+				ProgramVariant.DEFAULT_ORIGINAL_VARIANT,
+				getProperties().getFailingTestCases(),
+				getProperties().getRegressionTestCases(),
+				ConfigurationProperties.getPropertyBool("regressionforfaultlocalization")
+				)
+				;
 		return candidates;
 	}
 	
 	
-	public List<SuspiciousCode> getSuspicious(String packageToInst, String mutatorIdentifier) throws FileNotFoundException, IOException {
+	public List<SuspiciousCode> getSuspicious(
+						String locationSrc,
+						String locationBytecode,
+						String packageToInst, 
+						String mutatorIdentifier,
+						List<String> failingTest,
+						List<String> allTest,
+						boolean mustRunAllTest
+					) throws Exception {
 
 		if (getProperties().getFailingTestCases() == null
 				|| "".equals(getProperties().getFailingTestCases().isEmpty())) {
 			new IllegalArgumentException("Test Class can not be empty");
 		}
 		
-		String pathOutDir = getOutDirWithPrefix(mutatorIdentifier);
-		
-		
 		List<String> testcasesToExecute = null;
 				
-		if(ConfigurationProperties.getPropertyBool("regressionforfaultlocalization")){
-			testcasesToExecute = getProperties().getRegressionTestCases();
+		if(mustRunAllTest){
+			testcasesToExecute = allTest;
 		}
 		else{
-			testcasesToExecute = getProperties().getFailingTestCases();
+			testcasesToExecute = failingTest;
 		}
-		logger.info("-Executing Gzoltar classpath: " + pathOutDir+ " from "+
+		logger.info("-Executing Gzoltar classpath: " + locationBytecode+ " from "+
 				+ testcasesToExecute.size() +" classes with test cases");
 
 		List<String> listTOInst = new ArrayList<String>();
 		listTOInst.add(packageToInst);
 
-		HashSet<String> classPathForGZoltar = new HashSet<String>();
-		classPathForGZoltar.add(pathOutDir);
+		Set<String> classPath = new HashSet<String>();
+		classPath.add(locationBytecode);
 		for(URL dep : getProperties().getDependencies()){
-			classPathForGZoltar.add(dep.getPath());
+			classPath.add(dep.getPath());
 		};
 		
 		
-		List<SuspiciousCode> suspiciousStatemens = faultLocalizationFacade.searchGZoltar(
-				pathOutDir, testcasesToExecute, listTOInst, classPathForGZoltar, 
-				ConfigurationProperties.getProperty("location")+"/"+ConfigurationProperties.getProperty("srcjavafolder"));
+		List<SuspiciousCode> suspiciousStatemens = faultLocalizationFacade.searchSuspicious(
+				locationBytecode, testcasesToExecute, listTOInst, classPath, 
+				locationSrc);
 		
 		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 

@@ -55,7 +55,8 @@ public class JGenProg extends EvolutionaryEngine {
 			// We dont use FL, so at this point the do not have suspicious
 			this.initPopulation(new ArrayList<SuspiciousCode>());
 		} else {
-			this.initPopulation(projectFacade.getSuspicious());
+			List<SuspiciousCode> suspicious = projectFacade.getSuspicious();
+			this.initPopulation(suspicious);
 		}
 	}
 

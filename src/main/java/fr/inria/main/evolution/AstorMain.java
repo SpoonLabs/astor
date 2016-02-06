@@ -30,7 +30,7 @@ import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
 
 /**
- * Main for full version of jGenProg
+ * Astor main
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  *
