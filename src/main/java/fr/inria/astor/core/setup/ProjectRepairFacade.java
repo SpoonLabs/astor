@@ -176,10 +176,6 @@ public class ProjectRepairFacade {
 						boolean mustRunAllTest
 					) throws Exception {
 
-		if (getProperties().getFailingTestCases() == null
-				|| "".equals(getProperties().getFailingTestCases().isEmpty())) {
-			new IllegalArgumentException("Test Class can not be empty");
-		}
 		
 		List<String> testcasesToExecute = null;
 				
@@ -189,6 +185,12 @@ public class ProjectRepairFacade {
 		else{
 			testcasesToExecute = failingTest;
 		}
+		
+		if (testcasesToExecute == null
+				|| testcasesToExecute.isEmpty()) {
+			new IllegalArgumentException("Astor needs at least one test case for running");
+		}
+		
 		logger.info("-Executing Gzoltar classpath: " + locationBytecode+ " from "+
 				+ testcasesToExecute.size() +" classes with test cases");
 
