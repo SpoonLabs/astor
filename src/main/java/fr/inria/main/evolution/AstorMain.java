@@ -150,7 +150,6 @@ public class AstorMain extends AbstractMain {
 	 * @throws ParseException
 	 */
 	public static void main(String[] args) throws Exception {
-		System.out.println("Arguments: " + Arrays.toString(args).replace(",", " "));
 		AstorMain m = new AstorMain();
 		boolean correct = m.processArguments(args);
 		if (!correct) {
