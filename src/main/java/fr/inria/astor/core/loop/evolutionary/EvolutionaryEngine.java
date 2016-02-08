@@ -19,6 +19,7 @@ import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
+import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.loop.evolutionary.population.PopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightCtElement;
@@ -65,10 +66,6 @@ public abstract class EvolutionaryEngine {
 	protected List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
 	protected List<ProgramVariant> solutions = new ArrayList<ProgramVariant>();
 
-	public List<ProgramVariant> getSolutions() {
-		return solutions;
-	}
-
 	protected ProgramVariant originalVariant = null;
 
 	// SPACES
@@ -84,6 +81,9 @@ public abstract class EvolutionaryEngine {
 	protected ProjectRepairFacade projectFacade = null;
 
 	protected Date dateInitEvolution = new Date();
+	
+	//
+	protected IFaultLocalization faultLocalization = null;
 
 	int generationsExecuted = 0;
 	/**
@@ -919,6 +919,18 @@ public abstract class EvolutionaryEngine {
 
 		}
 		return line;
+	}
+	
+	public List<ProgramVariant> getSolutions() {
+		return solutions;
+	}
+
+	public IFaultLocalization getFaultLocalization() {
+		return faultLocalization;
+	}
+
+	public void setFaultLocalization(IFaultLocalization faultLocalization) {
+		this.faultLocalization = faultLocalization;
 	}
 
 }

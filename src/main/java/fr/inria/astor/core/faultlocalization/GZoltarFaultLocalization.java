@@ -24,9 +24,9 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class FaultLocalizationFacade implements IFaultLocalization{
+public class GZoltarFaultLocalization implements IFaultLocalization{
 
-	Logger logger = Logger.getLogger(FaultLocalizationFacade.class.getName());
+	Logger logger = Logger.getLogger(GZoltarFaultLocalization.class.getName());
 
 	
 	public List<SuspiciousCode> searchSuspicious(String location, List<String> testsToExecute, List<String> toInstrument,

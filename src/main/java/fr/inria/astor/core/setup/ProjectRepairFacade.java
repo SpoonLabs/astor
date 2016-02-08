@@ -1,7 +1,6 @@
 package fr.inria.astor.core.setup;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,9 +13,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.faultlocalization.FaultLocalizationFacade;
+import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
-import fr.inria.astor.core.faultlocalization.entity.TestClassesFinder;
 /**
  *  
  * @author Matias Martinez, matias.martinez@inria.fr
@@ -27,8 +25,6 @@ public class ProjectRepairFacade {
 	Logger logger = Logger.getLogger(Thread.currentThread().getName());
 
 	protected ProjectConfiguration setUpProperties = new ProjectConfiguration();
-	
-	protected FaultLocalizationFacade faultLocalizationFacade = new FaultLocalizationFacade();
 	
 	public ProjectRepairFacade(ProjectConfiguration properties) throws Exception {
 		
@@ -151,8 +147,9 @@ public class ProjectRepairFacade {
 		return cp;
 	}
 	
-	public List<SuspiciousCode> getSuspicious() throws Exception{
-		List<SuspiciousCode> candidates = this.getSuspicious(
+	public List<SuspiciousCode> calculateSuspicious(IFaultLocalization faultLocalization) throws Exception{
+		List<SuspiciousCode> candidates = this.calculateSuspicious(
+				faultLocalization,
 				ConfigurationProperties.getProperty("location")+File.separator+ConfigurationProperties.getProperty("srcjavafolder"),
 				getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT),
 				ConfigurationProperties.getProperty("packageToInstrument"), 
@@ -166,7 +163,8 @@ public class ProjectRepairFacade {
 	}
 	
 	
-	public List<SuspiciousCode> getSuspicious(
+	public List<SuspiciousCode> calculateSuspicious(
+						IFaultLocalization faultLocalization,	
 						String locationSrc,
 						String locationBytecode,
 						String packageToInst, 
@@ -175,7 +173,9 @@ public class ProjectRepairFacade {
 						List<String> allTest,
 						boolean mustRunAllTest
 					) throws Exception {
-
+		
+		if(faultLocalization == null)
+			throw new IllegalArgumentException("Fault localization is null");
 		
 		List<String> testcasesToExecute = null;
 				
@@ -204,7 +204,7 @@ public class ProjectRepairFacade {
 		};
 		
 		
-		List<SuspiciousCode> suspiciousStatemens = faultLocalizationFacade.searchSuspicious(
+		List<SuspiciousCode> suspiciousStatemens = faultLocalization.searchSuspicious(
 				locationBytecode, testcasesToExecute, listTOInst, classPath, 
 				locationSrc);
 		
@@ -248,14 +248,5 @@ public class ProjectRepairFacade {
 	public void setProperties(ProjectConfiguration properties) {
 		this.setUpProperties = properties;
 	}
-
-	public FaultLocalizationFacade getFaultLocalizationFacade() {
-		return faultLocalizationFacade;
-	}
-
-	
-
-
-
 	
 }

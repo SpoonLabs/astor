@@ -15,6 +15,8 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.entities.taxonomy.MutationOperation;
+import fr.inria.astor.core.faultlocalization.GZoltarFaultLocalization;
+import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
@@ -48,18 +50,26 @@ public class JGenProg extends EvolutionaryEngine {
 
 	public JGenProg(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
+		//By default, we use GZoltar fault localization
+		this.faultLocalization = new GZoltarFaultLocalization();
 	}
 
+	public JGenProg(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade, IFaultLocalization faultLocalization) throws JSAPException {
+		super(mutatorExecutor, projFacade);
+		this.faultLocalization = faultLocalization;
+	}
+	
 	public void createInitialPopulation() throws Exception {
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
 			// We dont use FL, so at this point the do not have suspicious
 			this.initPopulation(new ArrayList<SuspiciousCode>());
 		} else {
-			List<SuspiciousCode> suspicious = projectFacade.getSuspicious();
+			List<SuspiciousCode> suspicious = projectFacade.calculateSuspicious(faultLocalization);
 			this.initPopulation(suspicious);
 		}
 	}
 
+	
 	/**
 	 * By default, it initializes the spoon model. It should not be created
 	 * before. Otherwise, an exception occurs.
@@ -158,7 +168,7 @@ public class JGenProg extends EvolutionaryEngine {
 				mutatorSupporter.getClasses().add((CtClass) ctType);
 			}
 		}
-		//Finally, we update the list of test cases
+		//Finally, we update the list of test cases (we apply a pre-process using info from Spoon Model)
 		FinderTestCases.updateRegressionTestCases(projectFacade);
 	}
 
