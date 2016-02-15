@@ -81,11 +81,12 @@ public abstract class EvolutionaryEngine {
 	protected ProjectRepairFacade projectFacade = null;
 
 	protected Date dateInitEvolution = new Date();
-	
+
 	//
 	protected IFaultLocalization faultLocalization = null;
 
 	int generationsExecuted = 0;
+
 	/**
 	 * 
 	 * @param mutatorExecutor
@@ -321,7 +322,11 @@ public abstract class EvolutionaryEngine {
 	private void saveOriginalVariant(ProgramVariant variant) {
 		originalModel.clear();
 		for (CtType st : variant.getAffectedClasses()) {
-			originalModel.put(st.getQualifiedName(), st.toString());
+			try {
+				originalModel.put(st.getQualifiedName(), st.toString());
+			} catch (Exception e) {
+				log.error("Problems saving cttype: " + st.getQualifiedName());
+			}
 		}
 
 	}
@@ -329,7 +334,12 @@ public abstract class EvolutionaryEngine {
 	private void saveModifVariant(ProgramVariant variant) {
 		modifModel.clear();
 		for (CtType st : variant.getAffectedClasses()) {
-			modifModel.put(st.getQualifiedName(), st.toString());
+			try {
+				modifModel.put(st.getQualifiedName(), st.toString());
+			} catch (Exception e) {
+				log.error("Problems saving cttype: " + st.getQualifiedName());
+			}
+
 		}
 
 	}
@@ -338,12 +348,11 @@ public abstract class EvolutionaryEngine {
 
 		for (CtType st : variant.getAffectedClasses()) {
 			String original = originalModel.get(st.getQualifiedName());
-			boolean idem = original.equals(st.toString());
-			if (!idem) {
-				log.error("Error: the model was not the same from the original after this generation");
-				// throw new
-				// IllegalStateException("the model was not the same from the
-				// original after this generation");
+			if (original != null) {
+				boolean idem = original.equals(st.toString());
+				if (!idem) {
+					log.error("Error: the model was not the same from the original after this generation");
+				}
 			}
 		}
 
@@ -920,7 +929,7 @@ public abstract class EvolutionaryEngine {
 		}
 		return line;
 	}
-	
+
 	public List<ProgramVariant> getSolutions() {
 		return solutions;
 	}

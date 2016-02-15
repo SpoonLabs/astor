@@ -66,7 +66,7 @@ public class VariableResolver {
 	}
 	
 	public static boolean matchVariable(List<CtVariable> varContext, CtVariableAccess vartofind){
-		
+		try{
 		CtTypeReference typeToFind = vartofind.getType();
 			//First we search for compatible variables according to the type
 		 List<CtVariable> types = compatiblesSubType(varContext, typeToFind);
@@ -79,6 +79,9 @@ public class VariableResolver {
 				return true;
 			}
 		 }
+		}catch(Exception ex){
+			logger.error("Variable verification error",ex);
+		}
 		 
 		 return false;
 	}

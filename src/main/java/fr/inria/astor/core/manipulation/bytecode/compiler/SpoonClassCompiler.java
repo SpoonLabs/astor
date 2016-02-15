@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 
 import fr.inria.astor.core.manipulation.bytecode.compiler.tools.JavaXToolsCompiler;
@@ -31,7 +32,6 @@ import spoon.support.StandardEnvironment;
  */
 public class SpoonClassCompiler {
 
-
 	private Environment environment;
 
 	private Factory factory;
@@ -39,7 +39,7 @@ public class SpoonClassCompiler {
 	private ProcessingManager processing;
 
 	private JavaOutputProcessor javaPrinter;
-	
+
 	private DefaultJavaPrettyPrinter prettyPrinter;
 
 	private JavaXToolsCompiler dcc = new JavaXToolsCompiler();
@@ -48,13 +48,16 @@ public class SpoonClassCompiler {
 
 	public static final String CLASS_EXT = ".class";
 
+	private Logger logger = Logger.getLogger(SpoonClassCompiler.class.getName());
+
+	
 	public SpoonClassCompiler(Factory factory) {
 		this.factory = factory;
 	}
 
 	public void updateOutput(String output) {
-		JavaOutputProcessor fileOutput = new JavaOutputProcessor(new File(
-				output), new DefaultJavaPrettyPrinter(getEnvironment()));
+		JavaOutputProcessor fileOutput = new JavaOutputProcessor(new File(output),
+				new DefaultJavaPrettyPrinter(getEnvironment()));
 		fileOutput.setFactory(getFactory());
 		this.javaPrinter = fileOutput;
 	}
@@ -67,9 +70,13 @@ public class SpoonClassCompiler {
 			return;
 		}
 		// Create Java code and create ICompilationUnit
-		units.clear();
-		javaPrinter.getCreatedFiles().clear();
-		javaPrinter.process(element);
+		try{
+			units.clear();
+			javaPrinter.getCreatedFiles().clear();
+			javaPrinter.process(element);
+		}catch(Exception e){
+			logger.error("Error saving ctclass "+element.getQualifiedName());
+		}
 
 	}
 
@@ -78,12 +85,9 @@ public class SpoonClassCompiler {
 			outputDir.mkdirs();
 
 			for (String compiledClassName : compilation.getByteCodes().keySet()) {
-				String fileName = new String(compiledClassName).replace('.',
-						File.separatorChar) + CLASS_EXT;
-				byte[] compiledClass = compilation.getByteCodes().get(
-						compiledClassName);
-				ClassFileUtil.writeToDisk(true, outputDir.getAbsolutePath(),
-						fileName, compiledClass);
+				String fileName = new String(compiledClassName).replace('.', File.separatorChar) + CLASS_EXT;
+				byte[] compiledClass = compilation.getByteCodes().get(compiledClassName);
+				ClassFileUtil.writeToDisk(true, outputDir.getAbsolutePath(), fileName, compiledClass);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -91,31 +95,20 @@ public class SpoonClassCompiler {
 
 	}
 
-	public CompilationResult compileOnMemory(Collection<CtClass> ctClassList,
-			URL[] cp) {
-		
+	public CompilationResult compileOnMemory(Collection<CtClass> ctClassList, URL[] cp) {
+
 		Map<String, String> toCompile = new HashMap<String, String>();
 		prettyPrinter = new DefaultJavaPrettyPrinter(getEnvironment());
 
-		try {
-
-			for (CtClass ctClass : ctClassList) {
-
+		for (CtClass ctClass : ctClassList) {
+			try {
 				this.getProcessingManager().process(ctClass);
-				String[] tmp = ctClass.getQualifiedName().split("[.]");
-				char[][] pack = new char[tmp.length - 1][];
-				toCompile.put(ctClass.getQualifiedName(),
-						sourceForModelledClass(ctClass));
-
+				toCompile.put(ctClass.getQualifiedName(), sourceForModelledClass(ctClass));
+			} catch (Exception e) {
+				logger.error("Error printing class "+ctClass.getQualifiedName(),e);
 			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			List<String> errors = new ArrayList<String>();
-			errors.add(e.getMessage());
-			CompilationResult rbc = new CompilationResult(null,errors);
-			return rbc;
 		}
+
 		List<String> cps = new ArrayList<>();
 		cps.add("-cp");
 		String s = "";
@@ -123,25 +116,18 @@ public class SpoonClassCompiler {
 			s += ((url.getPath()) + File.pathSeparator);
 		}
 		cps.add(s);
-		CompilationResult rbc = dcc.javaBytecodeFor(toCompile,
-				new HashMap<String, byte[]>(), cps);
+		CompilationResult rbc = dcc.javaBytecodeFor(toCompile, new HashMap<String, byte[]>(), cps);
 		return rbc;
 	}
 
-
-
-	protected synchronized String sourceForModelledClass(
-			CtType<?> modelledClass) {
+	protected synchronized String sourceForModelledClass(CtType<?> modelledClass) {
+		prettyPrinter.reset();
 		prettyPrinter.scan(modelledClass);
-		String sourceCode = "package "+modelledClass.getPackage().toString()+ ";"
-				+ System.getProperty("line.separator")
-				+ 
-				prettyPrinter.toString();
+		String sourceCode = "package " + modelledClass.getPackage().toString() + ";"
+				+ System.getProperty("line.separator") + prettyPrinter.toString();
 		prettyPrinter.reset();
 		return sourceCode;
 	}
-
-	
 
 	/**
 	 * Gets the associated (standard) environment.
