@@ -1,13 +1,24 @@
 package fr.inria.astor.test.repair.evaluation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import fr.inria.astor.core.entities.Gen;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
@@ -17,13 +28,6 @@ import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.astor.core.util.ProcessUtil;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
 /**
  * This test cases aims at validating the mechanism of patch validation 
  * (We manually generate the candidate patches)
@@ -35,6 +39,7 @@ public class PatchValidationTest {
 	protected Logger log = Logger.getLogger(PatchValidationTest.class.getName());
 	
 	@Test
+	@Ignore
 	public void testPatchMath0C1() throws Exception {
 		
 		log.debug("\nInit test with one failing TC");
@@ -110,6 +115,7 @@ public class PatchValidationTest {
 	}
 
 	@Test
+	@Ignore
 	public void testPatchMath0C1TwoFailing() throws Exception {
 		log.debug("\nInit test with two failing TC");
 		String dependenciespath = new File("./examples/Math-0c1ef/lib/junit-4.11.jar").getAbsolutePath() 

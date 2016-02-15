@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.Arrays;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -46,7 +47,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		String[] args = new String[] { "-bug280"};
 		main1.main(args);
-		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
+		validatePatchExistence(out + File.separator + "AstorMain-Math-issue-280/");
 	}
 	
 	//@Test
@@ -79,7 +80,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testMath85issue280() throws Exception {
+	public void testMath85() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
@@ -95,13 +96,6 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	}
 	
 	/**
-	 *
-	 * 
-	 * @throws Exception
-	 */
-
-
-	/**
 	 * Math 70 bug can be fixed by replacing a method invocation inside a return statement. 
 	 * + return solve(f, min, max); 
 	 * - return solve(min, max);
@@ -110,6 +104,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void testMath70TwoSolutions() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();

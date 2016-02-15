@@ -1,10 +1,12 @@
 package fr.inria.astor.test.repair.evaluation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -102,6 +104,7 @@ public class jKaliTest extends BaseEvolutionaryTest{
 
 	@SuppressWarnings("static-access")
 	@Test
+	@Ignore	
 	public void testMath2ExampleRemoveModeManySolutions() throws Exception {
 		AstorMain main1 = new AstorMain();
 

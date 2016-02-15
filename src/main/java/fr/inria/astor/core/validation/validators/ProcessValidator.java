@@ -4,9 +4,13 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+
+import com.google.common.collect.Lists;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
@@ -36,16 +40,23 @@ public class ProcessValidator extends ProgramValidator {
 		try {
 			String bytecodeOutput = projectFacade.getOutDirWithPrefix(mutatedVariant.currentMutatorIdentifier());
 			File variantOutputFile = new File(bytecodeOutput);
-			URL[] bc = null;
-			URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+			
+			
+			List<URL> originalURL = new ArrayList(Arrays.asList(projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT)));
 
+			String classpath = System.getProperty("java.class.path");
+			
+			for (String s:  classpath.split(File.pathSeparator)) {
+				originalURL.add(new URL("file://"+new File(s).getAbsolutePath()));
+			}
+			URL[] bc;
 			if (mutatedVariant.getCompilation() != null) {
 				MutationSupporter.currentSupporter.getSpoonClassCompiler().saveByteCode(mutatedVariant.getCompilation(),
 						variantOutputFile);
 
-				bc = redefineURL(variantOutputFile, originalURL);
+				bc = redefineURL(variantOutputFile, originalURL.toArray(new URL[0]));
 			} else {
-				bc = originalURL;
+				bc = originalURL.toArray(new URL[0]);
 			}
 			JUnitExecutorProcess p = new JUnitExecutorProcess();
 			// First validation: failing test case

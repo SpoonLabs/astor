@@ -17,6 +17,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.factory.Factory;
 
 /**
@@ -178,7 +179,8 @@ public abstract class AbstractMain {
     }
 
 	public boolean processArguments(String[] args) throws Exception {
-		
+		log.info("command line arguments: " + Arrays.toString(args).replace(",", " "));
+
 		ConfigurationProperties.clear();
 		
 		CommandLine cmd = null;
@@ -378,7 +380,7 @@ public abstract class AbstractMain {
 			String dependenciespath = "examples/math_85/libs/junit-4.4.jar";
 			String folder = "Math-issue-280";
 			String failing = "org.apache.commons.math.distribution.NormalDistributionTest";
-			String location = "examples/math_85/";//"examples/Math-issue-280/";
+			String location = "examples/Math-issue-280/";
 			String packageToInstrument = "org.apache.commons";
 			double thfl = 0.5;
 			this.run(location, folder, dependenciespath, packageToInstrument, thfl, failing);

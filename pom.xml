@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
+			<version>1.2.17</version>
 		</dependency>
 
 		<dependency>
@@ -51,13 +51,6 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
-
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-		</dependency>
-
 
 		<dependency>
 			<groupId>com.gzoltar</groupId>
@@ -147,6 +140,15 @@
 				</configuration>
 			</plugin>
 
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <version>2.16</version>
+                            <configuration>
+                                <!-- force each test in a separate vm to work around a memory leak -->
+                                <reuseForks>false</reuseForks>
+                            </configuration>
+                        </plugin>
 		</plugins>
 	</build>
 </project>
