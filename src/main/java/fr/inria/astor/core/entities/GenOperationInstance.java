@@ -1,6 +1,6 @@
 package fr.inria.astor.core.entities;
 
-import fr.inria.astor.core.entities.taxonomy.MutationOperation;
+import fr.inria.astor.core.entities.taxonomy.Operation;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
 import fr.inria.astor.core.util.StringUtil;
 import spoon.reflect.code.CtBlock;
@@ -29,7 +29,7 @@ public class GenOperationInstance {
 	/**
 	 * Kind of the mutation Operation applied
 	 */
-	private MutationOperation operationApplied = null;
+	private Operation operationApplied = null;
 	/**
 	 * Parent entity there the mut operation
 	 */
@@ -50,7 +50,7 @@ public class GenOperationInstance {
 	
 	public GenOperationInstance (){}
 	
-	public GenOperationInstance(Gen gen, MutationOperation operationApplied, CtElement original, CtElement modified) {
+	public GenOperationInstance(Gen gen, Operation operationApplied, CtElement original, CtElement modified) {
 		super();
 		this.gen = gen;
 		this.operationApplied = operationApplied;
@@ -82,11 +82,11 @@ public class GenOperationInstance {
 		this.parentBlock = parentBlock;
 	}
 
-	public MutationOperation getOperationApplied() {
+	public Operation getOperationApplied() {
 		return operationApplied;
 	}
 
-	public void setOperationApplied(MutationOperation operationApplied) {
+	public void setOperationApplied(Operation operationApplied) {
 		this.operationApplied = operationApplied;
 	}
 

@@ -4,7 +4,7 @@ package fr.inria.astor.core.entities.taxonomy;
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public enum GenProgMutationOperation implements MutationOperation{
+public enum GenProgMutationOperation implements Operation{
 	
 	
 	INSERT_AFTER,

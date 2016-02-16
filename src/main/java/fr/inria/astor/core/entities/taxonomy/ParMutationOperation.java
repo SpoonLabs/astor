@@ -4,7 +4,7 @@ package fr.inria.astor.core.entities.taxonomy;
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public enum ParMutationOperation implements MutationOperation {
+public enum ParMutationOperation implements Operation {
 
 	
 	REPLACE,

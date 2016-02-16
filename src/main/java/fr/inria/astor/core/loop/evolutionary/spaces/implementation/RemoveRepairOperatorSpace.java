@@ -1,7 +1,7 @@
 package fr.inria.astor.core.loop.evolutionary.spaces.implementation;
 
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
-import fr.inria.astor.core.entities.taxonomy.MutationOperation;
+import fr.inria.astor.core.entities.taxonomy.Operation;
 import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpace;
 /**
  * The Operator space is composed by only one Operator: Delete/Remove
@@ -10,15 +10,15 @@ import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpac
  */
 public class RemoveRepairOperatorSpace implements RepairOperatorSpace {
 
-	MutationOperation[] values = new MutationOperation[]{GenProgMutationOperation.DELETE};
+	Operation[] values = new Operation[]{GenProgMutationOperation.DELETE};
 	@Override
-	public MutationOperation getNextMutation() {
+	public Operation getNextMutation() {
 		
 		return GenProgMutationOperation.DELETE;
 	}
 
 	@Override
-	public MutationOperation getNextMutation(double suspiciousValue) {
+	public Operation getNextMutation(double suspiciousValue) {
 	
 		return GenProgMutationOperation.DELETE;
 	}
@@ -29,7 +29,7 @@ public class RemoveRepairOperatorSpace implements RepairOperatorSpace {
 	}
 
 	@Override
-	public MutationOperation[] values() {
+	public Operation[] values() {
 		return values;
 	}
 

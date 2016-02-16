@@ -1,7 +1,7 @@
 package fr.inria.astor.core.loop.evolutionary.spaces.implementation;
 
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
-import fr.inria.astor.core.entities.taxonomy.MutationOperation;
+import fr.inria.astor.core.entities.taxonomy.Operation;
 import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpace;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
@@ -13,12 +13,12 @@ import fr.inria.astor.core.setup.RandomManager;
 public class UniformRandomRepairOperatorSpace implements RepairOperatorSpace {
 
 	@Override
-	public MutationOperation getNextMutation() {
+	public Operation getNextMutation() {
 		 return values()[RandomManager.nextInt(values().length)];
 	}
 
 	@Override
-	public MutationOperation getNextMutation(double suspiciousValue) {
+	public Operation getNextMutation(double suspiciousValue) {
 		double randomVal = RandomManager.nextDouble();
 		if(	!ConfigurationProperties.getPropertyBool("probagenmutation") || ( suspiciousValue * ConfigurationProperties.getPropertyDouble("mutationrate") ) >= randomVal ){
 			return this.getNextMutation();
@@ -35,7 +35,7 @@ public class UniformRandomRepairOperatorSpace implements RepairOperatorSpace {
 	 * By default, we use GenProgOperations
 	 */
 	@Override
-	public MutationOperation[] values(){
+	public Operation[] values(){
 		return GenProgMutationOperation.values();
 	}
 }
