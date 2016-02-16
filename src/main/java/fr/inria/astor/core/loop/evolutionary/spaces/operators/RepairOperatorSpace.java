@@ -1,6 +1,6 @@
 package fr.inria.astor.core.loop.evolutionary.spaces.operators;
 
-import fr.inria.astor.core.entities.taxonomy.Operation;
+import fr.inria.astor.core.entities.taxonomy.Operator;
 /**
  * Defines a interface of repair spaces
  * @author Matias Martinez,  matias.martinez@inria.fr
@@ -8,11 +8,11 @@ import fr.inria.astor.core.entities.taxonomy.Operation;
  */
 public interface RepairOperatorSpace {
 	
-	public Operation getNextMutation();
+	public Operator getNextOperator();
 	
-	public Operation getNextMutation(double suspiciousValue);
+	public Operator getNextOperator(double suspiciousValue);
 	
 	public int size();
 	
-	public Operation[] values();
+	public Operator[] values();
 }

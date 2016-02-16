@@ -14,7 +14,7 @@ import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
-import fr.inria.astor.core.entities.taxonomy.Operation;
+import fr.inria.astor.core.entities.taxonomy.Operator;
 import fr.inria.astor.core.faultlocalization.GZoltarFaultLocalization;
 import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
@@ -243,7 +243,7 @@ public class JGenProg extends AstorCoreEngine {
 		GenSuspicious genSusp = (GenSuspicious) gen;
 
 		GenProgMutationOperation operationType = (GenProgMutationOperation) repairActionSpace
-				.getNextMutation(genSusp.getSuspicious().getSuspiciousValue());
+				.getNextOperator(genSusp.getSuspicious().getSuspiciousValue());
 
 		if (operationType == null) {
 			log.debug("Operation Null");
@@ -471,7 +471,7 @@ public class JGenProg extends AstorCoreEngine {
 	 * @param location
 	 * @return
 	 */
-	protected boolean alreadyApplied(Gen gen, CtElement fixElement, Operation operator) {
+	protected boolean alreadyApplied(Gen gen, CtElement fixElement, Operator operator) {
 		// we add the instance identifier to the patch.
 		String lockey = gen.getCodeElement() + "-" + operator.toString();
 		String fix = "";

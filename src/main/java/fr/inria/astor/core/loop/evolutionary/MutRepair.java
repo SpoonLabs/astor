@@ -9,7 +9,7 @@ import fr.inria.astor.core.entities.Gen;
 import fr.inria.astor.core.entities.GenOperationInstance;
 import fr.inria.astor.core.entities.GenSuspicious;
 import fr.inria.astor.core.entities.taxonomy.MutationExpression;
-import fr.inria.astor.core.entities.taxonomy.Operation;
+import fr.inria.astor.core.entities.taxonomy.Operator;
 import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
 import fr.inria.astor.core.loop.mutation.mutants.operators.LogicalBinaryOperatorMutator;
 import fr.inria.astor.core.loop.mutation.mutants.operators.MutatorComposite;
@@ -83,7 +83,7 @@ public class MutRepair extends ExhaustiveSearchEngine {
 	protected GenOperationInstance createOperationForGen(Gen gen, MutantCtElement fix) throws IllegalAccessException {
 		Gen genSusp = gen;
 
-		Operation operationType = MutationExpression.REPLACE;
+		Operator operationType = MutationExpression.REPLACE;
 
 		if (!(genSusp.getCodeElement() instanceof CtIf)) {
 			// logger.error(".....The pointed Element is Not a statement");

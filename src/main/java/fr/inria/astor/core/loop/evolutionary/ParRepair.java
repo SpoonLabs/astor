@@ -67,7 +67,7 @@ public class ParRepair extends JGenProg {
 		CtExpression condit = targetIF.getCondition();
 		CtExpression originalCond = condit;
 		
-		ParMutationOperation operationType = (ParMutationOperation) repairActionSpace.getNextMutation();
+		ParMutationOperation operationType = (ParMutationOperation) repairActionSpace.getNextOperator();
 
 		if (operationType.equals(ParMutationOperation.DELETE_BEFORE)
 				|| operationType.equals(ParMutationOperation.DELETE_AFTER)) {
