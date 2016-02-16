@@ -44,7 +44,7 @@ import spoon.reflect.factory.Factory;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class JGenProg extends EvolutionaryEngine {
+public class JGenProg extends AstorCoreEngine {
 
 	Map<String, List<String>> appliedCache = new HashMap<String, List<String>>();
 

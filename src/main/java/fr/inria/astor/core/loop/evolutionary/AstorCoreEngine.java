@@ -44,7 +44,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public abstract class EvolutionaryEngine {
+public abstract class AstorCoreEngine {
 
 	/**
 	 * Initial identifier.
@@ -92,7 +92,7 @@ public abstract class EvolutionaryEngine {
 	 * @param mutatorExecutor
 	 * @throws JSAPException
 	 */
-	public EvolutionaryEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
+	public AstorCoreEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		this.mutatorSupporter = mutatorExecutor;
 		this.projectFacade = projFacade;
 	}
