@@ -74,7 +74,6 @@ public class AstorMain extends AbstractMain {
 		if (ExecutionMode.jKali.equals(mode)) {
 			gploop = new JKali(mutSupporter, projectFacade);
 			gploop.setRepairActionSpace(new RemoveRepairOperatorSpace());
-			//ConfigurationProperties.properties.setProperty("stopfirst", "false");
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
 
