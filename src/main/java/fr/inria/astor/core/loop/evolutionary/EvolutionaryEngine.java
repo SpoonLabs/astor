@@ -152,14 +152,12 @@ public abstract class EvolutionaryEngine {
 			log.info(getSolutionData(solutions, generationsExecuted));
 
 		}
-		// -----
+		
 		if (this.getFixSpace() != null) {
 			FixLocationSpace space = this.getFixSpace();
 			log.debug(space);
 		}
-		// /////-------------
-		// log.debug("\n----stats: ");
-		// log.debug(currentStat);
+
 	}
 
 	public String print(FixLocationSpace space) {
@@ -179,22 +177,6 @@ public abstract class EvolutionaryEngine {
 		return s;
 	}
 
-	public String print2(FixLocationSpace space) {
-
-		String s = "--Space: " + space.strategy() + "\n";
-		for (Object l : space.locationsConsidered()) {// Locations
-			int ing = 0;
-			Map r = (Map) space.getSpace().get(l);
-			// s+=l+"="+r.size()+",";
-			String ty = Integer.toString(space.getFixSpace(l).size());
-			/*
-			 * for (Object t : r.keySet()) {//Types List ingredients = (List)
-			 * r.get(t); ing += ingredients.size(); }
-			 */
-			s += l + "=" + ing + "|" + ty + ",";
-		}
-		return s;
-	}
 
 	/**
 	 * Check whether the program has passed the maximum time for operating
@@ -416,8 +398,6 @@ public abstract class EvolutionaryEngine {
 	protected void saveStaticSucessful(int generation) {
 		currentStat.patches++;
 		currentStat.genPatches.add(new StatPatch(generation, currentStat.passFailingval1, currentStat.passFailingval2));
-		// log.debug("-->" + currentStat.passFailingval1 + " - " +
-		// currentStat.passFailingval2);
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
 	}
@@ -483,9 +463,7 @@ public abstract class EvolutionaryEngine {
 		if (operations == null || operations.isEmpty()) {
 			return;
 		}
-		// log.debug("--Undoing #operations: " + operations.size()
-		// + " of generation " + genI);
-
+		
 		for (int i = operations.size() - 1; i >= 0; i--) {
 			GenOperationInstance genOperation = operations.get(i);
 			log.debug("---Undoing: gnrtn(" + genI + "): " + genOperation);
