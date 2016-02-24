@@ -1,5 +1,7 @@
 package fr.inria.astor.core.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 /**
@@ -18,4 +20,8 @@ public class TimeUtil {
 		return getDateDiff(date,new Date(),TimeUnit.MINUTES);
 	}
 	
+	public static Date tranformHours(String p) throws ParseException{
+		SimpleDateFormat parser=new SimpleDateFormat("HH:mm");
+		return parser.parse(p);
+	}
 }

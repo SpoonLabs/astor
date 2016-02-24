@@ -1,6 +1,8 @@
 package fr.inria.astor.core.loop.evolutionary;
 
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -115,7 +117,9 @@ public abstract class AstorCoreEngine {
 
 		while (!this.variants.isEmpty() && (!stop || !ConfigurationProperties.getPropertyBool("stopfirst"))
 				&& (generationsExecuted < ConfigurationProperties.getPropertyInt("maxGeneration")
-						&& continueOperating(dateInitEvolution, maxMinutes))) {
+						&& belowMaxTime(dateInitEvolution, maxMinutes))
+						&& limitDate()
+					) {
 			generationsExecuted++;
 			log.debug("\n----------Running generation/iteraction " + generationsExecuted + ", population size: "
 					+ this.variants.size());
@@ -155,7 +159,7 @@ public abstract class AstorCoreEngine {
 		
 		if (this.getFixSpace() != null) {
 			FixLocationSpace space = this.getFixSpace();
-			log.debug(space);
+			log.info(space);
 		}
 
 	}
@@ -187,7 +191,7 @@ public abstract class AstorCoreEngine {
 	 *            max minutes for operating
 	 * @return
 	 */
-	private boolean continueOperating(Date dateInit, int maxMinutes) {
+	private boolean belowMaxTime(Date dateInit, int maxMinutes) {
 		if (TimeUtil.deltaInMinutes(dateInit) <= maxMinutes) {
 			return true;
 		} else {
@@ -196,6 +200,28 @@ public abstract class AstorCoreEngine {
 		}
 	}
 
+	public boolean limitDate(){
+		String limit = ConfigurationProperties.properties.getProperty("maxdate");
+		if (limit == null){
+			return true;
+		}
+		
+		try {
+			Date d = TimeUtil.tranformHours(limit);
+			
+			Date dc = new Date();
+			Date tr = TimeUtil.tranformHours(dc.getHours()+":"+dc.getMinutes());
+			boolean continueProc =  tr.before(d);
+			if(!continueProc){
+				log.info("Astor reaches the hour limit, we stop here");
+			}
+			return continueProc;
+		} catch (ParseException e) {
+			log.error("Parsing time", e);
+			return false;
+		}
+	} 
+	
 	/**
 	 * Process a generation i: loops over all instances
 	 * 

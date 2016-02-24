@@ -17,6 +17,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.astor.core.util.TimeUtil;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.factory.Factory;
 
@@ -143,7 +144,9 @@ public abstract class AbstractMain {
 		options.addOption("skipfaultlocalization", false,
 				"The fault localization is skipped and all statements are considered");
 	
-		
+		options.addOption("maxdate", true,
+                "(Optional) Indicates the hour Astor has to stop processing. it must have the format: HH:mm");
+
 	}
 
 
@@ -327,6 +330,18 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("maxtime"))
 			ConfigurationProperties.properties.setProperty("maxtime", cmd.getOptionValue("maxtime"));
 
+		if (cmd.hasOption("maxdate")){
+			String hour = cmd.getOptionValue("maxdate");
+			try{
+				TimeUtil.tranformHours(hour);
+			}catch(Exception e){
+				System.out.println("Problem when parser maxdate property, tip: HH:mm");
+			}
+			ConfigurationProperties.properties.setProperty("maxdate", hour);
+			
+
+		}
+		
 		if (cmd.hasOption("multigenmodif"))
 			ConfigurationProperties.properties.setProperty("multigenmodif", "true");
 		
