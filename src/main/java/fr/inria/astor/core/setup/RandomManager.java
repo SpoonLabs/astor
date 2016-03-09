@@ -28,9 +28,8 @@ public class RandomManager {
             Integer seed = ConfigurationProperties.getPropertyInt("seed");
             randomNumberGenerator = new Random(seed);
         } else {
-            // CLG would love a way to be able to print the seed used here, but
-            // Java.Random does not seem to provide such functionality.  
-            randomNumberGenerator = new Random();
+        	// by default Astor is deterministic
+            randomNumberGenerator = new Random(0);
         }
     }
 
