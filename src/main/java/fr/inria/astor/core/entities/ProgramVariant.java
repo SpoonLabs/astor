@@ -9,10 +9,15 @@ import java.util.Map;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
+
 /**
- * Representation of a Program Variant (Genotype)
- * The program is represented by a list of Gens. 
- * @author Matias Martinez,  matias.martinez@inria.fr
+ * A ProgramVariant is a variant of a program. The variant can change over time.
+ * 
+ * Each program variant contains a list of "Gen", which represents all locations (i.e., statements) that can be modified for that variant during the whole evolution. For single-point repair, only one of those gens is affected by a mutation operator.. In case of multipoint repair (which can be
+ * activated in astor by a command line argument), different gens from a ProgramVariant can be modified by mutation operator. Note that 2 gens could be modified a) in the same generation, and/or b) in different generations (thus the variant changes over time). For instance, in generation X you
+ * modified gen at position i, and in the generation X+1 you modify position j. ProgramVariant contains a Map “operations” that tracks the history, i.e. the operations done over gens in each generation.
+ * 
+ * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
 public class ProgramVariant {
@@ -26,7 +31,7 @@ public class ProgramVariant {
 	protected int id = 0;
 	
 	/**
-	 * List of gens (statements be able to modify) of the program 
+	 * List of gens (statements that can be modified for finding a patch) of the program 
 	 */
 	protected List<Gen> genList = null;
 	/**
@@ -146,6 +151,7 @@ public class ProgramVariant {
 		this.compilationResult = compilation;
 	}
 	
+	@Override
 	public String toString(){
 		return "[Variant id: "+this.id+(this.isSolution()?" (SOL) ":"") +", #gens: "+this.getGenList().size()+ ", #ops: "+this.operations.values().size()+", parent:"+((this.parent==null)?"-":this.parent.id)+"]";
 	}
@@ -154,9 +160,14 @@ public class ProgramVariant {
 		return (id >= 0)? ( "variant-" + id) : DEFAULT_ORIGINAL_VARIANT;
 	}
 	
-	public List<CtType> getAffectedClasses(){
-		return new ArrayList<CtType>(loadClasses.values());
+	public List<CtType<?>> getAffectedClasses(){
+		List<CtType<?>> r = new ArrayList<CtType<?>>();
+		for (CtClass c:loadClasses.values()) {
+			r.add(c);
+		}
+		return r;
 	}
+	
 	public boolean isSolution() {
 		return isSolution;
 	}

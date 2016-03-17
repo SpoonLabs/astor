@@ -116,7 +116,7 @@ public class JGenProg extends AstorCoreEngine {
 
 	}
 
-	protected List retrieveClassesForIngredients() {
+	protected List<CtType<?>> retrieveClassesForIngredients() {
 		if (getFixSpace().strategy().equals(IngredientSpaceStrategy.LOCAL)
 				|| getFixSpace().strategy().equals(IngredientSpaceStrategy.PACKAGE))
 			return originalVariant.getAffectedClasses();
