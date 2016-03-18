@@ -37,6 +37,9 @@ import fr.inria.main.ExecutionMode;
  */
 public class AstorMain extends AbstractMain {
 
+	
+	JGenProg gploop = null;
+	
 	public void initProject(String location, String projectName, String dependencies, String packageToInstrument,
 			double thfl, String failing) throws Exception {
 
@@ -63,14 +66,12 @@ public class AstorMain extends AbstractMain {
 	 */
 
 	public JGenProg createEngine(ExecutionMode mode) throws Exception {
-
+		gploop = null;
 		MutationSupporter mutSupporter = new MutationSupporter();
 		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
 		// Fix Space
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 		
-		JGenProg gploop = null;
-
 		if (ExecutionMode.jKali.equals(mode)) {
 			gploop = new JKali(mutSupporter, projectFacade);
 			gploop.setRepairActionSpace(new RemoveRepairOperatorSpace());
@@ -119,7 +120,7 @@ public class AstorMain extends AbstractMain {
 
 		long startT = System.currentTimeMillis();
 		initProject(location, projectName, dependencies, packageToInstrument, thfl, failing);
-		JGenProg gploop = null;
+	
 		String mode = ConfigurationProperties.getProperty("mode");
 
 		if ("statement".equals(mode))
@@ -150,13 +151,17 @@ public class AstorMain extends AbstractMain {
 	 */
 	public static void main(String[] args) throws Exception {
 		AstorMain m = new AstorMain();
-		boolean correct = m.processArguments(args);
+		m.execute(args);	
+	}
+	
+	public void execute(String[] args) throws Exception{
+		boolean correct = processArguments(args);
 		if (!correct) {
 			System.err.println("Problems with commands arguments");
 			return;
 		}
-		if (m.isExample(args)) {
-			m.executeExample(args);
+		if (isExample(args)) {
+			executeExample(args);
 			return;
 		}
 
@@ -167,8 +172,13 @@ public class AstorMain extends AbstractMain {
 		double thfl = ConfigurationProperties.getPropertyDouble("flthreshold");
 		String projectName = ConfigurationProperties.getProperty("projectIdentifier");
 
-		m.run(location, projectName, dependencies, packageToInstrument, thfl, failing);
+		run(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
+	}
+
+
+	public JGenProg getEngine() {
+		return gploop;
 	}
 
 }
