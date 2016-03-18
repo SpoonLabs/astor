@@ -84,8 +84,8 @@ public abstract class AbstractMain {
 				"(Optional) maximum time (in miliseconds) for validating the regression test cases ");
 		options.addOption("stopfirst", true,
 				"(Optional) Indicates whether it stops when it finds the first solution (default: true)");
-		options.addOption("allgens", true,
-				"(Optional) True if analyze all gens of a program validation during a generation. False for analyzing only one gen per generation.");
+		options.addOption("allpoints", true,
+				"(Optional) True if analyze all points of a program validation during a generation. False for analyzing only one gen per generation.");
 
 		options.addOption("savesolution", false,
 				"(Optional) Save on disk intermediate program variants (even those that do not compile)");
@@ -93,7 +93,7 @@ public abstract class AbstractMain {
 
 		options.addOption("testbystep", false, "(Optional) Executes each test cases in a separate process.");
 
-		options.addOption("genlistnavigation", true,
+		options.addOption("modificationpointnavigation", true,
 				"(Optional) Method to navigate the gen space of a variant: inorder, random, weight random (according to the gen's suspicous value)");
 
 		options.addOption("mutationrate", true,
@@ -114,7 +114,7 @@ public abstract class AbstractMain {
 		options.addOption("bintestfolder", true,
 				"(Optional) folder with the test cases binaries (default: /target/test-classes/)");
 
-		options.addOption("multigenmodif", false,
+		options.addOption("multipointmodification", false,
 				"(Optional) An element of a program variant (i.e., gen) can be modified several times in different generation");
 
 		options.addOption("uniqueoptogen", true,
@@ -290,8 +290,8 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("stopfirst"))
 			ConfigurationProperties.properties.setProperty("stopfirst", cmd.getOptionValue("stopfirst"));
 
-		if (cmd.hasOption("allgens"))
-			ConfigurationProperties.properties.setProperty("allgens", cmd.getOptionValue("allgens"));
+		if (cmd.hasOption("allpoints"))
+			ConfigurationProperties.properties.setProperty("allpoints", cmd.getOptionValue("allpoints"));
 
 		if (cmd.hasOption("savesolution"))
 			ConfigurationProperties.properties.setProperty("savesolution", "true");
@@ -302,9 +302,9 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("testbystep"))
 			ConfigurationProperties.properties.setProperty("testbystep", "true");
 
-		if (cmd.hasOption("genlistnavigation"))
-			ConfigurationProperties.properties.setProperty("genlistnavigation",
-					cmd.getOptionValue("genlistnavigation"));
+		if (cmd.hasOption("modificationpointnavigation"))
+			ConfigurationProperties.properties.setProperty("modificationpointnavigation",
+					cmd.getOptionValue("modificationpointnavigation"));
 
 		if (cmd.hasOption("mutationrate"))
 			ConfigurationProperties.properties.setProperty("mutationrate", cmd.getOptionValue("mutationrate"));
@@ -335,8 +335,8 @@ public abstract class AbstractMain {
 
 		}
 
-		if (cmd.hasOption("multigenmodif"))
-			ConfigurationProperties.properties.setProperty("multigenmodif", "true");
+		if (cmd.hasOption("multipointmodification"))
+			ConfigurationProperties.properties.setProperty("multipointmodification", "true");
 
 		if (cmd.hasOption("javacompliancelevel"))
 			ConfigurationProperties.properties.setProperty("javacompliancelevel",

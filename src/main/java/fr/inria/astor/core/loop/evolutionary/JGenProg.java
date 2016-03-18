@@ -29,7 +29,6 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.stats.StatSpaceSize;
 import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;

@@ -19,9 +19,9 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-import fr.inria.astor.core.entities.Gen;
-import fr.inria.astor.core.entities.GenOperationInstance;
-import fr.inria.astor.core.entities.GenSuspicious;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
@@ -80,7 +80,7 @@ public class PatchValidationTest {
 		ProgramVariant variant = jgp.getVariants().get(0);
 	
 		int currentGeneration = 1;
-		GenOperationInstance operation1 = createDummyOperation1(variant, currentGeneration);
+		ModificationInstance operation1 = createDummyOperation1(variant, currentGeneration);
 		System.out.println("operation " + operation1);
 		assertNotNull(operation1);
 
@@ -154,7 +154,7 @@ public class PatchValidationTest {
 		ProgramVariant variant = jgp.getVariants().get(0);
 		
 		int currentGeneration = 1;
-		GenOperationInstance operation1 = createDummyOperation1(variant, currentGeneration);
+		ModificationInstance operation1 = createDummyOperation1(variant, currentGeneration);
 		assertNotNull(operation1);
 
 		boolean isSolution = false;
@@ -165,25 +165,25 @@ public class PatchValidationTest {
 		assertTrue("A solution is attended",isSolution);
 
 	}
-	private GenOperationInstance createDummyOperation1(ProgramVariant variant, int currentGeneration) {
+	private ModificationInstance createDummyOperation1(ProgramVariant variant, int currentGeneration) {
 
-		GenSuspicious genSusp = searchSuspiciousElement(variant, "n += 3", " ", 93);
+		SuspiciousModificationPoint genSusp = searchSuspiciousElement(variant, "n += 3", " ", 93);
 		assertNotNull(genSusp);
 
 		CtElement targetStmt = genSusp.getCodeElement();
 		CtElement fix = createFix1();
 		assertEquals(fix.toString(), "n += 2");
 
-		GenOperationInstance operation = new GenOperationInstance();
+		ModificationInstance operation = new ModificationInstance();
 
 		operation.setOperationApplied(GenProgMutationOperation.REPLACE);
-		operation.setGen(genSusp);
+		operation.setModificationPoint(genSusp);
 		operation.setParentBlock((CtBlock) targetStmt.getParent());
 		operation.setOriginal(targetStmt);
 		operation.setModified(fix);
 
-		variant.putGenOperation(currentGeneration, operation);
-		operation.setGen(genSusp);
+		variant.putModificationInstance(currentGeneration, operation);
+		operation.setModificationPoint(genSusp);
 
 		return operation;
 	}
@@ -207,12 +207,12 @@ public class PatchValidationTest {
 		return st;
 	}
 
-	public GenSuspicious searchSuspiciousElement(ProgramVariant variant, String snippet, String fileName, int line) {
+	public SuspiciousModificationPoint searchSuspiciousElement(ProgramVariant variant, String snippet, String fileName, int line) {
 
-		for (Gen gen : variant.getGenList()) {
+		for (ModificationPoint gen : variant.getModificationPoints()) {
 
 			if (gen.getCodeElement().toString().equals(snippet) && gen.getCodeElement().getPosition().getLine() == line)
-				return (GenSuspicious) gen;
+				return (SuspiciousModificationPoint) gen;
 		}
 
 		return null;

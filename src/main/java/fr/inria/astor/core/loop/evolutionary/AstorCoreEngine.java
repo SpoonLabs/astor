@@ -530,10 +530,10 @@ public abstract class AstorCoreEngine {
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
 			// tp refactor
 			modificationPoint.identified = variant.getModificationPoints().indexOf(modificationPoint);
-			log.debug("---analyzing gen position: " + modificationPoint.identified);
+			log.debug("---analyzing modificationPoint position: " + modificationPoint.identified);
 
 			// A point can be modified several time in the evolution
-			boolean multiPointMutation = ConfigurationProperties.getPropertyBool("multigenmodif");
+			boolean multiPointMutation = ConfigurationProperties.getPropertyBool("multipointmodification");
 			if (!multiPointMutation && alreadyModified(modificationPoint, variant.getOperations(), generation))
 				continue;
 
@@ -560,7 +560,7 @@ public abstract class AstorCoreEngine {
 				oneOperationCreated = true;
 				genMutated++;
 				// We analyze all gens
-				if (!ConfigurationProperties.getPropertyBool("allgens")) {
+				if (!ConfigurationProperties.getPropertyBool("allpoints")) {
 					break;
 				}
 
@@ -629,7 +629,7 @@ public abstract class AstorCoreEngine {
 	 */
 	protected List<ModificationPoint> getGenList(ProgramVariant variant) {
 		List<ModificationPoint> genList = variant.getModificationPoints();
-		String mode = ConfigurationProperties.getProperty("genlistnavigation");
+		String mode = ConfigurationProperties.getProperty("modificationpointnavigation");
 
 		if ("inorder".equals(mode))
 			return genList;
