@@ -6,9 +6,9 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.Gen;
-import fr.inria.astor.core.entities.GenOperationInstance;
-import fr.inria.astor.core.entities.GenSuspicious;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -38,17 +38,17 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 		for (ProgramVariant parentVariant : variants) {
 		
 			// We analyze each Gen of the variant i.e. suspicious statement
-			for (Gen gen : parentVariant.getGenList()) {
+			for (ModificationPoint gen : parentVariant.getModificationPoints()) {
 				// We create all operators to apply in the gen
-				List<GenOperationInstance> genOperations = createOperators((GenSuspicious) gen);
+				List<ModificationInstance> genOperations = createOperators((SuspiciousModificationPoint) gen);
 
 				if(genOperations == null || genOperations.isEmpty())
 					continue;
 				
-				for (GenOperationInstance genOperation : genOperations) {
+				for (ModificationInstance genOperation : genOperations) {
 
 					try{
-						log.info("gen "+((GenSuspicious)gen).getSuspicious());
+						log.info("gen "+((SuspiciousModificationPoint)gen).getSuspicious());
 						log.info("--> " + genOperation);
 					}catch(Exception e){}
 																		
@@ -75,6 +75,6 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 		
 	}
 
-	protected abstract List<GenOperationInstance> createOperators(GenSuspicious gen) ;
+	protected abstract List<ModificationInstance> createOperators(SuspiciousModificationPoint gen) ;
 
 }

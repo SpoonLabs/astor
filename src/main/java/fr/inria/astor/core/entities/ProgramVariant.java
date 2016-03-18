@@ -34,7 +34,7 @@ public class ProgramVariant {
 	/**
 	 * List of gens (statements that can be modified for finding a patch) of the program 
 	 */
-	protected List<Gen> genList = null;
+	protected List<ModificationPoint> modificationPoints = null;
 	/**
 	 * Reference to the loaded classes from the spoon model. The classes are shared by all variants, a
 	 * s consequence, it does not have changes of any variant.
@@ -44,7 +44,7 @@ public class ProgramVariant {
 	/**
 	 * operations applied to gen, organizated by generations
 	 */
-	protected Map<Integer,List<GenOperationInstance>> operations  = null;
+	protected Map<Integer,List<ModificationInstance>> operations  = null;
 	/**
 	 * Fitness value of the variant	
 	 */
@@ -84,8 +84,8 @@ public class ProgramVariant {
 	protected List<CtClass> modifiedClasses = new ArrayList<CtClass>();
 
 	public ProgramVariant(){
-		genList = new ArrayList<Gen>();
-		operations = new HashMap<Integer,List<GenOperationInstance>>();
+		modificationPoints = new ArrayList<ModificationPoint>();
+		operations = new HashMap<Integer,List<ModificationInstance>>();
 	}
 
 	public ProgramVariant(int id) {
@@ -93,12 +93,12 @@ public class ProgramVariant {
 		this.id = id;
 	}
 
-	public List<Gen> getGenList() {
-		return genList;
+	public List<ModificationPoint> getModificationPoints() {
+		return modificationPoints;
 	}
 
-	public void setGenList(List<Gen> genList) {
-		this.genList = genList;
+	public void setModificationPoints(List<ModificationPoint> modificationPoints) {
+		this.modificationPoints = modificationPoints;
 	}
 
 	public double getFitness() {
@@ -120,19 +120,19 @@ public class ProgramVariant {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public void putGenOperation(int generation, GenOperationInstance op){
-		List<GenOperationInstance> genList = operations.get(generation);
-		if(genList == null){
-			genList = new ArrayList<GenOperationInstance>();
-			operations.put(generation, genList);
+	public void putModificationInstance(int generation, ModificationInstance op){
+		List<ModificationInstance> modificationPoints = operations.get(generation);
+		if(modificationPoints == null){
+			modificationPoints = new ArrayList<ModificationInstance>();
+			operations.put(generation, modificationPoints);
 		}
-		genList.add(op);
+		modificationPoints.add(op);
 		
 	}
-	public Map<Integer, List<GenOperationInstance>> getOperations() {
+	public Map<Integer, List<ModificationInstance>> getOperations() {
 		return operations;
 	}
-	public List<GenOperationInstance> getOperations(int generation) {
+	public List<ModificationInstance> getOperations(int generation) {
 		return  operations.get(generation);
 	}
 
@@ -164,7 +164,7 @@ public class ProgramVariant {
 	
 	@Override
 	public String toString(){
-		return "[Variant id: "+this.id+(this.isSolution()?" (SOL) ":"") +", #gens: "+this.getGenList().size()+ ", #ops: "+this.operations.values().size()+", parent:"+((this.parent==null)?"-":this.parent.id)+"]";
+		return "[Variant id: "+this.id+(this.isSolution()?" (SOL) ":"") +", #gens: "+this.getModificationPoints().size()+ ", #ops: "+this.operations.values().size()+", parent:"+((this.parent==null)?"-":this.parent.id)+"]";
 	}
 	
 	public String currentMutatorIdentifier() {

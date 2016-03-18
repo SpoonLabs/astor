@@ -1,6 +1,6 @@
 package fr.inria.astor.core.loop.evolutionary.transformators;
 
-import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.ModificationInstance;
 
 /**
  * 
@@ -9,10 +9,10 @@ import fr.inria.astor.core.entities.GenOperationInstance;
  */
 public interface ModelTransformator {
 
-	public void revert(GenOperationInstance operation);
+	public void revert(ModificationInstance operation);
 	
-	public void transform(GenOperationInstance operation) throws Exception;
+	public void transform(ModificationInstance operation) throws Exception;
 	
-	public boolean canTransform(GenOperationInstance operation);
+	public boolean canTransform(ModificationInstance operation);
 	
 }

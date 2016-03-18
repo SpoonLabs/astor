@@ -8,8 +8,8 @@ import java.util.Set;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.GenOperationInstance;
-import fr.inria.astor.core.entities.GenSuspicious;
+import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -41,31 +41,31 @@ public class JKali extends ExhaustiveSearchEngine {
 	 * Creates the Kali operators 1) Delete statement 2) Insert return 3) change
 	 * if condition to true/false.
 	 * 
-	 * @param gen
+	 * @param modificationPoint
 	 * @return
 	 */
-	protected List<GenOperationInstance> createOperators(GenSuspicious gen) {
-		List<GenOperationInstance> ops = new ArrayList<>();
+	protected List<ModificationInstance> createOperators(SuspiciousModificationPoint modificationPoint) {
+		List<ModificationInstance> ops = new ArrayList<>();
 
-		GenOperationInstance opRemove = new GenOperationInstance(gen, GenProgMutationOperation.DELETE,
-				gen.getCodeElement(), null);
-		setParentToGenOperator(opRemove, gen);
+		ModificationInstance opRemove = new ModificationInstance(modificationPoint, GenProgMutationOperation.DELETE,
+				modificationPoint.getCodeElement(), null);
+		setParentToGenOperator(opRemove, modificationPoint);
 		ops.add(opRemove);
 
-		GenOperationInstance opInsertReturn = new GenOperationInstance(gen, GenProgMutationOperation.INSERT_BEFORE,
-				gen.getCodeElement(), createReturn(gen.getCodeElement()));
-		setParentToGenOperator(opInsertReturn, gen);
+		ModificationInstance opInsertReturn = new ModificationInstance(modificationPoint, GenProgMutationOperation.INSERT_BEFORE,
+				modificationPoint.getCodeElement(), createReturn(modificationPoint.getCodeElement()));
+		setParentToGenOperator(opInsertReturn, modificationPoint);
 		ops.add(opInsertReturn);
 
-		if (gen.getCodeElement() instanceof CtIf) {
-			GenOperationInstance opChangeIftrue = new GenOperationInstance(gen, GenProgMutationOperation.REPLACE,
-					gen.getCodeElement(), createIf((CtIf) gen.getCodeElement(), true));
-			setParentToGenOperator(opChangeIftrue, gen);
+		if (modificationPoint.getCodeElement() instanceof CtIf) {
+			ModificationInstance opChangeIftrue = new ModificationInstance(modificationPoint, GenProgMutationOperation.REPLACE,
+					modificationPoint.getCodeElement(), createIf((CtIf) modificationPoint.getCodeElement(), true));
+			setParentToGenOperator(opChangeIftrue, modificationPoint);
 			ops.add(opChangeIftrue);
 
-			GenOperationInstance opChangeIffalse = new GenOperationInstance(gen, GenProgMutationOperation.REPLACE,
-					gen.getCodeElement(), createIf((CtIf) gen.getCodeElement(), false));
-			setParentToGenOperator(opChangeIffalse, gen);
+			ModificationInstance opChangeIffalse = new ModificationInstance(modificationPoint, GenProgMutationOperation.REPLACE,
+					modificationPoint.getCodeElement(), createIf((CtIf) modificationPoint.getCodeElement(), false));
+			setParentToGenOperator(opChangeIffalse, modificationPoint);
 			ops.add(opChangeIffalse);
 		}
 		return ops;

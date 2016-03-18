@@ -7,13 +7,13 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 
 /**
- * Gen of the program variant. It represents an element (i.e. spoon element, CtElement) of
+ * ModificationPoint of the program variant. It represents an element (i.e. spoon element, CtElement) of
  * the program under analysis.
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class Gen {
+public class ModificationPoint {
 
 	protected ProgramVariant programVariant;
 	
@@ -21,21 +21,21 @@ public class Gen {
 
 	protected CtClass ctClass;
 	
-	List<CtVariable> contextOfGen;
+	List<CtVariable> contextOfModificationPoint;
 
 	public int identified = 0;
-	// TODO: to set a value.
+	
 	protected int generation = -1;
 
-	public Gen() {
+	public ModificationPoint() {
 	}
 
 
-	public Gen(CtElement rootElement, CtClass ctClass, List<CtVariable> contextOfGen) {
+	public ModificationPoint(CtElement rootElement, CtClass ctClass, List<CtVariable> contextOfGen) {
 		super();
 		this.codeElement = rootElement;
 		this.ctClass = ctClass;
-		this.contextOfGen = contextOfGen;
+		this.contextOfModificationPoint = contextOfGen;
 	}
 
 	public CtElement getCodeElement() {
@@ -58,12 +58,12 @@ public class Gen {
 		return "[" + codeElement.getClass().getSimpleName() + ", in " + ctClass.getSimpleName() + "]";
 	}
 
-	public List<CtVariable> getContextOfGen() {
-		return contextOfGen;
+	public List<CtVariable> getContextOfModificationPoint() {
+		return contextOfModificationPoint;
 	}
 
-	public void setContextOfGen(List<CtVariable> contextOfGen) {
-		this.contextOfGen = contextOfGen;
+	public void setContextOfModificationPoint(List<CtVariable> contextOfModificationPoint) {
+		this.contextOfModificationPoint = contextOfModificationPoint;
 	}
 
 	public ProgramVariant getProgramVariant() {

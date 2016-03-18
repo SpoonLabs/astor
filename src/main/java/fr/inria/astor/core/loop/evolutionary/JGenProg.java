@@ -8,9 +8,9 @@ import java.util.Map;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.Gen;
-import fr.inria.astor.core.entities.GenOperationInstance;
-import fr.inria.astor.core.entities.GenSuspicious;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
@@ -95,7 +95,7 @@ public class JGenProg extends AstorCoreEngine {
 			return;
 		}
 
-		if (originalVariant.getGenList().isEmpty()) {
+		if (originalVariant.getModificationPoints().isEmpty()) {
 			log.error("Variant with any gen");
 			return;
 		}
@@ -191,7 +191,7 @@ public class JGenProg extends AstorCoreEngine {
 		// We save the first variant
 		this.originalVariant = variants.get(0);
 
-		if (originalVariant.getGenList().isEmpty()) {
+		if (originalVariant.getModificationPoints().isEmpty()) {
 			throw new IllegalStateException("Variant without gens. It must have at least one.");
 		}
 	}
@@ -206,19 +206,19 @@ public class JGenProg extends AstorCoreEngine {
 	 *            operator to apply in the variant.
 	 */
 	@Override
-	protected void updateVariantGenList(ProgramVariant variant, GenOperationInstance operation) {
-		List<Gen> gens = variant.getGenList();
+	protected void updateVariantGenList(ProgramVariant variant, ModificationInstance operation) {
+		List<ModificationPoint> gens = variant.getModificationPoints();
 		GenProgMutationOperation type = (GenProgMutationOperation) operation.getOperationApplied();
 		if (type.equals(GenProgMutationOperation.DELETE) || type.equals(GenProgMutationOperation.REPLACE)) {
-			boolean removed = gens.remove(operation.getGen());
+			boolean removed = gens.remove(operation.getModificationPoint());
 			if (type.equals(GenProgMutationOperation.DELETE))
 				log.debug("---" + operation + " removed gen? " + removed);
 		}
 		if (!type.equals(GenProgMutationOperation.DELETE)) {
-			Gen existingGen = operation.getGen();
-			Gen newGen = null;
-			if (existingGen instanceof GenSuspicious)
-				newGen = variantFactory.cloneGen((GenSuspicious) existingGen, operation.getModified());
+			ModificationPoint existingGen = operation.getModificationPoint();
+			ModificationPoint newGen = null;
+			if (existingGen instanceof SuspiciousModificationPoint)
+				newGen = variantFactory.cloneGen((SuspiciousModificationPoint) existingGen, operation.getModified());
 			else
 				newGen = variantFactory.cloneGen(existingGen, operation.getModified());
 
@@ -239,8 +239,8 @@ public class JGenProg extends AstorCoreEngine {
 	 * @throws IllegalAccessException
 	 */
 	@Override
-	protected GenOperationInstance createOperationForGen(Gen gen) throws IllegalAccessException {
-		GenSuspicious genSusp = (GenSuspicious) gen;
+	protected ModificationInstance createOperationForGen(ModificationPoint gen) throws IllegalAccessException {
+		SuspiciousModificationPoint genSusp = (SuspiciousModificationPoint) gen;
 
 		GenProgMutationOperation operationType = (GenProgMutationOperation) repairActionSpace
 				.getNextOperator(genSusp.getSuspicious().getSuspiciousValue());
@@ -252,10 +252,10 @@ public class JGenProg extends AstorCoreEngine {
 
 		CtElement targetStmt = genSusp.getCodeElement();
 
-		GenOperationInstance operation = new GenOperationInstance();
+		ModificationInstance operation = new ModificationInstance();
 		operation.setOriginal(targetStmt);
 		operation.setOperationApplied(operationType);
-		operation.setGen(genSusp);
+		operation.setModificationPoint(genSusp);
 
 		setParentToGenOperator(operation, genSusp);
 
@@ -289,7 +289,7 @@ public class JGenProg extends AstorCoreEngine {
 		return operation;
 	}
 
-	protected void setParentToGenOperator(GenOperationInstance operation, GenSuspicious genSusp) {
+	protected void setParentToGenOperator(ModificationInstance operation, SuspiciousModificationPoint genSusp) {
 		CtElement targetStmt = genSusp.getCodeElement();
 		CtElement cparent = targetStmt.getParent();
 		if ((cparent != null && (cparent instanceof CtBlock))) {
@@ -326,7 +326,7 @@ public class JGenProg extends AstorCoreEngine {
 
 	}
 
-	protected Ingredient getFixIngredient(Gen gen, CtElement targetStmt, GenProgMutationOperation operationType) {
+	protected Ingredient getFixIngredient(ModificationPoint gen, CtElement targetStmt, GenProgMutationOperation operationType) {
 		return this.getFixIngredient(gen, targetStmt, null, operationType);
 	}
 
@@ -339,7 +339,7 @@ public class JGenProg extends AstorCoreEngine {
 	 * @param elementsFromFixSpace
 	 * @return
 	 */
-	protected Ingredient getFixIngredient(Gen gen, CtElement targetStmt, String type,
+	protected Ingredient getFixIngredient(ModificationPoint gen, CtElement targetStmt, String type,
 			GenProgMutationOperation operationType) {
 
 		int attempts = 0;
@@ -374,7 +374,7 @@ public class JGenProg extends AstorCoreEngine {
 
 			if (!alreadyApplied && !fix.getSignature().equals(targetStmt.getSignature())) {
 
-				ccompatibleNameTypes = VariableResolver.fitInPlace(gen.getContextOfGen(), fix);
+				ccompatibleNameTypes = VariableResolver.fitInPlace(gen.getContextOfModificationPoint(), fix);
 				continueSearching = !ccompatibleNameTypes;
 				fixStat = (ccompatibleNameTypes) ? INGREDIENT_STATUS.compiles : INGREDIENT_STATUS.notcompiles;
 			} else {
@@ -383,10 +383,6 @@ public class JGenProg extends AstorCoreEngine {
 
 			IngredientSpaceStrategy scope = (fix != null)
 					? determineIngredientScope(gen.getCodeElement(), fix, ingredients) : IngredientSpaceStrategy.GLOBAL;
-
-			currentStat.sizeSpaceOfVariant.add(new StatSpaceSize(gen.getProgramVariant().getId(),
-					gen.getCodeElement().getClass().getSimpleName(), elementsFromFixSpace,
-					((fix != null) ? fix.getClass().getSimpleName() : "null"), fixStat, scope, operationType));
 
 			if (!continueSearching) {
 				return new Ingredient(fix, scope);
@@ -400,7 +396,7 @@ public class JGenProg extends AstorCoreEngine {
 	}
 
 	@Override
-	protected void undoOperationToSpoonElement(GenOperationInstance operation) {
+	protected void undoOperationToSpoonElement(ModificationInstance operation) {
 		List<AbstractFixSpaceProcessor<?>> processors = this.getVariantFactory().getProcessors();
 		for (AbstractFixSpaceProcessor<?> processor : processors) {
 			ModelTransformator mt = processor.getTransformator();
@@ -422,7 +418,7 @@ public class JGenProg extends AstorCoreEngine {
 	 * 
 	 */
 	@Override
-	protected void applyPreviousMutationOperationToSpoonElement(GenOperationInstance operation)
+	protected void applyPreviousMutationOperationToSpoonElement(ModificationInstance operation)
 			throws IllegalAccessException {
 		this.applyNewMutationOperationToSpoonElement(operation);
 
@@ -441,7 +437,7 @@ public class JGenProg extends AstorCoreEngine {
 	 * 
 	 */
 	@Override
-	protected void applyNewMutationOperationToSpoonElement(GenOperationInstance operation)
+	protected void applyNewMutationOperationToSpoonElement(ModificationInstance operation)
 			throws IllegalAccessException {
 
 		List<AbstractFixSpaceProcessor<?>> processors = this.getVariantFactory().getProcessors();
@@ -471,7 +467,7 @@ public class JGenProg extends AstorCoreEngine {
 	 * @param location
 	 * @return
 	 */
-	protected boolean alreadyApplied(Gen gen, CtElement fixElement, Operator operator) {
+	protected boolean alreadyApplied(ModificationPoint gen, CtElement fixElement, Operator operator) {
 		// we add the instance identifier to the patch.
 		String lockey = gen.getCodeElement() + "-" + operator.toString();
 		String fix = "";

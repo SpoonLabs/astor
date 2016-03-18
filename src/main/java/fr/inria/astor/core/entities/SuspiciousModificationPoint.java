@@ -7,21 +7,21 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 /**
- * Gen created from a Suspicious code. 
- * That means, the gen is a suspicious to have a bug.
+ * ModificationPoint created from a Suspicious code. 
+ * That means, the ModificationPoint is a suspicious to have a bug.
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public class GenSuspicious extends Gen{
+public class SuspiciousModificationPoint extends ModificationPoint{
 
 	protected SuspiciousCode suspicious;
 
 	
-	public GenSuspicious(){
+	public SuspiciousModificationPoint(){
 		super();
 	}
 	
-	public GenSuspicious(SuspiciousCode suspicious, CtElement rootElement, CtClass clonedClass,List<CtVariable> context) {
+	public SuspiciousModificationPoint(SuspiciousCode suspicious, CtElement rootElement, CtClass clonedClass,List<CtVariable> context) {
 		super(rootElement, clonedClass, context);
 		this.suspicious = suspicious;
 	}
@@ -33,7 +33,7 @@ public class GenSuspicious extends Gen{
 	}
 	
 	public String toString(){
-		return "Gen="
+		return "ModificPoint="
 				+ ctClass.getSimpleName() +" line: "+suspicious.getLineNumber()+", el: "+codeElement.getClass().getSimpleName()+"";
 	}
 	

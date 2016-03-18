@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.Gen;
-import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -47,13 +47,12 @@ public class ParRepair extends JGenProg {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	protected GenOperationInstance createOperationForGen(Gen gen) throws IllegalAccessException {
-		// GenSuspicious genSusp = (GenSuspicious) gen;
-		Gen genSusp = gen;
+	protected ModificationInstance createOperationForGen(ModificationPoint mutationPoint) throws IllegalAccessException {
+		
+		ModificationPoint genSusp = mutationPoint;
 
 		
 		if (!(genSusp.getCodeElement() instanceof CtIf)) {
-			// logger.error(".....The pointed Element is Not a statement");
 			return null;
 		}
 		CtIf targetIF = (CtIf) genSusp.getCodeElement();
@@ -80,11 +79,11 @@ public class ParRepair extends JGenProg {
 			}
 		}
 		
-		GenOperationInstance operation = new GenOperationInstance();
+		ModificationInstance operation = new ModificationInstance();
 		operation.setOriginal(condit);
 		operation.setOperationApplied(operationType);
 		//operation.setParentBlock(parentBlock);
-		operation.setGen(genSusp);
+		operation.setModificationPoint(genSusp);
 		
 		//--
 		int elementsFromFixSpace = this.fixspace.getFixSpace(genSusp.getCodeElement()).size();
@@ -99,7 +98,7 @@ public class ParRepair extends JGenProg {
 			if (!operationType.equals(ParMutationOperation.DELETE_BEFORE)
 					&& !operationType.equals(ParMutationOperation.DELETE_AFTER)) {
 			
-				fixingredient = this.fixspace.getElementFromSpace(gen.getCodeElement());
+				fixingredient = this.fixspace.getElementFromSpace(mutationPoint.getCodeElement());
 				if(fixingredient == null){
 					continue;
 				}
@@ -118,7 +117,7 @@ public class ParRepair extends JGenProg {
 			if (includeClause(condit, fix, operationType)) {
 				//log.info("Discarting: Clause Included");
 			}else
-			continueSearching = alreadyApplied(gen,fix,operationType);
+			continueSearching = alreadyApplied(mutationPoint,fix,operationType);
 		
 		} 
 		if(continueSearching ){
@@ -178,7 +177,7 @@ public class ParRepair extends JGenProg {
 	}
 
 	@Override
-	protected void applyPreviousMutationOperationToSpoonElement(GenOperationInstance operation)
+	protected void applyPreviousMutationOperationToSpoonElement(ModificationInstance operation)
 			throws IllegalAccessException {
 		try {
 			boolean successful = false;
@@ -202,12 +201,12 @@ public class ParRepair extends JGenProg {
 	 * @throws IllegalAccessException
 	 */
 	@SuppressWarnings("rawtypes")
-	protected void applyNewMutationOperationToSpoonElement(GenOperationInstance operation)
+	protected void applyNewMutationOperationToSpoonElement(ModificationInstance operation)
 			throws IllegalAccessException {
 		
 		this.applyPreviousMutationOperationToSpoonElement(operation);	
 	}
-		protected void applyNewMutationOperationToSpoonElementOLD(GenOperationInstance operation)
+		protected void applyNewMutationOperationToSpoonElementOLD(ModificationInstance operation)
 				throws IllegalAccessException {	
 		CtExpression rightTerm = null, leftTerm = null;
 		try {
@@ -343,7 +342,7 @@ public class ParRepair extends JGenProg {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void undoOperationToSpoonElement(GenOperationInstance operation) {
+	public void undoOperationToSpoonElement(ModificationInstance operation) {
 		CtExpression ctst = (CtExpression) operation.getOriginal();
 		CtExpression fix = (CtExpression) operation.getModified();
 		//log.info("The modified fix is " + fix + ", the original is: " + ctst);
@@ -358,17 +357,17 @@ public class ParRepair extends JGenProg {
 	 * @param operationofGen
 	 */
 	@Override
-	protected void updateVariantGenList(ProgramVariant variant, GenOperationInstance operation) {
-		List<Gen> gens = variant.getGenList();
+	protected void updateVariantGenList(ProgramVariant variant, ModificationInstance operation) {
+		List<ModificationPoint> gens = variant.getModificationPoints();
 		ParMutationOperation type = (ParMutationOperation) operation.getOperationApplied();
 		if (type.equals(ParMutationOperation.DELETE_BEFORE) || type.equals(ParMutationOperation.DELETE_AFTER)
 				|| type.equals(ParMutationOperation.REPLACE)) {
-			boolean removed = gens.remove(operation.getGen());
+			boolean removed = gens.remove(operation.getModificationPoint());
 			log.info("---updating gen list " + operation + " removed gen? " + removed);
 		}
 		if (!type.equals(ParMutationOperation.DELETE_BEFORE) && !type.equals(ParMutationOperation.DELETE_AFTER)) {
-			Gen existingGen = operation.getGen();
-			Gen newGen = variantFactory.cloneGen(existingGen, operation.getModified());
+			ModificationPoint existingGen = operation.getModificationPoint();
+			ModificationPoint newGen = variantFactory.cloneGen(existingGen, operation.getModified());
 			log.info("---updating gen list " + operation + " adding gen: " + newGen);
 			gens.add(newGen);
 		}

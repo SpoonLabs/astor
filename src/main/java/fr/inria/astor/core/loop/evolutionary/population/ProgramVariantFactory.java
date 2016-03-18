@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.Gen;
-import fr.inria.astor.core.entities.GenSuspicious;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerLauncher;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
@@ -114,29 +114,29 @@ public class ProgramVariantFactory {
 			for (SuspiciousCode suspiciousCode : suspiciousList) {
 				// For each suspicious code, we create one or more Gens (when it
 				// is possible)
-				List<GenSuspicious> gens = createGens(suspiciousCode, progInstance);
+				List<SuspiciousModificationPoint> gens = createGens(suspiciousCode, progInstance);
 				if (gens != null)
-					progInstance.getGenList().addAll(gens);
+					progInstance.getModificationPoints().addAll(gens);
 				else {
 					log.info("-no gen created for suspicios " + suspiciousCode);
 				}
 
 			}
-			log.info("Total suspicious from FL: " + suspiciousList.size() + ",  " + progInstance.getGenList().size());
+			log.info("Total suspicious from FL: " + suspiciousList.size() + ",  " + progInstance.getModificationPoints().size());
 		} else {
 			// We do not have suspicious, so, we create gens for each statement
 
-			List<GenSuspicious> gensFromAllStatements = createGens(progInstance);
-			progInstance.getGenList().addAll(gensFromAllStatements);
+			List<SuspiciousModificationPoint> gensFromAllStatements = createGens(progInstance);
+			progInstance.getModificationPoints().addAll(gensFromAllStatements);
 		}
-		log.info("Total Gens created: " + progInstance.getGenList().size());
+		log.info("Total Gens created: " + progInstance.getModificationPoints().size());
 		return progInstance;
 	}
 
 	@SuppressWarnings("rawtypes")
-	private List<GenSuspicious> createGens(ProgramVariant progInstance) {
+	private List<SuspiciousModificationPoint> createGens(ProgramVariant progInstance) {
 
-		List<GenSuspicious> suspGen = new ArrayList<>();
+		List<SuspiciousModificationPoint> suspGen = new ArrayList<>();
 		List<CtClass> classesFromModel = mutatorSupporter.getClasses();
 			
 		for (CtClass ctclasspointed : classesFromModel) {
@@ -155,12 +155,12 @@ public class ProgramVariantFactory {
 
 				List<CtVariable> contextOfGen = VariableResolver.getVariablesFromBlockInScope(suspiciousElement);
 
-				GenSuspicious gen = new GenSuspicious();
+				SuspiciousModificationPoint gen = new SuspiciousModificationPoint();
 				gen.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
 						suspiciousElement.getPosition().getLine(), 0d));
 				gen.setClonedClass(ctclasspointed);
 				gen.setCodeElement(suspiciousElement);
-				gen.setContextOfGen(contextOfGen);
+				gen.setContextOfModificationPoint(contextOfGen);
 				suspGen.add(gen);
 				log.info("--Gen:" + suspiciousElement.getClass().getSimpleName() + ", suspValue "
 						+ gen.getSuspicious().getSuspiciousValue() + ", line "
@@ -181,9 +181,9 @@ public class ProgramVariantFactory {
 	 * @param progInstance
 	 * @return
 	 */
-	private List<GenSuspicious> createGens(SuspiciousCode suspiciousCode, ProgramVariant progInstance) {
+	private List<SuspiciousModificationPoint> createGens(SuspiciousCode suspiciousCode, ProgramVariant progInstance) {
 
-		List<GenSuspicious> suspGen = new ArrayList<GenSuspicious>();
+		List<SuspiciousModificationPoint> suspGen = new ArrayList<SuspiciousModificationPoint>();
 
 		CtClass ctclasspointed = resolveCtClass(suspiciousCode.getClassName(), progInstance);
 		if (ctclasspointed == null) {
@@ -222,11 +222,11 @@ public class ProgramVariantFactory {
 		// For each filtered element, we create a Gen.
 		int id = 0;
 		for (CtElement ctElement : filteredTypeByLine) {
-			GenSuspicious gen = new GenSuspicious();
+			SuspiciousModificationPoint gen = new SuspiciousModificationPoint();
 			gen.setSuspicious(suspiciousCode);
 			gen.setClonedClass(ctclasspointed);
 			gen.setCodeElement(ctElement);
-			gen.setContextOfGen(contextOfGen);
+			gen.setContextOfModificationPoint(contextOfGen);
 			suspGen.add(gen);
 			log.info("--Gen:" + ctElement.getClass().getSimpleName() + ", suspValue "
 					+ suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
@@ -316,7 +316,7 @@ public class ProgramVariantFactory {
 		ProgramVariant childVariant = new ProgramVariant(id);
 		childVariant.setGenerationSource(generation);
 		childVariant.setParent(parentVariant);
-		childVariant.getGenList().addAll(parentVariant.getGenList());
+		childVariant.getModificationPoints().addAll(parentVariant.getModificationPoints());
 
 		if (!ConfigurationProperties.getPropertyBool("resetoperations"))
 			childVariant.getOperations().putAll(parentVariant.getOperations());
@@ -366,19 +366,19 @@ public class ProgramVariantFactory {
 		this.mutatorSupporter = mutatorExecutor;
 	}
 
-	public GenSuspicious cloneGen(GenSuspicious existingGen, CtElement modified) {
+	public SuspiciousModificationPoint cloneGen(SuspiciousModificationPoint existingGen, CtElement modified) {
 		SuspiciousCode suspicious = existingGen.getSuspicious();
 		CtClass ctClass = existingGen.getCtClass();
-		List<CtVariable> context = existingGen.getContextOfGen();
-		GenSuspicious newGen = new GenSuspicious(suspicious, modified, ctClass, context);
+		List<CtVariable> context = existingGen.getContextOfModificationPoint();
+		SuspiciousModificationPoint newGen = new SuspiciousModificationPoint(suspicious, modified, ctClass, context);
 		return newGen;
 
 	}
 
-	public Gen cloneGen(Gen existingGen, CtElement modified) {
+	public ModificationPoint cloneGen(ModificationPoint existingGen, CtElement modified) {
 		CtClass ctClass = existingGen.getCtClass();
-		List<CtVariable> context = existingGen.getContextOfGen();
-		Gen newGen = new Gen(modified, ctClass, context);
+		List<CtVariable> context = existingGen.getContextOfModificationPoint();
+		ModificationPoint newGen = new ModificationPoint(modified, ctClass, context);
 		return newGen;
 
 	}

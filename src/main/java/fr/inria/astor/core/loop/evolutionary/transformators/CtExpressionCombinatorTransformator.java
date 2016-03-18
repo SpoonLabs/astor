@@ -2,7 +2,7 @@ package fr.inria.astor.core.loop.evolutionary.transformators;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.RandomManager;
@@ -22,7 +22,7 @@ public class CtExpressionCombinatorTransformator implements ModelTransformator{
 	
 	
 	@Override
-	public void revert(GenOperationInstance operation) {
+	public void revert(ModificationInstance operation) {
 		CtExpression ctst = (CtExpression) operation.getOriginal();
 		CtExpression fix = (CtExpression) operation.getModified();
 		fix.replace(ctst);
@@ -31,7 +31,7 @@ public class CtExpressionCombinatorTransformator implements ModelTransformator{
 	}
 
 	@Override
-	public void transform(GenOperationInstance operation) throws Exception {
+	public void transform(ModificationInstance operation) throws Exception {
 		Factory factory = MutationSupporter.getFactory();
 		
 		CtExpression rightTerm = null, leftTerm = null;
@@ -113,7 +113,7 @@ public class CtExpressionCombinatorTransformator implements ModelTransformator{
 	}
 	
 	@Override
-	public boolean canTransform(GenOperationInstance operation) {
+	public boolean canTransform(ModificationInstance operation) {
 		return (operation.getOriginal() instanceof CtExpression);
 	}
 }

@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.evolutionary.JGenProg;
-import fr.inria.astor.core.util.ProcessUtil;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
 
@@ -97,7 +96,7 @@ public class IntroClassTest {
 		Assert.assertEquals(1, jgp.getVariants().size());
 
 		ProgramVariant variant = jgp.getVariants().get(0);
-		int nroGen = variant.getGenList().size();
+		int nroGen = variant.getModificationPoints().size();
 		return nroGen;
 	}
 	

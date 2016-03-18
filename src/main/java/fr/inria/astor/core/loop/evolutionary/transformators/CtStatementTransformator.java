@@ -2,7 +2,7 @@ package fr.inria.astor.core.loop.evolutionary.transformators;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
@@ -16,7 +16,7 @@ public class CtStatementTransformator implements ModelTransformator {
 
 	private Logger log = Logger.getLogger(CtStatementTransformator.class.getName());
 
-	public void revert(GenOperationInstance operation) {
+	public void revert(ModificationInstance operation) {
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtStatement fix = (CtStatement) operation.getModified();
 		CtBlock<?> parentBlock = operation.getParentBlock();
@@ -72,7 +72,7 @@ public class CtStatementTransformator implements ModelTransformator {
 	 * @param operation
 	 * @throws IllegalAccessException
 	 */
-	public void transform(GenOperationInstance operation) throws IllegalAccessException {
+	public void transform(ModificationInstance operation) throws IllegalAccessException {
 		
 		boolean successful = false;
 		CtStatement ctst = (CtStatement) operation.getOriginal();
@@ -122,7 +122,7 @@ public class CtStatementTransformator implements ModelTransformator {
 	 * See that, it does not manage, for instance, invocation inside expressions.
 	 */
 	@Override
-	public boolean canTransform(GenOperationInstance operation) {
+	public boolean canTransform(ModificationInstance operation) {
 		return (operation.getOriginal() instanceof CtStatement) 
 				&& operation.getOriginal().getParent() instanceof CtBlock;
 	}

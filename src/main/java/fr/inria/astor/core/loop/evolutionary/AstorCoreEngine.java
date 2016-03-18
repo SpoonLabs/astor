@@ -2,7 +2,6 @@ package fr.inria.astor.core.loop.evolutionary;
 
 import java.net.URL;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -15,9 +14,9 @@ import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.Gen;
-import fr.inria.astor.core.entities.GenOperationInstance;
-import fr.inria.astor.core.entities.GenSuspicious;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
@@ -103,8 +102,6 @@ public abstract class AstorCoreEngine {
 	public void startEvolution() throws Exception {
 
 		log.info("\n----Starting Solution Search");
-
-		// log.debug("FIXSPACE:" + this.getFixSpace());
 
 		generationsExecuted = 0;
 		boolean stop = false;
@@ -496,13 +493,13 @@ public abstract class AstorCoreEngine {
 	}
 
 	protected void undoSingleGeneration(ProgramVariant instance, int genI) {
-		List<GenOperationInstance> operations = instance.getOperations().get(genI);
+		List<ModificationInstance> operations = instance.getOperations().get(genI);
 		if (operations == null || operations.isEmpty()) {
 			return;
 		}
 
 		for (int i = operations.size() - 1; i >= 0; i--) {
-			GenOperationInstance genOperation = operations.get(i);
+			ModificationInstance genOperation = operations.get(i);
 			log.debug("---Undoing: gnrtn(" + genI + "): " + genOperation);
 			undoOperationToSpoonElement(genOperation);
 		}
@@ -528,37 +525,37 @@ public abstract class AstorCoreEngine {
 		this.currentStat.sizeSpaceOfVariant.clear();
 
 		// For each gen of the program instance
-		List<Gen> gensToProcess = getGenList(variant);
-		log.debug("gensToProcess " + gensToProcess);
-		for (Gen genProgInstance : gensToProcess) {
+		List<ModificationPoint> modificationPointsToProcess = getGenList(variant);
+		log.debug("modifPointsToProcess " + modificationPointsToProcess);
+		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
 			// tp refactor
-			genProgInstance.identified = variant.getGenList().indexOf(genProgInstance);
-			log.debug("---analyzing gen position: " + genProgInstance.identified);
+			modificationPoint.identified = variant.getModificationPoints().indexOf(modificationPoint);
+			log.debug("---analyzing gen position: " + modificationPoint.identified);
 
-			// A gen can be modified several time in the evolution
-			boolean multiGenmutation = ConfigurationProperties.getPropertyBool("multigenmodif");
-			if (!multiGenmutation && alreadyModified(genProgInstance, variant.getOperations(), generation))
+			// A point can be modified several time in the evolution
+			boolean multiPointMutation = ConfigurationProperties.getPropertyBool("multigenmodif");
+			if (!multiPointMutation && alreadyModified(modificationPoint, variant.getOperations(), generation))
 				continue;
 
 			this.currentStat.typeOfElementsSelectedForModifying
-					.add(genProgInstance.getCodeElement().getClass().getSimpleName());
+					.add(modificationPoint.getCodeElement().getClass().getSimpleName());
 
-			genProgInstance.setProgramVariant(variant);
-			GenOperationInstance operationInGen = createOperationForGen(genProgInstance);
+			modificationPoint.setProgramVariant(variant);
+			ModificationInstance modificationInstance = createOperationForGen(modificationPoint);
 
-			if (operationInGen != null) {
+			if (modificationInstance != null) {
 
-				operationInGen.setGen(genProgInstance);
+				modificationInstance.setModificationPoint(modificationPoint);
 
-				if (ConfigurationProperties.getPropertyBool("uniqueoptogen") && alreadyApplied(operationInGen)) {
-					log.debug("---Operation already applied to the gen " + operationInGen);
+				if (ConfigurationProperties.getPropertyBool("uniqueoptogen") && alreadyApplied(modificationInstance)) {
+					log.debug("---Operation already applied to the gen " + modificationInstance);
 					currentStat.setAlreadyApplied(variant.getId());
 					continue;
 				}
 
-				log.debug("operation " + operationInGen);
+				log.debug("operation " + modificationInstance);
 				currentStat.numberOfAppliedOp++;
-				variant.putGenOperation(generation, operationInGen);
+				variant.putModificationInstance(generation, modificationInstance);
 
 				oneOperationCreated = true;
 				genMutated++;
@@ -569,8 +566,8 @@ public abstract class AstorCoreEngine {
 
 			} else {// Not gen created
 				currentStat.numberOfGenInmutated++;
-				log.debug("---gen " + (nroGen++) + " not mutation generated in  "
-						+ StringUtil.trunc(genProgInstance.getCodeElement().getSignature()));
+				log.debug("---modifPoint " + (nroGen++) + " not mutation generated in  "
+						+ StringUtil.trunc(modificationPoint.getCodeElement().getSignature()));
 				notmut++;
 			}
 		}
@@ -586,14 +583,14 @@ public abstract class AstorCoreEngine {
 		return oneOperationCreated;
 	}
 
-	Map<Gen, List<GenOperationInstance>> operationGenerated = new HashedMap();
+	Map<ModificationPoint, List<ModificationInstance>> operationGenerated = new HashedMap();
 
-	private boolean alreadyApplied(GenOperationInstance operationNew) {
+	private boolean alreadyApplied(ModificationInstance operationNew) {
 
-		List<GenOperationInstance> ops = operationGenerated.get(operationNew.getGen());
+		List<ModificationInstance> ops = operationGenerated.get(operationNew.getModificationPoint());
 		if (ops == null) {
 			ops = new ArrayList<>();
-			operationGenerated.put(operationNew.getGen(), ops);
+			operationGenerated.put(operationNew.getModificationPoint(), ops);
 			ops.add(operationNew);
 			return false;
 		}
@@ -609,14 +606,14 @@ public abstract class AstorCoreEngine {
 	 * @param generation
 	 * @return
 	 */
-	private boolean alreadyModified(Gen genProgInstance, Map<Integer, List<GenOperationInstance>> map, int generation) {
+	private boolean alreadyModified(ModificationPoint genProgInstance, Map<Integer, List<ModificationInstance>> map, int generation) {
 
 		for (int i = 1; i < generation; i++) {
-			List<GenOperationInstance> ops = map.get(i);
+			List<ModificationInstance> ops = map.get(i);
 			if (ops == null)
 				continue;
-			for (GenOperationInstance genOperationInstance : ops) {
-				if (genOperationInstance.getGen() == genProgInstance) {
+			for (ModificationInstance genOperationInstance : ops) {
+				if (genOperationInstance.getModificationPoint() == genProgInstance) {
 					return true;
 				}
 			}
@@ -627,11 +624,11 @@ public abstract class AstorCoreEngine {
 	/**
 	 * 
 	 * @param variant
-	 * @param genList
+	 * @param modificationPoints
 	 * @return
 	 */
-	protected List<Gen> getGenList(ProgramVariant variant) {
-		List<Gen> genList = variant.getGenList();
+	protected List<ModificationPoint> getGenList(ProgramVariant variant) {
+		List<ModificationPoint> genList = variant.getModificationPoints();
 		String mode = ConfigurationProperties.getProperty("genlistnavigation");
 
 		if ("inorder".equals(mode))
@@ -641,7 +638,7 @@ public abstract class AstorCoreEngine {
 			return getWeightGenList(genList);
 
 		if ("random".equals(mode)) {
-			List<Gen> shuffList = new ArrayList<Gen>(genList);
+			List<ModificationPoint> shuffList = new ArrayList<ModificationPoint>(genList);
 			Collections.shuffle(shuffList);
 			return shuffList;
 		}
@@ -659,15 +656,15 @@ public abstract class AstorCoreEngine {
 
 	}
 
-	protected List<Gen> getWeightGenList(List<Gen> genList) {
-		List<Gen> remaining = new ArrayList<Gen>(genList);
-		List<Gen> solution = new ArrayList<Gen>();
+	protected List<ModificationPoint> getWeightGenList(List<ModificationPoint> genList) {
+		List<ModificationPoint> remaining = new ArrayList<ModificationPoint>(genList);
+		List<ModificationPoint> solution = new ArrayList<ModificationPoint>();
 
 		for (int i = 0; i < genList.size(); i++) {
 			List<WeightCtElement> we = new ArrayList<WeightCtElement>();
 			double sum = 0;
-			for (Gen gen : remaining) {
-				double susp = ((GenSuspicious) gen).getSuspicious().getSuspiciousValue();
+			for (ModificationPoint gen : remaining) {
+				double susp = ((SuspiciousModificationPoint) gen).getSuspicious().getSuspiciousValue();
 				sum += susp;
 				WeightCtElement w = new WeightCtElement(gen, 0);
 				w.weight = susp;
@@ -683,7 +680,7 @@ public abstract class AstorCoreEngine {
 				WeightCtElement.feedAccumulative(we);
 				WeightCtElement selected = WeightCtElement.selectElementWeightBalanced(we);
 
-				Gen selectedg = (Gen) selected.element;
+				ModificationPoint selectedg = (ModificationPoint) selected.element;
 				remaining.remove(selectedg);
 				solution.add(selectedg);
 			} else {
@@ -696,10 +693,9 @@ public abstract class AstorCoreEngine {
 	}
 
 	private void updateVariantGenList(ProgramVariant variant, int generation) {
-		List<GenOperationInstance> operations = variant.getOperations().get(generation);
-		// log.debug("--Updating Model from Program Variants ");
-
-		for (GenOperationInstance genOperationInstance : operations) {
+		List<ModificationInstance> operations = variant.getOperations().get(generation);
+		
+		for (ModificationInstance genOperationInstance : operations) {
 			updateVariantGenList(variant, genOperationInstance);
 		}
 	}
@@ -711,7 +707,7 @@ public abstract class AstorCoreEngine {
 	 * @param variant
 	 * @param operationofGen
 	 */
-	protected abstract void updateVariantGenList(ProgramVariant variant, GenOperationInstance operation);
+	protected abstract void updateVariantGenList(ProgramVariant variant, ModificationInstance operation);
 
 	/**
 	 * Create a Gen Mutation for a given CtElement
@@ -722,9 +718,9 @@ public abstract class AstorCoreEngine {
 	 * @return
 	 * @throws IllegalAccessException
 	 */
-	protected abstract GenOperationInstance createOperationForGen(Gen genProgInstance) throws IllegalAccessException;
+	protected abstract ModificationInstance createOperationForGen(ModificationPoint genProgInstance) throws IllegalAccessException;
 
-	protected abstract void undoOperationToSpoonElement(GenOperationInstance operation);
+	protected abstract void undoOperationToSpoonElement(ModificationInstance operation);
 
 	/**
 	 * Apply a mutation generated in previous generation to a model
@@ -739,11 +735,11 @@ public abstract class AstorCoreEngine {
 		// We do not include the current generation (should be empty)
 		for (int generation_i = firstgenerationIndex; generation_i < currentGeneration; generation_i++) {
 
-			List<GenOperationInstance> operations = variant.getOperations().get(generation_i);
+			List<ModificationInstance> operations = variant.getOperations().get(generation_i);
 			if (operations == null || operations.isEmpty()) {
 				continue;
 			}
-			for (GenOperationInstance genOperation : operations) {
+			for (ModificationInstance genOperation : operations) {
 				applyPreviousMutationOperationToSpoonElement(genOperation);
 				log.debug("----gener( " + generation_i + ") `" + genOperation.isSuccessfulyApplied() + "`, "
 						+ genOperation.toString());
@@ -762,14 +758,13 @@ public abstract class AstorCoreEngine {
 	 */
 	public boolean applyNewOperationsToVariantModel(ProgramVariant variant, int currentGeneration)
 			throws IllegalAccessException {
-		// New: for the operation of each generation
-
-		List<GenOperationInstance> operations = variant.getOperations().get(currentGeneration);
+	
+		List<ModificationInstance> operations = variant.getOperations().get(currentGeneration);
 		if (operations == null || operations.isEmpty()) {
 			return false;
 		}
 
-		for (GenOperationInstance genOperation : operations) {
+		for (ModificationInstance genOperation : operations) {
 
 			applyNewMutationOperationToSpoonElement(genOperation);
 
@@ -779,7 +774,7 @@ public abstract class AstorCoreEngine {
 		// Clean Operations not applied:
 		int size = operations.size();
 		for (int i = 0; i < size; i++) {
-			GenOperationInstance genOperationInstance = operations.get(i);
+			ModificationInstance genOperationInstance = operations.get(i);
 			if (genOperationInstance.getExceptionAtApplied() != null || !genOperationInstance.isSuccessfulyApplied()) {
 				log.debug("---Error! Deleting " + genOperationInstance + " failed by a "
 						+ genOperationInstance.getExceptionAtApplied());
@@ -791,7 +786,7 @@ public abstract class AstorCoreEngine {
 		return !(operations.isEmpty());
 	}
 
-	protected abstract void applyPreviousMutationOperationToSpoonElement(GenOperationInstance operation)
+	protected abstract void applyPreviousMutationOperationToSpoonElement(ModificationInstance operation)
 			throws IllegalAccessException;
 
 	/**
@@ -800,7 +795,7 @@ public abstract class AstorCoreEngine {
 	 * @param operation
 	 * @throws IllegalAccessException
 	 */
-	protected abstract void applyNewMutationOperationToSpoonElement(GenOperationInstance operation)
+	protected abstract void applyNewMutationOperationToSpoonElement(ModificationInstance operation)
 			throws IllegalAccessException;
 
 	protected boolean validateInstance(ProgramVariant variant) {
@@ -891,17 +886,17 @@ public abstract class AstorCoreEngine {
 					+ TimeUtil.getDateDiff(this.dateInitEvolution, solutionVariant.getBornDate(), TimeUnit.SECONDS);
 
 			for (int i = 1; i <= generation; i++) {
-				List<GenOperationInstance> genOperationInstances = solutionVariant.getOperations().get(i);
+				List<ModificationInstance> genOperationInstances = solutionVariant.getOperations().get(i);
 				if (genOperationInstances == null)
 					continue;
 
-				for (GenOperationInstance genOperationInstance : genOperationInstances) {
+				for (ModificationInstance genOperationInstance : genOperationInstances) {
 
 					line += "\noperation: " + genOperationInstance.getOperationApplied().toString() + "\nlocation= "
-							+ genOperationInstance.getGen().getCtClass().getQualifiedName();
+							+ genOperationInstance.getModificationPoint().getCtClass().getQualifiedName();
 
-					if (genOperationInstance.getGen() instanceof GenSuspicious) {
-						GenSuspicious gs = (GenSuspicious) genOperationInstance.getGen();
+					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
+						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance.getModificationPoint();
 						line += "\nline= " + gs.getSuspicious().getLineNumber();
 					}
 

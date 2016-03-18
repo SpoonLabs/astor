@@ -22,8 +22,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import fr.inria.astor.core.entities.GenOperationInstance;
-import fr.inria.astor.core.entities.GenSuspicious;
+import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
@@ -252,21 +252,21 @@ public class MutationSupporter {
 			root.appendChild(rootElement);
 
 			for (int i = 1; i <= generation; i++) {
-				List<GenOperationInstance> genOperationInstances = childVariant.getOperations().get(i);
+				List<ModificationInstance> genOperationInstances = childVariant.getOperations().get(i);
 				if (genOperationInstances == null)
 					continue;
 
-				for (GenOperationInstance genOperationInstance : genOperationInstances) {
+				for (ModificationInstance genOperationInstance : genOperationInstances) {
 
 					Element op = root.createElement("operation");
 					rootElement.appendChild(op);
 
 					Attr attr_location = root.createAttribute("location");
-					attr_location.setValue(genOperationInstance.getGen().getCtClass().getQualifiedName());
+					attr_location.setValue(genOperationInstance.getModificationPoint().getCtClass().getQualifiedName());
 					op.setAttributeNode(attr_location);
 
-					if (genOperationInstance.getGen() instanceof GenSuspicious) {
-						GenSuspicious gs = (GenSuspicious) genOperationInstance.getGen();
+					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
+						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance.getModificationPoint();
 						int line = gs.getSuspicious().getLineNumber();
 						Attr attr_line = root.createAttribute("line");
 						attr_line.setValue(Integer.toString(line));

@@ -7,16 +7,16 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtElement;
 
 /**
- * Mutation Operation Applied to a particular gen
+ * Operation applied to a particular modification point
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class GenOperationInstance {
+public class ModificationInstance {
 	/**
 	 * Gen where the operation is applied
 	 */
-	private Gen gen = null;
+	private ModificationPoint modificationPoint = null;
 	/**
 	 * Original element where the operation is applied
 	 */
@@ -48,11 +48,11 @@ public class GenOperationInstance {
 	
 	private IngredientSpaceStrategy ingredientScope = null;
 	
-	public GenOperationInstance (){}
+	public ModificationInstance (){}
 	
-	public GenOperationInstance(Gen gen, Operator operationApplied, CtElement original, CtElement modified) {
+	public ModificationInstance(ModificationPoint modificationPoint, Operator operationApplied, CtElement original, CtElement modified) {
 		super();
-		this.gen = gen;
+		this.modificationPoint = modificationPoint;
 		this.operationApplied = operationApplied;
 		this.original = original;
 		this.modified = modified;		
@@ -103,12 +103,12 @@ public class GenOperationInstance {
 				+ "`";
 	}
 
-	public Gen getGen() {
-		return gen;
+	public ModificationPoint getModificationPoint() {
+		return modificationPoint;
 	}
 
-	public void setGen(Gen gen) {
-		this.gen = gen;
+	public void setModificationPoint(ModificationPoint modificationPoint) {
+		this.modificationPoint = modificationPoint;
 	}
 
 	public int getLocationInParent() {
@@ -131,7 +131,7 @@ public class GenOperationInstance {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((gen == null) ? 0 : gen.hashCode());
+		result = prime * result + ((modificationPoint == null) ? 0 : modificationPoint.hashCode());
 		result = prime * result + ((modified == null) ? 0 : modified.hashCode());
 		result = prime * result + ((operationApplied == null) ? 0 : operationApplied.hashCode());
 		result = prime * result + ((original == null) ? 0 : original.hashCode());
@@ -146,11 +146,11 @@ public class GenOperationInstance {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GenOperationInstance other = (GenOperationInstance) obj;
-		if (gen == null) {
-			if (other.gen != null)
+		ModificationInstance other = (ModificationInstance) obj;
+		if (modificationPoint == null) {
+			if (other.modificationPoint != null)
 				return false;
-		} else if (!gen.equals(other.gen))
+		} else if (!modificationPoint.equals(other.modificationPoint))
 			return false;
 		if (modified == null) {
 			if (other.modified != null)

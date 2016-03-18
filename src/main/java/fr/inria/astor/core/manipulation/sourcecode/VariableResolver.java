@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.ModificationInstance;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -377,11 +377,11 @@ public class VariableResolver {
 		return r;
 	}
 
-	public static boolean canBeApplied(GenOperationInstance operationInGen) {
+	public static boolean canBeApplied(ModificationInstance operationInGen) {
 		// If is an expression
 		if (operationInGen.getModified() != null){
 			if(operationInGen.getModified() instanceof CtExpression)
-				return fitInPlace(operationInGen.getGen().getContextOfGen(), (CtExpression) operationInGen.getModified());
+				return fitInPlace(operationInGen.getModificationPoint().getContextOfModificationPoint(), (CtExpression) operationInGen.getModified());
 		
 					
 		System.out.println("--->Reject Analysis: "+operationInGen.getModified().getClass().getName() +  " "+operationInGen.getModified());

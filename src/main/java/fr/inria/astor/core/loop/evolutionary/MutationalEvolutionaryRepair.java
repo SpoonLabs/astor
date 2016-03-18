@@ -7,8 +7,8 @@ import java.util.Map;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.Gen;
-import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightCtElement;
 import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
@@ -60,8 +60,8 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	 * @throws IllegalAccessException
 	 */
 	 @Override
-	protected GenOperationInstance createOperationForGen(Gen gen) throws IllegalAccessException {
-		Gen genSusp =  gen;
+	protected ModificationInstance createOperationForGen(ModificationPoint gen) throws IllegalAccessException {
+		ModificationPoint genSusp =  gen;
 							
 		GenProgMutationOperation operationType = GenProgMutationOperation.REPLACE;
 		
@@ -79,10 +79,10 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 			return null;
 		}
 		
-		GenOperationInstance operation = new GenOperationInstance();
+		ModificationInstance operation = new ModificationInstance();
 		operation.setOriginal(targetIF.getCondition());
 		operation.setOperationApplied(operationType);
-		operation.setGen(genSusp);
+		operation.setModificationPoint(genSusp);
 		
 		List<MutantCtElement> mutations = getMutants(targetIF);
 		
@@ -192,7 +192,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 		return clonedExpression;
 	}
 	@SuppressWarnings("rawtypes")
-	public void undoOperationToSpoonElement(GenOperationInstance operation) {
+	public void undoOperationToSpoonElement(ModificationInstance operation) {
 		CtExpression ctst = (CtExpression) operation.getOriginal();
 		CtExpression fix = (CtExpression) operation.getModified();
 		try{
@@ -210,7 +210,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	 * @throws IllegalAccessException 
 	 */
 	@Override
-	protected void applyNewMutationOperationToSpoonElement(GenOperationInstance operation) throws IllegalAccessException {
+	protected void applyNewMutationOperationToSpoonElement(ModificationInstance operation) throws IllegalAccessException {
 
 		boolean successful = false;
 		CtExpression ctst = (CtExpression) operation.getOriginal();

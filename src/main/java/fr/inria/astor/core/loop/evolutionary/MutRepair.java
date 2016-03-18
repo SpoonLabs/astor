@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.Gen;
-import fr.inria.astor.core.entities.GenOperationInstance;
-import fr.inria.astor.core.entities.GenSuspicious;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.taxonomy.MutationExpression;
 import fr.inria.astor.core.entities.taxonomy.Operator;
 import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
@@ -48,21 +48,20 @@ public class MutRepair extends ExhaustiveSearchEngine {
 	 * @return
 	 * @throws IllegalAccessException
 	 */
-	protected List<GenOperationInstance> createOperators(GenSuspicious genSusp) {
-		List<GenOperationInstance> ops = new ArrayList<>();
+	protected List<ModificationInstance> createOperators(SuspiciousModificationPoint modificationPoint) {
+		List<ModificationInstance> ops = new ArrayList<>();
 
-		if (!(genSusp.getCodeElement() instanceof CtIf)) {
-			// logger.error(".....The pointed Element is Not a statement");
+		if (!(modificationPoint.getCodeElement() instanceof CtIf)) {
 			return null;
 		}
-		CtIf targetIF = (CtIf) genSusp.getCodeElement();
+		CtIf targetIF = (CtIf) modificationPoint.getCodeElement();
 
 		List<MutantCtElement> mutations = getMutants(targetIF);
 
 		for (MutantCtElement mutantCtElement : mutations) {
-			GenOperationInstance opInstance;
+			ModificationInstance opInstance;
 			try {
-				opInstance = createOperationForGen(genSusp, mutantCtElement);
+				opInstance = createOperationForGen(modificationPoint, mutantCtElement);
 				if (opInstance != null)
 					ops.add(opInstance);
 			} catch (IllegalAccessException e) {
@@ -80,14 +79,13 @@ public class MutRepair extends ExhaustiveSearchEngine {
 		return mutations;
 	}
 
-	protected GenOperationInstance createOperationForGen(Gen gen, MutantCtElement fix) throws IllegalAccessException {
-		Gen genSusp = gen;
+	protected ModificationInstance createOperationForGen(ModificationPoint gen, MutantCtElement fix) throws IllegalAccessException {
+		ModificationPoint genSusp = gen;
 
 		Operator operationType = MutationExpression.REPLACE;
 
 		if (!(genSusp.getCodeElement() instanceof CtIf)) {
-			// logger.error(".....The pointed Element is Not a statement");
-			return null;
+				return null;
 		}
 		CtIf targetIF = (CtIf) genSusp.getCodeElement();
 
@@ -97,10 +95,10 @@ public class MutRepair extends ExhaustiveSearchEngine {
 			return null;
 		}
 
-		GenOperationInstance operation = new GenOperationInstance();
+		ModificationInstance operation = new ModificationInstance();
 		operation.setOriginal(targetIF.getCondition());
 		operation.setOperationApplied(operationType);
-		operation.setGen(genSusp);
+		operation.setModificationPoint(genSusp);
 
 		List<MutantCtElement> mutations = getMutants(targetIF);
 

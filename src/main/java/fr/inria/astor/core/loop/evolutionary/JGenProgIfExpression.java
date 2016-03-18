@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.Gen;
-import fr.inria.astor.core.entities.GenOperationInstance;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -43,8 +43,8 @@ public class JGenProgIfExpression extends JGenProg {
 	 * @throws IllegalAccessException
 	 */
 	@Override
-	protected GenOperationInstance createOperationForGen(Gen gen) throws IllegalAccessException {
-		Gen genSusp = gen;
+	protected ModificationInstance createOperationForGen(ModificationPoint gen) throws IllegalAccessException {
+		ModificationPoint genSusp = gen;
 
 		GenProgMutationOperation operationType = GenProgMutationOperation.REPLACE;
 
@@ -62,14 +62,14 @@ public class JGenProgIfExpression extends JGenProg {
 		// Should be the if.....
 		CtBlock parentBlock = (CtBlock) cpar;
 
-		GenOperationInstance operation = new GenOperationInstance();
+		ModificationInstance operation = new ModificationInstance();
 		CtExpression fullIfCondition = targetIF.getCondition();
 		CtExpression targetExpression = getExpressionToReplace(fullIfCondition);
 		
 		operation.setOriginal(targetExpression);
 		operation.setOperationApplied(operationType);
 		operation.setParentBlock(parentBlock);
-		operation.setGen(genSusp);
+		operation.setModificationPoint(genSusp);
 
 		
 		Ingredient fix = getFixIngredient(gen, targetExpression,operationType);
@@ -92,7 +92,7 @@ public class JGenProgIfExpression extends JGenProg {
 		return ctExp.get(index);
 	}
 
-	public void undoOperationToSpoonElement(GenOperationInstance operation) {
+	public void undoOperationToSpoonElement(ModificationInstance operation) {
 		CtExpression ctst = (CtExpression) operation.getOriginal();
 		CtExpression fix = (CtExpression) operation.getModified();
 		fix.replace(ctst);
@@ -104,7 +104,7 @@ public class JGenProgIfExpression extends JGenProg {
 	 * @param operation
 	 * @throws IllegalAccessException
 	 */
-	protected void applyNewMutationOperationToSpoonElement(GenOperationInstance operation)
+	protected void applyNewMutationOperationToSpoonElement(ModificationInstance operation)
 			throws IllegalAccessException {
 
 		boolean successful = false;
