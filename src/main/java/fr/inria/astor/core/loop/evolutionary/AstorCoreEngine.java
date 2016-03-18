@@ -37,6 +37,7 @@ import fr.inria.astor.core.util.StringUtil;
 import fr.inria.astor.core.util.TimeUtil;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
@@ -118,8 +119,7 @@ public abstract class AstorCoreEngine {
 		while (!this.variants.isEmpty() && (!stop || !ConfigurationProperties.getPropertyBool("stopfirst"))
 				&& (generationsExecuted < ConfigurationProperties.getPropertyInt("maxGeneration")
 						&& belowMaxTime(dateInitEvolution, maxMinutes))
-						&& limitDate()
-					) {
+				&& limitDate()) {
 			generationsExecuted++;
 			log.debug("\n----------Running generation/iteraction " + generationsExecuted + ", population size: "
 					+ this.variants.size());
@@ -156,7 +156,7 @@ public abstract class AstorCoreEngine {
 			log.info(getSolutionData(solutions, generationsExecuted));
 
 		}
-		
+
 		if (this.getFixSpace() != null) {
 			FixLocationSpace space = this.getFixSpace();
 			log.info(space);
@@ -181,7 +181,6 @@ public abstract class AstorCoreEngine {
 		return s;
 	}
 
-
 	/**
 	 * Check whether the program has passed the maximum time for operating
 	 * 
@@ -200,19 +199,22 @@ public abstract class AstorCoreEngine {
 		}
 	}
 
-	public boolean limitDate(){
+	public boolean limitDate() {
 		String limit = ConfigurationProperties.properties.getProperty("maxdate");
-		if (limit == null){
+		if (limit == null) {
 			return true;
 		}
-		
+
 		try {
 			Date d = TimeUtil.tranformHours(limit);
-			
+
 			Date dc = new Date();
-			Date tr = TimeUtil.tranformHours(dc.getHours()+":"+dc.getMinutes());
-			boolean continueProc =  tr.before(d);
-			if(!continueProc){
+			Date tr = TimeUtil.tranformHours(dc.getHours() + ":" + dc.getMinutes());
+			if (tr.getHours() >= 12) {
+				return true;
+			}
+			boolean continueProc = tr.before(d);
+			if (!continueProc) {
 				log.info("Astor reaches the hour limit, we stop here");
 			}
 			return continueProc;
@@ -220,8 +222,8 @@ public abstract class AstorCoreEngine {
 			log.error("Parsing time", e);
 			return false;
 		}
-	} 
-	
+	}
+
 	/**
 	 * Process a generation i: loops over all instances
 	 * 
@@ -249,12 +251,9 @@ public abstract class AstorCoreEngine {
 			if (newVariant == null) {
 				continue;
 			}
+			temporalInstances.add(newVariant);
 
 			boolean solution = processCreatedVariant(newVariant, generation);
-
-			// if (newVariant.getCompilation().compiles()) {
-			temporalInstances.add(newVariant);
-			// }
 
 			if (solution) {
 				foundSolution = true;
@@ -272,6 +271,19 @@ public abstract class AstorCoreEngine {
 		prepareNextGeneration(temporalInstances, generation);
 
 		return foundSolution;
+	}
+	/**
+	 * Store in the program variant passed as parameter a clone of each 
+	 * ctclass involved in the variant.
+	 * @param variant
+	 */
+	private void storeModifiedModel(ProgramVariant variant) {
+		variant.getModifiedClasses().clear();
+		for (CtClass modifiedClass : variant.getBuiltClasses().values()) {
+			CtClass cloneModifClass = (CtClass) MutationSupporter.clone(modifiedClass);
+			variant.getModifiedClasses().add(cloneModifClass);
+		}
+		
 	}
 
 	public void prepareNextGeneration(List<ProgramVariant> temporalInstances, int generation) {
@@ -316,10 +328,7 @@ public abstract class AstorCoreEngine {
 
 			}
 			variants.add(parentNew);
-			// log.debug("Introducing original
-			// variant"+((removedVariant!=null)?"instead of variant
-			// "+removedVariant.getId():""));
-
+		
 		}
 
 	}
@@ -384,6 +393,8 @@ public abstract class AstorCoreEngine {
 		boolean childCompiles = compilation.compiles();
 		programVariant.setCompilation(compilation);
 
+		storeModifiedModel(programVariant);
+		
 		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier());
 
 		if (ConfigurationProperties.getPropertyBool("saveall")) {
@@ -392,7 +403,7 @@ public abstract class AstorCoreEngine {
 			// output from memory compilation
 			mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
 		}
-
+				
 		if (childCompiles) {
 
 			log.debug("-The child compiles: id " + programVariant.getId());
@@ -489,7 +500,7 @@ public abstract class AstorCoreEngine {
 		if (operations == null || operations.isEmpty()) {
 			return;
 		}
-		
+
 		for (int i = operations.size() - 1; i >= 0; i--) {
 			GenOperationInstance genOperation = operations.get(i);
 			log.debug("---Undoing: gnrtn(" + genI + "): " + genOperation);
@@ -753,8 +764,6 @@ public abstract class AstorCoreEngine {
 			throws IllegalAccessException {
 		// New: for the operation of each generation
 
-		// log.debug("---Apply New mutations to variant: " + variant);
-
 		List<GenOperationInstance> operations = variant.getOperations().get(currentGeneration);
 		if (operations == null || operations.isEmpty()) {
 			return false;
@@ -763,7 +772,6 @@ public abstract class AstorCoreEngine {
 		for (GenOperationInstance genOperation : operations) {
 
 			applyNewMutationOperationToSpoonElement(genOperation);
-			// log.debug("----gener(" + currentGeneration+ ")" + genOperation);
 
 		}
 

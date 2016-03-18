@@ -1,17 +1,24 @@
 package fr.inria.astor.test.repair.evaluation;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 
 /**
  * 
@@ -103,6 +110,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 * 
 	 * @throws Exception
 	 */
+	@SuppressWarnings("rawtypes")
 	@Test
 	@Ignore
 	public void testMath70TwoSolutions() throws Exception {
@@ -117,15 +125,48 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope" , "package",
 				"-seed", "10",
-				"-maxgen", "50", 
+				"-maxgen", "50",
+				"-maxdate","11:00"
 				};
 		System.out.println(Arrays.toString(args));
-		main1.main(args);
-		//Last minute comment: I suspect Math-70 has flaky test cases, so, number of solutions discovered can be different
-		validatePatchExistence(out + File.separator + "AstorMain-math_70/", 2);
+		main1.execute(args);
+		
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size()>0);
+		ProgramVariant variant = solutions.get(0);
+		
+		//Program variant ref to 
+		Collection<CtType<?>> affected = variant.getAffectedClasses();
+		List<CtClass> progVariant = variant.getModifiedClasses();
+		assertFalse(progVariant.isEmpty());
+		
+		
+		for (CtType aff : affected) {
+			CtType ctcProgVariant = returnByName(progVariant,(CtClass) aff);
+			assertNotNull(ctcProgVariant);
+			assertFalse(ctcProgVariant == aff);
 
+			//Classes from affected set must be not equals to the program variant cloned ctclasses, 
+			//due to these have include the changes applied for repairing the bug.
+			assertNotEquals(ctcProgVariant, aff);
+			
+			//Classes from affected set must be equals to the spoon model
+			CtType ctspoon = returnByName(MutationSupporter.getFactory().Type().getAll(),(CtClass) aff);
+			assertNotNull(ctcProgVariant);
+			assertEquals(ctspoon, aff);
+		}
+		
 	}
 	
+	private CtType returnByName(Collection<?> classes, CtClass target){
+		
+		for (Object ctClass : classes) {
+			if(((CtType)ctClass).getSimpleName().equals(target.getSimpleName())){
+				return (CtType) ctClass;
+			}
+		}
+		return null;
+	}
 	
 
 	

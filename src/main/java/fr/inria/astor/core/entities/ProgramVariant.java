@@ -1,6 +1,7 @@
 package fr.inria.astor.core.entities;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +36,8 @@ public class ProgramVariant {
 	 */
 	protected List<Gen> genList = null;
 	/**
-	 * Reference to the loaded classes from the spoon model
+	 * Reference to the loaded classes from the spoon model. The classes are shared by all variants, a
+	 * s consequence, it does not have changes of any variant.
 	 */
 	protected Map<String, CtClass> loadClasses = new HashMap<String, CtClass>();
 	
@@ -71,6 +73,15 @@ public class ProgramVariant {
 	 * Date the variant were born
 	 */
 	protected Date bornDate = new Date(); 
+	
+	/**
+	 * List that contains the classes affected by the variant, 
+	 * with the corresponding changes that the variant proposes.
+	 * Note that these classes are cloned from the share model, 
+	 * and only belong to this variant. 
+	 * That means the children of this variant do not refer to those instances.
+	 */
+	protected List<CtClass> modifiedClasses = new ArrayList<CtClass>();
 
 	public ProgramVariant(){
 		genList = new ArrayList<Gen>();
@@ -159,13 +170,17 @@ public class ProgramVariant {
 	public String currentMutatorIdentifier() {
 		return (id >= 0)? ( "variant-" + id) : DEFAULT_ORIGINAL_VARIANT;
 	}
-	
+	/**
+	 * Return the classes affected by the variant. Note that those classes are shared between all variant, 
+	 * so, they do not have applied the changes proposed by the variant after the variant is validated. 
+	 * @return
+	 */
 	public List<CtType<?>> getAffectedClasses(){
 		List<CtType<?>> r = new ArrayList<CtType<?>>();
 		for (CtClass c:loadClasses.values()) {
 			r.add(c);
 		}
-		return r;
+		return Collections.unmodifiableList(r);
 	}
 	
 	public boolean isSolution() {
@@ -194,5 +209,13 @@ public class ProgramVariant {
 
 	public void setBornDate(Date bornDate) {
 		this.bornDate = bornDate;
+	}
+
+	public List<CtClass> getModifiedClasses() {
+		return modifiedClasses;
+	}
+
+	public void setModifiedClasses(List<CtClass> resultedClasses) {
+		this.modifiedClasses = resultedClasses;
 	}
 }
