@@ -541,7 +541,7 @@ public abstract class AstorCoreEngine {
 					.add(modificationPoint.getCodeElement().getClass().getSimpleName());
 
 			modificationPoint.setProgramVariant(variant);
-			ModificationInstance modificationInstance = createOperationForGen(modificationPoint);
+			ModificationInstance modificationInstance = createModificationForPoint(modificationPoint);
 
 			if (modificationInstance != null) {
 
@@ -718,7 +718,7 @@ public abstract class AstorCoreEngine {
 	 * @return
 	 * @throws IllegalAccessException
 	 */
-	protected abstract ModificationInstance createOperationForGen(ModificationPoint genProgInstance) throws IllegalAccessException;
+	protected abstract ModificationInstance createModificationForPoint(ModificationPoint genProgInstance) throws IllegalAccessException;
 
 	protected abstract void undoOperationToSpoonElement(ModificationInstance operation);
 

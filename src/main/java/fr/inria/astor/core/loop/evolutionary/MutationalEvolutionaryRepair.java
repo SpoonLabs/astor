@@ -60,7 +60,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	 * @throws IllegalAccessException
 	 */
 	 @Override
-	protected ModificationInstance createOperationForGen(ModificationPoint gen) throws IllegalAccessException {
+	protected ModificationInstance createModificationForPoint(ModificationPoint gen) throws IllegalAccessException {
 		ModificationPoint genSusp =  gen;
 							
 		GenProgMutationOperation operationType = GenProgMutationOperation.REPLACE;

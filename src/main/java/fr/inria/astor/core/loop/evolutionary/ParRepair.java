@@ -47,7 +47,7 @@ public class ParRepair extends JGenProg {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	protected ModificationInstance createOperationForGen(ModificationPoint mutationPoint) throws IllegalAccessException {
+	protected ModificationInstance createModificationForPoint(ModificationPoint mutationPoint) throws IllegalAccessException {
 		
 		ModificationPoint genSusp = mutationPoint;
 

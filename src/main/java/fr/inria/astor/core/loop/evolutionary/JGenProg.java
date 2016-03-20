@@ -238,8 +238,8 @@ public class JGenProg extends AstorCoreEngine {
 	 * @throws IllegalAccessException
 	 */
 	@Override
-	protected ModificationInstance createOperationForGen(ModificationPoint gen) throws IllegalAccessException {
-		SuspiciousModificationPoint genSusp = (SuspiciousModificationPoint) gen;
+	protected ModificationInstance createModificationForPoint(ModificationPoint modificationPoint) throws IllegalAccessException {
+		SuspiciousModificationPoint genSusp = (SuspiciousModificationPoint) modificationPoint;
 
 		GenProgMutationOperation operationType = (GenProgMutationOperation) repairActionSpace
 				.getNextOperator(genSusp.getSuspicious().getSuspiciousValue());
@@ -262,7 +262,7 @@ public class JGenProg extends AstorCoreEngine {
 		if (operationType.equals(GenProgMutationOperation.INSERT_AFTER)
 				|| operationType.equals(GenProgMutationOperation.INSERT_BEFORE)) {
 
-			fix = this.getFixIngredient(gen, targetStmt, operationType);
+			fix = this.getFixIngredient(modificationPoint, targetStmt, operationType);
 
 			if (operationType.equals(GenProgMutationOperation.INSERT_AFTER)) {
 				operation.setLocationInParent(operation.getLocationInParent() + 1);
@@ -270,7 +270,7 @@ public class JGenProg extends AstorCoreEngine {
 		}
 
 		if (operationType.equals(GenProgMutationOperation.REPLACE)) {
-			fix = this.getFixIngredient(gen, targetStmt, gen.getCodeElement().getClass().getSimpleName(),
+			fix = this.getFixIngredient(modificationPoint, targetStmt, modificationPoint.getCodeElement().getClass().getSimpleName(),
 					operationType);
 		}
 
