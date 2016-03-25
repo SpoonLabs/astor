@@ -20,11 +20,11 @@ import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.approaches.jgenprog.JGenProg;
+import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
-import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.astor.core.util.ProcessUtil;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
@@ -176,7 +176,7 @@ public class PatchValidationTest {
 
 		ModificationInstance operation = new ModificationInstance();
 
-		operation.setOperationApplied(GenProgMutationOperation.REPLACE);
+		operation.setOperationApplied(new ReplaceOp());
 		operation.setModificationPoint(genSusp);
 		operation.setParentBlock((CtBlock) targetStmt.getParent());
 		operation.setOriginal(targetStmt);

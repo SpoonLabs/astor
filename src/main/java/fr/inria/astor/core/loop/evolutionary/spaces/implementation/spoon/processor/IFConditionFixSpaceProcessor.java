@@ -15,7 +15,6 @@ public class IFConditionFixSpaceProcessor extends AbstractFixSpaceProcessor<CtIf
 
 	public  IFConditionFixSpaceProcessor(){
 		super();
-		this.transformator = new CtExpressionTransformator();
 	
 	}
 	

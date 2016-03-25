@@ -19,8 +19,6 @@ import spoon.reflect.code.CtCodeElement;
 public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends AbstractProcessor<T> {
 
 	
-	public ModelTransformator transformator;
-	
 	public static boolean mustClone = true;
 	public static boolean duplicated = true;
 	
@@ -53,16 +51,5 @@ public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends
 		return mustClone;
 	}
 	
-	public void canTransform(){
-		
-	}
-
-	public ModelTransformator getTransformator() {
-		return transformator;
-	}
-
-	public void setTransformator(ModelTransformator transformator) {
-		this.transformator = transformator;
-	}
 			
 }

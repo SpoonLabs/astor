@@ -61,7 +61,7 @@ public class jKaliTest extends BaseEvolutionaryTest{
 	@Test
 	public void testSeedExampleKaliAddReturnInt() throws Exception{
 		this.testSeedExampleKali("./examples/testKaliAddReturnPrimitive");
-		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"AstorMain-testKaliAddReturnPrimitive/",6);
+		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"AstorMain-testKaliAddReturnPrimitive/");
 		
 	}
 	

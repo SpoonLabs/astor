@@ -1,4 +1,4 @@
-package fr.inria.astor.core.loop.evolutionary;
+package fr.inria.astor.approaches;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,9 +8,11 @@ import java.util.Map;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.approaches.jgenprog.JGenProg;
+import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationInstance;
-import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.WeightCtElement;
+import fr.inria.astor.core.loop.evolutionary.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.mutation.mutants.core.MutantCtElement;
 import fr.inria.astor.core.loop.mutation.mutants.operators.LogicalBinaryOperatorMutator;
 import fr.inria.astor.core.loop.mutation.mutants.operators.MutatorComposite;
@@ -63,7 +65,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	protected ModificationInstance createModificationForPoint(ModificationPoint gen) throws IllegalAccessException {
 		ModificationPoint genSusp =  gen;
 							
-		GenProgMutationOperation operationType = GenProgMutationOperation.REPLACE;
+		AstorOperator operationType = new ReplaceOp();
 		
 		if (!(genSusp.getCodeElement() instanceof CtIf)) {
 			// logger.error(".....The pointed Element is Not a statement");

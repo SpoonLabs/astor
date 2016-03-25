@@ -1,10 +1,11 @@
-package fr.inria.astor.core.loop.evolutionary;
+package fr.inria.astor.approaches;
 
 import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.taxonomy.ParMutationOperation;
@@ -367,7 +368,7 @@ public class ParRepair extends JGenProg {
 		}
 		if (!type.equals(ParMutationOperation.DELETE_BEFORE) && !type.equals(ParMutationOperation.DELETE_AFTER)) {
 			ModificationPoint existingGen = operation.getModificationPoint();
-			ModificationPoint newGen = variantFactory.cloneGen(existingGen, operation.getModified());
+			ModificationPoint newGen = variantFactory.clonePoint(existingGen, operation.getModified());
 			log.info("---updating gen list " + operation + " adding gen: " + newGen);
 			gens.add(newGen);
 		}

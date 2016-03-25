@@ -19,8 +19,7 @@ public class IFExpressionFixSpaceProcessor extends AbstractFixSpaceProcessor<CtI
 
 	public  IFExpressionFixSpaceProcessor(){
 		super();
-		this.transformator = new CtExpressionTransformator();
-	
+		
 	}
 	
 	

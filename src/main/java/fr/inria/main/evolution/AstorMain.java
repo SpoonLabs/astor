@@ -8,17 +8,21 @@ import java.util.List;
 
 import org.apache.commons.cli.ParseException;
 
+import fr.inria.astor.approaches.jgenprog.JGenProg;
+import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
+import fr.inria.astor.approaches.jkali.JKali;
+import fr.inria.astor.approaches.jkali.JKaliSpace;
+import fr.inria.astor.approaches.mutRepair.MutExhaustiveRepair;
+import fr.inria.astor.approaches.mutRepair.MutRepairSpace;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.evolutionary.JGenProg;
-import fr.inria.astor.core.loop.evolutionary.JKali;
-import fr.inria.astor.core.loop.evolutionary.MutRepair;
 import fr.inria.astor.core.loop.evolutionary.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.RemoveRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.SingleStatementFixSpaceProcessor;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.BasicIngredientStrategy;
+import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.FixLocationSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.GlobalBasicFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.LocalFixSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.PackageBasicFixSpace;
@@ -38,7 +42,7 @@ import fr.inria.main.ExecutionMode;
 public class AstorMain extends AbstractMain {
 
 	
-	JGenProg gploop = null;
+	JGenProg astorCore = null;
 	
 	public void initProject(String location, String projectName, String dependencies, String packageToInstrument,
 			double thfl, String failing) throws Exception {
@@ -66,35 +70,39 @@ public class AstorMain extends AbstractMain {
 	 */
 
 	public JGenProg createEngine(ExecutionMode mode) throws Exception {
-		gploop = null;
+		astorCore = null;
 		MutationSupporter mutSupporter = new MutationSupporter();
 		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
 		// Fix Space
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 		
 		if (ExecutionMode.jKali.equals(mode)) {
-			gploop = new JKali(mutSupporter, projectFacade);
-			gploop.setRepairActionSpace(new RemoveRepairOperatorSpace());
+			astorCore = new JKali(mutSupporter, projectFacade);
+			astorCore.setRepairActionSpace(new JKaliSpace());
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
 
 		} else 	if (ExecutionMode.JGenProg.equals(mode)) {
-			gploop = new JGenProg(mutSupporter, projectFacade);
-			gploop.setRepairActionSpace(new UniformRandomRepairOperatorSpace());
+			astorCore = new JGenProg(mutSupporter, projectFacade);
+			astorCore.setRepairActionSpace(new UniformRandomRepairOperatorSpace(new jGenProgSpace()));
 
 			// The ingredients for build the patches
 			String scope = ConfigurationProperties.properties.getProperty("scope").toLowerCase();
+			FixLocationSpace fixspace = null;
 			if ("global".equals(scope)) {
-				gploop.setFixspace(new GlobalBasicFixSpace(ingredientProcessors));
+				fixspace = (new GlobalBasicFixSpace(ingredientProcessors));
 			} else if ("package".equals(scope)) {
-				gploop.setFixspace(new PackageBasicFixSpace(ingredientProcessors));
+				fixspace =  (new PackageBasicFixSpace(ingredientProcessors));
 			} else {//Default
-				gploop.setFixspace(new LocalFixSpace(ingredientProcessors));
+				fixspace = (new LocalFixSpace(ingredientProcessors));
 			}
+			astorCore.setIngredientStrategy(new BasicIngredientStrategy(fixspace));
 
+			
 		}else
 		if (ExecutionMode.MutRepair.equals(mode)) {
-			gploop = new MutRepair(mutSupporter, projectFacade);
+			astorCore = new MutExhaustiveRepair(mutSupporter, projectFacade);
+			astorCore.setRepairActionSpace(new MutRepairSpace());
 			ConfigurationProperties.properties.setProperty("stopfirst", "false");
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
@@ -104,13 +112,13 @@ public class AstorMain extends AbstractMain {
 		//Now we define the commons properties
 		
 		// Pop controller
-		gploop.setPopulationControler(new FitnessPopulationController());
+		astorCore.setPopulationControler(new FitnessPopulationController());
 		//
-		gploop.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
+		astorCore.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 
-		gploop.setProgramValidator(new ProcessValidator());
+		astorCore.setProgramValidator(new ProcessValidator());
 
-		return gploop;
+		return astorCore;
 
 	}
 	
@@ -124,21 +132,21 @@ public class AstorMain extends AbstractMain {
 		String mode = ConfigurationProperties.getProperty("mode");
 
 		if ("statement".equals(mode))
-			gploop = createEngine(ExecutionMode.JGenProg);
+			astorCore = createEngine(ExecutionMode.JGenProg);
 		else if ("statement-remove".equals(mode))
-			gploop = createEngine(ExecutionMode.jKali);
+			astorCore = createEngine(ExecutionMode.jKali);
 		else if ("mutation".equals(mode))
-			gploop = createEngine(ExecutionMode.MutRepair);
+			astorCore = createEngine(ExecutionMode.MutRepair);
 		else {
 			System.err.println("Unknown mode of execution (neither JKali nor JGenProg)");
 			return;
 		}
-		gploop.createInitialPopulation();
+		astorCore.createInitialPopulation();
 		ConfigurationProperties.print();
 
-		gploop.startEvolution();
+		astorCore.startEvolution();
 		
-		gploop.showResults();
+		astorCore.showResults();
 		
 		long endT = System.currentTimeMillis();
 		log.info("Time Total(s): " + (endT - startT)/1000d);
@@ -178,7 +186,7 @@ public class AstorMain extends AbstractMain {
 
 
 	public JGenProg getEngine() {
-		return gploop;
+		return astorCore;
 	}
 
 }

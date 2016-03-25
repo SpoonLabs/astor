@@ -1,7 +1,7 @@
 package fr.inria.astor.core.stats;
 
-import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
+import fr.inria.astor.core.loop.evolutionary.spaces.operators.AstorOperator;
 
 /**
  * 
@@ -17,13 +17,13 @@ public class StatSpaceSize {
 	String ingredientType = "";
 	public INGREDIENT_STATUS states; 
 	IngredientSpaceStrategy ingredientSpaceStrategy;
-	GenProgMutationOperation operationType;
+	AstorOperator operationType;
 	
 	public enum INGREDIENT_STATUS { compiles, notcompiles, alreadyanalyzed }
 	
 
 	public StatSpaceSize(
-			int id,String type, int ingredients, String ingType,INGREDIENT_STATUS states, IngredientSpaceStrategy ingredientSpaceStrategy, GenProgMutationOperation operationType) {
+			int id,String type, int ingredients, String ingType,INGREDIENT_STATUS states, IngredientSpaceStrategy ingredientSpaceStrategy, AstorOperator operationType) {
 		super();
 		this.id = id;
 		this.genType = type;

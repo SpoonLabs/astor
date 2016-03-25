@@ -22,7 +22,7 @@ public class LoopExpressionFixSpaceProcessor extends AbstractFixSpaceProcessor<C
 	
 	public LoopExpressionFixSpaceProcessor(){
 		super();
-		this.transformator = new CtExpressionTransformator();
+
 	}
 	@Override
 	public void process(CtLoop element) {

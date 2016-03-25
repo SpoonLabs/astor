@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.evolutionary.JGenProg;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
 

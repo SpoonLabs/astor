@@ -1,7 +1,7 @@
 package fr.inria.astor.core.loop.evolutionary.spaces.implementation;
 
-import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
-import fr.inria.astor.core.entities.taxonomy.Operator;
+import fr.inria.astor.core.loop.evolutionary.spaces.operators.AstorOperator;
+import fr.inria.astor.core.loop.evolutionary.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpace;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
@@ -12,13 +12,20 @@ import fr.inria.astor.core.setup.RandomManager;
  */
 public class UniformRandomRepairOperatorSpace implements RepairOperatorSpace {
 
+	OperatorSpace space;
+	
+	public UniformRandomRepairOperatorSpace(OperatorSpace space) {
+		super();
+		this.space = space;
+	}
+
 	@Override
-	public Operator getNextOperator() {
+	public AstorOperator getNextOperator() {
 		 return values()[RandomManager.nextInt(values().length)];
 	}
 
 	@Override
-	public Operator getNextOperator(double suspiciousValue) {
+	public AstorOperator getNextOperator(double suspiciousValue) {
 		double randomVal = RandomManager.nextDouble();
 		if(	!ConfigurationProperties.getPropertyBool("probagenmutation") || ( suspiciousValue * ConfigurationProperties.getPropertyDouble("mutationrate") ) >= randomVal ){
 			return this.getNextOperator();
@@ -35,7 +42,8 @@ public class UniformRandomRepairOperatorSpace implements RepairOperatorSpace {
 	 * By default, we use GenProgOperations
 	 */
 	@Override
-	public Operator[] values(){
-		return GenProgMutationOperation.values();
+	public AstorOperator[] values(){
+		AstorOperator[] op_arr = new AstorOperator[space.getOperators().size()]; 
+		return space.getOperators().toArray(op_arr);//GenProgMutationOperation.values();
 	}
 }

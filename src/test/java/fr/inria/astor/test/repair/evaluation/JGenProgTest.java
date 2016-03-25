@@ -112,7 +112,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Test
-	@Ignore
+	//@Ignore
 	public void testMath70TwoSolutions() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
@@ -126,7 +126,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				out.getAbsolutePath(), "-scope" , "package",
 				"-seed", "10",
 				"-maxgen", "50",
-				"-maxdate","11:00"
+			//	"-maxdate","11:00"
 				};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);

@@ -1,4 +1,4 @@
-package fr.inria.astor.core.loop.evolutionary;
+package fr.inria.astor.approaches;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.Ingredient;
-import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.ExpressionRevolver;
 import fr.inria.astor.core.setup.ProjectRepairFacade;

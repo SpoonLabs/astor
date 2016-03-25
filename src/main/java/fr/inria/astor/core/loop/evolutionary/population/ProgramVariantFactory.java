@@ -366,7 +366,7 @@ public class ProgramVariantFactory {
 		this.mutatorSupporter = mutatorExecutor;
 	}
 
-	public SuspiciousModificationPoint cloneGen(SuspiciousModificationPoint existingGen, CtElement modified) {
+	public  static SuspiciousModificationPoint clonePoint(SuspiciousModificationPoint existingGen, CtElement modified) {
 		SuspiciousCode suspicious = existingGen.getSuspicious();
 		CtClass ctClass = existingGen.getCtClass();
 		List<CtVariable> context = existingGen.getContextOfModificationPoint();
@@ -375,7 +375,7 @@ public class ProgramVariantFactory {
 
 	}
 
-	public ModificationPoint cloneGen(ModificationPoint existingGen, CtElement modified) {
+	public static ModificationPoint clonePoint(ModificationPoint existingGen, CtElement modified) {
 		CtClass ctClass = existingGen.getCtClass();
 		List<CtVariable> context = existingGen.getContextOfModificationPoint();
 		ModificationPoint newGen = new ModificationPoint(modified, ctClass, context);

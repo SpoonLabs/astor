@@ -1,6 +1,5 @@
 package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor;
 
-import fr.inria.astor.core.loop.evolutionary.transformators.CtStatementTransformator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
@@ -25,7 +24,6 @@ public class SingleStatementFixSpaceProcessor  extends AbstractFixSpaceProcessor
 	 */
 	public SingleStatementFixSpaceProcessor() {
 		super();
-		this.transformator = new CtStatementTransformator();
 	}
 
 	@Override

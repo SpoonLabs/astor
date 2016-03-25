@@ -1,9 +1,12 @@
 package fr.inria.astor.core.entities;
 
-import fr.inria.astor.core.entities.taxonomy.Operator;
+import org.apache.log4j.Logger;
+
 import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
+import fr.inria.astor.core.loop.evolutionary.spaces.operators.AstorOperator;
 import fr.inria.astor.core.util.StringUtil;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -13,6 +16,9 @@ import spoon.reflect.declaration.CtElement;
  * 
  */
 public class ModificationInstance {
+	
+	protected Logger log = Logger.getLogger(ModificationInstance.class.getName());
+
 	/**
 	 * Gen where the operation is applied
 	 */
@@ -29,7 +35,7 @@ public class ModificationInstance {
 	/**
 	 * Kind of the mutation Operation applied
 	 */
-	private Operator operationApplied = null;
+	private AstorOperator operator = null;
 	/**
 	 * Parent entity there the mut operation
 	 */
@@ -50,10 +56,10 @@ public class ModificationInstance {
 	
 	public ModificationInstance (){}
 	
-	public ModificationInstance(ModificationPoint modificationPoint, Operator operationApplied, CtElement original, CtElement modified) {
+	public ModificationInstance(ModificationPoint modificationPoint, AstorOperator operationApplied, CtElement original, CtElement modified) {
 		super();
 		this.modificationPoint = modificationPoint;
-		this.operationApplied = operationApplied;
+		this.operator = operationApplied;
 		this.original = original;
 		this.modified = modified;		
 	}
@@ -82,12 +88,12 @@ public class ModificationInstance {
 		this.parentBlock = parentBlock;
 	}
 
-	public Operator getOperationApplied() {
-		return operationApplied;
+	public AstorOperator getOperationApplied() {
+		return operator;
 	}
 
-	public void setOperationApplied(Operator operationApplied) {
-		this.operationApplied = operationApplied;
+	public void setOperationApplied(AstorOperator operationApplied) {
+		this.operator = operationApplied;
 	}
 
 	public Exception getExceptionAtApplied() {
@@ -133,7 +139,7 @@ public class ModificationInstance {
 		int result = 1;
 		result = prime * result + ((modificationPoint == null) ? 0 : modificationPoint.hashCode());
 		result = prime * result + ((modified == null) ? 0 : modified.hashCode());
-		result = prime * result + ((operationApplied == null) ? 0 : operationApplied.hashCode());
+		result = prime * result + ((operator == null) ? 0 : operator.hashCode());
 		result = prime * result + ((original == null) ? 0 : original.hashCode());
 		return result;
 	}
@@ -157,10 +163,10 @@ public class ModificationInstance {
 				return false;
 		} else if (!modified.equals(other.modified))
 			return false;
-		if (operationApplied == null) {
-			if (other.operationApplied != null)
+		if (operator == null) {
+			if (other.operator != null)
 				return false;
-		} else if (!operationApplied.equals(other.operationApplied))
+		} else if (!operator.equals(other.operator))
 			return false;
 		if (original == null) {
 			if (other.original != null)
@@ -178,5 +184,55 @@ public class ModificationInstance {
 		this.ingredientScope = ingredientScope;
 	}
 
+	public void applyModification() {
+		//todo opflex
+		operator.applyChangesInModel(this, this.getModificationPoint().getProgramVariant());
+	}
+
 	
+	public void undoModification() {
+		//todo opflex
+		operator.undoChangesInModel(this, this.getModificationPoint().getProgramVariant());
+	}
+	
+	public void updateProgramVariant() {
+		//todo opflex
+		operator.updateProgramVariant(this, this.getModificationPoint().getProgramVariant());
+	}
+	
+	public void defineParentInformation(SuspiciousModificationPoint genSusp) {
+		CtElement targetStmt = genSusp.getCodeElement();
+		CtElement cparent = targetStmt.getParent();
+		if ((cparent != null && (cparent instanceof CtBlock))) {
+			CtBlock parentBlock = (CtBlock) cparent;
+			this.setParentBlock(parentBlock);
+			int location = locationInParent(parentBlock, genSusp.getSuspicious().getLineNumber(), targetStmt);
+			this.setLocationInParent(location);
+
+		} else {
+			log.error("Parent diferent to block");
+		}
+	}
+		
+		/**
+		 * Return the position of the element in the block. It searches the same
+		 * object instance
+		 * 
+		 * @param parentBlock
+		 * @param line
+		 * @param element
+		 * @return
+		 */
+		private int locationInParent(CtBlock parentBlock, int line, CtElement element) {
+			int pos = 0;
+			for (CtStatement s : parentBlock.getStatements()) {
+				if (s == element)// the same object
+					return pos;
+				pos++;
+			}
+
+			log.error("Error: parent not found");
+			return -1;
+
+		}
 }

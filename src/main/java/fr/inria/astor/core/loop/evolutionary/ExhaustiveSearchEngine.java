@@ -7,6 +7,7 @@ import java.util.List;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;

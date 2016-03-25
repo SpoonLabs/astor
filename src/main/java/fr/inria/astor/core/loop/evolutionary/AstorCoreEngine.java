@@ -19,7 +19,6 @@ import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
-import fr.inria.astor.core.entities.taxonomy.GenProgMutationOperation;
 import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.loop.evolutionary.population.PopulationController;
 import fr.inria.astor.core.loop.evolutionary.population.ProgramVariantFactory;
@@ -71,7 +70,6 @@ public abstract class AstorCoreEngine {
 	protected ProgramVariant originalVariant = null;
 
 	// SPACES
-	protected FixLocationSpace<CtElement, CtCodeElement, String> fixspace = null;
 
 	protected RepairOperatorSpace repairActionSpace = null;
 
@@ -87,7 +85,7 @@ public abstract class AstorCoreEngine {
 	//
 	protected IFaultLocalization faultLocalization = null;
 
-	int generationsExecuted = 0;
+	protected int generationsExecuted = 0;
 
 	/**
 	 * 
@@ -152,11 +150,6 @@ public abstract class AstorCoreEngine {
 			log.info("\nSolution details");
 			log.info(getSolutionData(solutions, generationsExecuted));
 
-		}
-
-		if (this.getFixSpace() != null) {
-			FixLocationSpace space = this.getFixSpace();
-			log.info(space);
 		}
 
 	}
@@ -823,14 +816,6 @@ public abstract class AstorCoreEngine {
 		return variants;
 	}
 
-	public FixLocationSpace getFixSpace() {
-		return fixspace;
-	}
-
-	public void setFixspace(FixLocationSpace fixspace) {
-		this.fixspace = fixspace;
-	}
-
 	public ProgramVariantFactory getVariantFactory() {
 		return variantFactory;
 	}
@@ -911,9 +896,10 @@ public abstract class AstorCoreEngine {
 					line += "\ngeneration= " + Integer.toString(i);
 					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope() != null)
 							? genOperationInstance.getIngredientScope() : "-");
-					if (getFixSpace() != null) {
+					/*	if (getFixSpace() != null) {
 						// Ingredients space size
 						List<?> ingredients = null;
+						//todo opflex
 						if (genOperationInstance.getOperationApplied().equals(GenProgMutationOperation.REPLACE)) {
 							ingredients = getFixSpace().getFixSpace(genOperationInstance.getOriginal(),
 									genOperationInstance.getOriginal().getClass().getSimpleName());
@@ -927,7 +913,8 @@ public abstract class AstorCoreEngine {
 						if (ingredients != null) {
 							line += "\ningredients= " + ingredients.size();
 						}
-					}
+						
+					}*/
 					line += "\n ";
 
 				}
