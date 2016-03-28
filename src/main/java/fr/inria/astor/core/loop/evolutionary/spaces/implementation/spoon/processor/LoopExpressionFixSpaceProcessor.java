@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransformator;
 import fr.inria.astor.core.manipulation.sourcecode.ExpressionRevolver;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;

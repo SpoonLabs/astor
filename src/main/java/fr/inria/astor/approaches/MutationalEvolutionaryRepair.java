@@ -99,7 +99,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 		boolean continueSearching = true;
 		while(continueSearching && max < mutations.size()){
 			fix = getFixMutation(mutations);
-			continueSearching = alreadyApplied(gen,fix, operationType);
+			continueSearching = fix != null;//alreadyApplied(gen,fix, operationType);
 			max++;
 		} 
 		if(continueSearching ){

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransformator;
 import fr.inria.astor.core.manipulation.sourcecode.ExpressionRevolver;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
@@ -25,7 +24,6 @@ public class IFExpressionFixSpaceProcessor extends AbstractFixSpaceProcessor<CtI
 	
 	@Override
 	public void process(CtIf element) {
-		//super.add(element.getCondition());
 		List<CtExpression<Boolean>> ctExp = ExpressionRevolver.getExpressions(element.getCondition());
 		for (CtExpression ctExpression : ctExp) {
 			super.add(ctExpression);

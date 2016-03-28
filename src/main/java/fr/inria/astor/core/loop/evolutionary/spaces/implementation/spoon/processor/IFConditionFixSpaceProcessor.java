@@ -1,8 +1,6 @@
 package fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor;
 
 import org.apache.log4j.Logger;
-
-import fr.inria.astor.core.loop.evolutionary.transformators.CtExpressionTransformator;
 import spoon.reflect.code.CtIf;
 /**
  * Retrieves the if conditions
