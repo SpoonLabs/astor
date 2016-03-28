@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.runner.Result;
 
-import fr.inria.astor.core.entities.taxonomy.ValidationResult;
 import fr.inria.astor.core.validation.entity.TestResult;
 
 /**

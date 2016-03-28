@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;

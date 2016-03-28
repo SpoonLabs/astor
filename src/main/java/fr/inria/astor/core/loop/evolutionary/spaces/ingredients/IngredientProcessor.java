@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.loop.evolutionary.spaces.implementation.spoon.processor.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import spoon.Launcher;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.code.CtCodeElement;
