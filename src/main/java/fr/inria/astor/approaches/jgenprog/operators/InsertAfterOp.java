@@ -3,7 +3,7 @@ package fr.inria.astor.approaches.jgenprog.operators;
 import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.evolutionary.spaces.operators.AstorOperator;
+import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 

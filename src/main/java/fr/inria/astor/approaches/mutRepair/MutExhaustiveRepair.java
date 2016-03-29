@@ -7,8 +7,8 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.loop.evolutionary.ExhaustiveSearchEngine;
-import fr.inria.astor.core.loop.evolutionary.spaces.operators.AstorOperator;
+import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
+import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 

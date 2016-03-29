@@ -1,7 +1,7 @@
 package fr.inria.astor.core.stats;
 
-import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
-import fr.inria.astor.core.loop.evolutionary.spaces.operators.AstorOperator;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceStrategy;
+import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 
 /**
  * 

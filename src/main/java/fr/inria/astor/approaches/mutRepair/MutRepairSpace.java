@@ -1,9 +1,9 @@
 package fr.inria.astor.approaches.mutRepair;
 
 import fr.inria.astor.approaches.mutRepair.operators.IfExpresionMutOp;
-import fr.inria.astor.core.loop.evolutionary.spaces.operators.AstorOperator;
-import fr.inria.astor.core.loop.evolutionary.spaces.operators.OperatorSpace;
-import fr.inria.astor.core.loop.evolutionary.spaces.operators.RepairOperatorSpace;
+import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
+import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
+import fr.inria.astor.core.loop.spaces.operators.RepairOperatorSpace;
 /**
  * 
  * @author Matias Martinez

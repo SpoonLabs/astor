@@ -1,7 +1,7 @@
 package fr.inria.astor.approaches.jgenprog;
 
 import fr.inria.astor.approaches.jgenprog.operators.*;
-import fr.inria.astor.core.loop.evolutionary.spaces.operators.OperatorSpace;
+import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 
 
 public class jGenProgSpace extends OperatorSpace{

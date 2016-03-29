@@ -2,9 +2,9 @@ package fr.inria.astor.core.entities;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientSpaceStrategy;
-import fr.inria.astor.core.loop.evolutionary.spaces.operators.AstorOperator;
-import fr.inria.astor.core.util.StringUtil;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceStrategy;
+import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
+import fr.inria.astor.util.StringUtil;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;

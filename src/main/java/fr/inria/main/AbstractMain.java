@@ -17,7 +17,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
-import fr.inria.astor.core.util.TimeUtil;
+import fr.inria.astor.util.TimeUtil;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.factory.Factory;
 

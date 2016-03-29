@@ -14,16 +14,14 @@ import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.faultlocalization.GZoltarFaultLocalization;
 import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
-import fr.inria.astor.core.loop.evolutionary.AstorCoreEngine;
-import fr.inria.astor.core.loop.evolutionary.spaces.ingredients.IngredientStrategy;
-import fr.inria.astor.core.loop.evolutionary.spaces.operators.AstorOperator;
+import fr.inria.astor.core.loop.AstorCoreEngine;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientStrategy;
+import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -215,9 +213,6 @@ public class JGenProg extends AstorCoreEngine {
 
 		CtElement targetStmt = suspModificationPoint.getCodeElement();
 
-		//TODO:
-	//	operationType.createModificationInstance(modificationPoint);
-		//
 		ModificationInstance operation = new ModificationInstance();
 		operation.setOriginal(targetStmt);
 		operation.setOperationApplied(operationType);
@@ -233,11 +228,7 @@ public class JGenProg extends AstorCoreEngine {
 				return null;
 			}
 		}
-		
-	//	if (operationType.equals(GenProgMutationOperation.INSERT_AFTER)) {
-	//		operation.setLocationInParent(operation.getLocationInParent() + 1);
-	//	}
-		
+
 		if (fix != null) {
 			operation.setModified(fix.getCode());
 			operation.setIngredientScope(fix.getScope());
@@ -249,21 +240,6 @@ public class JGenProg extends AstorCoreEngine {
 	@Override
 	protected void undoOperationToSpoonElement(ModificationInstance operation) {
 		operation.undoModification();
-		/*List<AbstractFixSpaceProcessor<?>> processors = this.getVariantFactory().getProcessors();
-		for (AbstractFixSpaceProcessor<?> processor : processors) {
-			ModelTransformator mt = processor.getTransformator();
-			if (mt.canTransform(operation)) {
-				try {
-					mt.revert(operation);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				// After the operator instance is processed by one
-				// transformator, we break.
-				break;
-			}
-		}
-		*/
 
 	}
 
