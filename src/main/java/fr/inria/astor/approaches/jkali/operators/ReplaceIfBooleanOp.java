@@ -10,7 +10,11 @@ import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
-
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class ReplaceIfBooleanOp extends ReplaceOp{
 	
 	

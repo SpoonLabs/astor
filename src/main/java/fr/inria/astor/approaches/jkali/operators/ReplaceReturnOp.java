@@ -18,7 +18,11 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
-
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class ReplaceReturnOp extends InsertBeforeOp {
 	
 	final Set<String> prim = new HashSet<String>(Arrays.asList("byte","Byte", "long","Long", "int","Integer", "float","Float",  "double","Double", "short","Short", "char", "Character"));

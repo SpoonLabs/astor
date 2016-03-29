@@ -20,10 +20,6 @@ public class MutRepairSpace extends OperatorSpace implements RepairOperatorSpace
 		return null;
 	}
 
-	@Override
-	public AstorOperator getNextOperator(double suspiciousValue) {
-		return null;
-	}
 
 	@Override
 	public int size() {

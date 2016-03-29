@@ -24,10 +24,6 @@ public class JKaliSpace extends OperatorSpace implements RepairOperatorSpace{
 		return null;
 	}
 
-	@Override
-	public AstorOperator getNextOperator(double suspiciousValue) {
-		return null;
-	}
 
 	@Override
 	public int size() {

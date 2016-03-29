@@ -13,7 +13,8 @@ import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import spoon.reflect.code.CtStatement;
 
 /**
- * 
+ * Class that represents a Operator in Astor framework.
+ * New Operators cna be defined by extending this class.
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
@@ -21,11 +22,31 @@ public abstract class AstorOperator {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 	
-
+	/**
+	 * Method that applies the changes in the model (i.e., the spoon representation of the program) 
+	 * according to the operator. 
+	 * @param opInstance Instance of the operator to be applied in the model
+	 * @param p program variant to modified
+	 * @return true if the changes were applied successfully
+	 */
 	public abstract boolean applyChangesInModel(ModificationInstance opInstance, ProgramVariant p);
 
+	/**
+	 * Method that undo the changes applies by this operator.
+	 * @param opInstance Instance of the operator to be applied in the model
+	 * @param p program variant to modified
+	 * @return true if the changes were applied successfully
+	 */
 	public abstract boolean undoChangesInModel(ModificationInstance opInstance, ProgramVariant p);
 
+	/**
+	 * Some operators add or remove modification points from a program variant. for instance, if a oprator removes statement S at moment T, 
+	 * then this statement is not available for applying an operation at T+1.
+	 * 
+	 * @param opInstance
+	 * @param p
+	 * @return
+	 */
 	public abstract boolean updateProgramVariant(ModificationInstance opInstance, ProgramVariant p);
 	
 	/**

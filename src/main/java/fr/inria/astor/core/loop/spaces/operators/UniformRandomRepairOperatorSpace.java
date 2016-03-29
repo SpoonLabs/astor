@@ -21,7 +21,7 @@ public class UniformRandomRepairOperatorSpace implements RepairOperatorSpace {
 		 return values()[RandomManager.nextInt(values().length)];
 	}
 
-	@Override
+	@Deprecated
 	public AstorOperator getNextOperator(double suspiciousValue) {
 		double randomVal = RandomManager.nextDouble();
 		if(	!ConfigurationProperties.getPropertyBool("probagenmutation") || ( suspiciousValue * ConfigurationProperties.getPropertyDouble("mutationrate") ) >= randomVal ){

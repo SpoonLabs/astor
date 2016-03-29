@@ -202,8 +202,8 @@ public class JGenProg extends AstorCoreEngine {
 	protected ModificationInstance createModificationForPoint(ModificationPoint modificationPoint) throws IllegalAccessException {
 		SuspiciousModificationPoint suspModificationPoint = (SuspiciousModificationPoint) modificationPoint;
 
-		AstorOperator operationType =  repairActionSpace
-				.getNextOperator(suspModificationPoint.getSuspicious().getSuspiciousValue());
+		
+		AstorOperator operationType =  repairActionSpace.getNextOperator();
 
 		if (operationType == null) {
 			log.debug("Operation Null");

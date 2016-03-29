@@ -8,10 +8,15 @@ package fr.inria.astor.core.loop.spaces.operators;
 public interface RepairOperatorSpace {
 	
 	public AstorOperator getNextOperator();
-	
-	public AstorOperator getNextOperator(double suspiciousValue);
-	
+		
+	/**
+	 * Number of operators in the space
+	 * @return
+	 */
 	public int size();
-	
+	/**
+	 * Return all operators from the space
+	 * @return
+	 */
 	public AstorOperator[] values();
 }
