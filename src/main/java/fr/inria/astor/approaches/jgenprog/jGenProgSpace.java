@@ -3,7 +3,11 @@ package fr.inria.astor.approaches.jgenprog;
 import fr.inria.astor.approaches.jgenprog.operators.*;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 
-
+/**
+ * Operators included in jGenProg mode
+ * @author Matias Martinez
+ *
+ */
 public class jGenProgSpace extends OperatorSpace{
 
 	public jGenProgSpace(){

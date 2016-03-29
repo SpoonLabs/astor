@@ -6,15 +6,14 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
-
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class InsertBeforeOp extends AstorOperator {
 
-	@Override
-	public String name() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public boolean applyChangesInModel(ModificationInstance operation, ProgramVariant p) {
 		boolean successful = false;

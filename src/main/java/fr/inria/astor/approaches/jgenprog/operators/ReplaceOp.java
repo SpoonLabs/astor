@@ -6,7 +6,11 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
-
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class ReplaceOp extends AstorOperator {
 
 
@@ -37,10 +41,11 @@ public class ReplaceOp extends AstorOperator {
 
 	@Override
 	public boolean updateProgramVariant(ModificationInstance opInstance, ProgramVariant p) {
-		removePoint(p, opInstance);
-		addPoint(p, opInstance);
+		boolean sucess = true;
+		sucess &= removePoint(p, opInstance);
+		sucess &= addPoint(p, opInstance);
 
-		return true;
+		return sucess;
 
 	}
 
@@ -49,13 +54,12 @@ public class ReplaceOp extends AstorOperator {
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtStatement fix = (CtStatement) operation.getModified();
 		CtBlock<?> parentBlock = operation.getParentBlock();
-		int position = operation.getLocationInParent();
 		if (parentBlock != null) {
 				fix.replace((CtStatement) ctst);
+				return true;
 
 		}
-		//TODO:
-		return true;
+		return false;
 	}
 
 	@Override

@@ -186,7 +186,6 @@ public class JGenProg extends AstorCoreEngine {
 	 */
 	@Override
 	protected void updateVariantGenList(ProgramVariant variant, ModificationInstance operation) {
-	//	operation.getOperationApplied().applyChangesInModel(operation, variant);
 		operation.getOperationApplied().updateProgramVariant(operation, variant);
 	}
 

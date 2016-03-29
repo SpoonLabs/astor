@@ -6,7 +6,11 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
-
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class InsertAfterOp extends AstorOperator {
 
 	@Override
@@ -32,31 +36,27 @@ public class InsertAfterOp extends AstorOperator {
 
 	@Override
 	public boolean undoChangesInModel(ModificationInstance operation, ProgramVariant p) {
-		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtStatement fix = (CtStatement) operation.getModified();
 		CtBlock<?> parentBlock = operation.getParentBlock();
 		int position = operation.getLocationInParent();
-		//TODO: to check, in the creation of ModifInstance we put +1 in InsertAfter
 		position += 1;
-		remove(parentBlock, fix, position);
-		return true;
-
+		return remove(parentBlock, fix, position);
 	}
 
-	public static void remove(CtBlock parent, CtStatement fix, int pos) {
+	public static boolean remove(CtBlock parent, CtStatement fix, int pos) {
 
 		CtStatement s = parent.getStatement(pos);
 		if (fix.equals(s)) {// To be sure that the position has the element we
 							// want to remove
 			parent.getStatements().remove(pos);
+			return true;
 		} else {
 			throw new IllegalStateException("Undo: Not valid fix position");
 		}
 	}
 	@Override
 	public boolean updateProgramVariant(ModificationInstance opInstance, ProgramVariant p) {
-		addPoint(p, opInstance);
-		return false;
+		return addPoint(p, opInstance);
 	}
 
 	@Override
