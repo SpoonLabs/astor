@@ -12,6 +12,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
@@ -145,6 +146,11 @@ public abstract class AbstractMain {
 		options.addOption("maxdate", true,
 				"(Optional) Indicates the hour Astor has to stop processing. it must have the format: HH:mm");
 
+		options.addOption("customop", true,
+				"(Optional) Indicates the class name of the operators used by the selected execution mode. They must extend from "+AstorOperator.class.getName() 
+				+ ". Operator names must be separated by char "+File.pathSeparator);
+
+		
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -368,6 +374,10 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("scope"))
 			ConfigurationProperties.properties.setProperty("scope", cmd.getOptionValue("scope"));
 
+		if (cmd.hasOption("customop"))
+			ConfigurationProperties.properties.setProperty("customop", cmd.getOptionValue("customop"));
+
+		
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();

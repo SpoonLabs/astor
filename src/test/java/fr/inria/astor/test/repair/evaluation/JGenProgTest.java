@@ -12,6 +12,8 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.jgenprog.operators.RemoveOp;
+import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -197,7 +199,89 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(javahome.endsWith("bin"));
 	}
 	
+	/**
+	 * We pass as custom operator one that was already included in astor (it is included in the classpath).
+	 * @throws Exception
+	 */
+	@Test
+	public void testMath85CustomOperator() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+				"-maxgen", "100", "-scope", "package", "-seed","10" ,
+				"-customop", RemoveOp.class.getCanonicalName()
+				};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size()>0);
+		//The space must have only ONE operator
+		assertEquals(1, main1.getEngine().getRepairActionSpace().size());
+		assertEquals( RemoveOp.class.getName(),main1.getEngine().getRepairActionSpace().values()[0]);
+		
+	}
 
+	/**
+	 * We pass as custom operator one that was already included in astor (it is included in the classpath).
+	 * @throws Exception
+	 */
+	@Test
+	public void testMath85AnyCustomOperator() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+				"-maxgen", "100", "-scope", "package", "-seed","10" ,
+				"-customop", "MyoPeratorInvented1"
+				};
+		System.out.println(Arrays.toString(args));
+		try{
+		main1.execute(args);
+		fail("Astor cannot work without operators");
+		}
+		catch(Exception e){//Expected
+			}
+		}
+	
+	/**
+	 * We pass as custom operator one that was already included in astor (it is included in the classpath).
+	 * @throws Exception
+	 */
+	@Test
+	public void testMath85OtherOp() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons",
+				"-srcjavafolder", "/src/java/",
+				"-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+				"-maxgen", "100", "-scope", "package", "-seed","10" ,
+				"-customop", ReplaceOp.class.getCanonicalName()
+				};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+		//The space must have only ONE operator
+		assertEquals(1, main1.getEngine().getRepairActionSpace().size());
+		//assertEquals( ReplaceOp.class.getName(),main1.getEngine().getRepairActionSpace().values()[0]);
+	
+		validatePatchExistence(out + File.separator + "AstorMain-math_85/",0);
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() == 0);
+	
+		
+	}
 
 
 }

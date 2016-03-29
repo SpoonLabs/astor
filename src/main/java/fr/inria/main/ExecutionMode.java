@@ -5,5 +5,5 @@ package fr.inria.main;
  *
  */
 public enum ExecutionMode {
-	JGenProg, jKali, MutRepair;
+	JGenProg, jKali, MutRepair
 }
