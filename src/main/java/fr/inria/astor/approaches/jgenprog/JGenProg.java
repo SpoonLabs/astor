@@ -90,7 +90,7 @@ public class JGenProg extends AstorCoreEngine {
 		}
 
 		if (this.ingredientStrategy != null) {
-			this.ingredientStrategy.init(originalVariant);
+			this.ingredientStrategy.refineSpaceForProgramVariant(originalVariant);
 		}
 
 		boolean validInstance = validateInstance(originalVariant);

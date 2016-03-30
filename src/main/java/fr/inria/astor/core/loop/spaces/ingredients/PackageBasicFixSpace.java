@@ -56,8 +56,8 @@ public class PackageBasicFixSpace extends LocalFixSpace {
 	}
 
 	@Override
-	public IngredientSpaceStrategy strategy() {
-		return IngredientSpaceStrategy.PACKAGE;
+	public IngredientSpaceScope spaceScope() {
+		return IngredientSpaceScope.PACKAGE;
 	}
 
 }

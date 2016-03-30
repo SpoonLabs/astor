@@ -50,8 +50,8 @@ public class LocalFixSpace extends UniformRandomFixSpace<CtElement,String, CtCod
 	}
 
 	@Override
-	public IngredientSpaceStrategy strategy() {
-		return IngredientSpaceStrategy.LOCAL;
+	public IngredientSpaceScope spaceScope() {
+		return IngredientSpaceScope.LOCAL;
 	}
 
 	@Override

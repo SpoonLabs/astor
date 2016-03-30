@@ -12,6 +12,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -147,9 +148,13 @@ public abstract class AbstractMain {
 				"(Optional) Indicates the hour Astor has to stop processing. it must have the format: HH:mm");
 
 		options.addOption("customop", true,
-				"(Optional) Indicates the class name of the operators used by the selected execution mode. They must extend from "+AstorOperator.class.getName() 
-				+ ". Operator names must be separated by char "+File.pathSeparator);
+				"(Optional) Indicates the class name of the operators used by the selected execution mode. They must extend from "+AstorOperator.class.getName()
+				+ ". Operator names must be separated by char "+File.pathSeparator+". The classes must be included in the classpath.");
 
+		
+		options.addOption("ingredientstrategy", true,
+				"(Optional) Indicates the name of the class that astor calls for retrieving ingredients. They must extend from "+IngredientStrategy.class.getName() 
+				+ " The classes must be included in the classpath.");
 		
 	}
 
@@ -376,6 +381,9 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("customop"))
 			ConfigurationProperties.properties.setProperty("customop", cmd.getOptionValue("customop"));
+		
+		if (cmd.hasOption("ingredientstrategy"))
+			ConfigurationProperties.properties.setProperty("ingredientstrategy", cmd.getOptionValue("ingredientstrategy"));
 
 		
 		// CLG believes, but is not totally confident in her belief, that this

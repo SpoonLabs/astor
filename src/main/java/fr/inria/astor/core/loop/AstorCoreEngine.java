@@ -23,7 +23,7 @@ import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
-import fr.inria.astor.core.loop.spaces.ingredients.FixLocationSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.FixIngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.RepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
@@ -154,9 +154,9 @@ public abstract class AstorCoreEngine {
 
 	}
 
-	public String print(FixLocationSpace space) {
+	public String print(FixIngredientSpace space) {
 
-		String s = "--Space: " + space.strategy() + "\n";
+		String s = "--Space: " + space.spaceScope() + "\n";
 		for (Object l : space.getSpace().keySet()) {// Locations
 			int ing = 0;
 			Map r = (Map) space.getSpace().get(l);

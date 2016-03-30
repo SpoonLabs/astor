@@ -1,6 +1,6 @@
 package fr.inria.astor.core.entities;
 
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceScope;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -11,9 +11,9 @@ import spoon.reflect.declaration.CtElement;
 public class Ingredient {
 	
 	CtElement code;
-	IngredientSpaceStrategy scope;
+	IngredientSpaceScope scope;
 	
-	public Ingredient(CtElement element, IngredientSpaceStrategy scope) {
+	public Ingredient(CtElement element, IngredientSpaceScope scope) {
 		super();
 		this.code = element;
 		this.scope = scope;
@@ -27,11 +27,11 @@ public class Ingredient {
 		this.code = element;
 	}
 
-	public IngredientSpaceStrategy getScope() {
+	public IngredientSpaceScope getScope() {
 		return scope;
 	}
 
-	public void setScope(IngredientSpaceStrategy scope) {
+	public void setScope(IngredientSpaceScope scope) {
 		this.scope = scope;
 	}
 	

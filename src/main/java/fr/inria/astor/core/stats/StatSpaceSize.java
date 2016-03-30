@@ -1,6 +1,6 @@
 package fr.inria.astor.core.stats;
 
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 
 /**
@@ -16,14 +16,14 @@ public class StatSpaceSize {
 	String genType = "";
 	String ingredientType = "";
 	public INGREDIENT_STATUS states; 
-	IngredientSpaceStrategy ingredientSpaceStrategy;
+	IngredientSpaceScope ingredientSpaceStrategy;
 	AstorOperator operationType;
 	
 	public enum INGREDIENT_STATUS { compiles, notcompiles, alreadyanalyzed }
 	
 
 	public StatSpaceSize(
-			int id,String type, int ingredients, String ingType,INGREDIENT_STATUS states, IngredientSpaceStrategy ingredientSpaceStrategy, AstorOperator operationType) {
+			int id,String type, int ingredients, String ingType,INGREDIENT_STATUS states, IngredientSpaceScope ingredientSpaceStrategy, AstorOperator operationType) {
 		super();
 		this.id = id;
 		this.genType = type;

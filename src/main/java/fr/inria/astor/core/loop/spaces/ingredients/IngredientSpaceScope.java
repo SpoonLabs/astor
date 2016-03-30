@@ -4,7 +4,7 @@ package fr.inria.astor.core.loop.spaces.ingredients;
  * @author Matias Martinez matias.martinez@inria.fr
  *
  */
-public enum IngredientSpaceStrategy {
+public enum IngredientSpaceScope {
 	//Order from most restrictive to less
 	LOCAL,
 	PACKAGE,

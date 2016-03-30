@@ -23,7 +23,7 @@ import spoon.reflect.declaration.CtType;
  *
  */
 public abstract class UniformRandomFixSpace<L extends Object, K extends Object,  I extends CtCodeElement, T extends Object> 
-	implements FixLocationSpace <L, I , T>{
+	implements FixIngredientSpace <L, I , T>{
 	
 	
 	private Logger logger = Logger.getLogger(UniformRandomFixSpace.class.getName());
@@ -188,7 +188,7 @@ public abstract class UniformRandomFixSpace<L extends Object, K extends Object, 
 	}
 	
 	public String toString(){
-		String s ="--Space: "+this.strategy() +"\n";
+		String s ="--Space: "+this.spaceScope() +"\n";
 		for (K l : this.fixSpaceByLocationType.keySet()) {
 			
 			Map<T, List<I>> r = this.fixSpaceByLocationType.get(l);

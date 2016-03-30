@@ -74,12 +74,12 @@ public class GlobalBasicFixSpace extends LocalFixSpace {
 	}
 	
 	@Override
-	public IngredientSpaceStrategy strategy() {
-		return IngredientSpaceStrategy.GLOBAL;
+	public IngredientSpaceScope spaceScope() {
+		return IngredientSpaceScope.GLOBAL;
 	}
 
 	public String toString() {
-		String s ="--Space: "+this.strategy() +"\n";
+		String s ="--Space: "+this.spaceScope() +"\n";
 		int totalIng = 0;	
 		for (String l : this.fixSpaceByType.keySet()) {
 			List ing = this.fixSpaceByType.get(l);

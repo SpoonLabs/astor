@@ -2,7 +2,7 @@ package fr.inria.astor.core.entities;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.util.StringUtil;
 import spoon.reflect.code.CtBlock;
@@ -52,7 +52,7 @@ public class ModificationInstance {
 	private Exception exceptionAtApplied = null;
 	private boolean successfulyApplied = true;
 	
-	private IngredientSpaceStrategy ingredientScope = null;
+	private IngredientSpaceScope ingredientScope = null;
 	
 	public ModificationInstance (){}
 	
@@ -176,22 +176,20 @@ public class ModificationInstance {
 		return true;
 	}
 
-	public IngredientSpaceStrategy getIngredientScope() {
+	public IngredientSpaceScope getIngredientScope() {
 		return ingredientScope;
 	}
 
-	public void setIngredientScope(IngredientSpaceStrategy ingredientScope) {
+	public void setIngredientScope(IngredientSpaceScope ingredientScope) {
 		this.ingredientScope = ingredientScope;
 	}
 
 	public void applyModification() {
-		//todo opflex
 		operator.applyChangesInModel(this, this.getModificationPoint().getProgramVariant());
 	}
 
 	
 	public void undoModification() {
-		//todo opflex
 		operator.undoChangesInModel(this, this.getModificationPoint().getProgramVariant());
 	}
 	

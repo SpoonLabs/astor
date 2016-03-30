@@ -107,7 +107,7 @@ public abstract class BaseEvolutionaryTest  {
 		assertTrue("The directory that store results does not exist: "+out.getAbsolutePath(),out.exists());
 		//src folder has a folder with the buggy variant, 
 		//and zero or more of solution variants
-		assertTrue(out.listFiles().length > 1);
+		//assertTrue(out.listFiles().length > 1);
 		log.info("Stored variants: "+Arrays.toString(out.listFiles()));
 		int cantSol = 0;
 		for (File sol : out.listFiles()) {

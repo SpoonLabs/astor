@@ -18,8 +18,9 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.BasicIngredientStrategy;
-import fr.inria.astor.core.loop.spaces.ingredients.FixLocationSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.FixIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.GlobalBasicFixSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.LocalFixSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.PackageBasicFixSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
@@ -91,7 +92,7 @@ public class AstorMain extends AbstractMain {
 
 			// The ingredients for build the patches
 			String scope = ConfigurationProperties.properties.getProperty("scope").toLowerCase();
-			FixLocationSpace fixspace = null;
+			FixIngredientSpace fixspace = null;
 			if ("global".equals(scope)) {
 				fixspace = (new GlobalBasicFixSpace(ingredientProcessors));
 			} else if ("package".equals(scope)) {
@@ -99,7 +100,8 @@ public class AstorMain extends AbstractMain {
 			} else {// Default
 				fixspace = (new LocalFixSpace(ingredientProcessors));
 			}
-			astorCore.setIngredientStrategy(new BasicIngredientStrategy(fixspace));
+			IngredientStrategy ingStrategy = getIngredientStrategy(fixspace);
+			astorCore.setIngredientStrategy(ingStrategy);
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
 			astorCore = new MutExhaustiveRepair(mutSupporter, projectFacade);
@@ -129,11 +131,25 @@ public class AstorMain extends AbstractMain {
 
 	}
 
+	private IngredientStrategy getIngredientStrategy(FixIngredientSpace fixspace) throws Exception {
+		String strategy = ConfigurationProperties.properties.getProperty("ingredientstrategy");
+		IngredientStrategy st = null;
+		if(strategy == null || strategy.trim().isEmpty())
+			st = new BasicIngredientStrategy();
+		else
+			st = createStrategy(strategy);
+		
+		if(st != null)
+			st.setIngredientSpace(fixspace);	
+	
+		return st;
+	}
+
 	private void createCustomSpace(String customOp) throws Exception {
 		OperatorSpace customSpace = new OperatorSpace();
 		String[] operators = customOp.split(File.pathSeparator);
 		for (String op : operators) {
-			AstorOperator aop = createObject(op);
+			AstorOperator aop = createOperator(op);
 			if(aop != null)
 				customSpace.register(aop);
 		}
@@ -145,7 +161,7 @@ public class AstorMain extends AbstractMain {
 		astorCore.setRepairActionSpace(new UniformRandomRepairOperatorSpace(customSpace));
 	}
 	
-	AstorOperator createObject(String className) {
+	AstorOperator createOperator(String className) {
 	      Object object = null;
 	      try {
 	          Class classDefinition = Class.forName(className);
@@ -157,9 +173,23 @@ public class AstorMain extends AbstractMain {
 	    	  return (AstorOperator) object;
 	      else
 	    	  log.error("The operator "+className+" does not extend from "+ AstorOperator.class.getName());
-		     	  
-	      
-	      return null;
+		  return null;
+	 }
+	
+	public IngredientStrategy createStrategy(String className) throws Exception {
+	      Object object = null;
+	      try {
+	          Class classDefinition = Class.forName(className);
+	          object = classDefinition.newInstance();
+	      } catch (Exception e) {
+	          log.error("Loading strategy "+ className + " --"+ e);
+	          throw new Exception("Loading strategy: "+e);
+	      } 
+	      if(object instanceof  IngredientStrategy)
+	    	  return ( IngredientStrategy) object;
+	      else
+	    	  throw new Exception("The strategy "+className+" does not extend from "+ IngredientStrategy.class.getName());
+	
 	 }
 	
 	@Override

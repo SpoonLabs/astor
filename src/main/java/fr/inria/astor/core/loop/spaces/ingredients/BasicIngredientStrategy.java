@@ -31,24 +31,18 @@ public class BasicIngredientStrategy extends IngredientStrategy{
 
 	protected Map<String, List<String>> appliedCache = new HashMap<String, List<String>>();
 
-	protected FixLocationSpace<CtElement, CtCodeElement, String> fixspace = null;
+	protected FixIngredientSpace<CtElement, CtCodeElement, String> fixspace = null;
 
-	
-	
-	public BasicIngredientStrategy(FixLocationSpace<CtElement, CtCodeElement, String> fixspace) {
-		super();
-		this.fixspace = fixspace;
-	}
-	
+
 	
 	@Override
-	public void init(ProgramVariant variant) {
+	public void refineSpaceForProgramVariant(ProgramVariant variant) {
 		List<CtType<?>> typesToProcess = null;
-		if (getFixspace().strategy().equals(IngredientSpaceStrategy.LOCAL)
-				|| getFixspace().strategy().equals(IngredientSpaceStrategy.PACKAGE))
+		if (getFixspace().spaceScope().equals(IngredientSpaceScope.LOCAL)
+				|| getFixspace().spaceScope().equals(IngredientSpaceScope.PACKAGE))
 			typesToProcess = variant.getAffectedClasses();
 
-		if (getFixspace().strategy().equals(IngredientSpaceStrategy.GLOBAL))
+		if (getFixspace().spaceScope().equals(IngredientSpaceScope.GLOBAL))
 			typesToProcess = MutationSupporter.getFactory().Type().getAll();
 	
 		this.fixspace.defineSpace(typesToProcess);
@@ -113,8 +107,8 @@ public class BasicIngredientStrategy extends IngredientStrategy{
 				fixStat = INGREDIENT_STATUS.alreadyanalyzed;
 			}
 
-			IngredientSpaceStrategy scope = (fix != null)
-					? determineIngredientScope(modificationPoint.getCodeElement(), fix, ingredients) : IngredientSpaceStrategy.GLOBAL;
+			IngredientSpaceScope scope = (fix != null)
+					? determineIngredientScope(modificationPoint.getCodeElement(), fix, ingredients) : IngredientSpaceScope.GLOBAL;
 
 			if (!continueSearching) {
 				return new Ingredient(fix, scope);
@@ -126,10 +120,10 @@ public class BasicIngredientStrategy extends IngredientStrategy{
 		return null;
 
 	}
-	protected IngredientSpaceStrategy determineIngredientScope(CtElement ingredient, CtElement fix,
+	protected IngredientSpaceScope determineIngredientScope(CtElement ingredient, CtElement fix,
 			List<?> ingredients) {
 
-		IngredientSpaceStrategy orig = determineIngredientScope(ingredient, fix);
+		IngredientSpaceScope orig = determineIngredientScope(ingredient, fix);
 
 		String fixStr = fix.toString();
 		for (Object ing : ingredients) {
@@ -140,10 +134,10 @@ public class BasicIngredientStrategy extends IngredientStrategy{
 				continue;
 			}
 			if (ing.toString().equals(fixStr)) {
-				IngredientSpaceStrategy n = determineIngredientScope(ingredient, (CtElement) ing);
+				IngredientSpaceScope n = determineIngredientScope(ingredient, (CtElement) ing);
 				if (n.ordinal() < orig.ordinal()) {
 					orig = n;
-					if (IngredientSpaceStrategy.values()[0].equals(orig))
+					if (IngredientSpaceScope.values()[0].equals(orig))
 						return orig;
 				}
 
@@ -152,18 +146,18 @@ public class BasicIngredientStrategy extends IngredientStrategy{
 		return orig;
 	}
 
-	protected IngredientSpaceStrategy determineIngredientScope(CtElement ingredient, CtElement fix) {
+	protected IngredientSpaceScope determineIngredientScope(CtElement ingredient, CtElement fix) {
 
 		File ingp = ingredient.getPosition().getFile();
 		File fixp = fix.getPosition().getFile();
 
 		if (ingp.getAbsolutePath().equals(fixp.getAbsolutePath())) {
-			return IngredientSpaceStrategy.LOCAL;
+			return IngredientSpaceScope.LOCAL;
 		}
 		if (ingp.getParentFile().getAbsolutePath().equals(fixp.getParentFile().getAbsolutePath())) {
-			return IngredientSpaceStrategy.PACKAGE;
+			return IngredientSpaceScope.PACKAGE;
 		}
-		return IngredientSpaceStrategy.GLOBAL;
+		return IngredientSpaceScope.GLOBAL;
 	}
 	
 
@@ -202,8 +196,14 @@ public class BasicIngredientStrategy extends IngredientStrategy{
 			}
 		}
 	}
-	public FixLocationSpace<CtElement, CtCodeElement, String> getFixspace() {
+	public FixIngredientSpace<CtElement, CtCodeElement, String> getFixspace() {
 		return fixspace;
+	}
+
+
+	@Override
+	public void setIngredientSpace(FixIngredientSpace<CtElement, CtCodeElement, String> space) {
+		this.fixspace = space;
 	}
 	
 
