@@ -180,7 +180,7 @@ public abstract class AstorCoreEngine {
 	 *            max minutes for operating
 	 * @return
 	 */
-	private boolean belowMaxTime(Date dateInit, int maxMinutes) {
+	protected boolean belowMaxTime(Date dateInit, int maxMinutes) {
 		if (TimeUtil.deltaInMinutes(dateInit) <= maxMinutes) {
 			return true;
 		} else {

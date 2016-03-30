@@ -35,7 +35,8 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 		// We don't evolve variants, so the generation is always one.
 		generationsExecuted = 1;
 		// For each variant (one is enough)
-	
+		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
+		
 		for (ProgramVariant parentVariant : variants) {
 		
 			// We analyze each Gen of the variant i.e. suspicious statement
@@ -46,19 +47,19 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 				if(genOperations == null || genOperations.isEmpty())
 					continue;
 				
-				for (ModificationInstance genOperation : genOperations) {
+				for (ModificationInstance pointOperation : genOperations) {
 
 					try{
-						log.info("gen "+((SuspiciousModificationPoint)gen).getSuspicious());
-						log.info("--> " + genOperation);
+						log.info("mod_point "+((SuspiciousModificationPoint)gen).getSuspicious());
+						log.info("--> " + pointOperation);
 					}catch(Exception e){}
 																		
 					// We validate the variant after applying the operator
 					ProgramVariant solutionVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
 							generationsExecuted);
-					solutionVariant.getOperations().put(generationsExecuted, Arrays.asList(genOperation));
+					solutionVariant.getOperations().put(generationsExecuted, Arrays.asList(pointOperation));
 
-					applyNewMutationOperationToSpoonElement(genOperation);
+					applyNewMutationOperationToSpoonElement(pointOperation);
 					
 					boolean solution = processCreatedVariant(solutionVariant, generationsExecuted);
 
@@ -69,7 +70,12 @@ public abstract class ExhaustiveSearchEngine extends JGenProg {
 					}
 
 					// We undo the operator (for try the next one)
-					undoOperationToSpoonElement(genOperation);
+					undoOperationToSpoonElement(pointOperation);
+					
+					if(!belowMaxTime(dateInitEvolution, maxMinutes)){
+						log.debug("Max time reached");
+						return;
+					}
 				}
 			}
 		}

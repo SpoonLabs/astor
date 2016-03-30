@@ -3,6 +3,7 @@ package fr.inria.astor.test.repair.evaluation;
 import java.io.File;
 import java.util.Arrays;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -17,6 +18,7 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 	
 	
 	@Test
+	//@Ignore
 	public void testMath85issue280() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
@@ -28,11 +30,11 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 				"-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.1", 
 				"-stopfirst", "true",
-				"-maxgen", "100",
+				"-maxtime", "10",
 				"-seed","10"};
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
-		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"AstorMain-math_85/",1);
+		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"AstorMain-math_85/");
 		
 	}
 	

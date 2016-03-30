@@ -106,7 +106,7 @@ public class AstorMain extends AbstractMain {
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
 			astorCore = new MutExhaustiveRepair(mutSupporter, projectFacade);
 			astorCore.setRepairActionSpace(new MutRepairSpace());
-			ConfigurationProperties.properties.setProperty("stopfirst", "false");
+			//ConfigurationProperties.properties.setProperty("stopfirst", "false");
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
 			ingredientProcessors.clear();

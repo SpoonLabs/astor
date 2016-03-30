@@ -208,10 +208,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", "-customop", RemoveOp.class.getCanonicalName() };
+				"-maxgen", "100", "-scope", "package", "-seed", "10", 
+				"-customop", RemoveOp.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
-		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
+		//validatePatchExistence(out + File.separator + "AstorMain-math_85/");
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 		// The space must have only ONE operator
@@ -222,8 +223,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	}
 
 	/**
-	 * We pass as custom operator one that was already included in astor (it is
-	 * included in the classpath).
+	 * We pass as custom operator that it does not exist
 	 * 
 	 * @throws Exception
 	 */
@@ -247,7 +247,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	/**
 	 * We pass as custom operator one that was already included in astor (it is
-	 * included in the classpath).
+	 * included in the classpath) but it does not repair the bug
 	 * 
 	 * @throws Exception
 	 */
@@ -274,6 +274,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 
+	/**
+	 * Two custom operators, one repair the bug.
+	 * @throws Exception
+	 */
 	@Test
 	public void testMath85TwoCustomOperators() throws Exception {
 		AstorMain main1 = new AstorMain();
