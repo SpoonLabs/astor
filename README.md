@@ -106,6 +106,31 @@ or
 
     java fr.inria.main.evolution.MainjGenProg -bug280
 
+Extesion points
+-------
+Astor can be extended witout modifying the source code.
+For instance, one could add to Astor new repair operators or to add a customize strategy for navigating the search space.
+
+***Custom Repair Operator***
+
+Astor provides a way to add customized repair operators to each of the mentioned approaches (jGenProg, jMutRepair, jKali).
+For example, one can include to jMutRepair a new operator that mutates right-side expressions from assignments.
+
+A customize operator class extends from abstract class fr.inria.astor.core.loop.spaces.operators.AstorOperator.
+
+Then, the canonical name of this operator's class is passed to Astor via the argument '-customop'.
+
+
+***Custom Ingredient Selection Strategy***
+
+Astor allows to integrate a custom strategy for selecting ingredients from the ingredient search space.
+By default, Astor randomly takes one ingredient from a given ingredient scope (Application, Package or File).
+
+A customize ingredient selection strategy class extends from abstract class fr.inria.astor.core.loop.spaces.ingredients. IngredientStrategy.
+
+Then, the canonical name of this strategy's class is passed to Astor via the argument '-ingredientstrategy'.
+
+
 
 Contacts
 --------
