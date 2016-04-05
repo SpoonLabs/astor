@@ -35,7 +35,7 @@ We provide an implementation of GenProg repair algorithm called jGenProg.The cla
     fr.inria.main.evolution.MainjGenProg
 
 After the execution of a repair attempt, Astor writes in the output folder (property `workingDirectory` in the mentioned file), a folder with all the variants that fulfill the goals i.e., repair the bugs.
-Each variant folder contains the files that Astor have analyzed (and eventually modified). Additionally, it contains a file called 'Patch.xml' that summarized all changes done in the variant.
+Each variant folder contains the files that Astor has analyzed (and eventually modified). Additionally, it contains a file called 'Patch.xml' that summarized all changes done in the variant.
 The summary of the execution is alsoprinted on the screen at the end of the execution. If there is at least one solution, it prints “Solution found” and then it lists the program variants that are solution i.e., they fixed versions of the program. Then, if you go to the folder to each of those variants, the file patch appears, which summarizes the changes done for repairing the bug. In other words, the file `patch.xml` is only present if the variant is a valid solution (fixes the failing test and no regression).
 If Astor does not find any solution in the execution, it prints at the screen something like “Not solution found”. 
 
@@ -45,17 +45,7 @@ If Astor does not find any solution in the execution, it prints at the screen so
 We present an command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help are listed below. They arguments can also be changed  in "configuration.properties".
 
 Minimum arguments:
-
-
     java fr.inria.main.evolution.MainjGenProg 
-      -srcjavafolder "source code folder"
-      -srctestfolder "test source code folder"
-      -binjavafolder "class folder" 
-      -bintestfolder "test class folder" 
-
-    
-Other options:
-
     -mode statement 
 
     -location "location of the project to repair" 
@@ -73,6 +63,12 @@ Other options:
     -stopfirst true 
 
     -flthreshold "minimun suspicious value for fault localization e.g. 0.1"
+
+Other options: 
+      -srcjavafolder "source code folder"
+      -srctestfolder "test source code folder"
+      -binjavafolder "class folder" 
+      -bintestfolder "test class folder" 
 
 
 **Output**:
