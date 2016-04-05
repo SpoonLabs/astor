@@ -201,14 +201,14 @@ public class AstorMain extends AbstractMain {
 
 		String mode = ConfigurationProperties.getProperty("mode");
 
-		if ("statement".equals(mode))
+		if ("statement".equals(mode) ||"jgenprog".equals(mode) )
 			astorCore = createEngine(ExecutionMode.JGenProg);
-		else if ("statement-remove".equals(mode))
+		else if ("statement-remove".equals(mode) || "jkali".equals(mode))
 			astorCore = createEngine(ExecutionMode.jKali);
-		else if ("mutation".equals(mode))
+		else if ("mutation".equals(mode) || "jmutrepair".equals(mode))
 			astorCore = createEngine(ExecutionMode.MutRepair);
 		else {
-			System.err.println("Unknown mode of execution (neither JKali nor JGenProg)");
+			System.err.println("Unknown mode of execution: '"+mode+ "', know modes are: jgenprog, jkali, jmutrepair.");
 			return;
 		}
 		astorCore.createInitialPopulation();
