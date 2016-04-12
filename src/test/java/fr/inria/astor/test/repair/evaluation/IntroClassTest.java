@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
 
@@ -89,7 +90,7 @@ public class IntroClassTest {
 		
 		main.initProject(location, projectId, dependenciespath, packageToInstrument, thfl, failing);
 
-		JGenProg jgp = main.createEngine(ExecutionMode.JGenProg);
+		AstorCoreEngine jgp = main.createEngine(ExecutionMode.JGenProg);
 		
 		jgp.createInitialPopulation();
 		

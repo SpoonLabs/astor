@@ -15,6 +15,7 @@ import fr.inria.astor.approaches.jkali.JKaliSpace;
 import fr.inria.astor.approaches.mutRepair.MutExhaustiveRepair;
 import fr.inria.astor.approaches.mutRepair.MutRepairSpace;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.BasicIngredientStrategy;
@@ -47,7 +48,7 @@ public class AstorMain extends AbstractMain {
 	protected Logger log = Logger.getLogger(AstorMain.class.getName());
 
 	
-	JGenProg astorCore = null;
+	AstorCoreEngine astorCore = null;
 
 	public void initProject(String location, String projectName, String dependencies, String packageToInstrument,
 			double thfl, String failing) throws Exception {
@@ -73,7 +74,7 @@ public class AstorMain extends AbstractMain {
 	 * @throws Exception
 	 */
 
-	public JGenProg createEngine(ExecutionMode mode) throws Exception {
+	public AstorCoreEngine createEngine(ExecutionMode mode) throws Exception {
 		astorCore = null;
 		MutationSupporter mutSupporter = new MutationSupporter();
 		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
@@ -101,7 +102,7 @@ public class AstorMain extends AbstractMain {
 				fixspace = (new LocalFixSpace(ingredientProcessors));
 			}
 			IngredientStrategy ingStrategy = getIngredientStrategy(fixspace);
-			astorCore.setIngredientStrategy(ingStrategy);
+			((JGenProg) astorCore).setIngredientStrategy(ingStrategy);
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
 			astorCore = new MutExhaustiveRepair(mutSupporter, projectFacade);
@@ -254,7 +255,9 @@ public class AstorMain extends AbstractMain {
 
 	}
 
-	public JGenProg getEngine() {
+	
+	
+	public AstorCoreEngine getEngine() {
 		return astorCore;
 	}
 

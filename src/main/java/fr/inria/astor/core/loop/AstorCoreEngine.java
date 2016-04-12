@@ -86,6 +86,7 @@ public abstract class AstorCoreEngine {
 	protected IFaultLocalization faultLocalization = null;
 
 	protected int generationsExecuted = 0;
+	
 
 	/**
 	 * 
@@ -692,7 +693,8 @@ public abstract class AstorCoreEngine {
 			updateVariantGenList(variant, genOperationInstance);
 		}
 	}
-
+	
+	public abstract void createInitialPopulation()  throws Exception;
 	/**
 	 * This method updates gens of a variant according to a created
 	 * GenOperationInstance

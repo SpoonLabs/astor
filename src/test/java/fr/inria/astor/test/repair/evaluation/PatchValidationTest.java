@@ -24,6 +24,7 @@ import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.util.ProcessUtil;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.main.ExecutionMode;
@@ -71,13 +72,13 @@ public class PatchValidationTest {
 		
 		main.initProject(location, projectId, dependenciespath, packageToInstrument, thfl, failing);
 
-		JGenProg jgp = main.createEngine(ExecutionMode.JGenProg);
+		AstorCoreEngine astor = main.createEngine(ExecutionMode.JGenProg);
 		
-		jgp.createInitialPopulation();
+		astor.createInitialPopulation();
 		
-		Assert.assertEquals(1, jgp.getVariants().size());
+		Assert.assertEquals(1, astor.getVariants().size());
 
-		ProgramVariant variant = jgp.getVariants().get(0);
+		ProgramVariant variant = astor.getVariants().get(0);
 	
 		int currentGeneration = 1;
 		ModificationInstance operation1 = createDummyOperation1(variant, currentGeneration);
@@ -85,28 +86,28 @@ public class PatchValidationTest {
 		assertNotNull(operation1);
 
 		boolean isSolution = false;
-		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
+		isSolution = astor.processCreatedVariant(variant, currentGeneration);
 		// The model has not been changed.
 		assertFalse("Any solution was expected here", isSolution);
 
 		int afterFirstValidation = ProcessUtil.currentNumberProcess();
 		
-		jgp.applyNewOperationsToVariantModel(variant, currentGeneration);
+		astor.applyNewOperationsToVariantModel(variant, currentGeneration);
 
 		
-		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
+		isSolution = astor.processCreatedVariant(variant, currentGeneration);
 
 		int afterPatchValidation = ProcessUtil.currentNumberProcess();
 
 		assertTrue("The variant must be a solution",isSolution);
 
-		System.out.println("\nSolutions:\n" + jgp.getSolutionData(jgp.getVariants(), 1));
+		System.out.println("\nSolutions:\n" + astor.getSolutionData(astor.getVariants(), 1));
 
-		jgp.prepareNextGeneration(jgp.getVariants(), 1);
+		astor.prepareNextGeneration(astor.getVariants(), 1);
 
-		assertNotNull("Any solution found",jgp.getSolutions());
+		assertNotNull("Any solution found",astor.getSolutions());
 
-		assertFalse("Solution set must be not empty",jgp.getSolutions().isEmpty());
+		assertFalse("Solution set must be not empty",astor.getSolutions().isEmpty());
 
 		assertEquals("Problems with number of process", processBeforeAll, afterFirstValidation);
 
@@ -146,12 +147,12 @@ public class PatchValidationTest {
 		
 		main.initProject(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 
-		JGenProg jgp = main.createEngine(ExecutionMode.JGenProg);
-		jgp.createInitialPopulation();
+		AstorCoreEngine astor = main.createEngine(ExecutionMode.JGenProg);
+		astor.createInitialPopulation();
 		
-		Assert.assertEquals(1, jgp.getVariants().size());
+		Assert.assertEquals(1, astor.getVariants().size());
 
-		ProgramVariant variant = jgp.getVariants().get(0);
+		ProgramVariant variant = astor.getVariants().get(0);
 		
 		int currentGeneration = 1;
 		ModificationInstance operation1 = createDummyOperation1(variant, currentGeneration);
@@ -159,9 +160,9 @@ public class PatchValidationTest {
 
 		boolean isSolution = false;
 	
-		jgp.applyNewOperationsToVariantModel(variant, currentGeneration);
+		astor.applyNewOperationsToVariantModel(variant, currentGeneration);
 		
-		isSolution = jgp.processCreatedVariant(variant, currentGeneration);
+		isSolution = astor.processCreatedVariant(variant, currentGeneration);
 		assertTrue("A solution is attended",isSolution);
 
 	}
