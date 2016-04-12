@@ -36,7 +36,7 @@ We provide an implementation of GenProg repair algorithm called jGenProg.The cla
 
 After the execution of a repair attempt, Astor writes in the output folder (property `workingDirectory` in the mentioned file), a folder with all the variants that fulfill the goals i.e., repair the bugs.
 Each variant folder contains the files that Astor has analyzed (and eventually modified). Additionally, it contains a file called 'Patch.xml' that summarized all changes done in the variant.
-The summary of the execution is alsoprinted on the screen at the end of the execution. If there is at least one solution, it prints “Solution found” and then it lists the program variants that are solution i.e., they fixed versions of the program. Then, if you go to the folder to each of those variants, the file patch appears, which summarizes the changes done for repairing the bug. In other words, the file `patch.xml` is only present if the variant is a valid solution (fixes the failing test and no regression).
+The summary of the execution is also printed on the screen at the end of the execution. If there is at least one solution, it prints “Solution found” and then it lists the program variants that are solution i.e., they fixed versions of the program. Then, if you go to the folder to each of those variants, the file patch appears, which summarizes the changes done for repairing the bug. In other words, the file `patch.xml` is only present if the variant is a valid solution (fixes the failing test and no regression).
 If Astor does not find any solution in the execution, it prints at the screen something like “Not solution found”. 
 
 
@@ -78,7 +78,7 @@ The Astor's output is located in folder "./outputMutation". You can change it th
 Folder “default” contains the original program, without any modification. It's a sanity check, it’s the output of spoon without applying any processor over the spoon model of the application under repair.
 
 Each folder "variant-x" is a valid solution to the repair problem (passes all tests). There is an command line argument `saveall` that allows you to save all variants that Astor generates, even they are not solution.
-For each variant x that is solution, Astor sumarizes all changes applied to variant x inside the file '/variant-x/patch.xml'.
+For each variant x that is solution, Astor summarizes all changes applied to variant x inside the file '/variant-x/patch.xml'.
 
 **jKali**
 
@@ -106,9 +106,9 @@ or
 
     java fr.inria.main.evolution.MainjGenProg -bug280
 
-Extesion points
+Extension points
 -------
-Astor can be extended witout modifying the source code.
+Astor can be extended with out modifying the source code.
 For instance, one could add to Astor new repair operators or to add a customize strategy for navigating the search space.
 
 ***Custom Repair Operator***
