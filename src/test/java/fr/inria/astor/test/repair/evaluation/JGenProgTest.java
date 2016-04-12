@@ -15,8 +15,11 @@ import org.junit.Test;
 import fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp;
 import fr.inria.astor.approaches.jgenprog.operators.RemoveOp;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.BasicIngredientStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceScope;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientStrategy;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.other.FakeIngredientStrategy;
@@ -115,8 +118,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Test
-	@Ignore
-	public void testMath70TwoSolutions() throws Exception {
+	//@Ignore
+	public void testMath70LocalSolution() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
@@ -125,16 +128,22 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "50",
-				// "-maxdate","11:00"
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100"
+				
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
+		assertEquals(1,solutions.size());
 		ProgramVariant variant = solutions.get(0);
-
+		
+		ModificationInstance mi = variant.getOperations().values().iterator().next().get(0);
+		assertNotNull(mi);
+		assertEquals(IngredientSpaceScope.LOCAL,mi.getIngredientScope());
+		
+		//mi.getIngredientScope()
 		// Program variant ref to
 		Collection<CtType<?>> affected = variant.getAffectedClasses();
 		List<CtClass> progVariant = variant.getModifiedClasses();
