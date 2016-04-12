@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 
@@ -168,7 +169,7 @@ public class ProgramVariant {
 	}
 	
 	public String currentMutatorIdentifier() {
-		return (id >= 0)? ( "variant-" + id) : DEFAULT_ORIGINAL_VARIANT;
+		return (id >= 0)? ( ConfigurationProperties.getProperty("pvariantfoldername") + id) : DEFAULT_ORIGINAL_VARIANT;
 	}
 	/**
 	 * Return the classes affected by the variant. Note that those classes are shared between all variant, 

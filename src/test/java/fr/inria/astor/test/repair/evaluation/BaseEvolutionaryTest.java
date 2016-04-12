@@ -15,6 +15,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.AbstractMain;
 import spoon.support.StandardEnvironment;
 /**
@@ -111,7 +112,7 @@ public abstract class BaseEvolutionaryTest  {
 		log.info("Stored variants: "+Arrays.toString(out.listFiles()));
 		int cantSol = 0;
 		for (File sol : out.listFiles()) {
-			cantSol += (sol.getName().startsWith("variant-"))?1:0;
+			cantSol += (sol.getName().startsWith(ConfigurationProperties.getProperty("pvariantfoldername") ))?1:0;
 		}
 		return cantSol;
 	}

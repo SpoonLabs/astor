@@ -139,6 +139,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertEquals(1,solutions.size());
 		ProgramVariant variant = solutions.get(0);
 		
+		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
+		
 		ModificationInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
 		assertEquals(IngredientSpaceScope.LOCAL,mi.getIngredientScope());
