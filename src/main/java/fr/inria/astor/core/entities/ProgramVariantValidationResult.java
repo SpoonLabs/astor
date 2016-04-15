@@ -115,4 +115,8 @@ public class ProgramVariantValidationResult {
 		this.validatioResult = validatioResult;
 	}
 
+	public int getPassingTestCases() {
+		return passingTestCases;
+	}
+
 }
