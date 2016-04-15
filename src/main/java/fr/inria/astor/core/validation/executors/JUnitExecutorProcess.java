@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -24,7 +25,7 @@ import fr.inria.astor.junitexec.JUnitTestExecutor;
  */
 public class JUnitExecutorProcess {
 
-	private Logger log = Logger.getLogger(Thread.currentThread().getName());
+	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	public JUnitExecutorProcess() {
 		super();
@@ -53,6 +54,7 @@ public class JUnitExecutorProcess {
 
 			List<String> command = new ArrayList<String>();
 			command.add(javaPath);
+			//command.add("-Xmx2048m");
 			command.add("-cp");
 			command.add(path);
 			command.add(JUnitTestExecutor.class.getName());
@@ -71,7 +73,7 @@ public class JUnitExecutorProcess {
 			String commandToPrint = (trunk !=0 && commandString.length() > trunk )? (commandString.substring(0, trunk)+"..AND "+(commandString.length() - trunk)+" CHARS MORE..."):commandString;
 			log.debug("Executing process: \n" + commandToPrint);
 
-			Worker worker = new Worker(p);
+			WorkerThreadHelper worker = new WorkerThreadHelper(p);
 			worker.start();
 			worker.join(waitTime);
 			long t_end = System.currentTimeMillis();
@@ -90,6 +92,7 @@ public class JUnitExecutorProcess {
 		return null;
 	}
 
+
 	/**
 	 * This method analyze the output of the junit executor (i.e.,
 	 * {@link JUnitTestExecutor}) and return an entity called TestResult with
@@ -98,7 +101,7 @@ public class JUnitExecutorProcess {
 	 * @param p
 	 * @return
 	 */
-	private TestResult getTestResult(Process p) {
+	protected TestResult getTestResult(Process p) {
 		TestResult tr = new TestResult();
 		boolean success = false;
 		String out = "";
@@ -158,22 +161,6 @@ public class JUnitExecutorProcess {
 			e.printStackTrace();
 		}
 		return out;
-	}
-	private static class Worker extends Thread {
-		private final Process process;
-		private Integer exit;
-
-		private Worker(Process process) {
-			this.process = process;
-		}
-
-		public void run() {
-			try {
-				exit = process.waitFor();
-			} catch (InterruptedException ignore) {
-				return;
-			}
-		}
 	}
 
 }
