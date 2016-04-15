@@ -12,7 +12,7 @@ import fr.inria.astor.core.stats.Stats;
  */
 public abstract class ProgramValidator {
 
-	Stats currentStats = null;
+	Stats currentStats = new Stats();
 
 	public void setStats(Stats stats) {
 		currentStats = stats;
