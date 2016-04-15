@@ -44,6 +44,10 @@ public class TestResult {
 	public int getFailureCount(){
 		return failures;
 	}
+
+	public int getCasesExecuted() {
+		return casesExecuted;
+	}
 	
 	 
 	 
