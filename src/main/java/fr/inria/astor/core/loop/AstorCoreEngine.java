@@ -14,12 +14,12 @@ import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ModificationInstance;
-import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.entities.WeightCtElement;
+import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.entities.WeightCtElement;
 import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
@@ -34,9 +34,7 @@ import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.astor.util.TimeUtil;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -86,7 +84,6 @@ public abstract class AstorCoreEngine {
 	protected IFaultLocalization faultLocalization = null;
 
 	protected int generationsExecuted = 0;
-	
 
 	/**
 	 * 
@@ -263,9 +260,11 @@ public abstract class AstorCoreEngine {
 
 		return foundSolution;
 	}
+
 	/**
-	 * Store in the program variant passed as parameter a clone of each 
-	 * ctclass involved in the variant.
+	 * Store in the program variant passed as parameter a clone of each ctclass
+	 * involved in the variant.
+	 * 
 	 * @param variant
 	 */
 	private void storeModifiedModel(ProgramVariant variant) {
@@ -274,7 +273,7 @@ public abstract class AstorCoreEngine {
 			CtClass cloneModifClass = (CtClass) MutationSupporter.clone(modifiedClass);
 			variant.getModifiedClasses().add(cloneModifClass);
 		}
-		
+
 	}
 
 	public void prepareNextGeneration(List<ProgramVariant> temporalInstances, int generation) {
@@ -319,7 +318,7 @@ public abstract class AstorCoreEngine {
 
 			}
 			variants.add(parentNew);
-		
+
 		}
 
 	}
@@ -377,7 +376,7 @@ public abstract class AstorCoreEngine {
 	 */
 	public boolean processCreatedVariant(ProgramVariant programVariant, int generation) throws Exception {
 
-		URL[] originalURL = projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		URL[] originalURL = projectFacade.getClassPathURLforProgramVariant(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
 		CompilationResult compilation = mutatorSupporter.compileOnMemoryProgramVariant(programVariant, originalURL);
 
@@ -385,7 +384,7 @@ public abstract class AstorCoreEngine {
 		programVariant.setCompilation(compilation);
 
 		storeModifiedModel(programVariant);
-		
+
 		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier());
 
 		if (ConfigurationProperties.getPropertyBool("saveall")) {
@@ -394,13 +393,14 @@ public abstract class AstorCoreEngine {
 			// output from memory compilation
 			mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
 		}
-				
+
 		if (childCompiles) {
 
 			log.debug("-The child compiles: id " + programVariant.getId());
 			currentStat.numberOfRightCompilation++;
 			currentStat.setCompiles(programVariant.getId());
 			boolean validInstance = validateInstance(programVariant);
+
 			log.debug("-Valid?: " + validInstance + ", fitness " + programVariant.getFitness());
 			if (validInstance) {
 				log.info("-Found Solution, child variant #" + programVariant.getId());
@@ -600,7 +600,8 @@ public abstract class AstorCoreEngine {
 	 * @param generation
 	 * @return
 	 */
-	private boolean alreadyModified(ModificationPoint genProgInstance, Map<Integer, List<ModificationInstance>> map, int generation) {
+	private boolean alreadyModified(ModificationPoint genProgInstance, Map<Integer, List<ModificationInstance>> map,
+			int generation) {
 
 		for (int i = 1; i < generation; i++) {
 			List<ModificationInstance> ops = map.get(i);
@@ -688,13 +689,14 @@ public abstract class AstorCoreEngine {
 
 	private void updateVariantGenList(ProgramVariant variant, int generation) {
 		List<ModificationInstance> operations = variant.getOperations().get(generation);
-		
+
 		for (ModificationInstance genOperationInstance : operations) {
 			updateVariantGenList(variant, genOperationInstance);
 		}
 	}
-	
-	public abstract void createInitialPopulation()  throws Exception;
+
+	public abstract void createInitialPopulation() throws Exception;
+
 	/**
 	 * This method updates gens of a variant according to a created
 	 * GenOperationInstance
@@ -713,7 +715,8 @@ public abstract class AstorCoreEngine {
 	 * @return
 	 * @throws IllegalAccessException
 	 */
-	protected abstract ModificationInstance createModificationForPoint(ModificationPoint genProgInstance) throws IllegalAccessException;
+	protected abstract ModificationInstance createModificationForPoint(ModificationPoint genProgInstance)
+			throws IllegalAccessException;
 
 	protected abstract void undoOperationToSpoonElement(ModificationInstance operation);
 
@@ -753,7 +756,7 @@ public abstract class AstorCoreEngine {
 	 */
 	public boolean applyNewOperationsToVariantModel(ProgramVariant variant, int currentGeneration)
 			throws IllegalAccessException {
-	
+
 		List<ModificationInstance> operations = variant.getOperations().get(currentGeneration);
 		if (operations == null || operations.isEmpty()) {
 			return false;
@@ -883,7 +886,8 @@ public abstract class AstorCoreEngine {
 							+ genOperationInstance.getModificationPoint().getCtClass().getQualifiedName();
 
 					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
-						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance.getModificationPoint();
+						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
+								.getModificationPoint();
 						line += "\nline= " + gs.getSuspicious().getLineNumber();
 					}
 
@@ -898,25 +902,28 @@ public abstract class AstorCoreEngine {
 					line += "\ngeneration= " + Integer.toString(i);
 					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope() != null)
 							? genOperationInstance.getIngredientScope() : "-");
-					/*	if (getFixSpace() != null) {
-						// Ingredients space size
-						List<?> ingredients = null;
-						//todo opflex
-						if (genOperationInstance.getOperationApplied().equals(GenProgMutationOperation.REPLACE)) {
-							ingredients = getFixSpace().getFixSpace(genOperationInstance.getOriginal(),
-									genOperationInstance.getOriginal().getClass().getSimpleName());
-						}
-						if (genOperationInstance.getOperationApplied().equals(GenProgMutationOperation.INSERT_AFTER)
-								|| genOperationInstance.getOperationApplied()
-										.equals(GenProgMutationOperation.INSERT_BEFORE)) {
-							ingredients = getFixSpace().getFixSpace(genOperationInstance.getOriginal());
-
-						}
-						if (ingredients != null) {
-							line += "\ningredients= " + ingredients.size();
-						}
-						
-					}*/
+					/*
+					 * if (getFixSpace() != null) { // Ingredients space size
+					 * List<?> ingredients = null; //todo opflex if
+					 * (genOperationInstance.getOperationApplied().equals(
+					 * GenProgMutationOperation.REPLACE)) { ingredients =
+					 * getFixSpace().getFixSpace(genOperationInstance.
+					 * getOriginal(),
+					 * genOperationInstance.getOriginal().getClass().
+					 * getSimpleName()); } if
+					 * (genOperationInstance.getOperationApplied().equals(
+					 * GenProgMutationOperation.INSERT_AFTER) ||
+					 * genOperationInstance.getOperationApplied()
+					 * .equals(GenProgMutationOperation.INSERT_BEFORE)) {
+					 * ingredients =
+					 * getFixSpace().getFixSpace(genOperationInstance.
+					 * getOriginal());
+					 * 
+					 * } if (ingredients != null) { line += "\ningredients= " +
+					 * ingredients.size(); }
+					 * 
+					 * }
+					 */
 					line += "\n ";
 
 				}
@@ -936,6 +943,10 @@ public abstract class AstorCoreEngine {
 
 	public void setFaultLocalization(IFaultLocalization faultLocalization) {
 		this.faultLocalization = faultLocalization;
+	}
+
+	public ProjectRepairFacade getProjectFacade() {
+		return projectFacade;
 	}
 
 }

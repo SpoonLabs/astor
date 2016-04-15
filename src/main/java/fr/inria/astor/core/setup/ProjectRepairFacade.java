@@ -135,8 +135,13 @@ public class ProjectRepairFacade {
 		FileUtils.copyDirectory(source, destFile);
 		
 	}
-	
-	public URL[] getURLforMutation(String currentMutatorIdentifier) throws MalformedURLException{
+	/**
+	 * Return classpath form mutated variant.
+	 * @param currentMutatorIdentifier
+	 * @return
+	 * @throws MalformedURLException
+	 */
+	public URL[] getClassPathURLforProgramVariant(String currentMutatorIdentifier) throws MalformedURLException{
 		
 		List<URL> classpath = new ArrayList<URL>(getProperties().getDependencies());
 		//bin

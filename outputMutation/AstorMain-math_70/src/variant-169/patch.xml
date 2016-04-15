@@ -1,1 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><patch><operation generation="42" line="72" location="org.apache.commons.math.analysis.solvers.BisectionSolver" type="ReplaceOp"><original/><modified scope="LOCAL"/></operation></patch>

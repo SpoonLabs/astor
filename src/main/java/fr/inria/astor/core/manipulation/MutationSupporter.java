@@ -1,9 +1,7 @@
 package fr.inria.astor.core.manipulation;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,47 +79,45 @@ public class MutationSupporter {
 		spoonClassCompiler = new SpoonClassCompiler(factory);
 		this.currentSupporter = this;
 	}
-
+	
 	public void buildModel(String srcPathToBuild, String[] classpath) {
+		boolean saveOutput = true;
+		buildModel(srcPathToBuild, classpath,saveOutput);
+	}
+	
+	public void buildModel(String srcPathToBuild, String[] classpath, boolean saveOutput) {
 
 		logger.info("building model: " + srcPathToBuild + ", compliance level: "
 				+ factory.getEnvironment().getComplianceLevel());
 		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
-		jdtSpoonModelBuilder.addInputSource(new File(srcPathToBuild));
-		//Original
-		//jdtSpoonModelBuilder.setOutputDirectory(new File(srcPathToBuild));
-		jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
+		
+		String[] sources = srcPathToBuild.split(File.pathSeparator); 
+		for (String src : sources) {
+			if(!src.trim().isEmpty())
+				jdtSpoonModelBuilder.addInputSource(new File(src));
+		}
+		
 		jdtSpoonModelBuilder.setSourceClasspath(classpath);
 		jdtSpoonModelBuilder.build();
-		jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
-
-	}
-
-	/**
-	 * Load the class name TODO TO BE MODIFIED
-	 * 
-	 * @param classname
-	 * @return
-	 */
-	public Class loadInNewThread(URL[] cp, String classname) {
-		createClassLoadInCurrentThread(cp);
-		return loadInCurrentThread(classname);
-	}
-
-	public void createClassLoadInCurrentThread(URL[] cp) {
-		URLClassLoader cl = new URLClassLoader(cp);
-		Thread.currentThread().setContextClassLoader(cl);
-	}
-
-	public Class loadInCurrentThread(String className) {
-		try {
-			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			Class loadedclass = loader.loadClass(className);
-			return loadedclass;
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
+		if(saveOutput){
+			jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
+			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
+			//(OutputType.CLASSES);
 		}
 	}
+	
+	public void saveClassModel(String srcPathToBuild, String[] classpath, boolean saveOutput) {
+
+		logger.info("building model: " + srcPathToBuild + ", compliance level: "
+				+ factory.getEnvironment().getComplianceLevel());
+		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
+		
+			jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
+			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.CLASSES);
+	
+	}
+
+
 
 	/**
 	 * Saves Java File and Compiles it The Program Variant as well as the rest
@@ -176,32 +172,6 @@ public class MutationSupporter {
 
 	
 
-	/**
-	 * @return the class with the given qualified name.
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> Class<T> load(String binDirPath, String qualifiedName) {
-		try {
-			URL url = new File(binDirPath).toURI().toURL();
-			URLClassLoader cl = new URLClassLoader(new URL[] { url });
-			Thread.currentThread().setContextClassLoader(cl);
-			return (Class<T>) (cl.loadClass(qualifiedName));
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public <T> Class<T> loadInCurrent(String qualifiedName) {
-
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		try {
-			return (Class<T>) (cl.loadClass(qualifiedName));
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	
 
@@ -226,16 +196,6 @@ public class MutationSupporter {
 		return getFactory();
 	}
 
-	public Map<String, CtClass> getBuiltCtClasses() {
-		Map<String, CtClass> result = new HashMap<String, CtClass>();
-		List<CtType<?>> ct = factory.Class().getAll();
-		for (CtType<?> CtType : ct) {
-			if (CtType instanceof CtClass) {
-				result.put(CtType.getQualifiedName(), (CtClass) CtType);
-			}
-		}
-		return result;
-	}
 
 	public void saveSolutionData(ProgramVariant childVariant, String srcOutput, int generation) {
 		try {
@@ -280,20 +240,23 @@ public class MutationSupporter {
 
 					Element original = root.createElement("original");
 					op.appendChild(original);
-					original.setTextContent(genOperationInstance.getOriginal().toString());
-
+					//original.setTextContent(genOperationInstance.getOriginal().toString());
+					original.setNodeValue(genOperationInstance.getOriginal().toString());
 					Element mod = root.createElement("modified");
 					op.appendChild(mod);
 
 					if (genOperationInstance.getModified() != null) {
-						mod.setTextContent(genOperationInstance.getModified().toString());
+						//mod.setTextContent(genOperationInstance.getModified().toString());
+						mod.setNodeValue(genOperationInstance.getModified().toString());
+						
 						if (genOperationInstance.getIngredientScope() != null) {
 							Attr attr_ing = root.createAttribute("scope");
 							attr_ing.setValue(genOperationInstance.getIngredientScope().toString());
 							mod.setAttributeNode(attr_ing);
 						}
 					} else {
-						mod.setTextContent(genOperationInstance.getOriginal().toString());
+						//mod.setTextContent(genOperationInstance.getOriginal().toString());
+						mod.setNodeValue(genOperationInstance.getOriginal().toString());
 					}
 
 				}
