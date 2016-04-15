@@ -5,12 +5,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
-import com.google.common.collect.Lists;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
@@ -21,7 +18,7 @@ import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
 /**
  * 
- * @author matias
+ * @author Matias Martinez
  *
  */
 public class ProcessValidator extends ProgramValidator {
@@ -41,15 +38,20 @@ public class ProcessValidator extends ProgramValidator {
 			String bytecodeOutput = projectFacade.getOutDirWithPrefix(mutatedVariant.currentMutatorIdentifier());
 			File variantOutputFile = new File(bytecodeOutput);
 			
-			
-			List<URL> originalURL = new ArrayList(Arrays.asList(projectFacade.getURLforMutation(ProgramVariant.DEFAULT_ORIGINAL_VARIANT)));
+			URL[] defaultSUTClasspath = projectFacade.getClassPathURLforProgramVariant(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+			List<URL> originalURL = new ArrayList(Arrays.asList(defaultSUTClasspath));
 
 			String classpath = System.getProperty("java.class.path");
 			
-			for (String s:  classpath.split(File.pathSeparator)) {
-				originalURL.add(new URL("file://"+new File(s).getAbsolutePath()));
+			for (String path:  classpath.split(File.pathSeparator)) {
+				
+					File f = new File(path);
+				//	if(f.getName().toLowerCase().startsWith("junit")){
+					originalURL.add(new URL("file://"+ f.getAbsolutePath()));
+				//}
 			}
-			URL[] bc;
+			
+			URL[] bc = null;
 			if (mutatedVariant.getCompilation() != null) {
 				MutationSupporter.currentSupporter.getSpoonClassCompiler().saveByteCode(mutatedVariant.getCompilation(),
 						variantOutputFile);
@@ -58,11 +60,9 @@ public class ProcessValidator extends ProgramValidator {
 			} else {
 				bc = originalURL.toArray(new URL[0]);
 			}
+			
 			JUnitExecutorProcess p = new JUnitExecutorProcess();
-			// First validation: failing test case
-			String localPrefix = projectFacade.getProperties().getExperimentName() + File.separator
-					+ projectFacade.getProperties().getFixid();
-
+		
 			log.debug("-Running first validation");
 
 			currentStats.numberOfFailingTestCaseExecution++;
@@ -86,9 +86,9 @@ public class ProcessValidator extends ProgramValidator {
 					currentStats.numberOfRegressionTestExecution++;
 					currentStats.passFailingval2++;
 					if (ConfigurationProperties.getPropertyBool("testbystep"))
-						return executeRegressionTestingOneByOne(mutatedVariant, bc, p, localPrefix, projectFacade);
+						return executeRegressionTestingOneByOne(mutatedVariant, bc, p, projectFacade);
 					else
-						return executeRegressionTesting(mutatedVariant, bc, p, localPrefix, projectFacade);
+						return executeRegressionTesting(mutatedVariant, bc, p,  projectFacade);
 
 				} else {
 					ProgramVariantValidationResult r = new ProgramVariantValidationResult(trfailing, false, false);
@@ -113,7 +113,7 @@ public class ProcessValidator extends ProgramValidator {
 	}
 
 	protected ProgramVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc,
-			JUnitExecutorProcess p, String localPrefix, ProjectRepairFacade projectFacade) {
+			JUnitExecutorProcess p,  ProjectRepairFacade projectFacade) {
 		log.debug("-Test Failing is passing, Executing regression");
 		long t1 = System.currentTimeMillis();
 		List<String> testCasesRegression = projectFacade.getProperties().getRegressionTestCases();
@@ -135,7 +135,8 @@ public class ProcessValidator extends ProgramValidator {
 	}
 
 	protected ProgramVariantValidationResult executeRegressionTestingOneByOne(ProgramVariant mutatedVariant, URL[] bc,
-			JUnitExecutorProcess p, String localPrefix, ProjectRepairFacade projectFacade) {
+			JUnitExecutorProcess p,  ProjectRepairFacade projectFacade) {
+		
 		log.debug("-Test Failing is passing, Executing regression");
 		TestResult trregressionall = new TestResult();
 		long t1 = System.currentTimeMillis();
