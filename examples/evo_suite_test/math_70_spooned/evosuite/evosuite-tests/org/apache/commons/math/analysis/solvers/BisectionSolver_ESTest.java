@@ -6,45 +6,76 @@ package org.apache.commons.math.analysis.solvers;
 public class BisectionSolver_ESTest extends org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest_scaffolding {
 	@org.junit.Test(timeout = 4000)
 	public void test00() throws java.lang.Throwable {
-		org.apache.commons.math.analysis.QuinticFunction quinticFunction0 = new org.apache.commons.math.analysis.QuinticFunction();
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(quinticFunction0)));
-		bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(quinticFunction0)), 584.1131131, 1155.5723711036, 1155.5723711036);
+		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
+		org.apache.commons.math.analysis.UnivariateRealFunction univariateRealFunction0 = expm1Function0.derivative();
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(univariateRealFunction0);
+		bisectionSolver0.setAbsoluteAccuracy(0.0);
+		double double0 = bisectionSolver0.solve(0.0, 1203.227358259, 1.0);
+		org.junit.Assert.assertEquals(52, bisectionSolver0.getIterationCount());
+		org.junit.Assert.assertEquals(1203.227358259, double0, 0.01);
 	}
 
 	@org.junit.Test(timeout = 4000)
 	public void test01() throws java.lang.Throwable {
 		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
-		bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)), -2148.3548, 8.005476047401316E-6);
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
+		double double0 = bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)), 0.0, 2.117582368135751E-36, 0.0);
+		org.junit.Assert.assertEquals(5.293955920339377E-37, double0, 0.01);
+		org.junit.Assert.assertEquals(0, bisectionSolver0.getIterationCount());
 	}
 
 	@org.junit.Test(timeout = 4000)
 	public void test02() throws java.lang.Throwable {
 		org.apache.commons.math.analysis.QuinticFunction quinticFunction0 = new org.apache.commons.math.analysis.QuinticFunction();
 		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(quinticFunction0)));
-		bisectionSolver0.solve(584.1131131, 1155.5723711036, 1.0);
+		double double0 = bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(quinticFunction0)), -4688.869543201, -1.0, -1.0);
+		org.junit.Assert.assertEquals(32, bisectionSolver0.getIterationCount());
+		org.junit.Assert.assertEquals(-1.0000002728699209, double0, 0.01);
 	}
 
 	@org.junit.Test(timeout = 4000)
 	public void test03() throws java.lang.Throwable {
+		org.apache.commons.math.analysis.QuinticFunction quinticFunction0 = new org.apache.commons.math.analysis.QuinticFunction();
 		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
 		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
-		bisectionSolver0.solve(-5.4394E-4, 0.2629029, 0.2629029);
+		double double0 = bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(quinticFunction0)), 0.0, 1.0E-15);
+		org.junit.Assert.assertEquals(2.5E-16, double0, 0.01);
+		org.junit.Assert.assertEquals(0, bisectionSolver0.getIterationCount());
 	}
 
 	@org.junit.Test(timeout = 4000)
 	public void test04() throws java.lang.Throwable {
 		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
-		bisectionSolver0.solve(-134.1783398077, 1.0);
+		org.apache.commons.math.analysis.UnivariateRealFunction univariateRealFunction0 = expm1Function0.derivative();
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(univariateRealFunction0);
+		double double0 = bisectionSolver0.solve(-2982.31880945, 1.0, 1.0);
+		org.junit.Assert.assertEquals(31, bisectionSolver0.getIterationCount());
+		org.junit.Assert.assertEquals(-2982.318809102696, double0, 0.01);
 	}
 
 	@org.junit.Test(timeout = 4000)
 	public void test05() throws java.lang.Throwable {
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
 		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
+		double double0 = bisectionSolver0.solve(0.0, 1.0E-12);
+		org.junit.Assert.assertEquals(0, bisectionSolver0.getIterationCount());
+		org.junit.Assert.assertEquals(2.5E-13, double0, 0.01);
+	}
+
+	@org.junit.Test(timeout = 4000)
+	public void test06() throws java.lang.Throwable {
+		org.apache.commons.math.analysis.SinFunction sinFunction0 = new org.apache.commons.math.analysis.SinFunction();
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(sinFunction0)));
+		double double0 = bisectionSolver0.solve(-2016.254123630258, 0.0);
+		org.junit.Assert.assertEquals(30, bisectionSolver0.getIterationCount());
+		org.junit.Assert.assertEquals(-1108.9822069248048, double0, 0.01);
+	}
+
+	@org.junit.Test(timeout = 4000)
+	public void test07() throws java.lang.Throwable {
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
 		try {
-			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)), -348.55, -348.55, -348.55);
+			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(null)), 0.0, 0.0, 0.0);
 			org.junit.Assert.fail("Expecting exception: IllegalArgumentException");
 		} catch (java.lang.IllegalArgumentException e) {
 			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.MathRuntimeException", e);
@@ -52,12 +83,12 @@ public class BisectionSolver_ESTest extends org.apache.commons.math.analysis.sol
 	}
 
 	@org.junit.Test(timeout = 4000)
-	public void test06() throws java.lang.Throwable {
+	public void test08() throws java.lang.Throwable {
 		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
-		bisectionSolver0.setMaximalIterationCount(-1733);
-		org.apache.commons.math.analysis.SinFunction sinFunction0 = new org.apache.commons.math.analysis.SinFunction();
+		org.apache.commons.math.analysis.QuinticFunction quinticFunction0 = new org.apache.commons.math.analysis.QuinticFunction();
+		bisectionSolver0.setMaximalIterationCount(-927);
 		try {
-			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(sinFunction0)), -124.325794, 2066.0, -124.325794);
+			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(quinticFunction0)), 0.3503984076660156, 557.0, 1.0);
 			org.junit.Assert.fail("Expecting exception: Exception");
 		} catch (java.lang.Exception e) {
 			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
@@ -65,37 +96,14 @@ public class BisectionSolver_ESTest extends org.apache.commons.math.analysis.sol
 	}
 
 	@org.junit.Test(timeout = 4000)
-	public void test07() throws java.lang.Throwable {
+	public void test09() throws java.lang.Throwable {
 		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
+		org.apache.commons.math.analysis.QuinticFunction quinticFunction0 = new org.apache.commons.math.analysis.QuinticFunction();
 		try {
-			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(null)), 0.0, 1475.5555734889667, 4909.56324899);
-			org.junit.Assert.fail("Expecting exception: NullPointerException");
-		} catch (java.lang.NullPointerException e) {
-			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
-		}
-	}
-
-	@org.junit.Test(timeout = 4000)
-	public void test08() throws java.lang.Throwable {
-		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
-		org.apache.commons.math.analysis.MonitoredFunction monitoredFunction0 = new org.apache.commons.math.analysis.MonitoredFunction(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
-		try {
-			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(monitoredFunction0)), 2.0711471544635067E-6, -5.442213599988703E-9);
+			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(quinticFunction0)), 1.0, 1.0);
 			org.junit.Assert.fail("Expecting exception: IllegalArgumentException");
 		} catch (java.lang.IllegalArgumentException e) {
 			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.MathRuntimeException", e);
-		}
-	}
-
-	@org.junit.Test(timeout = 4000)
-	public void test09() throws java.lang.Throwable {
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
-		try {
-			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(null)), -1.0, 0.0);
-			org.junit.Assert.fail("Expecting exception: NullPointerException");
-		} catch (java.lang.NullPointerException e) {
-			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
 		}
 	}
 
@@ -103,32 +111,7 @@ public class BisectionSolver_ESTest extends org.apache.commons.math.analysis.sol
 	public void test10() throws java.lang.Throwable {
 		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
 		try {
-			bisectionSolver0.solve(1.0E-6, 1.0E-6, 1.0E-6);
-			org.junit.Assert.fail("Expecting exception: IllegalArgumentException");
-		} catch (java.lang.IllegalArgumentException e) {
-			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.MathRuntimeException", e);
-		}
-	}
-
-	@org.junit.Test(timeout = 4000)
-	public void test11() throws java.lang.Throwable {
-		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
-		bisectionSolver0.setMaximalIterationCount(1672328);
-		bisectionSolver0.setAbsoluteAccuracy(-3529.000309258157);
-		try {
-			bisectionSolver0.solve(-124.325794, 2066.0, -1165.64783582632);
-			org.junit.Assert.fail("Expecting exception: TooManyResourcesException");
-		} catch (org.evosuite.runtime.TooManyResourcesException e) {
-			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.evosuite.runtime.LoopCounter", e);
-		}
-	}
-
-	@org.junit.Test(timeout = 4000)
-	public void test12() throws java.lang.Throwable {
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
-		try {
-			bisectionSolver0.solve(-1043.0, 0.0, -1042.9999995143153);
+			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(null)), -1567.121909636, 0.0);
 			org.junit.Assert.fail("Expecting exception: NullPointerException");
 		} catch (java.lang.NullPointerException e) {
 			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
@@ -136,11 +119,10 @@ public class BisectionSolver_ESTest extends org.apache.commons.math.analysis.sol
 	}
 
 	@org.junit.Test(timeout = 4000)
-	public void test13() throws java.lang.Throwable {
-		org.apache.commons.math.analysis.QuinticFunction quinticFunction0 = new org.apache.commons.math.analysis.QuinticFunction();
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(quinticFunction0)));
+	public void test11() throws java.lang.Throwable {
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
 		try {
-			bisectionSolver0.solve(1146.0, 1.0);
+			bisectionSolver0.solve(-875.52475907, -875.52475907, -3772.9171773759085);
 			org.junit.Assert.fail("Expecting exception: IllegalArgumentException");
 		} catch (java.lang.IllegalArgumentException e) {
 			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.MathRuntimeException", e);
@@ -148,12 +130,37 @@ public class BisectionSolver_ESTest extends org.apache.commons.math.analysis.sol
 	}
 
 	@org.junit.Test(timeout = 4000)
-	public void test14() throws java.lang.Throwable {
-		org.apache.commons.math.analysis.SinFunction sinFunction0 = new org.apache.commons.math.analysis.SinFunction();
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(sinFunction0)));
-		bisectionSolver0.setMaximalIterationCount(1);
+	public void test12() throws java.lang.Throwable {
+		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
+		org.apache.commons.math.analysis.MonitoredFunction monitoredFunction0 = new org.apache.commons.math.analysis.MonitoredFunction(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(monitoredFunction0)));
+		bisectionSolver0.setAbsoluteAccuracy(-289.8);
 		try {
-			bisectionSolver0.solve(0.0, 3291.289081265524);
+			bisectionSolver0.solve(-289.8, 0.2605447570801971, -289.8);
+			org.junit.Assert.fail("Expecting exception: Exception");
+		} catch (java.lang.Exception e) {
+			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
+		}
+	}
+
+	@org.junit.Test(timeout = 4000)
+	public void test13() throws java.lang.Throwable {
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
+		try {
+			bisectionSolver0.solve(0.5, 1553.24562058039, 0.5);
+			org.junit.Assert.fail("Expecting exception: NullPointerException");
+		} catch (java.lang.NullPointerException e) {
+			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
+		}
+	}
+
+	@org.junit.Test(timeout = 4000)
+	public void test14() throws java.lang.Throwable {
+		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
+		bisectionSolver0.setAbsoluteAccuracy(-1604.6787);
+		try {
+			bisectionSolver0.solve(-1604.6787, 0.0);
 			org.junit.Assert.fail("Expecting exception: Exception");
 		} catch (java.lang.Exception e) {
 			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
@@ -164,7 +171,7 @@ public class BisectionSolver_ESTest extends org.apache.commons.math.analysis.sol
 	public void test15() throws java.lang.Throwable {
 		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
 		try {
-			bisectionSolver0.solve(554.2002938, 1405.0075677104728);
+			bisectionSolver0.solve(-3907.8956384, 439.713944048);
 			org.junit.Assert.fail("Expecting exception: NullPointerException");
 		} catch (java.lang.NullPointerException e) {
 			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
@@ -187,19 +194,22 @@ public class BisectionSolver_ESTest extends org.apache.commons.math.analysis.sol
 		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
 		org.apache.commons.math.analysis.MonitoredFunction monitoredFunction0 = new org.apache.commons.math.analysis.MonitoredFunction(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
 		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(monitoredFunction0)));
-		double double0 = bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)), 0.0, 1805.75678481413);
-		org.junit.Assert.assertEquals(30, bisectionSolver0.getIterationCount());
-		org.junit.Assert.assertEquals(4.2043551449061605E-7, double0, 0.01);
+		double double0 = bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(monitoredFunction0)), -2213.303500073061, 882.947831285651);
+		org.junit.Assert.assertEquals(31, bisectionSolver0.getIterationCount());
+		org.junit.Assert.assertEquals(-2.659401939745394E-7, double0, 0.01);
 	}
 
 	@org.junit.Test(timeout = 4000)
 	public void test18() throws java.lang.Throwable {
-		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
-		org.apache.commons.math.analysis.MonitoredFunction monitoredFunction0 = new org.apache.commons.math.analysis.MonitoredFunction(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(monitoredFunction0)));
-		double double0 = bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(monitoredFunction0)), -1043.0, 0.0, 0.0);
-		org.junit.Assert.assertEquals(29, bisectionSolver0.getIterationCount());
-		org.junit.Assert.assertEquals(-4.85684722661972E-7, double0, 0.01);
+		org.apache.commons.math.analysis.SinFunction sinFunction0 = new org.apache.commons.math.analysis.SinFunction();
+		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(sinFunction0)));
+		bisectionSolver0.setMaximalIterationCount(8);
+		try {
+			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(sinFunction0)), -4469.7843254918, 0.0);
+			org.junit.Assert.fail("Expecting exception: Exception");
+		} catch (java.lang.Exception e) {
+			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
+		}
 	}
 
 	@org.junit.Test(timeout = 4000)
@@ -208,30 +218,21 @@ public class BisectionSolver_ESTest extends org.apache.commons.math.analysis.sol
 		org.apache.commons.math.analysis.MonitoredFunction monitoredFunction0 = new org.apache.commons.math.analysis.MonitoredFunction(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)));
 		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(monitoredFunction0)));
 		try {
-			bisectionSolver0.solve(1249.75, 1.7781810894429843E33, 1249.75);
-			org.junit.Assert.fail("Expecting exception: Exception");
-		} catch (java.lang.Exception e) {
-			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
+			bisectionSolver0.solve(548.91, -2.659401939745394E-7);
+			org.junit.Assert.fail("Expecting exception: IllegalArgumentException");
+		} catch (java.lang.IllegalArgumentException e) {
+			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.MathRuntimeException", e);
 		}
 	}
 
 	@org.junit.Test(timeout = 4000)
 	public void test20() throws java.lang.Throwable {
-		org.apache.commons.math.analysis.SinFunction sinFunction0 = new org.apache.commons.math.analysis.SinFunction();
-		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver(((org.apache.commons.math.analysis.UnivariateRealFunction)(sinFunction0)));
-		double double0 = bisectionSolver0.solve(0.0, 3291.289081265524);
-		org.junit.Assert.assertEquals(31, bisectionSolver0.getIterationCount());
-		org.junit.Assert.assertEquals(3.831564776210026E-7, double0, 0.01);
-	}
-
-	@org.junit.Test(timeout = 4000)
-	public void test21() throws java.lang.Throwable {
 		org.apache.commons.math.analysis.solvers.BisectionSolver bisectionSolver0 = new org.apache.commons.math.analysis.solvers.BisectionSolver();
-		org.apache.commons.math.analysis.SinFunction sinFunction0 = new org.apache.commons.math.analysis.SinFunction();
+		org.apache.commons.math.analysis.Expm1Function expm1Function0 = new org.apache.commons.math.analysis.Expm1Function();
 		try {
-			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(sinFunction0)), -1279.391, 8.298171253910538E27);
-			org.junit.Assert.fail("Expecting exception: Exception");
-		} catch (java.lang.Exception e) {
+			bisectionSolver0.solve(((org.apache.commons.math.analysis.UnivariateRealFunction)(expm1Function0)), 1.0E-15, 6.8147913021677, 6.8147913021677);
+			org.junit.Assert.fail("Expecting exception: NullPointerException");
+		} catch (java.lang.NullPointerException e) {
 			org.evosuite.runtime.EvoAssertions.assertThrownBy("org.apache.commons.math.analysis.solvers.BisectionSolver", e);
 		}
 	}

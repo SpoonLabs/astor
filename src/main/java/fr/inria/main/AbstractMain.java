@@ -20,7 +20,6 @@ import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.util.TimeUtil;
-import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.factory.Factory;
 
 /**
@@ -67,8 +66,8 @@ public abstract class AbstractMain {
 
 		options.addOption("maxtime", true, "(Optional) maximum time (in minutes) to execute the whole experiment");
 
-		options.addOption("validation", true, "(Optional) type of validation: process|thread|local ");
-		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default:"
+		options.addOption("validation", true, "(Optional) type of validation: process|evosuite. Default:"+ ConfigurationProperties.properties.getProperty("validation"));
+		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default:" 
 				+ ConfigurationProperties.properties.getProperty("flthreshold"));
 
 		options.addOption("maxsuspcandidates", true,

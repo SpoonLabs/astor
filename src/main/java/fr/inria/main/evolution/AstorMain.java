@@ -33,6 +33,7 @@ import fr.inria.astor.core.manipulation.filters.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
+import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
@@ -126,8 +127,15 @@ public class AstorMain extends AbstractMain {
 		//
 		astorCore.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 
-		astorCore.setProgramValidator(new ProcessValidator());
-
+		//Select the kind of validation of a variant.
+		String validation = ConfigurationProperties.properties.getProperty("validation");
+		if(validation.equals("evosuite")){
+			
+			astorCore.setProgramValidator(new ProcessEvoSuiteValidator());
+		}else{
+			//Default (process)
+			astorCore.setProgramValidator(new ProcessValidator());
+		}
 		return astorCore;
 
 	}
