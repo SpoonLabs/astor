@@ -1,15 +1,17 @@
 package fr.inria.astor.test.repair.evaluation;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp;
@@ -19,7 +21,6 @@ import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.BasicIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceScope;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientStrategy;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.other.FakeIngredientStrategy;
@@ -29,7 +30,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 
 /**
- * 
+ * Test of Astor in mode jgenprog
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
@@ -171,7 +172,12 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	}
 
 	
-
+	/** 
+	 * Return the ct type from the collection according tho the class passed as parameter.
+	 * @param classes
+	 * @param target
+	 * @return
+	 */
 	private CtType returnByName(Collection<?> classes, CtClass target) {
 
 		for (Object ctClass : classes) {
