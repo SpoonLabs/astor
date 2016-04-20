@@ -7,9 +7,10 @@ script: mvn test -Dtest=fr.inria.astor.test.repair.evaluation.JGenProgTest,fr.in
 jdk:
   - oraclejdk8
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
 notifications:
   email:
     - martin.monperrus@univ-lille1.fr
     - matias.sebastian.martinez@usi.ch
-
-
