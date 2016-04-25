@@ -119,4 +119,7 @@ public class ProgramVariantValidationResult {
 		return passingTestCases;
 	}
 
+	public String toString(){
+		return "Variant Validation: successfull? "+this.wasSuccessful() + " "+this.getTestResults();
+	}
 }
