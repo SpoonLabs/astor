@@ -92,8 +92,6 @@ public class IntroClassTest {
 
 		AstorCoreEngine jgp = main.createEngine(ExecutionMode.JGenProg);
 		
-		jgp.createInitialPopulation();
-		
 		Assert.assertEquals(1, jgp.getVariants().size());
 
 		ProgramVariant variant = jgp.getVariants().get(0);

@@ -93,6 +93,10 @@ public class JGenProg extends AstorCoreEngine {
 			this.ingredientStrategy.refineSpaceForProgramVariant(originalVariant);
 		}
 
+		 setFitnessOfPopulation();
+	}
+	
+	private void setFitnessOfPopulation(){
 		boolean validInstance = validateInstance(originalVariant);
 		if (validInstance) {
 			throw new IllegalStateException("The application under repair has not failling test cases");
@@ -101,8 +105,8 @@ public class JGenProg extends AstorCoreEngine {
 		for (ProgramVariant initvariant : variants) {
 			initvariant.setFitness(originalVariant.getFitness());
 		}
-
-	}
+		
+	} 
 
 
 

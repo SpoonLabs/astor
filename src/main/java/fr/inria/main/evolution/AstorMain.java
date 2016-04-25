@@ -35,8 +35,10 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
+import fr.inria.astor.util.EvoSuiteFacade;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
+import spoon.reflect.declaration.CtClass;
 
 /**
  * Astor main
@@ -127,15 +129,21 @@ public class AstorMain extends AbstractMain {
 		//
 		astorCore.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 
+		//We do the first validation using the standard validation (test suite process)
+		astorCore.setProgramValidator(new ProcessValidator());
+		
+		//Initialize Population
+		astorCore.createInitialPopulation();
+		
+		//After initializing population, we set up specific validation mechanism
 		//Select the kind of validation of a variant.
 		String validation = ConfigurationProperties.properties.getProperty("validation");
 		if(validation.equals("evosuite")){
+			ProcessEvoSuiteValidator validator = new ProcessEvoSuiteValidator();
+			astorCore.setProgramValidator(validator);
 			
-			astorCore.setProgramValidator(new ProcessEvoSuiteValidator());
-		}else{
-			//Default (process)
-			astorCore.setProgramValidator(new ProcessValidator());
 		}
+		
 		return astorCore;
 
 	}
@@ -220,7 +228,6 @@ public class AstorMain extends AbstractMain {
 			System.err.println("Unknown mode of execution: '"+mode+ "', know modes are: jgenprog, jkali, jmutrepair.");
 			return;
 		}
-		astorCore.createInitialPopulation();
 		ConfigurationProperties.print();
 
 		astorCore.startEvolution();

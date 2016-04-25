@@ -74,8 +74,6 @@ public class PatchValidationTest {
 
 		AstorCoreEngine astor = main.createEngine(ExecutionMode.JGenProg);
 		
-		astor.createInitialPopulation();
-		
 		Assert.assertEquals(1, astor.getVariants().size());
 
 		ProgramVariant variant = astor.getVariants().get(0);
@@ -148,7 +146,6 @@ public class PatchValidationTest {
 		main.initProject(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 
 		AstorCoreEngine astor = main.createEngine(ExecutionMode.JGenProg);
-		astor.createInitialPopulation();
 		
 		Assert.assertEquals(1, astor.getVariants().size());
 
