@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -24,6 +25,7 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
+import fr.inria.astor.util.Converters;
 import fr.inria.astor.util.EvoSuiteFacade;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.AstorMain;
@@ -38,7 +40,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 	@SuppressWarnings("rawtypes")
 	@Test
-	public void testGenerateEvosuiteTests() throws Exception {
+	public void testGenerateEvosuiteTestsStepByStep() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		// Running Astor
@@ -111,7 +113,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 		// Compile
 		CompilationResult compilation = MutationSupporter.currentSupporter.getSpoonClassCompiler()
-				.compileOnMemory(classes, toURLArray(classpathForCreateModel));
+				.compileOnMemory(classes, Converters.toURLArray(classpathForCreateModel));
 		assertFalse("Any bytecode", compilation.getByteCodes().values().isEmpty());
 
 		//// Save compiled
@@ -134,7 +136,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 		ProcessEvoSuiteValidator evoProcess = new ProcessEvoSuiteValidator();
 		ProgramVariantValidationResult evoResult = evoProcess
-				.executeRegressionTesting(toURLArray(classpathForRunTest.split(File.pathSeparator)), testToExecute);
+				.executeRegressionTesting(Converters.toURLArray(classpathForRunTest.split(File.pathSeparator)), testToExecute);
 
 		assertNotNull("Test execution null", evoResult);
 		assertEquals("have a failure", evoResult.getFailureCount(), 0);
@@ -142,6 +144,79 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		assertTrue("Not exec", evoResult.getPassingTestCases() > 0);
 
 	}
+	@Test
+	public void testCompleteEvosuiteTests() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		// Running Astor
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
+				// We force to not execute the evolution, so, we run it for zero
+				// generation
+				"-maxgen", "0", "-population", "1", "-stopfirst", "true", "-maxtime", "100"
+
+		};
+		System.out.println(Arrays.toString(args));
+
+		main1.execute(args);
+
+		assertTrue(main1.getEngine().getSolutions().size() == 0);
+
+		assertEquals(1, main1.getEngine().getVariants().size());
+
+		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+
+		log.info("Executing evosuite");
+		EvoSuiteFacade fev = new EvoSuiteFacade();
+		
+		List<CtClass> classes = fev.createEvoTestModel(main1.getEngine().getProjectFacade(), variant);
+	
+		// Two classes: EvoTest + EvoScaffolding
+		assertEquals("We do not have 2 spoon classes generated", 2, classes.size());
+
+		assertFalse(main1.getEngine().getMutatorSupporter().getTestClasses().contains(classes.get(0)));
+
+		ProgramVariantValidationResult result = fev.saveAndExecuteEvoSuite(main1.getEngine().getProjectFacade(), variant, classes);
+	
+		assertNotNull(result);
+		
+		assertTrue(result.wasSuccessful());
+		
+	}
+	
+	
+	@Test
+	public void testjGenProgWithEvoSuiteTests() throws Exception {
+		AstorMain main1 = new AstorMain();
+		// Running Astor
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
+				"-stopfirst", "true",
+				"-population", 
+				"1", "-stopfirst", "true", "-maxtime", "100",
+				"-validation","evosuite"
+
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+		//One solution
+		assertFalse(main1.getEngine().getSolutions().isEmpty());
+	
+		
+	}
+	
 
 	/**
 	 * We take the output of evosuite, we generate the spoon model, then we
@@ -151,7 +226,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Test
-	public void testCompileSaveAndRunEvoSuiteTest() throws Exception {
+	public void testCompileSaveAndRunEvoSuiteTestStepByStep() throws Exception {
 
 		// For running the test cases, We use the JVM that runs Astor
 		String javahome = System.getProperty("java.home");
@@ -167,6 +242,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				+ new File("./examples/evo_suite_test/math_70_spooned//bin//default").getAbsolutePath()
 				+ File.pathSeparator + new File("./lib/evosuite-1.0.3.jar").getAbsolutePath();
 
+		
+		
 		EvoSuiteFacade fev = new EvoSuiteFacade();
 
 		List<CtClass> classes = fev.reificateEvoSuiteTest(
@@ -183,11 +260,14 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				+ new File("./examples/evo_suite_test/math_70_spooned/bin/default").getAbsolutePath()
 				+ File.pathSeparator + new File("./lib/evosuite-1.0.3.jar").getAbsolutePath();
 
+		log.info("Classpath "+classpathForCompileModel);
+		
+		
 		String[] classpathForEvoSuiteTest2 = classpathForCompileModel.split(File.pathSeparator);
 
 		// Compile (generation of evosuite bytecode) on memory
 		CompilationResult compilation = MutationSupporter.currentSupporter.getSpoonClassCompiler()
-				.compileOnMemory(classes, toURLArray(classpathForEvoSuiteTest2));
+				.compileOnMemory(classes, Converters.toURLArray(classpathForEvoSuiteTest2));
 		assertFalse("Any bytecode", compilation.getByteCodes().values().isEmpty());
 
 		assertEquals("Other size", 2, compilation.getByteCodes().values().size());
@@ -213,7 +293,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		/// Running junit for executing evosuite test:
 		String classpathForRunTest = classpathForCompileModel + (File.pathSeparator) + outPutTest;
 		// Asserting Running
-		URL[] classpath4Process = toURLArray(classpathForRunTest.split(File.pathSeparator));
+		URL[] classpath4Process = Converters.toURLArray(classpathForRunTest.split(File.pathSeparator));
 
 		List<String> testToExecute = new ArrayList<>();
 		for (CtClass evoTest : classes) {
@@ -230,17 +310,40 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		assertTrue("Not successfull", evoResult.wasSuccessful());
 		assertTrue("Not exec", evoResult.getPassingTestCases() > 0);
 	}
+	
+	
 
-	protected URL[] toURLArray(String[] cp) throws MalformedURLException {
-		List<URL> urls = new ArrayList<URL>();
+	@SuppressWarnings("rawtypes")
+	@Test
+	@Ignore
+	public void testMath70WithEvosuiteTests() throws Exception {
+		AstorMain main1 = new AstorMain();
 
-		for (String c : cp) {
-			urls.add(new File(c).toURI().toURL());
-		}
-		URL[] u = new URL[urls.size()];
+		// Running Astor
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
+				"-maxgen", "200", "-population", "1", "-stopfirst", "true", "-maxtime", "100"
+				//"-validator", "evosuite"
 
-		return (URL[]) urls.toArray(u);
+		};
+		System.out.println(Arrays.toString(args));
+
+		main1.execute(args);
+
+		assertEquals(1, main1.getEngine().getSolutions().size());
+
+		//assertEquals(1, main1.getEngine().getVariants().size());
+
+		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+
 	}
+	
 
 	/**
 	 * This test reproduce the bug of calling a regression using a process.
