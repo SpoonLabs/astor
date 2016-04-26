@@ -20,8 +20,6 @@ public class ProgramVariantValidationResult {
 
 	boolean regressionExecuted = false;
 
-	ValidationResult validatioResult = null;
-
 
 	public ProgramVariantValidationResult() {
 		super();
@@ -70,20 +68,12 @@ public class ProgramVariantValidationResult {
 	
 
 	public boolean wasSuccessful() {
-		/*
-		 * for(Result r : testResults){ if(!r.wasSuccessful()){ return false; }
-		 * } if(regressionResult != null){ return
-		 * regressionResult.wasSuccessful(); } return true;
-		 */
-		return failingTestCases == 0 /*&& resultSuccess*/;
+	
+		return failingTestCases == 0 ;
 	}
 
 	public int getFailureCount() {
-		/*
-		 * int runs = 0; for(Result r : testResults){ runs+=
-		 * r.getFailureCount(); } if(regressionResult != null){ runs+=
-		 * regressionResult.getFailureCount(); } return runs;
-		 */
+	
 		return failingTestCases;
 	}
 
@@ -107,14 +97,6 @@ public class ProgramVariantValidationResult {
 		this.regressionExecuted = regressionExecuted;
 	}
 	
-	public ValidationResult getValidatioResult() {
-		return validatioResult;
-	}
-
-	public void setValidatioResult(ValidationResult validatioResult) {
-		this.validatioResult = validatioResult;
-	}
-
 	public int getPassingTestCases() {
 		return passingTestCases;
 	}
