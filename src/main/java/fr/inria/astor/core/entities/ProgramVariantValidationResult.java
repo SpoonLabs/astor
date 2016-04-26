@@ -15,28 +15,25 @@ import fr.inria.astor.core.validation.entity.TestResult;
  */
 public class ProgramVariantValidationResult {
 
-	int failingTestCases = 0;
-	int passingTestCases = 0;
+	int numberFailingTestCases = 0;
+	int numberPassingTestCases = 0;
 
 	boolean regressionExecuted = false;
-
-
-	public ProgramVariantValidationResult() {
-		super();
-	}
+	TestResult testResult;
 
 	public ProgramVariantValidationResult(TestResult result) {
 		super();
-		passingTestCases = result.casesExecuted - result.failures;
-		failingTestCases = result.failures;
+		numberPassingTestCases = result.casesExecuted - result.failures;
+		numberFailingTestCases = result.failures;
+		testResult = result;
 
 	}
 
 	public ProgramVariantValidationResult(TestResult result,
 			boolean resultSucess, boolean regressionExecuted) {
 		super();
-		passingTestCases = result.casesExecuted - result.failures;
-		failingTestCases = result.failures;
+		numberPassingTestCases = result.casesExecuted - result.failures;
+		numberFailingTestCases = result.failures;
 	}
 
 	/**
@@ -69,23 +66,23 @@ public class ProgramVariantValidationResult {
 
 	public boolean wasSuccessful() {
 	
-		return failingTestCases == 0 ;
+		return numberFailingTestCases == 0 ;
 	}
 
 	public int getFailureCount() {
 	
-		return failingTestCases;
+		return numberFailingTestCases;
 	}
 
 	public void addResultTest(Result r) {
-		this.failingTestCases += r.getFailureCount();
-		this.passingTestCases += r.getRunCount() - r.getFailureCount();
+		this.numberFailingTestCases += r.getFailureCount();
+		this.numberPassingTestCases += r.getRunCount() - r.getFailureCount();
 		this.getTestResults().add(r);
 	}
 
 	public void addResultRegressionTest(Result r) {
-		this.failingTestCases += r.getFailureCount();
-		this.passingTestCases += r.getRunCount() - r.getFailureCount();
+		this.numberFailingTestCases += r.getFailureCount();
+		this.numberPassingTestCases += r.getRunCount() - r.getFailureCount();
 		this.getTestRegressionResults().add(r);
 	}
 
@@ -98,10 +95,19 @@ public class ProgramVariantValidationResult {
 	}
 	
 	public int getPassingTestCases() {
-		return passingTestCases;
+		return numberPassingTestCases;
 	}
 
 	public String toString(){
 		return "Variant Validation: successfull? "+this.wasSuccessful() + " "+this.getTestResults();
 	}
+
+	public TestResult getTestResult() {
+		return testResult;
+	}
+
+	public void setTestResult(TestResult testResult) {
+		this.testResult = testResult;
+	}
+
 }
