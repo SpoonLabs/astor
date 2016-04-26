@@ -99,7 +99,8 @@ public class SpoonClassCompiler {
 
 		Map<String, String> toCompile = new HashMap<String, String>();
 		prettyPrinter = new DefaultJavaPrettyPrinter(getEnvironment());
-
+		dcc = new JavaXToolsCompiler();
+		
 		for (CtClass ctClass : ctClassList) {
 			try {
 				this.getProcessingManager().process(ctClass);
