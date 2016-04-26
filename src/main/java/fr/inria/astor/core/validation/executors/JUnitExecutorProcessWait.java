@@ -16,10 +16,8 @@ import fr.inria.astor.junitexec.JUnitTestExecutor;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class JUnitExecutorProcessWait  extends JUnitExecutorProcess{
+public class JUnitExecutorProcessWait extends JUnitExecutorProcess {
 
-
-	
 	public TestResult execute(String path, List<String> classesToExecute, int waitTime) {
 		Process p = null;
 
@@ -55,30 +53,30 @@ public class JUnitExecutorProcessWait  extends JUnitExecutorProcess{
 
 			String commandString = command.toString().replace("[", "").replace("]", "").replace(",", " ");
 			int trunk = ConfigurationProperties.getPropertyInt("commandTrunk");
-			String commandToPrint = (trunk !=0 && commandString.length() > trunk )? (commandString.substring(0, trunk)+"..AND "+(commandString.length() - trunk)+" CHARS MORE..."):commandString;
+			String commandToPrint = (trunk != 0 && commandString.length() > trunk) ? (commandString.substring(0, trunk)
+					+ "..AND " + (commandString.length() - trunk) + " CHARS MORE...") : commandString;
 			log.debug("Executing process: \n" + commandToPrint);
-			//Here, we do not use the worker
-		//jdk 8	p.waitFor(waitTime,TimeUnit.MILLISECONDS);
-		//	Exec:  p.wait(waitTime);
+			// Here, we do not use the worker
+			// jdk 8 p.waitFor(waitTime,TimeUnit.MILLISECONDS);
+			// Exec: p.wait(waitTime);
 			WorkerThreadHelper worker = new WorkerThreadHelper(p);
 			worker.start();
 			worker.join(waitTime);
-			
-			//==
+
+			// ==
 			long t_end = System.currentTimeMillis();
-		
+
 			TestResult tr = getTestResult(p);
 			p.destroy();
 			log.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
 
 			return tr;
-		} catch ( IOException |InterruptedException |IllegalThreadStateException  ex) {
+		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
 			log.error("The Process that runs JUnit test cases had problems: " + ex.getMessage());
 			if (p != null)
 				p.destroy();
 		}
 		return null;
 	}
-	
 
 }

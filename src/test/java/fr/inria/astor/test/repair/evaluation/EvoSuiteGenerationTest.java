@@ -315,7 +315,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 	@SuppressWarnings("rawtypes")
 	@Test
-	@Ignore
+	//@Ignore
 	public void testMath70WithEvosuiteTests() throws Exception {
 		AstorMain main1 = new AstorMain();
 
@@ -328,8 +328,9 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "200", "-population", "1", "-stopfirst", "true", "-maxtime", "100"
-				//"-validator", "evosuite"
+				"-maxgen", "200", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
+				//PARAMETER TO TEST
+				"-validation", "evosuite"
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -338,7 +339,6 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 		assertEquals(1, main1.getEngine().getSolutions().size());
 
-		//assertEquals(1, main1.getEngine().getVariants().size());
 
 		ProgramVariant variant = main1.getEngine().getVariants().get(0);
 

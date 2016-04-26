@@ -1,5 +1,6 @@
 package fr.inria.astor.util;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +14,14 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.executors.WorkerThreadHelper;
+import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -30,8 +34,8 @@ import spoon.reflect.factory.Factory;
 public class EvoSuiteFacade {
 
 	public static String EVOSUITE_SUFFIX = "_ESTest";
-	public static String EVOSUITE_scaffolding_SUFFIX ="_ESTest_scaffolding";
-	
+	public static String EVOSUITE_scaffolding_SUFFIX = "_ESTest_scaffolding";
+
 	Logger logger = Logger.getLogger(Thread.currentThread().getName());
 
 	public boolean runEvosuite(ProgramVariant variant,
@@ -48,17 +52,20 @@ public class EvoSuiteFacade {
 		URL[] SUTClasspath = null;
 		SUTClasspath = originalURL.toArray(new URL[0]);
 
+		logger.debug("Creating test cases using evosuite ");
+		
 		List<CtType<?>> types = variant.getAffectedClasses();
 		boolean reponse = true;
 		for (CtType<?> ctType : types) {
-			// generate a process
-			String[] command = new String[] { "-class", ctType.getQualifiedName(), "-projectCP",
-					urlArrayToString(SUTClasspath), "-base_dir", outES
+			// generate a process for running evosuite
+			String[] command = new String[] { "-class", ctType.getQualifiedName(), 
+					"-projectCP", urlArrayToString(SUTClasspath),//
+					"-base_dir", outES//
 					// ,"-Djunit_check_on_separate_process=true"
 			};
-
+			logger.debug("Creating test for "+ctType.getQualifiedName());
 			reponse &= runProcess(null, command);
-			System.out.println("Analyzing " + ctType.getQualifiedName() + " " + reponse);
+			//logger.debug("reponse from " + ctType.getQualifiedName() + " " + reponse);
 		}
 		return reponse;
 	}
@@ -144,14 +151,15 @@ public class EvoSuiteFacade {
 		boolean saveOutput = true;
 		try {
 			mutatorSupporter.buildModel(codeLocation, classpath, saveOutput);
-			//mutatorSupporter.saveClassModel(codeLocation, classpath, saveOutput);//FOR TEST
+			// mutatorSupporter.saveClassModel(codeLocation, classpath,
+			// saveOutput);//FOR TEST
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			mutatorSupporter.getFactory().getEnvironment()
 					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
 			mutatorSupporter.buildModel(codeLocation, classpath, saveOutput);
-			
+
 		}
 
 		List<CtType<?>> allTypes = mutatorSupporter.getFactory().Type().getAll();
@@ -163,6 +171,96 @@ public class EvoSuiteFacade {
 			}
 		}
 		return ESTestClasses;
+	}
+
+	public List<CtClass> createEvoTestModel(ProjectRepairFacade projectFacade, ProgramVariant variant)
+			throws Exception {
+
+		logger.info("Executing evosuite");
+
+		boolean executed = this.runEvosuite(variant, projectFacade);
+		
+
+		// CHECKING EVO OUTPUT
+		String testEScodepath = projectFacade
+				.getInDirWithPrefix(ConfigurationProperties.getProperty("evosuiteresultfolder"));
+		File esPath = new File(testEScodepath);
+
+		logger.info("Evo output: " + esPath);
+
+		logger.info("Loading EvoTest model");
+		// CREATING CLASSPATH FOR EXECUTING EVO TESTS
+		String bytecodeSUTLocation = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+
+		String classpathForModelizeEvoSuite = "";
+
+		classpathForModelizeEvoSuite += (new File(ConfigurationProperties.getProperty("evosuitejar"))
+				.getAbsolutePath());
+
+		classpathForModelizeEvoSuite += (File.pathSeparator + projectFacade.getProperties().getDependenciesString());
+		classpathForModelizeEvoSuite += (File.pathSeparator + bytecodeSUTLocation);
+
+		String[] classpathForModelizeEvoSuiteTest = classpathForModelizeEvoSuite.split(File.pathSeparator);
+
+		// We create the Spoon model for the evosuite test generated
+		List<CtClass> classes = reificateEvoSuiteTest(testEScodepath, classpathForModelizeEvoSuiteTest);
+
+		return classes;
+
+	}
+
+	public ProgramVariantValidationResult saveAndExecuteEvoSuite(ProjectRepairFacade projectFacade, ProgramVariant variant,
+			List<CtClass> ctclasses) throws Exception{
+			
+		
+				String classpathForCompileSpoon = "";
+				classpathForCompileSpoon =
+						projectFacade.getProperties().getDependenciesString()
+						+ File.pathSeparator + 
+						projectFacade.getOutDirWithPrefix(variant.currentMutatorIdentifier())
+						+File.pathSeparator//
+						+ new File("./lib/evosuite-1.0.3.jar").getAbsolutePath()
+						+ File.pathSeparator + 
+						projectFacade.getOutDirWithPrefix(variant.DEFAULT_ORIGINAL_VARIANT)
+					;
+
+				logger.info("Classpath "+classpathForCompileSpoon);
+				String[] classpathForCreateModel = classpathForCompileSpoon.split(File.pathSeparator);
+
+				// Compile evo classes from spoon model
+				CompilationResult compilation = MutationSupporter.currentSupporter.getSpoonClassCompiler()
+						.compileOnMemory(ctclasses, Converters.toURLArray(classpathForCreateModel));
+				//assertFalse("Any bytecode", compilation.getByteCodes().values().isEmpty());
+
+				if(!compilation.compiles() || compilation.getByteCodes().values().isEmpty()){
+					logger.error("Error at compiling evotest classes");
+					return null;
+				}
+				logger.debug("EvoSuite compiled ok "+compilation.compiles());
+					
+					
+				//// Save compiled
+				String outPutTest = projectFacade
+						.getOutDirWithPrefix("/evosuite/evosuite-tests_" + variant.currentMutatorIdentifier());
+				File fbyteEvo = new File(outPutTest);
+				logger.info("Saving evotest bytecode at " + fbyteEvo);
+				MutationSupporter.currentSupporter.getSpoonClassCompiler().saveByteCode(compilation, fbyteEvo);
+			
+
+				List<String> testToExecute = new ArrayList<>();
+				for (CtClass evoTest : ctclasses) {
+					if (!evoTest.getQualifiedName().endsWith("ESTest_scaffolding"))
+						testToExecute.add(evoTest.getQualifiedName());
+				}
+
+				String classpathForRunTest = classpathForCompileSpoon + (File.pathSeparator) + outPutTest;
+				logger.info("Process classpath " + classpathForRunTest);
+
+				ProcessEvoSuiteValidator evoProcess = new ProcessEvoSuiteValidator();
+				ProgramVariantValidationResult evoResult = evoProcess
+						.executeRegressionTesting(Converters.toURLArray(classpathForRunTest.split(File.pathSeparator)), testToExecute);
+
+				return evoResult;
 	}
 
 	private String readOut(Process p) {
