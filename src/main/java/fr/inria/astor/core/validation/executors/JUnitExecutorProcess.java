@@ -85,7 +85,7 @@ public class JUnitExecutorProcess {
 
 			return tr;
 		} catch ( IOException |InterruptedException |IllegalThreadStateException  ex) {
-			log.error("The Process that runs JUnit test cases had problems: " + ex.getMessage());
+			log.info("The Process that runs JUnit test cases had problems: " + ex.getMessage());
 			if (p != null)
 				p.destroy();
 		}
