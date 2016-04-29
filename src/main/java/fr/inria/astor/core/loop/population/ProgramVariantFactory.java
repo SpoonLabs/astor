@@ -114,7 +114,7 @@ public class ProgramVariantFactory {
 			for (SuspiciousCode suspiciousCode : suspiciousList) {
 				// For each suspicious code, we create one or more Gens (when it
 				// is possible)
-				List<SuspiciousModificationPoint> gens = createGens(suspiciousCode, progInstance);
+				List<SuspiciousModificationPoint> gens = createModificationPoints(suspiciousCode, progInstance);
 				if (gens != null)
 					progInstance.getModificationPoints().addAll(gens);
 				else {
@@ -122,28 +122,29 @@ public class ProgramVariantFactory {
 				}
 
 			}
-			log.info("Total suspicious from FL: " + suspiciousList.size() + ",  " + progInstance.getModificationPoints().size());
+			log.info("Total suspicious from FL: " + suspiciousList.size() + ",  "
+					+ progInstance.getModificationPoints().size());
 		} else {
-			// We do not have suspicious, so, we create gens for each statement
+			// We do not have suspicious, so, we create modification for each statement
 
-			List<SuspiciousModificationPoint> gensFromAllStatements = createGens(progInstance);
+			List<SuspiciousModificationPoint> gensFromAllStatements = createModificationPoints(progInstance);
 			progInstance.getModificationPoints().addAll(gensFromAllStatements);
 		}
-		log.info("Total Gens created: " + progInstance.getModificationPoints().size());
+		log.info("Total ModPoint created: " + progInstance.getModificationPoints().size());
 		return progInstance;
 	}
 
 	@SuppressWarnings("rawtypes")
-	private List<SuspiciousModificationPoint> createGens(ProgramVariant progInstance) {
+	private List<SuspiciousModificationPoint> createModificationPoints(ProgramVariant progInstance) {
 
 		List<SuspiciousModificationPoint> suspGen = new ArrayList<>();
 		List<CtClass> classesFromModel = mutatorSupporter.getClasses();
-			
+
 		for (CtClass ctclasspointed : classesFromModel) {
-			
+
 			if (!progInstance.getBuiltClasses().containsKey(ctclasspointed.getQualifiedName())) {
-				//TODO: clone or not?
-				//CtClass ctclasspointed = getCtClassCloned(className);
+				// TODO: clone or not?
+				// CtClass ctclasspointed = getCtClassCloned(className);
 				progInstance.getBuiltClasses().put(ctclasspointed.getQualifiedName(), ctclasspointed);
 			}
 
@@ -181,7 +182,7 @@ public class ProgramVariantFactory {
 	 * @param progInstance
 	 * @return
 	 */
-	private List<SuspiciousModificationPoint> createGens(SuspiciousCode suspiciousCode, ProgramVariant progInstance) {
+	private List<SuspiciousModificationPoint> createModificationPoints(SuspiciousCode suspiciousCode, ProgramVariant progInstance) {
 
 		List<SuspiciousModificationPoint> suspGen = new ArrayList<SuspiciousModificationPoint>();
 
@@ -228,7 +229,7 @@ public class ProgramVariantFactory {
 			gen.setCodeElement(ctElement);
 			gen.setContextOfModificationPoint(contextOfGen);
 			suspGen.add(gen);
-			log.info("--Gen:" + ctElement.getClass().getSimpleName() + ", suspValue "
+			log.info("--ModifPoint:" + ctElement.getClass().getSimpleName() + ", suspValue "
 					+ suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
 					+ ctElement.getPosition().getFile().getName());
 		}
@@ -259,7 +260,7 @@ public class ProgramVariantFactory {
 				List<CtElement> result = spaceProcessor.createFixSpace(element, false);
 
 				for (CtElement ctElement : result) {
-					if(ctElement.toString().equals("super()")){
+					if (ctElement.toString().equals("super()")) {
 						continue;
 					}
 					if (!ctMatching.contains(ctElement))
@@ -283,7 +284,7 @@ public class ProgramVariantFactory {
 	 * @param progInstance
 	 * @return
 	 */
-	public CtClass resolveCtClass(String className,  ProgramVariant progInstance) {
+	public CtClass resolveCtClass(String className, ProgramVariant progInstance) {
 
 		// if the ctclass exists in the cache, return it.
 		if (progInstance.getBuiltClasses().containsKey(className)) {
@@ -345,7 +346,7 @@ public class ProgramVariantFactory {
 	}
 
 	public CtClass getCtClassCloned(String className) {
-		
+
 		CtType ct = mutatorSupporter.getFactory().Type().get(className);
 		if (!(ct instanceof CtClass)) {
 			return null;
@@ -366,7 +367,7 @@ public class ProgramVariantFactory {
 		this.mutatorSupporter = mutatorExecutor;
 	}
 
-	public  static SuspiciousModificationPoint clonePoint(SuspiciousModificationPoint existingGen, CtElement modified) {
+	public static SuspiciousModificationPoint clonePoint(SuspiciousModificationPoint existingGen, CtElement modified) {
 		SuspiciousCode suspicious = existingGen.getSuspicious();
 		CtClass ctClass = existingGen.getCtClass();
 		List<CtVariable> context = existingGen.getContextOfModificationPoint();
