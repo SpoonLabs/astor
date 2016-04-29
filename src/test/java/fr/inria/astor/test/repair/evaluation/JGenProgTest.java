@@ -31,6 +31,7 @@ import spoon.reflect.declaration.CtType;
 
 /**
  * Test of Astor in mode jgenprog
+ * 
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
@@ -65,7 +66,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		main1.main(args);
 		validatePatchExistence(out + File.separator + "AstorMain-Math-issue-280/");
 	}
-	//TODO: THE PARENT OF A STATEMENT IS A CASE:
+
+	// TODO: THE PARENT OF A STATEMENT IS A CASE:
 	// @Test
 	public void testExample288CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
@@ -74,7 +76,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		validatePatchExistence(out + File.separator + "AstorMain-Math-issue-288/");
 	}
 
-	//@Test
+	// @Test
 	public void testExample340CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String[] args = new String[] { "-bug340" };
@@ -119,7 +121,6 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Test
-	//@Ignore
 	public void testMath70LocalSolution() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
@@ -129,24 +130,25 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100"
-				
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
+				"-maxtime", "100"
+
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
-		assertEquals(1,solutions.size());
+		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		
+
 		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
-		
+
 		ModificationInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
-		assertEquals(IngredientSpaceScope.LOCAL,mi.getIngredientScope());
-		
-		//mi.getIngredientScope()
+		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());
+
+		// mi.getIngredientScope()
 		// Program variant ref to
 		Collection<CtType<?>> affected = variant.getAffectedClasses();
 		List<CtClass> progVariant = variant.getModifiedClasses();
@@ -171,9 +173,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 
-	
-	/** 
-	 * Return the ct type from the collection according tho the class passed as parameter.
+	/**
+	 * Return the ct type from the collection according tho the class passed as
+	 * parameter.
+	 * 
 	 * @param classes
 	 * @param target
 	 * @return
@@ -225,11 +228,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", 
-				"-customop", RemoveOp.class.getCanonicalName() };
+				"-maxgen", "100", "-scope", "package", "-seed", "10", "-customop", RemoveOp.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
-		//validatePatchExistence(out + File.separator + "AstorMain-math_85/");
+		// validatePatchExistence(out + File.separator + "AstorMain-math_85/");
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 		// The space must have only ONE operator
@@ -293,6 +295,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	/**
 	 * Two custom operators, one repair the bug.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -337,10 +340,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
-		
+
 	}
-	
-	
 
 	@Test
 	public void testMath85_AnyIngredientStrategy() throws Exception {
@@ -351,7 +352,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy", "DoneToFailIngredientStrat10" };
+				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy",
+				"DoneToFailIngredientStrat10" };
 		System.out.println(Arrays.toString(args));
 		try {
 			main1.execute(args);
@@ -359,9 +361,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		} catch (Exception e) {// Expected
 		}
 	}
+
 	@SuppressWarnings("rawtypes")
 	@Test
-	//@Ignore
+	// @Ignore
 	public void testMath70WithFakeIngStrategy() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
@@ -371,16 +374,49 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "50",
-				"-ingredientstrategy",FakeIngredientStrategy.class.getCanonicalName()
-		};
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "50", "-ingredientstrategy",
+				FakeIngredientStrategy.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.isEmpty());
-	
+
 	}
-	
+	/**
+	 * Testing injected but at CharacterReader line 118, commit version 31be24.
+	 * "org.jsoup.nodes.AttributesTest"+File.pathSeparator+"org.jsoup.nodes.DocumentTypeTest"
+						+File.pathSeparator+"org.jsoup.nodes.NodeTest"+File.pathSeparator+"org.jsoup.parser.HtmlParserTest"
+				
+	 * @throws Exception
+	 */
+	@Test
+	public void testJSoupParser31be24() throws Exception {
+		String dep = new File("./examples/libs/junit-4.5.jar").getAbsolutePath();
+		AstorMain main1 = new AstorMain();
+		
+		String[] args = new String[] { "-mode", "statement", "-location",
+				new File("./examples/jsoup31be24").getAbsolutePath(), "-dependencies", dep, 
+				//The injected bug produces 4 failing cases in two files
+				"-failing",
+				"org.jsoup.parser.CharacterReaderTest"+File.pathSeparator
+				+"org.jsoup.parser.HtmlParserTest"
+				, 
+				//
+				"-package", "org.jsoup", "-javacompliancelevel", "7", 
+				"-stopfirst", "true", 
+				//
+				"-flthreshold", "0.8", "-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/",
+				"-binjavafolder", "/target/classes", "-bintestfolder", "/target/test-classes", 
+				//
+				"-scope", "local",
+				"-seed", "10", 
+				"-maxtime", "100" };
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertFalse(solutions.isEmpty());
+
+	}
 
 }
