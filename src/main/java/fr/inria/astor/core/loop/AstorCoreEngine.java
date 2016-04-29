@@ -797,13 +797,14 @@ public abstract class AstorCoreEngine {
 			throws IllegalAccessException;
 
 	protected boolean validateInstance(ProgramVariant variant) {
-		ProgramVariantValidationResult result;
+		ProgramVariantValidationResult validationResult;
 
-		if ((result = programValidator.validate(variant, projectFacade)) != null) {
-			double fitness = this.populationControler.getFitnessValue(variant, result);
+		if ((validationResult = programValidator.validate(variant, projectFacade)) != null) {
+			double fitness = this.populationControler.getFitnessValue(variant, validationResult);
 			variant.setFitness(fitness);
-			boolean wasSuc = result.wasSuccessful();
+			boolean wasSuc = validationResult.wasSuccessful();
 			variant.setIsSolution(wasSuc);
+			variant.setValidationResult(validationResult);
 			return wasSuc;
 		}
 		return false;

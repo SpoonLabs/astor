@@ -84,6 +84,9 @@ public class ProgramVariant {
 	 */
 	protected List<CtClass> modifiedClasses = new ArrayList<CtClass>();
 
+	
+	ProgramVariantValidationResult validationResult = null;
+	
 	public ProgramVariant(){
 		modificationPoints = new ArrayList<ModificationPoint>();
 		operations = new HashMap<Integer,List<ModificationInstance>>();
@@ -218,5 +221,13 @@ public class ProgramVariant {
 
 	public void setModifiedClasses(List<CtClass> resultedClasses) {
 		this.modifiedClasses = resultedClasses;
+	}
+
+	public ProgramVariantValidationResult getValidationResult() {
+		return validationResult;
+	}
+
+	public void setValidationResult(ProgramVariantValidationResult validationResult) {
+		this.validationResult = validationResult;
 	}
 }
