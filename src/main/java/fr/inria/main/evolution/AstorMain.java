@@ -35,10 +35,8 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
-import fr.inria.astor.util.EvoSuiteFacade;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
-import spoon.reflect.declaration.CtClass;
 
 /**
  * Astor main
