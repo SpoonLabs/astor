@@ -208,7 +208,7 @@ public class ModificationInstance {
 			this.setLocationInParent(location);
 
 		} else {
-			log.error("Parent diferent to block");
+			log.error("Parent different to block");
 		}
 	}
 		
