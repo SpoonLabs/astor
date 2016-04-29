@@ -21,3 +21,8 @@ cd ../../
 cd examples/math_2/
 mvn test -DskipTests
 cd ../../
+
+
+cd examples/jsoup31be24/
+mvn test -DskipTests
+cd ../../
