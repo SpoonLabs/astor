@@ -52,8 +52,8 @@ Minimum arguments:
 
     -dependencies "folder with the dependencies of the application to repair" 
 
-    -failing "failing test case>"
-    
+    -failing "failing test case" (if there are several failing test case, give them separated by the classpath separator (: in linux/mac  and ; in windows)
+        
     -package "package to manipulate" (only the statements from this package are manipulated to find a patch)
 
     -jvm4testexecution "jdklocation"/java-1.7.0/bin/ 
@@ -130,7 +130,10 @@ A customize ingredient selection strategy class extends from abstract class fr.i
 
 Then, the canonical name of this strategy's class is passed to Astor via the argument '-ingredientstrategy'.
 
+Limitations
+------
 
+Due to limitation of fault localization, repair is impossible in a constructor for now. 
 
 Contacts
 --------
