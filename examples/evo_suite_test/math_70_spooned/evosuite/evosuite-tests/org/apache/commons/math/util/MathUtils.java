@@ -470,7 +470,7 @@ public final class MathUtils {
 		} 
 		final long bits = java.lang.Double.doubleToLongBits(d);
 		final long exponent = bits & 9218868437227405312L;
-		final long rest = bits & -9218868437227405313L;
+		final long rest = bits & (-9218868437227405313L);
 		final long newBits = rest | (exponent + (((long)(scaleFactor)) << 52));
 		return java.lang.Double.longBitsToDouble(newBits);
 	}

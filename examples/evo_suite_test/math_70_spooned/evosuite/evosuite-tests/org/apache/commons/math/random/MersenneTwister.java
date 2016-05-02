@@ -110,8 +110,8 @@ public class MersenneTwister extends org.apache.commons.math.random.BitsStreamGe
 		} 
 		y = mt[(mti)++];
 		y ^= y >>> 11;
-		y ^= (y << 7) & -1658038656;
-		y ^= (y << 15) & -272236544;
+		y ^= (y << 7) & (-1658038656);
+		y ^= (y << 15) & (-272236544);
 		y ^= y >>> 18;
 		return y >>> (32 - bits);
 	}

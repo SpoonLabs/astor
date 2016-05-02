@@ -3,6 +3,7 @@ package fr.inria.astor.test.repair.evaluation;
 import java.io.File;
 import java.util.Arrays;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -39,6 +40,7 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 	
 	
 	@Test
+	@Ignore
 	public void testMath288() throws Exception {
 		AstorMain main1 = new AstorMain();
 		File out = new File("./outputMutation/");
