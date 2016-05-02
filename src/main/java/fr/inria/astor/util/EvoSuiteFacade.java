@@ -144,7 +144,7 @@ public class EvoSuiteFacade {
 	}
 
 	public List<CtClass> reificateEvoSuiteTest(String evoTestpath, String[] classpath) {
-		System.out.println("Compiling ES code " + evoTestpath + " with CL " + Arrays.toString(classpath));
+		logger.debug("Compiling ES code " + evoTestpath + " with CL " + Arrays.toString(classpath));
 		MutationSupporter mutatorSupporter = MutationSupporter.currentSupporter;
 		Factory factory = MutationSupporter.currentSupporter.getFactory();
 		String codeLocation = evoTestpath;
