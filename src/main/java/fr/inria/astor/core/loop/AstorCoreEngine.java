@@ -152,23 +152,6 @@ public abstract class AstorCoreEngine {
 
 	}
 
-	public String print(FixIngredientSpace space) {
-
-		String s = "--Space: " + space.spaceScope() + "\n";
-		for (Object l : space.getSpace().keySet()) {// Locations
-			int ing = 0;
-			Map r = (Map) space.getSpace().get(l);
-			// s+=l+"="+r.size()+",";
-			String ty = "";
-			for (Object t : r.keySet()) {// Types
-				List ingredients = (List) r.get(t);
-				ing += ingredients.size();
-			}
-			s += l + "=" + ing + "|" + ty + ",";
-		}
-		return s;
-	}
-
 	/**
 	 * Check whether the program has passed the maximum time for operating
 	 * 
