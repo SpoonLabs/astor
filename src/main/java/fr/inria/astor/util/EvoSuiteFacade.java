@@ -275,7 +275,6 @@ public class EvoSuiteFacade {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(out);
 		return out;
 	}
 }
