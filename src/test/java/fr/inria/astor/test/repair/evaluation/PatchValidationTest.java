@@ -12,6 +12,16 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.jgenprog.JGenProg;
+import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.loop.AstorCoreEngine;
+import fr.inria.astor.util.ProcessUtil;
+import fr.inria.main.ExecutionMode;
+import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
@@ -19,16 +29,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.approaches.jgenprog.JGenProg;
-import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
-import fr.inria.astor.core.entities.ModificationInstance;
-import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.loop.AstorCoreEngine;
-import fr.inria.astor.util.ProcessUtil;
-import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.main.ExecutionMode;
-import fr.inria.main.evolution.AstorMain;
 /**
  * This test cases aims at validating the mechanism of patch validation 
  * (We manually generate the candidate patches)

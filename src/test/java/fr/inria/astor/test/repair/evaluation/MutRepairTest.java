@@ -3,7 +3,6 @@ package fr.inria.astor.test.repair.evaluation;
 import java.io.File;
 import java.util.Arrays;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
