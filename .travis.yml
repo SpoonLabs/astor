@@ -2,10 +2,27 @@ language: java
 
 install: "./.travis_install.sh"
 
-script: mvn test -Dtest=fr.inria.astor.test.repair.evaluation.JGenProgTest,fr.inria.astor.test.repair.evaluation.MutRepairTest,fr.inria.astor.test.repair.evaluation.IntroClassTest,fr.inria.astor.test.repair.evaluation.EvoSuiteGenerationTest
+env:
+  - TEST=fr.inria.astor.test.repair.evaluation.IntroClassTest
+  - TEST=fr.inria.astor.test.repair.evaluation.JGenProgTest
+  - TEST=fr.inria.astor.test.repair.evaluation.PatchValidationTest
+  - TEST=fr.inria.astor.test.repair.evaluation.jKaliTest
+  - TEST=fr.inria.astor.test.repair.evaluation.MutRepairTest
+  - TEST=fr.inria.astor.test.repair.evaluation.EvoSuiteGenerationTest
+
+script:
+  - mvn test -DskipTests
+  - mvn surefire:test -Dtest=$TEST
+
+sudo: required
 
 jdk:
   - oraclejdk8
+
+cache:
+  directories:
+  - $HOME/.m2
+  - examples/
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

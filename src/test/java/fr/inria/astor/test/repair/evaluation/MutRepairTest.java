@@ -40,7 +40,6 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 	
 	
 	@Test
-	@Ignore
 	public void testMath288() throws Exception {
 		AstorMain main1 = new AstorMain();
 		File out = new File("./outputMutation/");
