@@ -184,13 +184,13 @@ public class ModificationInstance {
 		this.ingredientScope = ingredientScope;
 	}
 
-	public void applyModification() {
-		operator.applyChangesInModel(this, this.getModificationPoint().getProgramVariant());
+	public boolean applyModification() {
+		return operator.applyChangesInModel(this, this.getModificationPoint().getProgramVariant());
 	}
 
 	
-	public void undoModification() {
-		operator.undoChangesInModel(this, this.getModificationPoint().getProgramVariant());
+	public boolean undoModification() {
+		return operator.undoChangesInModel(this, this.getModificationPoint().getProgramVariant());
 	}
 	
 	public void updateProgramVariant() {
@@ -198,13 +198,13 @@ public class ModificationInstance {
 		operator.updateProgramVariant(this, this.getModificationPoint().getProgramVariant());
 	}
 	
-	public void defineParentInformation(SuspiciousModificationPoint genSusp) {
+	public void defineParentInformation(ModificationPoint genSusp) {
 		CtElement targetStmt = genSusp.getCodeElement();
 		CtElement cparent = targetStmt.getParent();
 		if ((cparent != null && (cparent instanceof CtBlock))) {
 			CtBlock parentBlock = (CtBlock) cparent;
 			this.setParentBlock(parentBlock);
-			int location = locationInParent(parentBlock, genSusp.getSuspicious().getLineNumber(), targetStmt);
+			int location = locationInParent(parentBlock, targetStmt);
 			this.setLocationInParent(location);
 
 		} else {
@@ -221,7 +221,7 @@ public class ModificationInstance {
 		 * @param element
 		 * @return
 		 */
-		private int locationInParent(CtBlock parentBlock, int line, CtElement element) {
+		private int locationInParent(CtBlock parentBlock, CtElement element) {
 			int pos = 0;
 			for (CtStatement s : parentBlock.getStatements()) {
 				if (s == element)// the same object
