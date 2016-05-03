@@ -63,7 +63,7 @@ public class RemoveOp extends AstorOperator {
 	}
 
 	@Override
-	public boolean applyToPoint(ModificationPoint point) {
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
 		
 		return (point.getCodeElement() instanceof CtStatement);
 	}

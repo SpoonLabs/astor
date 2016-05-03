@@ -35,7 +35,7 @@ public class JKali extends ExhaustiveSearchEngine {
 		List<ModificationInstance> ops = new ArrayList<>();
 		AstorOperator[] operators = repairActionSpace.values();
 		for (AstorOperator astorOperator : operators) {
-			if (astorOperator.applyToPoint(modificationPoint)) {
+			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
 				List<ModificationInstance> instances = astorOperator.createModificationInstance(modificationPoint);
 				if (instances.size() > 0) {
 					ops.addAll(instances);

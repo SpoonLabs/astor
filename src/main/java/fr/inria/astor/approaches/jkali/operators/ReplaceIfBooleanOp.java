@@ -22,7 +22,7 @@ public class ReplaceIfBooleanOp extends ReplaceOp{
 		super();
 	}
 	@Override
-	public boolean applyToPoint(ModificationPoint point) {
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
 		
 		return (point.getCodeElement() instanceof CtIf);
 	}

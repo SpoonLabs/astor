@@ -34,10 +34,11 @@ public class MutExhaustiveRepair extends ExhaustiveSearchEngine {
 	 */
 	@Override
 	protected List<ModificationInstance> createOperators(SuspiciousModificationPoint modificationPoint) {
+		log.debug("Creating operation");
 		List<ModificationInstance> ops = new ArrayList<>();
 		AstorOperator[] operators = repairActionSpace.values();
 		for (AstorOperator astorOperator : operators) {
-			if (astorOperator.applyToPoint(modificationPoint)) {
+			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
 				List<ModificationInstance> instances = astorOperator.createModificationInstance(modificationPoint);
 				if (instances.size() > 0) {
 					ops.addAll(instances);

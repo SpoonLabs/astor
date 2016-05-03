@@ -89,7 +89,7 @@ public class ReplaceReturnOp extends InsertBeforeOp {
 	
 
 	@Override
-	public boolean applyToPoint(ModificationPoint point) {
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
 		return false;
 	}
 

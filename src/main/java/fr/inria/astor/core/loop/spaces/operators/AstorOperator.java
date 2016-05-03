@@ -63,11 +63,13 @@ public abstract class AstorOperator {
 		return instances;
 	}
 	/**
+	 * Indicates whether the operator can be applied in the ModificationPoint passed as argument.
+	 * 
 	 * By default, we consider that an operator works at the level of CtStatement.
-	 * @param point
+	 * @param point location to modify
 	 * @return
 	 */
-	public  boolean applyToPoint(ModificationPoint point){
+	public  boolean canBeAppliedToPoint(ModificationPoint point){
 		return (point.getCodeElement() instanceof CtStatement);
 	};
 	
