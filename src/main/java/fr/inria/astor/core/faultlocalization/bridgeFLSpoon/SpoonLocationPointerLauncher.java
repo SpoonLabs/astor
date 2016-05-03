@@ -1,5 +1,6 @@
 package fr.inria.astor.core.faultlocalization.bridgeFLSpoon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -39,16 +40,10 @@ public class SpoonLocationPointerLauncher extends SpoonLauncher {
 		SpoonElementPointer.inLine.clear();
 		SpoonElementPointer.line = lineNumber;
 		this.process(ctelement);
-		return SpoonElementPointer.inLine;
+		return new ArrayList<>(SpoonElementPointer.inLine);
 	}
 
-	
-	@Deprecated
-	private boolean include(CtElement element, String code) {
-		String content = getCtElementContent(element);
-		logger.info(""+content);
-		return content.contains(code);
-	}
+
 
 	@Deprecated
 	private String getCtElementContent(CtElement element) {
