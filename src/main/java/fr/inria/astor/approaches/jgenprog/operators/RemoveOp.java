@@ -48,8 +48,6 @@ public class RemoveOp extends AstorOperator {
 		if (parentBlock != null) {
 			if ((parentBlock.getStatements().isEmpty() && operation.getLocationInParent() == 0)
 					|| (parentBlock.getStatements().size() >= operation.getLocationInParent())) {
-				if(operation.getLocationInParent() < 0 )
-					System.out.println();;
 				parentBlock.getStatements().add(operation.getLocationInParent(), ctst);
 				return true;
 			} else {
