@@ -105,7 +105,7 @@ public class jKaliTest extends BaseEvolutionaryTest{
 
 	@SuppressWarnings("static-access")
 	@Test
-	@Ignore	
+	@Ignore
 	public void testMath2ExampleRemoveModeManySolutions() throws Exception {
 		AstorMain main1 = new AstorMain();
 
