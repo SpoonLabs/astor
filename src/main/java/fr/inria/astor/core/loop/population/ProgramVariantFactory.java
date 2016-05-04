@@ -98,7 +98,7 @@ public class ProgramVariantFactory {
 
 	/**
 	 * A Program instances is created from the list of suspicious. For each
-	 * suspiciuos a list of gens is created.
+	 * suspiciuos a list of modif point is created.
 	 * 
 	 * @param suspiciousList
 	 * @param idProgramInstance
@@ -114,11 +114,11 @@ public class ProgramVariantFactory {
 			for (SuspiciousCode suspiciousCode : suspiciousList) {
 				// For each suspicious code, we create one or more Gens (when it
 				// is possible)
-				List<SuspiciousModificationPoint> gens = createModificationPoints(suspiciousCode, progInstance);
-				if (gens != null)
-					progInstance.getModificationPoints().addAll(gens);
+				List<SuspiciousModificationPoint> modifPoints = createModificationPoints(suspiciousCode, progInstance);
+				if (modifPoints != null)
+					progInstance.getModificationPoints().addAll(modifPoints);
 				else {
-					log.info("-no gen created for suspicios " + suspiciousCode);
+					log.info("-any mod point created for suspicious " + suspiciousCode);
 				}
 
 			}
@@ -127,8 +127,8 @@ public class ProgramVariantFactory {
 		} else {
 			// We do not have suspicious, so, we create modification for each statement
 
-			List<SuspiciousModificationPoint> gensFromAllStatements = createModificationPoints(progInstance);
-			progInstance.getModificationPoints().addAll(gensFromAllStatements);
+			List<SuspiciousModificationPoint> pointsFromAllStatements = createModificationPoints(progInstance);
+			progInstance.getModificationPoints().addAll(pointsFromAllStatements);
 		}
 		log.info("Total ModPoint created: " + progInstance.getModificationPoints().size());
 		return progInstance;
@@ -156,15 +156,15 @@ public class ProgramVariantFactory {
 
 				List<CtVariable> contextOfGen = VariableResolver.getVariablesFromBlockInScope(suspiciousElement);
 
-				SuspiciousModificationPoint gen = new SuspiciousModificationPoint();
-				gen.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
+				SuspiciousModificationPoint point = new SuspiciousModificationPoint();
+				point.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
 						suspiciousElement.getPosition().getLine(), 0d));
-				gen.setClonedClass(ctclasspointed);
-				gen.setCodeElement(suspiciousElement);
-				gen.setContextOfModificationPoint(contextOfGen);
-				suspGen.add(gen);
-				log.info("--Gen:" + suspiciousElement.getClass().getSimpleName() + ", suspValue "
-						+ gen.getSuspicious().getSuspiciousValue() + ", line "
+				point.setClonedClass(ctclasspointed);
+				point.setCodeElement(suspiciousElement);
+				point.setContextOfModificationPoint(contextOfGen);
+				suspGen.add(point);
+				log.info("--ModificationPoint:" + suspiciousElement.getClass().getSimpleName() + ", suspValue "
+						+ point.getSuspicious().getSuspiciousValue() + ", line "
 						+ suspiciousElement.getPosition().getLine() + ", file "
 						+ suspiciousElement.getPosition().getFile().getName());
 			}
@@ -208,11 +208,11 @@ public class ProgramVariantFactory {
 			return null;
 		}
 
-		List<CtVariable> contextOfGen = null;
+		List<CtVariable> contextOfPoint = null;
 		// We take the first element for getting the context (as the remaining
 		// have the same location, it's not necessary)
 
-		contextOfGen = VariableResolver.getVariablesFromBlockInScope(ctSuspects.get(0));
+		contextOfPoint = VariableResolver.getVariablesFromBlockInScope(ctSuspects.get(0));
 
 		// From the suspicious CtElements, there are some of them we are
 		// interested in.
@@ -223,12 +223,12 @@ public class ProgramVariantFactory {
 		// For each filtered element, we create a Gen.
 		int id = 0;
 		for (CtElement ctElement : filteredTypeByLine) {
-			SuspiciousModificationPoint gen = new SuspiciousModificationPoint();
-			gen.setSuspicious(suspiciousCode);
-			gen.setClonedClass(ctclasspointed);
-			gen.setCodeElement(ctElement);
-			gen.setContextOfModificationPoint(contextOfGen);
-			suspGen.add(gen);
+			SuspiciousModificationPoint modifPoint = new SuspiciousModificationPoint();
+			modifPoint.setSuspicious(suspiciousCode);
+			modifPoint.setClonedClass(ctclasspointed);
+			modifPoint.setCodeElement(ctElement);
+			modifPoint.setContextOfModificationPoint(contextOfPoint);
+			suspGen.add(modifPoint);
 			log.info("--ModifPoint:" + ctElement.getClass().getSimpleName() + ", suspValue "
 					+ suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
 					+ ctElement.getPosition().getFile().getName());
@@ -306,7 +306,7 @@ public class ProgramVariantFactory {
 	}
 
 	/**
-	 * New Program Variante Clone
+	 * New Program Variant Clone
 	 * 
 	 * @param parentVariant
 	 * @param id
