@@ -213,11 +213,11 @@ public class ProjectRepairFacade {
 				locationBytecode, testcasesToExecute, listTOInst, classPath, 
 				locationSrc);
 		
-		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
-
 		if (suspiciousStatemens == null || suspiciousStatemens.isEmpty())
 			throw new IllegalArgumentException("No suspicious gen for analyze");
 		
+		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
+
 		for (SuspiciousCode suspiciousCode : suspiciousStatemens) {
 			if (!suspiciousCode.getClassName().endsWith("Exception")) {
 				filtercandidates.add(suspiciousCode);
