@@ -13,3 +13,8 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 
+
+/.settings/
+/.classpath
+/.DS_Store
+/.project

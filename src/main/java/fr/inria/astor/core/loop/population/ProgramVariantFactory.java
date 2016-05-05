@@ -44,6 +44,8 @@ public class ProgramVariantFactory {
 	protected List<AbstractFixSpaceProcessor<?>> processors = null;
 
 	protected boolean resetOperations;
+	
+	protected ProjectRepairFacade projectFacade;
 
 	public ProgramVariantFactory() {
 		super();
@@ -66,7 +68,9 @@ public class ProgramVariantFactory {
 	 */
 	public List<ProgramVariant> createInitialPopulation(List<SuspiciousCode> suspiciousList, int maxNumberInstances,
 			PopulationController populationControler, ProjectRepairFacade projectFacade) throws Exception {
-
+		
+		this.projectFacade = projectFacade;
+		
 		List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
 
 		for (int ins = 1; ins <= maxNumberInstances; ins++) {
@@ -141,7 +145,15 @@ public class ProgramVariantFactory {
 		List<CtClass> classesFromModel = mutatorSupporter.getClasses();
 
 		for (CtClass ctclasspointed : classesFromModel) {
-
+			
+			List<String> allTest = projectFacade.getProperties().getRegressionTestCases();
+			String testn = ctclasspointed.getQualifiedName();
+			if(allTest.contains(testn) ){
+				//it's a test, we ignore it
+				log.debug("ModifPoints creation: Ignoring test case "+testn);
+				continue;
+			}
+			
 			if (!progInstance.getBuiltClasses().containsKey(ctclasspointed.getQualifiedName())) {
 				// TODO: clone or not?
 				// CtClass ctclasspointed = getCtClassCloned(className);
