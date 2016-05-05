@@ -89,7 +89,7 @@ public class IntroClassTest {
 		
 		main.initProject(location, projectId, dependenciespath, packageToInstrument, thfl, failing);
 
-		AstorCoreEngine jgp = main.createEngine(ExecutionMode.JGenProg);
+		AstorCoreEngine jgp = main.createEngine(ExecutionMode.jGenProg);
 		
 		Assert.assertEquals(1, jgp.getVariants().size());
 

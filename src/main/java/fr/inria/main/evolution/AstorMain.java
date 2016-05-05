@@ -10,12 +10,12 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
-import fr.inria.astor.approaches.jkali.JKali;
 import fr.inria.astor.approaches.jkali.JKaliSpace;
-import fr.inria.astor.approaches.mutRepair.MutExhaustiveRepair;
 import fr.inria.astor.approaches.mutRepair.MutRepairSpace;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
+import fr.inria.astor.core.loop.ExhaustiveMutationEngine;
+import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.BasicIngredientStrategy;
@@ -83,12 +83,12 @@ public class AstorMain extends AbstractMain {
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 
 		if (ExecutionMode.jKali.equals(mode)) {
-			astorCore = new JKali(mutSupporter, projectFacade);
+			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
 			astorCore.setRepairActionSpace(new JKaliSpace());
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
 
-		} else if (ExecutionMode.JGenProg.equals(mode)) {
+		} else if (ExecutionMode.jGenProg.equals(mode)) {
 			astorCore = new JGenProg(mutSupporter, projectFacade);
 			astorCore.setRepairActionSpace(new UniformRandomRepairOperatorSpace(new jGenProgSpace()));
 
@@ -106,14 +106,19 @@ public class AstorMain extends AbstractMain {
 			((JGenProg) astorCore).setIngredientStrategy(ingStrategy);
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
-			astorCore = new MutExhaustiveRepair(mutSupporter, projectFacade);
+			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
 			astorCore.setRepairActionSpace(new MutRepairSpace());
 			//ConfigurationProperties.properties.setProperty("stopfirst", "false");
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
 			ingredientProcessors.clear();
 			ingredientProcessors.add(new IFConditionFixSpaceProcessor());
-		} 
+		} else{
+			//If the execution mode is any of the predefined, Astor interpretates as 
+			//a custom engine, where the value corresponds to the class name of the engine class 
+			String customengine = ConfigurationProperties.getProperty("customengine");
+			astorCore =  new ExhaustiveMutationEngine(mutSupporter, projectFacade); //createEngineFromArgument(customengine);
+		}
 
 		//We check if the user define their own operators
 		String customOp = ConfigurationProperties.getProperty("customop");
@@ -143,6 +148,22 @@ public class AstorMain extends AbstractMain {
 		}
 		
 		return astorCore;
+
+	}
+
+	private AstorCoreEngine createEngineFromArgument(String customEngine) throws Exception {
+		  Object object = null;
+	      try {
+	          Class classDefinition = Class.forName(customEngine);
+	          object = classDefinition.newInstance();
+	      } catch (Exception e) {
+	          log.error("Loading custom engine: "+ customEngine + " --"+ e);
+	          throw new Exception("Error Loading Engine: "+e);
+	      } 
+	      if(object instanceof  AstorCoreEngine)
+	    	  return (AstorCoreEngine) object;
+	      else
+	    	  throw new Exception("The strategy "+customEngine+" does not extend from "+ AstorCoreEngine.class.getName());
 
 	}
 
@@ -217,13 +238,15 @@ public class AstorMain extends AbstractMain {
 		String mode = ConfigurationProperties.getProperty("mode");
 
 		if ("statement".equals(mode) ||"jgenprog".equals(mode) )
-			astorCore = createEngine(ExecutionMode.JGenProg);
+			astorCore = createEngine(ExecutionMode.jGenProg);
 		else if ("statement-remove".equals(mode) || "jkali".equals(mode))
 			astorCore = createEngine(ExecutionMode.jKali);
 		else if ("mutation".equals(mode) || "jmutrepair".equals(mode))
 			astorCore = createEngine(ExecutionMode.MutRepair);
+		else if ("custom".equals(mode))
+			astorCore = createEngine(ExecutionMode.custom);
 		else {
-			System.err.println("Unknown mode of execution: '"+mode+ "', know modes are: jgenprog, jkali, jmutrepair.");
+			System.err.println("Unknown mode of execution: '"+mode+ "', know modes are: jgenprog, jkali, jmutrepair or custom.");
 			return;
 		}
 		ConfigurationProperties.print();
