@@ -41,7 +41,7 @@ public class ProjectConfiguration {
 	public String getStringProperty(ProjectConfiguration key){
 		return (String) this.internalProperties.get(key);
 	}
-	public String getInDir() {
+	public String getWorkingDirForSource() {
 		return (String) this.internalProperties.get(ProjectPropertiesEnum.workingDirSource);
 	}
 

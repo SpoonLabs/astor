@@ -74,7 +74,7 @@ public class ProjectRepairFacade {
 	 * @throws IOException
 	 */
 	public void copyOriginalSourceCode(String pathOriginalCode, String currentMutatorIdentifier) throws IOException {
-		File destination = new File(getProperties().getInDir() + File.separator + currentMutatorIdentifier);
+		File destination = new File(getProperties().getWorkingDirForSource() + File.separator + currentMutatorIdentifier);
 		destination.mkdirs();
 		FileUtils.copyDirectory(new File(pathOriginalCode), destination);
 	}
@@ -87,13 +87,13 @@ public class ProjectRepairFacade {
 	public void cleanMutationResultDirectories(String currentMutatorIdentifier)
 			throws IOException {
 
-		removeDir(getProperties().getInDir() + File.separator + currentMutatorIdentifier);
+		removeDir(getProperties().getWorkingDirForSource() + File.separator + currentMutatorIdentifier);
 		removeDir(getProperties().getWorkingDirForBytecode() + File.separator + currentMutatorIdentifier);
 	}
 
 	public void cleanMutationResultDirectories() throws IOException {
 
-		removeDir(getProperties().getInDir());
+		removeDir(getProperties().getWorkingDirForSource());
 		removeDir(getProperties().getWorkingDirForBytecode());
 	}
 
@@ -124,7 +124,7 @@ public class ProjectRepairFacade {
 	}
 
 	public String getInDirWithPrefix(String currentMutatorIdentifier) {
-		return getProperties().getInDir() + File.separator + currentMutatorIdentifier;
+		return getProperties().getWorkingDirForSource() + File.separator + currentMutatorIdentifier;
 	}
 
 	public void copyData(String currentMutatorIdentifier) throws IOException {
