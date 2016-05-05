@@ -42,28 +42,28 @@ public class ProjectConfiguration {
 		return (String) this.internalProperties.get(key);
 	}
 	public String getInDir() {
-		return (String) this.internalProperties.get(ProjectPropertiesEnum.inDir);
+		return (String) this.internalProperties.get(ProjectPropertiesEnum.workingDirSource);
 	}
 
-	public void setInDir(String inDir) {
-		this.internalProperties.put(ProjectPropertiesEnum.inDir,inDir);
+	public void setWorkingDirForSource(String inDir) {
+		this.internalProperties.put(ProjectPropertiesEnum.workingDirSource,inDir);
 	}
 
 
-	public String getOutDir() {
-		return (String) this.internalProperties.get(ProjectPropertiesEnum.outDir);
+	public String getWorkingDirForBytecode() {
+		return (String) this.internalProperties.get(ProjectPropertiesEnum.workingDirBytecode);
 	}
 
-	public void setOutDir(String outDir) {
-		this.internalProperties.put(ProjectPropertiesEnum.outDir,outDir);
+	public void setWorkingDirForBytecode(String outDir) {
+		this.internalProperties.put(ProjectPropertiesEnum.workingDirBytecode,outDir);
 	}
 
-	public String getTestPath() {
-		return (String) this.internalProperties.get(ProjectPropertiesEnum.testPath);
+	public String getTestDirSrc() {
+		return (String) this.internalProperties.get(ProjectPropertiesEnum.testDirSrc);
 	}
 
-	public void setTestPath(String testPath) {
-		this.internalProperties.put(ProjectPropertiesEnum.testPath,testPath);
+	public void setTestDirSrc(String testPath) {
+		this.internalProperties.put(ProjectPropertiesEnum.testDirSrc,testPath);
 	}
 
 	
@@ -80,10 +80,6 @@ public class ProjectConfiguration {
 	
 	public void setOriginalDirSrc(String originalDir) {
 		((List)this.internalProperties.get(ProjectPropertiesEnum.originalDirSrc)).add(originalDir);
-	}
-
-	public void setOriginalDir(List<String> originalDir) {
-		this.internalProperties.put(ProjectPropertiesEnum.originalDirSrc, originalDir);
 	}
 
 	public List<URL> getDependencies() {

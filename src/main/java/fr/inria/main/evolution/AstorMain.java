@@ -14,7 +14,6 @@ import fr.inria.astor.approaches.jkali.JKaliSpace;
 import fr.inria.astor.approaches.mutRepair.MutRepairSpace;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
-import fr.inria.astor.core.loop.ExhaustiveMutationEngine;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
@@ -33,6 +32,7 @@ import fr.inria.astor.core.manipulation.filters.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
+import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.main.AbstractMain;
@@ -48,7 +48,6 @@ public class AstorMain extends AbstractMain {
 
 	protected Logger log = Logger.getLogger(AstorMain.class.getName());
 
-	
 	AstorCoreEngine astorCore = null;
 
 	public void initProject(String location, String projectName, String dependencies, String packageToInstrument,
@@ -59,7 +58,7 @@ public class AstorMain extends AbstractMain {
 		projectFacade = getProject(location, projectName, method, failingList, dependencies, true);
 		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
 
-		projectFacade.setupTempDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		projectFacade.setupWorkingDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
 		FinderTestCases.findTestCasesForRegression(
 				projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
@@ -108,21 +107,24 @@ public class AstorMain extends AbstractMain {
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
 			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
 			astorCore.setRepairActionSpace(new MutRepairSpace());
-			//ConfigurationProperties.properties.setProperty("stopfirst", "false");
+			// ConfigurationProperties.properties.setProperty("stopfirst",
+			// "false");
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
 			ingredientProcessors.clear();
 			ingredientProcessors.add(new IFConditionFixSpaceProcessor());
-		} else{
-			//If the execution mode is any of the predefined, Astor interpretates as 
-			//a custom engine, where the value corresponds to the class name of the engine class 
+		} else {
+			// If the execution mode is any of the predefined, Astor
+			// interpretates as
+			// a custom engine, where the value corresponds to the class name of
+			// the engine class
 			String customengine = ConfigurationProperties.getProperty("customengine");
-			astorCore =  new ExhaustiveMutationEngine(mutSupporter, projectFacade); //createEngineFromArgument(customengine);
+			astorCore = createEngineFromArgument(customengine, mutSupporter, projectFacade);
 		}
 
-		//We check if the user define their own operators
+		// We check if the user define their own operators
 		String customOp = ConfigurationProperties.getProperty("customop");
-		if(customOp != null && !customOp.isEmpty()){
+		if (customOp != null && !customOp.isEmpty()) {
 			createCustomSpace(customOp);
 		}
 		// Now we define the commons properties
@@ -132,52 +134,67 @@ public class AstorMain extends AbstractMain {
 		//
 		astorCore.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 
-		//We do the first validation using the standard validation (test suite process)
+		// We do the first validation using the standard validation (test suite
+		// process)
 		astorCore.setProgramValidator(new ProcessValidator());
-		
-		//Initialize Population
+
+		// Initialize Population
 		astorCore.createInitialPopulation();
-		
-		//After initializing population, we set up specific validation mechanism
-		//Select the kind of validation of a variant.
+
+		// After initializing population, we set up specific validation
+		// mechanism
+		// Select the kind of validation of a variant.
 		String validation = ConfigurationProperties.properties.getProperty("validation");
-		if(validation.equals("evosuite")){
+		if (validation.equals("evosuite")) {
 			ProcessEvoSuiteValidator validator = new ProcessEvoSuiteValidator();
 			astorCore.setProgramValidator(validator);
-			
+
 		}
-		
+
 		return astorCore;
 
 	}
 
-	private AstorCoreEngine createEngineFromArgument(String customEngine) throws Exception {
-		  Object object = null;
-	      try {
-	          Class classDefinition = Class.forName(customEngine);
-	          object = classDefinition.newInstance();
-	      } catch (Exception e) {
-	          log.error("Loading custom engine: "+ customEngine + " --"+ e);
-	          throw new Exception("Error Loading Engine: "+e);
-	      } 
-	      if(object instanceof  AstorCoreEngine)
-	    	  return (AstorCoreEngine) object;
-	      else
-	    	  throw new Exception("The strategy "+customEngine+" does not extend from "+ AstorCoreEngine.class.getName());
+	/**
+	 * We create an instance of the Engine which name is passed as argument.
+	 * 
+	 * @param customEngine
+	 * @param mutSupporter
+	 * @param projectFacade
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private AstorCoreEngine createEngineFromArgument(String customEngine, MutationSupporter mutSupporter,
+			ProjectRepairFacade projectFacade) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(customEngine);
+			object = classDefinition.getConstructor(mutSupporter.getClass(), projectFacade.getClass())
+					.newInstance(mutSupporter, projectFacade);
+		} catch (Exception e) {
+			log.error("Loading custom engine: " + customEngine + " --" + e);
+			throw new Exception("Error Loading Engine: " + e);
+		}
+		if (object instanceof AstorCoreEngine)
+			return (AstorCoreEngine) object;
+		else
+			throw new Exception(
+					"The strategy " + customEngine + " does not extend from " + AstorCoreEngine.class.getName());
 
 	}
 
 	private IngredientStrategy getIngredientStrategy(FixIngredientSpace fixspace) throws Exception {
 		String strategy = ConfigurationProperties.properties.getProperty("ingredientstrategy");
 		IngredientStrategy st = null;
-		if(strategy == null || strategy.trim().isEmpty())
+		if (strategy == null || strategy.trim().isEmpty())
 			st = new BasicIngredientStrategy();
 		else
 			st = createStrategy(strategy);
-		
-		if(st != null)
-			st.setIngredientSpace(fixspace);	
-	
+
+		if (st != null)
+			st.setIngredientSpace(fixspace);
+
 		return st;
 	}
 
@@ -186,48 +203,49 @@ public class AstorMain extends AbstractMain {
 		String[] operators = customOp.split(File.pathSeparator);
 		for (String op : operators) {
 			AstorOperator aop = createOperator(op);
-			if(aop != null)
+			if (aop != null)
 				customSpace.register(aop);
 		}
-		if(customSpace.getOperators().isEmpty()){
+		if (customSpace.getOperators().isEmpty()) {
 			log.error("Empty custom operator space");
 			throw new Exception("Empty custom operator space");
 		}
-		
+
 		astorCore.setRepairActionSpace(new UniformRandomRepairOperatorSpace(customSpace));
 	}
-	
+
 	AstorOperator createOperator(String className) {
-	      Object object = null;
-	      try {
-	          Class classDefinition = Class.forName(className);
-	          object = classDefinition.newInstance();
-	      } catch (Exception e) {
-	          log.error(e);
-	      } 
-	      if(object instanceof AstorOperator)
-	    	  return (AstorOperator) object;
-	      else
-	    	  log.error("The operator "+className+" does not extend from "+ AstorOperator.class.getName());
-		  return null;
-	 }
-	
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(className);
+			object = classDefinition.newInstance();
+		} catch (Exception e) {
+			log.error(e);
+		}
+		if (object instanceof AstorOperator)
+			return (AstorOperator) object;
+		else
+			log.error("The operator " + className + " does not extend from " + AstorOperator.class.getName());
+		return null;
+	}
+
 	public IngredientStrategy createStrategy(String className) throws Exception {
-	      Object object = null;
-	      try {
-	          Class classDefinition = Class.forName(className);
-	          object = classDefinition.newInstance();
-	      } catch (Exception e) {
-	          log.error("Loading strategy "+ className + " --"+ e);
-	          throw new Exception("Loading strategy: "+e);
-	      } 
-	      if(object instanceof  IngredientStrategy)
-	    	  return ( IngredientStrategy) object;
-	      else
-	    	  throw new Exception("The strategy "+className+" does not extend from "+ IngredientStrategy.class.getName());
-	
-	 }
-	
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(className);
+			object = classDefinition.newInstance();
+		} catch (Exception e) {
+			log.error("Loading strategy " + className + " --" + e);
+			throw new Exception("Loading strategy: " + e);
+		}
+		if (object instanceof IngredientStrategy)
+			return (IngredientStrategy) object;
+		else
+			throw new Exception(
+					"The strategy " + className + " does not extend from " + IngredientStrategy.class.getName());
+
+	}
+
 	@Override
 	public void run(String location, String projectName, String dependencies, String packageToInstrument, double thfl,
 			String failing) throws Exception {
@@ -237,7 +255,7 @@ public class AstorMain extends AbstractMain {
 
 		String mode = ConfigurationProperties.getProperty("mode");
 
-		if ("statement".equals(mode) ||"jgenprog".equals(mode) )
+		if ("statement".equals(mode) || "jgenprog".equals(mode))
 			astorCore = createEngine(ExecutionMode.jGenProg);
 		else if ("statement-remove".equals(mode) || "jkali".equals(mode))
 			astorCore = createEngine(ExecutionMode.jKali);
@@ -246,7 +264,8 @@ public class AstorMain extends AbstractMain {
 		else if ("custom".equals(mode))
 			astorCore = createEngine(ExecutionMode.custom);
 		else {
-			System.err.println("Unknown mode of execution: '"+mode+ "', know modes are: jgenprog, jkali, jmutrepair or custom.");
+			System.err.println("Unknown mode of execution: '" + mode
+					+ "', know modes are: jgenprog, jkali, jmutrepair or custom.");
 			return;
 		}
 		ConfigurationProperties.print();
@@ -291,8 +310,6 @@ public class AstorMain extends AbstractMain {
 
 	}
 
-	
-	
 	public AstorCoreEngine getEngine() {
 		return astorCore;
 	}

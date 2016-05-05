@@ -482,20 +482,16 @@ public abstract class AbstractMain {
 		}
 
 		String key = File.separator + method + "-" + projectIdentifier + File.separator;
-		String inResult = ConfigurationProperties.getProperty("workingDirectory") + key + "/src/";
-		String outResult = ConfigurationProperties.getProperty("workingDirectory") + key + "/bin/";
+		String workingDirForSource = ConfigurationProperties.getProperty("workingDirectory") + key + "/src/";
+		String workingDirForBytecode = ConfigurationProperties.getProperty("workingDirectory") + key + "/bin/";
 		String originalProjectRoot = location + File.separator;
-		// location + File.separator + projectIdentifier + File.separator;
-
-		List<String> src = determineMavenFolders(srcWithMain, originalProjectRoot);
-
+		
 		String libdir = dependencies;
 
-		// String mainClassTest = regressionTest;
-
+	
 		ProjectConfiguration properties = new ProjectConfiguration();
-		properties.setInDir(inResult);
-		properties.setOutDir(outResult);
+		properties.setWorkingDirForSource(workingDirForSource);
+		properties.setWorkingDirForBytecode(workingDirForBytecode);
 		properties.setOriginalAppBinDir(
 				originalProjectRoot + File.separator + ConfigurationProperties.getProperty("binjavafolder"));
 		properties.setOriginalTestBinDir(
@@ -503,7 +499,10 @@ public abstract class AbstractMain {
 		properties.setFixid(projectIdentifier);
 
 		properties.setOriginalProjectRootDir(originalProjectRoot);
+		
+		List<String> src = determineMavenFolders(srcWithMain, originalProjectRoot);
 		properties.setOriginalDirSrc(src);
+
 		properties.setLibPath(libdir);
 		properties.setFailingTestCases(failingTestCases);
 
