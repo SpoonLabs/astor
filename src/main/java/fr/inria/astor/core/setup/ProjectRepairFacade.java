@@ -61,9 +61,13 @@ public class ProjectRepairFacade {
 	}
 
 	public void copyOriginalCode(String mutIdentifier) throws IOException {
-		for (String dirSourceOrigin : getProperties().getOriginalDirSrc()) {
-			copyOriginalSourceCode(dirSourceOrigin, mutIdentifier);
-		}
+			List<String>  dirs = getProperties().getOriginalDirSrc();
+			//The first element corresponds to application source
+			String srcApp = dirs.get(0);
+			//the second to the test folder
+			String srctest = dirs.get(1);
+			//we only want to generate the model of the application, so, we copy only it code, ignoring tests
+			copyOriginalSourceCode(srcApp, mutIdentifier);
 	}
 
 	/**
