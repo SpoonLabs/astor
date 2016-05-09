@@ -60,13 +60,12 @@ public class GZoltarFaultLocalization implements IFaultLocalization{
 			gz.addPackageToInstrument(to);
 		}
 		if (cp != null || !cp.isEmpty()) {
-			//logger.info("-gz-Current classpath: " + System.getProperty("java.class.path"));
 			logger.info("-gz-Adding classpath: " + cp);
 			gz.getClasspaths().addAll(cp);
 		}
 		for (String test : testsToExecute) {
 			gz.addTestToExecute(test);
-			gz.addClassNotToInstrument(test);// new
+			gz.addClassNotToInstrument(test);
 		}
 		gz.addTestPackageNotToExecute("junit.framework");
 		gz.addPackageNotToInstrument("junit.framework");
@@ -80,12 +79,9 @@ public class GZoltarFaultLocalization implements IFaultLocalization{
 				continue;
 			}
 			sum[0]++;
-			// logger.debug("Test "+tr.getName()+", success: "+
-			// tr.wasSuccessful());
 			sum[1] += tr.wasSuccessful() ? 0 : 1;
 			if (!tr.wasSuccessful()) {
 				logger.info("Test failt: " + tr.getName());
-				// logger.info(tr.getTrace());
 				failingTestCases.add(testName);
 			}
 			if (tr.getTrace() != null) {
@@ -103,15 +99,16 @@ public class GZoltarFaultLocalization implements IFaultLocalization{
 
 		DecimalFormat df = new DecimalFormat("#.###");
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
-		for (Statement s : gz.getSuspiciousStatements()) {
-			String compName = s.getMethod().getParent().getLabel();
-
-			if (s.getSuspiciousness() >= thr && isSource(compName, srcFolder)) {
-				logger.debug("Suspicious: line " + compName + " l: " + s.getLineNumber() + ", susp "
-						+ df.format(s.getSuspiciousness()));
-				SuspiciousCode c = new SuspiciousCode(compName, s.getMethod().toString(), s.getLineNumber(),
-						s.getSuspiciousness());
-				candidates.add(c);
+		for (Statement gzoltarStatement : gz.getSuspiciousStatements()) {
+			String compName = gzoltarStatement.getMethod().getParent().getLabel();
+	
+			if (gzoltarStatement.getSuspiciousness() >= thr && isSource(compName, srcFolder)) {
+				logger.debug("Suspicious: line " + compName + " l: " + gzoltarStatement.getLineNumber() + ", susp "
+						+ df.format(gzoltarStatement.getSuspiciousness()));
+				SuspiciousCode suspcode = new SuspiciousCode(compName, gzoltarStatement.getMethod().toString(), gzoltarStatement.getLineNumber(),
+						gzoltarStatement.getSuspiciousness(),
+						gzoltarStatement.getCountMap());
+				candidates.add(suspcode);
 				
 			}
 
