@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -43,7 +45,7 @@ public class ProgramVariant {
 	protected Map<String, CtClass> loadClasses = new HashMap<String, CtClass>();
 	
 	/**
-	 * operations applied to gen, organizated by generations
+	 * operations applied to a Modification Point, organizated by generations
 	 */
 	protected Map<Integer,List<ModificationInstance>> operations  = null;
 	/**
@@ -230,4 +232,21 @@ public class ProgramVariant {
 	public void setValidationResult(ProgramVariantValidationResult validationResult) {
 		this.validationResult = validationResult;
 	}
+	
+	public ModificationPoint getModificationPoint(CtElement element){
+		for (Iterator iterator = modificationPoints.iterator(); iterator.hasNext();) {
+			ModificationPoint modificationPoint = (ModificationPoint) iterator.next();
+			if(element == modificationPoint.getCodeElement())
+				return modificationPoint;
+		}
+		return null;
+	}
+	
+	public void addModificationPoints(List<? extends ModificationPoint> points){
+		for (ModificationPoint modificationPoint : points) {
+			this.modificationPoints.add(modificationPoint);
+			modificationPoint.setProgramVariant(this);
+		}
+	}
+	
 }

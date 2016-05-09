@@ -120,7 +120,7 @@ public class ProgramVariantFactory {
 				// is possible)
 				List<SuspiciousModificationPoint> modifPoints = createModificationPoints(suspiciousCode, progInstance);
 				if (modifPoints != null)
-					progInstance.getModificationPoints().addAll(modifPoints);
+					progInstance.addModificationPoints(modifPoints);
 				else {
 					log.info("-any mod point created for suspicious " + suspiciousCode);
 				}
@@ -170,7 +170,7 @@ public class ProgramVariantFactory {
 
 				SuspiciousModificationPoint point = new SuspiciousModificationPoint();
 				point.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
-						suspiciousElement.getPosition().getLine(), 0d));
+						suspiciousElement.getPosition().getLine(), 0d, null));
 				point.setClonedClass(ctclasspointed);
 				point.setCodeElement(suspiciousElement);
 				point.setContextOfModificationPoint(contextOfGen);
@@ -329,7 +329,7 @@ public class ProgramVariantFactory {
 		ProgramVariant childVariant = new ProgramVariant(id);
 		childVariant.setGenerationSource(generation);
 		childVariant.setParent(parentVariant);
-		childVariant.getModificationPoints().addAll(parentVariant.getModificationPoints());
+		childVariant.addModificationPoints(parentVariant.getModificationPoints());
 
 		if (!ConfigurationProperties.getPropertyBool("resetoperations"))
 			childVariant.getOperations().putAll(parentVariant.getOperations());

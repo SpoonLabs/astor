@@ -200,7 +200,6 @@ public class ProjectRepairFacade {
 		for (URL dep : getProperties().getDependencies()) {
 			classPath.add(dep.getPath());
 		}
-		;
 
 		List<SuspiciousCode> suspiciousStatemens = faultLocalization.searchSuspicious(locationBytecode,
 				testcasesToExecute, listTOInst, classPath, locationSrc);
