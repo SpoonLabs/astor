@@ -120,6 +120,11 @@ public class ProcessValidator extends ProgramValidator {
 
 		TestResult trregression = p.execute(bc, testCasesRegression, ConfigurationProperties.getPropertyInt("tmax2"));
 
+		if(testCasesRegression == null || testCasesRegression.isEmpty()){
+			log.error("Any test case for regression testing");
+			return null;
+		}
+		
 		long t2 = System.currentTimeMillis();
 		currentStats.time2Validation.add((t2 - t1));
 
