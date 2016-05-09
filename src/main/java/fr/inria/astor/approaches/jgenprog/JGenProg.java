@@ -151,8 +151,8 @@ public class JGenProg extends AstorCoreEngine {
 				mutatorSupporter.getClasses().add((CtClass) ctType);
 			}
 		}
-		//Finally, we update the list of test cases (we apply a pre-process using info from Spoon Model)
-		FinderTestCases.updateRegressionTestCases(projectFacade);
+		//We do not refine the test case list using the spoon model, due we do not create the model for test any more.
+		//FinderTestCases.updateRegressionTestCases(projectFacade);
 	}
 
 	/**

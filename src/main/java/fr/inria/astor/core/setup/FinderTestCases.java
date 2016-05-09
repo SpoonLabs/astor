@@ -72,7 +72,7 @@ public class FinderTestCases {
 	 * I analyze each model of each test to validate whether is a test or not. 
 	 */
 
-	public static List<String> refineListofRegressionTestCases(List<String> allTest) {
+	private static List<String> refineListofRegressionTestCases(List<String> allTest) {
 			List<String> regressionCases = new ArrayList<String>();
 			List<String> ignoreTestcases = retriveIgnoreTestCases();
 			
