@@ -152,7 +152,7 @@ public class JGenProg extends AstorCoreEngine {
 			}
 		}
 		//We do not refine the test case list using the spoon model, due we do not create the model for test any more.
-		//FinderTestCases.updateRegressionTestCases(projectFacade);
+		FinderTestCases.updateRegressionTestCases(projectFacade);
 	}
 
 	/**
