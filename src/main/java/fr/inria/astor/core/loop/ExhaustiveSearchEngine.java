@@ -95,7 +95,7 @@ public class ExhaustiveSearchEngine extends JGenProg {
 		for (AstorOperator astorOperator : operators) {
 			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
 				List<ModificationInstance> instances = astorOperator.createModificationInstance(modificationPoint);
-				if (instances.size() > 0) {
+				if (instances != null && instances.size() > 0) {
 					ops.addAll(instances);
 				}
 			}
