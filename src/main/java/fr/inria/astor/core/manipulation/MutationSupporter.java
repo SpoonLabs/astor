@@ -240,14 +240,12 @@ public class MutationSupporter {
 
 					Element original = root.createElement("original");
 					op.appendChild(original);
-					//original.setTextContent(genOperationInstance.getOriginal().toString());
-					original.setNodeValue(genOperationInstance.getOriginal().toString());
+					original.setTextContent(genOperationInstance.getOriginal().toString());
 					Element mod = root.createElement("modified");
 					op.appendChild(mod);
 
 					if (genOperationInstance.getModified() != null) {
-						//mod.setTextContent(genOperationInstance.getModified().toString());
-						mod.setNodeValue(genOperationInstance.getModified().toString());
+						mod.setTextContent(genOperationInstance.getModified().toString());
 						
 						if (genOperationInstance.getIngredientScope() != null) {
 							Attr attr_ing = root.createAttribute("scope");
