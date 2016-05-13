@@ -15,7 +15,7 @@ import fr.inria.astor.core.faultlocalization.GZoltarFaultLocalization;
 import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.AstorCoreEngine;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
@@ -35,7 +35,7 @@ import spoon.reflect.factory.Factory;
  */
 public class JGenProg extends AstorCoreEngine {
 
-	IngredientStrategy ingredientStrategy;
+	IngredientSearchStrategy ingredientSearchStrategy;
 	
 	public JGenProg(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -89,8 +89,8 @@ public class JGenProg extends AstorCoreEngine {
 			return;
 		}
 
-		if (this.ingredientStrategy != null) {
-			this.ingredientStrategy.refineSpaceForProgramVariant(originalVariant);
+		if (this.ingredientSearchStrategy != null) {
+			this.ingredientSearchStrategy.getIngredientSpace().defineSpace(originalVariant);
 		}
 
 		 setFitnessOfPopulation();
@@ -225,7 +225,7 @@ public class JGenProg extends AstorCoreEngine {
 		Ingredient fix = null;
 		
 		if(operationType.needIngredient()){
-			fix = this.ingredientStrategy.getFixIngredient(modificationPoint, operationType);
+			fix = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operationType);
 			if(fix == null){
 				log.debug("Any ingredient for this point, we discard it");
 				return null;
@@ -268,12 +268,12 @@ public class JGenProg extends AstorCoreEngine {
 	
 	}
 
-	public IngredientStrategy getIngredientStrategy() {
-		return ingredientStrategy;
+	public IngredientSearchStrategy getIngredientStrategy() {
+		return ingredientSearchStrategy;
 	}
 
-	public void setIngredientStrategy(IngredientStrategy ingredientStrategy) {
-		this.ingredientStrategy = ingredientStrategy;
+	public void setIngredientStrategy(IngredientSearchStrategy ingredientStrategy) {
+		this.ingredientSearchStrategy = ingredientStrategy;
 	}
 
 

@@ -1,6 +1,6 @@
 package fr.inria.astor.core.stats;
 
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceScope;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 
 /**

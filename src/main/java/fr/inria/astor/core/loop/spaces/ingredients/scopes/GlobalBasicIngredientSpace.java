@@ -1,4 +1,4 @@
-package fr.inria.astor.core.loop.spaces.ingredients;
+package fr.inria.astor.core.loop.spaces.ingredients.scopes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,34 +15,24 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
 /**
- * This Fix Space takes uniform randomly elements from the the search space. It
- * requires that all classes to parser (i.e., that provide material to the
- * space) be processed to the use of the space.
- * 
+ 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class GlobalBasicFixSpace extends LocalFixSpace {
+public class GlobalBasicIngredientSpace extends LocalIngredientSpace {
 
-	private Logger logger = Logger.getLogger(GlobalBasicFixSpace.class
+	private Logger logger = Logger.getLogger(GlobalBasicIngredientSpace.class
 			.getName());
 
-	public GlobalBasicFixSpace(AbstractFixSpaceProcessor<?> processor)
+	public GlobalBasicIngredientSpace(AbstractFixSpaceProcessor<?> processor)
 			throws JSAPException {
 		super(processor);
 
 	}
 
-	public GlobalBasicFixSpace(List<AbstractFixSpaceProcessor<?>> processor)
+	public GlobalBasicIngredientSpace(List<AbstractFixSpaceProcessor<?>> processor)
 			throws JSAPException {
 		super(processor);
-
-	}
-
-	@Override
-	public CtCodeElement getElementFromSpace(CtElement element) {
-		CtCodeElement originalPicked = getRandomStatementFromSpace(getFixSpace(null));
-		return MutationSupporter.clone(originalPicked);
 
 	}
 
@@ -50,7 +40,7 @@ public class GlobalBasicFixSpace extends LocalFixSpace {
 	 * Ignored the class, returns all elements from the space
 	 */
 	@Override
-	public List<CtCodeElement> getFixSpace(CtElement element) {
+	public List<CtCodeElement> getIngredients(CtElement element) {
 		List result = 	new ArrayList();
 		for(String type : fixSpaceByType.keySet()){
 			result.addAll(this.fixSpaceByType.get(type));
@@ -62,18 +52,12 @@ public class GlobalBasicFixSpace extends LocalFixSpace {
 	 * Ignores the element, returns all types
 	 */
 	@Override
-	public List<CtCodeElement> getFixSpace(CtElement element, String type) {
+	public List<CtCodeElement> getIngredients(CtElement element, String type) {
 
 		return this.fixSpaceByType.get(type);
 
 	}
 
-	@Override
-	public CtCodeElement getElementFromSpace(CtElement element, String type) {
-		CtCodeElement originalPicked = getRandomStatementFromSpace(getFixSpace(
-				null, type));
-		return MutationSupporter.clone(originalPicked);
-	}
 	
 	@Override
 	public IngredientSpaceScope spaceScope() {

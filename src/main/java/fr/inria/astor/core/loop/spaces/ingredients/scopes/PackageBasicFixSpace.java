@@ -1,4 +1,4 @@
-package fr.inria.astor.core.loop.spaces.ingredients;
+package fr.inria.astor.core.loop.spaces.ingredients.scopes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez matias.martinez@inria.fr
  *
  */
-public class PackageBasicFixSpace extends LocalFixSpace {
+public class PackageBasicFixSpace extends LocalIngredientSpace {
 
 	public PackageBasicFixSpace(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
 		super(processor);
@@ -29,7 +29,7 @@ public class PackageBasicFixSpace extends LocalFixSpace {
 	}
 
 	@Override
-	protected String convertKey(CtElement original) {
+	public String convertKey(CtElement original) {
 
 		return original.getParent(CtPackage.class).getQualifiedName();
 	}
@@ -47,11 +47,6 @@ public class PackageBasicFixSpace extends LocalFixSpace {
 				for (CtType<?> t : p.getTypes()) {
 					this.createFixSpaceFromAClass(t, t);
 				}
-				/**
-				 * List<CtType<?>> sts = new ArrayList<>(); for(CtType<?> t :
-				 * p.getTypes()){ sts.add(t); } super.defineSpace(sts);
-				 * 
-				 */
 
 			}
 

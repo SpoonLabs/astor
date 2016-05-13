@@ -1,32 +1,33 @@
-package fr.inria.astor.core.loop.spaces.ingredients;
+package fr.inria.astor.core.loop.spaces.ingredients.scopes;
 
 import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.loop.spaces.ingredients.AstorIngredientSpace;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 /**
- * 
+ * Create the space using classes affected by the variants
  * @author Matias Martinez
  *
  */
-public class LocalFixSpace extends UniformRandomFixSpace<CtElement,String, CtCodeElement,String>{
+public class LocalIngredientSpace extends AstorIngredientSpace<CtElement,String, CtCodeElement,String>{
 
-	public LocalFixSpace(AbstractFixSpaceProcessor<?> processor)
+	public LocalIngredientSpace(AbstractFixSpaceProcessor<?> processor)
 			throws JSAPException {
 		super(processor);
 	}
 
-	public LocalFixSpace(List<AbstractFixSpaceProcessor<?>> processors)
+	public LocalIngredientSpace(List<AbstractFixSpaceProcessor<?>> processors)
 			throws JSAPException {
 		super(processors);
 	}
 
-	public LocalFixSpace() throws JSAPException {
+	public LocalIngredientSpace() throws JSAPException {
 		super();
 	
 	}
@@ -53,12 +54,12 @@ public class LocalFixSpace extends UniformRandomFixSpace<CtElement,String, CtCod
 	}
 
 	@Override
-	protected String convertKey(CtElement original) {
+	public String convertKey(CtElement original) {
 		
 		if(original instanceof CtType<?>)
 			return ((CtType) original).getQualifiedName();
 		return original.getParent(CtType.class).getQualifiedName();
-		//return original.getSignature();
+
 	}
 	
 

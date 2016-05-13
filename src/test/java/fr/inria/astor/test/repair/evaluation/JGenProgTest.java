@@ -19,8 +19,8 @@ import fr.inria.astor.approaches.jgenprog.operators.RemoveOp;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.spaces.ingredients.BasicIngredientStrategy;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpaceScope;
+import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.other.FakeIngredientStrategy;
@@ -334,7 +334,26 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
 				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy",
-				BasicIngredientStrategy.class.getCanonicalName() };
+				EfficientIngredientStrategy.class.getCanonicalName() };
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+
+	}
+	
+	@Test
+	public void testMath85_ParticularIngredientStrategy() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy",
+				EfficientIngredientStrategy.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 		validatePatchExistence(out + File.separator + "AstorMain-math_85/");

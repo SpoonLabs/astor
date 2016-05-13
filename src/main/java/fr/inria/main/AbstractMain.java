@@ -13,7 +13,7 @@ import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.loop.AstorCoreEngine;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -153,7 +153,7 @@ public abstract class AbstractMain {
 
 		
 		options.addOption("ingredientstrategy", true,
-				"(Optional) Indicates the name of the class that astor calls for retrieving ingredients. They must extend from "+IngredientStrategy.class.getName() 
+				"(Optional) Indicates the name of the class that astor calls for retrieving ingredients. They must extend from "+IngredientSearchStrategy.class.getName() 
 				+ " The classes must be included in the classpath.");
 		
 		
