@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
@@ -34,7 +35,8 @@ public class PackageBasicFixSpace extends LocalFixSpace {
 	}
 
 	@Override
-	public void defineSpace(List<CtType<?>> affected) {
+	public void defineSpace(ProgramVariant variant) {
+		List<CtType<?>> affected = variant.getAffectedClasses();
 
 		List<CtPackage> packageAnalyzed = new ArrayList<>();
 		for (CtType<?> ing : affected) {
@@ -42,13 +44,15 @@ public class PackageBasicFixSpace extends LocalFixSpace {
 			CtPackage p = ing.getParent(CtPackage.class);
 			if (!packageAnalyzed.contains(p)) {
 				packageAnalyzed.add(p);
-				List<CtType<?>> sts = new ArrayList<>();
-				for(CtType<?> t : p.getTypes()){
-					if(!t.getQualifiedName().toLowerCase().contains("test")){
-						sts.add(t);
-					}
+				for (CtType<?> t : p.getTypes()) {
+					this.createFixSpaceFromAClass(t, t);
 				}
-				super.defineSpace(sts);
+				/**
+				 * List<CtType<?>> sts = new ArrayList<>(); for(CtType<?> t :
+				 * p.getTypes()){ sts.add(t); } super.defineSpace(sts);
+				 * 
+				 */
+
 			}
 
 		}
@@ -59,5 +63,7 @@ public class PackageBasicFixSpace extends LocalFixSpace {
 	public IngredientSpaceScope spaceScope() {
 		return IngredientSpaceScope.PACKAGE;
 	}
+	
+	
 
 }

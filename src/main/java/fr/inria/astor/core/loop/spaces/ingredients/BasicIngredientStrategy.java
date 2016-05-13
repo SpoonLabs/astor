@@ -13,12 +13,10 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
-import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtType;
 /**
  * This class represents a basic strategy to navigate one ingredient space (passed as parameter in the constructor). 
  * Specifically, it randomly takes ingredients and verifies that it was not taken before for the same modification point. 
@@ -34,18 +32,11 @@ public class BasicIngredientStrategy extends IngredientStrategy{
 	protected FixIngredientSpace<CtElement, CtCodeElement, String> fixspace = null;
 
 
-	
-	@Override
-	public void refineSpaceForProgramVariant(ProgramVariant variant) {
-		List<CtType<?>> typesToProcess = null;
-		if (getFixspace().spaceScope().equals(IngredientSpaceScope.LOCAL)
-				|| getFixspace().spaceScope().equals(IngredientSpaceScope.PACKAGE))
-			typesToProcess = variant.getAffectedClasses();
 
-		if (getFixspace().spaceScope().equals(IngredientSpaceScope.GLOBAL))
-			typesToProcess = MutationSupporter.getFactory().Type().getAll();
+	@Override
+	public void initIngredientSpace(ProgramVariant variant) {
 	
-		this.fixspace.defineSpace(typesToProcess);
+		this.fixspace.defineSpace(variant);
 		
 	}
 	

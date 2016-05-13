@@ -31,7 +31,7 @@ public abstract class IngredientStrategy {
 	 * Initialize the strategy, which in turns, will create the ingredient space
 	 * @param variant a program variant is necessary for creating initialize the strategy and the space. 
 	 */
-	public abstract void refineSpaceForProgramVariant(ProgramVariant variant);
+	public abstract void initIngredientSpace(ProgramVariant variant);
 	
 	/**
 	 * The strategy receives as parameter the FixSpace

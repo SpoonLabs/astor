@@ -3,6 +3,7 @@ package fr.inria.astor.core.loop.spaces.ingredients;
 import java.util.List;
 import java.util.Map;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
@@ -16,15 +17,14 @@ import spoon.reflect.declaration.CtType;
 public interface FixIngredientSpace<L extends Object, I extends CtElement, T extends Object> {
 
 	/**
-	 * Creates the Space using the classes passed as argument
+	 * Creates the Space using the classes from a Variant
 	 * 
 	 * @param affected
-	 *            cttypes affected by the program variants. That is, types that
-	 *            can me modified during the evolution
+	 *           
 	 * @param all
 	 *            corresponds to all types from the program under analysis.
 	 */
-	public void defineSpace(List<CtType<?>> affected);
+	public void defineSpace(ProgramVariant variant);
 
 	/**
 	 * Return an Ingredient taken from a given location

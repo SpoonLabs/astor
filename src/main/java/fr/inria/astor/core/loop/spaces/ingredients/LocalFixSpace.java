@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
@@ -32,13 +33,10 @@ public class LocalFixSpace extends UniformRandomFixSpace<CtElement,String, CtCod
 	
 
 	@Override
-	public void defineSpace(List<CtType<?>> affected) {
-
+	public void defineSpace(ProgramVariant variant) {
+		List<CtType<?>> affected = variant.getAffectedClasses();
 			for (CtType<?> CtType : affected) {
-				if(!CtType.getSimpleName().toLowerCase().startsWith("test")
-						&& !CtType.getSimpleName().toLowerCase().endsWith("test")){
 					this.createFixSpaceFromAClass(CtType, CtType);
-				}
 			}
 				
 	}

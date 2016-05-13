@@ -23,7 +23,7 @@ public class FakeIngredientStrategy extends IngredientStrategy {
 	}
 
 	@Override
-	public void refineSpaceForProgramVariant(ProgramVariant variant) {
+	public void initIngredientSpace(ProgramVariant variant) {
 	
 
 	}

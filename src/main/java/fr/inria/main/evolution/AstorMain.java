@@ -101,7 +101,8 @@ public class AstorMain extends AbstractMain {
 			} else {// Default
 				fixspace = (new LocalFixSpace(ingredientProcessors));
 			}
-			IngredientStrategy ingStrategy = getIngredientStrategy(fixspace);
+			IngredientStrategy ingStrategy = getIngredientStrategy();
+			ingStrategy.setIngredientSpace(fixspace);
 			((JGenProg) astorCore).setIngredientStrategy(ingStrategy);
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
@@ -184,7 +185,7 @@ public class AstorMain extends AbstractMain {
 
 	}
 
-	private IngredientStrategy getIngredientStrategy(FixIngredientSpace fixspace) throws Exception {
+	private IngredientStrategy getIngredientStrategy() throws Exception {
 		String strategy = ConfigurationProperties.properties.getProperty("ingredientstrategy");
 		IngredientStrategy st = null;
 		if (strategy == null || strategy.trim().isEmpty())
@@ -192,8 +193,7 @@ public class AstorMain extends AbstractMain {
 		else
 			st = createStrategy(strategy);
 
-		if (st != null)
-			st.setIngredientSpace(fixspace);
+	
 
 		return st;
 	}

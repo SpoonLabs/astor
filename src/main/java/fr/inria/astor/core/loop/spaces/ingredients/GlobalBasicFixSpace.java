@@ -7,10 +7,12 @@ import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 
 /**
  * This Fix Space takes uniform randomly elements from the the search space. It
@@ -88,6 +90,15 @@ public class GlobalBasicFixSpace extends LocalFixSpace {
 		}
 		s = " All ingredients: "+totalIng + s;
 		return s;
+	}
+	
+	@Override
+	public void defineSpace(ProgramVariant variant) {
+		List<CtType<?>> affected =  MutationSupporter.getFactory().Type().getAll();
+			for (CtType<?> classToProcess : affected) {
+					this.createFixSpaceFromAClass(classToProcess, classToProcess);
+			}
+				
 	}
 
 }
