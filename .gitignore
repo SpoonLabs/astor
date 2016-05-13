@@ -12,7 +12,10 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-
+**/.settings/
+**/.project
+**/.classpath
+**/.gitignore
 
 /.settings/
 /.classpath
