@@ -343,65 +343,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 	
-	@Test
-	public void testMath85_ParticularIngredientStrategy() throws Exception {
-		AstorMain main1 = new AstorMain();
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
-				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy",
-				EfficientIngredientStrategy.class.getCanonicalName() };
-		System.out.println(Arrays.toString(args));
-		main1.execute(args);
-		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
-		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
-		assertTrue(solutions.size() > 0);
-
-	}
-
-	@Test
-	public void testMath85_AnyIngredientStrategy() throws Exception {
-		AstorMain main1 = new AstorMain();
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
-				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy",
-				"DoneToFailIngredientStrat10" };
-		System.out.println(Arrays.toString(args));
-		try {
-			main1.execute(args);
-			fail();
-		} catch (Exception e) {// Expected
-		}
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Test
-	// @Ignore
-	public void testMath70WithFakeIngStrategy() throws Exception {
-		AstorMain main1 = new AstorMain();
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
-				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "50", "-ingredientstrategy",
-				FakeIngredientStrategy.class.getCanonicalName() };
-		System.out.println(Arrays.toString(args));
-		main1.execute(args);
-
-		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
-		assertTrue(solutions.isEmpty());
-
-	}
+	
 	/**
 	 * Testing injected but at CharacterReader line 118, commit version 31be24.
 	 * "org.jsoup.nodes.AttributesTest"+File.pathSeparator+"org.jsoup.nodes.DocumentTypeTest"

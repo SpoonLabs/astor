@@ -90,6 +90,17 @@ public abstract class AstorIngredientSpace<L extends Object, K extends Object, I
 	}
 
 	public abstract K convertKey(L original);
+	
+	private void recreateTypesStructures(){
+		
+		this.fixSpaceByLocationType.clear();
+		this.fixSpaceByType.clear();
+		
+		for (K key : fixSpaceByLocation.keySet()){
+			List<I> ingredientsToProcess = fixSpaceByLocation.get(key);	
+			splitByType(key, ingredientsToProcess);
+		}
+	}
 
 	private void splitByType(K keyLocation, List<I> ingredients) {
 
@@ -130,6 +141,14 @@ public abstract class AstorIngredientSpace<L extends Object, K extends Object, I
 	}
 
 	@Override
+	public void setIngredients(L location, List<I> ingredients) {
+		K key = convertKey(location);
+		getFixSpace().put(key,ingredients);
+		recreateTypesStructures();
+	}
+
+	
+	@Override
 	public List<I> getIngredients(L rootClass1, T type) {
 		K rootClass = convertKey(rootClass1);
 		Map<T, List<I>> types = this.fixSpaceByLocationType.get(rootClass);
@@ -139,6 +158,7 @@ public abstract class AstorIngredientSpace<L extends Object, K extends Object, I
 		List<I> elements = types.get(type);
 		return elements;
 	}
+	
 
 	public String toString() {
 		String s = "--Space: " + this.spaceScope() + "\n";
