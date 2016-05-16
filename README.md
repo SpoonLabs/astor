@@ -3,6 +3,9 @@ ASTOR
 
 [![Build Status](https://travis-ci.org/SpoonLabs/astor.svg?branch=master)](https://travis-ci.org/SpoonLabs/astor)
 
+Astor is an automatic software repair framework in Java for Java. It contains an implementation of state of the art repair approaches such as GenProg and Kali.
+
+
 If you use Astor, please cite this technical report:
 
 Matias Martinez, Martin Monperrus. "ASTOR: Evolutionary Automatic Software Repair for Java". Technical Report hal-01075976, Inria; 2014. 
@@ -15,10 +18,8 @@ Matias Martinez, Martin Monperrus. "ASTOR: Evolutionary Automatic Software Repai
      YEAR = {2014}
     }
 
-Astor is an evolutionary Automatic Software Repair framework that contains implementation of state of the art repair approaches such as GenProg and Kali.
 
-
-Getting started
+Compilation
 -------
 
 Note that this project requires the use of **Java 1.7**; it does not build or does not run (on OS X 10.10.3) with Java 1.8. Please install a JDK 1.7 and configure Maven or your IDE to use it. Fill property jvm4testexecution in `src/main/resources/configuration.properties`.
@@ -30,6 +31,8 @@ To compile using maven, first execute:
 
 We recommend to remove all package-info.java files from the project to repair (You can use command: `find . -name "package-info.java" -type f -delete`).
 
+Execution
+-------
 We provide an implementation of GenProg repair algorithm called jGenProg.The class to run it is:
 
     fr.inria.main.evolution.MainjGenProg
@@ -105,6 +108,21 @@ To run it using jGenProg, type:
 or 
 
     java fr.inria.main.evolution.MainjGenProg -bug280
+
+Walkthrough
+----------
+
+**AstorMain.main**: Everything begins by constructing an AstorMain instance (which owns a Logger, a MutationSupporter, a spoon.reflect.factory.Factory, a ProjectRepairFacade, and a CommandLineParser) and reading configuration properties such as the URL of the project to manipulate, the name of the project, the project’s dependencies, failing test cases, and the fault localization threshold to run the program. 
+
+**AstorMain.run**: uses six properties to initialize a project (AstorMain.initProject) before defining a JGenProg object for a particular mode of executionwithin: Execution.JGenProg, ExecutionMode.jKali, and ExecutionMode.MutRepair corresponding to three test suite based repair approaches, viz. GenProg, Kali, and a mutation-testing based repair approach, respectively. Subsequently, the method creates a repair engine (AstorMain.createEngine) and an initial population of program variants (JGenProg.createInitialPopulation). It evolves the program variants (JGenProg.startEvolution) while we still have variants; we are still failing test cases; we have neither reached the maximum number of generations nor the maximum number of minutes. Afterward, run will show the results (JGenProg.showResults) and log the total time elapsed from initializing the project to showing the results.
+
+**AstorMain.initProject**: initProject parses a string argument into a list of failing Junit test cases. Then initProject initializes a project façade before setting up temp directories, which will contain copies of the original src and bin directories for the experiment. Finally, it defines the regression suite.
+
+**AstorMain.createEngine**: createEngine creates a repair engine based on the mode of execution. It constructs a MutationSupporter to carry out supporter tasks, e.g., creating directories, copying directories, and calling the compiler. Then it constructs a list of source code transformers based on the Spoon transformation library (which serves as the fix space) with a default of a new SingleStatementFixSpaceProcessor; therefore, the ingredients processor will retrieve statements (excluding blocks, methods, and classes). More specifically, it only adds statements whose parent is a block. Afterward, different properties will be defined, depending on the mode of execution. Then—focusing on JgenProg— method createEngine sets the repair action space and handles the ingredients to build the patches by inspecting the scope of the ingredient search space, which is a ConfigurationProperty. There are three scopes: global (all classes from the application under analysis), package (classes from the same package), and local (same class); the default is local. GlobalBasicFixSpace and PackageBasicFixSpace extend LocalFixSpace which extends the abstract class UniformRandomFixSpace (UniformRandomFixSpace takes uniform random elements from the search space. It takes a location and a CtType root and creates a fix space from a CtClass) which implements FixLocationSpace. createEngine sets the fix space and then sets the population controller. A FitnessPopulationController controls the population of program variants by the fitness values. For the three test suite based approaches, the fitness relates to the number of failing test cases, and the goal is to find a program with a fitness of zero. Finally, createEngine sets the variant factory and the program validator.
+
+**JGenProg.createInitialPopulation**: If we do not use fault localization, then createInitialPopulation initializes a population with a new ArrayList<SuspiciousCode>(). Otherwise, it initializes the population using the project façade, which will run spectrum-based fault localization to get a list of suspicious statements. After building and processing the Spoon model, the population is initialized using the list of suspicious statements, which creates the program variants from the suspicious code. Specifically, for each suspicious line, a list of genotypes will be created from that suspicious line (when it’s possible) by querying suspicious Spoon elements. The first suspicious element is used to query all the variables in scope, which serves as the context. (This process of establishing the context is made easy by the fact that only statements are mutated.) A genotype is created for each filtered element. Finally, the program variants are compiled, and the fitness value is computed.
+
+**JGenProg.startEvolution**. Here is where we start our solution search. For each program variant, the original variant will be saved and then a new program variant will be created by cloning a child variant from a given parent variant before mutating the child. Specifically, in each generation, Astor applies one source code transformation to each program variant (the parent variant) to produce a child variant and then evaluates a fitness function over each program variant. After each child variant is evaluated, Astor selects some variants among the children and parents to be part of the next generation according to their fitness values. 
 
 Extension points
 -------
