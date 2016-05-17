@@ -144,9 +144,11 @@ Then, the canonical name of this operator's class is passed to Astor via the arg
 Astor allows to integrate a custom strategy for selecting ingredients from the ingredient search space.
 By default, Astor randomly takes one ingredient from a given ingredient scope (Application, Package or File).
 
-A customize ingredient selection strategy class extends from abstract class fr.inria.astor.core.loop.spaces.ingredients. IngredientStrategy.
+A customize ingredient selection strategy class extends from abstract class fr.inria.astor.core.loop.spaces.ingredients.IngredientStrategy.
 
 Then, the canonical name of this strategy's class is passed to Astor via the argument '-ingredientstrategy'.
+
+We detail this extension point in the document [Ingredient Space Tutorial](https://github.com/SpoonLabs/astor/blob/master/docs/tutorials/readme_ing_space.md).
 
 Limitations
 ------
