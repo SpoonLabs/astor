@@ -123,7 +123,8 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 			log.debug(trregression);
 			currentStats.numberOfTestcasesExecutedval2 += trregression.casesExecuted;
 			currentStats.numberOfRegressionTestCases = trregression.casesExecuted;
-			return new ProgramVariantValidationResult(trregression);
+			return new ProgramVariantValidationResult(trregression, trregression.wasSuccessful(), (trregression != null));
+
 		}
 	}
 
