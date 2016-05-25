@@ -6,7 +6,7 @@ import fr.inria.astor.core.entities.ModificationInstance;
 import spoon.reflect.code.CtExpression;
 
 /**
- * 
+ * Set of spoon transformation that affects CtExpression.
  * @author Matias Martinez
  *
  */
