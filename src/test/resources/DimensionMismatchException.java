@@ -43,21 +43,77 @@ public class DimensionMismatchException extends MathException {
      * @return first dimension
      */
     public int getDimension1() {
+    	if(dimension1 == 0 ){
+    		this.dimension1 = 1;
+    	}
+    		
+    		
+        return dimension1;
+    }
+    //Common var at the end of the block
+    public int getDimension2() {
+    	if(dimension1 == 0 ){
+    		int i= 3;
+    		this.dimension1 = i;
+    	}
+    		
+    		
+        return dimension1;
+    }
+    
+    public int getDimension3() {
+    	if(dimension1 == 0 ){
+    		int i= 3;
+    		this.dimension1 = i;
+    	}
+    	this.dimension1 = 1;
+    	//Not commond var
+    	if(dimension2 > 10 ){
+    		return 10;
+    	}
+    		
+        return dimension1;
+    }
+    
+    //Test Unary
+    public int getDimension4TestUnary() {
+    	if(dimension1 == 0 ){
+    		int i= 3;
+    		this.dimension1 = i;
+    	}
+    	this.dimension1 = 1;
+    	//Not commond var
+    	if(!(dimension2 > 10) ){
+    		return 10;
+    	}
+    		
         return dimension1;
     }
     
     /**
-     * Get the second dimension
-     * @return second dimension
+     * 
+     * @return
      */
-    public int getDimension2() {
-        return dimension2;
+    public int getDimensionTestIfTermRemove() {
+    	if(dimension1 == 0 && dimension2 >100){
+    		int i= 3;
+    		this.dimension1 = i;
+    	}
+    	this.dimension1 = 1;
+    	
+    	//Not commond var
+    	if(!(dimension1 > 10) && (dimension2 < 10 || dimension3 > 30)  ){
+    		return 10;
+    	}
+    		
+        return dimension1;
     }
 
     /** First dimension. */
-    private int dimension1;
+    private int dimension1 = 1;
     
     /** Second dimension. */
-    private int dimension2;
+    private int dimension2 = 1;
     
+    int dimension3 = 1;
 }
