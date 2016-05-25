@@ -1,10 +1,5 @@
 package fr.inria.astor.core.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.runner.Result;
-
 import fr.inria.astor.core.validation.entity.TestResult;
 
 /**
@@ -19,6 +14,7 @@ public class ProgramVariantValidationResult {
 	int numberPassingTestCases = 0;
 
 	boolean regressionExecuted = false;
+	boolean resultSucess = false;
 	TestResult testResult;
 
 	public ProgramVariantValidationResult(TestResult result) {
@@ -26,42 +22,28 @@ public class ProgramVariantValidationResult {
 		numberPassingTestCases = result.casesExecuted - result.failures;
 		numberFailingTestCases = result.failures;
 		testResult = result;
+		resultSucess = (result.casesExecuted == result.failures);
 
 	}
 
 	public ProgramVariantValidationResult(TestResult result,
 			boolean resultSucess, boolean regressionExecuted) {
-		super();
-		numberPassingTestCases = result.casesExecuted - result.failures;
-		numberFailingTestCases = result.failures;
+		this(result);
+		this.regressionExecuted = regressionExecuted;
+		this.resultSucess = resultSucess;
 	}
 
 	/**
 	 * Result of the original failing test cases
 	 */
-	private List<Result> testResults = new ArrayList<Result>();
+	//private List<Result> testResults = new ArrayList<Result>();
 
 	/**
 	 * Result of the original failing test cases
 	 */
-	private List<Result> testRegressionResults = new ArrayList<Result>();
+//	private List<Result> testRegressionResults = new ArrayList<Result>();
 
-	public List<Result> getTestResults() {
-		return testResults;
-	}
-
-	public List<Result> getTestRegressionResults() {
-		return testRegressionResults;
-	}
-
-	public void setTestRegressionResults(List<Result> testRegressionResults) {
-		this.testRegressionResults = testRegressionResults;
-	}
-
-	public void setTestResults(List<Result> failingResults) {
-		this.testResults = failingResults;
-	}
-
+	
 	
 
 	public boolean wasSuccessful() {
@@ -74,17 +56,7 @@ public class ProgramVariantValidationResult {
 		return numberFailingTestCases;
 	}
 
-	public void addResultTest(Result r) {
-		this.numberFailingTestCases += r.getFailureCount();
-		this.numberPassingTestCases += r.getRunCount() - r.getFailureCount();
-		this.getTestResults().add(r);
-	}
 
-	public void addResultRegressionTest(Result r) {
-		this.numberFailingTestCases += r.getFailureCount();
-		this.numberPassingTestCases += r.getRunCount() - r.getFailureCount();
-		this.getTestRegressionResults().add(r);
-	}
 
 	public boolean isRegressionExecuted() {
 		return regressionExecuted;
@@ -99,7 +71,7 @@ public class ProgramVariantValidationResult {
 	}
 
 	public String toString(){
-		return "Variant Validation: successfull? "+this.wasSuccessful() + " "+this.getTestResults();
+		return "Variant Validation: successfull? "+this.wasSuccessful() + " "+this.getTestResult();
 	}
 
 	public TestResult getTestResult() {

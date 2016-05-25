@@ -26,7 +26,6 @@ import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.util.Converters;
 import fr.inria.astor.util.EvoSuiteFacade;
-import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
 
