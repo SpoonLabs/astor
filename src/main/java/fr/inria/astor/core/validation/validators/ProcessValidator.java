@@ -82,7 +82,7 @@ public class ProcessValidator extends ProgramValidator {
 				currentStats.numberOfTestcasesExecutedval1 += trfailing.casesExecuted;
 				currentStats.numberOfFailingTestCase = trfailing.casesExecuted;
 				log.debug(trfailing);
-				if (trfailing.wasSuccessful()) {
+				if (trfailing.wasSuccessful() && Boolean.valueOf(ConfigurationProperties.getProperty("executeRegression"))) {
 					currentStats.numberOfRegressionTestExecution++;
 					currentStats.passFailingval2++;
 					if (ConfigurationProperties.getPropertyBool("testbystep"))
@@ -91,7 +91,7 @@ public class ProcessValidator extends ProgramValidator {
 						return executeRegressionTesting(mutatedVariant, bc, p,  projectFacade);
 
 				} else {
-					ProgramVariantValidationResult r = new ProgramVariantValidationResult(trfailing, false, false);
+					ProgramVariantValidationResult r = new ProgramVariantValidationResult(trfailing, trfailing.wasSuccessful(), false);
 					return r;
 				}
 
@@ -135,7 +135,7 @@ public class ProcessValidator extends ProgramValidator {
 			log.debug(trregression);
 			currentStats.numberOfTestcasesExecutedval2 += trregression.casesExecuted;
 			currentStats.numberOfRegressionTestCases = trregression.casesExecuted;
-			return new ProgramVariantValidationResult(trregression);
+			return new ProgramVariantValidationResult(trregression, trregression.wasSuccessful(), (trregression != null));
 		}
 	}
 

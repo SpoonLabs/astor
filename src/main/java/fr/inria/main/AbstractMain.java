@@ -160,6 +160,8 @@ public abstract class AbstractMain {
 		options.addOption("customengine", true,
 				"(Optional) Indicates the class name of the execution mode. It must extend from "+AstorCoreEngine.class.getName());
 
+		options.addOption("excludeRegression", false, "Exclude test regression execution");
+
 		
 	}
 
@@ -392,6 +394,10 @@ public abstract class AbstractMain {
 
 		if(cmd.hasOption("customengine"))
 			ConfigurationProperties.properties.setProperty("customengine", cmd.getOptionValue("customengine"));
+		
+		if (cmd.hasOption("excludeRegression"))
+			ConfigurationProperties.properties.setProperty("executeRegression", "false");
+
 		
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
