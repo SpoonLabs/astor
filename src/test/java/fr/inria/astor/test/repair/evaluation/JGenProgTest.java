@@ -141,7 +141,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-
+		assertTrue(variant.getValidationResult().isRegressionExecuted());
+		
 		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
 
 		ModificationInstance mi = variant.getOperations().values().iterator().next().get(0);
