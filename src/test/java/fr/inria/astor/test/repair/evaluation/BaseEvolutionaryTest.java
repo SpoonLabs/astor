@@ -17,6 +17,7 @@ import org.junit.Before;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.AbstractMain;
+import fr.inria.main.evolution.AstorMain;
 import spoon.support.StandardEnvironment;
 /**
  * 
@@ -37,13 +38,12 @@ public abstract class BaseEvolutionaryTest  {
 	public void setUp() throws Exception {
 
 	
-		main = createMain();
+		main = new AstorMain();
 		
 		Logger.getLogger(StandardEnvironment.class).setLevel(Level.ERROR);
 		
 	}
 
-	public abstract AbstractMain createMain();
 	
 
 	public void createFileLogger(String file) throws IOException {
@@ -117,18 +117,6 @@ public abstract class BaseEvolutionaryTest  {
 		return cantSol;
 	}
 	
-	public void generic(
-			String location,
-			String folder,
-			String regression,
-			String failing, 
-			String dependenciespath,
-			String packageToInstrument, 
-			double thfl) throws Exception{};
-	
-	protected AbstractMain getMain(){
-		return this.main;
-	}
 	
 	
 }

@@ -72,16 +72,7 @@ public class jKaliTest extends BaseEvolutionaryTest{
 		
 	}
 	
-	
-	@Override
-	public AbstractMain createMain() {
-			return null;
-	}
-	@Override
-	public void generic(String location, String folder, String regression, String failing, String dependenciespath,
-			String packageToInstrument, double thfl) throws Exception {
-		
-	}
+
 	
 	@SuppressWarnings("static-access")
 	@Test

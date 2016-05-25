@@ -64,10 +64,6 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 				+File.separator+"AstorMain-Math-issue-288/");
 	}
 	
-	@Override
-	public AbstractMain createMain() {
-		return  new AstorMain();
-	}
 
 
 

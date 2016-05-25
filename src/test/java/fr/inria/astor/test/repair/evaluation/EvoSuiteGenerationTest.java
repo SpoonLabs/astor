@@ -393,10 +393,6 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		}
 	}
 
-	@Override
-	public AbstractMain createMain() {
 
-		return null;
-	}
 
 }

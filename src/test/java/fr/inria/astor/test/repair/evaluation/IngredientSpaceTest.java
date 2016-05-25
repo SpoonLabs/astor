@@ -126,10 +126,6 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 	
 	}
 
-	@Override
-	public AbstractMain createMain() {
-		return null;
-	}
 
 	@Test
 	public void testMath85_ParticularIngredientStrategy() throws Exception {

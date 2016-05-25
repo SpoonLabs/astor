@@ -23,7 +23,6 @@ import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIng
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.test.repair.evaluation.other.FakeIngredientStrategy;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
@@ -43,21 +42,6 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 	}
 
-	@Override
-	public void generic(String location, String folder, String regression, String failing, String dependenciespath,
-			String packageToInstrument, double thfl) throws Exception {
-
-		getMain().run(location, folder, dependenciespath, packageToInstrument, thfl, failing);
-
-	}
-
-	@Override
-	public AbstractMain createMain() {
-		if (main == null) {
-			return new AstorMain();
-		}
-		return main;
-	}
 
 	@Test
 	public void testExample280CommandLine() throws Exception {

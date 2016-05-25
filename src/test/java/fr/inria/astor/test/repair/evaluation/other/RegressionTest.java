@@ -111,10 +111,4 @@ public class RegressionTest extends BaseEvolutionaryTest{
 
 		
 	}
-
-	@Override
-	public AbstractMain createMain() {
-		return null;
-	}
-
 }
