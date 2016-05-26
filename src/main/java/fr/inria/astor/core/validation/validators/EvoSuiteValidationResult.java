@@ -15,6 +15,7 @@ public class EvoSuiteValidationResult extends ProgramVariantValidationResult {
 		super(original);
 	}
 
+	protected ProgramVariantValidationResult manualTestValidation;
 	protected ProgramVariantValidationResult evoValidation;
 
 	public ProgramVariantValidationResult getEvoValidation() {
@@ -24,5 +25,21 @@ public class EvoSuiteValidationResult extends ProgramVariantValidationResult {
 	public void setEvoValidation(ProgramVariantValidationResult evoValidation) {
 		this.evoValidation = evoValidation;
 	}
+
+	public ProgramVariantValidationResult getManualTestValidation() {
+		return manualTestValidation;
+	}
+
+	public void setManualTestValidation(ProgramVariantValidationResult manualTestValidation) {
+		this.manualTestValidation = manualTestValidation;
+	}
+	public String toString(){
+		return ""
+		+ "\nfailing: "+ printTestResult(this.getTestResult())
+		+"\nmanual_regression: "+printTestResult(this.manualTestValidation.getTestResult())
+		+"\nevo_regression: "+ printTestResult(this.evoValidation.getTestResult())
+		;
+	}
+	
 	
 }
