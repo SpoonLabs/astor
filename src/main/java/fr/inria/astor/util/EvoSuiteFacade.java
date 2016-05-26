@@ -38,8 +38,16 @@ public class EvoSuiteFacade {
 
 	Logger logger = Logger.getLogger(Thread.currentThread().getName());
 
+	/**
+	 * Executing evosuite.
+	 * For each Affected class from the program variant, 
+	 * we create the related TestUnit using evosuite
+	 * @param variant
+	 * @param projectFacade
+	 * @return
+	 * @throws Exception
+	 */
 	public boolean runEvosuite(ProgramVariant variant,
-			// String path, String classpath,
 			ProjectRepairFacade projectFacade) throws Exception {
 
 		List<URL> originalURL = new ArrayList(
@@ -49,8 +57,7 @@ public class EvoSuiteFacade {
 		File fESout = new File(outES);
 		fESout.mkdirs();
 
-		URL[] SUTClasspath = null;
-		SUTClasspath = originalURL.toArray(new URL[0]);
+		URL[] SUTClasspath = originalURL.toArray(new URL[0]);
 
 		logger.debug("Creating test cases using evosuite ");
 		
@@ -172,12 +179,19 @@ public class EvoSuiteFacade {
 		}
 		return ESTestClasses;
 	}
-
+	/**
+	 * Given a program variant, we create using a program variant a) the Evosuite test
+	 * b) the spoon model of the Evosuite test classes. 
+	 * @param projectFacade
+	 * @param variant
+	 * @return
+	 * @throws Exception
+	 */
 	public List<CtClass> createEvoTestModel(ProjectRepairFacade projectFacade, ProgramVariant variant)
 			throws Exception {
 
 		logger.info("Executing evosuite");
-
+		//Generating Evosuite test class from the variant
 		boolean executed = this.runEvosuite(variant, projectFacade);
 		
 
