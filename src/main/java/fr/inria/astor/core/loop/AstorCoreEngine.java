@@ -885,33 +885,12 @@ public abstract class AstorCoreEngine {
 					line += "\ngeneration= " + Integer.toString(i);
 					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope() != null)
 							? genOperationInstance.getIngredientScope() : "-");
-					/*
-					 * if (getFixSpace() != null) { // Ingredients space size
-					 * List<?> ingredients = null; //todo opflex if
-					 * (genOperationInstance.getOperationApplied().equals(
-					 * GenProgMutationOperation.REPLACE)) { ingredients =
-					 * getFixSpace().getFixSpace(genOperationInstance.
-					 * getOriginal(),
-					 * genOperationInstance.getOriginal().getClass().
-					 * getSimpleName()); } if
-					 * (genOperationInstance.getOperationApplied().equals(
-					 * GenProgMutationOperation.INSERT_AFTER) ||
-					 * genOperationInstance.getOperationApplied()
-					 * .equals(GenProgMutationOperation.INSERT_BEFORE)) {
-					 * ingredients =
-					 * getFixSpace().getFixSpace(genOperationInstance.
-					 * getOriginal());
-					 * 
-					 * } if (ingredients != null) { line += "\ningredients= " +
-					 * ingredients.size(); }
-					 * 
-					 * }
-					 */
-					line += "\n ";
+					
+					//line += "\n ";
 
 				}
 			}
-
+			line +="\nvalidation="+solutionVariant.getValidationResult().toString();
 		}
 		return line;
 	}
