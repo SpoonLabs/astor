@@ -71,7 +71,7 @@ public class ProgramVariantValidationResult {
 	}
 
 	public String toString(){
-		return "Variant Validation: successfull? "+this.wasSuccessful() + " "+this.getTestResult();
+		return printTestResult(this.getTestResult());
 	}
 
 	public TestResult getTestResult() {
@@ -82,4 +82,8 @@ public class ProgramVariantValidationResult {
 		this.testResult = testResult;
 	}
 
+	
+	protected String printTestResult(TestResult result){
+		return "|"+result.wasSuccessful()+"|"+result.failures+"|"+result.casesExecuted+"|"+result.failTest+"|";
+	}
 }
