@@ -35,6 +35,7 @@ import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
+import fr.inria.astor.core.validation.validators.ProgramValidator;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
 
@@ -102,7 +103,7 @@ public class AstorMain extends AbstractMain {
 				ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
 			}
 			IngredientSearchStrategy ingStrategy = retrieveIngredientStrategy(ingredientspace);
-			
+
 			((JGenProg) astorCore).setIngredientStrategy(ingStrategy);
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
@@ -145,11 +146,14 @@ public class AstorMain extends AbstractMain {
 		// After initializing population, we set up specific validation
 		// mechanism
 		// Select the kind of validation of a variant.
-		String validation = ConfigurationProperties.properties.getProperty("validation");
-		if (validation.equals("evosuite")) {
+		String validationArgument = ConfigurationProperties.properties.getProperty("validation");
+		if (validationArgument.equals("evosuite")) {
 			ProcessEvoSuiteValidator validator = new ProcessEvoSuiteValidator();
 			astorCore.setProgramValidator(validator);
-
+		} else
+		// if validation is different to default (process)
+		if (!validationArgument.equals("process")) {
+			astorCore.setProgramValidator(createProcessValidatorFromArgument(validationArgument));
 		}
 
 		return astorCore;
@@ -185,13 +189,30 @@ public class AstorMain extends AbstractMain {
 
 	}
 
+	private ProcessValidator createProcessValidatorFromArgument(String className) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(className);
+			object = classDefinition.newInstance();
+		} catch (Exception e) {
+			log.error("LoadingProcessValidator: " + className + " --" + e);
+			throw new Exception("Error Loading Engine: " + e);
+		}
+		if (object instanceof ProcessValidator)
+			return (ProcessValidator) object;
+		else
+			throw new Exception(
+					"The strategy " + className + " does not extend from " + ProgramValidator.class.getName());
+
+	}
+
 	private IngredientSearchStrategy retrieveIngredientStrategy(IngredientSpace ingredientspace) throws Exception {
 		String strategy = ConfigurationProperties.properties.getProperty("ingredientstrategy");
 		IngredientSearchStrategy st = null;
 		if (strategy == null || strategy.trim().isEmpty())
 			st = new EfficientIngredientStrategy(ingredientspace);
 		else
-			st = loadCustomIngredientStrategy(strategy,ingredientspace);
+			st = loadCustomIngredientStrategy(strategy, ingredientspace);
 		return st;
 	}
 
@@ -225,19 +246,21 @@ public class AstorMain extends AbstractMain {
 			log.error("The operator " + className + " does not extend from " + AstorOperator.class.getName());
 		return null;
 	}
+
 	/**
 	 * Load a custom ing strategy using reflection.
+	 * 
 	 * @param customStrategyclassName
 	 * @param ingredientSpace
 	 * @return
 	 * @throws Exception
 	 */
-	private IngredientSearchStrategy loadCustomIngredientStrategy(String customStrategyclassName, IngredientSpace ingredientSpace) throws Exception {
+	private IngredientSearchStrategy loadCustomIngredientStrategy(String customStrategyclassName,
+			IngredientSpace ingredientSpace) throws Exception {
 		Object object = null;
 		try {
 			Class classDefinition = Class.forName(customStrategyclassName);
-			object = classDefinition.getConstructor(IngredientSpace.class)
-					.newInstance(ingredientSpace);
+			object = classDefinition.getConstructor(IngredientSpace.class).newInstance(ingredientSpace);
 		} catch (Exception e) {
 			log.error("Loading strategy " + customStrategyclassName + " --" + e);
 			throw new Exception("Loading strategy: " + e);
@@ -245,8 +268,8 @@ public class AstorMain extends AbstractMain {
 		if (object instanceof IngredientSearchStrategy)
 			return (IngredientSearchStrategy) object;
 		else
-			throw new Exception(
-					"The strategy " + customStrategyclassName + " does not extend from " + IngredientSearchStrategy.class.getName());
+			throw new Exception("The strategy " + customStrategyclassName + " does not extend from "
+					+ IngredientSearchStrategy.class.getName());
 
 	}
 
