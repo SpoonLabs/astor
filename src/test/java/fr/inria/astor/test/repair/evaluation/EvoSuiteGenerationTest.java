@@ -396,7 +396,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 	
 	@SuppressWarnings("rawtypes")
-	@Test
+	//@Test
 	public void testMath70RegressionTests() throws Exception {
 		AstorMain main1 = new AstorMain();
 
