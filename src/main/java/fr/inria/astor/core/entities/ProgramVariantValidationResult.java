@@ -84,6 +84,8 @@ public class ProgramVariantValidationResult {
 
 	
 	protected String printTestResult(TestResult result){
+		if(result == null)
+			return "";
 		return "|"+result.wasSuccessful()+"|"+result.failures+"|"+result.casesExecuted+"|"+result.failTest+"|";
 	}
 }

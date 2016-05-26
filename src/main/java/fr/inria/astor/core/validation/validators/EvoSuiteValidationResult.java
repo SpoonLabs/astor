@@ -36,8 +36,8 @@ public class EvoSuiteValidationResult extends ProgramVariantValidationResult {
 	public String toString(){
 		return ""
 		+ "\nfailing: "+ printTestResult(this.getTestResult())
-		+"\nmanual_regression: "+printTestResult(this.manualTestValidation.getTestResult())
-		+"\nevo_regression: "+ printTestResult(this.evoValidation.getTestResult())
+		+((this.manualTestValidation != null)?"\nmanual_regression: "+printTestResult(this.manualTestValidation.getTestResult()):"")
+		+((this.evoValidation != null)?"\nevo_regression: "+ printTestResult(this.evoValidation.getTestResult()):"")
 		;
 	}
 	
