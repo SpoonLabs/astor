@@ -6,7 +6,17 @@ ASTOR
 Astor is an automatic software repair framework in Java for Java. It contains an implementation of state of the art repair approaches such as GenProg and Kali.
 
 
-If you use Astor, please cite this technical report:
+If you use Astor for academic purposes, please cite the appropriate publication:
+
+Matias Martinez, Martin Monperrus, "ASTOR: A Program Repair Library for Java", in Proceedings of ISSTA, Demonstration Track, 2016.
+
+    @inproceedings{martinez:hal-01321615,
+     title = {ASTOR: A Program Repair Library for Java},
+     author = {Martinez, Matias and Monperrus, Martin},
+     booktitle = {Proceedings of ISSTA, Demonstration Track},
+     year = {2016},
+    url = {https://hal.archives-ouvertes.fr/hal-01321615/document},
+   }
 
 Matias Martinez, Martin Monperrus. "ASTOR: Evolutionary Automatic Software Repair for Java". Technical Report hal-01075976, Inria; 2014. 
 
