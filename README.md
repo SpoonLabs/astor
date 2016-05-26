@@ -32,7 +32,7 @@ Matias Martinez, Martin Monperrus. "ASTOR: Evolutionary Automatic Software Repai
 Compilation
 -------
 
-Note that this project requires the use of **Java 1.7**; it does not build or does not run (on OS X 10.10.3) with Java 1.8. Please install a JDK 1.7 and configure Maven or your IDE to use it. Fill property jvm4testexecution in `src/main/resources/configuration.properties`.
+Please install a JDK 1.8 and configure Maven or your IDE to use it. Fill property jvm4testexecution in `src/main/resources/configuration.properties`.
 
 To compile using maven, first execute:
 
