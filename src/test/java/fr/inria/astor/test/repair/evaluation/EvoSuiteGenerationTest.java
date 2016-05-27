@@ -236,7 +236,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		ConfigurationProperties.properties.setProperty("jvm4testexecution", javahome);
 
 		MutationSupporter.currentSupporter = new MutationSupporter();
-
+	
 		// Classpath to build a Spoon Model
 		String classpath4BuildModel = new File("./examples/libs/junit-4.4.jar").getAbsolutePath() + File.pathSeparator
 				+ new File("./examples/evo_suite_test/math_70_spooned//bin//default").getAbsolutePath()
@@ -251,7 +251,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				new File("./examples/evo_suite_test/math_70_spooned/evosuite/evosuite-tests")
 						.getAbsolutePath(),
 				classpath4BuildModel.split(File.pathSeparator));
-
+		
 		// Two classes: EvoTest + EvoScaffolding
 		assertEquals("We do not have 2 classes generated", 2, classes.size());
 
@@ -396,7 +396,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 	
 	@SuppressWarnings("rawtypes")
-	//@Test
+	@Test
 	public void testMath70RegressionTests() throws Exception {
 		AstorMain main1 = new AstorMain();
 
