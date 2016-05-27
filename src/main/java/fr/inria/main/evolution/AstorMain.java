@@ -67,7 +67,7 @@ public class AstorMain extends AbstractMain {
 	}
 
 	/**
-	 * It creates an repair engine according to an execution mode.
+	 * It creates a repair engine according to an execution mode.
 	 * 
 	 * 
 	 * @param removeMode
