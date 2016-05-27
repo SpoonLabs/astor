@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.commons.collections.Factory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -15,6 +16,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.AstorMain;
@@ -28,7 +30,6 @@ public abstract class BaseEvolutionaryTest  {
 
 	public static Logger log = Logger.getLogger(Thread.currentThread().getName());
 	
-	protected AbstractMain main;
 	
 	@After
 	public void tearDown() throws Exception {
@@ -37,8 +38,7 @@ public abstract class BaseEvolutionaryTest  {
 	@Before
 	public void setUp() throws Exception {
 
-	
-		main = new AstorMain();
+		MutationSupporter.cleanFactory();
 		
 		Logger.getLogger(StandardEnvironment.class).setLevel(Level.ERROR);
 		
