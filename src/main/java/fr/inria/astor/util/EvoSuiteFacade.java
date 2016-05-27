@@ -153,13 +153,10 @@ public class EvoSuiteFacade {
 	public List<CtClass> reificateEvoSuiteTest(String evoTestpath, String[] classpath) {
 		logger.debug("Compiling ES code " + evoTestpath + " with CL " + Arrays.toString(classpath));
 		MutationSupporter mutatorSupporter = MutationSupporter.currentSupporter;
-		Factory factory = MutationSupporter.currentSupporter.getFactory();
 		String codeLocation = evoTestpath;
-		boolean saveOutput = true;
+		boolean saveOutput = false;
 		try {
 			mutatorSupporter.buildModel(codeLocation, classpath, saveOutput);
-			// mutatorSupporter.saveClassModel(codeLocation, classpath,
-			// saveOutput);//FOR TEST
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -168,7 +165,7 @@ public class EvoSuiteFacade {
 			mutatorSupporter.buildModel(codeLocation, classpath, saveOutput);
 
 		}
-
+		
 		List<CtType<?>> allTypes = mutatorSupporter.getFactory().Type().getAll();
 		List<CtClass> ESTestClasses = new ArrayList<>();
 		for (CtType<?> ctType : allTypes) {
