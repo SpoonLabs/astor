@@ -18,13 +18,11 @@ import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.executors.WorkerThreadHelper;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
 
 /**
  * 
@@ -50,7 +48,7 @@ public class EvoSuiteFacade {
 	public boolean runEvosuite(ProgramVariant variant,
 			ProjectRepairFacade projectFacade) throws Exception {
 
-		List<URL> originalURL = new ArrayList(
+		List<URL> originalURL = new ArrayList<>(
 				Arrays.asList(projectFacade.getClassPathURLforProgramVariant(ProgramVariant.DEFAULT_ORIGINAL_VARIANT)));
 
 		String outES = projectFacade.getInDirWithPrefix(ConfigurationProperties.getProperty("evosuiteresultfolder"));
@@ -108,12 +106,8 @@ public class EvoSuiteFacade {
 	 */
 	private boolean runProcess(URL[] urlClasspath, String[] argumentsEvo) {
 		Process p = null;
-
-		if (!ProjectConfiguration.validJDK())
-			throw new IllegalArgumentException(
-					"jdk folder not found, please configure property jvm4testexecution in the configuration.properties file");
-
-		String javaPath = ConfigurationProperties.getProperty("jvm4testexecution");
+		
+		String javaPath = ConfigurationProperties.getProperty("jvm4evosuitetestexecution");
 		javaPath += File.separator + "java";
 
 		try {
@@ -136,8 +130,7 @@ public class EvoSuiteFacade {
 			WorkerThreadHelper worker = new WorkerThreadHelper(p);
 			worker.start();
 			worker.join();
-			long t_end = System.currentTimeMillis();
-
+		
 			p.exitValue();
 
 			readOut(p);
@@ -275,7 +268,6 @@ public class EvoSuiteFacade {
 	}
 
 	private String readOut(Process p) {
-		boolean success = false;
 		String out = "";
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));

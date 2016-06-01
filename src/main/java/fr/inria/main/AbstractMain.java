@@ -60,7 +60,9 @@ public abstract class AbstractMain {
 
 		// Optional parameters
 		options.addOption("jvm4testexecution", true,
-				"(Optional) location of JVM that executes the mutated version of a program (Folder that contains java script, such as /bin/ ). For the examples, run jdk 6");
+				"(Optional) location of JVM that executes the mutated version of a program (Folder that contains java script, such as /bin/ ).");
+		options.addOption("jvm4evosuitetestexecution", true,
+				"(Optional) location of JVM that executes the EvoSuite test cases. If it is not specified, Astor uses that one from property 'jvm4testexecution'");
 		options.addOption("maxgen", true, "(Optional) max number of generation a program variant is evolved");
 		options.addOption("population", true,
 				"(Optional)number of population (program variants) that the approach evolves");
@@ -231,9 +233,18 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("jvm4testexecution", javahome);
 
 		}
+		
+		if (cmd.hasOption("jvm4evosuitetestexecution")) {
+			ConfigurationProperties.properties.setProperty("jvm4evosuitetestexecution",
+					cmd.getOptionValue("jvm4evosuitetestexecution"));
+		}else{
+			ConfigurationProperties.properties.setProperty("jvm4evosuitetestexecution", 
+					ConfigurationProperties.properties.getProperty("jvm4testexecution"));
 
+		}
+		
 		if (!ProjectConfiguration.validJDK()) {
-			System.out.println("Error: invalid jdk folder");
+			System.err.println("Error: invalid jdk folder");
 			return false;
 		}
 

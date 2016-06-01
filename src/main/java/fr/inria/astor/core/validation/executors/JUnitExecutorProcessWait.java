@@ -6,26 +6,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.junitexec.JUnitTestExecutor;
 
 /**
- * Process-based program variant validation
+ * Process-based program variant validation, used for executing EvoSuite test cases
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
 public class JUnitExecutorProcessWait extends JUnitExecutorProcess {
 
-	public TestResult execute(String path, List<String> classesToExecute, int waitTime) {
+	@Override
+	public TestResult execute(String jvmPath, String path, List<String> classesToExecute, int waitTime) {
 		Process p = null;
 
-		if (!ProjectConfiguration.validJDK())
-			throw new IllegalArgumentException(
-					"jdk folder not found, please configure property jvm4testexecution in the configuration.properties file");
-
-		String javaPath = ConfigurationProperties.getProperty("jvm4testexecution");
+		String javaPath = ConfigurationProperties.getProperty("jvm4evosuitetestexecution");
 		javaPath += File.separator + "java";
 		String systemcp = System.getProperty("java.class.path");
 
@@ -34,7 +30,6 @@ public class JUnitExecutorProcessWait extends JUnitExecutorProcess {
 		List<String> cls = new ArrayList<>(classesToExecute);
 
 		try {
-
 			List<String> command = new ArrayList<String>();
 			command.add(javaPath);
 			command.add("-Xmx2048m");

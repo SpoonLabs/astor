@@ -8,12 +8,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.junitexec.JUnitTestExecutor;
 
@@ -31,36 +29,34 @@ public class JUnitExecutorProcess {
 		super();
 	}
 
-	public TestResult execute(URL[] path, List<String> classesToExecute, int waitTime) {
-		return execute(urlArrayToString(path), classesToExecute, waitTime);
+	public TestResult execute(String jvmPath,URL[] classpath, List<String> classesToExecute, int waitTime) {
+		return execute(jvmPath,urlArrayToString(classpath), classesToExecute, waitTime);
 	}
 
-	public TestResult execute(String path, List<String> classesToExecute, int waitTime) {
+	public TestResult execute(String jvmPath, String classpath, List<String> classesToExecute, int waitTime) {
 		Process p = null;
-
-		if (!ProjectConfiguration.validJDK())
-			throw new IllegalArgumentException(
-					"jdk folder not found, please configure property jvm4testexecution in the configuration.properties file");
-
-		String javaPath = ConfigurationProperties.getProperty("jvm4testexecution");
-		javaPath += File.separator + "java";
+		jvmPath += File.separator + "java";
 		String systemcp = System.getProperty("java.class.path");
 
-		path = systemcp + File.pathSeparator + path;
+		classpath = systemcp + File.pathSeparator + classpath;
 
 		List<String> cls = new ArrayList<>(classesToExecute);
 
 		try {
 
 			List<String> command = new ArrayList<String>();
-			command.add(javaPath);
-			//command.add("-Xmx2048m");
+			command.add(jvmPath);
 			command.add("-cp");
-			command.add(path);
+			command.add(classpath);
 			command.add(JUnitTestExecutor.class.getName());
 
 			command.addAll(cls);
 
+			String commandString = command.toString().replace("[", "").replace("]", "").replace(",", " ");
+			int trunk = ConfigurationProperties.getPropertyInt("commandTrunk");
+			String commandToPrint = (trunk !=0 && commandString.length() > trunk )? (commandString.substring(0, trunk)+"..AND "+(commandString.length() - trunk)+" CHARS MORE..."):commandString;
+			log.debug("Executing process: \n" + commandToPrint);
+			
 			ProcessBuilder pb = new ProcessBuilder(command.toArray(new String[command.size()]));
 			pb.redirectOutput();
 			pb.redirectErrorStream(true);
@@ -68,15 +64,13 @@ public class JUnitExecutorProcess {
 			long t_start = System.currentTimeMillis();
 			p = pb.start();
 
-			String commandString = command.toString().replace("[", "").replace("]", "").replace(",", " ");
-			int trunk = ConfigurationProperties.getPropertyInt("commandTrunk");
-			String commandToPrint = (trunk !=0 && commandString.length() > trunk )? (commandString.substring(0, trunk)+"..AND "+(commandString.length() - trunk)+" CHARS MORE..."):commandString;
-			log.debug("Executing process: \n" + commandToPrint);
-
 			WorkerThreadHelper worker = new WorkerThreadHelper(p);
 			worker.start();
 			worker.join(waitTime);
 			long t_end = System.currentTimeMillis();
+			
+	
+
 			
 			p.exitValue();
 			TestResult tr = getTestResult(p);

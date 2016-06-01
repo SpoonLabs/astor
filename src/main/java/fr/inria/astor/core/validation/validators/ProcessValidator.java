@@ -60,7 +60,9 @@ public class ProcessValidator extends ProgramValidator {
 			currentStats.numberOfFailingTestCaseExecution++;
 
 			long t1 = System.currentTimeMillis();
-			TestResult trfailing = testProcessRunner.execute(bc, projectFacade.getProperties().getFailingTestCases(),
+			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
+			
+			TestResult trfailing = testProcessRunner.execute(jvmPath,bc, projectFacade.getProperties().getFailingTestCases(),
 					ConfigurationProperties.getPropertyInt("tmax1"));
 			long t2 = System.currentTimeMillis();
 			currentStats.time1Validation.add((t2 - t1));
@@ -103,7 +105,9 @@ public class ProcessValidator extends ProgramValidator {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
 			JUnitExecutorProcess testProcessRunner = new JUnitExecutorProcess();
-			TestResult trfailing = testProcessRunner.execute(bc, projectFacade.getProperties().getFailingTestCases(),
+			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
+			
+			TestResult trfailing = testProcessRunner.execute(jvmPath,bc, projectFacade.getProperties().getFailingTestCases(),
 					ConfigurationProperties.getPropertyInt("tmax1"));
 			ProgramVariantValidationResult validationResult = new ProgramVariantValidationResult(trfailing,
 					trfailing.wasSuccessful(), false);
@@ -176,7 +180,9 @@ public class ProcessValidator extends ProgramValidator {
 		long t1 = System.currentTimeMillis();
 		List<String> testCasesRegression = projectFacade.getProperties().getRegressionTestCases();
 
-		TestResult trregression = p.execute(bc, testCasesRegression, ConfigurationProperties.getPropertyInt("tmax2"));
+		String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
+		
+		TestResult trregression = p.execute(jvmPath,bc, testCasesRegression, ConfigurationProperties.getPropertyInt("tmax2"));
 
 		if (testCasesRegression == null || testCasesRegression.isEmpty()) {
 			log.error("Any test case for regression testing");
@@ -209,7 +215,9 @@ public class ProcessValidator extends ProgramValidator {
 
 			List<String> parcial = new ArrayList<String>();
 			parcial.add(tc);
-			TestResult trregression = p.execute(bc, parcial, ConfigurationProperties.getPropertyInt("tmax2"));
+			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
+			
+			TestResult trregression = p.execute(jvmPath,bc, parcial, ConfigurationProperties.getPropertyInt("tmax2"));
 			if (trregression == null) {
 				log.debug("The validation 2 have not finished well");
 				return null;

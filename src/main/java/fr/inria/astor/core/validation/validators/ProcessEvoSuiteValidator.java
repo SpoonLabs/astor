@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.executors.JUnitExecutorProcessWait;
@@ -18,7 +19,9 @@ import spoon.reflect.declaration.CtClass;
 
 /**
  * 
- * @author matias
+ ** Process-based program variant validation, used for executing EvoSuite test cases
+ * 
+ * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
 public class ProcessEvoSuiteValidator extends ProgramValidator {
@@ -114,7 +117,8 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 
 		JUnitExecutorProcessWait process = new JUnitExecutorProcessWait();
 		int time = 60000;
-		TestResult trregression = process.execute(processClasspath, testCasesRegression, time);
+		String jvmPath = ConfigurationProperties.getProperty("jvm4evosuitetestexecution");
+		TestResult trregression = process.execute(jvmPath,processClasspath, testCasesRegression, time);
 
 		long t2 = System.currentTimeMillis();
 		currentStats.time2Validation.add((t2 - t1));
