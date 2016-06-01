@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -38,6 +39,19 @@ import spoon.reflect.declaration.CtClass;
  */
 public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
+	@Before
+	public void setUp() throws Exception{
+		super.setUp();
+		// For running the test cases, We use the JVM that runs Astor
+		String javahome = System.getProperty("java.home");
+		File location = new File(javahome);
+		javahome = location.getParent() + File.separator + "bin";
+		// We set up the JVM that runs test
+		ConfigurationProperties.properties.setProperty("jvm4testexecution", javahome);
+		ConfigurationProperties.properties.setProperty("jvm4evosuitetestexecution", javahome);
+	}
+	
+	
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testGenerateEvosuiteTestsStepByStep() throws Exception {
@@ -227,13 +241,6 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testCompileSaveAndRunEvoSuiteTestStepByStep() throws Exception {
-
-		// For running the test cases, We use the JVM that runs Astor
-		String javahome = System.getProperty("java.home");
-		File location = new File(javahome);
-		javahome = location.getParent() + File.separator + "bin";
-		// We set up the JVM that runs test
-		ConfigurationProperties.properties.setProperty("jvm4testexecution", javahome);
 
 		MutationSupporter.currentSupporter = new MutationSupporter();
 	
@@ -471,6 +478,32 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				+ ",out,"+new File(ConfigurationProperties.getProperty("workingDirectory"))
 				//+ "-dependencies,"+(new File("./examples/libs/")).getAbsolutePath()
 				+ ",-failing,org.apache.commons.math.analysis.solvers.BisectionSolverTest,"
+				+ "-package,org.apache.commons,"
+				//+ "-jvm4testexecution,/home/mmartinez/jdk1.8.0_45/bin/"
+				+ "-javacompliancelevel,7,"
+				+ "-maxgen,1000000,"
+				+ "-seed,6001,"
+				+ "-stopfirst,true,"
+				+ "-scope,package,-maxtime,10,"
+				+ "-population,1,"
+				+ "-srcjavafolder,src/java/,"
+				+ "-srctestfolder,src/test/,-binjavafolder,target/classes/,"
+				+ "-bintestfolder,target/test-classes/,"
+				+ "-flthreshold,0.1,"
+				//+ " -validation,fr.inria.astor.core.validation.validators.RegressionValidation,"
+				;
+		String[] args = command.split(",");
+		AstorMain main1 = new AstorMain();
+		main1.execute(args);
+	}
+	
+	//@Test
+	public void testM50() throws Exception{
+		String command = "-mode,statement,"
+					+ "-location,"+ (new File("./examples/math_50")).getAbsolutePath()
+				+ ","+ "-dependencies,"+new File("./examples/libs/junit-4.8.2.jar").getAbsolutePath()
+				+ ",out,"+new File(ConfigurationProperties.getProperty("workingDirectory"))
+				+ ",-failing,org.apache.commons.math.analysis.solvers.BaseSecantSolver,"
 				+ "-package,org.apache.commons,"
 				//+ "-jvm4testexecution,/home/mmartinez/jdk1.8.0_45/bin/"
 				+ "-javacompliancelevel,7,"
