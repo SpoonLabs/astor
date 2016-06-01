@@ -1,6 +1,7 @@
 package fr.inria.astor.core.manipulation.filters;
 
 import org.apache.log4j.Logger;
+
 import spoon.reflect.code.CtIf;
 /**
  * Retrieves the if conditions

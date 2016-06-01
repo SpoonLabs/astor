@@ -7,10 +7,6 @@ import java.util.Map;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.entities.MutantCtElement;
-import fr.inria.astor.core.entities.WeightCtElement;
-import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.LogicalBinaryOperatorMutator;
@@ -18,6 +14,10 @@ import fr.inria.astor.approaches.mutRepair.operators.ctmutators.MutatorComposite
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.NegationUnaryOperatorConditionMutator;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.RelationalBinaryOperatorMutator;
 import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.MutantCtElement;
+import fr.inria.astor.core.entities.WeightCtElement;
+import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;

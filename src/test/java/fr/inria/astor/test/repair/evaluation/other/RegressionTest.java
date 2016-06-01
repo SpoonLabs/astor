@@ -1,6 +1,8 @@
 package fr.inria.astor.test.repair.evaluation.other;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
@@ -11,7 +13,6 @@ import org.junit.Test;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.BaseEvolutionaryTest;
-import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.AstorMain;
 /**
  * Tests for assert the execution/ exclussion of regression 

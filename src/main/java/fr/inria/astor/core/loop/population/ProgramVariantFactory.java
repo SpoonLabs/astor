@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerLauncher;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientProcessor;

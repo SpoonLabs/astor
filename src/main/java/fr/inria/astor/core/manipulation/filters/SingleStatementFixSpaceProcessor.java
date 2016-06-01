@@ -1,12 +1,9 @@
 package fr.inria.astor.core.manipulation.filters;
 
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
-import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 

@@ -10,7 +10,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.main.AbstractMain;
 import fr.inria.main.evolution.AstorMain;
 /**
  * Execution of multiples kali scenarios.

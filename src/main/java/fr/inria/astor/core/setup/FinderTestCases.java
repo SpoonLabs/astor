@@ -10,11 +10,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.faultlocalization.entity.TestClassesFinder;
-import fr.inria.astor.core.manipulation.MutationSupporter;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 
 /**
  * Class for manipulating information related to test cases.

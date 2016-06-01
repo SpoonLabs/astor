@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.apache.commons.collections.Factory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -18,8 +17,6 @@ import org.junit.Before;
 
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.main.AbstractMain;
-import fr.inria.main.evolution.AstorMain;
 import spoon.support.StandardEnvironment;
 /**
  * 
