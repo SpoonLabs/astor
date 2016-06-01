@@ -28,7 +28,7 @@ public class IntroClassTest {
 		String dep = new File("./examples/libs/junit-4.11.jar").getAbsolutePath();
 		String[] command = new String[]{
 		"-location", 
-		new File("./examples/introclass/3b2376ab97bb5d1a5dbbf2b45cf062db320757549c761936d19df05e856de894e45695014cd8063cdc22148b13fa1803b3c9e77356931d66f4fbec0efacf7829/003/").getAbsolutePath(),
+		new File("./examples/introclass/3b2376/003/").getAbsolutePath(),
 		"-failing","introclassJava.median_3b2376ab_003BlackboxTest:introclassJava.median_3b2376ab_003WhiteboxTest", 
 		"-dependencies", dep,
 		"-seed","10",
@@ -67,7 +67,7 @@ public class IntroClassTest {
 				+ new File("./examples/Math-0c1ef/lib/hamcrest-core-1.3.jar").getAbsolutePath();
 		String projectId = "IntroClass003";
 		String failing = "introclassJava.median_3b2376ab_003BlackboxTest:introclassJava.median_3b2376ab_003WhiteboxTest";
-		File exampleLocation = new File("./examples/introclass/3b2376ab97bb5d1a5dbbf2b45cf062db320757549c761936d19df05e856de894e45695014cd8063cdc22148b13fa1803b3c9e77356931d66f4fbec0efacf7829/003/");
+		File exampleLocation = new File("./examples/introclass/3b2376/003/");
 		String location = exampleLocation.getAbsolutePath();
 		String packageToInstrument = "";
 		
