@@ -37,7 +37,7 @@ public class TestResult {
 
 	@Override
 	public String toString() {
-		return "TR: Success: "+ failTest.isEmpty() + ", failTest= "
+		return "TR: Success: "+ (failures == 0) + ", failTest= "
 				+ failures + ", was successful: "+this.wasSuccessful()+"] ,"+ this.failTest;
 	}
 

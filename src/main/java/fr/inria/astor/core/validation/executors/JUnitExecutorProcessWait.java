@@ -14,8 +14,8 @@ import fr.inria.astor.junitexec.JUnitTestExecutor;
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
- */
-public class JUnitExecutorProcessWait extends JUnitExecutorProcess {
+ */@Deprecated
+public abstract class JUnitExecutorProcessWait extends JUnitExecutorProcess {
 
 	@Override
 	public TestResult execute(String jvmPath, String path, List<String> classesToExecute, int waitTime) {
@@ -57,7 +57,7 @@ public class JUnitExecutorProcessWait extends JUnitExecutorProcess {
 			WorkerThreadHelper worker = new WorkerThreadHelper(p);
 			worker.start();
 			worker.join(waitTime);
-
+			
 			// ==
 			long t_end = System.currentTimeMillis();
 

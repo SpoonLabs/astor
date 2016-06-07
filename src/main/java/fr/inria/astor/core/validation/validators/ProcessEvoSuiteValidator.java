@@ -13,7 +13,8 @@ import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.entity.TestResult;
-import fr.inria.astor.core.validation.executors.JUnitExecutorProcessWait;
+import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
+import fr.inria.astor.core.validation.executors.JUnitIndirectExecutorProcess;
 import fr.inria.astor.util.EvoSuiteFacade;
 import spoon.reflect.declaration.CtClass;
 
@@ -115,7 +116,10 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 		log.debug("Executing EvosuiteTest :"+ testCasesRegression );
 		long t1 = System.currentTimeMillis();
 
-		JUnitExecutorProcessWait process = new JUnitExecutorProcessWait();
+		boolean avoidInterrupt = true;
+		JUnitExecutorProcess process = 
+			new JUnitIndirectExecutorProcess(avoidInterrupt);
+		
 		int time = 60000;
 		String jvmPath = ConfigurationProperties.getProperty("jvm4evosuitetestexecution");
 		TestResult trregression = process.execute(jvmPath,processClasspath, testCasesRegression, time);

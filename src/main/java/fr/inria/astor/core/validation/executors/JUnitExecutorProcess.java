@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -21,10 +22,16 @@ import fr.inria.astor.junitexec.JUnitTestExecutor;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class JUnitExecutorProcess {
+public abstract class  JUnitExecutorProcess {
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
-
+	boolean avoidInterruption = false;
+	
+	public JUnitExecutorProcess(boolean avoidInterruption ) {
+		this();
+		this.avoidInterruption = avoidInterruption;
+	}
+	
 	public JUnitExecutorProcess() {
 		super();
 	}
@@ -36,7 +43,7 @@ public class JUnitExecutorProcess {
 	public TestResult execute(String jvmPath, String classpath, List<String> classesToExecute, int waitTime) {
 		Process p = null;
 		jvmPath += File.separator + "java";
-		String systemcp = System.getProperty("java.class.path");
+		String systemcp = 	defineInitialClasspath();
 
 		classpath = systemcp + File.pathSeparator + classpath;
 
@@ -46,16 +53,13 @@ public class JUnitExecutorProcess {
 
 			List<String> command = new ArrayList<String>();
 			command.add(jvmPath);
+			command.add("-Xmx2048m");
 			command.add("-cp");
 			command.add(classpath);
-			command.add(JUnitTestExecutor.class.getName());
-
+			command.add(classNameToCall());
 			command.addAll(cls);
 
-			String commandString = command.toString().replace("[", "").replace("]", "").replace(",", " ");
-			int trunk = ConfigurationProperties.getPropertyInt("commandTrunk");
-			String commandToPrint = (trunk !=0 && commandString.length() > trunk )? (commandString.substring(0, trunk)+"..AND "+(commandString.length() - trunk)+" CHARS MORE..."):commandString;
-			log.debug("Executing process: \n" + commandToPrint);
+			printCommandToExecute(command);
 			
 			ProcessBuilder pb = new ProcessBuilder(command.toArray(new String[command.size()]));
 			pb.redirectOutput();
@@ -64,19 +68,23 @@ public class JUnitExecutorProcess {
 			long t_start = System.currentTimeMillis();
 			p = pb.start();
 
-			WorkerThreadHelper worker = new WorkerThreadHelper(p);
-			worker.start();
-			worker.join(waitTime);
+			//WorkerThreadHelper worker = new WorkerThreadHelper(p);
+			//worker.start();
+			//worker.join(waitTime);
+			//log.debug("Launched for " + waitTime+" milliseconds");
+			p.waitFor(waitTime,TimeUnit.MILLISECONDS);
 			long t_end = System.currentTimeMillis();
+			log.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
+		
+			if(!avoidInterruption){
+				log.debug("Running Exit Value");
+				//We force obtaining the exit value.
+				p.exitValue();
+			}
 			
-	
-
-			
-			p.exitValue();
 			TestResult tr = getTestResult(p);
 			p.destroy();
-			log.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
-
+			
 			return tr;
 		} catch ( IOException |InterruptedException |IllegalThreadStateException  ex) {
 			log.info("The Process that runs JUnit test cases had problems: " + ex.getMessage());
@@ -86,6 +94,9 @@ public class JUnitExecutorProcess {
 		return null;
 	}
 
+	public abstract String defineInitialClasspath();
+
+	public abstract String classNameToCall();
 
 	/**
 	 * This method analyze the output of the junit executor (i.e.,
@@ -95,44 +106,7 @@ public class JUnitExecutorProcess {
 	 * @param p
 	 * @return
 	 */
-	protected TestResult getTestResult(Process p) {
-		TestResult tr = new TestResult();
-		boolean success = false;
-		String out = "";
-		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line;
-			while ((line = in.readLine()) != null) {
-				out += line + "\n";
-				if (line.startsWith(JUnitTestExecutor.OUTSEP)) {
-					String[] s = line.split(JUnitTestExecutor.OUTSEP);
-					int nrtc = Integer.valueOf(s[1]);
-					tr.casesExecuted = nrtc;
-					int failing = Integer.valueOf(s[2]);
-					tr.failures = failing;
-					if (!"".equals(s[3])) {
-						String[] falinglist = s[3].replace("[", "").replace("]", "").split(",");
-						for (String string : falinglist) {
-							if (!string.trim().isEmpty())
-								tr.failTest.add(string.trim());
-						}
-					}
-					success = true;
-				}
-			}
-			in.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (success)
-			return tr;
-		else {
-			log.error("Error reading the validation process\n output: \n"+
-			out +" \n error: "+getProcessError(p.getErrorStream()));
-			
-			return null;
-		}
-	}
+	protected abstract TestResult getTestResult(Process p);
 
 	protected String urlArrayToString(URL[] urls) {
 		String s = "";
@@ -142,7 +116,7 @@ public class JUnitExecutorProcess {
 		}
 		return s;
 	}
-	private String getProcessError(InputStream str){
+	protected String getProcessError(InputStream str){
 		String out = "";
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(str));
@@ -155,6 +129,15 @@ public class JUnitExecutorProcess {
 			e.printStackTrace();
 		}
 		return out;
+	}
+	
+	private void printCommandToExecute(List<String> command) {
+		String commandString = command.toString().replace("[", "").replace("]", "").replace(",", " ");
+		int trunk = ConfigurationProperties.getPropertyInt("commandTrunk");
+		String commandToPrint = (trunk != 0 && commandString.length() > trunk)
+				? (commandString.substring(0, trunk) + "..AND " + (commandString.length() - trunk) + " CHARS MORE...")
+				: commandString;
+		log.debug("Executing process: \n" + commandToPrint);
 	}
 
 }
