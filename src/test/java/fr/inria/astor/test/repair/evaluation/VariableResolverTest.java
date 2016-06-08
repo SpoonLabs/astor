@@ -5,15 +5,22 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerLauncher;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 
 /**
@@ -23,6 +30,7 @@ import spoon.reflect.declaration.CtVariable;
  */
 public class VariableResolverTest {
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void test1VariablesInScope() throws Exception {
 
@@ -49,7 +57,7 @@ public class VariableResolverTest {
 		ProgramVariant pv = variants.get(0);
 		ModificationPoint mp = pv.getModificationPoints().get(0);
 		System.out.println(mp);
-		List<CtVariable> vars = VariableResolver.getVariablesScope(mp.getCodeElement());
+		List<CtVariable> vars = VariableResolver.searchVariablesInScope(mp.getCodeElement());
 		System.out.println(vars);
 
 		// 0 line 72, file BisectionSolver.java
@@ -60,15 +68,10 @@ public class VariableResolverTest {
 
 		ModificationPoint mp1 = pv.getModificationPoints().get(1);
 
-		List<CtVariable> vars1 = VariableResolver.getVariablesScope(mp1.getCodeElement());
+		List<CtVariable> vars1 = VariableResolver.searchVariablesInScope(mp1.getCodeElement());
 		// Now, two locals
 		assertEquals((7 + 6 + 2), vars1.size());
 
-		// 0 line 66, file BisectionSolver.java
-		// (double min, double max)
-
-		// 7 line 89, file BisectionSolver.java
-		// (final UnivariateRealFunction f, double min, double max)
 
 	}
 
@@ -92,17 +95,150 @@ public class VariableResolverTest {
 		ProgramVariant pv = variants.get(0);
 		ModificationPoint mp = pv.getModificationPoints().get(0);
 		assertEquals(97, ((SuspiciousModificationPoint)mp).getSuspicious().getLineNumber() );
-		List<CtVariable> vars = VariableResolver.getVariablesScope(mp.getCodeElement());
-		//System.out.println(vars);
+		List<CtVariable> vars = VariableResolver.searchVariablesInScope(mp.getCodeElement());
 		//remember that we exclude serialId fields
 		assertEquals((0 +4 + 1), vars.size());
 
 		ModificationPoint mp4 = pv.getModificationPoints().get(4);
 		assertEquals(181, ((SuspiciousModificationPoint)mp4).getSuspicious().getLineNumber() );
 	
-		List<CtVariable> vars4 = VariableResolver.getVariablesScope(mp4.getCodeElement());
+		List<CtVariable> vars4 = VariableResolver.searchVariablesInScope(mp4.getCodeElement());
 		//method local + block local + par + fields
 		assertEquals((1 + 3 +4 + 6), vars4.size());
+	}
+	
+	@Test
+	public void testVarMapping() throws Exception{
+		
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+			//Force not running
+				"-maxgen", "0", "-scope", "package", "-seed", "10" };
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+
+		ProgramVariant pv = variants.get(0);
+		ModificationPoint mp = pv.getModificationPoints().get(0);
+		assertEquals(97, ((SuspiciousModificationPoint)mp).getSuspicious().getLineNumber() );
+		List<CtVariable> varsInScope = VariableResolver.searchVariablesInScope(mp.getCodeElement());
+		List<CtVariableAccess> varacc = VariableResolver.collectVariableAccess(mp.getCodeElement());
+		
+		
+		//Let's imagine that we take an ingredient. I created two statement. 
+		CtStatement statementsToTest = MutationSupporter.factory.Code().createCodeSnippetStatement("double i = 0; i= i+1;").compile();
+		//let's take the statement i= i+1 
+		CtStatement varToQuery = ((CtBlock)statementsToTest.getParent()).getLastStatement();
+		//we collect the variable access.
+		List<CtVariableAccess> varsAccessCollectedToQuery = VariableResolver.collectVariableAccess(varToQuery);
+		assertTrue(varsAccessCollectedToQuery.size() > 0);
+		
+		//We do not match the names, only the types so double vars are mapped
+		Map<CtVariableAccess, List<CtVariable>>  mappings1= VariableResolver.matchVars(varsInScope,varsAccessCollectedToQuery, false);
+		assertTrue(!mappings1.isEmpty());
+		
+		assertTrue(mappings1.get(varsAccessCollectedToQuery.get(0)).size() > 0);
+		boolean match1 = VariableResolver.fitInContext(varsInScope , varToQuery, false);
+		assertTrue(match1);
+		
+		//Using var names, it must not be match (we have var i as ingredient)
+		Map<CtVariableAccess, List<CtVariable>>  mappings1b= VariableResolver.matchVars(varsInScope,varsAccessCollectedToQuery, true);
+		assertTrue(mappings1b.get(varsAccessCollectedToQuery.get(0)).isEmpty());
+			
+		boolean match1b = VariableResolver.fitInContext(varsInScope , varToQuery, true);
+		assertFalse(match1b);
+		
+		//Now, case with same name and type
+		
+		//Let's imagine that we take an ingredient. I created two statement. 
+		CtStatement statementsToTest2 = MutationSupporter.factory.Code().createCodeSnippetStatement("double p = 0; p= p+1;").compile();
+		CtStatement varToQuery2 = ((CtBlock)statementsToTest2.getParent()).getLastStatement();
+		assertTrue(VariableResolver.fitInContext(varsInScope , varToQuery2, false));
+		assertTrue(VariableResolver.fitInContext(varsInScope , varToQuery2, true));
+		
+		
+		//Now, case same name incomp type, no matching
+		CtStatement statementsToTest3 = MutationSupporter.factory.Code().createCodeSnippetStatement("int p = 0; p= p+1;").compile();
+		CtStatement varToQuery3 = ((CtBlock)statementsToTest3.getParent()).getLastStatement();
+		assertFalse(VariableResolver.fitInContext(varsInScope , varToQuery3, false));
+		assertFalse(VariableResolver.fitInContext(varsInScope , varToQuery3, true));
+		
+		
+		
+		//Now, case two compatible variables
+		CtStatement statementsToTest4 = MutationSupporter.factory.Code().createCodeSnippetStatement("double p = 0;double lowerBound = 0; p= lowerBound+1;").compile();
+		CtStatement varToQuery4 = ((CtBlock)statementsToTest4.getParent()).getLastStatement();
+		assertTrue(VariableResolver.fitInContext(varsInScope , varToQuery4, false));
+		assertTrue(VariableResolver.fitInContext(varsInScope , varToQuery4, true));
+		
+		
+		//Now, case two variables, one compatible by name, the other not
+		CtStatement statementsToTest5 = MutationSupporter.factory.Code().createCodeSnippetStatement("double p = 0;double lowerBound1 = 0; p = lowerBound1 + 1;").compile();
+		CtStatement varToQuery5 = ((CtBlock)statementsToTest5.getParent()).getLastStatement();
+		assertTrue(VariableResolver.fitInContext(varsInScope , varToQuery5, false));
+		//One var name does not match
+		assertFalse(VariableResolver.fitInContext(varsInScope , varToQuery5, true));
+	}
+	
+	@Test
+	public void testJSoupParser31be24Version2() throws Exception {
+		String dep = new File("./examples/libs/junit-4.5.jar").getAbsolutePath();
+		AstorMain main1 = new AstorMain();
+		
+		String[] args = new String[] { "-mode", "statement", "-location",
+				new File("./examples/jsoup31be24").getAbsolutePath(), "-dependencies", dep, 
+				//The injected bug produces 4 failing cases in two files
+				"-failing",
+				"org.jsoup.parser.CharacterReaderTest"+File.pathSeparator
+				+"org.jsoup.parser.HtmlParserTest"
+				, 
+				//
+				"-package", "org.jsoup", "-javacompliancelevel", "7", 
+				"-stopfirst", "true", 
+				//
+				"-flthreshold", "0.8", "-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/",
+				"-binjavafolder", "/target/classes", "-bintestfolder", "/target/test-classes", 
+				//
+				"-scope", "local",
+				"-seed", "10", 
+				//Not Evolution
+				"-maxtime", "0",
+				"-maxgen","0",
+				"-population","1"};
+		main1.execute(args);
+
+		ProgramVariant pv = main1.getEngine().getVariants().get(0);
+		SuspiciousModificationPoint smp = (SuspiciousModificationPoint) pv.getModificationPoints().get(1);
+		assertEquals(118, smp.getSuspicious().getLineNumber());
+		
+		SpoonLocationPointerLauncher muSpoonLaucher = new SpoonLocationPointerLauncher(MutationSupporter.getFactory());
+		//Ingredient position
+		List<CtElement> ingredients = muSpoonLaucher.run(smp.getCtClass(), 107);
+		System.out.println(ingredients);
+		assertEquals(3, ingredients.size());
+		CtStatement ingredient = (CtStatement) ingredients.get(2);
+		assertNotNull(ingredient);
+		assertEquals("pos += offset",ingredient.toString());
+		assertTrue(smp.getContextOfModificationPoint().size() > 0);
+		//The ingredient must fit in the modpoint'context.
+		boolean fits = VariableResolver.fitInPlace(smp.getContextOfModificationPoint(), ingredient);
+		assertTrue(fits);
+		
+		List<CtElement> ingredients2 = muSpoonLaucher.run(smp.getCtClass(), 104);
+		CtStatement ingredient2 = (CtStatement) ingredients2.get(3);
+		assertNotNull(ingredient2);
+		assertEquals("int offset = nextIndexOf(c)",ingredient2.toString());
+		
+		boolean fits2 = VariableResolver.fitInPlace(smp.getContextOfModificationPoint(), ingredient2);
+		assertFalse(fits2);
+		
 	}
 
 }

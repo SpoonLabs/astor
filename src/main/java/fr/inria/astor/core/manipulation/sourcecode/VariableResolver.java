@@ -17,6 +17,8 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -31,6 +33,8 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -43,6 +47,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 
 /**
  * Variable manipulations: methods to analyze variables and scope
@@ -56,47 +61,38 @@ public class VariableResolver {
 	private static Logger logger = Logger.getLogger(VariableResolver.class.getName());
 
 	/**
-	 * For a given VariableAccess, we search the list of Variables contains
-	 * compatible types (i.e. sub types)
+	 * Return a list of variables that match with the variable access passed as
+	 * parameter. The last argument indicate if we map also the vars name
 	 * 
 	 * @param varContext
 	 * @param vartofind
+	 * @param mapName
 	 * @return
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Deprecated
-	private static List<CtVariable> compatiblesSubType(List<CtVariable> varContext, CtVariableAccess vartofind) {
-
-		CtTypeReference typeToFind = vartofind.getType();
-
-		return compatiblesSubType(varContext, typeToFind);
-	}
-
-	/**
-	 * 
-	 * @param varContext
-	 * @param vartofind
-	 * @return
-	 */
-	protected static boolean matchVariable(List<CtVariable> varContext, CtVariableAccess vartofind) {
+	protected static List<CtVariable> matchVariable(List<CtVariable> varContext, CtVariableAccess vartofind,
+			boolean mapName) {
+		List<CtVariable> varMatched = new ArrayList<>();
 		try {
 			CtTypeReference typeToFind = vartofind.getType();
 			// First we search for compatible variables according to the type
 			List<CtVariable> types = compatiblesSubType(varContext, typeToFind);
-
+			if (types.isEmpty()) {
+				return varMatched;
+			}
 			// Then, we search
 			for (CtVariable ctVariableWithTypes : types) {
-				boolean match = ctVariableWithTypes.getSimpleName().equals(vartofind.getVariable().getSimpleName());
-				if (match) {
-					// System.out.println("idem "+ctVariableWithTypes );
-					return true;
+				// comparing name is optional, according to argument.
+				boolean matchName = !mapName
+						|| ctVariableWithTypes.getSimpleName().equals(vartofind.getVariable().getSimpleName());
+				if (matchName) {
+					varMatched.add(ctVariableWithTypes);
 				}
 			}
 		} catch (Exception ex) {
 			logger.error("Variable verification error", ex);
 		}
 
-		return false;
+		return varMatched;
 	}
 
 	/**
@@ -106,7 +102,7 @@ public class VariableResolver {
 	 * @return
 	 */
 	@Deprecated
-	private static boolean findCompatibleVariable(List<CtVariable> varContext, CtVariableAccess vartofind) {
+	protected static boolean matchVariable(List<CtVariable> varContext, CtVariableAccess vartofind) {
 		try {
 			CtTypeReference typeToFind = vartofind.getType();
 			// First we search for compatible variables according to the type
@@ -155,21 +151,126 @@ public class VariableResolver {
 		return result;
 	}
 
-	@Deprecated
-	private static List<CtVariable> existSameVariable(List<CtVariable> vars, CtVariableAccess vartofind) {
+	/**
+	 * Maps a variable access with a variable declaration.
+	 * 
+	 * @param varContext
+	 * @param varacc
+	 * @return
+	 */
+	public static Map<CtVariableAccess, List<CtVariable>> matchVars(List<CtVariable> varContext,
+			List<CtVariableAccess> varacc, boolean mapName) {
 
-		List<CtVariable> result = new ArrayList<CtVariable>();
-		CtTypeReference typeToFind = vartofind.getType();
-		for (CtVariable ctVariable_i : vars) {
+		Map<CtVariableAccess, List<CtVariable>> mapping = new HashMap<>();
 
-			CtTypeReference typeref_i = ctVariable_i.getType();
+		for (CtVariableAccess ctVariableAccess : varacc) {
+			List<CtVariable> matched = matchVariable(varContext, ctVariableAccess, mapName);
+			mapping.put(ctVariableAccess, matched);
+		}
 
-			if (typeref_i.equals((typeToFind))
-					&& ctVariable_i.getSimpleName().equals(vartofind.getVariable().getSimpleName())) {
-				result.add(ctVariable_i);
+		return mapping;
+	}
+
+	/**
+	 * Return all variables related to the element passed as argument
+	 * 
+	 * @param element
+	 * @return
+	 */
+	public static List<CtVariableAccess> collectVariableAccess(CtElement element) {
+		List<CtVariableAccess> varaccess = new ArrayList<>();
+
+		CtScanner sc = new CtScanner() {
+
+			@Override
+			public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
+				super.visitCtVariableRead(variableRead);
+				if (!varaccess.contains(variableRead))
+					varaccess.add(variableRead);
 			}
-		} // return false
-		return result;
+
+			@Override
+			public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
+				super.visitCtVariableWrite(variableWrite);
+				if (!varaccess.contains(variableWrite))
+					varaccess.add(variableWrite);
+			}
+
+			@Override
+			public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
+				super.visitCtTypeAccess(typeAccess);
+				//varaccess.add(typeAccess);
+			}
+
+			@Override
+			public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+				super.visitCtFieldRead(fieldRead);
+				if(!varaccess.contains(fieldRead))
+					varaccess.add(fieldRead);
+			}
+
+			@Override
+			public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+				super.visitCtFieldWrite(fieldWrite);
+				if(!varaccess.contains(fieldWrite))
+					varaccess.add(fieldWrite);
+			}
+
+		};
+
+		sc.scan(element);
+
+		return varaccess;
+
+	}
+
+	/**
+	 * 
+	 * This methods determines whether all the variable access contained in a
+	 * CtElement passes as parameter match with a variable from a set of
+	 * variables given as argument. Both variable Types and Names are compared,
+	 * 
+	 * @param varContext
+	 *            List of variables to match
+	 * @param element
+	 *            element to extract the var access to match
+	 * @return
+	 */
+	public static boolean fitInPlace(List<CtVariable> varContext, CtElement element) {
+		return fitInContext(varContext, element, true);
+	}
+
+	/**
+	 * This methods determines whether all the variable access contained in a
+	 * CtElement passes as parameter match with a variable from a set of
+	 * variables given as argument. The argument <code>matchName </code>
+	 * indicates whether Type and Names are compared (value true), only type
+	 * (false).
+	 * 
+	 * @param varContext
+	 *            List of variables to match
+	 * @param element
+	 *            element to extract the var access to match
+	 * @return
+	 */
+	public static boolean fitInContext(List<CtVariable> varContext, CtElement element, boolean matchName) {
+
+		List<CtVariableAccess> varAccessCollected = collectVariableAccess(element);
+
+		Map<CtVariableAccess, List<CtVariable>> matched = matchVars(varContext, varAccessCollected, matchName);
+
+		// Now, we analyze if all access were matched
+		for (CtVariableAccess ctVariableAccess : matched.keySet()) {
+			List<CtVariable> mapped = matched.get(ctVariableAccess);
+			if (mapped.isEmpty()) {
+				// One var access was not mapped
+				return false;
+			}
+		}
+		System.out.println(matched);
+		// All VarAccess were mapped
+		return true;
+
 	}
 
 	/**
@@ -184,7 +285,8 @@ public class VariableResolver {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public static boolean fitInPlace(List<CtVariable> varContext, CtElement element) {
+	@Deprecated
+	public static boolean fitInPlaceOLD(List<CtVariable> varContext, CtElement element) {
 
 		if (element == null)
 			return true;
@@ -355,65 +457,14 @@ public class VariableResolver {
 	}
 
 	/**
-	 * Return all the variables in scope of the element passed as parameter.
+	 * Returns all variables in scope, reachable from the ctelement passes as
+	 * argument
 	 * 
 	 * @param element
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Deprecated
-	private static List<CtVariable> getVariablesFromBlockInScope(CtElement element) {
-		List<CtVariable> variables = new ArrayList();
-
-		if (element == null) {
-			return variables;
-		}
-
-		if (element instanceof CtField) {
-			return variables;
-		}
-		// If is a class, return the fields
-		// TODO: parent fields are included?
-
-		if (element instanceof CtClass) {
-			CtClass ctclass = (CtClass) element;
-			Collection<CtFieldReference<?>> vars = ctclass.getAllFields();
-			for (CtFieldReference<?> ctFieldReference : vars) {
-				variables.add(ctFieldReference.getDeclaration());
-			}
-
-			// variables.addAll(ctclass.getFields());
-
-			return variables;
-		}
-
-		if (element instanceof CtMethod) {
-			// Method PARAMETERS
-			CtMethod method = (CtMethod) element;
-			List<CtParameter> pars = method.getParameters();
-			for (CtParameter ctParameter : pars) {
-				variables.add(ctParameter);
-			}
-			// Class fields:
-			CtClass ctclass = (CtClass) method.getParent();
-			variables.addAll(ctclass.getFields());
-		} else {
-
-			CtElement parent = element.getParent();
-
-			if (parent instanceof CtBlock) {
-				CtBlock pb = (CtBlock) parent;
-				int positionEl = pb.getStatements().indexOf(element);
-				variables.addAll(VariableResolver.retrieveLocalVariables(positionEl, pb));
-			}
-			variables.addAll(getVariablesFromBlockInScope(parent));
-		}
-
-		return variables;
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static List<CtVariable> getVariablesScope(CtElement element) {
+	public static List<CtVariable> searchVariablesInScope(CtElement element) {
 		List<CtVariable> variables = new ArrayList();
 
 		if (element == null) {
@@ -428,11 +479,11 @@ public class VariableResolver {
 		if (ctclass != null) {
 			Collection<CtFieldReference<?>> vars = ctclass.getAllFields();
 			for (CtFieldReference<?> ctFieldReference : vars) {
-				//We dont add private fields from parent classes
-				if((!ctFieldReference.getModifiers().contains(ModifierKind.PRIVATE) 
-						|| ctclass.getFields().contains(ctFieldReference.getDeclaration()))){
-					//We ignore "serialVersionUID
-					if(!"serialVersionUID".equals(ctFieldReference.getDeclaration().getSimpleName()))
+				// We dont add private fields from parent classes
+				if ((!ctFieldReference.getModifiers().contains(ModifierKind.PRIVATE)
+						|| ctclass.getFields().contains(ctFieldReference.getDeclaration()))) {
+					// We ignore "serialVersionUID'
+					if (!"serialVersionUID".equals(ctFieldReference.getDeclaration().getSimpleName()))
 						variables.add(ctFieldReference.getDeclaration());
 				}
 			}
@@ -461,12 +512,13 @@ public class VariableResolver {
 	}
 
 	/**
-	 * Return the local variables of a block from the begining until the element
-	 * located at positionEl.
+	 * Return the local variables of a block from the beginning until the
+	 * element located at positionEl.
 	 * 
 	 * @param positionEl
 	 *            analyze variables from the block until that position.
 	 * @param pb
+	 *            a block to search the local variables
 	 * @return
 	 */
 	protected static List<CtLocalVariable> retrieveLocalVariables(int positionEl, CtBlock pb) {
@@ -481,101 +533,25 @@ public class VariableResolver {
 		CtElement beforei = pb;
 		CtElement parenti = pb.getParent();
 		boolean continueSearch = true;
-		//We find the parent block
-		while (continueSearch){
-			
-			if(parenti == null){
+		// We find the parent block
+		while (continueSearch) {
+
+			if (parenti == null) {
 				continueSearch = false;
 				parenti = null;
-			}
-			else if(parenti instanceof CtBlock){
+			} else if (parenti instanceof CtBlock) {
 				continueSearch = false;
-			}else{
+			} else {
 				beforei = parenti;
 				parenti = parenti.getParent();
 			}
 		}
-		
-		if(parenti != null){
+
+		if (parenti != null) {
 			int pos = ((CtBlock) parenti).getStatements().indexOf(beforei);
 			variables.addAll(retrieveLocalVariables(pos, (CtBlock) parenti));
 		}
 		return variables;
 	}
 
-	@Deprecated
-	private static boolean canBeApplied(ModificationInstance operationInGen) {
-		// If is an expression
-		if (operationInGen.getModified() != null) {
-			if (operationInGen.getModified() instanceof CtExpression)
-				return fitInPlace(operationInGen.getModificationPoint().getContextOfModificationPoint(),
-						(CtExpression) operationInGen.getModified());
-
-			System.out.println("--->Reject Analysis: " + operationInGen.getModified().getClass().getName() + " "
-					+ operationInGen.getModified());
-
-		}
-		logger.debug("--> Context not analyzed ");
-
-		return true;
-	}
-
-	/**
-	 * For one variable (target) the method finds a set of method invocations
-	 * from the target's CtType that coul be called i using the variables in
-	 * scope
-	 * 
-	 * @param target
-	 * @param varScope
-	 * @param compatibleReturning
-	 * @return
-	 */
-	@Deprecated
-	@SuppressWarnings("unused")
-	private static List<MethodInstantialization> compatibleMethodInvocationInScope(CtVariable target,
-			List<CtVariable> varScope, CtTypeReference compatibleReturning) {
-		List<MethodInstantialization> instant = new ArrayList<MethodInstantialization>();
-		logger.debug("Target class " + target.getType());
-		if (target.getType().getDeclaration() instanceof CtType) {
-			CtType type = (CtType) target.getType().getDeclaration();
-			Collection<CtMethod> methods = type.getAllMethods();
-			for (CtMethod ctMethod : methods) {
-				CtTypeReference returningMethodType = ctMethod.getType();
-				logger.debug("Analyzing Method " + ctMethod.getSimpleName() + " returning " + returningMethodType);
-				// Analyze return
-				// TODO: check
-				if (compatibleReturning != null && !compatibleReturning.isAssignableFrom(returningMethodType)) {
-					logger.debug("Method return not compatible with type ref assignement");
-					continue;
-				}
-
-				// Analyze parameters
-				boolean compatibles = true;
-				List<CtParameter> parameters = ctMethod.getParameters();
-				Map<CtParameter, List> candidates = new HashMap<CtParameter, List>();
-				for (CtParameter ctParameter : parameters) {
-					CtTypeReference typ = ctParameter.getType();
-					List<CtVariable> vari = compatiblesSubType(varScope, typ);
-					if (vari.isEmpty()) {
-						compatibles = false;
-						break;
-					} else {
-						candidates.put(ctParameter, vari);
-					}
-					logger.debug(typ.getSimpleName() + " ==> " + vari);
-				}
-				if (compatibles) {
-					MethodInstantialization mi = new MethodInstantialization(ctMethod, candidates);
-					instant.add(mi);
-				}
-
-			}
-		} else {
-			//
-			// TODO:The declaration is null i.e. there is not representation of
-			// the class in the model
-
-		}
-		return instant;
-	}
 }

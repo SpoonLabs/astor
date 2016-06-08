@@ -166,7 +166,7 @@ public class ProgramVariantFactory {
 
 			for (CtElement suspiciousElement : extractedElements) {
 
-				List<CtVariable> contextOfGen = VariableResolver.getVariablesScope(suspiciousElement);
+				List<CtVariable> contextOfGen = VariableResolver.searchVariablesInScope(suspiciousElement);
 
 				SuspiciousModificationPoint point = new SuspiciousModificationPoint();
 				point.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
@@ -224,7 +224,7 @@ public class ProgramVariantFactory {
 		// We take the first element for getting the context (as the remaining
 		// have the same location, it's not necessary)
 
-		contextOfPoint = VariableResolver.getVariablesScope(ctSuspects.get(0));
+		contextOfPoint = VariableResolver.searchVariablesInScope(ctSuspects.get(0));
 
 		// From the suspicious CtElements, there are some of them we are
 		// interested in.
