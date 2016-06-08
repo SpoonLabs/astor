@@ -41,8 +41,12 @@ public class ProcessValidator extends ProgramValidator {
 				Boolean.valueOf(ConfigurationProperties.getProperty("executeRegression")));
 
 	}
+
 	/**
-	 * Run the validation of the program variant in two steps: one the original failing test, the second the complete test suite (only in case the failing now passes)
+	 * Run the validation of the program variant in two steps: one the original
+	 * failing test, the second the complete test suite (only in case the
+	 * failing now passes)
+	 * 
 	 * @param mutatedVariant
 	 * @param projectFacade
 	 * @param executeRegression
@@ -62,8 +66,9 @@ public class ProcessValidator extends ProgramValidator {
 
 			long t1 = System.currentTimeMillis();
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
-			
-			TestResult trfailing = testProcessRunner.execute(jvmPath,bc, projectFacade.getProperties().getFailingTestCases(),
+
+			TestResult trfailing = testProcessRunner.execute(jvmPath, bc,
+					projectFacade.getProperties().getFailingTestCases(),
 					ConfigurationProperties.getPropertyInt("tmax1"));
 			long t2 = System.currentTimeMillis();
 			currentStats.time1Validation.add((t2 - t1));
@@ -98,36 +103,39 @@ public class ProcessValidator extends ProgramValidator {
 		}
 	}
 
-	
-	public ProgramVariantValidationResult runFailing(ProgramVariant mutatedVariant,
-			ProjectRepairFacade projectFacade) {
+	public ProgramVariantValidationResult runFailing(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
 
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner = //new JUnitExecutorProcess();
-					new JUnitDirectExecutorProcess();
+			JUnitExecutorProcess testProcessRunner = new JUnitDirectExecutorProcess();
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
-			
-			TestResult trfailing = testProcessRunner.execute(jvmPath,bc, projectFacade.getProperties().getFailingTestCases(),
+
+			TestResult trfailing = testProcessRunner.execute(jvmPath, bc,
+					projectFacade.getProperties().getFailingTestCases(),
 					ConfigurationProperties.getPropertyInt("tmax1"));
-			ProgramVariantValidationResult validationResult = new ProgramVariantValidationResult(trfailing,
-					trfailing.wasSuccessful(), false);
-			return validationResult;
-			
+			if (trfailing == null)
+				return null;
+			else {
+				ProgramVariantValidationResult validationResult = new ProgramVariantValidationResult(trfailing,
+						trfailing.wasSuccessful(), false);
+				return validationResult;
+			}
+
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
+
 	public ProgramVariantValidationResult runRegression(ProgramVariant mutatedVariant,
 			ProjectRepairFacade projectFacade) {
 
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner = //new JUnitExecutorProcess();
+			JUnitExecutorProcess testProcessRunner = // new
+														// JUnitExecutorProcess();
 					new JUnitDirectExecutorProcess();
 			return executeRegressionTesting(mutatedVariant, bc, testProcessRunner, projectFacade);
 
@@ -184,8 +192,9 @@ public class ProcessValidator extends ProgramValidator {
 		List<String> testCasesRegression = projectFacade.getProperties().getRegressionTestCases();
 
 		String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
-		
-		TestResult trregression = p.execute(jvmPath,bc, testCasesRegression, ConfigurationProperties.getPropertyInt("tmax2"));
+
+		TestResult trregression = p.execute(jvmPath, bc, testCasesRegression,
+				ConfigurationProperties.getPropertyInt("tmax2"));
 
 		if (testCasesRegression == null || testCasesRegression.isEmpty()) {
 			log.error("Any test case for regression testing");
@@ -219,8 +228,8 @@ public class ProcessValidator extends ProgramValidator {
 			List<String> parcial = new ArrayList<String>();
 			parcial.add(tc);
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
-			
-			TestResult trregression = p.execute(jvmPath,bc, parcial, ConfigurationProperties.getPropertyInt("tmax2"));
+
+			TestResult trregression = p.execute(jvmPath, bc, parcial, ConfigurationProperties.getPropertyInt("tmax2"));
 			if (trregression == null) {
 				log.debug("The validation 2 have not finished well");
 				return null;
