@@ -362,13 +362,21 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-scope", "local",
 				"-seed", "10", 
 				"-maxtime", "100",
-				"-population","1"};
+				"-population","1",
+				"-maxgen","250"
+				};
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertEquals(1,solutions.size());
 		//pos += offset
-			
+		//time(sec)= 30
+		//operation: ReplaceOp
+		//	location= org.jsoup.parser.CharacterReader
+		//	line= 118
+		//	original statement= pos -= offset
+		//	fixed statement= pos += offset
+		//generation= 26	
 	}
 	
 }
