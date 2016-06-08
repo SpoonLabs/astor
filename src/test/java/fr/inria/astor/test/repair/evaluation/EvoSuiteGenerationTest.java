@@ -220,13 +220,13 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				"-stopfirst", "true",
 				"-population", 
 				"1", "-stopfirst", "true", "-maxtime", "100",
-				"-validation","evosuite"
+				"-validation","evosuite","-maxgen","250"
 
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 		//One solution
-		assertFalse(main1.getEngine().getSolutions().isEmpty());
+		assertEquals(1,main1.getEngine().getSolutions().size());
 	
 		
 	}
@@ -334,7 +334,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "200", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
+				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
 				//PARAMETER TO TEST
 				"-validation", "evosuite"
 
@@ -416,7 +416,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "200", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
+				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
 				//PARAMETER TO TEST
 				"-validation", RegressionValidation.class.getCanonicalName()
 
@@ -426,7 +426,14 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		main1.execute(args);
 
 		assertEquals(1, main1.getEngine().getSolutions().size());
-
+		//Patch info
+		//time(sec)= 546
+		//operation: ReplaceOp
+		//location= org.apache.commons.math.analysis.solvers.BisectionSolver
+		//line= 72
+		//original statement= return solve(min, max)
+		//fixed statement= return solve(f, min, max)
+		//generation= 240
 
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
 		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();

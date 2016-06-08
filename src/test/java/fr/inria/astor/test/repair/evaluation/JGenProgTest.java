@@ -19,12 +19,17 @@ import fr.inria.astor.approaches.jgenprog.operators.RemoveOp;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerLauncher;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -329,7 +334,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	
 	
 	/**
-	 * Testing injected but at CharacterReader line 118, commit version 31be24.
+	 * Testing injected bug at CharacterReader line 118, commit version 31be24.
 	 * "org.jsoup.nodes.AttributesTest"+File.pathSeparator+"org.jsoup.nodes.DocumentTypeTest"
 						+File.pathSeparator+"org.jsoup.nodes.NodeTest"+File.pathSeparator+"org.jsoup.parser.HtmlParserTest"
 				
@@ -356,12 +361,14 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				//
 				"-scope", "local",
 				"-seed", "10", 
-				"-maxtime", "100" };
+				"-maxtime", "100",
+				"-population","1"};
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
-		assertFalse(solutions.isEmpty());
-
+		assertEquals(1,solutions.size());
+		//pos += offset
+			
 	}
-
+	
 }
