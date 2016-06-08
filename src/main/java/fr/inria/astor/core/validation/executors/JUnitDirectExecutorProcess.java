@@ -1,8 +1,6 @@
 package fr.inria.astor.core.validation.executors;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import fr.inria.astor.core.validation.entity.TestResult;
@@ -37,7 +35,6 @@ public class JUnitDirectExecutorProcess extends JUnitExecutorProcess {
 	 */
 	@Override
 	protected TestResult getTestResult(Process p) {
-		log.info("Parsing output of jUnit 4.11: ");
 		TestResult tr = new TestResult();
 		boolean success = false;
 
