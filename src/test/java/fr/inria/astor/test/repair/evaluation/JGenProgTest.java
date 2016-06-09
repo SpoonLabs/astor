@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp;
@@ -341,6 +342,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void testJSoupParser31be24() throws Exception {
 		String dep = new File("./examples/libs/junit-4.5.jar").getAbsolutePath();
 		AstorMain main1 = new AstorMain();
@@ -363,12 +365,14 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-seed", "10", 
 				"-maxtime", "100",
 				"-population","1",
-				"-maxgen","250"
+				"-maxgen","250",
+				"-saveall","true"
 				};
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertEquals(1,solutions.size());
+		//TODO: Problem printing CtThisAccess
 		//pos += offset
 		//time(sec)= 30
 		//operation: ReplaceOp
