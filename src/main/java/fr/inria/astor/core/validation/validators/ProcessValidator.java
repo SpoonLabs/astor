@@ -17,6 +17,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.executors.JUnitDirectExecutorProcess;
 import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
+import fr.inria.astor.core.validation.executors.JUnitIndirectExecutorProcess;
 
 /**
  * 
@@ -58,7 +59,7 @@ public class ProcessValidator extends ProgramValidator {
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner = new JUnitDirectExecutorProcess();
+			JUnitExecutorProcess testProcessRunner = new JUnitIndirectExecutorProcess(false);//Dir
 
 			log.debug("-Running first validation");
 
@@ -108,7 +109,7 @@ public class ProcessValidator extends ProgramValidator {
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner = new JUnitDirectExecutorProcess();
+			JUnitExecutorProcess testProcessRunner =  new JUnitIndirectExecutorProcess(false);//Dir
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
 
 			TestResult trfailing = testProcessRunner.execute(jvmPath, bc,
@@ -134,9 +135,7 @@ public class ProcessValidator extends ProgramValidator {
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner = // new
-														// JUnitExecutorProcess();
-					new JUnitDirectExecutorProcess();
+			JUnitExecutorProcess testProcessRunner =  new JUnitIndirectExecutorProcess(false);//Dir
 			return executeRegressionTesting(mutatedVariant, bc, testProcessRunner, projectFacade);
 
 		} catch (MalformedURLException e) {
