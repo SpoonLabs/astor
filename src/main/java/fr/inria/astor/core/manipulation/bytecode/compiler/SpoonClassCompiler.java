@@ -13,6 +13,7 @@ import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 
 import fr.inria.astor.core.manipulation.bytecode.compiler.tools.JavaXToolsCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.compiler.Environment;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.declaration.CtClass;
@@ -112,11 +113,19 @@ public class SpoonClassCompiler {
 
 		List<String> cps = new ArrayList<>();
 		cps.add("-cp");
-		String s = "";
+		String path = "";
 		for (URL url : cp) {
-			s += ((url.getPath()) + File.pathSeparator);
+			path += ((url.getPath()) + File.pathSeparator);
 		}
-		cps.add(s);
+		cps.add(path);
+		
+		String compliance = ConfigurationProperties.getProperty("javacompliancelevel");
+		cps.add("-source");
+		cps.add("1."+ compliance);
+	
+		cps.add("-target");
+		cps.add("1."+ compliance);
+		
 		CompilationResult rbc = dcc.javaBytecodeFor(toCompile, new HashMap<String, byte[]>(), cps);
 		return rbc;
 	}
@@ -132,11 +141,14 @@ public class SpoonClassCompiler {
 
 	/**
 	 * Gets the associated (standard) environment.
+	 * When we create it, we set the compliance level taken as parameter (if any)
 	 */
 
 	public Environment getEnvironment() {
 		if (this.environment == null) {
 			this.environment = new StandardEnvironment();
+			String compliance = ConfigurationProperties.getProperty("javacompliancelevel");
+			this.environment.setLevel(compliance);
 		}
 		return this.environment;
 	}

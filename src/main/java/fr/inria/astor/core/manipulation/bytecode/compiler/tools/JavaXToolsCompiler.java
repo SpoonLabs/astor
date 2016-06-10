@@ -40,7 +40,7 @@ public class JavaXToolsCompiler {
 			Map<String, byte[]> compiledDependencies, List<String> options) {
 		diagnostics = new DiagnosticCollector<JavaFileObject>();
 		fileManager.classFiles().clear();
-		//
+		
 		Collection<JavaFileObject> units = addCompilationUnits(qualifiedNameAndContent);
 		fileManager.addCompiledClasses(compiledDependencies);
 		CompilationTask task = compiler().getTask(null, fileManager, diagnostics(), options, null, units);
