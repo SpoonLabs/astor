@@ -37,8 +37,8 @@ public class RegressionValidation extends ProcessValidator {
 			} else
 				return failingValidation;
 		} catch (Exception e) {
-			log.error(e);
-			e.printStackTrace();
+			log.error(e.getMessage(),e);
+			
 		}
 
 		return null;

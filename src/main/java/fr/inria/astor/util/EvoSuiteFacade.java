@@ -51,15 +51,17 @@ public class EvoSuiteFacade {
 		List<URL> originalURL = new ArrayList<>(
 				Arrays.asList(projectFacade.getClassPathURLforProgramVariant(ProgramVariant.DEFAULT_ORIGINAL_VARIANT)));
 
+		logger.debug("---> creating evosuite tests");
+		
 		String outES = projectFacade.getInDirWithPrefix(ConfigurationProperties.getProperty("evosuiteresultfolder"));
 		File fESout = new File(outES);
 		fESout.mkdirs();
 
 		URL[] SUTClasspath = originalURL.toArray(new URL[0]);
 
-		logger.debug("Creating test cases using evosuite ");
-		
 		List<CtType<?>> types = variant.getAffectedClasses();
+		logger.debug("Creating test cases using evosuite for :"+types.size()+" classes");
+		
 		boolean reponse = true;
 		for (CtType<?> ctType : types) {
 			// generate a process for running evosuite
@@ -70,6 +72,8 @@ public class EvoSuiteFacade {
 			};
 			logger.debug("Creating test for "+ctType.getQualifiedName());
 			reponse &= runProcess(null, command);
+			System.out.println("---> Evo OK? "+ reponse+ " ");
+			
 			//logger.debug("reponse from " + ctType.getQualifiedName() + " " + reponse);
 		}
 		return reponse;
@@ -133,10 +137,12 @@ public class EvoSuiteFacade {
 		
 			p.exitValue();
 
-			readOut(p);
+			//String out = readOut(p);
+			//logger.debug("--->OutES \n "+out);
 			p.destroy();
 			return true;
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
+			logger.error(ex.getMessage(),ex);
 			if (p != null)
 				p.destroy();
 		}
@@ -145,6 +151,7 @@ public class EvoSuiteFacade {
 
 	public List<CtClass> reificateEvoSuiteTest(String evoTestpath, String[] classpath) {
 		logger.debug("Compiling ES code " + evoTestpath + " with CL " + Arrays.toString(classpath));
+		logger.debug("Es dir content: "+ Arrays.toString(new File(evoTestpath).listFiles()));
 		MutationSupporter mutatorSupporter = MutationSupporter.currentSupporter;
 		String codeLocation = evoTestpath;
 		boolean saveOutput = false;
@@ -167,6 +174,7 @@ public class EvoSuiteFacade {
 				ESTestClasses.add((CtClass) ctType);
 			}
 		}
+		logger.debug("CtClass from evosuite: "+ESTestClasses);
 		return ESTestClasses;
 	}
 	/**
@@ -183,7 +191,7 @@ public class EvoSuiteFacade {
 		logger.info("Executing evosuite");
 		//Generating Evosuite test class from the variant
 		boolean executed = this.runEvosuite(variant, projectFacade);
-		
+		logger.debug("Evo result: "+executed);
 
 		// CHECKING EVO OUTPUT
 		String testEScodepath = projectFacade
