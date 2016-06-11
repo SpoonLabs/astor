@@ -44,6 +44,11 @@ public class TestFilter implements ClassFilter {
 	}
 
 	public boolean acceptClass(Class<?> clazz) {
+		//We directly ignore abstract class
+		if (isAbstractClass(clazz)) {
+			return false;
+		}
+		//--
 		if (isInSuiteTypes(TestType.TEST_CLASSES)) {
 			if (acceptTestClass(clazz)) {
 				return true;
