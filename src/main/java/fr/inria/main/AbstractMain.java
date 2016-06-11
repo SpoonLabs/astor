@@ -164,6 +164,8 @@ public abstract class AbstractMain {
 
 		options.addOption("excludeRegression", false, "Exclude test regression execution");
 
+		options.addOption("ignoredtestcases", true, "Test cases to ignore");
+
 		
 	}
 
@@ -408,6 +410,10 @@ public abstract class AbstractMain {
 		
 		if (cmd.hasOption("excludeRegression"))
 			ConfigurationProperties.properties.setProperty("executeRegression", "false");
+
+		if (cmd.hasOption("ignoredtestcases"))
+			ConfigurationProperties.properties.setProperty("ignoredTestCases",
+					cmd.getOptionValue("ignoredtestcases"));
 
 		
 		// CLG believes, but is not totally confident in her belief, that this
