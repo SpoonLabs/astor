@@ -477,8 +477,9 @@ public class VariableResolver {
 				// We dont add private fields from parent classes
 				if ((!ctFieldReference.getModifiers().contains(ModifierKind.PRIVATE)
 						|| ctclass.getFields().contains(ctFieldReference.getDeclaration()))) {
+					
 					// We ignore "serialVersionUID'
-					if (!"serialVersionUID".equals(ctFieldReference.getDeclaration().getSimpleName()))
+					if ( (ctFieldReference.getDeclaration() != null) && !"serialVersionUID".equals(ctFieldReference.getDeclaration().getSimpleName()))
 						variables.add(ctFieldReference.getDeclaration());
 				}
 			}
