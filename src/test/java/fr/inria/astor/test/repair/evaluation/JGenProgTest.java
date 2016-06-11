@@ -396,9 +396,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.1", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
 				"-maxtime", "100",
-				"-jvm4testexecution","/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin/"
-				
-
+				"-ignoredtestcases","org.apache.commons.math.util.FastMathTest"
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
