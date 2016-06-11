@@ -132,13 +132,25 @@ public class ProjectRepairFacade {
 	}
 
 	public void copyData(String currentMutatorIdentifier) throws IOException {
-		if (getProperties().getDataFolder() == null)
+		
+		String resourcesDir = getProperties().getDataFolder();
+		if ( resourcesDir == null)
 			return;
-		File source = new File(getProperties().getDataFolder());
-		File destFile = new File(getOutDirWithPrefix(currentMutatorIdentifier) + File.separator + source.getName());
-		destFile.mkdirs();
-		FileUtils.copyDirectory(source, destFile);
+		
+		String[] resources = resourcesDir.split(File.pathSeparator);
+		File destFile = new File(getOutDirWithPrefix(currentMutatorIdentifier));
+		
+		for (String r : resources) {
+			String path = ConfigurationProperties.getProperty("location");
+			File source = new File(path + File.separator + r);
+			if(!source.exists())
+				return;
+			//destFile.mkdirs();
+			//for(File f:source.listFiles())
+			FileUtils.copyDirectory(source, destFile);
 
+		}
+	
 	}
 
 	/**

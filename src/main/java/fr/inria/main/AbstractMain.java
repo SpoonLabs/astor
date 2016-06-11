@@ -524,6 +524,8 @@ public abstract class AbstractMain {
 		properties.setFailingTestCases(failingTestCases);
 
 		properties.setPackageToInstrument(ConfigurationProperties.getProperty("packageToInstrument"));
+		
+		properties.setDataFolder(ConfigurationProperties.getProperty("resourcesfolder"));
 
 		ProjectRepairFacade ce = new ProjectRepairFacade(properties);
 
