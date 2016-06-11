@@ -383,4 +383,31 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		//generation= 26	
 	}
 	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath50Remove() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.8.2.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.RegulaFalsiSolverTest", "-location",
+				new File("./examples/math_50").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.1", "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
+				"-maxtime", "100",
+				"-jvm4testexecution","/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin/"
+				
+
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+		ProgramVariant variant = solutions.get(0);
+		assertTrue(variant.getValidationResult().isRegressionExecuted());
+		
+	}
 }
