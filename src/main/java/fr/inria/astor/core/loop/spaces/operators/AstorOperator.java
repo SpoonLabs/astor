@@ -58,7 +58,6 @@ public abstract class AstorOperator {
 		
 		List<ModificationInstance> instances = new ArrayList<>();
 		ModificationInstance modinst =  new ModificationInstance(modificationPoint, this,modificationPoint.getCodeElement(), null);
-		modinst.defineParentInformation(modificationPoint);
 		instances.add(modinst);
 		return instances;
 	}

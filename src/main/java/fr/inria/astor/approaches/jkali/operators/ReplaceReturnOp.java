@@ -32,7 +32,6 @@ public class ReplaceReturnOp extends InsertBeforeOp {
 		
 		ModificationInstance opInsertReturn = new ModificationInstance(modificationPoint, this,
 				modificationPoint.getCodeElement(), createReturn(modificationPoint.getCodeElement()));
-		opInsertReturn.defineParentInformation(modificationPoint);
 		instances.add(opInsertReturn);
 		return instances;
 	}

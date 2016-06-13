@@ -34,13 +34,11 @@ public class ReplaceIfBooleanOp extends ReplaceOp{
 		
 		ModificationInstance opChangeIftrue = new ModificationInstance(modificationPoint, this,
 				modificationPoint.getCodeElement(), createIf((CtIf) modificationPoint.getCodeElement(), true));
-		opChangeIftrue.defineParentInformation(modificationPoint);
 		
 		instances.add(opChangeIftrue);
 		
 		ModificationInstance opChangeIffalse = new ModificationInstance(modificationPoint, this,
 				modificationPoint.getCodeElement(), createIf((CtIf) modificationPoint.getCodeElement(), false));
-		opChangeIffalse.defineParentInformation(modificationPoint);
 		
 		instances.add(opChangeIffalse);
 		
