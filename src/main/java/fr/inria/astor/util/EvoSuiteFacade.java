@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -72,7 +73,7 @@ public class EvoSuiteFacade {
 			};
 			logger.debug("Creating test for "+ctType.getQualifiedName());
 			reponse &= runProcess(null, command);
-			System.out.println("---> Evo OK? "+ reponse+ " ");
+			logger.debug("---> Evo OK? "+ reponse+ " ");
 			
 			//logger.debug("reponse from " + ctType.getQualifiedName() + " " + reponse);
 		}
@@ -131,14 +132,15 @@ public class EvoSuiteFacade {
 			pb.directory(new File((ConfigurationProperties.getProperty("location"))));
 			p = pb.start();
 
-			WorkerThreadHelper worker = new WorkerThreadHelper(p);
-			worker.start();
-			worker.join();
-		
+			//WorkerThreadHelper worker = new WorkerThreadHelper(p);
+			//worker.start();
+			//worker.join(180000);
+			p.waitFor(300000,TimeUnit.MILLISECONDS);
+			
 			p.exitValue();
 
-			//String out = readOut(p);
-			//logger.debug("--->OutES \n "+out);
+			String out = readOut(p);
+			logger.debug(out);
 			p.destroy();
 			return true;
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
@@ -174,7 +176,7 @@ public class EvoSuiteFacade {
 				ESTestClasses.add((CtClass) ctType);
 			}
 		}
-		logger.debug("CtClass from evosuite: "+ESTestClasses);
+		logger.debug("CtClass from evosuite: #"+ESTestClasses.size());
 		return ESTestClasses;
 	}
 	/**
@@ -281,7 +283,9 @@ public class EvoSuiteFacade {
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
 			while ((line = in.readLine()) != null) {
-				out += line + "\n";
+				if(line.startsWith("Writing JUnit test case")){
+					out += line + "\n";
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
