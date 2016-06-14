@@ -22,7 +22,7 @@ public class RemoveOp extends AstorOperator {
 		if (parentBlock != null) {
 
 			try {
-				parentBlock.getStatements().remove(ctst);
+				parentBlock.getStatements().remove(operation.getLocationInParent());
 				successful = true;
 				operation.setSuccessfulyApplied(successful);
 			} catch (Exception ex) {
