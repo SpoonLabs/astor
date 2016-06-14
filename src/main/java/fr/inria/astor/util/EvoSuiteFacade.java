@@ -64,7 +64,10 @@ public class EvoSuiteFacade {
 			logger.info("Buggy classes");
 			typesToProcess = variant.getAffectedClasses();
 		} else {
-			typesToProcess = new ArrayList<>(variant.getModifiedClasses());
+			typesToProcess = new ArrayList<>();
+			for (CtClass<?> classes : variant.getModifiedClasses()) {
+				typesToProcess.add(classes);
+			}
 		}
 
 		logger.debug("Creating test cases using evosuite for: " + typesToProcess.size() + " classes");
