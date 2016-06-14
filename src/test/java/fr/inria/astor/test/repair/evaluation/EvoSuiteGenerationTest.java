@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -529,4 +530,52 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		main1.execute(args);
 	}
 	
+	@Test
+	@Ignore //It takes long to run evosuite for all susp class
+	public void testMath74() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.ode.nonstiff.AdamsMoultonIntegratorTest", "-location",
+				new File("./examples/math_74").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.1", 
+				"-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "6010", 
+				//Forced
+				"-maxgen", "0", "-stopfirst", "true",
+				"-maxtime", "100",
+				"-population", "1",
+				//PARAMETER TO TEST
+				"-validation", RegressionValidation.class.getCanonicalName()
+					
+		};
+		main1.execute(args);
+
+		assertTrue(main1.getEngine().getSolutions().size() == 0);
+
+		assertEquals(1, main1.getEngine().getVariants().size());
+
+		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+
+		log.info("Executing evosuite for Math-74");
+		EvoSuiteFacade fev = new EvoSuiteFacade();
+		
+		List<CtClass> classes = fev.createEvoTestModel(main1.getEngine().getProjectFacade(), variant);
+	
+		// Two classes: EvoTest + EvoScaffolding
+		//assertEquals("We do not have 2 spoon classes generated", 2, classes.size());
+
+		assertFalse(main1.getEngine().getMutatorSupporter().getTestClasses().contains(classes.get(0)));
+
+		ProgramVariantValidationResult result = fev.saveAndExecuteEvoSuite(main1.getEngine().getProjectFacade(), variant, classes);
+	
+		log.debug(result);
+		
+		assertNotNull(result);
+		
+		assertTrue(result.wasSuccessful());
+		
+	}
 }

@@ -408,4 +408,83 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(variant.getValidationResult().isRegressionExecuted());
 		
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	@Ignore
+	public void testMath76() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.linear.SingularValueSolverTest", "-location",
+				new File("./examples/math_76").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.5", 
+				"-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "6010", "-maxgen", "50", "-stopfirst", "true",
+				"-maxtime", "20",
+					
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.isEmpty());
+
+		
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath74() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.ode.nonstiff.AdamsMoultonIntegratorTest", "-location",
+				new File("./examples/math_74").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.5", 
+				"-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
+				"-maxtime", "15",
+					
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.isEmpty());
+		
+		
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath106UndoException() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/commons-discovery-0.2.jar").getAbsolutePath()+File.pathSeparator
+				+new File("./examples/libs/commons-logging-1.0.4.jar").getAbsolutePath()+File.pathSeparator
+				+new File("./examples/libs/junit-3.8.2.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.fraction.FractionFormatTest", "-location",
+				new File("./examples/math_106").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", 
+				"-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "6010", "-maxgen", "50", "-stopfirst", "true",
+				"-maxtime", "30",
+					
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.isEmpty());
+
+		
+	}
+	
 }
