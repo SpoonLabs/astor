@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -97,6 +99,8 @@ public abstract class AstorCoreEngine {
 	public void startEvolution() throws Exception {
 
 		log.info("\n----Starting Solution Search");
+		//LogManager.getRootLogger().setLevel(Level.DEBUG);
+		
 
 		generationsExecuted = 0;
 		boolean stop = false;
@@ -232,7 +236,7 @@ public abstract class AstorCoreEngine {
 
 			// Finally, reverse the changes done by the child
 			reverseOperationInModel(newVariant, generation);
-			this.validateReversedOriginalVariant(newVariant);
+			boolean validation = this.validateReversedOriginalVariant(newVariant);
 			if (foundSolution && ConfigurationProperties.getPropertyBool("stopfirst")) {
 				break;
 			}
@@ -253,6 +257,7 @@ public abstract class AstorCoreEngine {
 		variant.getModifiedClasses().clear();
 		for (CtClass modifiedClass : variant.getBuiltClasses().values()) {
 			CtClass cloneModifClass = (CtClass) MutationSupporter.clone(modifiedClass);
+			cloneModifClass.setParent(modifiedClass.getParent());
 			variant.getModifiedClasses().add(cloneModifClass);
 		}
 
@@ -333,7 +338,7 @@ public abstract class AstorCoreEngine {
 
 	}
 
-	private void validateReversedOriginalVariant(ProgramVariant variant) {
+	private boolean validateReversedOriginalVariant(ProgramVariant variant) {
 
 		for (CtType st : variant.getAffectedClasses()) {
 			String original = originalModel.get(st.getQualifiedName());
@@ -341,10 +346,13 @@ public abstract class AstorCoreEngine {
 				boolean idem = original.equals(st.toString());
 				if (!idem) {
 					log.error("Error: the model was not the same from the original after this generation");
+					log.error("Undo Error: original: \n"+original);
+					log.error("Undo Error: modified: \n"+st.toString());
+					return false;
 				}
 			}
 		}
-
+		return true;
 	}
 
 	/**
@@ -502,7 +510,7 @@ public abstract class AstorCoreEngine {
 
 		// For each gen of the program instance
 		List<ModificationPoint> modificationPointsToProcess = getGenList(variant);
-		log.debug("modifPointsToProcess " + modificationPointsToProcess);
+		//log.debug("modifPointsToProcess " + modificationPointsToProcess);
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
 			// tp refactor
 			modificationPoint.identified = variant.getModificationPoints().indexOf(modificationPoint);
