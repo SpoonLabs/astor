@@ -67,9 +67,10 @@ public class EvoSuiteFacade {
 			typesToProcess = new ArrayList<>(variant.getModifiedClasses());
 		}
 
-		logger.debug("Creating test cases using evosuite for :" + typesToProcess.size() + " classes");
+		logger.debug("Creating test cases using evosuite for: " + typesToProcess.size() + " classes");
 
 		boolean reponse = true;
+		int counter = 0;
 		for (CtType<?> ctType : typesToProcess) {
 			// generate a process for running evosuite
 			String[] command = new String[] { "-class", ctType.getQualifiedName(), "-projectCP",
@@ -78,13 +79,12 @@ public class EvoSuiteFacade {
 					"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")
 					// ,"-Djunit_check_on_separate_process=true"
 			};
-			logger.debug("Creating test for " + ctType.getQualifiedName());
+			logger.debug("Creating test for " + ctType.getQualifiedName() +" "+(++counter) + "/"+typesToProcess.size()) ;
 			boolean sucess = runProcess(null, command);
 			logger.debug("---> Evo OK? " + sucess + " ");
 			reponse &= sucess;
 			nrGenerated += (sucess)?1:0;
-			// logger.debug("reponse from " + ctType.getQualifiedName() + " " +
-			// reponse);
+	
 		}
 		logger.debug("Evo end: generated "+nrGenerated+" over "+typesToProcess.size() );
 		return reponse;
