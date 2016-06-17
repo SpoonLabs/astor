@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
@@ -30,12 +31,13 @@ import spoon.reflect.declaration.CtType;
 public abstract class AstorIngredientSpace<L extends Object, K extends Object, I extends CtCodeElement, T extends Object>
 		implements IngredientSpace<L, I, T> {
 	/**
-	 * Maps that represent the ingredient space.
-	 * We define different structures to optimize the search. 
+	 * Maps that represent the ingredient space. We define different structures
+	 * to optimize the search.
 	 */
 	protected Map<K, List<I>> fixSpaceByLocation = new HashMap<K, List<I>>();
 	protected Map<K, Map<T, List<I>>> fixSpaceByLocationType = new HashMap<K, Map<T, List<I>>>();
 	protected Map<T, List<I>> fixSpaceByType = new HashMap<T, List<I>>();
+	protected Map<L, K> keysLocation = new HashMap<L, K>();
 
 	private IngredientProcessor<L, I> ingredientProcessor;
 
@@ -70,14 +72,13 @@ public abstract class AstorIngredientSpace<L extends Object, K extends Object, I
 		return fixSpaceByLocation;
 	}
 
-
 	/**
 	 * Creation of fix space from a CtClass
 	 * 
 	 * @param root
 	 */
-	public void createFixSpaceFromAClass(L key1, CtType root) {
-		K key = convertKey(key1);
+	public void createFixSpaceFromAClass(L location, CtType root) {
+		K key = mapKey(location);
 		List<I> ingredientsToProcess = this.ingredientProcessor.createFixSpace(root);
 		AbstractFixSpaceProcessor.mustClone = true;
 		if (getFixSpace().containsKey(key)) {
@@ -88,16 +89,35 @@ public abstract class AstorIngredientSpace<L extends Object, K extends Object, I
 		splitByType(key, ingredientsToProcess);
 
 	}
+	/**
+	 * The space maps a location to a given key
+	 *  @param location
+	 * @return
+	 */
+	private K mapKey(L location) {
+		
+		K key = convertKey(location);
+		
+		if (key == null)
+			return null;
+		
+		K keyByLoc = this.keysLocation.get(location);
+		if (keyByLoc == null) {
+			this.keysLocation.put(location, keyByLoc);
+		}
+		
+		return key;
+	}
 
 	public abstract K convertKey(L original);
-	
-	private void recreateTypesStructures(){
-		
+
+	private void recreateTypesStructures() {
+
 		this.fixSpaceByLocationType.clear();
 		this.fixSpaceByType.clear();
-		
-		for (K key : fixSpaceByLocation.keySet()){
-			List<I> ingredientsToProcess = fixSpaceByLocation.get(key);	
+
+		for (K key : fixSpaceByLocation.keySet()) {
+			List<I> ingredientsToProcess = fixSpaceByLocation.get(key);
 			splitByType(key, ingredientsToProcess);
 		}
 	}
@@ -142,12 +162,11 @@ public abstract class AstorIngredientSpace<L extends Object, K extends Object, I
 
 	@Override
 	public void setIngredients(L location, List<I> ingredients) {
-		K key = convertKey(location);
-		getFixSpace().put(key,ingredients);
+		K key = mapKey(location);
+		getFixSpace().put(key, ingredients);
 		recreateTypesStructures();
 	}
 
-	
 	@Override
 	public List<I> getIngredients(L rootClass1, T type) {
 		K rootClass = convertKey(rootClass1);
@@ -158,7 +177,16 @@ public abstract class AstorIngredientSpace<L extends Object, K extends Object, I
 		List<I> elements = types.get(type);
 		return elements;
 	}
+
+	@Override
+	public List<L> getLocations() {
+		return new ArrayList<L>(this.keysLocation.keySet());
+	}
 	
+	
+	public List<K> getLocationsKeys() {
+		return new ArrayList<K>(this.fixSpaceByLocation.keySet());
+	}
 
 	public String toString() {
 		String s = "--Space: " + this.spaceScope() + "\n";

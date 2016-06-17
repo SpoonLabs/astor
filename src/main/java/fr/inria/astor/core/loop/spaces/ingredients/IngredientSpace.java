@@ -54,5 +54,7 @@ public interface IngredientSpace<L extends Object, I extends CtElement, T extend
 	public void setIngredients(L location, List<I> ingredients);
 	
 	public IngredientSpaceScope spaceScope();
+	
+	public List<L> getLocations();
 
 }
