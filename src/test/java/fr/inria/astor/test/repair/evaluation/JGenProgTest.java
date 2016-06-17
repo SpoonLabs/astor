@@ -20,6 +20,7 @@ import fr.inria.astor.approaches.jgenprog.operators.RemoveOp;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -319,7 +320,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
 				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy",
-				EfficientIngredientStrategy.class.getCanonicalName() };
+				//EfficientIngredientStrategy.class.getCanonicalName()
+				CloneIngredientSearchStrategy.class.getCanonicalName()
+				};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 		validatePatchExistence(out + File.separator + "AstorMain-math_85/");

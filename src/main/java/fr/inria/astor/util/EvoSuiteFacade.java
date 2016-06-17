@@ -3,6 +3,7 @@ package fr.inria.astor.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -81,15 +82,17 @@ public class EvoSuiteFacade {
 					"-base_dir", outES, //
 					"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")
 					// ,"-Djunit_check_on_separate_process=true"
+					//,"-seed ",ConfigurationProperties.getProperty("seed")
 			};
-			logger.debug("Creating test for " + ctType.getQualifiedName() +" "+(++counter) + "/"+typesToProcess.size()) ;
+			logger.debug(
+					"Creating test for " + ctType.getQualifiedName() + " " + (++counter) + "/" + typesToProcess.size());
 			boolean sucess = runProcess(null, command);
 			logger.debug("---> Evo OK? " + sucess + " ");
 			reponse &= sucess;
-			nrGenerated += (sucess)?1:0;
-	
+			nrGenerated += (sucess) ? 1 : 0;
+
 		}
-		logger.debug("Evo end: generated "+nrGenerated+" over "+typesToProcess.size() );
+		logger.debug("Evo end: generated " + nrGenerated + " over " + typesToProcess.size());
 		return reponse;
 	}
 
@@ -138,16 +141,16 @@ public class EvoSuiteFacade {
 			for (String arg : argumentsEvo) {
 				command.add(arg);
 			}
-			logger.debug("EvoGenerate "+(command));
+			logger.debug("EvoGenerate " + (command));
 			ProcessBuilder pb = new ProcessBuilder(command.toArray(new String[command.size()]));
 			pb.redirectOutput();
 			pb.redirectErrorStream(true);
 			pb.directory(new File((ConfigurationProperties.getProperty("location"))));
 			p = pb.start();
 
-			p.waitFor( (ConfigurationProperties.getPropertyInt("evosuitetimeout") * 2 * 1000), TimeUnit.MILLISECONDS);
+			p.waitFor((ConfigurationProperties.getPropertyInt("evosuitetimeout") * 2 * 1000), TimeUnit.MILLISECONDS);
 
-		//	p.exitValue();
+			// p.exitValue();
 
 			String out = readOut(p);
 			logger.debug(out);
@@ -204,6 +207,7 @@ public class EvoSuiteFacade {
 
 		logger.info("Executing evosuite");
 		// Generating Evosuite test class from the variant
+		//Matias: TODO: I would like that this method return a map<CtClass:TestCasesGenerated(File)>
 		boolean executed = this.runEvosuite(variant, projectFacade);
 		logger.debug("Evo result: " + executed);
 
@@ -298,21 +302,38 @@ public class EvoSuiteFacade {
 		return out;
 	}
 
-	private List<CtType> obtainBuggyButLatterModif(ProgramVariant variant){
+	private List<CtType> obtainBuggyButLatterModif(ProgramVariant variant) {
 		List<CtType> types = new ArrayList<>();
-		for(CtType affected : variant.getAffectedClasses()){
-			
+		for (CtType affected : variant.getAffectedClasses()) {
+
 			boolean add = false;
-			for(CtType modif : variant.getModifiedClasses()){
-				if(modif.getQualifiedName().equals(affected.getQualifiedName())){
+			for (CtType modif : variant.getModifiedClasses()) {
+				if (modif.getQualifiedName().equals(affected.getQualifiedName())) {
 					add = true;
 					break;
 				}
-				if(add){
+				if (add) {
 					types.add(affected);
 				}
-		}
+			}
 		}
 		return types;
 	}
+
+	private static void printLines(String name, InputStream ins) throws Exception {
+		String line = null;
+		BufferedReader in = new BufferedReader(new InputStreamReader(ins));
+		while ((line = in.readLine()) != null) {
+			System.out.println(name + " " + line);
+		}
+	}
+
+	public  static void runProcess(String[] command) throws Exception {
+		Process pro = Runtime.getRuntime().exec(command);
+		printLines(command + " stdout:", pro.getInputStream());
+		printLines(command + " stderr:", pro.getErrorStream());
+		pro.waitFor();
+		System.out.println(command + " exitValue() " + pro.exitValue());
+	}
+
 }
