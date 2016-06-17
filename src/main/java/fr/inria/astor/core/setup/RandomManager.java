@@ -29,6 +29,7 @@ public class RandomManager {
             randomNumberGenerator = new Random(seed);
         } else {
         	// by default Astor is deterministic
+        	ConfigurationProperties.properties.setProperty("seed","0");
             randomNumberGenerator = new Random(0);
         }
     }
