@@ -320,8 +320,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
 				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy",
-				//EfficientIngredientStrategy.class.getCanonicalName()
-				CloneIngredientSearchStrategy.class.getCanonicalName()
+				EfficientIngredientStrategy.class.getCanonicalName()
 				};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
