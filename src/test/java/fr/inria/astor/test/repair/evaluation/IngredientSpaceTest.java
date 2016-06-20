@@ -1,7 +1,7 @@
 package fr.inria.astor.test.repair.evaluation;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Arrays;
@@ -17,11 +17,16 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.MethodBasicIngredientScope;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.other.FakeIngredientStrategy;
 import fr.inria.astor.test.repair.evaluation.other.ShortestIngredientSearchStrategy;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 
 /**
  * Test of Ingredient Space
@@ -66,14 +71,12 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 		Ingredient ingLast = ingStrategy.getFixIngredient(mpoint, null);
 		Assert.assertNotNull(ingLast);
 		boolean respectOrder = true;
-		int countAllIng = 1;
 		while(respectOrder){
 			Ingredient ingN = ingStrategy.getFixIngredient(mpoint, null);
 			if(ingN == null)
 				break;
 			respectOrder= ingLast.getCode().toString().length() <= ingN.getCode().toString().length();
 			ingLast = ingN;
-			countAllIng++;
 		}
 		Assert.assertTrue(respectOrder);
 	}
@@ -109,7 +112,6 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 		Ingredient ingLast = ingStrategy.getFixIngredient(mpoint, operator);
 		Assert.assertNotNull(ingLast);
 		boolean respectOrder = true;
-		int countRepIngredient = 1;
 		while(respectOrder){
 			Ingredient ingN = ingStrategy.getFixIngredient(mpoint, operator);
 			if(ingN == null)
@@ -117,7 +119,6 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 			//System.out.println(mpoint.getCodeElement()+" vs "+ ingN.getCode());
 			respectOrder= ingLast.getCode().toString().length() <= ingN.getCode().toString().length();
 			ingLast = ingN;
-			countRepIngredient++;
 			Assert.assertEquals(mpoint.getCodeElement().getClass().getName(), ingN.getCode().getClass().getName());
 		}
 		Assert.assertTrue(respectOrder);
@@ -133,7 +134,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "true",
 				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy",
 				EfficientIngredientStrategy.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
@@ -186,5 +187,152 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.isEmpty());
 
 	}
+	
+	
+	@Test
+	public void testMath85ScopeLocalSpace() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+				// We put 0 as max generation, so we force to not evolve the
+				// population
+				"-maxgen", "0", "-scope", "local", "-seed", "10", "-ingredientstrategy",
+				ShortestIngredientSearchStrategy.class.getName() };
+	
+		main1.execute(args);
+		JGenProg astor = (JGenProg) main1.getEngine();
+		IngredientSearchStrategy ingStrategy = astor.getIngredientStrategy();
+	
+		
+		//
+		AstorOperator operator = new ReplaceOp(); 
+		//Let's take a modification point from the first variant. I take the element at 12, it's an assignement.
+		ModificationPoint mpoint = astor.getVariants().get(0).getModificationPoints().get(12);
+		Ingredient ingLast = ingStrategy.getFixIngredient(mpoint, operator);
+		Assert.assertNotNull(ingLast);
+		
+		List<String> files =ingStrategy.getIngredientSpace().getLocations();
+		Assert.assertTrue(files.size() > 0);
+		Assert.assertTrue(files.contains(mpoint.getProgramVariant().getAffectedClasses().get(0).getQualifiedName()));
+	
+		List<CtCodeElement> ingredients =  ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
+		Assert.assertTrue(ingredients.size() > 0);
+		Assert.assertTrue(hasIngredient(ingredients,ingLast));
+		
+		//Now, we check if all ingredients retrieved belongs affected classes
+		for (CtCodeElement ctCodeElement : ingredients) {
+			assertTrue(mpoint.getProgramVariant().getAffectedClasses().contains(ctCodeElement.getParent(CtType.class)));
+		}
+		
+	}
+	
+	@Test
+	public void testMath85ScopePackageSpace() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+				// We put 0 as max generation, so we force to not evolve the
+				// population
+				"-maxgen", "0", "-scope", "package", "-seed", "10", "-ingredientstrategy",
+				ShortestIngredientSearchStrategy.class.getName() };
+	
+		main1.execute(args);
+		JGenProg astor = (JGenProg) main1.getEngine();
+		IngredientSearchStrategy ingStrategy = astor.getIngredientStrategy();
+	
+		
+		//
+		AstorOperator operator = new ReplaceOp(); 
+		//Let's take a modification point from the first variant. I take the element at 12, it's an assignement.
+		ModificationPoint mpoint = astor.getVariants().get(0).getModificationPoints().get(12);
+		Ingredient ingLast = ingStrategy.getFixIngredient(mpoint, operator);
+		Assert.assertNotNull(ingLast);
+		
+		List<String> packages =ingStrategy.getIngredientSpace().getLocations();
+		Assert.assertTrue(packages.size() > 0);
+		Assert.assertTrue(packages.contains(mpoint.getProgramVariant().getAffectedClasses().get(0).getParent(CtPackage.class).getQualifiedName()));
+	
+		List<CtCodeElement> ingredients =  ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
+		Assert.assertTrue(ingredients.size() > 0);
+		Assert.assertTrue(hasIngredient(ingredients,ingLast));
+		
+		boolean ingrePackageCorrect = false;
+		//Now, we check if all ingredients retrieved belongs affected classes
+		for (CtCodeElement ctCodeElement : ingredients) {
+			for(CtType aff : mpoint.getProgramVariant().getAffectedClasses()){
+				if(aff.getPackage().equals(ctCodeElement.getParent(CtPackage.class)))
+					ingrePackageCorrect = true;
+			};
+			
+		}
+		assertTrue(ingrePackageCorrect);
+		
+	}
+	
+	@Test
+	public void testMath85ScopeMethodSpace() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+				// We put 0 as max generation, so we force to not evolve the
+				// population
+				"-maxgen", "0", 
+				"-scope", MethodBasicIngredientScope.class.getCanonicalName(), //
+				"-seed", "10", "-ingredientstrategy",
+				ShortestIngredientSearchStrategy.class.getName() };
+	
+		main1.execute(args);
+		JGenProg astor = (JGenProg) main1.getEngine();
+		IngredientSearchStrategy ingStrategy = astor.getIngredientStrategy();
+	
+		
+		//
+		AstorOperator operator = new ReplaceOp(); 
+		//Let's take a modification point from the first variant. I take the element at 12, it's an assignement.
+		ModificationPoint mpoint = astor.getVariants().get(0).getModificationPoints().get(12);
+		Ingredient ingLast = ingStrategy.getFixIngredient(mpoint, operator);
+		Assert.assertNotNull(ingLast);
+		
+		List<String> methods =ingStrategy.getIngredientSpace().getLocations();
+		Assert.assertTrue(methods.size() > 0);
+		
+		List<CtCodeElement> ingredients =  ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
+		Assert.assertTrue(ingredients.size() > 0);
+		Assert.assertTrue(hasIngredient(ingredients,ingLast));
+		
+		CtExecutable exec = (mpoint.getCodeElement().getParent(CtExecutable.class));
+		for (CtCodeElement ctCodeElement : ingredients) {
+			assertEquals(exec,ctCodeElement.getParent(CtExecutable.class));
+		}
+		
+	}
+	
+	
+	
+	private boolean hasIngredient(List<CtCodeElement> ingredients, Ingredient ing){
+		for (CtCodeElement ctCodeElement : ingredients) {
+			if(ctCodeElement.toString().equals(ing.getCode().toString()))
+				return true;
+		}
+		return false;
+	}
+	
+	
+	
 	
 }

@@ -20,6 +20,7 @@ import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.GlobalBasicIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.LocalIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.PackageBasicFixSpace;
@@ -93,15 +94,18 @@ public class AstorMain extends AbstractMain {
 			astorCore.setRepairActionSpace(new UniformRandomRepairOperatorSpace(new jGenProgSpace()));
 
 			// The ingredients for build the patches
-			String scope = ConfigurationProperties.properties.getProperty("scope").toLowerCase();
+			String scope = ConfigurationProperties.properties.getProperty("scope");
 			IngredientSpace ingredientspace = null;
 			if ("global".equals(scope)) {
 				ingredientspace = (new GlobalBasicIngredientSpace(ingredientProcessors));
 			} else if ("package".equals(scope)) {
 				ingredientspace = (new PackageBasicFixSpace(ingredientProcessors));
-			} else {// Default
+			} else if ("local".equals(scope)) {
 				ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
+			}else{
+				ingredientspace = loadSpace(scope, ingredientProcessors);
 			}
+			
 			IngredientSearchStrategy ingStrategy = retrieveIngredientStrategy(ingredientspace);
 
 			((JGenProg) astorCore).setIngredientStrategy(ingStrategy);
@@ -209,10 +213,13 @@ public class AstorMain extends AbstractMain {
 	private IngredientSearchStrategy retrieveIngredientStrategy(IngredientSpace ingredientspace) throws Exception {
 		String strategy = ConfigurationProperties.properties.getProperty("ingredientstrategy");
 		IngredientSearchStrategy st = null;
-		if (strategy == null || strategy.trim().isEmpty())
-			st = new EfficientIngredientStrategy(ingredientspace);
-		else
+		if (strategy == null || strategy.trim().isEmpty()){
+			AstorCtIngredientSpace ctIngredientSpace = (AstorCtIngredientSpace) ingredientspace;
+			st = new EfficientIngredientStrategy(ctIngredientSpace);
+		}
+		else{
 			st = loadCustomIngredientStrategy(strategy, ingredientspace);
+		}
 		return st;
 	}
 
@@ -260,7 +267,7 @@ public class AstorMain extends AbstractMain {
 		Object object = null;
 		try {
 			Class classDefinition = Class.forName(customStrategyclassName);
-			object = classDefinition.getConstructor(IngredientSpace.class).newInstance(ingredientSpace);
+			object = classDefinition.getConstructor(AstorCtIngredientSpace.class).newInstance(ingredientSpace);
 		} catch (Exception e) {
 			log.error("Loading strategy " + customStrategyclassName + " --" + e);
 			throw new Exception("Loading strategy: " + e);
@@ -269,7 +276,26 @@ public class AstorMain extends AbstractMain {
 			return (IngredientSearchStrategy) object;
 		else
 			throw new Exception("The strategy " + customStrategyclassName + " does not extend from "
-					+ IngredientSearchStrategy.class.getName());
+					+  IngredientSearchStrategy.class.getName());
+
+	}
+	
+	private AstorCtIngredientSpace loadSpace(String customSpaceclassName,
+			List<AbstractFixSpaceProcessor<?>> ingredientProcessors) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(customSpaceclassName);
+			object = classDefinition.getConstructor(List.class).
+					newInstance(ingredientProcessors);
+		} catch (Exception e) {
+			log.error("Loading strategy " + customSpaceclassName + " --" + e);
+			throw new Exception("Loading strategy: " + e);
+		}
+		if (object instanceof AstorCtIngredientSpace)
+			return (AstorCtIngredientSpace) object;
+		else
+			throw new Exception("The strategy " +customSpaceclassName+ " does not extend from "
+					+  AstorCtIngredientSpace.class.getName());
 
 	}
 
