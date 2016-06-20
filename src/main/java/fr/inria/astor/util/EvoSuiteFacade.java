@@ -80,7 +80,7 @@ public class EvoSuiteFacade {
 					urlArrayToString(SUTClasspath), //
 					"-base_dir", outES, //
 					"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")
-					,"-seed ",ConfigurationProperties.getProperty("seed")
+					//,"-seed ",ConfigurationProperties.getProperty("seed")
 			};
 			logger.debug(
 					"Creating test for " + ctType.getQualifiedName() + " " + (++counter) + "/" + typesToProcess.size());
