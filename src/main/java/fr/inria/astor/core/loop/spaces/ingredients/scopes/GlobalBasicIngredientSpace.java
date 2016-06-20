@@ -80,7 +80,7 @@ public class GlobalBasicIngredientSpace extends LocalIngredientSpace {
 	public void defineSpace(ProgramVariant variant) {
 		List<CtType<?>> affected =  MutationSupporter.getFactory().Type().getAll();
 			for (CtType<?> classToProcess : affected) {
-					this.createFixSpaceFromAClass(classToProcess, classToProcess);
+					this.createFixSpaceFromAClass(classToProcess);
 			}
 				
 	}

@@ -20,7 +20,6 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.validation.executors.WorkerThreadHelper;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -81,8 +80,7 @@ public class EvoSuiteFacade {
 					urlArrayToString(SUTClasspath), //
 					"-base_dir", outES, //
 					"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")
-					// ,"-Djunit_check_on_separate_process=true"
-					//,"-seed ",ConfigurationProperties.getProperty("seed")
+					,"-seed ",ConfigurationProperties.getProperty("seed")
 			};
 			logger.debug(
 					"Creating test for " + ctType.getQualifiedName() + " " + (++counter) + "/" + typesToProcess.size());

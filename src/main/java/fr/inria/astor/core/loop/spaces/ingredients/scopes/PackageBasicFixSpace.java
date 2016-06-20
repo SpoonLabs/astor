@@ -29,7 +29,7 @@ public class PackageBasicFixSpace extends LocalIngredientSpace {
 	}
 
 	@Override
-	public String convertKey(CtElement original) {
+	public String calculateLocation(CtElement original) {
 
 		return original.getParent(CtPackage.class).getQualifiedName();
 	}
@@ -45,7 +45,7 @@ public class PackageBasicFixSpace extends LocalIngredientSpace {
 			if (!packageAnalyzed.contains(p)) {
 				packageAnalyzed.add(p);
 				for (CtType<?> t : p.getTypes()) {
-					this.createFixSpaceFromAClass(t, t);
+					this.createFixSpaceFromAClass(t);
 				}
 
 			}

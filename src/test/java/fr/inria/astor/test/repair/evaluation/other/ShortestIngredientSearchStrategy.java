@@ -9,12 +9,13 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 
 /**
- * Ingredient navegation strategy created for testing. The strategy returns the
+ * Ingredient navigation strategy created for testing. The strategy returns the
  * smallest ingredient in term of number of chars. Once it returns one
  * ingredient, it removes it from the space.
  * 
@@ -26,11 +27,12 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 
 	private List<CtElement> locationsAnalyzed = new ArrayList<>();
 
-	public ShortestIngredientSearchStrategy(IngredientSpace<CtElement, CtCodeElement, String> space) {
+	public ShortestIngredientSearchStrategy(AstorCtIngredientSpace space) {
 		super(space);
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
 
@@ -45,12 +47,14 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 					modificationPoint.getCodeElement().getClass().getSimpleName());
 
 		}
-
 		// We store the location to avoid sorting the ingredient twice.
 		if (!locationsAnalyzed.contains(modificationPoint.getCodeElement())) {
 			locationsAnalyzed.add(modificationPoint.getCodeElement());
+			//We create the list to reorder the ingredients without modifying the original.
+			List<CtCodeElement> ingredientsLocationSort = new ArrayList(ingredientsLocation);
+			
 			// We have never analyze this location, let's sort the ingredients.
-			Collections.sort(ingredientsLocation, new Comparator<CtCodeElement>() {
+			Collections.sort(ingredientsLocationSort, new Comparator<CtCodeElement>() {
 
 				@Override
 				public int compare(CtCodeElement o1, CtCodeElement o2) {
@@ -58,7 +62,8 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 				}
 			});
 			// We reintroduce the sorted list ingredient into the space
-			this.ingredientSpace.setIngredients(modificationPoint.getCodeElement(), ingredientsLocation);
+			this.ingredientSpace.setIngredients(modificationPoint.getCodeElement(), ingredientsLocationSort);
+			ingredientsLocation = ingredientsLocationSort;
 		}
 		int size = ingredientsLocation.size();
 		if (size > 0) {

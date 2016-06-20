@@ -7,8 +7,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.RandomManager;
@@ -24,15 +23,15 @@ import spoon.reflect.declaration.CtElement;
  * @param <I>
  *
  */
-public class UniformRandomIngredientSearch extends IngredientSearchStrategy {
+public class UniformRandomIngredientSearch extends AstorCtSearchStrategy {
+
+	public UniformRandomIngredientSearch(AstorCtIngredientSpace space) {
+		super(space);
+	}
 
 	private Logger logger = Logger.getLogger(UniformRandomIngredientSearch.class.getName());
 
-	public UniformRandomIngredientSearch(IngredientSpace<CtElement, CtCodeElement, String> space) {
-		super(space);
-
-	}
-
+	
 	/**
 	 * 
 	 * @param fixSpace

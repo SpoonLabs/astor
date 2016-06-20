@@ -5,7 +5,6 @@ import java.util.List;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.spaces.ingredients.AstorIngredientSpace;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
@@ -15,7 +14,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class LocalIngredientSpace extends AstorIngredientSpace<CtElement,String, CtCodeElement,String>{
+public class LocalIngredientSpace extends AstorCtIngredientSpace{
 
 	public LocalIngredientSpace(AbstractFixSpaceProcessor<?> processor)
 			throws JSAPException {
@@ -37,7 +36,7 @@ public class LocalIngredientSpace extends AstorIngredientSpace<CtElement,String,
 	public void defineSpace(ProgramVariant variant) {
 		List<CtType<?>> affected = variant.getAffectedClasses();
 			for (CtType<?> CtType : affected) {
-					this.createFixSpaceFromAClass(CtType, CtType);
+					this.createFixSpaceFromAClass(CtType);
 			}
 				
 	}
@@ -54,12 +53,12 @@ public class LocalIngredientSpace extends AstorIngredientSpace<CtElement,String,
 	}
 
 	@Override
-	public String convertKey(CtElement original) {
+	public String calculateLocation(CtElement original) {
 		
 		if(original instanceof CtType<?>)
 			return ((CtType) original).getQualifiedName();
 		return original.getParent(CtType.class).getQualifiedName();
-
+		
 	}
 	
 

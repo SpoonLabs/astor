@@ -12,10 +12,10 @@ import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -26,6 +26,10 @@ import spoon.reflect.declaration.CtElement;
  */
 public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 
+	public EfficientIngredientStrategy(AstorCtIngredientSpace space) {
+		super(space);
+	}
+
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	/**
@@ -33,9 +37,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 	 */
 	protected Map<String, List<String>> appliedCache = new HashMap<String, List<String>>();
 
-	public EfficientIngredientStrategy(IngredientSpace<CtElement, CtCodeElement, String> space) {
-		super(space);
-	}
+
 
 	/**
 	 * Return an ingredient. As it has a cache, it never returns twice the same

@@ -11,13 +11,15 @@ import spoon.reflect.declaration.CtElement;
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  *
- *         L is the location of the code ingredient (e.g., ingredient from File
- *         A)
- * 
- *         I the content of the ingredient (e.g., a= b+c;) T type of the
- *         ingredient (e.g., a statement, if, a while, etc)
+ *       Q type of the element to modify using an ingredient from this space.
+ *       
+ *        K location of the ingredient according to the space
+ *        
+ *         I ingredient (e.g., a= b+c;) 
+ *         
+ *         T type of the ingredient (e.g., a statement, if, a while, etc)
  */
-public interface IngredientSpace<L extends Object, I extends CtElement, T extends Object> {
+public interface IngredientSpace<Q extends Object, K extends Object, I extends CtElement, T extends Object> {
 
 	/**
 	 * Creates the Space using the classes from a Variant
@@ -32,29 +34,44 @@ public interface IngredientSpace<L extends Object, I extends CtElement, T extend
 	/**
 	 * Return list of ingredients from location
 	 * 
-	 * @param location
+	 * @param elementToModify
 	 * @return
 	 */
-	public List<I> getIngredients(L location);
+	public List<I> getIngredients(Q elementToModify);
 
 	/**
 	 * Return list of ingredient of type from location
 	 * 
-	 * @param location
+	 * @param elementToModify
 	 * @param type
 	 * @return
 	 */
-	public List<I> getIngredients(L location, T type);
+	public List<I> getIngredients(Q elementToModify, T type);
 	
 	/**
 	 * Set the list of ingredient in the location.
-	 * @param location
+	 * @param elementToModify
 	 * @param ingredients
 	 */
-	public void setIngredients(L location, List<I> ingredients);
+	public void setIngredients(Q elementToModify, List<I> ingredients);
 	
 	public IngredientSpaceScope spaceScope();
 	
-	public List<L> getLocations();
+	/**
+	 * For a given piece of code Q, it returns the location according to the scope.
+	 * For instance, if the scope of the Space is file, it returns the file name that contains Q, 
+	 * if the scope is package, it returns the package where Q is located.
+	 * @param elementToModify
+	 * @return
+	 */
+	public K calculateLocation(Q elementToModify);
+	
+	/**
+	 * Get all the locations for a given scope.
+	 * For instance, if the scope is 'Package' it will return all package with ingredients.
+	 * If the scope is method, it returns all methods with at least one ingredient.
+	 * @return
+	 */
+	public List<K> getLocations();
 
 }

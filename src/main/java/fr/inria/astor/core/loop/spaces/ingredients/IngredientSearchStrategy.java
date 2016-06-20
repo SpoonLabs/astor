@@ -3,8 +3,6 @@ package fr.inria.astor.core.loop.spaces.ingredients;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtElement;
 
 /**
  * Abstract class that represent a strategy to pick an ingredient from the
@@ -15,14 +13,14 @@ import spoon.reflect.declaration.CtElement;
  */
 public abstract class IngredientSearchStrategy {
 
-	protected IngredientSpace<CtElement, CtCodeElement, String> ingredientSpace = null;
+	protected IngredientSpace ingredientSpace = null;
 
 	/**
 	 * The strategy receives as parameter the FixSpace
 	 * 
 	 * @param space
 	 */
-	public IngredientSearchStrategy(IngredientSpace<CtElement, CtCodeElement, String> space) {
+	public IngredientSearchStrategy(IngredientSpace space) {
 		super();
 		this.ingredientSpace = space;
 	}
@@ -39,7 +37,7 @@ public abstract class IngredientSearchStrategy {
 	 */
 	public abstract Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType);
 
-	public IngredientSpace<CtElement, CtCodeElement, String> getIngredientSpace() {
+	public IngredientSpace getIngredientSpace() {
 		return ingredientSpace;
 	}
 
