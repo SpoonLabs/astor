@@ -284,8 +284,8 @@ public class MutationSupporter {
 	public static CtCodeElement clone(CtCodeElement st) {
 		CtCodeElement cloned = factory.Core().clone(st);
 	
-		cloned.setParent(ROOT_ELEMENT);
-
+		//cloned.setParent(ROOT_ELEMENT);
+		cloned.setParent(st.getParent());
 		return cloned;
 	}
 
