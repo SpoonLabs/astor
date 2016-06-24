@@ -1,7 +1,6 @@
 package fr.inria.main.evolution;
 
 import java.io.File;
-import java.rmi.server.Operation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +25,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.GlobalBasicIngredientS
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.LocalIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.PackageBasicFixSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
+import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.loop.spaces.operators.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -84,18 +84,35 @@ public class AstorMain extends AbstractMain {
 		// Fix Space
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 
+		// We check if the user defines the operators to include in the operator space
+		OperatorSpace operatorSpace = null;
+		String customOp = ConfigurationProperties.getProperty("customop");
+		if (customOp != null && !customOp.isEmpty()) {
+			 operatorSpace = createCustomOperatorSpace(customOp);
+		}
+		
+		
+		
 		if (ExecutionMode.jKali.equals(mode)) {
 			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
-			astorCore.setOperatorSpace(new JKaliSpace());
+			if(operatorSpace == null)
+				operatorSpace =  new JKaliSpace();
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
 
 		} else if (ExecutionMode.jGenProg.equals(mode)) {
 			astorCore = new JGenProg(mutSupporter, projectFacade);
-			OperatorSpace operatorSpace = new jGenProgSpace();
-			astorCore.setOperatorSpace(operatorSpace);
-			astorCore.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(operatorSpace));
-
+			if(operatorSpace == null)
+				operatorSpace = new jGenProgSpace();
+			//We retrieve strategy for navigating operator space
+			String opStrategyClassName = 	ConfigurationProperties.properties.getProperty("opselectionstrategy");
+			if(opStrategyClassName != null){
+				OperatorSelectionStrategy strategy =  createOperationSelectionStrategy(opStrategyClassName,operatorSpace);
+				astorCore.setOperatorSelectionStrategy(strategy);
+			}
+			else{//By default, uniform strategy
+				astorCore.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(operatorSpace));
+			}
 			// The ingredients for build the patches
 			String scope = ConfigurationProperties.properties.getProperty("scope");
 			IngredientSpace ingredientspace = null;
@@ -115,7 +132,8 @@ public class AstorMain extends AbstractMain {
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
 			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
-			astorCore.setOperatorSpace(new MutRepairSpace());
+			if(operatorSpace == null)
+				operatorSpace = new MutRepairSpace();
 			// ConfigurationProperties.properties.setProperty("stopfirst",
 			// "false");
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
@@ -129,14 +147,17 @@ public class AstorMain extends AbstractMain {
 			// the engine class
 			String customengine = ConfigurationProperties.getProperty("customengine");
 			astorCore = createEngineFromArgument(customengine, mutSupporter, projectFacade);
+				
 		}
 
-		// We check if the user define their own operators
-		String customOp = ConfigurationProperties.getProperty("customop");
-		if (customOp != null && !customOp.isEmpty()) {
-			createCustomSpace(customOp);
-		}
 		// Now we define the commons properties
+		
+		if(operatorSpace != null){
+			astorCore.setOperatorSpace(operatorSpace);
+		}else{
+			throw new Exception("The operator Space cannot be null");
+		}
+			
 
 		// Pop controller
 		astorCore.setPopulationControler(new FitnessPopulationController());
@@ -226,7 +247,7 @@ public class AstorMain extends AbstractMain {
 		return st;
 	}
 
-	private void createCustomSpace(String customOp) throws Exception {
+	private OperatorSpace createCustomOperatorSpace(String customOp) throws Exception {
 		OperatorSpace customSpace = new OperatorSpace();
 		String[] operators = customOp.split(File.pathSeparator);
 		for (String op : operators) {
@@ -238,8 +259,23 @@ public class AstorMain extends AbstractMain {
 			log.error("Empty custom operator space");
 			throw new Exception("Empty custom operator space");
 		}
-		astorCore.setOperatorSpace(customSpace);
-		astorCore.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(customSpace));
+		return customSpace;
+	}
+	
+	private OperatorSelectionStrategy createOperationSelectionStrategy(String opSelectionStrategyClassName, OperatorSpace space) throws Exception{
+			Object object = null;
+		try {
+			Class classDefinition = Class.forName(opSelectionStrategyClassName);
+			object = classDefinition.getConstructor(OperatorSpace.class).newInstance(space);
+		} catch (Exception e) {
+			log.error("Loading strategy " + opSelectionStrategyClassName + " --" + e);
+			throw new Exception("Loading strategy: " + e);
+		}
+		if (object instanceof OperatorSelectionStrategy)
+			return (OperatorSelectionStrategy) object;
+		else
+			throw new Exception("The strategy " + opSelectionStrategyClassName + " does not extend from "
+					+  OperatorSelectionStrategy.class.getName());
 	}
 
 	AstorOperator createOperator(String className) {

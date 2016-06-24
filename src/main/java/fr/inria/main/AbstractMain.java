@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
+import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
@@ -156,6 +157,10 @@ public abstract class AbstractMain {
 		
 		options.addOption("ingredientstrategy", true,
 				"(Optional) Indicates the name of the class that astor calls for retrieving ingredients. They must extend from "+IngredientSearchStrategy.class.getName() 
+				+ " The classes must be included in the classpath.");
+		
+		options.addOption("opselectionstrategy", true,
+				"(Optional) Indicates the name of the class that astor calls for selecting an operator from the operator space. They must extend from "+OperatorSelectionStrategy.class.getName() 
 				+ " The classes must be included in the classpath.");
 		
 		
@@ -405,6 +410,9 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("ingredientstrategy"))
 			ConfigurationProperties.properties.setProperty("ingredientstrategy", cmd.getOptionValue("ingredientstrategy"));
 
+		if (cmd.hasOption("opselectionstrategy"))
+			ConfigurationProperties.properties.setProperty("opselectionstrategy", cmd.getOptionValue("opselectionstrategy"));
+	
 		if(cmd.hasOption("customengine"))
 			ConfigurationProperties.properties.setProperty("customengine", cmd.getOptionValue("customengine"));
 		

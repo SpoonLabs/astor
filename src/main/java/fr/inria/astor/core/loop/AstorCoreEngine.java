@@ -102,7 +102,7 @@ public abstract class AstorCoreEngine {
 	public void startEvolution() throws Exception {
 
 		log.info("\n----Starting Solution Search");
-		LogManager.getRootLogger().setLevel(Level.DEBUG);
+		//LogManager.getRootLogger().setLevel(Level.DEBUG);
 		
 
 		generationsExecuted = 0;
