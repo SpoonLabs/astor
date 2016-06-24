@@ -91,7 +91,7 @@ public class ExhaustiveSearchEngine extends JGenProg {
 	 */
 	protected List<ModificationInstance> createOperators(SuspiciousModificationPoint modificationPoint) {
 		List<ModificationInstance> ops = new ArrayList<>();
-		AstorOperator[] operators = repairActionSpace.values();
+		AstorOperator[] operators = getOperatorSpace().values();
 		for (AstorOperator astorOperator : operators) {
 			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
 				List<ModificationInstance> instances = astorOperator.createModificationInstance(modificationPoint);

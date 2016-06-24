@@ -220,9 +220,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 		// The space must have only ONE operator
-		assertEquals(1, main1.getEngine().getRepairActionSpace().size());
+		assertEquals(1, main1.getEngine().getOperatorSpace().size());
 		assertEquals(RemoveOp.class.getSimpleName(),
-				main1.getEngine().getRepairActionSpace().values()[0].getClass().getSimpleName());
+				main1.getEngine().getOperatorSpace().values()[0].getClass().getSimpleName());
 
 	}
 
@@ -268,9 +268,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 		// The space must have only ONE operator
-		assertEquals(1, main1.getEngine().getRepairActionSpace().size());
+		assertEquals(1, main1.getEngine().getOperatorSpace().size());
 		assertEquals(ReplaceOp.class.getSimpleName(),
-				main1.getEngine().getRepairActionSpace().values()[0].getClass().getSimpleName());
+				main1.getEngine().getOperatorSpace().values()[0].getClass().getSimpleName());
 
 		validatePatchExistence(out + File.separator + "AstorMain-math_85/", 0);
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
@@ -297,11 +297,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 		// The space must have Two operators
-		assertEquals(2, main1.getEngine().getRepairActionSpace().size());
+		assertEquals(2, main1.getEngine().getOperatorSpace().size());
 		assertEquals(InsertAfterOp.class.getSimpleName(),
-				main1.getEngine().getRepairActionSpace().values()[0].getClass().getSimpleName());
+				main1.getEngine().getOperatorSpace().values()[0].getClass().getSimpleName());
 		assertEquals(RemoveOp.class.getSimpleName(),
-				main1.getEngine().getRepairActionSpace().values()[1].getClass().getSimpleName());
+				main1.getEngine().getOperatorSpace().values()[1].getClass().getSimpleName());
 
 		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();

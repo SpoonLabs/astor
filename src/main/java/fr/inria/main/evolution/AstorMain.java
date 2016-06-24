@@ -1,6 +1,7 @@
 package fr.inria.main.evolution;
 
 import java.io.File;
+import java.rmi.server.Operation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -85,13 +86,15 @@ public class AstorMain extends AbstractMain {
 
 		if (ExecutionMode.jKali.equals(mode)) {
 			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
-			astorCore.setRepairActionSpace(new JKaliSpace());
+			astorCore.setOperatorSpace(new JKaliSpace());
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
 
 		} else if (ExecutionMode.jGenProg.equals(mode)) {
 			astorCore = new JGenProg(mutSupporter, projectFacade);
-			astorCore.setRepairActionSpace(new UniformRandomRepairOperatorSpace(new jGenProgSpace()));
+			OperatorSpace operatorSpace = new jGenProgSpace();
+			astorCore.setOperatorSpace(operatorSpace);
+			astorCore.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(operatorSpace));
 
 			// The ingredients for build the patches
 			String scope = ConfigurationProperties.properties.getProperty("scope");
@@ -112,7 +115,7 @@ public class AstorMain extends AbstractMain {
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
 			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
-			astorCore.setRepairActionSpace(new MutRepairSpace());
+			astorCore.setOperatorSpace(new MutRepairSpace());
 			// ConfigurationProperties.properties.setProperty("stopfirst",
 			// "false");
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
@@ -235,8 +238,8 @@ public class AstorMain extends AbstractMain {
 			log.error("Empty custom operator space");
 			throw new Exception("Empty custom operator space");
 		}
-
-		astorCore.setRepairActionSpace(new UniformRandomRepairOperatorSpace(customSpace));
+		astorCore.setOperatorSpace(customSpace);
+		astorCore.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(customSpace));
 	}
 
 	AstorOperator createOperator(String className) {

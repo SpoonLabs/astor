@@ -25,7 +25,8 @@ import fr.inria.astor.core.entities.WeightCtElement;
 import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
-import fr.inria.astor.core.loop.spaces.operators.RepairOperatorSpace;
+import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
+import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -70,7 +71,9 @@ public abstract class AstorCoreEngine {
 
 	// SPACES
 
-	protected RepairOperatorSpace repairActionSpace = null;
+	protected OperatorSelectionStrategy operatorSelectionStrategy = null;
+	
+	protected OperatorSpace operatorSpace = null;
 
 	protected PopulationController populationControler = null;
 
@@ -99,7 +102,7 @@ public abstract class AstorCoreEngine {
 	public void startEvolution() throws Exception {
 
 		log.info("\n----Starting Solution Search");
-		//LogManager.getRootLogger().setLevel(Level.DEBUG);
+		LogManager.getRootLogger().setLevel(Level.DEBUG);
 		
 
 		generationsExecuted = 0;
@@ -800,12 +803,12 @@ public abstract class AstorCoreEngine {
 		return false;
 	}
 
-	public RepairOperatorSpace getRepairActionSpace() {
-		return repairActionSpace;
+	public OperatorSelectionStrategy getOperatorSelectionStrategy() {
+		return operatorSelectionStrategy;
 	}
 
-	public void setRepairActionSpace(RepairOperatorSpace repairSpace) {
-		this.repairActionSpace = repairSpace;
+	public void setOperatorSelectionStrategy(OperatorSelectionStrategy operatorSelectionStrategy) {
+		this.operatorSelectionStrategy = operatorSelectionStrategy;
 	}
 
 	public List<ProgramVariant> getVariants() {
@@ -917,6 +920,14 @@ public abstract class AstorCoreEngine {
 
 	public ProjectRepairFacade getProjectFacade() {
 		return projectFacade;
+	}
+
+	public OperatorSpace getOperatorSpace() {
+		return operatorSpace;
+	}
+
+	public void setOperatorSpace(OperatorSpace operatorSpace) {
+		this.operatorSpace = operatorSpace;
 	}
 
 }
