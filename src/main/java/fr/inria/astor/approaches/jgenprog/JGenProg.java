@@ -207,7 +207,7 @@ public class JGenProg extends AstorCoreEngine {
 		SuspiciousModificationPoint suspModificationPoint = (SuspiciousModificationPoint) modificationPoint;
 
 		
-		AstorOperator operationType =  operatorSelectionStrategy.getNextOperator();
+		AstorOperator operationType =  operatorSelectionStrategy.getNextOperator(suspModificationPoint);
 
 		if (operationType == null) {
 			log.debug("Operation Null");
