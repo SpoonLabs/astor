@@ -9,6 +9,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -142,10 +143,7 @@ public abstract class AstorIngredientSpace<Q extends Object, K extends Object, I
 
 	}
 
-	protected T getType(I element) {
-
-		return (T) element;
-	}
+	protected abstract T getType(I element);
 
 	@Override
 	public List<I> getIngredients(Q location) {
