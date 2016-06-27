@@ -26,7 +26,7 @@ import spoon.reflect.declaration.CtElement;
  */
 public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 
-	public EfficientIngredientStrategy(AstorCtIngredientSpace space) {
+	public EfficientIngredientStrategy(IngredientSpace space) {
 		super(space);
 	}
 

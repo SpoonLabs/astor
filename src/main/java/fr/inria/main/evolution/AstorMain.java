@@ -238,8 +238,8 @@ public class AstorMain extends AbstractMain {
 		String strategy = ConfigurationProperties.properties.getProperty("ingredientstrategy");
 		IngredientSearchStrategy st = null;
 		if (strategy == null || strategy.trim().isEmpty()){
-			AstorCtIngredientSpace ctIngredientSpace = (AstorCtIngredientSpace) ingredientspace;
-			st = new EfficientIngredientStrategy(ctIngredientSpace);
+			//AstorCtIngredientSpace ctIngredientSpace = (AstorCtIngredientSpace) ingredientspace;
+			st = new EfficientIngredientStrategy(ingredientspace);
 		}
 		else{
 			st = loadCustomIngredientStrategy(strategy, ingredientspace);
@@ -306,7 +306,7 @@ public class AstorMain extends AbstractMain {
 		Object object = null;
 		try {
 			Class classDefinition = Class.forName(customStrategyclassName);
-			object = classDefinition.getConstructor(AstorCtIngredientSpace.class).newInstance(ingredientSpace);
+			object = classDefinition.getConstructor(IngredientSpace.class).newInstance(ingredientSpace);
 		} catch (Exception e) {
 			log.error("Loading strategy " + customStrategyclassName + " --" + e);
 			throw new Exception("Loading strategy: " + e);
@@ -319,7 +319,7 @@ public class AstorMain extends AbstractMain {
 
 	}
 	
-	private AstorCtIngredientSpace loadSpace(String customSpaceclassName,
+	private IngredientSpace loadSpace(String customSpaceclassName,
 			List<AbstractFixSpaceProcessor<?>> ingredientProcessors) throws Exception {
 		Object object = null;
 		try {
@@ -330,11 +330,11 @@ public class AstorMain extends AbstractMain {
 			log.error("Loading strategy " + customSpaceclassName + " --" + e);
 			throw new Exception("Loading strategy: " + e);
 		}
-		if (object instanceof AstorCtIngredientSpace)
-			return (AstorCtIngredientSpace) object;
+		if (object instanceof IngredientSpace)
+			return (IngredientSpace) object;
 		else
 			throw new Exception("The strategy " +customSpaceclassName+ " does not extend from "
-					+  AstorCtIngredientSpace.class.getName());
+					+  IngredientSpace.class.getName());
 
 	}
 
