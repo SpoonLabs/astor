@@ -15,15 +15,21 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp;
 import fr.inria.astor.approaches.jgenprog.operators.RemoveOp;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
+import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.test.repair.evaluation.other.FakeOperatorSelectionStrategy;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -205,7 +211,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testMath85CustomOperator() throws Exception {
+	public void testMath85CustomOperatorSpace() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
@@ -226,6 +232,49 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 
+	@Test
+	public void testMath70CustomOperatorNavigationStrategy() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), 
+				//Forced to not run 
+				"-scope", "local", "-seed", "10", "-maxgen", "0", 
+				"-stopfirst", "true",
+				"-maxtime", "100",
+				"-opselectionstrategy", FakeOperatorSelectionStrategy.class.getName(),
+				
+
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+	
+		OperatorSpace opSpace = ((JGenProg)main1.getEngine()).getOperatorSpace();
+		assertTrue(((JGenProg)main1.getEngine()).getOperatorSelectionStrategy() instanceof FakeOperatorSelectionStrategy);
+		
+		for(ModificationPoint mp : variants.get(0).getModificationPoints()){
+			
+			SuspiciousModificationPoint smp = (SuspiciousModificationPoint) mp;
+			int line = smp.getSuspicious().getLineNumber();
+			if(line % 10 == 0){
+				assertEquals(opSpace.getOperators().get(0), 
+						((JGenProg)main1.getEngine()).getOperatorSelectionStrategy().getNextOperator(smp)					);
+			}else
+				assertEquals(opSpace.getOperators().get(1), 
+						((JGenProg)main1.getEngine()).getOperatorSelectionStrategy().getNextOperator(smp)					);
+			
+		}
+		
+		 
+		
+	}
+	
+	
 	/**
 	 * We pass as custom operator that it does not exist
 	 * 
@@ -419,7 +468,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.5", 
 				"-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "6010", "-maxgen", "50", "-stopfirst", "true",
-				"-maxtime", "20",
+				"-maxtime", "2",
 					
 		};
 		System.out.println(Arrays.toString(args));
@@ -444,7 +493,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.5", 
 				"-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
-				"-maxtime", "15",
+				"-maxtime", "2",
 					
 		};
 		System.out.println(Arrays.toString(args));
