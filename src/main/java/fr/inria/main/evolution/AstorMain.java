@@ -217,7 +217,7 @@ public class AstorMain extends AbstractMain {
 
 	}
 
-	private ProcessValidator createProcessValidatorFromArgument(String className) throws Exception {
+	private ProgramValidator createProcessValidatorFromArgument(String className) throws Exception {
 		Object object = null;
 		try {
 			Class classDefinition = Class.forName(className);
@@ -226,8 +226,8 @@ public class AstorMain extends AbstractMain {
 			log.error("LoadingProcessValidator: " + className + " --" + e);
 			throw new Exception("Error Loading Engine: " + e);
 		}
-		if (object instanceof ProcessValidator)
-			return (ProcessValidator) object;
+		if (object instanceof ProgramValidator)
+			return (ProgramValidator) object;
 		else
 			throw new Exception(
 					"The strategy " + className + " does not extend from " + ProgramValidator.class.getName());
