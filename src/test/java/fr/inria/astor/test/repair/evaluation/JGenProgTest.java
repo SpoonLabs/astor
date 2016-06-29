@@ -303,7 +303,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 * 
 	 * @throws Exception
 	 */
-	//@Test
+	@Test
 	public void testMath85_Custom_Operator_NoFix() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
@@ -312,17 +312,14 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", "-customop", ReplaceOp.class.getCanonicalName() };
+				"-maxgen", "1", "-scope", "package", "-seed", "10", "-customop", ReplaceOp.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
+
 		// The space must have only ONE operator
 		assertEquals(1, main1.getEngine().getOperatorSpace().size());
 		assertEquals(ReplaceOp.class.getSimpleName(),
 				main1.getEngine().getOperatorSpace().values()[0].getClass().getSimpleName());
-
-		validatePatchExistence(out + File.separator + "AstorMain-math_85/", 0);
-		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
-		assertTrue(solutions.size() == 0);
 
 	}
 
