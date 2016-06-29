@@ -34,7 +34,7 @@ public class EvoSuiteFacade {
 	public static String EVOSUITE_SUFFIX = "_ESTest";
 	public static String EVOSUITE_scaffolding_SUFFIX = "_ESTest_scaffolding";
 
-	Logger logger = Logger.getLogger(Thread.currentThread().getName());
+	static Logger logger = Logger.getLogger(Thread.currentThread().getName());
 
 	/**
 	 * Executing evosuite. For each Affected class from the program variant, we
@@ -95,7 +95,7 @@ public class EvoSuiteFacade {
 	}
 
 	// TODO: cloned
-	protected String urlArrayToString(URL[] urls) {
+	protected static String urlArrayToString(URL[] urls) {
 		String s = "";
 		if (urls == null)
 			return s;
@@ -107,7 +107,7 @@ public class EvoSuiteFacade {
 	}
 
 	// TODO: cloned
-	protected URL[] redefineURL(File foutgen, URL[] originalURL) throws MalformedURLException {
+	protected static URL[] redefineURL(File foutgen, URL[] originalURL) throws MalformedURLException {
 		List<URL> urls = new ArrayList<URL>();
 		urls.add(foutgen.toURL());
 		for (int i = 0; (originalURL != null) && i < originalURL.length; i++) {
@@ -123,7 +123,7 @@ public class EvoSuiteFacade {
 	 * @param argumentsEvo
 	 * @return
 	 */
-	private boolean runProcess(URL[] urlClasspath, String[] argumentsEvo) {
+	protected boolean runProcess(URL[] urlClasspath, String[] argumentsEvo) {
 		Process p = null;
 
 		String javaPath = ConfigurationProperties.getProperty("jvm4evosuitetestexecution");
@@ -322,16 +322,17 @@ public class EvoSuiteFacade {
 		String line = null;
 		BufferedReader in = new BufferedReader(new InputStreamReader(ins));
 		while ((line = in.readLine()) != null) {
-			System.out.println(name + " " + line);
+			logger.debug(name + " " + line);
 		}
 	}
 
 	public  static void runProcess(String[] command) throws Exception {
+		logger.debug("Executing compilation : "+ Arrays.toString(command));
 		Process pro = Runtime.getRuntime().exec(command);
 		printLines(command + " stdout:", pro.getInputStream());
 		printLines(command + " stderr:", pro.getErrorStream());
 		pro.waitFor();
-		System.out.println(command + " exitValue() " + pro.exitValue());
+		logger.debug(command + " exitValue() " + pro.exitValue());
 	}
 
 }
