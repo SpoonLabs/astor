@@ -8,32 +8,14 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import spoon.reflect.code.CtArrayAccess;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtConditional;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtDo;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
-import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtForEach;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -91,33 +73,7 @@ public class VariableResolver {
 		return varMatched;
 	}
 
-	/**
-	 * 
-	 * @param varContext
-	 * @param vartofind
-	 * @return
-	 */
-	@Deprecated
-	protected static boolean matchVariable(List<CtVariable> varContext, CtVariableAccess vartofind) {
-		try {
-			CtTypeReference typeToFind = vartofind.getType();
-			// First we search for compatible variables according to the type
-			List<CtVariable> types = compatiblesSubType(varContext, typeToFind);
-
-			// Then, we search
-			for (CtVariable ctVariableWithTypes : types) {
-				boolean match = ctVariableWithTypes.getSimpleName().equals(vartofind.getVariable().getSimpleName());
-				if (match) {
-					// System.out.println("idem "+ctVariableWithTypes );
-					return true;
-				}
-			}
-		} catch (Exception ex) {
-			logger.error("Variable verification error", ex);
-		}
-
-		return false;
-	}
+	
 
 	/**
 	 * For a given VariableAccess, we search the list of Variables contains
@@ -268,188 +224,7 @@ public class VariableResolver {
 
 	}
 
-	/**
-	 * Return true if the CtElement is valid according to a set of variables
-	 * (the context). In this case valid means all variables referenced by the
-	 * expression can be REPLACED by one from the context.
-	 * 
-	 * It does not take in account the variable names. Only types.
-	 * 
-	 * @param varContext
-	 * @param element
-	 * @return
-	 */
-	@SuppressWarnings("rawtypes")
-	@Deprecated
-	public static boolean fitInPlaceOLD(List<CtVariable> varContext, CtElement element) {
-
-		if (element == null)
-			return true;
-
-		if (element instanceof CtVariableAccess) {
-			return matchVariable(varContext, (CtVariableAccess) element);
-		}
-		if (element instanceof CtArrayAccess) {
-			CtArrayAccess el = (CtArrayAccess) element;
-			boolean fitTarget = fitInPlace(varContext, el.getIndexExpression());
-			if (fitTarget)
-				fitTarget = fitInPlace(varContext, el.getTarget());
-			return fitTarget;
-		}
-
-		// **********If the element is not a variable access, the analyze each
-		// case.
-
-		if (element instanceof CtReturn<?>) {
-			return fitInPlace(varContext, ((CtReturn) element).getReturnedExpression());
-		}
-
-		if (element instanceof CtInvocation) {
-			CtInvocation inv = (CtInvocation) element;
-			CtExpression target = inv.getTarget();
-			boolean fitTarget = true;
-			if (target != null) {
-				fitTarget = fitInPlace(varContext, target);
-			}
-			List<CtExpression> args = inv.getArguments();
-
-			for (int i = 0; fitTarget && i < args.size(); i++) {
-				fitTarget = fitInPlace(varContext, args.get(i));
-			}
-			return fitTarget;
-		}
-
-		if (element instanceof CtConstructorCall) {
-			CtConstructorCall ccall = (CtConstructorCall) element;
-
-			boolean fitTarget = true;
-
-			List<CtExpression> args = ccall.getArguments();
-
-			for (int i = 0; fitTarget && i < args.size(); i++) {
-				fitTarget = fitInPlace(varContext, args.get(i));
-			}
-			return fitTarget;
-		}
-		if (element instanceof CtThisAccess) {
-
-		}
-
-		if (element instanceof CtAssignment) {
-			CtAssignment assig = (CtAssignment) element;
-			CtExpression expleft = assig.getAssigned();
-			CtExpression expright = assig.getAssignment();
-
-			return fitInPlace(varContext, expleft) && fitInPlace(varContext, expright);
-		}
-		if (element instanceof CtBinaryOperator) {
-			CtBinaryOperator binop = (CtBinaryOperator) element;
-			CtExpression expleft = binop.getLeftHandOperand();
-			CtExpression expright = binop.getRightHandOperand();
-			return fitInPlace(varContext, expleft) && fitInPlace(varContext, expright);
-
-		}
-		if (element instanceof CtUnaryOperator) {
-			CtUnaryOperator upnop = (CtUnaryOperator) element;
-			CtExpression expleft = upnop.getOperand();
-
-			return fitInPlace(varContext, expleft);
-
-		}
-		if (element instanceof CtBlock) {
-
-			boolean fitTarget = true;
-
-			List<CtStatement> args = ((CtBlock) element).getStatements();
-
-			for (int i = 0; fitTarget && i < args.size(); i++) {
-				fitTarget = fitInPlace(varContext, args.get(i));
-			}
-			return fitTarget;
-		}
-
-		if (element instanceof CtIf) {
-			CtIf el = (CtIf) element;
-			boolean fitTarget = fitInPlace(varContext, el.getCondition());
-			if (fitTarget) {
-				fitInPlace(varContext, el.getThenStatement());
-				fitInPlace(varContext, el.getElseStatement());
-			}
-			return fitTarget;
-		}
-
-		if (element instanceof CtConditional) {
-			CtConditional el = (CtConditional) element;
-			boolean fitTarget = fitInPlace(varContext, el.getCondition());
-			if (fitTarget) {
-				fitInPlace(varContext, el.getThenExpression());
-				fitInPlace(varContext, el.getElseExpression());
-			}
-			return fitTarget;
-		}
-
-		if (element instanceof CtWhile) {
-			CtWhile el = (CtWhile) element;
-			boolean fitTarget = fitInPlace(varContext, el.getLoopingExpression());
-			if (fitTarget) {
-				fitInPlace(varContext, el.getBody());
-			}
-			return fitTarget;
-		}
-
-		if (element instanceof CtFor) {
-			CtFor el = (CtFor) element;
-			boolean fitTarget = fitInPlace(varContext, el.getExpression());
-			if (fitTarget) {
-				fitInPlace(varContext, el.getBody());
-			}
-			return fitTarget;
-		}
-
-		if (element instanceof CtForEach) {
-			CtForEach el = (CtForEach) element;
-			boolean fitTarget = fitInPlace(varContext, el.getExpression());
-			if (fitTarget) {
-				fitInPlace(varContext, el.getBody());
-			}
-			return fitTarget;
-		}
-
-		if (element instanceof CtDo) {
-			CtDo el = (CtDo) element;
-			boolean fitTarget = fitInPlace(varContext, el.getLoopingExpression());
-			if (fitTarget) {
-				fitInPlace(varContext, el.getBody());
-			}
-			return fitTarget;
-		}
-
-		if (element instanceof CtThrow) {
-			CtThrow el = (CtThrow) element;
-			boolean fitTarget = fitInPlace(varContext, el.getThrownExpression());
-
-			return fitTarget;
-		}
-
-		if (element instanceof CtLiteral) {
-			return true;
-		}
-
-		if (element instanceof CtLocalVariable) {
-			CtLocalVariable el = (CtLocalVariable) element;
-			fitInPlace(varContext, el.getDefaultExpression());
-			return true;
-		}
-
-		if (element instanceof CtTypeAccess)
-			return true;
-
-		// CtTypeAccessImpl
-		logger.error("\nUndefined case " + element.getClass().getName() + " " + element.getSignature());
-
-		// If we can not determine, we continue and accept the element
-		return true;
-	}
+	
 
 	/**
 	 * Returns all variables in scope, reachable from the ctelement passes as
