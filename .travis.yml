@@ -10,6 +10,7 @@ env:
   - TEST=fr.inria.astor.test.repair.evaluation.MutRepairTest
   - TEST=fr.inria.astor.test.repair.evaluation.EvoSuiteGenerationTest
   - TEST=fr.inria.astor.test.repair.evaluation.VariableResolverTest
+  - TEST=fr.inria.astor.test.repair.evaluation.RepairOperatorTest
 
 script:
   - mvn test -DskipTests
