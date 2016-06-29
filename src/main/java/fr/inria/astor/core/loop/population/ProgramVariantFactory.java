@@ -241,7 +241,7 @@ public class ProgramVariantFactory {
 			modifPoint.setCodeElement(ctElement);
 			modifPoint.setContextOfModificationPoint(contextOfPoint);
 			suspGen.add(modifPoint);
-			log.info("--ModifPoint:" + ctElement.getClass().getSimpleName() + ", suspValue "
+			log.debug("--ModifPoint:" + ctElement.getClass().getSimpleName() + ", suspValue "
 					+ suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
 					+ ctElement.getPosition().getFile().getName());
 		}
