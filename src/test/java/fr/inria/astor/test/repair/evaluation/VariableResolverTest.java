@@ -9,10 +9,12 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerLauncher;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -240,5 +242,75 @@ public class VariableResolverTest {
 		assertFalse(fits2);
 		
 	}
+	@Test
+	public void testExample288VariablesLocalAccess() throws Exception{
+		//then to remove induction variables from varAccessCollected, 
+		//we would look for the induction variables' names in varAccessCollected 
+		//and remove the local accesses but leave static references to those names in the collection
+		
+			AstorMain main1 = new AstorMain();
+			
+			String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+			File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+			String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+					"org.apache.commons.math.optimization.linear.SimplexSolverTest", "-location",
+					new File("./examples/Math-issue-288").getAbsolutePath(), 
+					"-package", "org.apache.commons", "-srcjavafolder",
+					"/src/main/java/", 
+					"-srctestfolder", "/src/main/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+					"/target/test-classes", "-javacompliancelevel", "7", //
+					"-flthreshold", "0.2", "-out",//
+					out.getAbsolutePath(), "-scope", "package", "-seed", "10",
+					// Force not evolution
+					"-maxgen", "0",
+					//
+					"-stopfirst", "true", "-maxtime", "100"
 
+			};
+			
+			
+			main1.execute(args);
+			
+			List<ProgramVariant> variants = main1.getEngine().getVariants();
+			JGenProg jgp = (JGenProg) main1.getEngine();
+			ModificationPoint mp = variants.get(0).getModificationPoints().get(0);
+			System.out.println("Mpoint \n"+mp);
+			
+			System.out.println("Mpoint Context \n"+mp.getContextOfModificationPoint());
+			
+			
+			IngredientSpace ispace = jgp.getIngredientStrategy().getIngredientSpace();
+			List<CtElement> ingredients = ispace.getIngredients(mp.getCodeElement()); 
+			for (int i = 0; i < ingredients.size(); i++) {
+				//System.out.println(i+ " "+ ingredients.get(i));
+			}
+			
+			
+			//For with a induction variable
+			CtElement ifor = ingredients.get(72);
+			boolean matchFor = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), ifor, true);
+			
+			//the variable 'i' is declared inside the ingredient, and event it does not exist  
+			assertTrue(matchFor);
+			
+			CtElement iif = ingredients.get(71); 
+			boolean matchIf = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iif, true);
+			
+			//the variable 'i' does not exist in the context
+			assertFalse(matchIf);
+		
+			
+			CtElement iStaticSame = ingredients.get(1);//static
+			boolean matchStSame = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iStaticSame, true);
+			assertTrue(matchStSame);
+			
+			
+			CtElement iStaticDouble = ingredients.get(87);//static
+			boolean matchSt = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iStaticDouble, true);
+			assertTrue(matchSt);
+			
+			
+		}
+	
+	
 }

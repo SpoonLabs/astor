@@ -73,8 +73,6 @@ public class VariableResolver {
 		return varMatched;
 	}
 
-	
-
 	/**
 	 * For a given VariableAccess, we search the list of Variables contains
 	 * compatible types (i.e. sub types)
@@ -151,20 +149,20 @@ public class VariableResolver {
 			@Override
 			public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
 				super.visitCtTypeAccess(typeAccess);
-				//varaccess.add(typeAccess);
+				// varaccess.add(typeAccess);
 			}
 
 			@Override
 			public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
 				super.visitCtFieldRead(fieldRead);
-				if(!varaccess.contains(fieldRead))
+				if (!varaccess.contains(fieldRead))
 					varaccess.add(fieldRead);
 			}
 
 			@Override
 			public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
 				super.visitCtFieldWrite(fieldWrite);
-				if(!varaccess.contains(fieldWrite))
+				if (!varaccess.contains(fieldWrite))
 					varaccess.add(fieldWrite);
 			}
 
@@ -201,16 +199,43 @@ public class VariableResolver {
 	 * 
 	 * @param varContext
 	 *            List of variables to match
-	 * @param element
+	 * @param ingredientCtElement
 	 *            element to extract the var access to match
 	 * @return
 	 */
-	public static boolean fitInContext(List<CtVariable> varContext, CtElement element, boolean matchName) {
+	public static boolean fitInContext(List<CtVariable> varContext, CtElement ingredientCtElement, boolean matchName) {
 
-		List<CtVariableAccess> varAccessCollected = collectVariableAccess(element);
+		// We collect all var access from the ingredient
+		List<CtVariableAccess> varAccessCollected = collectVariableAccess(ingredientCtElement);
 
+		// Here we retrieve the induction variables, then match ONLY the name.
+		List<CtVariableAccess> varInductionCollected = collectInductionVariableAccess(ingredientCtElement,
+				varAccessCollected);
+		// Remove all induction variables, we dont need them to the variable
+		// match
+		boolean removedInduction = varAccessCollected.removeAll(varInductionCollected);
+
+		if (varInductionCollected.size() > 0 && !removedInduction)
+			throw new IllegalAccessError("Var induction not removed");
+
+		// Now, we check there is not name conflict with the induction variable.
+		boolean nameConflict = nameConflict(varContext, varInductionCollected);
+		if (nameConflict) {
+			logger.debug("Name Conflict " + varAccessCollected);
+			return false;
+		}
+
+		// Now, we search for access to public variable
+		List<CtVariableAccess> varStaticAccessCollected = collectStaticVariableAccess(ingredientCtElement,
+				varAccessCollected);
+		// We discard those variables, we dont need to match it
+		boolean removedStaticAccess = varAccessCollected.removeAll(varStaticAccessCollected);
+
+		if (varStaticAccessCollected.size() > 0 && !removedStaticAccess)
+			throw new IllegalAccessError("Var static access not removed");
+
+		// Now, we match the remain var access.
 		Map<CtVariableAccess, List<CtVariable>> matched = matchVars(varContext, varAccessCollected, matchName);
-
 		// Now, we analyze if all access were matched
 		for (CtVariableAccess ctVariableAccess : matched.keySet()) {
 			List<CtVariable> mapped = matched.get(ctVariableAccess);
@@ -224,7 +249,106 @@ public class VariableResolver {
 
 	}
 
-	
+	public static List<CtVariableAccess> collectStaticVariableAccess(CtElement rootElement,
+			List<CtVariableAccess> varAccessCollected) {
+		List<CtVariableAccess> statics = new ArrayList();
+
+		for (CtVariableAccess ctVariableAccess : varAccessCollected) {
+			CtVariable var = ctVariableAccess.getVariable().getDeclaration();
+			if (var == null || var.getModifiers().contains(ModifierKind.STATIC)) {
+				statics.add(ctVariableAccess);
+			}
+		}
+		return statics;
+	}
+
+	/**
+	 * Return true if there is name conflicts between the vars and the context.
+	 * 
+	 * @param varsFromContext
+	 * @param varInductionCollected
+	 * @return
+	 */
+	public static boolean nameConflict(List<CtVariable> varsFromContext,
+			List<CtVariableAccess> varInductionCollected) {
+		Map<CtVariableAccess, List<CtVariable>> conflics = searchVarNameConflicts(varsFromContext,
+				varInductionCollected);
+
+		return !conflics.isEmpty();
+	}
+
+	/**
+	 * Returns a map between the variables with name conflicts.
+	 * 
+	 * @param varsFromContext
+	 * @param varInductionCollected
+	 * @return
+	 */
+	public static Map<CtVariableAccess, List<CtVariable>> searchVarNameConflicts(List<CtVariable> varsFromContext,
+			List<CtVariableAccess> varInductionCollected) {
+
+		Map<CtVariableAccess, List<CtVariable>> mappingConflicts = new HashMap<>();
+
+		for (CtVariableAccess inductionVar : varInductionCollected) {
+
+			List<CtVariable> varsConf = new ArrayList<>();
+			String nameInduction = inductionVar.getVariable().getSimpleName();
+
+			for (CtVariable ctVariableContext : varsFromContext) {
+				String nameVarContexr = ctVariableContext.getSimpleName();
+				if (nameInduction.equals(nameVarContexr)) {
+					varsConf.add(ctVariableContext);
+				}
+			}
+			if (varsConf.size() > 0) {
+				mappingConflicts.put(inductionVar, varsConf);
+			}
+
+		}
+		return mappingConflicts;
+	}
+
+	/**
+	 * It retrieves all variables access which declarations are inside the
+	 * ingredient.
+	 * 
+	 * @param ingredientRootElement
+	 * @param varAccessCollected
+	 * @return
+	 */
+	public static List<CtVariableAccess> collectInductionVariableAccess(CtElement ingredientRootElement,
+			List<CtVariableAccess> varAccessCollected) {
+
+		List<CtVariableAccess> induction = new ArrayList();
+
+		for (CtVariableAccess ctVariableAccess : varAccessCollected) {
+			CtVariable var = ctVariableAccess.getVariable().getDeclaration();
+
+			boolean insideIngredient = checkParent(var, ingredientRootElement);
+			if (insideIngredient)
+				induction.add(ctVariableAccess);
+			//logger.debug("var decl  " + var + " indution " + insideIngredient);
+		}
+		return induction;
+	}
+
+	/**
+	 * 
+	 * @param var
+	 * @param rootElement
+	 * @return
+	 */
+	private static boolean checkParent(CtVariable var, CtElement rootElement) {
+
+		CtElement parent = var;
+		while (parent != null) {
+			if (parent.equals(rootElement))
+				return true;
+			parent = parent.getParent();
+		}
+
+		return false;
+	}
 
 	/**
 	 * Returns all variables in scope, reachable from the ctelement passes as
@@ -252,9 +376,10 @@ public class VariableResolver {
 				// We dont add private fields from parent classes
 				if ((!ctFieldReference.getModifiers().contains(ModifierKind.PRIVATE)
 						|| ctclass.getFields().contains(ctFieldReference.getDeclaration()))) {
-					
+
 					// We ignore "serialVersionUID'
-					if ( (ctFieldReference.getDeclaration() != null) && !"serialVersionUID".equals(ctFieldReference.getDeclaration().getSimpleName()))
+					if ((ctFieldReference.getDeclaration() != null)
+							&& !"serialVersionUID".equals(ctFieldReference.getDeclaration().getSimpleName()))
 						variables.add(ctFieldReference.getDeclaration());
 				}
 			}
