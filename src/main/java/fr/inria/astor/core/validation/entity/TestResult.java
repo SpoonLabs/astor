@@ -10,7 +10,7 @@ import java.util.List;
 public class TestResult {
 	
 	public int casesExecuted = 0;
-	public int failures = -1;
+	public int failures = 0;
 	public List<String> successTest =new ArrayList<String>();
 	 
 	public  List<String> failTest =new ArrayList<String>();
