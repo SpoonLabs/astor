@@ -15,7 +15,6 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.entity.TestResult;
-import fr.inria.astor.core.validation.executors.JUnitDirectExecutorProcess;
 import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
 import fr.inria.astor.core.validation.executors.JUnitIndirectExecutorProcess;
 
@@ -218,7 +217,7 @@ public class ProcessValidator extends ProgramValidator {
 	protected ProgramVariantValidationResult executeRegressionTestingOneByOne(ProgramVariant mutatedVariant, URL[] bc,
 			JUnitExecutorProcess p, ProjectRepairFacade projectFacade) {
 
-		log.debug("-Test Failing is passing, Executing regression");
+		log.debug("-Test Failing is passing, Executing regression, One by one");
 		TestResult trregressionall = new TestResult();
 		long t1 = System.currentTimeMillis();
 
@@ -236,8 +235,7 @@ public class ProcessValidator extends ProgramValidator {
 				trregressionall.getFailures().addAll(trregression.getFailures());
 				trregressionall.getSuccessTest().addAll(trregression.getSuccessTest());
 				trregressionall.failures += trregression.getFailures().size();
-				trregressionall.casesExecuted += trregression.getFailures().size()
-						+ trregression.getSuccessTest().size();
+				trregressionall.casesExecuted += trregression.getCasesExecuted();
 			}
 		}
 		long t2 = System.currentTimeMillis();
