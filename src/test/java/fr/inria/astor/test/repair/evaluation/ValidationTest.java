@@ -5,6 +5,10 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.Arrays;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -16,6 +20,11 @@ import fr.inria.main.evolution.AstorMain;
  */
 public class ValidationTest {
 
+	@Before
+	public void setup(){
+		LogManager.getRootLogger().setLevel(Level.DEBUG);
+		
+	}
 	@Test
 	public void testLang63ValidationStepbyStep() throws Exception{
 		AstorMain main1 = new AstorMain();
@@ -46,5 +55,11 @@ public class ValidationTest {
 		main1.execute(args);
 		
 		assertTrue(main1.getEngine().getSolutions().size() > 0);
+	}
+	
+	@After
+	public void teardown(){
+		LogManager.getRootLogger().setLevel(Level.ERROR);
+		
 	}
 }
