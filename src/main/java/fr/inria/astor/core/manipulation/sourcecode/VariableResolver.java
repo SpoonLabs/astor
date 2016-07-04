@@ -253,10 +253,17 @@ public class VariableResolver {
 
 	public static List<CtVariableAccess> collectStaticVariableAccess(CtElement rootElement,
 			List<CtVariableAccess> varAccessCollected) {
-		List<CtVariableAccess> statics = new ArrayList();
+		List<CtVariableAccess> statics = new ArrayList<>();
 
 		for (CtVariableAccess ctVariableAccess : varAccessCollected) {
-			CtVariable var = ctVariableAccess.getVariable().getDeclaration();
+			CtVariableReference varref = ctVariableAccess.getVariable();
+
+			// an access to a static must be a static field.
+			if (!(varref instanceof CtFieldReference)) {
+				continue;
+			}
+
+			CtVariable var = varref.getDeclaration();
 			if (var == null || var.getModifiers().contains(ModifierKind.STATIC)) {
 				statics.add(ctVariableAccess);
 			}
@@ -271,8 +278,7 @@ public class VariableResolver {
 	 * @param varInductionCollected
 	 * @return
 	 */
-	public static boolean nameConflict(List<CtVariable> varsFromContext,
-			List<CtVariableAccess> varInductionCollected) {
+	public static boolean nameConflict(List<CtVariable> varsFromContext, List<CtVariableAccess> varInductionCollected) {
 		Map<CtVariableAccess, List<CtVariable>> conflics = searchVarNameConflicts(varsFromContext,
 				varInductionCollected);
 
@@ -324,19 +330,21 @@ public class VariableResolver {
 		List<CtVariableAccess> induction = new ArrayList<>();
 
 		for (CtVariableAccess ctVariableAccess : varAccessCollected) {
-			
+
 			CtVariableReference varref = ctVariableAccess.getVariable();
-			
-			//We are interesting in induction vars, they are modeled as LocalVariables
-			if(! (varref instanceof CtLocalVariableReference))
+
+			// We are interesting in induction vars, they are modeled as
+			// LocalVariables
+			if (!(varref instanceof CtLocalVariableReference))
 				continue;
-			
+
 			CtVariable var = varref.getDeclaration();
-			
+
 			boolean insideIngredient = checkParent(var, ingredientRootElement);
 			if (insideIngredient)
 				induction.add(ctVariableAccess);
-			//logger.debug("var decl  " + var + " indution " + insideIngredient);
+			// logger.debug("var decl " + var + " indution " +
+			// insideIngredient);
 		}
 		return induction;
 	}
