@@ -359,7 +359,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-package", "org.apache.commons", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java", 
 				"-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/tests", "-javacompliancelevel", "2", "-flthreshold", "0.5", 
+				"/target/test-classes", "-javacompliancelevel", "2", "-flthreshold", "0.5", 
 				"-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "6010", "-maxgen", "50", 
 				"-stopfirst", "true",
@@ -374,5 +374,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		
 		assertTrue(main1.getEngine().getSolutions().size() > 0);
 	}
+	
+
 	
 }
