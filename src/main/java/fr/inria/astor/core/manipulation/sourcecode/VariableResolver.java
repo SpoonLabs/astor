@@ -24,7 +24,9 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtScanner;
 
 /**
@@ -319,11 +321,18 @@ public class VariableResolver {
 	public static List<CtVariableAccess> collectInductionVariableAccess(CtElement ingredientRootElement,
 			List<CtVariableAccess> varAccessCollected) {
 
-		List<CtVariableAccess> induction = new ArrayList();
+		List<CtVariableAccess> induction = new ArrayList<>();
 
 		for (CtVariableAccess ctVariableAccess : varAccessCollected) {
-			CtVariable var = ctVariableAccess.getVariable().getDeclaration();
-
+			
+			CtVariableReference varref = ctVariableAccess.getVariable();
+			
+			//We are interesting in induction vars, they are modeled as LocalVariables
+			if(! (varref instanceof CtLocalVariableReference))
+				continue;
+			
+			CtVariable var = varref.getDeclaration();
+			
 			boolean insideIngredient = checkParent(var, ingredientRootElement);
 			if (insideIngredient)
 				induction.add(ctVariableAccess);
