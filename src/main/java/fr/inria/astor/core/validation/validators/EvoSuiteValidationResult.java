@@ -1,7 +1,6 @@
 package fr.inria.astor.core.validation.validators;
 
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
-import fr.inria.astor.core.validation.entity.TestResult;
 /**
  * This class stores two validation result. One using traditional astor validation mechanism such as process for running junit.
  * The second one corresponds to the result from test generated with Evosuite.
@@ -9,36 +8,47 @@ import fr.inria.astor.core.validation.entity.TestResult;
  * @author Matias Martinez
  *
  */
-public class EvoSuiteValidationResult extends ProgramVariantValidationResult {
+public class EvoSuiteValidationResult extends CompoundValidationResult {
 
-	public EvoSuiteValidationResult(TestResult original) {
-		super(original);
+
+
+	public ProgramVariantValidationResult getFailingTestValidation() {
+		return this.validations.get("failing");
 	}
 
-	protected ProgramVariantValidationResult manualTestValidation;
-	protected ProgramVariantValidationResult evoValidation;
-
+	public void setFailingTestValidation(ProgramVariantValidationResult evoValidation) {
+		this.addValidation("failing", evoValidation);
+	}
+	
 	public ProgramVariantValidationResult getEvoValidation() {
-		return evoValidation;
+		return this.validations.get("evo");
 	}
 
 	public void setEvoValidation(ProgramVariantValidationResult evoValidation) {
-		this.evoValidation = evoValidation;
+		this.addValidation("evo", evoValidation);
 	}
 
 	public ProgramVariantValidationResult getManualTestValidation() {
-		return manualTestValidation;
+		return this.getValidation("manual");
+		
 	}
 
 	public void setManualTestValidation(ProgramVariantValidationResult manualTestValidation) {
-		this.manualTestValidation = manualTestValidation;
+		this.addValidation("manual",manualTestValidation);
 	}
 	public String toString(){
 		return ""
-		+ "\nfailing: "+ printTestResult(this.getTestResult())
-		+((this.manualTestValidation != null)?"\nmanual_regression: "+printTestResult(this.manualTestValidation.getTestResult()):"")
-		+((this.evoValidation != null)?"\nevo_regression: "+ printTestResult(this.evoValidation.getTestResult()):"")
+			+ ((this.getValidation("original") != null)?"\noriginal: "+ (getValidation("original")):"")
+				+ ((this.getFailingTestValidation() != null)?"\nfailing: "+ (getValidation("failing")):"")
+		+((this.getManualTestValidation() != null)?"\nmanual_regression: "+(getManualTestValidation()):"")
+		+((getEvoValidation() != null)?"\nevo_regression: "+ (getEvoValidation()):"")
 		;
+	}
+
+	@Override
+	public boolean wasSuccessful() {
+	
+		return getValidation("original")!= null && getValidation("original").wasSuccessful();
 	}
 	
 	

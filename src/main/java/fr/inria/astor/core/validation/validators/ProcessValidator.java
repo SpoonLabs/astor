@@ -91,7 +91,7 @@ public class ProcessValidator extends ProgramValidator {
 						return executeRegressionTesting(mutatedVariant, bc, testProcessRunner, projectFacade);
 
 				} else {
-					ProgramVariantValidationResult r = new ProgramVariantValidationResult(trfailing,
+					ProgramVariantValidationResult r = new TestCasesProgramValidationResult(trfailing,
 							trfailing.wasSuccessful(), false);
 					return r;
 				}
@@ -117,7 +117,7 @@ public class ProcessValidator extends ProgramValidator {
 			if (trfailing == null)
 				return null;
 			else {
-				ProgramVariantValidationResult validationResult = new ProgramVariantValidationResult(trfailing,
+				ProgramVariantValidationResult validationResult = new TestCasesProgramValidationResult(trfailing,
 						trfailing.wasSuccessful(), false);
 				return validationResult;
 			}
@@ -209,7 +209,7 @@ public class ProcessValidator extends ProgramValidator {
 			log.debug(trregression);
 			currentStats.numberOfTestcasesExecutedval2 += trregression.casesExecuted;
 			currentStats.numberOfRegressionTestCases = trregression.casesExecuted;
-			return new ProgramVariantValidationResult(trregression, trregression.wasSuccessful(),
+			return new TestCasesProgramValidationResult(trregression, trregression.wasSuccessful(),
 					(trregression != null));
 		}
 	}
@@ -243,7 +243,7 @@ public class ProcessValidator extends ProgramValidator {
 		currentStats.numberOfTestcasesExecutedval2 += trregressionall.casesExecuted;
 		currentStats.numberOfRegressionTestCases = trregressionall.casesExecuted;
 		log.debug(trregressionall);
-		return new ProgramVariantValidationResult(trregressionall, true, trregressionall.wasSuccessful());
+		return new TestCasesProgramValidationResult(trregressionall, true, trregressionall.wasSuccessful());
 
 	}
 
