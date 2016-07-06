@@ -70,18 +70,30 @@ public class EvoSuiteFacade {
 			}
 		}
 
-		logger.debug("Creating test cases using evosuite for: " + typesToProcess.size() + " classes");
+		logger.debug("Creating test cases using evosuite for: " + typesToProcess.size() + " classes, mode: "+((ConfigurationProperties.getPropertyBool("evoDSE"))?"DSE":"LS"));
 
 		boolean reponse = true;
 		int counter = 0;
 		for (CtType<?> ctType : typesToProcess) {
 			// generate a process for running evosuite
-			String[] command = new String[] { "-class", ctType.getQualifiedName(), "-projectCP",
-					urlArrayToString(SUTClasspath), //
+			String[] command = new String[] { "-class", ctType.getQualifiedName(), //
+					"-projectCP", urlArrayToString(SUTClasspath), //
 					"-base_dir", outES, //
-					"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")
-					,"-seed",ConfigurationProperties.getProperty("seed")
+					"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")//
+					, "-seed", ConfigurationProperties.getProperty("seed")//
 			};
+			if (ConfigurationProperties.getPropertyBool("evoDSE")) {
+				
+				String[] dse = new String[] { "-Dlocal_search_rate", "8", //
+						"-Dlocal_search_budget", "5", //
+						"-Dlocal_search_budget_type", "TIME", //
+						"-Dlocal_search_adaptation_rate", "0.33", //
+						"-Dlocal_search_probability", "1.0", //
+						"-Ddse_probability", "1.0",//
+				};
+				command = StringUtil.concat(command, dse);
+			}
+
 			logger.debug(
 					"Creating test for " + ctType.getQualifiedName() + " " + (++counter) + "/" + typesToProcess.size());
 			boolean sucess = runProcess(null, command);
@@ -148,8 +160,6 @@ public class EvoSuiteFacade {
 
 			p.waitFor((ConfigurationProperties.getPropertyInt("evosuitetimeout") * 2 * 1000), TimeUnit.MILLISECONDS);
 
-			// p.exitValue();
-
 			String out = readOut(p);
 			logger.debug(out);
 			p.destroy();
@@ -205,7 +215,8 @@ public class EvoSuiteFacade {
 
 		logger.info("Executing evosuite");
 		// Generating Evosuite test class from the variant
-		//Matias: TODO: I would like that this method return a map<CtClass:TestCasesGenerated(File)>
+		// Matias: TODO: I would like that this method return a
+		// map<CtClass:TestCasesGenerated(File)>
 		boolean executed = this.runEvosuite(variant, projectFacade);
 		logger.debug("Evo result: " + executed);
 
@@ -326,8 +337,8 @@ public class EvoSuiteFacade {
 		}
 	}
 
-	public  static void runProcess(String[] command) throws Exception {
-		logger.debug("Executing compilation : "+ Arrays.toString(command));
+	public static void runProcess(String[] command) throws Exception {
+		logger.debug("Executing compilation : " + Arrays.toString(command));
 		Process pro = Runtime.getRuntime().exec(command);
 		printLines(command + " stdout:", pro.getInputStream());
 		printLines(command + " stderr:", pro.getErrorStream());
