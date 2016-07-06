@@ -38,7 +38,7 @@ public class TestResult {
 	@Override
 	public String toString() {
 		return "TR: Success: "+ (failures == 0) + ", failTest= "
-				+ failures + ", was successful: "+this.wasSuccessful()+"] ,"+ this.failTest;
+				+ failures + ", was successful: "+this.wasSuccessful()+", cases executed: "+casesExecuted+"] ,"+ this.failTest;
 	}
 
 	public int getFailureCount(){
