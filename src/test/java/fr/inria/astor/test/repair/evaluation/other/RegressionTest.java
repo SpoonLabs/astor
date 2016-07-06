@@ -43,7 +43,7 @@ public class RegressionTest extends BaseEvolutionaryTest{
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
 		assertTrue(variant.getValidationResult().isRegressionExecuted());
-		assertEquals(2071, variant.getValidationResult().getTestResult().getCasesExecuted());
+		assertEquals(2071, variant.getValidationResult().getCasesExecuted());
 		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
 
 		
@@ -73,7 +73,7 @@ public class RegressionTest extends BaseEvolutionaryTest{
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
 		assertFalse(variant.getValidationResult().isRegressionExecuted());
-		assertEquals(12, variant.getValidationResult().getTestResult().getCasesExecuted());
+		assertEquals(12, variant.getValidationResult().getCasesExecuted());
 		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
 
 		
@@ -106,7 +106,7 @@ public class RegressionTest extends BaseEvolutionaryTest{
 		
 		assertFalse(variant.getValidationResult().isRegressionExecuted());
 		//The failing
-		assertEquals(12, variant.getValidationResult().getTestResult().getCasesExecuted());
+		assertEquals(12, variant.getValidationResult().getCasesExecuted());
 		assertEquals(1, variant.getValidationResult().getFailureCount());
 		assertEquals(11, variant.getValidationResult().getPassingTestCases());
 
