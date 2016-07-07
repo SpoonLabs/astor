@@ -37,9 +37,9 @@ public class EvoSuiteValidationResult extends CompoundValidationResult {
 		this.addValidation("manual",manualTestValidation);
 	}
 	public String toString(){
-		return ""
-			+ ((this.getValidation("original") != null)?"\noriginal: "+ (getValidation("original")):"")
-				+ ((this.getFailingTestValidation() != null)?"\nfailing: "+ (getValidation("failing")):"")
+		return
+			//+ ((this.getValidation("original") != null)?"\noriginal: "+ (getValidation("original")):"")
+			 ((this.getFailingTestValidation() != null)?"\nfailing: "+ (getValidation("failing")):"")
 		+((this.getManualTestValidation() != null)?"\nmanual_regression: "+(getManualTestValidation()):"")
 		+((getEvoValidation() != null)?"\nevo_regression: "+ (getEvoValidation()):"")
 		;
@@ -48,7 +48,10 @@ public class EvoSuiteValidationResult extends CompoundValidationResult {
 	@Override
 	public boolean wasSuccessful() {
 	
-		return getValidation("original")!= null && getValidation("original").wasSuccessful();
+		return (getValidation("failing") == null || getValidation("failing").wasSuccessful())
+				&&
+				(getValidation("manual") == null || getValidation("manual").wasSuccessful())
+				;
 	}
 	
 	

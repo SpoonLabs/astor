@@ -66,7 +66,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 			log.info("Evo Result " + resultEvoExecution.toString());
 
 			EvoSuiteValidationResult evoResult = new EvoSuiteValidationResult();
-			evoResult.addValidation("original", resultOriginal);
+			evoResult.setManualTestValidation(resultOriginal);
 			evoResult.setEvoValidation(resultEvoExecution);
 			return evoResult;
 

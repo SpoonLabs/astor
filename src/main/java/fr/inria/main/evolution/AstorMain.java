@@ -20,7 +20,6 @@ import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.GlobalBasicIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.LocalIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.PackageBasicFixSpace;
