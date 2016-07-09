@@ -58,7 +58,7 @@ public class ProcessValidator extends ProgramValidator {
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner = new JUnitIndirectExecutorProcess(false);//Dir
+			JUnitExecutorProcess testProcessRunner = new JUnitIndirectExecutorProcess(false);// Dir
 
 			log.debug("-Running first validation");
 
@@ -85,11 +85,7 @@ public class ProcessValidator extends ProgramValidator {
 				if (trfailing.wasSuccessful() && executeRegression) {
 					currentStats.numberOfRegressionTestExecution++;
 					currentStats.passFailingval2++;
-					if (ConfigurationProperties.getPropertyBool("testbystep"))
-						return executeRegressionTestingOneByOne(mutatedVariant, bc, testProcessRunner, projectFacade);
-					else
-						return executeRegressionTesting(mutatedVariant, bc, testProcessRunner, projectFacade);
-
+					return runRegression(mutatedVariant, projectFacade, bc);
 				} else {
 					ProgramVariantValidationResult r = new TestCasesProgramValidationResult(trfailing,
 							trfailing.wasSuccessful(), false);
@@ -108,7 +104,7 @@ public class ProcessValidator extends ProgramValidator {
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner =  new JUnitIndirectExecutorProcess(false);//Dir
+			JUnitExecutorProcess testProcessRunner = new JUnitIndirectExecutorProcess(false);// Dir
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
 
 			TestResult trfailing = testProcessRunner.execute(jvmPath, bc,
@@ -130,17 +126,27 @@ public class ProcessValidator extends ProgramValidator {
 
 	public ProgramVariantValidationResult runRegression(ProgramVariant mutatedVariant,
 			ProjectRepairFacade projectFacade) {
-
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
-
-			JUnitExecutorProcess testProcessRunner =  new JUnitIndirectExecutorProcess(false);//Dir
-			return executeRegressionTesting(mutatedVariant, bc, testProcessRunner, projectFacade);
-
+			return this.runRegression(mutatedVariant, projectFacade, bc);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			return null;
 		}
+
+	}
+
+	protected ProgramVariantValidationResult runRegression(ProgramVariant mutatedVariant,
+			ProjectRepairFacade projectFacade, URL[] bc) {
+
+		JUnitExecutorProcess testProcessRunner = new JUnitIndirectExecutorProcess(false);// Dir
+		
+		if (ConfigurationProperties.getPropertyBool("testbystep"))
+			return executeRegressionTestingOneByOne(mutatedVariant, bc, testProcessRunner, projectFacade);
+		else
+			return executeRegressionTesting(mutatedVariant, bc, testProcessRunner, projectFacade);
+
+		
 	}
 
 	protected URL[] createClassPath(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade)
