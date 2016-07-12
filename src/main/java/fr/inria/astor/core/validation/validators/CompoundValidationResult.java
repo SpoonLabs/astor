@@ -50,9 +50,13 @@ public class CompoundValidationResult extends ProgramVariantValidationResult {
 
 	@Override
 	public int getFailureCount() {
+		if( this.validations.isEmpty())
+			return 0;
+		
 		int count = 0;
 		for (ProgramVariantValidationResult  pv : this.validations.values()) {
-			count+= pv.getFailureCount();
+			if(pv != null)
+				count+= pv.getFailureCount();
 		}
 		
 		return count;
