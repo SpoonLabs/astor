@@ -28,7 +28,8 @@ public class SingleStatementFixSpaceProcessor  extends AbstractFixSpaceProcessor
 		if(!(element instanceof CtBlock  || element instanceof CtClass 
 				|| element instanceof CtMethod || element instanceof CtTry || element instanceof CtCatch)
 				&& //We check parents
-				(element.getParent() instanceof CtBlock)){
+				(element.getParent() instanceof CtBlock)
+				&& !(element.toString().startsWith("super"))){
 			add(element);
 		}
 	}
