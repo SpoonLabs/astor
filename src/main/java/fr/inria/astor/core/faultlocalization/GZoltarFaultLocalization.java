@@ -3,6 +3,7 @@ package fr.inria.astor.core.faultlocalization;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -35,9 +36,6 @@ public class GZoltarFaultLocalization implements IFaultLocalization{
 		List<SuspiciousCode> candidates = new ArrayList<SuspiciousCode>();
 		List<String> failingTestCases = new ArrayList<String>();
 
-		
-		candidates.clear();
-		failingTestCases.clear();
 		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");
 		logger.info("Gzoltar fault localization: min susp value parameter: " + thr);
 		// 1. Instantiate GZoltar
@@ -82,17 +80,18 @@ public class GZoltarFaultLocalization implements IFaultLocalization{
 			sum[1] += tr.wasSuccessful() ? 0 : 1;
 			if (!tr.wasSuccessful()) {
 				logger.info("Test failt: " + tr.getName());
-				failingTestCases.add(testName);
+				failingTestCases.add(testName.split("\\#")[0]);
 			}
 			if (tr.getTrace() != null) {
-				// logger.info(tr.getTrace());
+				// logger.debug(tr.getTrace());
 			}
 			if (!alltest.contains(testName)) {
 				alltest.add(testName);
 				casesTest += testName + File.pathSeparator;
 			}
 		}
-
+		addFlakyFailingTestToIgnoredList(failingTestCases);
+		//
 		ConfigurationProperties.properties.setProperty("testcasesregression", casesTest);
 		logger.info("Gzoltar Test Result Total:" + sum[0] + ", fails: " + sum[1] + ", GZoltar suspicious "
 				+ gz.getSuspiciousStatements().size());
@@ -122,6 +121,24 @@ public class GZoltarFaultLocalization implements IFaultLocalization{
 		candidates = candidates.subList(0, max);
 
 		return candidates;
+	}
+	/**
+	 * It adds to the ignore list all failing TC that were not passed as argument. \
+	 * They are probably flaky test.
+	 * @param failingTestCases
+	 */
+	private void addFlakyFailingTestToIgnoredList(List<String> failingTestCases) {
+		//
+		List<String> originalFailing = Arrays.asList(ConfigurationProperties.getProperty("failing").split(File.pathSeparator));
+		List<String> onlyFailingInFL = new ArrayList<>(failingTestCases);
+		//we remove those that we already know that fail
+		onlyFailingInFL.removeAll(originalFailing);
+		logger.debug("failing before "+ onlyFailingInFL+ ", added to the ignored list");
+		String ignoredTestCases =  ConfigurationProperties.getProperty("ignoredTestCases");
+		for (String failingFL : onlyFailingInFL) {
+			ignoredTestCases+=File.pathSeparator+failingFL;
+		}
+		ConfigurationProperties.properties.setProperty("ignoredTestCases",ignoredTestCases);
 	}
 
 	protected boolean isSource(String compName, String srcFolder) {
