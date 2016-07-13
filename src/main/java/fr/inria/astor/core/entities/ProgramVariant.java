@@ -248,5 +248,13 @@ public class ProgramVariant {
 			modificationPoint.setProgramVariant(this);
 		}
 	}
-	
+	public List<CtType<?>> computeAffectedClassesByOperatos() {
+		List<CtType<?>> typesToProcess = new ArrayList<>();
+		for (List<ModificationInstance> modifofGeneration : this.getOperations().values()) {
+			for (ModificationInstance modificationInstance : modifofGeneration) {
+				typesToProcess.add(modificationInstance.getModificationPoint().getCtClass());
+			}
+		}
+		return typesToProcess;
+	}
 }
