@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -59,18 +61,10 @@ public class EvoSuiteFacade {
 
 		URL[] SUTClasspath = originalURL.toArray(new URL[0]);
 
-		List<CtType<?>> typesToProcess = null;
-		if (ConfigurationProperties.getPropertyBool("evo_buggy_class")) {
-			logger.info("Buggy classes");
-			typesToProcess = variant.getAffectedClasses();
-		} else {
-			typesToProcess = new ArrayList<>();
-			for (CtClass<?> classes : variant.getModifiedClasses()) {
-				typesToProcess.add(classes);
-			}
-		}
+		List<CtType<?>> typesToProcess = getClassesToProcess(variant);
 
-		logger.debug("Creating test cases using evosuite for: " + typesToProcess.size() + " classes, mode: "+((ConfigurationProperties.getPropertyBool("evoDSE"))?"DSE":"LS"));
+		logger.debug("Creating test cases using evosuite for: " + typesToProcess.size() + " classes, mode: "
+				+ ((ConfigurationProperties.getPropertyBool("evoDSE")) ? "DSE" : "LS"));
 
 		boolean reponse = true;
 		int counter = 0;
@@ -83,8 +77,9 @@ public class EvoSuiteFacade {
 					, "-seed", ConfigurationProperties.getProperty("seed")//
 			};
 			if (ConfigurationProperties.getPropertyBool("evoDSE")) {
-				
-				String[] dse = new String[] { "-Dlocal_search_rate", "8", //
+
+				String[] dse = new String[] { "-Dlocal_search_rate", "2", // "8",
+																			// //
 						"-Dlocal_search_budget", "5", //
 						"-Dlocal_search_budget_type", "TIME", //
 						"-Dlocal_search_adaptation_rate", "0.33", //
@@ -105,6 +100,35 @@ public class EvoSuiteFacade {
 		logger.debug("Evo end: generated " + nrGenerated + " over " + typesToProcess.size());
 		return reponse;
 	}
+
+	protected List<CtType<?>> getClassesToProcess(ProgramVariant variant) {
+		List<CtType<?>> typesToProcess = null;
+
+		if (ConfigurationProperties.getPropertyBool("evo_buggy_class")) {
+		
+			//
+			if (ConfigurationProperties.getPropertyBool("evo_affected_by_op")) {
+				logger.info("Affected Buggy classes");
+				typesToProcess = variant.computeAffectedClassesByOperatos();
+			} else {
+				logger.info("All Buggy classes");
+				typesToProcess = variant.getAffectedClasses();
+			}
+
+		} else
+
+		{
+			typesToProcess = new ArrayList<>();
+			for (CtClass<?> classes : variant.getModifiedClasses()) {
+				typesToProcess.add(classes);
+			}
+		}
+		logger.info("Classes for generating test: "+ typesToProcess.stream()
+				.map(e -> e.getQualifiedName()).collect(Collectors.toList()));
+		return typesToProcess;
+	}
+
+	
 
 	// TODO: cloned
 	protected static String urlArrayToString(URL[] urls) {
@@ -263,8 +287,7 @@ public class EvoSuiteFacade {
 		// Compile evo classes from spoon model
 		CompilationResult compilation = MutationSupporter.currentSupporter.getSpoonClassCompiler()
 				.compileOnMemory(ctclasses, Converters.toURLArray(classpathForCreateModel));
-		// assertFalse("Any bytecode",
-		// compilation.getByteCodes().values().isEmpty());
+
 
 		if (!compilation.compiles() || compilation.getByteCodes().values().isEmpty()) {
 			logger.error("Error at compiling evotest classes");
@@ -281,7 +304,7 @@ public class EvoSuiteFacade {
 
 		List<String> testToExecute = new ArrayList<>();
 		for (CtClass evoTest : ctclasses) {
-			if (!evoTest.getQualifiedName().endsWith("ESTest_scaffolding"))
+			if (!evoTest.getQualifiedName().endsWith(EVOSUITE_scaffolding_SUFFIX))
 				testToExecute.add(evoTest.getQualifiedName());
 		}
 
@@ -340,7 +363,7 @@ public class EvoSuiteFacade {
 	public static void runProcess(String[] command) throws Exception {
 		logger.debug("Executing compilation : " + Arrays.toString(command));
 		Process pro = Runtime.getRuntime().exec(command);
-		printLines(command + " stdout:", pro.getInputStream());
+		//printLines(command + " stdout:", pro.getInputStream());
 		printLines(command + " stderr:", pro.getErrorStream());
 		pro.waitFor();
 		logger.debug(command + " exitValue() " + pro.exitValue());
