@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -15,6 +16,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
+import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.support.StandardEnvironment;
@@ -114,6 +117,21 @@ public abstract class BaseEvolutionaryTest  {
 		return cantSol;
 	}
 	
+	
+	protected static boolean comparePatch(ProgramVariant variant,String patch){
+		boolean found = false;
+		
+		for(List<ModificationInstance> modif:  variant.getOperations().values()){
+			for (ModificationInstance modificationInstance : modif) {
+				if(patch.equals(modificationInstance.getModified())){
+					found = true;
+				}
+			}
+		}
+		
+		return found;
+		
+	}
 	
 	
 }
