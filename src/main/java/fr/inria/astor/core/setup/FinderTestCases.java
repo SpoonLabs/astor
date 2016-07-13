@@ -72,6 +72,12 @@ public class FinderTestCases {
 			List<String> regressionCases = new ArrayList<String>();
 			List<String> ignoreTestcases = retriveIgnoreTestCases();
 			
+			log.debug("Ignored test cases: "+ignoreTestcases);
+			
+			if(ignoreTestcases.isEmpty())
+				return allTest;
+			
+			
 			for (String candidateTest : allTest) {
 			/*	CtType<?> type = MutationSupporter.getFactory().Type().get(candidateTest);
 				if (type != null && (!type.getModifiers().contains(ModifierKind.ABSTRACT))
