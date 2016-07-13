@@ -30,7 +30,6 @@ public class FinderTestCases {
 			s+=tcr+File.pathSeparator;
 			tr.add(tcr);
 		}
-		//ConfigurationProperties.properties.setProperty("testcasesregression", s);
 		projectFacade.getProperties().setRegressionCases(tr);
 	}
 
@@ -103,7 +102,7 @@ public class FinderTestCases {
 
 	private static List<String> retriveIgnoreTestCases() {
 		String list = ConfigurationProperties.getProperty("ignoredTestCases");
-		String[] cases = list.split(";");
+		String[] cases = list.split(File.pathSeparator);
 		return 	Arrays.asList(cases);
 	}
 
