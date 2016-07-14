@@ -171,13 +171,17 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 
 	}
 
-
 	public TestCasesProgramValidationResult executeRegressionTesting(URL[] processClasspath,
 			List<String> testCasesRegression) {
+		boolean avoidInterrupt = true;
+		return executeRegressionTesting(processClasspath,testCasesRegression, avoidInterrupt);
+	}
+
+	public TestCasesProgramValidationResult executeRegressionTesting(URL[] processClasspath,
+			List<String> testCasesRegression, boolean avoidInterrupt) {
 		log.debug("Executing EvosuiteTest :" + testCasesRegression);
 		long t1 = System.currentTimeMillis();
 
-		boolean avoidInterrupt = true;
 		JUnitExecutorProcess process = new JUnitIndirectExecutorProcess(avoidInterrupt);
 
 		int time = 60000;
