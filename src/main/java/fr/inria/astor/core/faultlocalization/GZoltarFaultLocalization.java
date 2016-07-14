@@ -82,16 +82,16 @@ public class GZoltarFaultLocalization implements IFaultLocalization{
 				logger.info("Test failt: " + tr.getName());
 				failingTestCases.add(testName.split("\\#")[0]);
 			}
-			if (tr.getTrace() != null) {
-				// logger.debug(tr.getTrace());
-			}
 			if (!alltest.contains(testName)) {
 				alltest.add(testName);
 				casesTest += testName + File.pathSeparator;
 			}
 		}
-		addFlakyFailingTestToIgnoredList(failingTestCases);
-		//
+		
+		if(ConfigurationProperties.getPropertyBool("ignoreflakyinfl")){
+			addFlakyFailingTestToIgnoredList(failingTestCases);
+		}
+		
 		ConfigurationProperties.properties.setProperty("testcasesregression", casesTest);
 		logger.info("Gzoltar Test Result Total:" + sum[0] + ", fails: " + sum[1] + ", GZoltar suspicious "
 				+ gz.getSuspiciousStatements().size());
