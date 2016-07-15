@@ -71,6 +71,11 @@
 			<version>1.2</version>
 		</dependency>
 
+		<dependency>
+			<artifactId>jte</artifactId>
+			<groupId>fr.spoonlab</groupId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -144,7 +149,28 @@
 					</filesets>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>astor-junit-exec</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<artifactId>jte</artifactId>
+							<groupId>fr.spoonlab</groupId>
+							<version>0.0.1</version>
+							<file>${basedir}/lib/jtestex-0.0.1.jar</file>
+							<packaging>jar</packaging>
+							<createChecksum>true</createChecksum>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -154,8 +180,7 @@
 					<reuseForks>false</reuseForks>
 				</configuration>
 			</plugin>
-			
-		<!-- Required for codecov.io -->
+			<!-- Required for codecov.io -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
