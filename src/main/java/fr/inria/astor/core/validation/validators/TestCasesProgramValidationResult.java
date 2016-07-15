@@ -2,6 +2,7 @@ package fr.inria.astor.core.validation.validators;
 
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.validation.entity.TestResult;
+
 /**
  * 
  * @author Matias Martinez
@@ -15,11 +16,26 @@ public class TestCasesProgramValidationResult extends ProgramVariantValidationRe
 	boolean regressionExecuted = false;
 	boolean resultSucess = false;
 
+	/**
+	 * Indicates whether where were a problem during the execution that stop
+	 * finishing the complete execution , example Infinite loop
+	 **/
+	boolean executionError = false;
+
 	TestResult testResult;
 
 	public TestCasesProgramValidationResult(TestResult result) {
 		super();
 		setTestResult(result);
+	}
+
+	public TestCasesProgramValidationResult(boolean errorExecution) {
+		this.executionError = errorExecution;
+		this.testResult = null;
+		this.regressionExecuted = false;
+		this.resultSucess = false;
+		this.numberFailingTestCases = 0;
+		this.numberPassingTestCases = 0;
 	}
 
 	public TestCasesProgramValidationResult(TestResult result, boolean resultSucess, boolean regressionExecuted) {
@@ -68,16 +84,22 @@ public class TestCasesProgramValidationResult extends ProgramVariantValidationRe
 	}
 
 	protected String printTestResult(TestResult result) {
-		if (result == null)
-			return "";
+		if (this.executionError || (result == null)) {
+			return "|" + false + "|" + 0 + "|" + 0 + "|" + "[]" + "|";
+		}
+	
 		return "|" + result.wasSuccessful() + "|" + result.failures + "|" + result.casesExecuted + "|" + result.failTest
 				+ "|";
 	}
 
 	@Override
 	public int getCasesExecuted() {
-		
+
 		return getPassingTestCases() + getFailureCount();
+	}
+
+	public boolean isExecutionError() {
+		return executionError;
 	}
 
 }

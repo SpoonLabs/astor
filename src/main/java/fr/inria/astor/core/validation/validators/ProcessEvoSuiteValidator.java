@@ -193,7 +193,9 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 
 		if (trregression == null) {
 			currentStats.unfinishValidation++;
-			return null;
+			boolean error = true;
+			return new TestCasesProgramValidationResult(error);
+		
 		} else {
 			log.debug(trregression);
 			currentStats.numberOfTestcasesExecutedval2 += trregression.casesExecuted;
