@@ -129,6 +129,8 @@ public class GZoltarFaultLocalization implements IFaultLocalization{
 	 */
 	private void addFlakyFailingTestToIgnoredList(List<String> failingTestCases) {
 		//
+		if(ConfigurationProperties.getProperty("failing") == null)
+			return;
 		List<String> originalFailing = Arrays.asList(ConfigurationProperties.getProperty("failing").split(File.pathSeparator));
 		List<String> onlyFailingInFL = new ArrayList<>(failingTestCases);
 		//we remove those that we already know that fail
