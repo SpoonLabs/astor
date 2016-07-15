@@ -16,7 +16,7 @@ public class FakeIngredientStrategy extends IngredientSearchStrategy {
 
 	
 
-	public FakeIngredientStrategy(AstorCtIngredientSpace space) {
+	public FakeIngredientStrategy(IngredientSpace space) {
 		super(space);
 	}
 

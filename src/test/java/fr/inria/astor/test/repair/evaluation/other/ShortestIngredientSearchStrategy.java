@@ -27,7 +27,7 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 
 	private List<CtElement> locationsAnalyzed = new ArrayList<>();
 
-	public ShortestIngredientSearchStrategy(AstorCtIngredientSpace space) {
+	public ShortestIngredientSearchStrategy(IngredientSpace space) {
 		super(space);
 
 	}
