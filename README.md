@@ -84,6 +84,8 @@ Other options:
       -bintestfolder "test class folder" 
 
 
+If you use command line, the -cp argument of java must include the absolute path of Astor jar. Otherwise, it could be the case that an exception is thrown by the fault localization tool (Gzoltar) used by Astor.
+
 **Output**:
 
 The Astor's output is located in folder "./outputMutation". You can change it through command line argument '-out'. Inside the folder "/src/" Astor stores the source code of the solutions that it found.
