@@ -19,7 +19,12 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
@@ -287,25 +292,33 @@ public class VariableResolverTest {
 			
 			
 			//For with a induction variable
-			CtElement ifor = ingredients.get(72);
+			CtElement ifor = ingredients.get(71); //for (int i = tableau.getNumObjectiveFunctions() 
+			assertTrue(ifor.toString().startsWith("for (int i = tableau.getNumObjectiveFunctions"));
+			assertTrue(ifor instanceof CtFor);
 			boolean matchFor = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), ifor, true);
 			
 			//the variable 'i' is declared inside the ingredient, and event it does not exist  
 			assertTrue(matchFor);
 			
-			CtElement iif = ingredients.get(71); 
+			CtElement iif = ingredients.get(70); //if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i),
+			assertTrue(iif.toString().startsWith("if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i)"));
+			assertTrue(iif instanceof CtIf);
 			boolean matchIf = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iif, true);
 			
 			//the variable 'i' does not exist in the context
 			assertFalse(matchIf);
 		
 			
-			CtElement iStaticSame = ingredients.get(1);//static
+			CtElement iStaticSame = ingredients.get(0);//static setMaxIterations(org.apache.commons.math.optimization.linear.AbstractLinearOptimizer.DEFAULT_MAX_ITERATIONS)
+			assertTrue(iStaticSame instanceof CtInvocation);
+			assertTrue(iStaticSame.toString().startsWith("setMaxIterations("));
 			boolean matchStSame = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iStaticSame, true);
 			assertTrue(matchStSame);
 			
 			
-			CtElement iStaticDouble = ingredients.get(87);//static
+			CtElement iStaticDouble = ingredients.get(80);//static 
+			assertTrue(iStaticDouble instanceof CtLocalVariable);
+			assertTrue(iStaticDouble.toString().startsWith("double minRatio = java.lang.Double.MAX_VALUE"));
 			boolean matchSt = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iStaticDouble, true);
 			assertTrue(matchSt);
 			

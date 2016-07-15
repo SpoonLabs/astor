@@ -12,6 +12,7 @@ env:
   - TEST=fr.inria.astor.test.repair.evaluation.VariableResolverTest
   - TEST=fr.inria.astor.test.repair.evaluation.RepairOperatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.ValidationTest
+  - TEST=fr.inria.astor.test.repair.evaluation.IngredientSpaceTest
 
 script:
   - mvn clean
