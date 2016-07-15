@@ -66,7 +66,7 @@ public abstract class AbstractMain {
 				"(Optional) location of JVM that executes the EvoSuite test cases. If it is not specified, Astor uses that one from property 'jvm4testexecution'");
 		options.addOption("maxgen", true, "(Optional) max number of generation a program variant is evolved");
 		options.addOption("population", true,
-				"(Optional)number of population (program variants) that the approach evolves");
+				"(Optional) number of population (program variants) that the approach evolves");
 
 		options.addOption("maxtime", true, "(Optional) maximum time (in minutes) to execute the whole experiment");
 
@@ -99,7 +99,7 @@ public abstract class AbstractMain {
 		options.addOption("testbystep", false, "(Optional) Executes each test cases in a separate process.");
 
 		options.addOption("modificationpointnavigation", true,
-				"(Optional) Method to navigate the gen space of a variant: inorder, random, weight random (according to the gen's suspicous value)");
+				"(Optional) Method to navigate the modification point space of a variant: inorder, random, weight random (according to the gen's suspicous value)");
 
 		options.addOption("mutationrate", true,
 				"(Optional) Value between 0 and 1 that indicates the probability of modify one gen (default: 1)");
