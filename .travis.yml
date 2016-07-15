@@ -14,6 +14,7 @@ env:
   - TEST=fr.inria.astor.test.repair.evaluation.ValidationTest
 
 script:
+  - mvn clean
   - mvn test -DskipTests
   - mvn surefire:test -Dtest=$TEST
 
