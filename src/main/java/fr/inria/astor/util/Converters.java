@@ -26,4 +26,13 @@ public class Converters {
 		return (URL[]) urls.toArray(u);
 	}
 
+	public static URL[] redefineURL(File foutgen, URL[] originalURL) throws MalformedURLException {
+		List<URL> urls = new ArrayList<URL>();
+		urls.add(foutgen.toURL());
+		for (int i = 0; (originalURL != null) && i < originalURL.length; i++) {
+			urls.add(originalURL[i]);
+		}
+
+		return (URL[]) urls.toArray(originalURL);
+	}
 }

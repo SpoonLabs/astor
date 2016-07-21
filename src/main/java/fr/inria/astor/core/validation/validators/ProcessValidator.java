@@ -17,6 +17,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
 import fr.inria.astor.core.validation.executors.JUnitIndirectExecutorProcess;
+import fr.inria.astor.util.Converters;
 
 /**
  * 
@@ -172,22 +173,13 @@ public class ProcessValidator extends ProgramValidator {
 			MutationSupporter.currentSupporter.getSpoonClassCompiler().saveByteCode(mutatedVariant.getCompilation(),
 					variantOutputFile);
 
-			bc = redefineURL(variantOutputFile, originalURL.toArray(new URL[0]));
+			bc = Converters.redefineURL(variantOutputFile, originalURL.toArray(new URL[0]));
 		} else {
 			bc = originalURL.toArray(new URL[0]);
 		}
 		return bc;
 	}
 
-	protected URL[] redefineURL(File foutgen, URL[] originalURL) throws MalformedURLException {
-		List<URL> urls = new ArrayList<URL>();
-		urls.add(foutgen.toURL());
-		for (int i = 0; (originalURL != null) && i < originalURL.length; i++) {
-			urls.add(originalURL[i]);
-		}
-
-		return (URL[]) urls.toArray(originalURL);
-	}
 
 	protected ProgramVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc,
 			JUnitExecutorProcess p, ProjectRepairFacade projectFacade) {
