@@ -44,6 +44,8 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 		evoTestClasses = new ArrayList<>();
 	}
 
+	boolean overOriginal = true;
+	
 	/**
 	 * Process-based validation Advantage: stability, memory consumption, CG
 	 * activity Disadvantage: time.
@@ -63,7 +65,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 				// It's not a solution, we discard this.
 				return resultOriginal;
 			}
-			ProgramVariantValidationResult resultEvoExecution = runTestFromEvoSuite(currentVariant, projectFacade);
+			ProgramVariantValidationResult resultEvoExecution = runTestFromEvoSuite(currentVariant, projectFacade, this.isOverOriginal());
 			log.info("Evo Result " + resultEvoExecution.toString());
 
 			EvoSuiteValidationResult evoResult = new EvoSuiteValidationResult();
@@ -79,14 +81,22 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 
 
 
-	/** Generates and runs evosuite test cases **/
 	public ProgramVariantValidationResult runTestFromEvoSuite(ProgramVariant currentVariant,
 			ProjectRepairFacade projectFacade) throws Exception {
+		boolean overOriginal = false;
+		return  runTestFromEvoSuite(currentVariant,projectFacade, overOriginal);
+	}
+	
+	/** Generates and runs evosuite test cases **/
+	public ProgramVariantValidationResult runTestFromEvoSuite(ProgramVariant currentVariant,
+			ProjectRepairFacade projectFacade, boolean runOverOriginal) throws Exception {
 		log.info("Running Evosuite for variant " + currentVariant.currentMutatorIdentifier());
 
+		String sufix = (runOverOriginal)?"default":("var"+currentVariant.getId()); 
+		
 		EvoSuiteFacade fev = new EvoSuiteFacade();
 		String testEScodepath = projectFacade
-				.getInDirWithPrefix(ConfigurationProperties.getProperty("evosuiteresultfolder"));
+				.getInDirWithPrefix(ConfigurationProperties.getProperty("evosuiteresultfolder")+File.separator+sufix);
 		File esPath = new File(testEScodepath);
 		log.info("Evo output: " + esPath);
 		
@@ -98,13 +108,15 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 				+ new File("./lib/evosuite-1.0.3.jar").getAbsolutePath() + File.pathSeparator
 				+ projectFacade.getOutDirWithPrefix(currentVariant.DEFAULT_ORIGINAL_VARIANT);
 
+		
 		String outPutTest = projectFacade
-				.getOutDirWithPrefix("/evosuite/evosuite-tests/");
+				.getOutDirWithPrefix("/evosuite/evosuite-tests/"+sufix);
 	
 
-		if (generatedTest.isEmpty()) {
+		if ( !runOverOriginal || generatedTest.isEmpty()) {
+			generatedTest.clear();
 			log.debug("Generating test for the first time");
-			boolean executed = fev.runEvosuite(currentVariant, projectFacade);
+			boolean executed = fev.runEvosuite(currentVariant, projectFacade,testEScodepath, runOverOriginal);
 
 			// we collect the files generated
 
@@ -204,6 +216,18 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 					(trregression != null));
 
 		}
+	}
+
+
+
+	public boolean isOverOriginal() {
+		return overOriginal;
+	}
+
+
+
+	public void setOverOriginal(boolean overOriginal) {
+		this.overOriginal = overOriginal;
 	}
 
 	

@@ -24,6 +24,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.validation.validators.RegressionValidation;
+import fr.inria.astor.test.repair.evaluation.other.ProcessVal4Test;
 import fr.inria.astor.util.Converters;
 import fr.inria.astor.util.EvoSuiteFacade;
 import fr.inria.main.evolution.AstorMain;
@@ -80,7 +81,9 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 		log.info("Executing evosuite");
 		EvoSuiteFacade fev = new EvoSuiteFacade();
-		boolean executed = fev.runEvosuite(variant, main1.getEngine().getProjectFacade());
+		String outES = main1.getEngine().getProjectFacade().getInDirWithPrefix(ConfigurationProperties.getProperty("evosuiteresultfolder"));
+		
+		boolean executed = fev.runEvosuite(variant, main1.getEngine().getProjectFacade(), outES);
 		assertTrue(executed);
 
 		// CHECKING EVO OUTPUT
@@ -355,6 +358,55 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		//Now, the extended validation must fail
 		assertFalse(esvalidationresult.getEvoValidation().wasSuccessful());
 		
+		assertTrue(esvalidationresult.getEvoValidation().getFailureCount() > 0);
+		
+		assertTrue(esvalidationresult.getEvoValidation().getCasesExecuted() > 0);
+		
+		
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70WithEvosuiteTestsPostValid() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		
+		// Running Astor
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
+				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
+				//PARAMETER TO TEST
+				"-validation", ProcessVal4Test.class.getName()
+
+		};
+		System.out.println(Arrays.toString(args));
+
+		main1.execute(args);
+
+		assertEquals(1, main1.getEngine().getSolutions().size());
+
+
+		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
+		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
+		
+		assertNotNull("Without validation",validationResult);
+		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
+		assertTrue(validationResult instanceof EvoSuiteValidationResult);
+		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
+		//The main validation must be true (due it is a solution)
+		assertTrue(esvalidationresult.wasSuccessful());
+		//Now, the extended validation must fail
+		assertTrue(esvalidationresult.getEvoValidation().wasSuccessful());
+		
+		assertTrue(esvalidationresult.getEvoValidation().getCasesExecuted() > 0);
+		
+		assertEquals(0,esvalidationresult.getEvoValidation().getFailureCount());
 		
 		
 	}
