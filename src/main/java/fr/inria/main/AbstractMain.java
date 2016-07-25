@@ -171,7 +171,8 @@ public abstract class AbstractMain {
 
 		options.addOption("ignoredtestcases", true, "Test cases to ignore");
 
-		
+		options.addOption("dse", false, "Apply DSE into Evosuite");
+
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -422,6 +423,9 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("ignoredtestcases"))
 			ConfigurationProperties.properties.setProperty("ignoredTestCases",
 					cmd.getOptionValue("ignoredtestcases"));
+
+		if (cmd.hasOption("dse"))
+			ConfigurationProperties.properties.setProperty("evoDSE", "true");
 
 		
 		// CLG believes, but is not totally confident in her belief, that this

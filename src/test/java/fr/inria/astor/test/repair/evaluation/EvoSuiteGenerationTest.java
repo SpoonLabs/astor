@@ -553,14 +553,17 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
 				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
 				//PARAMETER TO TEST
-				"-validation", "evosuite"
-
+				"-validation", "evosuite",
+				"-dse"
 		};
 	
-		ConfigurationProperties.properties.setProperty("evoDSE", "true");
+		//ConfigurationProperties.properties.setProperty("evoDSE", "true");
 		
 		main1.execute(args);
 
+		assertTrue(ConfigurationProperties.getPropertyBool("evoDSE")); 
+		
+		
 		assertEquals(1, main1.getEngine().getSolutions().size());
 
 		
@@ -588,6 +591,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 		assertEquals(1, main1.getEngine().getSolutions().size());
 
+		assertFalse(ConfigurationProperties.getPropertyBool("evoDSE")); 
+		
 		//
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
 		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
