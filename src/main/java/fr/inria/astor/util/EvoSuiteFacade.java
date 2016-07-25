@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.entities.ModificationInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -98,6 +97,8 @@ public class EvoSuiteFacade {
 					"-base_dir", outES, //
 					"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")//
 					, "-seed", ConfigurationProperties.getProperty("seed")//
+					, "-Drandom_seed", ConfigurationProperties.getProperty("seed")//
+					
 			};
 			if (ConfigurationProperties.getPropertyBool("evoDSE")) {
 
