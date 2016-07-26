@@ -585,10 +585,21 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		
 		//Now, we disactivate evoDSE.
 		
-		ConfigurationProperties.properties.setProperty("evoDSE", "false");
-		
+	args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
+				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
+				//PARAMETER TO TEST
+				"-validation", "evosuite",
+				//"-dse"//we avoid dse
+		};
 		main1.execute(args);
 
+		ConfigurationProperties.properties.setProperty("evoDSE", "false");
+		
 		assertEquals(1, main1.getEngine().getSolutions().size());
 
 		assertFalse(ConfigurationProperties.getPropertyBool("evoDSE")); 
