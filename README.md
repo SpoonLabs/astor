@@ -109,17 +109,14 @@ The distribution contains a version of Apache commons Math with a real defect (r
 To run it using jGenProg, type: 
 
      java -version # it is JDK 7?
+     mvn clean compile # compiling  astor
      cd examples/Math-issue-280
-     mvn test 
+     mvn clean compile test  # compiling and running bug example
      cd ../../
-     mvn compile
      mvn  dependency:build-classpath | egrep -v "(^\[INFO\]|^\[WARNING\])" | tee /tmp/astor-classpath.txt
      cat /tmp/astor-classpath.txt
      java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.MainjGenProg -bug280
 
-or 
-
-    java fr.inria.main.evolution.MainjGenProg -bug280
 
 Walkthrough
 ----------
