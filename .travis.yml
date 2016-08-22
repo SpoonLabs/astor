@@ -35,4 +35,4 @@ after_success:
 notifications:
   email:
     - martin.monperrus@univ-lille1.fr
-    - matias.sebastian.martinez@usi.ch
+    - matias.sebastian.martinez@gmail.com
