@@ -166,5 +166,5 @@ Due to limitation of fault localization, repair is impossible in a constructor f
 
 Contacts
 --------
-matias.sebastian.martinez@usi.ch
+matias.sebastian.martinez@gmail.com
 martin.monperrus@univ-lille1.fr
