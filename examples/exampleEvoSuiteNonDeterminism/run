@@ -1,0 +1,1 @@
+java  -jar  ../../lib/evosuite-1.0.3.jar  -class  org.apache.commons.math.analysis.solvers.BisectionSolver  -projectCP  ./example/junit-4.4.jar:./example/classes   -Dglobal_timeout  120  -seed  10  -Drandom_seed  10
