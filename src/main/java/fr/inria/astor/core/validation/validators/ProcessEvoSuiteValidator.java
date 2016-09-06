@@ -37,8 +37,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 
 	protected List<CtClass> evoTestClasses = new ArrayList<>();
 
-	//TODO: improve this cache.
-	protected List<String> generatedTest = new ArrayList<String>();
+	protected List<String> generatedTestCache = new ArrayList<String>();
 
 	public ProcessEvoSuiteValidator() {
 		evoTestClasses = new ArrayList<>();
@@ -92,6 +91,8 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 			ProjectRepairFacade projectFacade, boolean runOverOriginal) throws Exception {
 		log.info("Running Evosuite for variant " + currentVariant.currentMutatorIdentifier());
 
+		log.debug("Run ES over "+((runOverOriginal)?"default":"patched"));
+		
 		String sufix = (runOverOriginal)?"default":("var"+currentVariant.getId()); 
 		
 		EvoSuiteFacade fev = new EvoSuiteFacade();
@@ -112,9 +113,10 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 		String outPutTest = projectFacade
 				.getOutDirWithPrefix("/evosuite/evosuite-tests/"+sufix);
 	
+		List<String> testGeneratedToRun = new ArrayList<String>();
 
-		if ( !runOverOriginal || generatedTest.isEmpty()) {
-			generatedTest.clear();
+		if ( !runOverOriginal || generatedTestCache.isEmpty()) {
+		
 			log.debug("Generating test for the first time");
 			boolean executed = fev.runEvosuite(currentVariant, projectFacade,testEScodepath, runOverOriginal);
 
@@ -123,7 +125,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 			Collection<File> files = FileUtils.listFiles(esPath, new RegexFileFilter("^(.*?)"),
 					DirectoryFileFilter.DIRECTORY);
 			for (File file : files) {
-				generatedTest.add(file.getAbsolutePath());
+				testGeneratedToRun.add(file.getAbsolutePath());
 			}
 			//Now, Compilation
 		
@@ -143,27 +145,31 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 			command.add(outPutTest);
 
 			// Adding the files
-			for (String testPath : generatedTest) {
+			for (String testPath : testGeneratedToRun) {
 				command.add(testPath);
 			}
 
 			fev.runProcess(command.toArray(new String[command.size()]));
 			///
-			
+			if(overOriginal){
+				generatedTestCache.addAll(testGeneratedToRun);
+			}
 			
 		}else{
-			log.debug("Tests were already generated "+generatedTest);
+			log.debug("Tests were already generated "+generatedTestCache);
+			//We add the cache
+			testGeneratedToRun.addAll(generatedTestCache);
 		}
 
 		
 		List<String> changed = currentVariant.computeAffectedClassesByOperatos().stream().
 				map(e -> e.getQualifiedName()).collect(Collectors.toList());
 
-		log.debug("Generated tests: " + generatedTest);
+		log.debug("Generated tests to run: " + testGeneratedToRun);
 		log.debug("Classes Changed: "+changed);
 		
 		List<String> testToExecute = new ArrayList<>();
-		for (String f : generatedTest) {
+		for (String f : testGeneratedToRun) {
 			String qualifiedTestName = f.replace(".java", "").replace(esPath.toString(), "").replace("/evosuite-tests/", "")
 					.replace(File.separator, ".");
 			if (!qualifiedTestName.endsWith(EvoSuiteFacade.EVOSUITE_scaffolding_SUFFIX) 
