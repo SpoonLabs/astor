@@ -419,9 +419,53 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		
 		assertEquals(0,esvalidationresult.getEvoValidation().getFailureCount());
 		
-		
 	}
 	
+	
+	@Test
+	public void testM70Regression() throws Exception{
+		String command = "-mode,statement,"
+				+ "-location,"+ (new File("./examples/math_70")).getAbsolutePath()
+				+ ","+ "-dependencies,"+new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
+				+ ",out,"+new File(ConfigurationProperties.getProperty("workingDirectory"))
+			
+				+ ",-failing,org.apache.commons.math.analysis.solvers.BisectionSolverTest,"
+				+ "-package,org.apache.commons,"
+				+ "-javacompliancelevel,7,"
+				+ "-maxgen,1000000,"
+				+ "-seed,1,"
+				+ "-stopfirst,true,"
+				+ "-scope,package,-maxtime,10,"
+				+ "-population,1,"
+				+ "-srcjavafolder,src/java/,"
+				+ "-srctestfolder,src/test/,-binjavafolder,target/classes/,"
+				+ "-bintestfolder,target/test-classes/,"
+				+ "-flthreshold,0.1,"
+				+ "-validation,"+fr.inria.astor.core.validation.validators.RegressionValidation.class.getCanonicalName()
+				;
+		String[] args = command.split(",");
+		AstorMain main1 = new AstorMain();
+		main1.execute(args);
+	
+		assertEquals(1, main1.getEngine().getSolutions().size());
+
+
+		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
+		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
+		
+		assertNotNull("Without validation",validationResult);
+		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
+		assertTrue(validationResult instanceof EvoSuiteValidationResult);
+		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
+		//The main validation must be true (due it is a solution)
+		assertTrue(esvalidationresult.wasSuccessful());
+		//Now, the extended validation must fail
+		assertFalse(esvalidationresult.getEvoValidation().wasSuccessful());
+		
+		assertTrue(esvalidationresult.getEvoValidation().getFailureCount() > 0);
+		
+		assertTrue(esvalidationresult.getEvoValidation().getCasesExecuted() > 0);
+	}
 
 	/**
 	 * This test reproduce the bug of calling a regression using a process.
