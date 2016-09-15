@@ -172,6 +172,8 @@ public abstract class AbstractMain {
 		options.addOption("ignoredtestcases", true, "Test cases to ignore");
 
 		options.addOption("dse", false, "Apply DSE into Evosuite");
+		
+		options.addOption("esoverpatched", false, "Apply ES over the patched version. By default it applies over the buggy version.");
 
 	}
 
@@ -424,8 +426,10 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("ignoredTestCases",
 					cmd.getOptionValue("ignoredtestcases"));
 
-		if (cmd.hasOption("dse"))
-			ConfigurationProperties.properties.setProperty("evoDSE", "true");
+	
+		ConfigurationProperties.properties.setProperty("evoDSE", Boolean.toString(cmd.hasOption("dse")));
+		
+		ConfigurationProperties.properties.setProperty("evoRunOnBuggyClass", Boolean.toString(!(cmd.hasOption("esoverpatched"))));
 
 		
 		// CLG believes, but is not totally confident in her belief, that this
