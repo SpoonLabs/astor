@@ -1,6 +1,10 @@
 package fr.inria.astor.test.repair.evaluation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,7 +17,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -23,8 +26,6 @@ import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
-import fr.inria.astor.core.validation.validators.RegressionValidation;
-import fr.inria.astor.test.repair.evaluation.other.ProcessVal4Test;
 import fr.inria.astor.util.Converters;
 import fr.inria.astor.util.EvoSuiteFacade;
 import fr.inria.main.evolution.AstorMain;
@@ -369,6 +370,10 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		
 	}
 	
+	/**
+	 * This test assert Astor when it runs ES over the patched version.
+	 * @throws Exception
+	 */
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMath70WithEvosuiteTestsPostValid() throws Exception {
@@ -385,8 +390,10 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
 				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
-				//PARAMETER TO TEST
-				"-validation", ProcessVal4Test.class.getName()
+				"-validation", "evosuite",
+				//parameter to test
+				"-esoverpatched",
+				
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -631,5 +638,67 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		//evo_regression (LS (NoDSE)): |false|5|22|[test01(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): endpoints do not specify an interval: 1, 850, 0-, test00(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): endpoints do not specify an interval: 1, 850, 0-, test07(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Expecting exception: NullPointerException-, test18(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): endpoints do not specify an interval: 4, 369.837, 4, 369.837-, test06(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Expecting exception: Exception-]|
 
 		}
+	
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testNonDeterministimsMath70WithEvosuiteTests() throws Exception {
+	
+
+		int numberRuns = 3,inum = 0;
+	
+		//For storying the results
+		int executed = -1, failing = -1; 
+	
+		
+		while (inum < numberRuns){
+		
+			AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
+				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
+				"-validation", "evosuite"
+
+		};
+		System.out.println(Arrays.toString(args));
+
+		main1.execute(args);
+
+		assertEquals(1, main1.getEngine().getSolutions().size());
+
+
+		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
+		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
+		
+		assertNotNull("Without validation",validationResult);
+		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
+		assertTrue(validationResult instanceof EvoSuiteValidationResult);
+		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
+		//The main validation must be true (due it is a solution)
+		assertTrue(esvalidationresult.wasSuccessful());
+	
+		///
+		if(executed == -1){
+			executed = esvalidationresult.getEvoValidation().getCasesExecuted();
+			failing = esvalidationresult.getEvoValidation().getFailureCount();
+		}else{
+			
+			assertEquals(esvalidationresult.getEvoValidation().getFailureCount(), failing);
+			
+			assertEquals(esvalidationresult.getEvoValidation().getCasesExecuted(), executed);
+		
+		}
+	
+		
+		inum ++;
+		
+		}
+	}
 	
 }

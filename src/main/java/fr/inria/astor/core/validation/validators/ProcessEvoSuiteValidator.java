@@ -42,8 +42,6 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 	public ProcessEvoSuiteValidator() {
 		evoTestClasses = new ArrayList<>();
 	}
-
-	boolean overOriginal = true;
 	
 	/**
 	 * Process-based validation Advantage: stability, memory consumption, CG
@@ -64,7 +62,9 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 				// It's not a solution, we discard this.
 				return resultOriginal;
 			}
-			ProgramVariantValidationResult resultEvoExecution = runTestFromEvoSuite(currentVariant, projectFacade, this.isOverOriginal());
+			boolean runESoverOriginalBuggyClass = ConfigurationProperties.getPropertyBool("evoRunOnBuggyClass");
+			
+			ProgramVariantValidationResult resultEvoExecution = runTestFromEvoSuite(currentVariant, projectFacade, runESoverOriginalBuggyClass);
 			log.info("Evo Result " + resultEvoExecution.toString());
 
 			EvoSuiteValidationResult evoResult = new EvoSuiteValidationResult();
@@ -78,13 +78,6 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 		}
 	}
 
-
-
-	public ProgramVariantValidationResult runTestFromEvoSuite(ProgramVariant currentVariant,
-			ProjectRepairFacade projectFacade) throws Exception {
-		boolean overOriginal = false;
-		return  runTestFromEvoSuite(currentVariant,projectFacade, overOriginal);
-	}
 	
 	/** Generates and runs evosuite test cases **/
 	public ProgramVariantValidationResult runTestFromEvoSuite(ProgramVariant currentVariant,
@@ -151,7 +144,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 
 			fev.runProcess(command.toArray(new String[command.size()]));
 			///
-			if(overOriginal){
+			if(runOverOriginal){
 				generatedTestCache.addAll(testGeneratedToRun);
 			}
 			
@@ -223,19 +216,6 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 
 		}
 	}
-
-
-
-	public boolean isOverOriginal() {
-		return overOriginal;
-	}
-
-
-
-	public void setOverOriginal(boolean overOriginal) {
-		this.overOriginal = overOriginal;
-	}
-
 	
 	
 }

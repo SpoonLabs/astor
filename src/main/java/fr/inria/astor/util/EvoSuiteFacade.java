@@ -55,7 +55,7 @@ public class EvoSuiteFacade {
 	/**
 	 * Executing evosuite. For each Affected class from the program variant, we
 	 * create the related TestUnit using evosuite
-	 * 
+	 * Argument overOriginal indicate if we generate over the fixed version or original version (buggy)
 	 * @param variant
 	 * @param projectFacade
 	 * @return

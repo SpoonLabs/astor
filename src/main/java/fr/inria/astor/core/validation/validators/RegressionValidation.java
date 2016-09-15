@@ -2,6 +2,7 @@ package fr.inria.astor.core.validation.validators;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
@@ -17,6 +18,7 @@ public class RegressionValidation extends ProcessValidator {
 	public ProgramVariantValidationResult validate(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
 
 		try {
+			boolean runESoverOriginalBuggyClass = ConfigurationProperties.getPropertyBool("evoRunOnBuggyClass");
 			ProgramVariantValidationResult failingValidation = super.runFailing(mutatedVariant, projectFacade);
 			log.debug("Failing Val: " + failingValidation);
 			if (failingValidation != null && failingValidation.wasSuccessful()) {
@@ -28,7 +30,7 @@ public class RegressionValidation extends ProcessValidator {
 
 				// Now, Evosuite
 				ProgramVariantValidationResult evoSuiteRegressionValidation = evoValidator
-						.runTestFromEvoSuite(mutatedVariant, projectFacade);
+						.runTestFromEvoSuite(mutatedVariant, projectFacade,runESoverOriginalBuggyClass);
 
 				log.debug("Evo Regression: " + evoSuiteRegressionValidation);
 				EvoSuiteValidationResult evoResult = new EvoSuiteValidationResult();
