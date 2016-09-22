@@ -175,6 +175,7 @@ public abstract class AbstractMain {
 		
 		options.addOption("esoverpatched", false, "Apply ES over the patched version. By default it applies over the buggy version.");
 
+		options.addOption("evosuitetimeout",true, "ES global timeout");
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -426,6 +427,9 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("ignoredTestCases",
 					cmd.getOptionValue("ignoredtestcases"));
 
+		if (cmd.hasOption("evosuitetimeout"))
+			ConfigurationProperties.properties.setProperty("evosuitetimeout",
+					cmd.getOptionValue("evosuitetimeout"));
 	
 		ConfigurationProperties.properties.setProperty("evoDSE", Boolean.toString(cmd.hasOption("dse")));
 		
