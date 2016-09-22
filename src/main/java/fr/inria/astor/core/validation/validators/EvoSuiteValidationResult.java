@@ -49,8 +49,9 @@ public class EvoSuiteValidationResult extends CompoundValidationResult {
 	public boolean wasSuccessful() {
 	
 		return (getValidation("failing") == null || getValidation("failing").wasSuccessful())
-				&&
-				(getValidation("manual") == null || getValidation("manual").wasSuccessful())
+				//I dont know when I included the manual as part of ES validation.
+				//&&
+				//(getValidation("manual") == null || getValidation("manual").wasSuccessful())
 				;
 	}
 	
