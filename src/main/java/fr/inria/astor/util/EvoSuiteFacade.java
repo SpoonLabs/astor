@@ -70,7 +70,6 @@ public class EvoSuiteFacade {
 	 */
 	public boolean runEvosuite(ProgramVariant variant, List<String> testToCreate,ProjectRepairFacade projectFacade, String outES,
 			boolean processOriginal) throws Exception {
-
 		int nrGenerated = 0;
 		List<URL> originalURL = new ArrayList<>(
 				Arrays.asList(projectFacade.getClassPathURLforProgramVariant(ProgramVariant.DEFAULT_ORIGINAL_VARIANT)));
@@ -95,6 +94,8 @@ public class EvoSuiteFacade {
 		logger.debug("Creating test cases using evosuite for: " + testToCreate.size() + " classes, mode: "
 				+ ((ConfigurationProperties.getPropertyBool("evoDSE")) ? "DSE" : "LS"));
 
+		long init = System.currentTimeMillis();
+		
 		boolean reponse = true;
 		int counter = 0;
 		for (String ctType : testToCreate) {
@@ -104,7 +105,9 @@ public class EvoSuiteFacade {
 					"-base_dir", outES, //
 					"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")//
 					, "-seed", ConfigurationProperties.getProperty("seed")//
-					, "-Drandom_seed", ConfigurationProperties.getProperty("seed")//
+					, "-Drandom_seed", ConfigurationProperties.getProperty("seed"),//
+					"-Dsearch_budget",ConfigurationProperties.getProperty("evosuitetimeout"),// 
+					"-Dstopping_condition","MaxTime",
 
 			};
 			if (ConfigurationProperties.getPropertyBool("evoDSE")) {
@@ -128,7 +131,8 @@ public class EvoSuiteFacade {
 			nrGenerated += (sucess) ? 1 : 0;
 
 		}
-		logger.debug("Evo end: generated " + nrGenerated + " over " + testToCreate.size());
+		long time = (System.currentTimeMillis() - init)/1000;
+		logger.debug("Evo end in total "+time+" seconds for generating " + nrGenerated + " over " + testToCreate.size());
 		return reponse;
 	}
 
