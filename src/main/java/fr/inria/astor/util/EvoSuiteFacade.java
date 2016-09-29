@@ -51,8 +51,11 @@ public class EvoSuiteFacade {
 	 */
 	public boolean runEvosuite(ProgramVariant variant, ProjectRepairFacade projectFacade, String outES)
 			throws Exception {
+		//If the variant does not have operators, we use all classes. 
+		List<CtType<?>> types = (!variant.computeAffectedClassesByOperators().isEmpty())?
+				variant.computeAffectedClassesByOperators(): variant.getAffectedClasses();
 		
-		List<String> affectedTypes = variant.computeAffectedClassesByOperatos().stream().
+		List<String> affectedTypes = types.stream().
 				map(e -> e.getQualifiedName()).collect(Collectors.toList());
 
 		return runEvosuite(variant, affectedTypes,projectFacade, outES, true);
@@ -144,7 +147,7 @@ public class EvoSuiteFacade {
 			//
 			if (ConfigurationProperties.getPropertyBool("evo_affected_by_op")) {
 				logger.info("Affected Buggy classes");
-				typesToProcess = variant.computeAffectedClassesByOperatos();
+				typesToProcess = variant.computeAffectedClassesByOperators();
 			} else {
 				logger.info("All Buggy classes");
 				typesToProcess = variant.getAffectedClasses();
