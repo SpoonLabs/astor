@@ -105,8 +105,8 @@ public class EvoSuiteFacade {
 			// generate a process for running evosuite
 			String[] command = new String[] { "-class", ctType, //
 					"-projectCP", urlArrayToString(SUTClasspath), //
-					"-base_dir", outES, //
-					"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")//
+					"-base_dir", outES //
+					//,"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")//
 					, "-seed", ConfigurationProperties.getProperty("seed")//
 					, "-Drandom_seed", ConfigurationProperties.getProperty("seed"),//
 					"-Dsearch_budget",ConfigurationProperties.getProperty("evosuitetimeout"),// 
