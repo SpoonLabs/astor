@@ -221,7 +221,7 @@ public class EvoSuiteFacade {
 			p.waitFor((ConfigurationProperties.getPropertyInt("evosuitetimeout") * 2 * 1000), TimeUnit.MILLISECONDS);
 
 			String out = readOut(p);
-			logger.debug(out);
+			logger.debug("ES generation output: \n "+out);
 			p.destroy();
 			return true;
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
@@ -356,6 +356,7 @@ public class EvoSuiteFacade {
 
 	private String readOut(Process p) {
 		String out = "";
+		String all = "" ;
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
@@ -363,6 +364,11 @@ public class EvoSuiteFacade {
 				if (line.startsWith("Writing JUnit test case")) {
 					out += line + "\n";
 				}
+				all += line + "\n";
+				
+			}
+			if("".equals(out)){
+				return all;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
