@@ -160,7 +160,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 			}
 			//check if number of test cases generated is the same that the number of test case we wanted to generate
 			if(classesToGenerateTests.size() != testGenerated.size()){
-				log.error("ES did not generate all test cases, generated "+testGenerated+", to generate "+classesToGenerateTests);
+				log.error("ES did not generate all test cases that I should do, test generated "+testGenerated+", classes under generation "+classesToGenerateTests);
 			}
 			log.debug("Generated tests to run: " + testGenerated);
 			
