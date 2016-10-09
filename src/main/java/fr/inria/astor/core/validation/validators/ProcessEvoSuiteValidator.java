@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -102,7 +101,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 		String classpathForCompile = "";
 		classpathForCompile = projectFacade.getProperties().getDependenciesString() + File.pathSeparator
 				+ projectFacade.getOutDirWithPrefix(currentVariant.currentMutatorIdentifier()) + File.pathSeparator//
-				+ new File("./lib/evosuite-1.0.3.jar").getAbsolutePath() + File.pathSeparator
+				+ new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath() + File.pathSeparator
 				+ projectFacade.getOutDirWithPrefix(currentVariant.DEFAULT_ORIGINAL_VARIANT);
 
 		

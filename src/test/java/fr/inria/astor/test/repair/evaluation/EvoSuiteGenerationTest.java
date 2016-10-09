@@ -131,7 +131,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		// ----------
 		classpathForCompileSpoon = main1.getEngine().getProjectFacade().getProperties().getDependenciesString()
 				+ File.pathSeparator + bytecodeSUTLocation + File.pathSeparator
-				+ new File("./lib/evosuite-1.0.3.jar").getAbsolutePath();
+				+ new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath();
 
 		String[] classpathForCreateModel = classpathForCompileSpoon.split(File.pathSeparator);
 
@@ -258,7 +258,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		// Classpath to build a Spoon Model
 		String classpath4BuildModel = new File("./examples/libs/junit-4.4.jar").getAbsolutePath() + File.pathSeparator
 				+ new File("./examples/evo_suite_test/math_70_spooned//bin//default").getAbsolutePath()
-				+ File.pathSeparator + new File("./lib/evosuite-1.0.3.jar").getAbsolutePath();
+				+ File.pathSeparator + new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath();
 
 		
 		
@@ -276,7 +276,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String classpathForCompileModel = new File("./examples/libs/junit-4.4.jar").getAbsolutePath()
 				+ File.pathSeparator
 				+ new File("./examples/evo_suite_test/math_70_spooned/bin/default").getAbsolutePath()
-				+ File.pathSeparator + new File("./lib/evosuite-1.0.3.jar").getAbsolutePath();
+				+ File.pathSeparator + new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath();
 
 		log.info("Classpath "+classpathForCompileModel);
 		

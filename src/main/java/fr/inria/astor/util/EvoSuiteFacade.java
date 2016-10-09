@@ -315,7 +315,7 @@ public class EvoSuiteFacade {
 		String classpathForCompileSpoon = "";
 		classpathForCompileSpoon = projectFacade.getProperties().getDependenciesString() + File.pathSeparator
 				+ projectFacade.getOutDirWithPrefix(variant.currentMutatorIdentifier()) + File.pathSeparator//
-				+ new File("./lib/evosuite-1.0.3.jar").getAbsolutePath() + File.pathSeparator
+				+ new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath() + File.pathSeparator
 				+ projectFacade.getOutDirWithPrefix(variant.DEFAULT_ORIGINAL_VARIANT);
 
 		logger.info("Classpath " + classpathForCompileSpoon);
