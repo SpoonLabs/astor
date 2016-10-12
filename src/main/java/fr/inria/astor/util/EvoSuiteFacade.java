@@ -111,6 +111,8 @@ public class EvoSuiteFacade {
 					, "-Drandom_seed", ConfigurationProperties.getProperty("seed"),//
 					"-Dsearch_budget",ConfigurationProperties.getProperty("evosuitetimeout"),// 
 					"-Dstopping_condition","MaxTime",
+					"-Dsandbox","false",
+					"-mem","2000"
 
 			};
 			if (ConfigurationProperties.getPropertyBool("evoDSE")) {
