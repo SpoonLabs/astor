@@ -379,56 +379,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		
 	}
 	
-	/**
-	 * This test assert Astor when it runs ES over the patched version.
-	 * @throws Exception
-	 */
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void testMath70WithEvosuiteTestsPostValid() throws Exception {
-		AstorMain main1 = new AstorMain();
-
-		
-		// Running Astor
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
-				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
-				"-validation", "evosuite",
-				//parameter to test
-				"-esoverpatched",
-				
-
-		};
-		System.out.println(Arrays.toString(args));
-
-		main1.execute(args);
-
-		assertEquals(1, main1.getEngine().getSolutions().size());
-
-
-		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
-		
-		assertNotNull("Without validation",validationResult);
-		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
-		assertTrue(validationResult instanceof EvoSuiteValidationResult);
-		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
-		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.wasSuccessful());
-		//Now, the extended validation must fail
-		assertTrue(esvalidationresult.getEvoValidation().wasSuccessful());
-		
-		assertTrue(esvalidationresult.getEvoValidation().getCasesExecuted() > 0);
-		
-		assertEquals(0,esvalidationresult.getEvoValidation().getFailureCount());
-		
-	}
+	
 	
 	
 	@Test
@@ -574,128 +525,14 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		main1.execute(args);
 	}
 	
-	//@Test
-	public void testM50() throws Exception{
-		String command = "-mode,statement,"
-					+ "-location,"+ (new File("./examples/math_50")).getAbsolutePath()
-				+ ","+ "-dependencies,"+new File("./examples/libs/junit-4.8.2.jar").getAbsolutePath()
-				+ ",out,"+new File(ConfigurationProperties.getProperty("workingDirectory"))
-				+ ",-failing,org.apache.commons.math.analysis.solvers.BaseSecantSolver,"
-				+ "-package,org.apache.commons,"
-				//+ "-jvm4testexecution,/home/mmartinez/jdk1.8.0_45/bin/"
-				+ "-javacompliancelevel,7,"
-				+ "-maxgen,1000000,"
-				+ "-seed,6001,"
-				+ "-stopfirst,true,"
-				+ "-scope,package,-maxtime,10,"
-				+ "-population,1,"
-				+ "-srcjavafolder,src/java/,"
-				+ "-srctestfolder,src/test/,-binjavafolder,target/classes/,"
-				+ "-bintestfolder,target/test-classes/,"
-				+ "-flthreshold,0.1,"
-				//+ " -validation,fr.inria.astor.core.validation.validators.RegressionValidation,"
-				;
-		String[] args = command.split(",");
-		AstorMain main1 = new AstorMain();
-		main1.execute(args);
-	}
 	
 	
 	
 	
-	@Test
-	public void testM70_lsdse() throws Exception{
-		AstorMain main1 = new AstorMain();
-		ConfigurationProperties.properties.setProperty("evosuitetimeout", "240");
-		// Running Astor
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
-				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
-				//PARAMETER TO TEST
-				"-validation", "evosuite",
-				"-dse"
-		};
-	
-		//ConfigurationProperties.properties.setProperty("evoDSE", "true");
-		
-		main1.execute(args);
 
-		assertTrue(ConfigurationProperties.getPropertyBool("evoDSE")); 
-		
-		
-		assertEquals(1, main1.getEngine().getSolutions().size());
-
-		
-		ProgramVariant variantSolutionDSE = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResultDSE = variantSolutionDSE.getValidationResult();
-	
-		
-		assertNotNull("Without validation",validationResultDSE);
-		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
-		assertTrue(validationResultDSE instanceof EvoSuiteValidationResult);
-		EvoSuiteValidationResult esvalidationresultDSE = (EvoSuiteValidationResult) validationResultDSE;
-		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresultDSE.wasSuccessful());
-		//Now, the extended validation must fail
-		assertFalse(esvalidationresultDSE.getEvoValidation().wasSuccessful());
-		
-		//Results ES-DSE: evo_regression: |false|3|21|[test07(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Expecting exception: NullPointerException-, test18(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): endpoints do not specify an interval: 4, 369.837, 4, 369.837-, test06(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Exception was not thrown in org.apache.commons.math.analysis.solvers.BisectionSolver but in org.apache.commons.math.MathRuntimeException.createIllegalArgumentException(MathRuntimeException.java:305): org.evosuite.runtime.mock.java.lang.MockThrowable-]|
-
-		
-		//Now, we disactivate evoDSE.
-		
-	args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
-				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
-				//PARAMETER TO TEST
-				"-validation", "evosuite",
-				//"-dse"//we avoid dse
-		};
-		main1.execute(args);
-
-		ConfigurationProperties.properties.setProperty("evoDSE", "false");
-		
-		assertEquals(1, main1.getEngine().getSolutions().size());
-
-		assertFalse(ConfigurationProperties.getPropertyBool("evoDSE")); 
-		
-		//
-		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
-		
-		assertNotNull("Without validation",validationResult);
-		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
-		assertTrue(validationResult instanceof EvoSuiteValidationResult);
-		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
-		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.wasSuccessful());
-		//Now, the extended validation must fail
-		assertFalse(esvalidationresult.getEvoValidation().wasSuccessful());
-		
-		
-	//	assertNotEquals(esvalidationresult.getEvoValidation().getFailureCount(),
-	//			esvalidationresultDSE.getEvoValidation().getFailureCount());
-		
-		System.out.println("LS: "+esvalidationresult.getEvoValidation().getFailureCount()
-				+", DSE: "+esvalidationresultDSE.getEvoValidation().getFailureCount());
-		
-		//evo_regression (LS (NoDSE)): |false|5|22|[test01(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): endpoints do not specify an interval: 1, 850, 0-, test00(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): endpoints do not specify an interval: 1, 850, 0-, test07(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Expecting exception: NullPointerException-, test18(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): endpoints do not specify an interval: 4, 369.837, 4, 369.837-, test06(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Expecting exception: Exception-]|
-
-		}
-	
 	
 	@SuppressWarnings("rawtypes")
-	@Test
+	//@Test
 	public void testNonDeterministimsMath70WithEvosuiteTests() throws Exception {
 	
 
@@ -757,97 +594,6 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 	
 	
 	
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void testMath70WithTimeBudget() throws Exception {
-		AstorMain main1 = new AstorMain();
-
-		// Running Astor
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
-				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
-				"-validation", "evosuite",
-				//Argument to test
-			
-		};
-		
-		System.out.println(Arrays.toString(args));
-
-		main1.execute(args);
-
-		assertEquals(1, main1.getEngine().getSolutions().size());
-
-
-		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
-		
-		assertNotNull("Without validation",validationResult);
-		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
-		assertTrue(validationResult instanceof EvoSuiteValidationResult);
-		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
-		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.wasSuccessful());
-		//Now, the extended validation must fail
-		assertFalse(esvalidationresult.getEvoValidation().wasSuccessful());
-		
-		assertTrue(esvalidationresult.getEvoValidation().getFailureCount() > 0);
-		
-		assertTrue(esvalidationresult.getEvoValidation().getCasesExecuted() > 0);
-		///
-		///Now, we trigger the second execution we different time budget for ES.
-		///////
-		
-		String[] argsExtendedBudget = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
-				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
-				"-validation", "evosuite",
-				//Argument to test
-				"-evosuitetimeout","300"
-
-		};
-		System.out.println(Arrays.toString(argsExtendedBudget));
-
-		main1.execute(argsExtendedBudget);
-
-		assertEquals(1, main1.getEngine().getSolutions().size());
-
-
-		ProgramVariant variantSolution2 = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult2 = variantSolution2.getValidationResult();
-		
-		assertNotNull("Without validation",validationResult2);
-		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
-		assertTrue(validationResult2 instanceof EvoSuiteValidationResult);
-		EvoSuiteValidationResult esvalidationresultExtendedBudget = (EvoSuiteValidationResult) validationResult2;
-		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresultExtendedBudget.wasSuccessful());
-		//Now, the extended validation must fail
-		assertFalse(esvalidationresultExtendedBudget.getEvoValidation().wasSuccessful());
-		
-		assertTrue(esvalidationresultExtendedBudget.getEvoValidation().getFailureCount() > 0);
-		
-		assertTrue(esvalidationresultExtendedBudget.getEvoValidation().getCasesExecuted() > 0);
-		///
-		///Now comparison of cases executed, it must be greater for the extended budget version
-		
-		log.info("Execution times: "+esvalidationresultExtendedBudget.getEvoValidation().getCasesExecuted() + " "+  
-				esvalidationresult.getEvoValidation().getCasesExecuted());
-		
-		//assertTrue(esvalidationresultExtendedBudget.getEvoValidation().getCasesExecuted() !=  
-		//esvalidationresult.getEvoValidation().getCasesExecuted() );
-		
-	}
 	
 	
 }
