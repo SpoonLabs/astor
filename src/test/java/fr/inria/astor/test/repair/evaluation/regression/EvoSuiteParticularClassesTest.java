@@ -16,10 +16,6 @@ import fr.inria.main.evolution.AstorMain;
  */
 public class EvoSuiteParticularClassesTest extends BaseEvolutionaryTest {
 
-	@Test
-	public void test() {
-		fail("Not yet implemented");
-	}
 
 	//@Test
 		public void testM50() throws Exception{

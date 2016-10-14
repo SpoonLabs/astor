@@ -22,7 +22,7 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 
 
 	@SuppressWarnings("rawtypes")
-	@Test
+	//@Test
 	public void testMath70WithTimeBudget() throws Exception {
 		AstorMain main1 = new AstorMain();
 
@@ -77,7 +77,7 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
 				"-validation", "evosuite",
 				//Argument to test
-				"-evosuitetimeout","300"
+				"-evosuitetimeout","120"//"300"
 
 		};
 		System.out.println(Arrays.toString(argsExtendedBudget));
