@@ -112,6 +112,7 @@ public class EvoSuiteFacade {
 					"-Dsearch_budget",ConfigurationProperties.getProperty("evosuitetimeout"),// 
 					"-Dstopping_condition","MaxTime",
 					"-Dsandbox","false",
+					"-Dno_runtime_dependency","true",
 					"-mem","2000"
 
 			};
