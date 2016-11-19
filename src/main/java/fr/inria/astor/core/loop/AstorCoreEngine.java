@@ -883,6 +883,7 @@ public abstract class AstorCoreEngine {
 						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
 								.getModificationPoint();
 						line += "\nline= " + gs.getSuspicious().getLineNumber();
+						line += "\nlineSuspiciousness= " + gs.getSuspicious().getSuspiciousValueString();
 					}
 
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
