@@ -106,16 +106,27 @@ public class EvoSuiteFacade {
 			String[] command = new String[] { "-class", ctType, //
 					"-projectCP", urlArrayToString(SUTClasspath), //
 					"-base_dir", outES //
-					//,"-Dglobal_timeout", ConfigurationProperties.getProperty("evosuitetimeout")//
-					, "-seed", ConfigurationProperties.getProperty("seed")//
-					, "-Drandom_seed", ConfigurationProperties.getProperty("seed"),//
-					"-Dsearch_budget",ConfigurationProperties.getProperty("evosuitetimeout"),// 
-					"-Dstopping_condition","MaxTime",
-					"-Dsandbox","false",
-					"-Dno_runtime_dependency","true",
-					"-mem","2000"
-
 			};
+			String[] defaultsParameters = null;
+			String defaultESParameters = ConfigurationProperties.getProperty("ESParameters");
+			if(defaultESParameters != null && !"".equals(defaultESParameters.trim())){
+				 defaultsParameters = defaultESParameters.split(File.pathSeparator);
+			}else{
+				 defaultsParameters =  new String[] {
+						 //Default options:
+						 "-Dglobal_timeout", Integer.toString(2 * Integer.valueOf(ConfigurationProperties.getProperty("evosuitetimeout")))//Before commented
+						, "-seed", ConfigurationProperties.getProperty("seed")//
+						, "-Drandom_seed", ConfigurationProperties.getProperty("seed"),//
+						"-Dsearch_budget",ConfigurationProperties.getProperty("evosuitetimeout"),// 
+						////Stopping conditions options: [MAXSTATEMENTS, MAXTESTS, MAXTIME, MAXGENERATIONS, MAXFITNESSEVALUATIONS, TIMEDELTA])
+						//"-Dstopping_condition","MaxTime",
+						"-Dstopping_condition","MAXGENERATIONS",//
+						"-Dsandbox","false",//
+						"-Dno_runtime_dependency","true",//
+						"-mem","2000"};//
+			}
+			command = StringUtil.concat(command, defaultsParameters);
+			
 			if (ConfigurationProperties.getPropertyBool("evoDSE")) {
 
 				String[] dse = new String[] { "-Dlocal_search_rate", "2", // "8",
@@ -208,6 +219,7 @@ public class EvoSuiteFacade {
 
 			List<String> command = new ArrayList<String>();
 			command.add(javaPath);
+			command.add("-Xbootclasspath/p:"+ (new File("./lib/fixran-0.0.1.jar").getAbsolutePath()));
 			command.add("-jar");
 			command.add(new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath());
 

@@ -25,7 +25,8 @@ import fr.inria.astor.util.TimeUtil;
 import spoon.reflect.factory.Factory;
 
 /**
- * 
+ * Abstract entry point of the framework.
+ * It defines and manages program arguments.
  * @author Matias Martinez
  * 
  */
@@ -176,6 +177,9 @@ public abstract class AbstractMain {
 		options.addOption("esoverpatched", false, "Apply ES over the patched version. By default it applies over the buggy version.");
 
 		options.addOption("evosuitetimeout",true, "ES global timeout");
+		
+		options.addOption("ESParameters", true,
+				"(Optional) Parameters to pass to ES. Separe parameters name and values using "+File.pathSeparator);	
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -435,7 +439,10 @@ public abstract class AbstractMain {
 		
 		ConfigurationProperties.properties.setProperty("evoRunOnBuggyClass", Boolean.toString(!(cmd.hasOption("esoverpatched"))));
 
-		
+		if (cmd.hasOption("ESParameters"))
+			ConfigurationProperties.properties.setProperty("ESParameters",
+					cmd.getOptionValue("ESParameters"));
+	
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();
