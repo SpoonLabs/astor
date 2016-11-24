@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
@@ -83,7 +83,7 @@ public class PatchValidationTest {
 		ProgramVariant variant = astor.getVariants().get(0);
 	
 		int currentGeneration = 1;
-		ModificationInstance operation1 = createDummyOperation1(variant, currentGeneration);
+		OperatorInstance operation1 = createDummyOperation1(variant, currentGeneration);
 		System.out.println("operation " + operation1);
 		assertNotNull(operation1);
 
@@ -158,7 +158,7 @@ public class PatchValidationTest {
 		ProgramVariant variant = astor.getVariants().get(0);
 		
 		int currentGeneration = 1;
-		ModificationInstance operation1 = createDummyOperation1(variant, currentGeneration);
+		OperatorInstance operation1 = createDummyOperation1(variant, currentGeneration);
 		assertNotNull(operation1);
 
 		boolean isSolution = false;
@@ -169,7 +169,7 @@ public class PatchValidationTest {
 		assertTrue("A solution is attended",isSolution);
 
 	}
-	private ModificationInstance createDummyOperation1(ProgramVariant variant, int currentGeneration) {
+	private OperatorInstance createDummyOperation1(ProgramVariant variant, int currentGeneration) {
 
 		SuspiciousModificationPoint genSusp = searchSuspiciousElement(variant, "n += 3", " ", 93);
 		assertNotNull(genSusp);
@@ -178,7 +178,7 @@ public class PatchValidationTest {
 		CtElement fix = createFix1();
 		assertEquals(fix.toString(), "n += 2");
 
-		ModificationInstance operation = new ModificationInstance();
+		OperatorInstance operation = new OperatorInstance();
 
 		operation.setOperationApplied(new ReplaceOp());
 		operation.setModificationPoint(genSusp);

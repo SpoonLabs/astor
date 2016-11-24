@@ -2,7 +2,7 @@ package fr.inria.astor.core.manipulation.modelTransformer;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import spoon.reflect.code.CtExpression;
 
 /**
@@ -14,7 +14,7 @@ public class ExpressionTransformer {
 
 	private static Logger log = Logger.getLogger(ExpressionTransformer.class.getName());
 
-	public static boolean undoReplace(ModificationInstance operation) {
+	public static boolean undoReplace(OperatorInstance operation) {
 		try {
 			CtExpression ctst = (CtExpression) operation.getOriginal();
 			CtExpression fix = (CtExpression) operation.getModified();
@@ -28,7 +28,7 @@ public class ExpressionTransformer {
 
 	}
 
-	public static boolean doReplace(ModificationInstance operation) {
+	public static boolean doReplace(OperatorInstance operation) {
 		boolean successful = false;
 
 		try {

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -29,15 +29,15 @@ public class ReplaceIfBooleanOp extends ReplaceOp{
 	
 	
 	@Override
-	public List<ModificationInstance> createModificationInstance(SuspiciousModificationPoint  modificationPoint){
-		List<ModificationInstance> instances = new ArrayList<>();
+	public List<OperatorInstance> createModificationInstance(SuspiciousModificationPoint  modificationPoint){
+		List<OperatorInstance> instances = new ArrayList<>();
 		
-		ModificationInstance opChangeIftrue = new ModificationInstance(modificationPoint, this,
+		OperatorInstance opChangeIftrue = new OperatorInstance(modificationPoint, this,
 				modificationPoint.getCodeElement(), createIf((CtIf) modificationPoint.getCodeElement(), true));
 		
 		instances.add(opChangeIftrue);
 		
-		ModificationInstance opChangeIffalse = new ModificationInstance(modificationPoint, this,
+		OperatorInstance opChangeIffalse = new OperatorInstance(modificationPoint, this,
 				modificationPoint.getCodeElement(), createIf((CtIf) modificationPoint.getCodeElement(), false));
 		
 		instances.add(opChangeIffalse);

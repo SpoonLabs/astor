@@ -15,9 +15,9 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class ModificationInstance {
+public class OperatorInstance {
 	
-	protected Logger log = Logger.getLogger(ModificationInstance.class.getName());
+	protected Logger log = Logger.getLogger(OperatorInstance.class.getName());
 
 	/**
 	 * Gen where the operation is applied
@@ -54,7 +54,7 @@ public class ModificationInstance {
 	
 	private IngredientSpaceScope ingredientScope = null;
 	
-	public ModificationInstance (){}
+	public OperatorInstance (){}
 	
 	/**
 	 * Creates a modification instance 
@@ -63,7 +63,7 @@ public class ModificationInstance {
 	 * @param original
 	 * @param modified
 	 */
-	public ModificationInstance(ModificationPoint modificationPoint, AstorOperator operationApplied, CtElement original, CtElement modified) {
+	public OperatorInstance(ModificationPoint modificationPoint, AstorOperator operationApplied, CtElement original, CtElement modified) {
 		super();
 		this.modificationPoint = modificationPoint;
 		this.operator = operationApplied;
@@ -160,7 +160,7 @@ public class ModificationInstance {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ModificationInstance other = (ModificationInstance) obj;
+		OperatorInstance other = (OperatorInstance) obj;
 		if (modificationPoint == null) {
 			if (other.modificationPoint != null)
 				return false;

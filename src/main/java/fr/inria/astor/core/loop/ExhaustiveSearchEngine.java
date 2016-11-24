@@ -8,7 +8,7 @@ import java.util.List;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
@@ -44,12 +44,12 @@ public class ExhaustiveSearchEngine extends JGenProg {
 			// We analyze each modifpoint of the variant i.e. suspicious statement
 			for (ModificationPoint modifPoint : parentVariant.getModificationPoints()) {
 				// We create all operators to apply in the modifpoint
-				List<ModificationInstance> genOperations = createOperators((SuspiciousModificationPoint) modifPoint);
+				List<OperatorInstance> genOperations = createOperators((SuspiciousModificationPoint) modifPoint);
 
 				if (genOperations == null || genOperations.isEmpty())
 					continue;
 
-				for (ModificationInstance pointOperation : genOperations) {
+				for (OperatorInstance pointOperation : genOperations) {
 
 					try {
 						log.info("mod_point " + modifPoint);
@@ -89,12 +89,12 @@ public class ExhaustiveSearchEngine extends JGenProg {
 	 * @param modificationPoint
 	 * @return
 	 */
-	protected List<ModificationInstance> createOperators(SuspiciousModificationPoint modificationPoint) {
-		List<ModificationInstance> ops = new ArrayList<>();
+	protected List<OperatorInstance> createOperators(SuspiciousModificationPoint modificationPoint) {
+		List<OperatorInstance> ops = new ArrayList<>();
 		AstorOperator[] operators = getOperatorSpace().values();
 		for (AstorOperator astorOperator : operators) {
 			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
-				List<ModificationInstance> instances = astorOperator.createModificationInstance(modificationPoint);
+				List<OperatorInstance> instances = astorOperator.createModificationInstance(modificationPoint);
 				if (instances != null && instances.size() > 0) {
 					ops.addAll(instances);
 				}

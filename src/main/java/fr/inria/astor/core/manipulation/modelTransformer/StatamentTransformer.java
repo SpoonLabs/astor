@@ -2,7 +2,7 @@ package fr.inria.astor.core.manipulation.modelTransformer;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 
@@ -17,7 +17,7 @@ public class StatamentTransformer {
 	protected static Logger log = Logger.getLogger(StatamentTransformer.class.getName());
 	
 	
-	public static boolean doReplaceStatement(ModificationInstance operation){
+	public static boolean doReplaceStatement(OperatorInstance operation){
 		boolean successful = false;
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtStatement fix = (CtStatement) operation.getModified();
@@ -42,7 +42,7 @@ public class StatamentTransformer {
 		return successful;
 	}
 	
-	public static boolean undoReplaceStatement(ModificationInstance operation) {
+	public static boolean undoReplaceStatement(OperatorInstance operation) {
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtStatement fix = (CtStatement) operation.getModified();
 		CtBlock<?> parentBlock = operation.getParentBlock();
@@ -54,7 +54,7 @@ public class StatamentTransformer {
 		return false;
 	}
 	
-	public static boolean doRemoveStatement(ModificationInstance operation){
+	public static boolean doRemoveStatement(OperatorInstance operation){
 		boolean successful = false;
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 	
@@ -78,7 +78,7 @@ public class StatamentTransformer {
 	}
 	
 
-	public static boolean undoRemoveStatement(ModificationInstance operation) {
+	public static boolean undoRemoveStatement(OperatorInstance operation) {
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtBlock<?> parentBlock = operation.getParentBlock();
 		if (parentBlock != null) {

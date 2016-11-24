@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp;
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
@@ -27,10 +27,10 @@ public class ReplaceReturnOp extends InsertBeforeOp {
 	
 	final Set<String> prim = new HashSet<String>(Arrays.asList("byte","Byte", "long","Long", "int","Integer", "float","Float",  "double","Double", "short","Short", "char", "Character"));
 
-	public List<ModificationInstance> createModificationInstance(SuspiciousModificationPoint modificationPoint){
-		List<ModificationInstance> instances = new ArrayList<>();
+	public List<OperatorInstance> createModificationInstance(SuspiciousModificationPoint modificationPoint){
+		List<OperatorInstance> instances = new ArrayList<>();
 		
-		ModificationInstance opInsertReturn = new ModificationInstance(modificationPoint, this,
+		OperatorInstance opInsertReturn = new OperatorInstance(modificationPoint, this,
 				modificationPoint.getCodeElement(), createReturn(modificationPoint.getCodeElement()));
 		instances.add(opInsertReturn);
 		return instances;
@@ -93,17 +93,17 @@ public class ReplaceReturnOp extends InsertBeforeOp {
 	}
 
 	@Override
-	public boolean applyChangesInModel(ModificationInstance opInstance, ProgramVariant p) {
+	public boolean applyChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
 		return false;
 	}
 
 	@Override
-	public boolean undoChangesInModel(ModificationInstance opInstance, ProgramVariant p) {
+	public boolean undoChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
 		return false;
 	}
 
 	@Override
-	public boolean updateProgramVariant(ModificationInstance opInstance, ProgramVariant p) {
+	public boolean updateProgramVariant(OperatorInstance opInstance, ProgramVariant p) {
 		return false;
 	}
 

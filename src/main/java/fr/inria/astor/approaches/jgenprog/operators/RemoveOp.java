@@ -1,6 +1,6 @@
 package fr.inria.astor.approaches.jgenprog.operators;
 
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
@@ -14,7 +14,7 @@ import spoon.reflect.code.CtStatement;
 public class RemoveOp extends AstorOperator {
 
 	@Override
-	public boolean applyChangesInModel(ModificationInstance operation, ProgramVariant p) {
+	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {
 		boolean successful = false;
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtBlock parentBlock = operation.getParentBlock();
@@ -37,12 +37,12 @@ public class RemoveOp extends AstorOperator {
 	}
 
 	@Override
-	public boolean updateProgramVariant(ModificationInstance opInstance, ProgramVariant p) {
+	public boolean updateProgramVariant(OperatorInstance opInstance, ProgramVariant p) {
 		return removePoint(p, opInstance);
 	}
 
 	@Override
-	public boolean undoChangesInModel(ModificationInstance operation, ProgramVariant p) {
+	public boolean undoChangesInModel(OperatorInstance operation, ProgramVariant p) {
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtBlock<?> parentBlock = operation.getParentBlock();
 		if (parentBlock != null) {

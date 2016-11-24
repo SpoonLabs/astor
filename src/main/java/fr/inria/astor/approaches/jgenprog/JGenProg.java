@@ -7,7 +7,7 @@ import java.util.List;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.Ingredient;
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
@@ -189,7 +189,7 @@ public class JGenProg extends AstorCoreEngine {
 	 *            operator to apply in the variant.
 	 */
 	@Override
-	protected void updateVariantGenList(ProgramVariant variant, ModificationInstance operation) {
+	protected void updateVariantGenList(ProgramVariant variant, OperatorInstance operation) {
 		operation.getOperationApplied().updateProgramVariant(operation, variant);
 	}
 
@@ -203,7 +203,7 @@ public class JGenProg extends AstorCoreEngine {
 	 * @throws IllegalAccessException
 	 */
 	@Override
-	protected ModificationInstance createModificationForPoint(ModificationPoint modificationPoint) throws IllegalAccessException {
+	protected OperatorInstance createOperatorInstanceForPoint(ModificationPoint modificationPoint) throws IllegalAccessException {
 		SuspiciousModificationPoint suspModificationPoint = (SuspiciousModificationPoint) modificationPoint;
 
 		
@@ -216,7 +216,7 @@ public class JGenProg extends AstorCoreEngine {
 
 		CtElement targetStmt = suspModificationPoint.getCodeElement();
 
-		ModificationInstance operation = new ModificationInstance();
+		OperatorInstance operation = new OperatorInstance();
 		operation.setOriginal(targetStmt);
 		operation.setOperationApplied(operationType);
 		operation.setModificationPoint(suspModificationPoint);
@@ -241,7 +241,7 @@ public class JGenProg extends AstorCoreEngine {
 
 	
 	@Override
-	protected void undoOperationToSpoonElement(ModificationInstance operation) {
+	protected void undoOperationToSpoonElement(OperatorInstance operation) {
 		operation.undoModification();
 
 	}
@@ -250,7 +250,7 @@ public class JGenProg extends AstorCoreEngine {
 	 * 
 	 */
 	@Override
-	protected void applyPreviousMutationOperationToSpoonElement(ModificationInstance operation)
+	protected void applyPreviousMutationOperationToSpoonElement(OperatorInstance operation)
 			throws IllegalAccessException {
 		this.applyNewMutationOperationToSpoonElement(operation);
 
@@ -261,7 +261,7 @@ public class JGenProg extends AstorCoreEngine {
 	 * 
 	 */
 	@Override
-	protected void applyNewMutationOperationToSpoonElement(ModificationInstance operationInstance)
+	protected void applyNewMutationOperationToSpoonElement(OperatorInstance operationInstance)
 			throws IllegalAccessException {
 
 		operationInstance.applyModification();

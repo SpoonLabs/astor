@@ -13,7 +13,7 @@ import fr.inria.astor.approaches.mutRepair.operators.ctmutators.LogicalBinaryOpe
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.MutatorComposite;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.NegationUnaryOperatorConditionMutator;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.RelationalBinaryOperatorMutator;
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.MutantCtElement;
 import fr.inria.astor.core.entities.WeightCtElement;
@@ -62,7 +62,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	 * @throws IllegalAccessException
 	 */
 	 @Override
-	protected ModificationInstance createModificationForPoint(ModificationPoint gen) throws IllegalAccessException {
+	protected OperatorInstance createOperatorInstanceForPoint(ModificationPoint gen) throws IllegalAccessException {
 		ModificationPoint genSusp =  gen;
 							
 		AstorOperator operationType = new ReplaceOp();
@@ -81,7 +81,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 			return null;
 		}
 		
-		ModificationInstance operation = new ModificationInstance();
+		OperatorInstance operation = new OperatorInstance();
 		operation.setOriginal(targetIF.getCondition());
 		operation.setOperationApplied(operationType);
 		operation.setModificationPoint(genSusp);
@@ -194,7 +194,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 		return clonedExpression;
 	}
 	@SuppressWarnings("rawtypes")
-	public void undoOperationToSpoonElement(ModificationInstance operation) {
+	public void undoOperationToSpoonElement(OperatorInstance operation) {
 		CtExpression ctst = (CtExpression) operation.getOriginal();
 		CtExpression fix = (CtExpression) operation.getModified();
 		try{
@@ -212,7 +212,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	 * @throws IllegalAccessException 
 	 */
 	@Override
-	protected void applyNewMutationOperationToSpoonElement(ModificationInstance operation) throws IllegalAccessException {
+	protected void applyNewMutationOperationToSpoonElement(OperatorInstance operation) throws IllegalAccessException {
 
 		boolean successful = false;
 		CtExpression ctst = (CtExpression) operation.getOriginal();

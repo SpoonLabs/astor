@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
@@ -480,13 +480,13 @@ public abstract class AstorCoreEngine {
 	}
 
 	protected void undoSingleGeneration(ProgramVariant instance, int genI) {
-		List<ModificationInstance> operations = instance.getOperations().get(genI);
+		List<OperatorInstance> operations = instance.getOperations().get(genI);
 		if (operations == null || operations.isEmpty()) {
 			return;
 		}
 
 		for (int i = operations.size() - 1; i >= 0; i--) {
-			ModificationInstance genOperation = operations.get(i);
+			OperatorInstance genOperation = operations.get(i);
 			log.debug("---Undoing: gnrtn(" + genI + "): " + genOperation);
 			undoOperationToSpoonElement(genOperation);
 		}
@@ -528,7 +528,7 @@ public abstract class AstorCoreEngine {
 					.add(modificationPoint.getCodeElement().getClass().getSimpleName());
 
 			modificationPoint.setProgramVariant(variant);
-			ModificationInstance modificationInstance = createModificationForPoint(modificationPoint);
+			OperatorInstance modificationInstance = createOperatorInstanceForPoint(modificationPoint);
 
 			if (modificationInstance != null) {
 
@@ -570,11 +570,11 @@ public abstract class AstorCoreEngine {
 		return oneOperationCreated;
 	}
 
-	Map<ModificationPoint, List<ModificationInstance>> operationGenerated = new HashedMap();
+	Map<ModificationPoint, List<OperatorInstance>> operationGenerated = new HashedMap();
 
-	private boolean alreadyApplied(ModificationInstance operationNew) {
+	private boolean alreadyApplied(OperatorInstance operationNew) {
 
-		List<ModificationInstance> ops = operationGenerated.get(operationNew.getModificationPoint());
+		List<OperatorInstance> ops = operationGenerated.get(operationNew.getModificationPoint());
 		if (ops == null) {
 			ops = new ArrayList<>();
 			operationGenerated.put(operationNew.getModificationPoint(), ops);
@@ -593,14 +593,14 @@ public abstract class AstorCoreEngine {
 	 * @param generation
 	 * @return
 	 */
-	private boolean alreadyModified(ModificationPoint genProgInstance, Map<Integer, List<ModificationInstance>> map,
+	private boolean alreadyModified(ModificationPoint genProgInstance, Map<Integer, List<OperatorInstance>> map,
 			int generation) {
 
 		for (int i = 1; i < generation; i++) {
-			List<ModificationInstance> ops = map.get(i);
+			List<OperatorInstance> ops = map.get(i);
 			if (ops == null)
 				continue;
-			for (ModificationInstance genOperationInstance : ops) {
+			for (OperatorInstance genOperationInstance : ops) {
 				if (genOperationInstance.getModificationPoint() == genProgInstance) {
 					return true;
 				}
@@ -681,9 +681,9 @@ public abstract class AstorCoreEngine {
 	}
 
 	private void updateVariantGenList(ProgramVariant variant, int generation) {
-		List<ModificationInstance> operations = variant.getOperations().get(generation);
+		List<OperatorInstance> operations = variant.getOperations().get(generation);
 
-		for (ModificationInstance genOperationInstance : operations) {
+		for (OperatorInstance genOperationInstance : operations) {
 			updateVariantGenList(variant, genOperationInstance);
 		}
 	}
@@ -697,7 +697,7 @@ public abstract class AstorCoreEngine {
 	 * @param variant
 	 * @param operationofGen
 	 */
-	protected abstract void updateVariantGenList(ProgramVariant variant, ModificationInstance operation);
+	protected abstract void updateVariantGenList(ProgramVariant variant, OperatorInstance operation);
 
 	/**
 	 * Create a Gen Mutation for a given CtElement
@@ -708,10 +708,10 @@ public abstract class AstorCoreEngine {
 	 * @return
 	 * @throws IllegalAccessException
 	 */
-	protected abstract ModificationInstance createModificationForPoint(ModificationPoint genProgInstance)
+	protected abstract OperatorInstance createOperatorInstanceForPoint(ModificationPoint genProgInstance)
 			throws IllegalAccessException;
 
-	protected abstract void undoOperationToSpoonElement(ModificationInstance operation);
+	protected abstract void undoOperationToSpoonElement(OperatorInstance operation);
 
 	/**
 	 * Apply a mutation generated in previous generation to a model
@@ -726,11 +726,11 @@ public abstract class AstorCoreEngine {
 		// We do not include the current generation (should be empty)
 		for (int generation_i = firstgenerationIndex; generation_i < currentGeneration; generation_i++) {
 
-			List<ModificationInstance> operations = variant.getOperations().get(generation_i);
+			List<OperatorInstance> operations = variant.getOperations().get(generation_i);
 			if (operations == null || operations.isEmpty()) {
 				continue;
 			}
-			for (ModificationInstance genOperation : operations) {
+			for (OperatorInstance genOperation : operations) {
 				applyPreviousMutationOperationToSpoonElement(genOperation);
 				log.debug("----gener( " + generation_i + ") `" + genOperation.isSuccessfulyApplied() + "`, "
 						+ genOperation.toString());
@@ -750,12 +750,12 @@ public abstract class AstorCoreEngine {
 	public boolean applyNewOperationsToVariantModel(ProgramVariant variant, int currentGeneration)
 			throws IllegalAccessException {
 
-		List<ModificationInstance> operations = variant.getOperations().get(currentGeneration);
+		List<OperatorInstance> operations = variant.getOperations().get(currentGeneration);
 		if (operations == null || operations.isEmpty()) {
 			return false;
 		}
 
-		for (ModificationInstance genOperation : operations) {
+		for (OperatorInstance genOperation : operations) {
 
 			applyNewMutationOperationToSpoonElement(genOperation);
 
@@ -765,7 +765,7 @@ public abstract class AstorCoreEngine {
 		// Clean Operations not applied:
 		int size = operations.size();
 		for (int i = 0; i < size; i++) {
-			ModificationInstance genOperationInstance = operations.get(i);
+			OperatorInstance genOperationInstance = operations.get(i);
 			if (genOperationInstance.getExceptionAtApplied() != null || !genOperationInstance.isSuccessfulyApplied()) {
 				log.debug("---Error! Deleting " + genOperationInstance + " failed by a "
 						+ genOperationInstance.getExceptionAtApplied());
@@ -777,7 +777,7 @@ public abstract class AstorCoreEngine {
 		return !(operations.isEmpty());
 	}
 
-	protected abstract void applyPreviousMutationOperationToSpoonElement(ModificationInstance operation)
+	protected abstract void applyPreviousMutationOperationToSpoonElement(OperatorInstance operation)
 			throws IllegalAccessException;
 
 	/**
@@ -786,7 +786,7 @@ public abstract class AstorCoreEngine {
 	 * @param operation
 	 * @throws IllegalAccessException
 	 */
-	protected abstract void applyNewMutationOperationToSpoonElement(ModificationInstance operation)
+	protected abstract void applyNewMutationOperationToSpoonElement(OperatorInstance operation)
 			throws IllegalAccessException;
 
 	protected boolean validateInstance(ProgramVariant variant) {
@@ -870,11 +870,11 @@ public abstract class AstorCoreEngine {
 					+ TimeUtil.getDateDiff(this.dateInitEvolution, solutionVariant.getBornDate(), TimeUnit.SECONDS);
 
 			for (int i = 1; i <= generation; i++) {
-				List<ModificationInstance> genOperationInstances = solutionVariant.getOperations().get(i);
+				List<OperatorInstance> genOperationInstances = solutionVariant.getOperations().get(i);
 				if (genOperationInstances == null)
 					continue;
 
-				for (ModificationInstance genOperationInstance : genOperationInstances) {
+				for (OperatorInstance genOperationInstance : genOperationInstances) {
 
 					line += "\noperation: " + genOperationInstance.getOperationApplied().toString() + "\nlocation= "
 							+ genOperationInstance.getModificationPoint().getCtClass().getQualifiedName();

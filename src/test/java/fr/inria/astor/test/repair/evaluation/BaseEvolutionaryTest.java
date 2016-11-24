@@ -16,7 +16,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -121,8 +121,8 @@ public abstract class BaseEvolutionaryTest  {
 	protected static boolean comparePatch(ProgramVariant variant,String patch){
 		boolean found = false;
 		
-		for(List<ModificationInstance> modif:  variant.getOperations().values()){
-			for (ModificationInstance modificationInstance : modif) {
+		for(List<OperatorInstance> modif:  variant.getOperations().values()){
+			for (OperatorInstance modificationInstance : modif) {
 				if(patch.equals(modificationInstance.getModified())){
 					found = true;
 				}

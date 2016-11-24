@@ -7,7 +7,7 @@ import fr.inria.astor.approaches.mutRepair.operators.ctmutators.LogicalBinaryOpe
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.MutatorComposite;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.NegationUnaryOperatorConditionMutator;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.RelationalBinaryOperatorMutator;
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.MutantCtElement;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -31,7 +31,7 @@ public class IfExpresionMutOp extends AstorOperator {
 	}
 
 	@Override
-	public boolean applyChangesInModel(ModificationInstance operation, ProgramVariant p) {
+	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {
 		boolean successful = false;
 		CtExpression rightTerm = null, leftTerm = null;
 		try {
@@ -63,10 +63,10 @@ public class IfExpresionMutOp extends AstorOperator {
 		return false;
 	}
 
-	protected ModificationInstance createModificationInstance(ModificationPoint point, MutantCtElement fix)
+	protected OperatorInstance createModificationInstance(ModificationPoint point, MutantCtElement fix)
 			throws IllegalAccessException {
 		CtIf targetIF = (CtIf) point.getCodeElement();
-		ModificationInstance operation = new ModificationInstance();
+		OperatorInstance operation = new OperatorInstance();
 		operation.setOriginal(targetIF.getCondition());
 		operation.setOperationApplied(this);
 		operation.setModificationPoint(point);
@@ -76,15 +76,15 @@ public class IfExpresionMutOp extends AstorOperator {
 	}
 
 	@Override
-	public List<ModificationInstance> createModificationInstance(SuspiciousModificationPoint modificationPoint) {
-		List<ModificationInstance> ops = new ArrayList<>();
+	public List<OperatorInstance> createModificationInstance(SuspiciousModificationPoint modificationPoint) {
+		List<OperatorInstance> ops = new ArrayList<>();
 
 		CtIf targetIF = (CtIf) modificationPoint.getCodeElement();
 
 		List<MutantCtElement> mutations = getMutants(targetIF);
 
 		for (MutantCtElement mutantCtElement : mutations) {
-			ModificationInstance opInstance;
+			OperatorInstance opInstance;
 			try {
 				opInstance = createModificationInstance(modificationPoint, mutantCtElement);
 				if (opInstance != null)
@@ -105,7 +105,7 @@ public class IfExpresionMutOp extends AstorOperator {
 	}
 
 	@Override
-	public boolean undoChangesInModel(ModificationInstance opInstance, ProgramVariant p) {
+	public boolean undoChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
 		try {
 			CtExpression ctst = (CtExpression) opInstance.getOriginal();
 			CtExpression fix = (CtExpression) opInstance.getModified();
@@ -118,7 +118,7 @@ public class IfExpresionMutOp extends AstorOperator {
 	}
 
 	@Override
-	public boolean updateProgramVariant(ModificationInstance opInstance, ProgramVariant p) {
+	public boolean updateProgramVariant(OperatorInstance opInstance, ProgramVariant p) {
 		// TODO Auto-generated method stub
 		return false;
 	}

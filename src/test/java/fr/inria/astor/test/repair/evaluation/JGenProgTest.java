@@ -14,7 +14,7 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -124,7 +124,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		
 		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
 
-		ModificationInstance mi = variant.getOperations().values().iterator().next().get(0);
+		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
 		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());
 

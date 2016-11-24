@@ -19,7 +19,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import fr.inria.astor.core.entities.ModificationInstance;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
@@ -209,11 +209,11 @@ public class MutationSupporter {
 			root.appendChild(rootElement);
 
 			for (int i = 1; i <= generation; i++) {
-				List<ModificationInstance> genOperationInstances = childVariant.getOperations().get(i);
+				List<OperatorInstance> genOperationInstances = childVariant.getOperations().get(i);
 				if (genOperationInstances == null)
 					continue;
 
-				for (ModificationInstance genOperationInstance : genOperationInstances) {
+				for (OperatorInstance genOperationInstance : genOperationInstances) {
 
 					Element op = root.createElement("operation");
 					rootElement.appendChild(op);

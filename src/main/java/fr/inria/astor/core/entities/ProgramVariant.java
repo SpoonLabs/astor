@@ -47,7 +47,7 @@ public class ProgramVariant {
 	/**
 	 * operations applied to a Modification Point, organizated by generations
 	 */
-	protected Map<Integer,List<ModificationInstance>> operations  = null;
+	protected Map<Integer,List<OperatorInstance>> operations  = null;
 	/**
 	 * Fitness value of the variant	
 	 */
@@ -91,7 +91,7 @@ public class ProgramVariant {
 	
 	public ProgramVariant(){
 		modificationPoints = new ArrayList<ModificationPoint>();
-		operations = new HashMap<Integer,List<ModificationInstance>>();
+		operations = new HashMap<Integer,List<OperatorInstance>>();
 	}
 
 	public ProgramVariant(int id) {
@@ -126,19 +126,19 @@ public class ProgramVariant {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public void putModificationInstance(int generation, ModificationInstance op){
-		List<ModificationInstance> modificationPoints = operations.get(generation);
+	public void putModificationInstance(int generation, OperatorInstance op){
+		List<OperatorInstance> modificationPoints = operations.get(generation);
 		if(modificationPoints == null){
-			modificationPoints = new ArrayList<ModificationInstance>();
+			modificationPoints = new ArrayList<OperatorInstance>();
 			operations.put(generation, modificationPoints);
 		}
 		modificationPoints.add(op);
 		
 	}
-	public Map<Integer, List<ModificationInstance>> getOperations() {
+	public Map<Integer, List<OperatorInstance>> getOperations() {
 		return operations;
 	}
-	public List<ModificationInstance> getOperations(int generation) {
+	public List<OperatorInstance> getOperations(int generation) {
 		return  operations.get(generation);
 	}
 
@@ -250,8 +250,8 @@ public class ProgramVariant {
 	}
 	public List<CtType<?>> computeAffectedClassesByOperators() {
 		List<CtType<?>> typesToProcess = new ArrayList<>();
-		for (List<ModificationInstance> modifofGeneration : this.getOperations().values()) {
-			for (ModificationInstance modificationInstance : modifofGeneration) {
+		for (List<OperatorInstance> modifofGeneration : this.getOperations().values()) {
+			for (OperatorInstance modificationInstance : modifofGeneration) {
 				typesToProcess.add(modificationInstance.getModificationPoint().getCtClass());
 			}
 		}
