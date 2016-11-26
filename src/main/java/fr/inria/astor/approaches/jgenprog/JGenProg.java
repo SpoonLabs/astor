@@ -222,20 +222,18 @@ public class JGenProg extends AstorCoreEngine {
 		operation.setModificationPoint(suspModificationPoint);
 		operation.defineParentInformation(suspModificationPoint);
 		
-		Ingredient fix = null;
-		
 		if(operationType.needIngredient()){
+			Ingredient fix = null;
 			fix = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operationType);
 			if(fix == null){
 				log.debug("Any ingredient for this point, we discard it");
 				return null;
+			}else{
+				operation.setModified(fix.getCode());
+				operation.setIngredientScope(fix.getScope());
 			}
 		}
 
-		if (fix != null) {
-			operation.setModified(fix.getCode());
-			operation.setIngredientScope(fix.getScope());
-		}
 		return operation;
 	}
 
