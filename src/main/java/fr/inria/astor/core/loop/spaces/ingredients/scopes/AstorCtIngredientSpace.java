@@ -17,6 +17,8 @@ import spoon.reflect.declaration.CtType;
  */
 public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElement,String, CtCodeElement,String> {
 
+	boolean discartDuplicates = true;
+	
 	public AstorCtIngredientSpace() throws JSAPException {
 		super();
 	}
@@ -39,28 +41,26 @@ public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElem
 	protected void createFixSpaceFromAClass(CtType root) {
 		List<CtCodeElement> ingredients = this.ingredientProcessor.createFixSpace(root);
 		AbstractFixSpaceProcessor.mustClone = true;
-		//this.setIngredients(root, ingredients);
 		determineScopeOfIngredient(ingredients);
 	}
 	
 	/**
-	 * Creation of fix space from a CtClass
+	 * Creation of fix space from a list of ctelements.
 	 * 
-	 * @param root
 	 */
 	public void determineScopeOfIngredient(List<CtCodeElement> ingredients) {
 		
 		for (CtCodeElement ctCodeElement : ingredients) {
 			
 			String key = mapKey(ctCodeElement);
-			if (getFixSpace().containsKey(key)) {
-				getFixSpace().get(key).add(ctCodeElement);
-			} else {
-				List<CtCodeElement> ingr = new ArrayList<CtCodeElement>();
-				ingr.add(ctCodeElement);
-				getFixSpace().put(key, ingr);
+			List<CtCodeElement> ingredientsKey = getFixSpace().get(key);
+			if (!getFixSpace().containsKey(key)) {
+				ingredientsKey = new ArrayList<CtCodeElement>();
+				getFixSpace().put(key, ingredientsKey);
 			}
-			
+			if(!discartDuplicates || !ingredientsKey.contains(ctCodeElement)){
+				ingredientsKey.add(ctCodeElement);
+			}
 		}
 		recreateTypesStructures();
 		
