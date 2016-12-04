@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.approaches.exhaustive.ExhaustiveAstorEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.approaches.jkali.JKaliSpace;
@@ -139,7 +140,32 @@ public class AstorMain extends AbstractMain {
 			ConfigurationProperties.properties.setProperty("population", "1");
 			ingredientProcessors.clear();
 			ingredientProcessors.add(new IFConditionFixSpaceProcessor());
-		} else {
+		}  
+		 else if (ExecutionMode.EXASTOR.equals(mode)) {
+				astorCore = new ExhaustiveAstorEngine(mutSupporter, projectFacade);
+				if(operatorSpace == null)
+					operatorSpace = new jGenProgSpace();
+				
+				// The ingredients for build the patches
+				String scope = ConfigurationProperties.properties.getProperty("scope");
+				IngredientSpace ingredientspace = null;
+				if ("global".equals(scope)) {
+					ingredientspace = (new GlobalBasicIngredientSpace(ingredientProcessors));
+				} else if ("package".equals(scope)) {
+					ingredientspace = (new PackageBasicFixSpace(ingredientProcessors));
+				} else if ("local".equals(scope)) {
+					ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
+				}else{
+					ingredientspace = loadSpace(scope, ingredientProcessors);
+				}
+				
+				//TODO: put in a strategy
+				IngredientSearchStrategy ingStrategy = null;//retrieveIngredientStrategy(ingredientspace);
+
+				((ExhaustiveAstorEngine) astorCore).setIngredientSpace(ingredientspace);
+
+			}
+		else {
 			// If the execution mode is any of the predefined, Astor
 			// interpretates as
 			// a custom engine, where the value corresponds to the class name of
@@ -354,6 +380,8 @@ public class AstorMain extends AbstractMain {
 			astorCore = createEngine(ExecutionMode.MutRepair);
 		else if ("custom".equals(mode))
 			astorCore = createEngine(ExecutionMode.custom);
+		else if ("exhaustive".equals(mode) || "exastor".equals(mode))
+			astorCore = createEngine(ExecutionMode.EXASTOR);
 		else {
 			System.err.println("Unknown mode of execution: '" + mode
 					+ "', know modes are: jgenprog, jkali, jmutrepair or custom.");
