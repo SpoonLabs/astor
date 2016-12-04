@@ -19,7 +19,7 @@ public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends
 
 	
 	public static boolean mustClone = true;
-	public static boolean duplicated = true;
+	public static boolean allowsDuplicateIngredients = true;
 	
 	/**
 	 * This list saves the result
@@ -31,9 +31,8 @@ public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends
 		if (mustClone()) {
 			code = MutationSupporter.clone(st);
 		}
-		if (duplicated ||  !duplicated && !contains(st)) {
-				spaceElements.add(code);
-		
+		if (allowsDuplicateIngredients ||  !contains(st)) {
+			spaceElements.add(code);
 		}
 	}
 
