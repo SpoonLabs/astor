@@ -292,7 +292,7 @@ public class VariableResolverTest {
 			
 			
 			//For with a induction variable
-			CtElement ifor = ingredients.get(71); //for (int i = tableau.getNumObjectiveFunctions() 
+			CtElement ifor = ingredients.get(46); //for (int i = tableau.getNumObjectiveFunctions() 
 			assertTrue(ifor.toString().startsWith("for (int i = tableau.getNumObjectiveFunctions"));
 			assertTrue(ifor instanceof CtFor);
 			boolean matchFor = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), ifor, true);
@@ -300,7 +300,7 @@ public class VariableResolverTest {
 			//the variable 'i' is declared inside the ingredient, and event it does not exist  
 			assertTrue(matchFor);
 			
-			CtElement iif = ingredients.get(70); //if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i),
+			CtElement iif = ingredients.get(45); //if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i),
 			assertTrue(iif.toString().startsWith("if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i)"));
 			assertTrue(iif instanceof CtIf);
 			boolean matchIf = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iif, true);
@@ -316,7 +316,7 @@ public class VariableResolverTest {
 			assertTrue(matchStSame);
 			
 			
-			CtElement iStaticDouble = ingredients.get(80);//static 
+			CtElement iStaticDouble = ingredients.get(55);//static 
 			assertTrue(iStaticDouble instanceof CtLocalVariable);
 			assertTrue(iStaticDouble.toString().startsWith("double minRatio = java.lang.Double.MAX_VALUE"));
 			boolean matchSt = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iStaticDouble, true);
