@@ -55,7 +55,7 @@ public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElem
 			String key = mapKey(ctCodeElement);
 			List<CtCodeElement> ingredientsKey = getFixSpace().get(key);
 			if (!getFixSpace().containsKey(key)) {
-				ingredientsKey = new ArrayList<CtCodeElement>();
+				ingredientsKey = new CacheList<CtCodeElement>();
 				getFixSpace().put(key, ingredientsKey);
 			}
 			if(!discartDuplicates || !ingredientsKey.contains(ctCodeElement)){
