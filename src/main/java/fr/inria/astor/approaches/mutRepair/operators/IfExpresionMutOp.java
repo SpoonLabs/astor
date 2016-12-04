@@ -76,7 +76,7 @@ public class IfExpresionMutOp extends AstorOperator {
 	}
 
 	@Override
-	public List<OperatorInstance> createModificationInstance(SuspiciousModificationPoint modificationPoint) {
+	public List<OperatorInstance> createOperatorInstance(SuspiciousModificationPoint modificationPoint) {
 		List<OperatorInstance> ops = new ArrayList<>();
 
 		CtIf targetIF = (CtIf) modificationPoint.getCodeElement();

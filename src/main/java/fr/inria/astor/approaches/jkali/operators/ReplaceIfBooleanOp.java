@@ -29,7 +29,7 @@ public class ReplaceIfBooleanOp extends ReplaceOp{
 	
 	
 	@Override
-	public List<OperatorInstance> createModificationInstance(SuspiciousModificationPoint  modificationPoint){
+	public List<OperatorInstance> createOperatorInstance(SuspiciousModificationPoint  modificationPoint){
 		List<OperatorInstance> instances = new ArrayList<>();
 		
 		OperatorInstance opChangeIftrue = new OperatorInstance(modificationPoint, this,

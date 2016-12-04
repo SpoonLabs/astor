@@ -27,7 +27,7 @@ public class ReplaceReturnOp extends InsertBeforeOp {
 	
 	final Set<String> prim = new HashSet<String>(Arrays.asList("byte","Byte", "long","Long", "int","Integer", "float","Float",  "double","Double", "short","Short", "char", "Character"));
 
-	public List<OperatorInstance> createModificationInstance(SuspiciousModificationPoint modificationPoint){
+	public List<OperatorInstance> createOperatorInstance(SuspiciousModificationPoint modificationPoint){
 		List<OperatorInstance> instances = new ArrayList<>();
 		
 		OperatorInstance opInsertReturn = new OperatorInstance(modificationPoint, this,
