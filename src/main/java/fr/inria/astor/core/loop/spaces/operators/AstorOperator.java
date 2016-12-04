@@ -54,7 +54,7 @@ public abstract class AstorOperator {
 	 * @param modificationPoint
 	 * @return
 	 */
-	public List<OperatorInstance> createModificationInstance(SuspiciousModificationPoint modificationPoint){
+	public List<OperatorInstance> createOperatorInstance(SuspiciousModificationPoint modificationPoint){
 		
 		List<OperatorInstance> instances = new ArrayList<>();
 		OperatorInstance modinst =  new OperatorInstance(modificationPoint, this,modificationPoint.getCodeElement(), null);

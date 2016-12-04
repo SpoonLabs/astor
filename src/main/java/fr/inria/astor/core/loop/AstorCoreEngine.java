@@ -405,8 +405,7 @@ public abstract class AstorCoreEngine {
 				return true;
 			}
 		} else {
-			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "
-					+ compilation.getErrorList());
+			//log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "+ compilation.getErrorList());
 			currentStat.numberOfFailingCompilation++;
 			currentStat.setNotCompiles(programVariant.getId());
 			programVariant.setFitness(this.populationControler.getMaxFitnessValue());

@@ -44,12 +44,12 @@ public class ExhaustiveSearchEngine extends JGenProg {
 			// We analyze each modifpoint of the variant i.e. suspicious statement
 			for (ModificationPoint modifPoint : parentVariant.getModificationPoints()) {
 				// We create all operators to apply in the modifpoint
-				List<OperatorInstance> genOperations = createOperators((SuspiciousModificationPoint) modifPoint);
+				List<OperatorInstance> operatorInstances = createInstancesOfOperators((SuspiciousModificationPoint) modifPoint);
 
-				if (genOperations == null || genOperations.isEmpty())
+				if (operatorInstances == null || operatorInstances.isEmpty())
 					continue;
 
-				for (OperatorInstance pointOperation : genOperations) {
+				for (OperatorInstance pointOperation : operatorInstances) {
 
 					try {
 						log.info("mod_point " + modifPoint);
@@ -89,12 +89,12 @@ public class ExhaustiveSearchEngine extends JGenProg {
 	 * @param modificationPoint
 	 * @return
 	 */
-	protected List<OperatorInstance> createOperators(SuspiciousModificationPoint modificationPoint) {
+	protected List<OperatorInstance> createInstancesOfOperators(SuspiciousModificationPoint modificationPoint) {
 		List<OperatorInstance> ops = new ArrayList<>();
 		AstorOperator[] operators = getOperatorSpace().values();
 		for (AstorOperator astorOperator : operators) {
 			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
-				List<OperatorInstance> instances = astorOperator.createModificationInstance(modificationPoint);
+				List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
 				if (instances != null && instances.size() > 0) {
 					ops.addAll(instances);
 				}
@@ -104,5 +104,7 @@ public class ExhaustiveSearchEngine extends JGenProg {
 		return ops;
 
 	}
+	
+	
 
 }
