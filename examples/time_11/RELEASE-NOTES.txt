@@ -1,0 +1,66 @@
+Joda-Time version 2.3
+---------------------
+
+Joda-Time is a date and time handling library that seeks to replace the JDK
+Date and Calendar classes.
+
+This release contains enhancements, bug fixes and a time zone update.
+JDK 1.5 or later is required.
+
+Joda-Time is licensed under the business-friendly Apache License Version 2.
+This is the same license as all of Apache, plus other open source projects such as Spring.
+The intent is to make the code available to the Java community with the minimum
+of restrictions. If the license causes you problems please contact the mailing list.
+
+**  Please also check out our related projects   **
+** http://joda-time.sourceforge.net/related.html **
+
+
+Enhancements since 2.2
+----------------------
+
+
+Compatibility with 2.2
+----------------------
+Build system - Yes
+
+Binary compatible - Yes
+
+Source compatible - Yes
+
+Serialization compatible - Yes
+
+Data compatible - Yes, except
+ - DateTimeZone data updated to version 2012j
+
+Semantic compatible - Yes
+
+
+Deprecations since 2.2
+----------------------
+None
+
+
+Bug fixes since 2.2
+-------------------
+- ZoneInfoCompiler and DateTimeZoneBuilder multi-threading [#18]
+  A thread local variable was previously only initialised in one thread causing NPE
+  https://github.com/JodaOrg/joda-time/issues/18
+
+
+Scala
+--------
+Joda-Time uses annotations from Joda-Convert.
+In the Java programming language, this dependency is optional, however in Scala it is not.
+Scala users must manually add the Joda-Convert v1.2 dependency.
+
+
+Feedback
+--------
+Feedback is best received using GitHub issues and Pull Requests.
+https://github.com/JodaOrg/joda-time/
+
+Feedback is also welcomed via the joda-interest mailing list.
+
+The Joda team
+http://joda-time.sourceforge.net
