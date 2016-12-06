@@ -180,7 +180,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "0",
+				out.getAbsolutePath(), "-scope", "package", "-package", "10",
 				// We force to not execute the evolution, so, we run it for zero
 				// generation
 				"-maxgen", "0", "-population", "1", "-stopfirst", "true", "-maxtime", "100"
@@ -196,6 +196,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 		ProgramVariant variant = main1.getEngine().getVariants().get(0);
 
+		main1.getEngine().processCreatedVariant(variant, 1);
+		
 		log.info("Executing evosuite");
 		EvoSuiteFacade fev = new EvoSuiteFacade();
 		
@@ -227,7 +229,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "0",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10",
 				"-stopfirst", "true",
 				"-population", 
 				"1", "-stopfirst", "true", "-maxtime", "100",
