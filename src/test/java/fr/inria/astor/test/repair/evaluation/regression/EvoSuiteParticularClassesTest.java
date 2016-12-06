@@ -71,7 +71,7 @@ public class EvoSuiteParticularClassesTest extends BaseEvolutionaryTest {
 			main1.execute(args);
 		}
 		
-		@Test
+		//@Test
 		public void testTime11() throws Exception{
 			
 	//		command line arguments: [-mode  statement  -location  .  -id  Time  -dependencies  lib/  -failing  org.joda.time.tz.TestCompiler:  -package  org.joda  -jvm4testexecution  /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/  -jvm4evosuitetestexecution  /home/mmartinez/jdk1.8.0_45/bin/  -javacompliancelevel  5  -maxgen  1000000  -seed  10  -stopfirst  false  -scope  local  -maxtime  120  -population  1  -srcjavafolder  src/main/java/  -srctestfolder  src/test/java/  -binjavafolder  target/classes/  -bintestfolder  target/test-classes/  -flthreshold  0.1  -validation  fr.inria.astor.core.validation.validators.RegressionValidation  -evosuitetimeout  300  -ignoredtestcases  org.apache.commons.lang.LocaleUtilsTest]
@@ -92,7 +92,8 @@ public class EvoSuiteParticularClassesTest extends BaseEvolutionaryTest {
 					+ "-scope,package,-maxtime,10,"
 					+ "-population,1,"
 					+ "-srcjavafolder,src/main/java/,"
-					+ "-srctestfolder,src/test/java/,-binjavafolder,target/classes/,"
+					+ "-srctestfolder,src/test/java/,"
+					+ "-binjavafolder,target/classes/,"
 					+ "-bintestfolder,target/test-classes/,"
 					+ "-flthreshold,0.1,"
 					//+ " -validation,fr.inria.astor.core.validation.validators.RegressionValidation,"
