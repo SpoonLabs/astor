@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -888,7 +886,8 @@ public abstract class AstorCoreEngine {
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
 					line += "\nfixed statement= ";
 					if (genOperationInstance.getModified() != null)
-						line += genOperationInstance.getModified().toString();
+						if(genOperationInstance.getModified().toString() != genOperationInstance.getOriginal().toString() )
+							line += genOperationInstance.getModified().toString();
 					else {
 						line += genOperationInstance.getOriginal().toString();
 					}
@@ -896,8 +895,7 @@ public abstract class AstorCoreEngine {
 					line += "\ngeneration= " + Integer.toString(i);
 					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope() != null)
 							? genOperationInstance.getIngredientScope() : "-");
-					
-					//line += "\n ";
+		
 
 				}
 			}
