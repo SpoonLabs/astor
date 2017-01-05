@@ -110,7 +110,12 @@ public class EvoSuiteFacade {
 			String[] defaultsParameters = null;
 			String defaultESParameters = ConfigurationProperties.getProperty("ESParameters");
 			if(defaultESParameters != null && !"".equals(defaultESParameters.trim())){
-				 defaultsParameters = defaultESParameters.split(File.pathSeparator);
+				if(!(defaultESParameters.contains("-seed") || defaultESParameters.contains("-Drandom_seed"))){
+					defaultESParameters+= (defaultESParameters.charAt(defaultESParameters.length() - 1) != File.pathSeparatorChar)?
+							(File.pathSeparator):"";
+					defaultESParameters+="-Drandom_seed"+(File.pathSeparator)+ConfigurationProperties.getProperty("seed"); 
+				}
+				defaultsParameters = defaultESParameters.split(File.pathSeparator);
 			}else{
 				 defaultsParameters =  new String[] {
 						 //Default options:
@@ -119,8 +124,7 @@ public class EvoSuiteFacade {
 						, "-Drandom_seed", ConfigurationProperties.getProperty("seed"),//
 						"-Dsearch_budget",ConfigurationProperties.getProperty("evosuitetimeout"),// 
 						////Stopping conditions options: [MAXSTATEMENTS, MAXTESTS, MAXTIME, MAXGENERATIONS, MAXFITNESSEVALUATIONS, TIMEDELTA])
-						//"-Dstopping_condition","MaxTime",
-						"-Dstopping_condition","MAXGENERATIONS",//
+						"-Dstopping_condition","MaxTime",
 						"-Dsandbox","false",//
 						"-Dno_runtime_dependency","true",//
 						"-mem","2000"};//
