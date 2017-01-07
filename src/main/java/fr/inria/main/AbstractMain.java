@@ -42,7 +42,7 @@ public abstract class AbstractMain {
 
 	CommandLineParser parser = new BasicParser();
 
-	static {
+	static { 
 		options.addOption("id", true, "(Optional) Name/identified of the project to evaluate (Default: folder name)");
 		options.addOption("mode", true, " (Optional) Mode (Default: Statement Mode)");
 		options.addOption("location", true, "URL of the project to manipulate");
@@ -176,10 +176,17 @@ public abstract class AbstractMain {
 		
 		options.addOption("esoverpatched", false, "Apply ES over the patched version. By default it applies over the buggy version.");
 
-		options.addOption("evosuitetimeout",true, "ES global timeout");
+		options.addOption("evosuitetimeout",true, "ES global timeout (in seconds)");
 		
 		options.addOption("ESParameters", true,
 				"(Optional) Parameters to pass to ES. Separe parameters name and values using "+File.pathSeparator);	
+	
+		options.addOption("learningdir", true,
+				"Learning Dir");	
+		
+		options.addOption("clonegranularity", true,
+				"Clone granularity");	
+
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -442,7 +449,15 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("ESParameters"))
 			ConfigurationProperties.properties.setProperty("ESParameters",
 					cmd.getOptionValue("ESParameters"));
+		
+		if (cmd.hasOption("learningdir"))
+			ConfigurationProperties.properties.setProperty("learningdir",
+					cmd.getOptionValue("learningdir"));
 	
+		if (cmd.hasOption("clonegranularity"))
+			ConfigurationProperties.properties.setProperty("clonegranularity",
+					cmd.getOptionValue("clonegranularity"));
+		
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();
