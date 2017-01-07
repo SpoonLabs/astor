@@ -160,12 +160,8 @@ public class ProjectConfiguration {
 		this.internalProperties.put(ProjectPropertiesEnum.originalTestBinDir, dir);
 	}
 
-	public String getLibPath() {
-		return (String) this.internalProperties.get(ProjectPropertiesEnum.libPath);
-	}
 
-	public void setLibPath(String libPath) {
-		this.internalProperties.put(ProjectPropertiesEnum.libPath, libPath);
+	public void setDependencies(String libPath) {
 		String[] s = libPath.split(File.pathSeparator);
 		for (String pathcomp : s) {
 			this.addLocationToClasspath(pathcomp);

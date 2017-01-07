@@ -25,8 +25,9 @@ import fr.inria.astor.util.TimeUtil;
 import spoon.reflect.factory.Factory;
 
 /**
- * Abstract entry point of the framework.
- * It defines and manages program arguments.
+ * Abstract entry point of the framework. It defines and manages program
+ * arguments.
+ * 
  * @author Matias Martinez
  * 
  */
@@ -42,7 +43,7 @@ public abstract class AbstractMain {
 
 	CommandLineParser parser = new BasicParser();
 
-	static { 
+	static {
 		options.addOption("id", true, "(Optional) Name/identified of the project to evaluate (Default: folder name)");
 		options.addOption("mode", true, " (Optional) Mode (Default: Statement Mode)");
 		options.addOption("location", true, "URL of the project to manipulate");
@@ -71,8 +72,9 @@ public abstract class AbstractMain {
 
 		options.addOption("maxtime", true, "(Optional) maximum time (in minutes) to execute the whole experiment");
 
-		options.addOption("validation", true, "(Optional) type of validation: process|evosuite. Default:"+ ConfigurationProperties.properties.getProperty("validation"));
-		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default:" 
+		options.addOption("validation", true, "(Optional) type of validation: process|evosuite. Default:"
+				+ ConfigurationProperties.properties.getProperty("validation"));
+		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default:"
 				+ ConfigurationProperties.properties.getProperty("flthreshold"));
 
 		options.addOption("maxsuspcandidates", true,
@@ -152,40 +154,40 @@ public abstract class AbstractMain {
 				"(Optional) Indicates the hour Astor has to stop processing. it must have the format: HH:mm");
 
 		options.addOption("customop", true,
-				"(Optional) Indicates the class name of the operators used by the selected execution mode. They must extend from "+AstorOperator.class.getName()
-				+ ". Operator names must be separated by char "+File.pathSeparator+". The classes must be included in the classpath.");
+				"(Optional) Indicates the class name of the operators used by the selected execution mode. They must extend from "
+						+ AstorOperator.class.getName() + ". Operator names must be separated by char "
+						+ File.pathSeparator + ". The classes must be included in the classpath.");
 
-		
 		options.addOption("ingredientstrategy", true,
-				"(Optional) Indicates the name of the class that astor calls for retrieving ingredients. They must extend from "+IngredientSearchStrategy.class.getName() 
-				+ " The classes must be included in the classpath.");
-		
+				"(Optional) Indicates the name of the class that astor calls for retrieving ingredients. They must extend from "
+						+ IngredientSearchStrategy.class.getName() + " The classes must be included in the classpath.");
+
 		options.addOption("opselectionstrategy", true,
-				"(Optional) Indicates the name of the class that astor calls for selecting an operator from the operator space. They must extend from "+OperatorSelectionStrategy.class.getName() 
-				+ " The classes must be included in the classpath.");
-		
-		
+				"(Optional) Indicates the name of the class that astor calls for selecting an operator from the operator space. They must extend from "
+						+ OperatorSelectionStrategy.class.getName()
+						+ " The classes must be included in the classpath.");
+
 		options.addOption("customengine", true,
-				"(Optional) Indicates the class name of the execution mode. It must extend from "+AstorCoreEngine.class.getName());
+				"(Optional) Indicates the class name of the execution mode. It must extend from "
+						+ AstorCoreEngine.class.getName());
 
 		options.addOption("excludeRegression", false, "Exclude test regression execution");
 
 		options.addOption("ignoredtestcases", true, "Test cases to ignore");
 
 		options.addOption("dse", false, "Apply DSE into Evosuite");
-		
-		options.addOption("esoverpatched", false, "Apply ES over the patched version. By default it applies over the buggy version.");
 
-		options.addOption("evosuitetimeout",true, "ES global timeout (in seconds)");
-		
+		options.addOption("esoverpatched", false,
+				"Apply ES over the patched version. By default it applies over the buggy version.");
+
+		options.addOption("evosuitetimeout", true, "ES global timeout (in seconds)");
+
 		options.addOption("ESParameters", true,
-				"(Optional) Parameters to pass to ES. Separe parameters name and values using "+File.pathSeparator);	
-	
-		options.addOption("learningdir", true,
-				"Learning Dir");	
-		
-		options.addOption("clonegranularity", true,
-				"Clone granularity");	
+				"(Optional) Parameters to pass to ES. Separe parameters name and values using " + File.pathSeparator);
+
+		options.addOption("learningdir", true, "Learning Dir");
+
+		options.addOption("clonegranularity", true, "Clone granularity");
 
 	}
 
@@ -255,16 +257,16 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("jvm4testexecution", javahome);
 
 		}
-		
+
 		if (cmd.hasOption("jvm4evosuitetestexecution")) {
 			ConfigurationProperties.properties.setProperty("jvm4evosuitetestexecution",
 					cmd.getOptionValue("jvm4evosuitetestexecution"));
-		}else{
-			ConfigurationProperties.properties.setProperty("jvm4evosuitetestexecution", 
+		} else {
+			ConfigurationProperties.properties.setProperty("jvm4evosuitetestexecution",
 					ConfigurationProperties.properties.getProperty("jvm4testexecution"));
 
 		}
-		
+
 		if (!ProjectConfiguration.validJDK()) {
 			System.err.println("Error: invalid jdk folder");
 			return false;
@@ -280,8 +282,10 @@ public abstract class AbstractMain {
 				help();
 				return false;
 			}
+			if (dependenciespath != null) {
+				ConfigurationProperties.properties.setProperty("dependenciespath", dependenciespath);
+			}
 
-			ConfigurationProperties.properties.setProperty("dependenciespath", dependenciespath);
 			ConfigurationProperties.properties.setProperty("failing", failing);
 			ConfigurationProperties.properties.setProperty("location", location);
 		}
@@ -421,43 +425,41 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("customop"))
 			ConfigurationProperties.properties.setProperty("customop", cmd.getOptionValue("customop"));
-		
+
 		if (cmd.hasOption("ingredientstrategy"))
-			ConfigurationProperties.properties.setProperty("ingredientstrategy", cmd.getOptionValue("ingredientstrategy"));
+			ConfigurationProperties.properties.setProperty("ingredientstrategy",
+					cmd.getOptionValue("ingredientstrategy"));
 
 		if (cmd.hasOption("opselectionstrategy"))
-			ConfigurationProperties.properties.setProperty("opselectionstrategy", cmd.getOptionValue("opselectionstrategy"));
-	
-		if(cmd.hasOption("customengine"))
+			ConfigurationProperties.properties.setProperty("opselectionstrategy",
+					cmd.getOptionValue("opselectionstrategy"));
+
+		if (cmd.hasOption("customengine"))
 			ConfigurationProperties.properties.setProperty("customengine", cmd.getOptionValue("customengine"));
-		
+
 		if (cmd.hasOption("excludeRegression"))
 			ConfigurationProperties.properties.setProperty("executeRegression", "false");
 
 		if (cmd.hasOption("ignoredtestcases"))
-			ConfigurationProperties.properties.setProperty("ignoredTestCases",
-					cmd.getOptionValue("ignoredtestcases"));
+			ConfigurationProperties.properties.setProperty("ignoredTestCases", cmd.getOptionValue("ignoredtestcases"));
 
 		if (cmd.hasOption("evosuitetimeout"))
-			ConfigurationProperties.properties.setProperty("evosuitetimeout",
-					cmd.getOptionValue("evosuitetimeout"));
-	
+			ConfigurationProperties.properties.setProperty("evosuitetimeout", cmd.getOptionValue("evosuitetimeout"));
+
 		ConfigurationProperties.properties.setProperty("evoDSE", Boolean.toString(cmd.hasOption("dse")));
-		
-		ConfigurationProperties.properties.setProperty("evoRunOnBuggyClass", Boolean.toString(!(cmd.hasOption("esoverpatched"))));
+
+		ConfigurationProperties.properties.setProperty("evoRunOnBuggyClass",
+				Boolean.toString(!(cmd.hasOption("esoverpatched"))));
 
 		if (cmd.hasOption("ESParameters"))
-			ConfigurationProperties.properties.setProperty("ESParameters",
-					cmd.getOptionValue("ESParameters"));
-		
+			ConfigurationProperties.properties.setProperty("ESParameters", cmd.getOptionValue("ESParameters"));
+
 		if (cmd.hasOption("learningdir"))
-			ConfigurationProperties.properties.setProperty("learningdir",
-					cmd.getOptionValue("learningdir"));
-	
+			ConfigurationProperties.properties.setProperty("learningdir", cmd.getOptionValue("learningdir"));
+
 		if (cmd.hasOption("clonegranularity"))
-			ConfigurationProperties.properties.setProperty("clonegranularity",
-					cmd.getOptionValue("clonegranularity"));
-		
+			ConfigurationProperties.properties.setProperty("clonegranularity", cmd.getOptionValue("clonegranularity"));
+
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();
@@ -520,7 +522,8 @@ public abstract class AbstractMain {
 			faultLocalizationThreshold = 0.5;
 		}
 		if (location != null) {
-			ConfigurationProperties.properties.setProperty("flthreshold", new Double(faultLocalizationThreshold).toString());
+			ConfigurationProperties.properties.setProperty("flthreshold",
+					new Double(faultLocalizationThreshold).toString());
 			this.run(location, folder, dependenciespath, packageToInstrument, faultLocalizationThreshold, failing);
 			return true;
 		}
@@ -550,10 +553,7 @@ public abstract class AbstractMain {
 		String workingDirForSource = ConfigurationProperties.getProperty("workingDirectory") + key + "/src/";
 		String workingDirForBytecode = ConfigurationProperties.getProperty("workingDirectory") + key + "/bin/";
 		String originalProjectRoot = location + File.separator;
-		
-		String libdir = dependencies;
 
-	
 		ProjectConfiguration properties = new ProjectConfiguration();
 		properties.setWorkingDirForSource(workingDirForSource);
 		properties.setWorkingDirForBytecode(workingDirForBytecode);
@@ -564,15 +564,18 @@ public abstract class AbstractMain {
 		properties.setFixid(projectIdentifier);
 
 		properties.setOriginalProjectRootDir(originalProjectRoot);
-		
+
 		List<String> src = determineMavenFolders(srcWithMain, originalProjectRoot);
 		properties.setOriginalDirSrc(src);
 
-		properties.setLibPath(libdir);
+		if (dependencies != null) {
+			properties.setDependencies(dependencies);
+		}
+		
 		properties.setFailingTestCases(failingTestCases);
 
 		properties.setPackageToInstrument(ConfigurationProperties.getProperty("packageToInstrument"));
-		
+
 		properties.setDataFolder(ConfigurationProperties.getProperty("resourcesfolder"));
 
 		ProjectRepairFacade ce = new ProjectRepairFacade(properties);

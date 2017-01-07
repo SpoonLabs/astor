@@ -13,7 +13,6 @@ public enum ProjectPropertiesEnum {
 	originalAppBinDir,
 	originalTestBinDir,
 	dependencies,
-	libPath,
 	originalProjectRootDir,
 	dataFolder ,
 	failingTestCases,
