@@ -2,13 +2,15 @@ package fr.inria.astor.core.stats;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 
 /**
- * 
+ * Stores and manages statistics
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
@@ -20,11 +22,17 @@ public class Stats {
 
 	public int id = 0;
 
+	// Ingredients
+	// Key: id, value: counter
+	public Map<Integer, Integer> temporalIngCounter = new HashedMap();
+	public List<Integer> ingAttemps = new ArrayList<>();
+	//
+	
 	public int numberOfElementsToMutate = 0;
 	public StatCounter<String> sizeSpace = new StatCounter<String>();
 	public List<StatSpaceSize> sizeSpaceOfVariant = new ArrayList<StatSpaceSize>();
 	public StatCounter<Integer> attemptsPerVariant = new StatCounter<Integer>();
-	
+
 	public StatCounter<String> typeOfElementsSelectedForModifying = new StatCounter<String>();
 	public List<StatPatch> genPatches = new ArrayList<StatPatch>();
 
@@ -41,7 +49,7 @@ public class Stats {
 
 	public int numberOfAppliedOp = 0;
 	public int numberOfNotAppliedOp = 0;
-	// this property contains the number of gen that the approach try to mutate
+	// this property contains the number of modification points that the approach try to mutate
 	// but it could. For instance, it takes as same ingredient one element that
 	// gen already containe
 	public int numberOfGenInmutated = 0;
@@ -64,7 +72,7 @@ public class Stats {
 	public void printStats() {
 		log.info(toString());
 	}
-	
+
 	public String toString() {
 		String s = "";
 		s += ("\nspaces navigation: [" + this.sizeSpace.getStructure().size() + "]: " + this.sizeSpace);
@@ -114,22 +122,81 @@ public class Stats {
 		}
 	}
 
-
-	public static Stats getCurrentStats() {
+	public static Stats createStat() {
 
 		if (currentStat == null) {
 			currentStat = new Stats();
 		}
 		return currentStat;
 	}
+	public static Stats getCurrentStats() {
+
+		if (currentStat == null) {
+			return createStat();
+		}
+		return currentStat;
+	}
 
 	public void saveStats() {
-		if(sizeSpaceOfVariant.isEmpty())
+		if (sizeSpaceOfVariant.isEmpty())
 			return;
-		
+
 		for (StatSpaceSize statSpaceSize : sizeSpaceOfVariant) {
 			this.sizeSpace.add(statSpaceSize.toString());
 		}
 		this.attemptsPerVariant.add(sizeSpaceOfVariant.size());
 	}
+	/**
+	 * Increments the counter for variant received as argument.
+	 * Return the counter
+	 * @param idprogvariant
+	 * @return
+	 */
+	public int incrementIngCounter(Integer idprogvariant) {
+		Integer counter = 0;
+		if(!temporalIngCounter.containsKey(idprogvariant))
+			temporalIngCounter.put(idprogvariant, new Integer(0));
+		else{
+			counter = temporalIngCounter.get(idprogvariant);
+		}
+		counter++;
+		temporalIngCounter.put(idprogvariant, counter);
+		return counter;
+	}
+	
+	/**
+	 * Returns the counter for the program variant passed as argument.
+	 * It does not modify the counter.
+	 * @param idprogvariant
+	 * @return
+	 */
+	public int getIngCounter(Integer idprogvariant) {
+	
+		if(!temporalIngCounter.containsKey(idprogvariant))
+			return 0;
+		else{
+			return temporalIngCounter.get(idprogvariant);
+		}
+		
+	}
+	/**
+	 * Save variant counter and
+	 * Reset counter for the id received as argument.
+	 * @param idprogvariant
+	 * @return
+	 */
+	public int saveIngCounter(Integer idprogvariant) {
+		Integer counter = temporalIngCounter.get(idprogvariant);
+		this.ingAttemps.add(counter);
+		temporalIngCounter.put(idprogvariant, 0);
+		return counter;
+	}
+	/**
+	 * Remove all values.
+	 */
+	public void resetIngCounter() {
+		temporalIngCounter.clear();
+		this.ingAttemps.clear();
+	}
+	
 }
