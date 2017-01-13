@@ -12,14 +12,15 @@ import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
+import fr.inria.astor.core.stats.Stats;
 import spoon.reflect.declaration.CtElement;
 
 /**
- * Strategy based on {@link UniformRandomIngredientSearch}, which stores the ingredient already used by the algorithm.
+ * Strategy based on {@link UniformRandomIngredientSearch}, which stores the
+ * ingredient already used by the algorithm.
  * 
  * @author Matias Martinez
  *
@@ -37,8 +38,6 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 	 */
 	protected Map<String, List<String>> appliedCache = new HashMap<String, List<String>>();
 
-
-
 	/**
 	 * Return an ingredient. As it has a cache, it never returns twice the same
 	 * ingredient.
@@ -52,12 +51,16 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 	@Override
 	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
 
+		int variant_id = modificationPoint.getProgramVariant().getId();
+		
 		int attempts = 0;
 
 		boolean continueSearching = true;
 
 		int elementsFromFixSpace = getSpaceSize(modificationPoint, operationType);
-
+		
+		Stats.currentStat.initializeIngCounter(variant_id);
+		
 		while (continueSearching && attempts < elementsFromFixSpace) {
 			Ingredient randomIngredient = super.getFixIngredient(modificationPoint, operationType);
 
@@ -67,27 +70,34 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 			CtElement elementFromIngredient = randomIngredient.getCode();
 
 			attempts++;
-
+			
+			
 			boolean alreadyApplied = alreadySelected(modificationPoint, elementFromIngredient, operationType);
 
 			if (!alreadyApplied && !elementFromIngredient.getSignature()
 					.equals(modificationPoint.getCodeElement().getSignature())) {
 
+				Stats.currentStat.incrementIngCounter(variant_id);
+				
 				continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
 						elementFromIngredient);
 
-			}
+				if (!continueSearching) {
+					IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(),
+							elementFromIngredient);
+					
+					int ingCounter = Stats.currentStat.saveIngCounter(variant_id);
+					log.debug("---attempts on ingredient space: " + ingCounter );
+					
+					return new Ingredient(elementFromIngredient, scope);
+				}
 
-			if (!continueSearching) {
-				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(),
-						elementFromIngredient);
-
-				return new Ingredient(elementFromIngredient, scope);
-			}
+			}else{log.debug("Already applied");}
 
 		}
-
-		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement().getSignature());
+		Stats.currentStat.saveIngCounter(variant_id);
+		
+		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement().getSignature()+ ", search space size: "+elementsFromFixSpace);
 		return null;
 
 	}
@@ -181,7 +191,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 	 */
 	protected boolean alreadySelected(ModificationPoint gen, CtElement fixElement, AstorOperator operator) {
 		// we add the instance identifier to the patch.
-		String lockey = gen.getCodeElement() + "-" + operator.toString();
+		String lockey = gen.getCodeElement().getPosition().toString()+ "-"+gen.getCodeElement() + "-" + operator.toString();
 		String fix = "";
 		try {
 			fix = fixElement.toString();
@@ -205,7 +215,5 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 			}
 		}
 	}
-
-
 
 }
