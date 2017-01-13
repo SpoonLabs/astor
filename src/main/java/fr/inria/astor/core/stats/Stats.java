@@ -164,6 +164,10 @@ public class Stats {
 		return counter;
 	}
 	
+	public void initializeIngCounter(Integer idprogvariant) {
+		temporalIngCounter.put(idprogvariant, new Integer(0));
+	}
+	
 	/**
 	 * Returns the counter for the program variant passed as argument.
 	 * It does not modify the counter.
