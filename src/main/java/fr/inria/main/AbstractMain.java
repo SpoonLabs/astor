@@ -188,6 +188,8 @@ public abstract class AbstractMain {
 		options.addOption("learningdir", true, "Learning Dir");
 
 		options.addOption("clonegranularity", true, "Clone granularity");
+		
+		options.addOption("cloneclass", true, "Clone class");
 
 	}
 
@@ -460,6 +462,10 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("clonegranularity"))
 			ConfigurationProperties.properties.setProperty("clonegranularity", cmd.getOptionValue("clonegranularity"));
 
+		if (cmd.hasOption("cloneclass"))
+			ConfigurationProperties.properties.setProperty("cloneclass", cmd.getOptionValue("cloneclass"));
+
+		
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();
