@@ -21,6 +21,7 @@ import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.WeightCtElement;
 import fr.inria.astor.core.faultlocalization.IFaultLocalization;
+import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
@@ -53,7 +54,7 @@ public abstract class AstorCoreEngine {
 	/**
 	 * Statistic
 	 */
-	protected Stats currentStat = new Stats();
+	protected Stats currentStat = null;
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 
@@ -87,6 +88,9 @@ public abstract class AstorCoreEngine {
 
 	protected int generationsExecuted = 0;
 
+	protected SolutionVariantSortCriterion patchSortCriterion = null;
+	
+
 	/**
 	 * 
 	 * @param mutatorExecutor
@@ -95,6 +99,8 @@ public abstract class AstorCoreEngine {
 	public AstorCoreEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		this.mutatorSupporter = mutatorExecutor;
 		this.projectFacade = projFacade;
+		
+		this.currentStat = Stats.getCurrentStats();
 	}
 
 	public void startEvolution() throws Exception {
@@ -128,6 +134,22 @@ public abstract class AstorCoreEngine {
 		log.info("Time Repair Loop (s): " + (endT - startT) / 1000d);
 		currentStat.timeIteraction = ((endT - startT));
 
+	}
+
+	public void atEnd(){
+		
+		this.sortPatches();
+		this.showResults();
+	};
+	
+	/**
+	 * Sorts patches 
+	 */
+	public void sortPatches() {
+		if (!getSolutions().isEmpty() && this.getPatchSortCriterion() != null) {
+			this.solutions = this.getPatchSortCriterion().priorize(getSolutions());
+			
+		}
 	}
 
 	public void showResults() {
@@ -403,7 +425,7 @@ public abstract class AstorCoreEngine {
 				return true;
 			}
 		} else {
-			//log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "+ compilation.getErrorList());
+			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "+ compilation.getErrorList());
 			currentStat.numberOfFailingCompilation++;
 			currentStat.setNotCompiles(programVariant.getId());
 			programVariant.setFitness(this.populationControler.getMaxFitnessValue());
@@ -560,7 +582,7 @@ public abstract class AstorCoreEngine {
 			updateVariantGenList(variant, generation);
 		}
 		log.debug("\n--Summary Creation: for variant " + variant + " gen mutated: " + genMutated + " , gen not mut: "
-				+ notmut + ", gen not applied  " + notapplied + "\n ");
+				+ notmut + ", gen not applied  " + notapplied );
 
 		currentStat.saveStats();
 
@@ -849,13 +871,6 @@ public abstract class AstorCoreEngine {
 		this.programValidator.setStats(currentStat);
 	}
 
-	public Stats getCurrentStat() {
-		return currentStat;
-	}
-
-	public void setCurrentStat(Stats currentStat) {
-		this.currentStat = currentStat;
-	}
 
 	public String getSolutionData(List<ProgramVariant> variants, int generation) {
 		String line = "";
@@ -886,6 +901,7 @@ public abstract class AstorCoreEngine {
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
 					line += "\nfixed statement= ";
 					if (genOperationInstance.getModified() != null)
+						//if fix content is the same that original buggy content, we do not write the patch, remaining empty the property fixed statement  
 						if(genOperationInstance.getModified().toString() != genOperationInstance.getOriginal().toString() )
 							line += genOperationInstance.getModified().toString();
 					else {
@@ -928,4 +944,11 @@ public abstract class AstorCoreEngine {
 		this.operatorSpace = operatorSpace;
 	}
 
+	public SolutionVariantSortCriterion getPatchSortCriterion() {
+		return patchSortCriterion;
+	}
+
+	public void setPatchSortCriterion(SolutionVariantSortCriterion patchSortCriterion) {
+		this.patchSortCriterion = patchSortCriterion;
+	}
 }

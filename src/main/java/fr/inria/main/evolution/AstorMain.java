@@ -391,12 +391,13 @@ public class AstorMain extends AbstractMain {
 
 		astorCore.startEvolution();
 
-		astorCore.showResults();
+		astorCore.atEnd();
 
 		long endT = System.currentTimeMillis();
 		log.info("Time Total(s): " + (endT - startT) / 1000d);
 	}
 
+	
 	/**
 	 * @param args
 	 * @throws Exception
