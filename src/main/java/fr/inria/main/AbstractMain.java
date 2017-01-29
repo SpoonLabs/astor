@@ -13,6 +13,7 @@ import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.loop.AstorCoreEngine;
+import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
@@ -190,6 +191,9 @@ public abstract class AbstractMain {
 		options.addOption("clonegranularity", true, "Clone granularity");
 		
 		options.addOption("cloneclass", true, "Clone class");
+		
+		options.addOption("patchprioritization", true, "(Optional) Indicates the class name of the class that orders patches. It must extend from "
+				+ SolutionVariantSortCriterion.class.getName());
 
 	}
 
@@ -464,6 +468,10 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("cloneclass"))
 			ConfigurationProperties.properties.setProperty("cloneclass", cmd.getOptionValue("cloneclass"));
+
+		if (cmd.hasOption("patchprioritization"))
+			ConfigurationProperties.properties.setProperty("patchprioritization",
+					cmd.getOptionValue("patchprioritization"));
 
 		
 		// CLG believes, but is not totally confident in her belief, that this

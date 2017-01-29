@@ -16,6 +16,7 @@ import fr.inria.astor.approaches.mutRepair.MutRepairSpace;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
+import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
@@ -84,33 +85,32 @@ public class AstorMain extends AbstractMain {
 		// Fix Space
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 
-		// We check if the user defines the operators to include in the operator space
+		// We check if the user defines the operators to include in the operator
+		// space
 		OperatorSpace operatorSpace = null;
 		String customOp = ConfigurationProperties.getProperty("customop");
 		if (customOp != null && !customOp.isEmpty()) {
-			 operatorSpace = createCustomOperatorSpace(customOp);
+			operatorSpace = createCustomOperatorSpace(customOp);
 		}
-		
-		
-		
+
 		if (ExecutionMode.jKali.equals(mode)) {
 			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
-			if(operatorSpace == null)
-				operatorSpace =  new JKaliSpace();
+			if (operatorSpace == null)
+				operatorSpace = new JKaliSpace();
 			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 			ConfigurationProperties.properties.setProperty("population", "1");
 
 		} else if (ExecutionMode.jGenProg.equals(mode)) {
 			astorCore = new JGenProg(mutSupporter, projectFacade);
-			if(operatorSpace == null)
+			if (operatorSpace == null)
 				operatorSpace = new jGenProgSpace();
-			//We retrieve strategy for navigating operator space
-			String opStrategyClassName = 	ConfigurationProperties.properties.getProperty("opselectionstrategy");
-			if(opStrategyClassName != null){
-				OperatorSelectionStrategy strategy =  createOperationSelectionStrategy(opStrategyClassName,operatorSpace);
+			// We retrieve strategy for navigating operator space
+			String opStrategyClassName = ConfigurationProperties.properties.getProperty("opselectionstrategy");
+			if (opStrategyClassName != null) {
+				OperatorSelectionStrategy strategy = createOperationSelectionStrategy(opStrategyClassName,
+						operatorSpace);
 				astorCore.setOperatorSelectionStrategy(strategy);
-			}
-			else{//By default, uniform strategy
+			} else {// By default, uniform strategy
 				astorCore.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(operatorSpace));
 			}
 			// The ingredients for build the patches
@@ -122,17 +122,17 @@ public class AstorMain extends AbstractMain {
 				ingredientspace = (new PackageBasicFixSpace(ingredientProcessors));
 			} else if ("local".equals(scope)) {
 				ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
-			}else{
+			} else {
 				ingredientspace = loadSpace(scope, ingredientProcessors);
 			}
-			
+
 			IngredientSearchStrategy ingStrategy = retrieveIngredientStrategy(ingredientspace);
 
 			((JGenProg) astorCore).setIngredientStrategy(ingStrategy);
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
 			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
-			if(operatorSpace == null)
+			if (operatorSpace == null)
 				operatorSpace = new MutRepairSpace();
 			// ConfigurationProperties.properties.setProperty("stopfirst",
 			// "false");
@@ -140,49 +140,46 @@ public class AstorMain extends AbstractMain {
 			ConfigurationProperties.properties.setProperty("population", "1");
 			ingredientProcessors.clear();
 			ingredientProcessors.add(new IFConditionFixSpaceProcessor());
-		}  
-		 else if (ExecutionMode.EXASTOR.equals(mode)) {
-				astorCore = new ExhaustiveAstorEngine(mutSupporter, projectFacade);
-				if(operatorSpace == null)
-					operatorSpace = new jGenProgSpace();
-				
-				// The ingredients for build the patches
-				String scope = ConfigurationProperties.properties.getProperty("scope");
-				IngredientSpace ingredientspace = null;
-				if ("global".equals(scope)) {
-					ingredientspace = (new GlobalBasicIngredientSpace(ingredientProcessors));
-				} else if ("package".equals(scope)) {
-					ingredientspace = (new PackageBasicFixSpace(ingredientProcessors));
-				} else if ("local".equals(scope)) {
-					ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
-				}else{
-					ingredientspace = loadSpace(scope, ingredientProcessors);
-				}
-				
-				//TODO: put in a strategy
-				IngredientSearchStrategy ingStrategy = null;//retrieveIngredientStrategy(ingredientspace);
+		} else if (ExecutionMode.EXASTOR.equals(mode)) {
+			astorCore = new ExhaustiveAstorEngine(mutSupporter, projectFacade);
+			if (operatorSpace == null)
+				operatorSpace = new jGenProgSpace();
 
-				((ExhaustiveAstorEngine) astorCore).setIngredientSpace(ingredientspace);
-
+			// The ingredients for build the patches
+			String scope = ConfigurationProperties.properties.getProperty("scope");
+			IngredientSpace ingredientspace = null;
+			if ("global".equals(scope)) {
+				ingredientspace = (new GlobalBasicIngredientSpace(ingredientProcessors));
+			} else if ("package".equals(scope)) {
+				ingredientspace = (new PackageBasicFixSpace(ingredientProcessors));
+			} else if ("local".equals(scope)) {
+				ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
+			} else {
+				ingredientspace = loadSpace(scope, ingredientProcessors);
 			}
-		else {
+
+			// TODO: put in a strategy
+			IngredientSearchStrategy ingStrategy = null;// retrieveIngredientStrategy(ingredientspace);
+
+			((ExhaustiveAstorEngine) astorCore).setIngredientSpace(ingredientspace);
+
+		} else {
 			// If the execution mode is any of the predefined, Astor
 			// interpretates as
 			// a custom engine, where the value corresponds to the class name of
 			// the engine class
 			String customengine = ConfigurationProperties.getProperty("customengine");
 			astorCore = createEngineFromArgument(customengine, mutSupporter, projectFacade);
-				
+
 		}
 
 		// Now we define the commons properties
-		
-		if(operatorSpace != null){
+
+		if (operatorSpace != null) {
 			astorCore.setOperatorSpace(operatorSpace);
-		}else{
+		} else {
 			throw new Exception("The operator Space cannot be null");
 		}
-			
 
 		// Pop controller
 		astorCore.setPopulationControler(new FitnessPopulationController());
@@ -262,11 +259,11 @@ public class AstorMain extends AbstractMain {
 	private IngredientSearchStrategy retrieveIngredientStrategy(IngredientSpace ingredientspace) throws Exception {
 		String strategy = ConfigurationProperties.properties.getProperty("ingredientstrategy");
 		IngredientSearchStrategy st = null;
-		if (strategy == null || strategy.trim().isEmpty()){
-			//AstorCtIngredientSpace ctIngredientSpace = (AstorCtIngredientSpace) ingredientspace;
+		if (strategy == null || strategy.trim().isEmpty()) {
+			// AstorCtIngredientSpace ctIngredientSpace =
+			// (AstorCtIngredientSpace) ingredientspace;
 			st = new EfficientIngredientStrategy(ingredientspace);
-		}
-		else{
+		} else {
 			st = loadCustomIngredientStrategy(strategy, ingredientspace);
 		}
 		return st;
@@ -286,9 +283,10 @@ public class AstorMain extends AbstractMain {
 		}
 		return customSpace;
 	}
-	
-	private OperatorSelectionStrategy createOperationSelectionStrategy(String opSelectionStrategyClassName, OperatorSpace space) throws Exception{
-			Object object = null;
+
+	private OperatorSelectionStrategy createOperationSelectionStrategy(String opSelectionStrategyClassName,
+			OperatorSpace space) throws Exception {
+		Object object = null;
 		try {
 			Class classDefinition = Class.forName(opSelectionStrategyClassName);
 			object = classDefinition.getConstructor(OperatorSpace.class).newInstance(space);
@@ -300,7 +298,7 @@ public class AstorMain extends AbstractMain {
 			return (OperatorSelectionStrategy) object;
 		else
 			throw new Exception("The strategy " + opSelectionStrategyClassName + " does not extend from "
-					+  OperatorSelectionStrategy.class.getName());
+					+ OperatorSelectionStrategy.class.getName());
 	}
 
 	AstorOperator createOperator(String className) {
@@ -340,17 +338,32 @@ public class AstorMain extends AbstractMain {
 			return (IngredientSearchStrategy) object;
 		else
 			throw new Exception("The strategy " + customStrategyclassName + " does not extend from "
-					+  IngredientSearchStrategy.class.getName());
+					+ IngredientSearchStrategy.class.getName());
 
 	}
-	
+
+	private SolutionVariantSortCriterion loadPatchPrioritization(String classname) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(classname);
+			object = classDefinition.newInstance();
+		} catch (Exception e) {
+			log.error("Loading strategy " + classname + " --" + e);
+			throw new Exception("Loading strategy: " + e);
+		}
+		if (object instanceof SolutionVariantSortCriterion)
+			return (SolutionVariantSortCriterion) object;
+		else
+			throw new Exception("The strategy " + classname + " does not extend from "
+					+ SolutionVariantSortCriterion.class.getName());
+	}
+
 	private IngredientSpace loadSpace(String customSpaceclassName,
 			List<AbstractFixSpaceProcessor<?>> ingredientProcessors) throws Exception {
 		Object object = null;
 		try {
 			Class classDefinition = Class.forName(customSpaceclassName);
-			object = classDefinition.getConstructor(List.class).
-					newInstance(ingredientProcessors);
+			object = classDefinition.getConstructor(List.class).newInstance(ingredientProcessors);
 		} catch (Exception e) {
 			log.error("Loading strategy " + customSpaceclassName + " --" + e);
 			throw new Exception("Loading strategy: " + e);
@@ -358,8 +371,8 @@ public class AstorMain extends AbstractMain {
 		if (object instanceof IngredientSpace)
 			return (IngredientSpace) object;
 		else
-			throw new Exception("The strategy " +customSpaceclassName+ " does not extend from "
-					+  IngredientSpace.class.getName());
+			throw new Exception("The strategy " + customSpaceclassName + " does not extend from "
+					+ IngredientSpace.class.getName());
 
 	}
 
@@ -387,6 +400,9 @@ public class AstorMain extends AbstractMain {
 					+ "', know modes are: jgenprog, jkali, jmutrepair or custom.");
 			return;
 		}
+
+		loadCommonExtensionPoints(astorCore);
+
 		ConfigurationProperties.print();
 
 		astorCore.startEvolution();
@@ -397,7 +413,27 @@ public class AstorMain extends AbstractMain {
 		log.info("Time Total(s): " + (endT - startT) / 1000d);
 	}
 
-	
+	/**
+	 * Load extensions point that are used for all approaches.
+	 * For the moment it loads only the "patch priorization point""
+	 * @throws Exception 
+	 */
+	private boolean loadCommonExtensionPoints(AstorCoreEngine astorCore)  {
+
+		String patchpriority = ConfigurationProperties.getProperty("patchprioritization");
+		if (patchpriority != null && !patchpriority.trim().isEmpty()) {
+			SolutionVariantSortCriterion priorizStrategy = null;
+			try {
+				priorizStrategy = loadPatchPrioritization(patchpriority);
+				astorCore.setPatchSortCriterion(priorizStrategy);
+				return true;
+			} catch (Exception e) {
+				log.error(e);
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * @param args
 	 * @throws Exception
