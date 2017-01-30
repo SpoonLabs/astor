@@ -190,8 +190,6 @@ public abstract class AbstractMain {
 
 		options.addOption("clonegranularity", true, "Clone granularity");
 		
-		options.addOption("cloneclass", true, "Clone class");
-		
 		options.addOption("patchprioritization", true, "(Optional) Indicates the class name of the class that orders patches. It must extend from "
 				+ SolutionVariantSortCriterion.class.getName());
 
@@ -465,9 +463,6 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("clonegranularity"))
 			ConfigurationProperties.properties.setProperty("clonegranularity", cmd.getOptionValue("clonegranularity"));
-
-		if (cmd.hasOption("cloneclass"))
-			ConfigurationProperties.properties.setProperty("cloneclass", cmd.getOptionValue("cloneclass"));
 
 		if (cmd.hasOption("patchprioritization"))
 			ConfigurationProperties.properties.setProperty("patchprioritization",
