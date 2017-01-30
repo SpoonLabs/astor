@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.martiansoftware.jsap.JSAPException;
+
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
@@ -31,10 +33,13 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientProcessor;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 
@@ -62,7 +67,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 	
 	@SuppressWarnings("unchecked")
 	private void setfilter() throws ClassNotFoundException {
-		cls = (Class<T>) Class.forName(ConfigurationProperties.properties.getProperty("cloneclass"));
+		cls = (Class<T>) Class.forName(ConfigurationProperties.properties.getProperty("clonegranularity"));
 		if (cls.equals(CtType.class) || cls.equals(CtExecutable.class)) {
 			filter = new TypeFilter<T>(cls) {
 				@Override
@@ -124,7 +129,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		
 		if (suspicious == null) {
 			// TODO Count number of times modification point does not map to "top level" T.
-			log.info("Modification point does not map to \"top level\" " + ConfigurationProperties.properties.getProperty("cloneclass") + ": " + mp);
+			log.info("Modification point does not map to \"top level\" " + ConfigurationProperties.properties.getProperty("clonegranularity") + ": " + mp);
 			return super.getFixIngredient(mp, op); // Use EfficientIngredientStrategy for this modification instance.
 		}
 		
@@ -188,15 +193,20 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		// Use ingredient space to get locations.
 		List<CtElement> locations = getIngredientSpace().getLocations();
 		log.debug("Number of locations: " + locations.size());
-		
+
 		// Use locations to get T elements.
+		TypeFilter<T> tf = new TypeFilter<>(cls);
 		Map<String, T> elements = locations.stream()
-				.flatMap(l -> l.getElements(filter).stream())
+				//.flatMap(l -> l.getElements(filter).stream())
+				.flatMap(l -> l.getElements(tf).stream())
 				.collect(Collectors.toMap(e -> getkey((T) e), e -> e));
 		log.debug("Number of \"top level\" elements: " + elements.size());
-		
+		//log.debug("top level elements "+elements);
 		Set<String> orphans = new HashSet<>(elements.keySet());
 		orphans.removeAll(key2row.keySet());
+		
+		
+	//	log.debug("keysToRow ("+key2row.keySet().size()+") "+key2row.keySet());
 		if (!orphans.isEmpty()) {
 			log.error("Number of \"top level\" elements that do not have a src2txt key: " + orphans.size());
 			log.error(orphans.stream().collect(Collectors.joining(",")));
@@ -238,7 +248,6 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		element2simlist.put(element, simlist);
 	}
 	
-	// TODO Use a Spoon processor to collect the statements.
 	public Queue<CtCodeElement> getfixspace(ModificationPoint mp, AstorOperator op, T suspicious) {		
 		List<CtStatement> statements = null; // Statements (i.e., ingredients) extracted from elements.
 		String type = mp.getCodeElement().getClass().getSimpleName(); // The modification point's type in case we selected the ReplaceOp.
@@ -246,21 +255,15 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		
 		// Get the list of elements sorted by similarity.
 		List<T> simlist = element2simlist.get(suspicious);
+		log.debug("For "+suspicious.getSimpleName() + " simlist: "+simlist.size());
 		for (T element : simlist) {
-			if (element instanceof CtType) {
-				// Astor uses block reification.
-				List<CtBlock<?>> blocks = element.getElements(new TypeFilter<CtBlock<?>>(CtBlock.class));
-				if (blocks == null)
-					continue;
-				statements = blocks.stream().flatMap(b -> b.getStatements().stream()).collect(Collectors.toList());
-			}
-			
-			if (element instanceof CtExecutable) {
-				// If the element doesn't have a body then it won't have ingredients so skip it.
-				if (((CtExecutable<?>) element).getBody() == null)
-					continue;
-				statements = ((CtExecutable<?>) element).getBody().getStatements();
-			}
+				try {
+					IngredientProcessor<?,CtStatement> ipro = new IngredientProcessor<>(new SingleStatementFixSpaceProcessor());
+					statements = ipro.createFixSpace(element);
+					log.debug(element.getSimpleName()+" from simlist, statements: ("+statements.size()+")");
+				} catch (JSAPException e) {
+					log.error(e);
+				}
 			
 			// If the element has a body but it doesn't have ingredients then skip it.
 			if (statements == null)
@@ -297,7 +300,9 @@ enum Input {
 	
 	Input(String extension) {
 		learningdir = ConfigurationProperties.properties.getProperty("learningdir");
-		granularity = ConfigurationProperties.properties.getProperty("clonegranularity");
+		String tempCloneGranularity = ConfigurationProperties.properties.getProperty("clonegranularity");
+		//We pass from a class name to a granularity identifier: 
+		granularity = tempCloneGranularity.split("\\.Ct")[1] + "s";
 		this.extension = extension;
 	}
 	
