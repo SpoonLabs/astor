@@ -250,7 +250,43 @@ public class VariableResolver {
 		return true;
 
 	}
-
+	/**
+	 * 
+	 */
+	public static List<CtElement> transformIngredient(List<CtVariable> varContext,
+			CtElement ingredientCtElement, boolean matchName){
+		//see al not in context
+		//choose one var, see if exist one var in context
+		//TODO
+		List<CtVariableAccess> variablesOutOfScope = retriveVariablesOutOfContext(varContext, ingredientCtElement);
+		
+		
+		//: finds all variables *out of scope* from 'Ing'.
+		//2: for each var  'wout' from  *out of scope* do
+		//2.a: finds line 'Lwo' corresponding to 'out' var in clustering.csv to retrieve the cluster of 'wout'
+		//2.b: for each word 'wcluster' from 'Lwo' // as they sorted by embedding distance, it iterates from left to right
+		//2.b.1: Search if there is one variable 'wcontext' with name 'wcluster' in  scope.// here, we invoke to the VariableResolver.
+		//2.b.2: Check compatibility of types from 'wcontext' and 'wout' vars
+		//2.b.2.1: if they are compatibles replace 'wout'' by 'wcontent' on 'Ing'; break loop (2.b).
+		//2.b.2.2: else (vars not compatibles) continue loop.
+		
+		return null;
+	}
+	/**
+	 * Retrieves the variables out of scope from the element given a context.
+	 */
+	public static List<CtVariableAccess> retriveVariablesOutOfContext(List<CtVariable> varContext, CtElement ingredientCtElement) {
+		List<CtVariableAccess> variablesOutOfScope =  new ArrayList<>();
+				
+		List<CtVariableAccess> allVariables = collectVariableAccess(ingredientCtElement);
+		for (CtVariableAccess variableAccessFromElement : allVariables) {
+			if(!fitInPlace(varContext, variableAccessFromElement)){
+				variablesOutOfScope.add(variableAccessFromElement);
+			}
+		} 
+		return variablesOutOfScope;
+	}
+	
 	public static List<CtVariableAccess> collectStaticVariableAccess(CtElement rootElement,
 			List<CtVariableAccess> varAccessCollected) {
 		List<CtVariableAccess> statics = new ArrayList<>();
