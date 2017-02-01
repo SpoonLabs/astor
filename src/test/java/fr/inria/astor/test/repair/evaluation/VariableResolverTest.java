@@ -451,12 +451,50 @@ public class VariableResolverTest {
 			
 			assertNotNull(variablesOutOfScope118);
 
-			log.debug("Out scope l118: "+variablesOutOfScope118);
-			assertEquals(2,variablesOutOfScope118.size());
-			assertEquals("pivotRow", variablesOutOfScope118.get(0).getVariable().getSimpleName());
-			assertEquals("pivotCol", variablesOutOfScope118.get(1).getVariable().getSimpleName());
-		
 		
 			
 		}
+	
+	@Test
+	public void testVarsOutOfScope2() throws Exception{
+		
+		AstorMain main1 = new AstorMain();
+		ClassLoader classLoader = getClass().getClassLoader();
+		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+
+		Class typeCloneGranularityClass = CtType.class;
+
+		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(dep, out, learningDir, typeCloneGranularityClass);
+
+		log.debug(Arrays.toString(args));
+
+		main1.execute(args);
+		JGenProg engine = (JGenProg) main1.getEngine();
+
+		ProgramVariant pv = engine.getVariants().get(0);
+		CtElement c1 = pv.getModificationPoints().get(0).getCodeElement();
+		CtElement c3 = pv.getModificationPoints().get(2).getCodeElement();
+		
+		CtElement ingredientCtElement = pv.getModificationPoints().get(7).getCodeElement();
+		
+		List<CtVariable> varContextC1 = VariableResolver.searchVariablesInScope(c1);
+		//   clearResult();
+		List<CtVariable> varContextC3 = VariableResolver.searchVariablesInScope(c3);//
+		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContextC1, ingredientCtElement);
+		assertNotNull(variablesOutOfScope);
+		assertEquals(1,variablesOutOfScope.size());
+		log.debug("Out scope: "+variablesOutOfScope);
+		assertEquals("fmin", variablesOutOfScope.get(0).getVariable().getSimpleName());
+		 // return (a + b) * .5;
+		CtElement otherClassElementC8 = pv.getModificationPoints().get(8).getCodeElement();
+		
+		Map<CtVariableAccess, List<CtVariable>> mapsVariablesOutC1 =  VariableResolver.transformIngredient(varContextC1, otherClassElementC8);
+		
+		log.debug("vars -->"+ mapsVariablesOutC1);
+		log.debug("Second mapping: ");
+		Map<CtVariableAccess, List<CtVariable>> mapsVariablesOutC2 =  VariableResolver.transformIngredient(varContextC3, otherClassElementC8);
+		System.out.println("vars -->"+ mapsVariablesOutC2+ "\n"+ varContextC3);
+		
+	}
+	
 }
