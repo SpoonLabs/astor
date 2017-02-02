@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -38,7 +37,6 @@ import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -302,7 +300,7 @@ enum Input {
 		learningdir = ConfigurationProperties.properties.getProperty("learningdir");
 		String tempCloneGranularity = ConfigurationProperties.properties.getProperty("clonegranularity");
 		//We pass from a class name to a granularity identifier: 
-		granularity = tempCloneGranularity.split("\\.Ct")[1] + "s";
+		granularity = tempCloneGranularity.split("\\.Ct")[1].toLowerCase() + "s";
 		this.extension = extension;
 	}
 	
