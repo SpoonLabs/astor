@@ -121,21 +121,21 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 	public Ingredient getFixIngredient(ModificationPoint mp, AstorOperator op) {
 		// TODO Move to constructor when Spoon model building happens before ingredient strategy is initialized.
 		if (key2element.isEmpty())
-			key2element = queryelements().orElseThrow(RuntimeException::new); // Or use EfficientIngredientStrategy.
+			key2element = queryelements().orElseThrow(RuntimeException::new);
 		
 		T suspicious = mp.getCodeElement().getParent(filter);
 		
 		if (suspicious == null) {
 			// TODO Count number of times modification point does not map to "top level" T.
 			log.info("Modification point does not map to \"top level\" " + ConfigurationProperties.properties.getProperty("clonegranularity") + ": " + mp);
-			return super.getFixIngredient(mp, op); // Use EfficientIngredientStrategy for this modification instance.
+			return null;
 		}
 		
 		String key = getkey(suspicious);
 		
 		if (!key2element.containsKey(key)) {
 			log.error("Suspicious element is not in scope: " + key);
-			throw new RuntimeException(); //return super.getFixIngredient(mp, op);
+			throw new RuntimeException();
 		}
 		
 		// element2simlist is a cache of element-specific similarity lists.
@@ -145,7 +145,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		Queue<CtCodeElement> fixspace = getfixspace(mp, op, suspicious);
 		log.debug("Fix space is empty? " + fixspace.isEmpty());
 		if (fixspace.isEmpty())
-			return super.getFixIngredient(mp, op);
+			return null;
 		
 		boolean continueSearching = true;
 		CtElement ingredient;
@@ -154,11 +154,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		while (continueSearching) {
 			ingredient = getingredient(fixspace);
 			
-			if (ingredient == null) {
-				// TODO Count number of times similarity heuristic is exhausted.
-				log.info("Exhausted similarity heuristic.");
-				break; // Use EfficientIngredientStrategy.
-			}
+			if (ingredient == null)
+				break;
 			
 			alreadyApplied = alreadySelected(mp, ingredient, op);
 			
@@ -171,7 +168,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			}
 		}
 		
-		return super.getFixIngredient(mp, op);
+		return null;
 	}
 	
 	private String getkey(T element) {
@@ -222,7 +219,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		// The distance matrix should be square (for now).
 		if (key2row.size() != values.length) {
 			log.error(String.format("Distance vector on line %d has wrong dimension.", row+1)); // row is 0-indexed so we add 1.
-			throw new RuntimeException(); // Or use EfficientIngredientStrategy.
+			throw new RuntimeException();
 		}
 		
 		List<Distance> distances = new ArrayList<>();
