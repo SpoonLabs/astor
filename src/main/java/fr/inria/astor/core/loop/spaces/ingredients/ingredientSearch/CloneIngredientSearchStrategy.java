@@ -40,6 +40,7 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.stats.Stats;
 
 /**
  * A strategy to pick an ingredient from the fix space using code fragments' similarities.
@@ -121,21 +122,21 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 	public Ingredient getFixIngredient(ModificationPoint mp, AstorOperator op) {
 		// TODO Move to constructor when Spoon model building happens before ingredient strategy is initialized.
 		if (key2element.isEmpty())
-			key2element = queryelements().orElseThrow(RuntimeException::new); // Or use EfficientIngredientStrategy.
+			key2element = queryelements().orElseThrow(RuntimeException::new);
 		
 		T suspicious = mp.getCodeElement().getParent(filter);
 		
 		if (suspicious == null) {
 			// TODO Count number of times modification point does not map to "top level" T.
 			log.info("Modification point does not map to \"top level\" " + ConfigurationProperties.properties.getProperty("clonegranularity") + ": " + mp);
-			return super.getFixIngredient(mp, op); // Use EfficientIngredientStrategy for this modification instance.
+			return null;
 		}
 		
 		String key = getkey(suspicious);
 		
 		if (!key2element.containsKey(key)) {
 			log.error("Suspicious element is not in scope: " + key);
-			throw new RuntimeException(); //return super.getFixIngredient(mp, op);
+			throw new RuntimeException();
 		}
 		
 		// element2simlist is a cache of element-specific similarity lists.
@@ -143,35 +144,41 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			computesimlist(suspicious);
 		
 		Queue<CtCodeElement> fixspace = getfixspace(mp, op, suspicious);
-		log.debug("Fix space is empty? " + fixspace.isEmpty());
+		log.debug("Fix space is empty? " + fixspace.isEmpty() + ", search space size: " + fixspace.size());
 		if (fixspace.isEmpty())
-			return super.getFixIngredient(mp, op);
+			return null;
 		
 		boolean continueSearching = true;
 		CtElement ingredient;
 		boolean alreadyApplied;
+
+		int variant_id = mp.getProgramVariant().getId();
+		Stats.currentStat.initializeIngCounter(variant_id);
 		
 		while (continueSearching) {
 			ingredient = getingredient(fixspace);
 			
-			if (ingredient == null) {
-				// TODO Count number of times similarity heuristic is exhausted.
-				log.info("Exhausted similarity heuristic.");
-				break; // Use EfficientIngredientStrategy.
-			}
+			if (ingredient == null)
+				break;
 			
 			alreadyApplied = alreadySelected(mp, ingredient, op);
 			
-			if (!alreadyApplied && !ingredient.equals(mp.getCodeElement()))
+			if (!alreadyApplied && !ingredient.equals(mp.getCodeElement())) {
+				Stats.currentStat.incrementIngCounter(variant_id);
 				continueSearching = !VariableResolver.fitInPlace(mp.getContextOfModificationPoint(), ingredient);
-			
+			}
+
 			if (!continueSearching) {
 				IngredientSpaceScope scope = determineIngredientScope(mp.getCodeElement(), ingredient);
+				int ingCounter = Stats.currentStat.saveIngCounter(variant_id);
+				log.debug("---attempts on ingredient space: " + ingCounter);
 				return new Ingredient(ingredient, scope);
 			}
 		}
+		Stats.currentStat.saveIngCounter(variant_id);
 		
-		return super.getFixIngredient(mp, op);
+		log.debug("--- no mutation left to apply in element " + mp.getCodeElement());
+		return null;
 	}
 	
 	private String getkey(T element) {
@@ -222,7 +229,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		// The distance matrix should be square (for now).
 		if (key2row.size() != values.length) {
 			log.error(String.format("Distance vector on line %d has wrong dimension.", row+1)); // row is 0-indexed so we add 1.
-			throw new RuntimeException(); // Or use EfficientIngredientStrategy.
+			throw new RuntimeException();
 		}
 		
 		List<Distance> distances = new ArrayList<>();
