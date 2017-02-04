@@ -40,6 +40,7 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.stats.Stats;
 
 /**
  * A strategy to pick an ingredient from the fix space using code fragments' similarities.
@@ -143,13 +144,16 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			computesimlist(suspicious);
 		
 		Queue<CtCodeElement> fixspace = getfixspace(mp, op, suspicious);
-		log.debug("Fix space is empty? " + fixspace.isEmpty());
+		log.debug("Fix space is empty? " + fixspace.isEmpty() + ", search space size: " + fixspace.size());
 		if (fixspace.isEmpty())
 			return null;
 		
 		boolean continueSearching = true;
 		CtElement ingredient;
 		boolean alreadyApplied;
+
+		int variant_id = mp.getProgramVariant().getId();
+		Stats.currentStat.initializeIngCounter(variant_id);
 		
 		while (continueSearching) {
 			ingredient = getingredient(fixspace);
@@ -159,15 +163,21 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			
 			alreadyApplied = alreadySelected(mp, ingredient, op);
 			
-			if (!alreadyApplied && !ingredient.equals(mp.getCodeElement()))
+			if (!alreadyApplied && !ingredient.equals(mp.getCodeElement())) {
+				Stats.currentStat.incrementIngCounter(variant_id);
 				continueSearching = !VariableResolver.fitInPlace(mp.getContextOfModificationPoint(), ingredient);
-			
+			}
+
 			if (!continueSearching) {
 				IngredientSpaceScope scope = determineIngredientScope(mp.getCodeElement(), ingredient);
+				int ingCounter = Stats.currentStat.saveIngCounter(variant_id);
+				log.debug("---attempts on ingredient space: " + ingCounter);
 				return new Ingredient(ingredient, scope);
 			}
 		}
+		Stats.currentStat.saveIngCounter(variant_id);
 		
+		log.debug("--- no mutation left to apply in element " + mp.getCodeElement());
 		return null;
 	}
 	
