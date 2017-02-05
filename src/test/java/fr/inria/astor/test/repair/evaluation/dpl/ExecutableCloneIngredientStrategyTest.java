@@ -119,7 +119,7 @@ public class ExecutableCloneIngredientStrategyTest {
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes",
 				//
-				"-javacompliancelevel", "7", "-flthreshold", "0.5", "-out", out.getAbsolutePath(),
+				"-javacompliancelevel", "7", "-flthreshold", "0.1", "-out", out.getAbsolutePath(),
 				//
 				"-scope", CtLocationIngredientSpace.class.getCanonicalName(),
 				//
@@ -127,6 +127,7 @@ public class ExecutableCloneIngredientStrategyTest {
 				// HERE WE FORCE TO NOT EVOLVE
 				"-maxgen", "0",
 				//
+				"-population","3",
 				"-stopfirst", "true",
 				//
 				"-maxtime", "100",

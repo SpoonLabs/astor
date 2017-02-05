@@ -256,23 +256,27 @@ public class VariableResolver {
 	/**
 	 * 
 	 */
-	public static Map<CtVariableAccess, List<CtVariable>> transformIngredient(List<CtVariable> varContext,
-			CtElement ingredientCtElement) {
+	public static VarMapping mapVariables(List<CtVariable> varContext, CtElement ingredientCtElement) {
 
 		// var out-of scope, list of variables compatibles
 		Map<CtVariableAccess, List<CtVariable>> varMaps = new HashMap<>();
-		ClassLoader classLoader =VariableResolver.class.getClassLoader();
+		List<CtVariableAccess> notMappedVariables = new ArrayList<>();
+
+		ClassLoader classLoader = VariableResolver.class.getClassLoader();
 		ClusteringParser cluster = new ClusteringParser();
-		Map<String, List<String>> clusters = cluster.readClusterFile(new File(classLoader.getResource("learningm70"+File.separator+"clustering_test.csv").getFile()).toPath());
-		logger.debug("#clusters "+clusters.keySet().size());
+		Map<String, List<String>> clusters = cluster.readClusterFile(
+				new File(classLoader.getResource("learningm70" + File.separator + "clustering_test.csv").getFile())
+						.toPath());
+		logger.debug("#clusters " + clusters.keySet().size());
 		List<CtVariableAccess> variablesOutOfScope = retriveVariablesOutOfContext(varContext, ingredientCtElement);
-		logger.debug("vars out of context: "+variablesOutOfScope);
+		logger.debug("vars out of context: " + variablesOutOfScope);
 		for (CtVariableAccess wOut : variablesOutOfScope) {
 			List<String> wcluster = clusters.get(wOut.getVariable().getSimpleName());
-			if(wcluster == null){
-				logger.debug("variable our of scope without context: "+wOut);
+			if (wcluster == null) {
+				logger.debug("variable our of scope without context: " + wOut);
 				continue;
 			}
+			boolean mapped = false;
 			for (String wordFromCluster : wcluster) {// In order
 				List<CtVariable> varExist = existVariableWithName(varContext, wordFromCluster);
 				// check compatibility between varExist and wout
@@ -286,14 +290,24 @@ public class VariableResolver {
 								varMaps.put(wOut, vars);
 							}
 							vars.add(varFromCluster);
+							mapped = true;
+							// We do not break the loop, we want to find all
+							// mappings
 						}
 					} catch (Exception e) {
 						logger.error(e);
 					}
 				}
+
 			}
+			// if the var was not matched, we put in list of variables out of
+			// scope not mapped.
+			if (!mapped)
+				notMappedVariables.add(wOut);
 
 		}
+		VarMapping mappings = new VarMapping(varMaps, notMappedVariables);
+		return mappings;
 
 		// : finds all variables *out of scope* from 'Ing'.
 		// 2: for each var 'wout' from *out of scope* do
@@ -310,8 +324,6 @@ public class VariableResolver {
 		// 'Ing';
 		// break loop (2.b).
 		// 2.b.2.2: else (vars not compatibles) continue loop.
-
-		return varMaps;
 
 	}
 

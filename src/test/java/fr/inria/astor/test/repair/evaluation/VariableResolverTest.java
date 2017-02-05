@@ -1,6 +1,9 @@
 package fr.inria.astor.test.repair.evaluation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
@@ -15,15 +18,14 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerLauncher;
+import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.CtLocationIngredientSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.dpl.ExecutableCloneIngredientStrategyTest;
 import fr.inria.main.evolution.AstorMain;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
@@ -31,7 +33,9 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 
@@ -476,25 +480,75 @@ public class VariableResolverTest {
 		CtElement c3 = pv.getModificationPoints().get(2).getCodeElement();
 		
 		CtElement ingredientCtElement = pv.getModificationPoints().get(7).getCodeElement();
-		
+		//C1:.BisectionSolver l: 66,
 		List<CtVariable> varContextC1 = VariableResolver.searchVariablesInScope(c1);
-		//   clearResult();
+		// C3:   clearResult(); BisectionSolver l: 80,
 		List<CtVariable> varContextC3 = VariableResolver.searchVariablesInScope(c3);//
 		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContextC1, ingredientCtElement);
 		assertNotNull(variablesOutOfScope);
 		assertEquals(1,variablesOutOfScope.size());
 		log.debug("Out scope: "+variablesOutOfScope);
 		assertEquals("fmin", variablesOutOfScope.get(0).getVariable().getSimpleName());
-		 // return (a + b) * .5;
+		 
+		//##########-------
+		//Here, we retrieve the ingredient to insert in another place
+		
+		// C8 return (a + b) * .5; from line 223, file UnivariateRealSolverUtils.java
 		CtElement otherClassElementC8 = pv.getModificationPoints().get(8).getCodeElement();
 		
-		Map<CtVariableAccess, List<CtVariable>> mapsVariablesOutC1 =  VariableResolver.transformIngredient(varContextC1, otherClassElementC8);
-		
-		log.debug("vars -->"+ mapsVariablesOutC1);
+		VarMapping vmapping1 =  VariableResolver.mapVariables(varContextC1, otherClassElementC8);
+		 Map<CtVariableAccess, List<CtVariable>> mapsVariablesOutC1 = vmapping1.getMappedVariables();
+		 log.debug("mapping 1 -->"+ mapsVariablesOutC1);
+		// assertTrue(mapsVariablesOutC1.values().isEmpty());
+		// assertTrue(mapsVariablesOutC1.values().isEmpty());
+			
+		 
+		//We try to insert C8 (a + b ...) in the place ofC3 (clearResult) 
 		log.debug("Second mapping: ");
-		Map<CtVariableAccess, List<CtVariable>> mapsVariablesOutC2 =  VariableResolver.transformIngredient(varContextC3, otherClassElementC8);
-		System.out.println("vars -->"+ mapsVariablesOutC2+ "\n"+ varContextC3);
+		VarMapping vmapping2 = VariableResolver.mapVariables(varContextC3, otherClassElementC8);
 		
-	}
+		//######=======================
+		Map<CtVariableAccess, List<CtVariable>> mapsVariablesOutC2 =  vmapping2.getMappedVariables();
+				
+		log.debug("mapping 2 -->"+ mapsVariablesOutC2+ "\n to we put in context: "+ varContextC3);
+		//Here, the mapping must not be empty
+		assertFalse(mapsVariablesOutC2.values().isEmpty());
+		//one key for each unmapped var
+		assertTrue(mapsVariablesOutC2.keySet().size() == 2);
+		//all vars were mapped
+		log.debug("not mapped "+vmapping2.getNotMappedVariables());
+		assertTrue(vmapping2.getNotMappedVariables().isEmpty());
+		
+		//We get a method setup(UnivariateRealFunction f) for testing the insertion of a ingredient out of scope
+		CtMethod mSetup = getMethod4Test1(engine);
+		assertNotNull(mSetup);
+		
+		//##########------------------
+		//Testing Not Mapped variables
+		CtStatement stmSetup = mSetup.getBody().getStatement(0);
+		List<CtVariable> varsScopeStmSetup = VariableResolver.searchVariablesInScope(stmSetup);
+		assertFalse(varsScopeStmSetup.isEmpty());
+		// field:  private static final String NULL_FUNCTION_MESSAGE, parameter UnivariateRealFunction f
+		assertEquals(2,varsScopeStmSetup.size());
+		log.debug("context of Setup method "+varsScopeStmSetup);
+		
+		VarMapping vmapping3 =  VariableResolver.mapVariables(varsScopeStmSetup, otherClassElementC8);
+		assertTrue(vmapping3.getMappedVariables().isEmpty());
+		assertFalse(vmapping3.getNotMappedVariables().isEmpty());
+		assertEquals(2, vmapping3.getNotMappedVariables().size());
+		
+		
+	}	
 	
+	/**
+	 * 
+	 * @return
+	 */
+	private CtMethod getMethod4Test1(AstorCoreEngine core){
+		//setup from  UnivariateRealSolverUtils
+		List<CtClass> classes = core.getMutatorSupporter().getClasses();
+		CtClass cUniv = classes.stream().filter(x -> x.getSimpleName().equals("UnivariateRealSolverUtils")).findFirst().get();
+		CtMethod mSetup = (CtMethod) cUniv.getAllMethods().stream().filter(x -> ((CtMethod)x).getSimpleName().equals("setup")).findFirst().get();
+		return mSetup;
+	}
 }
