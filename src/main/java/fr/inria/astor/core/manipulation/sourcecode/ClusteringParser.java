@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
@@ -22,12 +23,10 @@ public class ClusteringParser {
 
 	private static Logger logger = Logger.getLogger(ClusteringParser.class.getName());
 
-	private Map<String, List<String>> clusters = new HashMap<>();
+	public Map<String, List<String>> readClusterFile(Path file) {
+		Map<String, List<String>> clusters = new TreeMap<>();
 
-	public boolean readClusterFile(Path file) {
-
-		clusters.clear();
-
+		logger.debug("reading " + file);
 		Charset charset = Charset.forName("US-ASCII");
 		try (BufferedReader reader = Files.newBufferedReader(file, charset)) {
 			String line = null;
@@ -49,14 +48,7 @@ public class ClusteringParser {
 		} catch (IOException x) {
 			logger.error("IOException: %s%n", x);
 		}
-		return !clusters.isEmpty();
-	}
-
-	public Map<String, List<String>> getClusters() {
 		return clusters;
 	}
 
-	public void setClusters(Map<String, List<String>> clusters) {
-		this.clusters = clusters;
-	}
 }

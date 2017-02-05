@@ -3,6 +3,8 @@ package fr.inria.astor.test.repair.evaluation.dpl;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -22,15 +24,15 @@ public class ClusteringParserTest {
 		assertTrue(clusteringFile.exists());
 		
 		ClusteringParser clusteringParser = new ClusteringParser();
-		boolean loaded = clusteringParser.readClusterFile(clusteringFile.toPath());
-		assertTrue(loaded);
+		Map<String, List<String>> clusters = clusteringParser.readClusterFile(clusteringFile.toPath());
+		assertNotNull(clusters);
 		
-		assertTrue(clusteringParser.getClusters().get("N").isEmpty());
-		assertEquals(2, clusteringParser.getClusters().get("alpha").size());
-		assertTrue(clusteringParser.getClusters().get("alpha").contains("beta"));
-		assertTrue(clusteringParser.getClusters().get("alpha").contains("gamma"));
-		assertFalse(clusteringParser.getClusters().get("N").contains("gamma"));
-		assertNull(clusteringParser.getClusters().get("claveinexistente"));
+		assertTrue(clusters.get("N").isEmpty());
+		assertEquals(2, clusters.get("alpha").size());
+		assertTrue(clusters.get("alpha").contains("beta"));
+		assertTrue(clusters.get("alpha").contains("gamma"));
+		assertFalse(clusters.get("N").contains("gamma"));
+		assertNull(clusters.get("claveinexistente"));
 
 		
 	}
