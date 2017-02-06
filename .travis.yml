@@ -9,7 +9,6 @@ env:
   - TEST=fr.inria.astor.test.repair.evaluation.jKaliTest
   - TEST=fr.inria.astor.test.repair.evaluation.MutRepairTest
   - TEST=fr.inria.astor.test.repair.evaluation.EvoSuiteGenerationTest
-  - TEST=fr.inria.astor.test.repair.evaluation.VariableResolverTest
   - TEST=fr.inria.astor.test.repair.evaluation.RepairOperatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.ValidationTest
   - TEST=fr.inria.astor.test.repair.evaluation.IngredientSpaceTest

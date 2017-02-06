@@ -15,21 +15,21 @@ import spoon.reflect.declaration.CtVariable;
  */
 public class VarMapping {
 
-	private Map<CtVariableAccess, List<CtVariable>> mappedVariables = null;
+	private Map<VarWrapper, List<CtVariable>> mappedVariables = null;
 	private List<CtVariableAccess> notMappedVariables = null;
 
-	public VarMapping(Map<CtVariableAccess, List<CtVariable>> mapsVariables,
+	public VarMapping(Map<VarWrapper, List<CtVariable>> mapsVariables,
 			List<CtVariableAccess> notMappedVariables) {
 		super();
 		this.mappedVariables = mapsVariables;
 		this.notMappedVariables = notMappedVariables;
 	}
 
-	public Map<CtVariableAccess, List<CtVariable>> getMappedVariables() {
+	public Map<VarWrapper, List<CtVariable>> getMappedVariables() {
 		return mappedVariables;
 	}
 
-	public void setMappedVariables(Map<CtVariableAccess, List<CtVariable>> mapsVariables) {
+	public void setMappedVariables(Map<VarWrapper, List<CtVariable>> mapsVariables) {
 		this.mappedVariables = mapsVariables;
 	}
 

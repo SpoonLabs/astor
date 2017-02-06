@@ -24,6 +24,7 @@ import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
+import fr.inria.astor.core.manipulation.sourcecode.VarWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.dpl.ExecutableCloneIngredientStrategyTest;
@@ -501,7 +502,7 @@ public class VariableResolverTest {
 		CtElement otherClassElementC8 = pv.getModificationPoints().get(8).getCodeElement();
 		
 		VarMapping vmapping1 =  VariableResolver.mapVariables(varContextC1, otherClassElementC8);
-		 Map<CtVariableAccess, List<CtVariable>> mapsVariablesOutC1 = vmapping1.getMappedVariables();
+		 Map<VarWrapper, List<CtVariable>> mapsVariablesOutC1 = vmapping1.getMappedVariables();
 		 log.debug("mapping 1 -->"+ mapsVariablesOutC1);
 		// assertTrue(mapsVariablesOutC1.values().isEmpty());
 		// assertTrue(mapsVariablesOutC1.values().isEmpty());
@@ -512,7 +513,7 @@ public class VariableResolverTest {
 		VarMapping vmapping2 = VariableResolver.mapVariables(varContextC3, otherClassElementC8);
 		
 		//######=======================
-		Map<CtVariableAccess, List<CtVariable>> mapsVariablesOutC2 =  vmapping2.getMappedVariables();
+		Map<VarWrapper, List<CtVariable>> mapsVariablesOutC2 =  vmapping2.getMappedVariables();
 				
 		log.debug("mapping 2 -->"+ mapsVariablesOutC2+ "\n to we put in context: "+ varContextC3);
 		//Here, the mapping must not be empty
@@ -544,7 +545,7 @@ public class VariableResolverTest {
 		//###########
 		//Now, all combinations of mapped variables
 		List<Map<String, CtVariable>> allCombinations = new ArrayList<>();
-		List<CtVariableAccess> varNames = new ArrayList<>(vmapping2.getMappedVariables().keySet());
+		List<VarWrapper> varNames = new ArrayList<>(vmapping2.getMappedVariables().keySet());
 		VariableResolver.findAllVarMappingCombination(vmapping2.getMappedVariables(), varNames, 0, new TreeMap<>(), allCombinations);
 		
 		//
@@ -601,21 +602,57 @@ public class VariableResolverTest {
 		
 		log.debug("C8 after 2: "+otherClassElementC8);
 
-	
+		///############
+			//QuinticFunction
+		CtMethod cm = getMethodFromClass(engine, "org.apache.commons.math.analysis.QuinticFunction", "value");
+		assertNotNull(cm);
+		CtStatement stm1vr = cm.getBody().getStatement(0);
+		log.debug("ingredient:  "+ stm1vr);
+		
+		
+		
+		//
+		log.debug("context:  "+ varContextC3);
+		//the ingredient has 5 Xs
+		VarMapping vmappingOnevar =  VariableResolver.mapVariables(varContextC3, stm1vr);
+		assertEquals(5,vmappingOnevar.getMappedVariables().size() );
+		assertEquals(5, vmappingOnevar.getMappedVariables().keySet().size());
+		assertTrue(vmappingOnevar.getNotMappedVariables().isEmpty());
+		
+		//
+		
+		List<Map<String, CtVariable>> allCombinationsOne = new ArrayList<>();
+		List<VarWrapper> varNamesOne = new ArrayList<>(vmappingOnevar.getMappedVariables().keySet());
+		VariableResolver.findAllVarMappingCombination(vmappingOnevar .getMappedVariables(), varNamesOne, 0, new TreeMap<>(), allCombinationsOne);
+		log.debug(allCombinationsOne);
+		
+		log.debug("Trying mapping "+allCombinationsOne.get(0));
+		
+		Map<CtVariableAccess, CtVariableReference> originalMapOnevarTomap=
+		VariableResolver.convertIngredient(vmappingOnevar ,allCombinationsOne.get(0));
+		
+		
+		log.debug("C8 after 2: "+stm1vr );
 
 		
 	}	
 	
 	
 	/**
-	 * 
+	 * //setup from  UnivariateRealSolverUtils
 	 * @return
 	 */
 	private CtMethod getMethod4Test1(AstorCoreEngine core){
-		//setup from  UnivariateRealSolverUtils
-		List<CtClass> classes = core.getMutatorSupporter().getClasses();
-		CtClass cUniv = classes.stream().filter(x -> x.getSimpleName().equals("UnivariateRealSolverUtils")).findFirst().get();
-		CtMethod mSetup = (CtMethod) cUniv.getAllMethods().stream().filter(x -> ((CtMethod)x).getSimpleName().equals("setup")).findFirst().get();
+		return getMethodFromClass(core,"org.apache.commons.math.analysis.solvers.UnivariateRealSolverUtils","setup");
+	}
+	
+	protected CtMethod getMethodFromClass(AstorCoreEngine core, String classname, String methodName){
+	//	
+		log.debug("Searching for class "+classname);
+		List<CtType<?>> classes = core.getMutatorSupporter().getFactory().Type().getAll();
+		CtType cUniv = classes.stream().filter(x -> x.getQualifiedName().equals(classname)).findFirst().get();
+		CtMethod mSetup = (CtMethod) cUniv.getAllMethods().stream().filter(x -> ((CtMethod)x).getSimpleName().equals(methodName)).findFirst().get();
 		return mSetup;
+	//
 	}
 }
