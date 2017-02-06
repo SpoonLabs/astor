@@ -6,10 +6,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-import javassist.bytecode.stackmap.BasicBlock.Catch;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
@@ -271,13 +271,19 @@ public class VariableResolver {
 		List<CtVariableAccess> variablesOutOfScope = retriveVariablesOutOfContext(varContext, ingredientCtElement);
 		logger.debug("vars out of context: " + variablesOutOfScope);
 		for (CtVariableAccess wOut : variablesOutOfScope) {
+
+			logger.debug("cluster querying " + wOut.getVariable().getSimpleName());
 			List<String> wcluster = clusters.get(wOut.getVariable().getSimpleName());
+
 			if (wcluster == null) {
 				logger.debug("variable our of scope without context: " + wOut);
 				continue;
 			}
+			logger.debug("--var" + " out of context: " + wOut + " wcluster " + wcluster);
+
 			boolean mapped = false;
 			for (String wordFromCluster : wcluster) {// In order
+
 				List<CtVariable> varExist = existVariableWithName(varContext, wordFromCluster);
 				// check compatibility between varExist and wout
 				for (CtVariable varFromCluster : varExist) {
@@ -577,4 +583,89 @@ public class VariableResolver {
 		return variables;
 	}
 
+	/**
+	 * Adapt the ingredient to the destination according to the mapping. We
+	 * directly manipulate the variables from the ingredient, which are stored
+	 * in VarMapping
+	 * 
+	 * @param varMapping
+	 * @param destination
+	 * @return it returns the original variable reference of each converted variable
+	 */
+	public static Map<CtVariableAccess, CtVariableReference> convertIngredient(VarMapping varMapping,
+			Map<String, CtVariable> mapToFollow) {
+
+		Map<CtVariableAccess, CtVariableReference> originalMap = new HashMap<>();
+
+		Map<CtVariableAccess, List<CtVariable>> mappedVars = varMapping.getMappedVariables();
+		for (CtVariableAccess var : mappedVars.keySet()) {
+			CtVariable varNew = mapToFollow.get(var.getVariable().getSimpleName());
+			originalMap.put(var, var.getVariable());
+			var.setVariable(varNew.getReference());
+		}
+
+		return originalMap;
+	}
+	
+	/**
+	 * For each modified variable, it resets the variables by putting their original var reference
+	 * @param varMapping
+	 * @param original
+	 */
+	public static void resetIngredient(VarMapping varMapping, Map<CtVariableAccess, CtVariableReference> original) {
+
+		Map<CtVariableAccess, List<CtVariable>> mappedVars = varMapping.getMappedVariables();
+		for (CtVariableAccess var : mappedVars.keySet()) {
+			CtVariableReference varNew = original.get(var);
+			var.setVariable(varNew);
+		}
+	}
+
+	/**
+	 * Method that finds all combination of variables mappings
+	 * Ex: if var 'a' can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return all combinations 
+	 * (a1,b1), (a2,b1), (a1,b2), (a2,b2)
+	 * 
+	 * @param mappedVars
+	 *            map of variables (out-of-scope) and candidate replacements of
+	 * @param varsName
+	 *            names of all variables
+	 * @param indexVar
+	 *            current variable under analysis
+	 * @param currentCombination
+	 *            current combination of variable
+	 * @param allCombinations
+	 *            list that store all variable combinations
+	 */
+	public static void findAllVarMappingCombination(Map<CtVariableAccess, List<CtVariable>> mappedVars,
+			List<CtVariableAccess> varsName, int indexVar, Map<String, CtVariable> currentCombination,
+			List<Map<String, CtVariable>> allCombinations) {
+
+		//Stop condition
+		// If we have analyzed all variables, we add the combination to the
+		// result
+		if (varsName.size() == indexVar) {
+			allCombinations.add(currentCombination);
+			return;
+		}
+
+		// Get the variable to change
+		CtVariableAccess currentVar = varsName.get(indexVar);
+		// get all possibles variables to replace
+		List<CtVariable> mapped = mappedVars.get(currentVar);
+
+		if (currentCombination.containsKey(currentVar.getVariable().getSimpleName())) {
+			findAllVarMappingCombination(mappedVars, varsName, indexVar + 1, currentCombination, allCombinations);
+		}
+
+		// for each mapping candidate
+		for (CtVariable varFromMap : mapped) {
+			// we create the new var combination from the previous one
+			Map<String, CtVariable> newCombination = new TreeMap<>(currentCombination);
+			// we add the map for the variable to the new combination
+			newCombination.put(currentVar.getVariable().getSimpleName(), varFromMap);
+			// we call recursive to continue mapping the remaining variables
+			findAllVarMappingCombination(mappedVars, varsName, indexVar + 1, newCombination, allCombinations);
+		}
+	}
 }

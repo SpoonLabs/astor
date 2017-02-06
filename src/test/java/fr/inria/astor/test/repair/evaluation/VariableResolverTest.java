@@ -6,9 +6,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -27,6 +29,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.dpl.ExecutableCloneIngredientStrategyTest;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
@@ -38,6 +41,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtVariableReference;
 
 /**
  * 
@@ -537,8 +541,71 @@ public class VariableResolverTest {
 		assertFalse(vmapping3.getNotMappedVariables().isEmpty());
 		assertEquals(2, vmapping3.getNotMappedVariables().size());
 		
+		//###########
+		//Now, all combinations of mapped variables
+		List<Map<String, CtVariable>> allCombinations = new ArrayList<>();
+		List<CtVariableAccess> varNames = new ArrayList<>(vmapping2.getMappedVariables().keySet());
+		VariableResolver.findAllVarMappingCombination(vmapping2.getMappedVariables(), varNames, 0, new TreeMap<>(), allCombinations);
+		
+		//
+		assertFalse(allCombinations.isEmpty());
+		assertEquals(4, allCombinations.size());
+		
+		//
+		log.debug("C8 before "+otherClassElementC8);
+		
+		CtElement cloned = engine.getMutatorSupporter().clone((CtCodeElement) otherClassElementC8);
+		
+		log.debug("Trying mapping "+allCombinations.get(0));
+		
+		Map<CtVariableAccess, CtVariableReference> originalMap=
+		VariableResolver.convertIngredient(vmapping2,allCombinations.get(0));
+		
+		log.debug("C8 after: "+otherClassElementC8);
+		
+		assertFalse(cloned.equals(otherClassElementC8));
+
+		VariableResolver.resetIngredient(vmapping2, originalMap);
+		
+		log.debug("C8 after reset: "+otherClassElementC8);
+		
+		assertEquals(cloned, otherClassElementC8);
+		
+		log.debug("Trying mapping "+allCombinations.get(1));
+		
+		Map<CtVariableAccess, CtVariableReference> originalMap2=
+		VariableResolver.convertIngredient(vmapping2,allCombinations.get(1));
+		
+		
+		log.debug("C8 after 2: "+otherClassElementC8);
+
+		assertFalse(cloned.equals(otherClassElementC8));
+
+		//---
+		CtElement clonedMapped1 = engine.getMutatorSupporter().clone((CtCodeElement) otherClassElementC8);
+		
+		VariableResolver.resetIngredient(vmapping2, originalMap2);
+		
+		log.debug("C8 after reset 2: "+otherClassElementC8);
+		
+
+		assertEquals(cloned, otherClassElementC8);
+		assertFalse(clonedMapped1.equals(otherClassElementC8));
+		
+		//------
+		log.debug("Trying mapping "+allCombinations.get(2));
+		
+		Map<CtVariableAccess, CtVariableReference> originalMap3=
+		VariableResolver.convertIngredient(vmapping2,allCombinations.get(2));
+		
+		
+		log.debug("C8 after 2: "+otherClassElementC8);
+
+	
+
 		
 	}	
+	
 	
 	/**
 	 * 
