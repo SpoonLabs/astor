@@ -20,7 +20,7 @@ public class ClusteringParserTest {
 	public void testClusterRepresentation() {
 		
 		ClassLoader classLoader = getClass().getClassLoader();
-		File clusteringFile = new File(classLoader.getResource("learningm70"+File.separator+"clustering.csv").getFile());
+		File clusteringFile = new File(classLoader.getResource("learningm70"+File.separator+"clustering_test.csv").getFile());
 		assertTrue(clusteringFile.exists());
 		
 		ClusteringParser clusteringParser = new ClusteringParser();
@@ -33,6 +33,10 @@ public class ClusteringParserTest {
 		assertTrue(clusters.get("alpha").contains("gamma"));
 		assertFalse(clusters.get("N").contains("gamma"));
 		assertNull(clusters.get("claveinexistente"));
+		
+		
+		Map<String, List<String>> clusters2 = clusteringParser.readClusterFile(clusteringFile.toPath());
+		System.out.println(clusters2.get("a"));
 
 		
 	}

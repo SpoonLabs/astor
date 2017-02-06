@@ -332,7 +332,7 @@ public class AstorMain extends AbstractMain {
 			object = classDefinition.getConstructor(IngredientSpace.class).newInstance(ingredientSpace);
 		} catch (Exception e) {
 			log.error("Loading strategy " + customStrategyclassName + " --" + e);
-			throw new Exception("Loading strategy: " + e);
+			throw new Exception("Loading strategy "+ customStrategyclassName + ": "  + e);
 		}
 		if (object instanceof IngredientSearchStrategy)
 			return (IngredientSearchStrategy) object;
