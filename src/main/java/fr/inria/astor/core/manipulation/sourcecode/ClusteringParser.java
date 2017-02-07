@@ -23,8 +23,16 @@ public class ClusteringParser {
 
 	private static Logger logger = Logger.getLogger(ClusteringParser.class.getName());
 
+	Map<String, List<String>> clusters = new TreeMap<>();
+
+	public Map<String, List<String>> getClusters() {
+		return clusters;
+	}
+
 	public Map<String, List<String>> readClusterFile(Path file) {
-		Map<String, List<String>> clusters = new TreeMap<>();
+
+		if (!clusters.isEmpty())
+			return clusters;
 
 		logger.debug("reading " + file);
 		Charset charset = Charset.forName("US-ASCII");

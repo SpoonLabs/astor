@@ -40,7 +40,9 @@ import spoon.reflect.visitor.CtScanner;
  */
 @SuppressWarnings("rawtypes")
 public class VariableResolver {
-
+	
+	static ClusteringParser cluster = new ClusteringParser();
+	
 	private static Logger logger = Logger.getLogger(VariableResolver.class.getName());
 
 	/**
@@ -269,23 +271,22 @@ public class VariableResolver {
 		List<CtVariableAccess> notMappedVariables = new ArrayList<>();
 
 		ClassLoader classLoader = VariableResolver.class.getClassLoader();
-		ClusteringParser cluster = new ClusteringParser();
+		
 		Map<String, List<String>> clusters = cluster.readClusterFile(
 				new File(classLoader.getResource("learningm70" + File.separator + ConfigurationProperties.getProperty("clusteringfilename")).getFile())
 						.toPath());
-		//logger.debug("#clusters " + clusters.keySet().size());
+		
 		List<CtVariableAccess> variablesOutOfScope = retriveVariablesOutOfContext(varContext, ingredientCtElement);
 		logger.debug("vars out of context: " + variablesOutOfScope);
 		for (CtVariableAccess wOut : variablesOutOfScope) {
 
-			logger.debug("cluster querying " + wOut.getVariable().getSimpleName());
 			List<String> wcluster = clusters.get(wOut.getVariable().getSimpleName());
 
 			if (wcluster == null) {
 				logger.debug("variable our of scope without context: " + wOut);
 				continue;
 			}
-			logger.debug("--var" + " out of context: " + wOut + " wcluster " + wcluster);
+			logger.debug("--var  out of context: " + wOut + ", with wcluster " + wcluster);
 
 			boolean mapped = false;
 			VarWrapper varOutWrapper = new VarWrapper(wOut);
