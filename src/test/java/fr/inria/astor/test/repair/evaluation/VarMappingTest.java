@@ -6,11 +6,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -60,6 +58,7 @@ public class VarMappingTest {
 
 		Class typeCloneGranularityClass = CtType.class;
 
+		ConfigurationProperties.setProperty("clusteringfilename", "clustering_test.csv");
 		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(dep, out, learningDir,
 				typeCloneGranularityClass);
 
@@ -162,13 +161,8 @@ public class VarMappingTest {
 		// We try to insert C8 (a + b ...) in the place ofC3 (clearResult)
 		VarMapping vmapping2 = VariableResolver.mapVariables(varContextC3, otherClassElementC8);
 
-		// Now, all combinations of mapped variables
-		//list for storing results
-		List<Map<String, CtVariable>> allCombinations = new ArrayList<>();
-		//all ingredient's vars to map
-		List<VarWrapper> varNames = new ArrayList<>(vmapping2.getMappedVariables().keySet());
-		VariableResolver.findAllVarMappingCombination(vmapping2.getMappedVariables(), varNames, 0, new TreeMap<>(),
-				allCombinations);
+	
+		List<Map<String, CtVariable>> allCombinations = VariableResolver.findAllVarMappingCombination(vmapping2.getMappedVariables());
 
 		assertFalse(allCombinations.isEmpty());
 		assertEquals(4, allCombinations.size());
@@ -224,6 +218,9 @@ public class VarMappingTest {
 	}
 	@Test
 	public void testSameVariableTwiceOnIngredient(){
+		//a modified clustering for facilitating testing task
+		ConfigurationProperties.setProperty("clusteringfilename", "clustering_test.csv");
+		
 		// we take a ingredient from  QuinticFunction
 		// return (x-1)*(x-0.5)*x*(x+0.5)*(x+1); line 32.
 		CtMethod cm = getMethodFromClass(engine, "org.apache.commons.math.analysis.QuinticFunction", "value");
@@ -239,12 +236,8 @@ public class VarMappingTest {
 		assertEquals(5, vmappingOnevar.getMappedVariables().size());
 		assertEquals(5, vmappingOnevar.getMappedVariables().keySet().size());
 		assertTrue(vmappingOnevar.getNotMappedVariables().isEmpty());
-
-		
-		List<Map<String, CtVariable>> allCombinationsOne = new ArrayList<>();
-		List<VarWrapper> varNamesOne = new ArrayList<>(vmappingOnevar.getMappedVariables().keySet());
-		VariableResolver.findAllVarMappingCombination(vmappingOnevar.getMappedVariables(), varNamesOne, 0,
-				new TreeMap<>(), allCombinationsOne);
+	
+		List<Map<String, CtVariable>> allCombinationsOne = VariableResolver.findAllVarMappingCombination(vmappingOnevar.getMappedVariables());
 		
 		log.debug(allCombinationsOne);
 		assertFalse(allCombinationsOne.isEmpty());

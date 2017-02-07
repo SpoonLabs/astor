@@ -10,6 +10,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
@@ -125,11 +126,10 @@ public class VariableResolver {
 		return mapping;
 	}
 
-	
 	public static List<CtVariableAccess> collectVariableAccess(CtElement element) {
-		return collectVariableAccess(element,false);
+		return collectVariableAccess(element, false);
 	}
-	
+
 	/**
 	 * Return all variables related to the element passed as argument
 	 * 
@@ -141,11 +141,11 @@ public class VariableResolver {
 
 		CtScanner sc = new CtScanner() {
 
-			public void add(CtVariableAccess e){
+			public void add(CtVariableAccess e) {
 				if (duplicates || !varaccess.contains(e))
 					varaccess.add(e);
 			}
-				
+
 			@Override
 			public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
 				super.visitCtVariableRead(variableRead);
@@ -258,8 +258,6 @@ public class VariableResolver {
 		return true;
 
 	}
-	
-	
 
 	/**
 	 * 
@@ -267,15 +265,15 @@ public class VariableResolver {
 	public static VarMapping mapVariables(List<CtVariable> varContext, CtElement ingredientCtElement) {
 
 		// var out-of scope, list of variables compatibles
-		Map<VarWrapper , List<CtVariable>> varMaps = new HashMap<>();
+		Map<VarWrapper, List<CtVariable>> varMaps = new HashMap<>();
 		List<CtVariableAccess> notMappedVariables = new ArrayList<>();
 
 		ClassLoader classLoader = VariableResolver.class.getClassLoader();
 		ClusteringParser cluster = new ClusteringParser();
 		Map<String, List<String>> clusters = cluster.readClusterFile(
-				new File(classLoader.getResource("learningm70" + File.separator + "clustering_test.csv").getFile())
+				new File(classLoader.getResource("learningm70" + File.separator + ConfigurationProperties.getProperty("clusteringfilename")).getFile())
 						.toPath());
-		logger.debug("#clusters " + clusters.keySet().size());
+		//logger.debug("#clusters " + clusters.keySet().size());
 		List<CtVariableAccess> variablesOutOfScope = retriveVariablesOutOfContext(varContext, ingredientCtElement);
 		logger.debug("vars out of context: " + variablesOutOfScope);
 		for (CtVariableAccess wOut : variablesOutOfScope) {
@@ -302,7 +300,7 @@ public class VariableResolver {
 							List<CtVariable> vars = varMaps.get(varOutWrapper);
 							if (vars == null) {
 								vars = new ArrayList<>();
-								varMaps.put(varOutWrapper , vars);
+								varMaps.put(varOutWrapper, vars);
 							}
 							vars.add(varFromCluster);
 							mapped = true;
@@ -366,7 +364,7 @@ public class VariableResolver {
 	public static List<CtVariableAccess> retriveVariablesOutOfContext(List<CtVariable> varContext,
 			CtElement ingredientCtElement) {
 		List<CtVariableAccess> variablesOutOfScope = new ArrayList<>();
-        boolean duplicated =  true;
+		boolean duplicated = true;
 		List<CtVariableAccess> allVariables = collectVariableAccess(ingredientCtElement, duplicated);
 		for (CtVariableAccess variableAccessFromElement : allVariables) {
 			if (!fitInPlace(varContext, variableAccessFromElement)) {
@@ -599,7 +597,8 @@ public class VariableResolver {
 	 * 
 	 * @param varMapping
 	 * @param destination
-	 * @return it returns the original variable reference of each converted variable
+	 * @return it returns the original variable reference of each converted
+	 *         variable
 	 */
 	public static Map<CtVariableAccess, CtVariableReference> convertIngredient(VarMapping varMapping,
 			Map<String, CtVariable> mapToFollow) {
@@ -615,9 +614,11 @@ public class VariableResolver {
 
 		return originalMap;
 	}
-	
+
 	/**
-	 * For each modified variable, it resets the variables by putting their original var reference
+	 * For each modified variable, it resets the variables by putting their
+	 * original var reference
+	 * 
 	 * @param varMapping
 	 * @param original
 	 */
@@ -629,11 +630,30 @@ public class VariableResolver {
 			var.getVar().setVariable(varNew);
 		}
 	}
+	/**
+	 * 
+	 * Method that finds all combination of variables mappings Ex: if var 'a'
+	 * can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return
+	 * all combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2)
+	 * @param mappedVars  map of variables (out-of-scope) and candidate replacements of
+	 * @param currentCombination   current combination of variables
+	 * @return
+	 */
+	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
+			Map<VarWrapper, List<CtVariable>> mappedVars) {
+		
+		List<Map<String, CtVariable>> allCombinationsOne = new ArrayList<>();
+		List<VarWrapper> varNamesOne = new ArrayList<>(mappedVars.keySet());
+		
+		VariableResolver.findAllVarMappingCombination(mappedVars, varNamesOne, 0, new TreeMap<>(), allCombinationsOne);
+
+		return allCombinationsOne;
+	}
 
 	/**
-	 * Method that finds all combination of variables mappings
-	 * Ex: if var 'a' can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return all combinations 
-	 * (a1,b1), (a2,b1), (a1,b2), (a2,b2)
+	 * Method that finds all combination of variables mappings Ex: if var 'a'
+	 * can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return
+	 * all combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2)
 	 * 
 	 * @param mappedVars
 	 *            map of variables (out-of-scope) and candidate replacements of
@@ -642,7 +662,7 @@ public class VariableResolver {
 	 * @param indexVar
 	 *            current variable under analysis
 	 * @param currentCombination
-	 *            current combination of variable
+	 *            current combination of variables
 	 * @param allCombinations
 	 *            list that store all variable combinations
 	 */
@@ -650,7 +670,7 @@ public class VariableResolver {
 			List<VarWrapper> varsName, int indexVar, Map<String, CtVariable> currentCombination,
 			List<Map<String, CtVariable>> allCombinations) {
 
-		//Stop condition
+		// Stop condition
 		// If we have analyzed all variables, we add the combination to the
 		// result
 		if (varsName.size() == indexVar) {
@@ -659,7 +679,7 @@ public class VariableResolver {
 		}
 
 		// Get the variable to change
-	//	CtVariableAccess currentVar = varsName.get(indexVar).getVar();
+		// CtVariableAccess currentVar = varsName.get(indexVar).getVar();
 		VarWrapper currentVar = varsName.get(indexVar);
 		// get all possibles variables to replace
 		List<CtVariable> mapped = mappedVars.get(currentVar);
