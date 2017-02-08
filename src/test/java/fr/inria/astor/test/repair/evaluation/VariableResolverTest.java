@@ -271,8 +271,6 @@ public class VariableResolverTest {
 		
 			AstorMain main1 = new AstorMain();
 			
-			String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-			File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 			String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 					"org.apache.commons.math.optimization.linear.SimplexSolverTest", "-location",
 					new File("./examples/Math-issue-288").getAbsolutePath(), 
@@ -384,7 +382,7 @@ public class VariableResolverTest {
 
 		Class typeCloneGranularityClass = CtType.class;
 
-		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(dep, out, learningDir, typeCloneGranularityClass);
+		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(learningDir, typeCloneGranularityClass);
 
 		log.debug(Arrays.toString(args));
 

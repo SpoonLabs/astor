@@ -51,23 +51,19 @@ public class ExecutableCloneIngredientStrategyTest {
 		CloneIngredientSearchStrategy<?> cloneStrategy = new CloneIngredientSearchStrategy<>(ingredientSpace);
 
 	}
-	private String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-	private	File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
-	
-	
 	@Test
-	public void testExecutableMath70() throws Exception{
+	public void testExecutableMath70() throws Exception {
 
 		// Now, let's test at Executanble granularity
 
 		Class executableCloneGranularity = CtExecutable.class;
-		
+
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
 
 		Class typeCloneGranularityClass = CtExecutable.class;
-		String[] args = createCommandM70(dep, out, learningDir, executableCloneGranularity);
+		String[] args = createCommandM70( learningDir, executableCloneGranularity);
 
 		log.debug(Arrays.toString(args));
 
@@ -99,15 +95,20 @@ public class ExecutableCloneIngredientStrategyTest {
 		assertFalse(execingredientsToConsider.isEmpty());
 
 		log.debug(execingredientsToConsider);
-		
-	
 
 	}
-	static public String[] createCommandM70(String dep, File out, File learningDir, Class cloneGranularityClass) {
+
+	static public String[] createCommandM70(File learningDir, Class cloneGranularityClass) {
 		// HERE WE FORCE TO NOT EVOLVE
-		return createCommandM70(dep, out, learningDir, cloneGranularityClass,0, false);
+		return createCommandM70(learningDir, cloneGranularityClass, 0, false);
 	}
-	static public String[] createCommandM70(String dep, File out, File learningDir, Class cloneGranularityClass, int generations, boolean transformIngredient) {
+
+	static public String[] createCommandM70(File learningDir, Class cloneGranularityClass, int generations,
+			boolean transformIngredient) {
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement",
 				//
 				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest",
@@ -124,11 +125,10 @@ public class ExecutableCloneIngredientStrategyTest {
 				"-scope", CtLocationIngredientSpace.class.getCanonicalName(),
 				//
 				"-seed", "10",
-			
+
 				"-maxgen", Integer.toString(generations),
 				//
-				"-population","3",
-				"-stopfirst", "true",
+				"-population", "3", "-stopfirst", "true",
 				//
 				"-maxtime", "100",
 				//
@@ -139,26 +139,25 @@ public class ExecutableCloneIngredientStrategyTest {
 				//
 				"-ingredientstrategy", CloneIngredientSearchStrategy.class.getName(),
 				//
-				"-transformingredient",
-		};
+				"-transformingredient", };
 		return args;
 	}
-	
-	
+
 	@Test
-	public void testExecutableMath70TransformationStrategy() throws Exception{
+	public void testExecutableMath70TransformationStrategy() throws Exception {
 
 		// Now, let's test at Executable granularity
 
 		Class executableCloneGranularity = CtExecutable.class;
-		
+
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
 
 		Class typeCloneGranularityClass = CtExecutable.class;
 		int generations = 100;
 		boolean transformIngredient = true;
-		String[] args = createCommandM70(dep, out, learningDir, executableCloneGranularity, generations, transformIngredient);
+		String[] args = createCommandM70( learningDir, executableCloneGranularity, generations,
+				transformIngredient);
 
 		log.debug(Arrays.toString(args));
 
@@ -168,7 +167,6 @@ public class ExecutableCloneIngredientStrategyTest {
 
 		ProgramVariant pvariant = engine.getVariants().get(0);
 
-
 	}
-	
+
 }

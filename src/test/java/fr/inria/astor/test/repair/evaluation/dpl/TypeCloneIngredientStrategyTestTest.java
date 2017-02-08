@@ -32,9 +32,6 @@ import spoon.reflect.declaration.CtType;
  */
 public class TypeCloneIngredientStrategyTestTest {
 
-	private String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-	private	File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	@Test
@@ -45,7 +42,7 @@ public class TypeCloneIngredientStrategyTestTest {
 
 		Class typeCloneGranularityClass = CtType.class;
 
-		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(dep, out, learningDir, typeCloneGranularityClass);
+		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(learningDir, typeCloneGranularityClass);
 
 		log.debug(Arrays.toString(args));
 

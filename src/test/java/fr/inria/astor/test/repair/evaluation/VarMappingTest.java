@@ -40,8 +40,7 @@ import spoon.reflect.reference.CtVariableReference;
 public class VarMappingTest {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
-	private String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-	private File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		private File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 	JGenProg engine = null;
 	CtElement c1 = null;
@@ -59,7 +58,7 @@ public class VarMappingTest {
 		Class typeCloneGranularityClass = CtType.class;
 
 		ConfigurationProperties.setProperty("clusteringfilename", "clustering_test.csv");
-		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(dep, out, learningDir,
+		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(learningDir,
 				typeCloneGranularityClass);
 
 		log.debug(Arrays.toString(args));
