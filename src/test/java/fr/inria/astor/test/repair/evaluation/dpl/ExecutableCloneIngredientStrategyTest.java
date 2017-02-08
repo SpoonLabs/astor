@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Queue;
 
 import org.apache.log4j.Logger;
@@ -17,7 +15,6 @@ import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.CtLocationIngredientSpace;
@@ -106,8 +103,11 @@ public class ExecutableCloneIngredientStrategyTest {
 	
 
 	}
-
 	static public String[] createCommandM70(String dep, File out, File learningDir, Class cloneGranularityClass) {
+		// HERE WE FORCE TO NOT EVOLVE
+		return createCommandM70(dep, out, learningDir, cloneGranularityClass,0, false);
+	}
+	static public String[] createCommandM70(String dep, File out, File learningDir, Class cloneGranularityClass, int generations, boolean transformIngredient) {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement",
 				//
 				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest",
@@ -124,8 +124,8 @@ public class ExecutableCloneIngredientStrategyTest {
 				"-scope", CtLocationIngredientSpace.class.getCanonicalName(),
 				//
 				"-seed", "10",
-				// HERE WE FORCE TO NOT EVOLVE
-				"-maxgen", "0",
+			
+				"-maxgen", Integer.toString(generations),
 				//
 				"-population","3",
 				"-stopfirst", "true",
@@ -137,10 +137,38 @@ public class ExecutableCloneIngredientStrategyTest {
 				//
 				"-clonegranularity", cloneGranularityClass.getCanonicalName(),
 				//
-
-				"-ingredientstrategy", CloneIngredientSearchStrategy.class.getName()
-
+				"-ingredientstrategy", CloneIngredientSearchStrategy.class.getName(),
+				//
+				"-transformingredient",
 		};
 		return args;
 	}
+	
+	
+	@Test
+	public void testExecutableMath70TransformationStrategy() throws Exception{
+
+		// Now, let's test at Executable granularity
+
+		Class executableCloneGranularity = CtExecutable.class;
+		
+		ClassLoader classLoader = getClass().getClassLoader();
+		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+
+		Class typeCloneGranularityClass = CtExecutable.class;
+		int generations = 100;
+		boolean transformIngredient = true;
+		String[] args = createCommandM70(dep, out, learningDir, executableCloneGranularity, generations, transformIngredient);
+
+		log.debug(Arrays.toString(args));
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(args);
+		JGenProg engine = (JGenProg) main1.getEngine();
+
+		ProgramVariant pvariant = engine.getVariants().get(0);
+
+
+	}
+	
 }

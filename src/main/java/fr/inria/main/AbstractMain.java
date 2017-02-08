@@ -193,6 +193,8 @@ public abstract class AbstractMain {
 		options.addOption("patchprioritization", true, "(Optional) Indicates the class name of the class that orders patches. It must extend from "
 				+ SolutionVariantSortCriterion.class.getName());
 
+		options.addOption("transformingredient", false, "indicates if Astor transforms ingredients.");
+		
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -468,7 +470,9 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("patchprioritization",
 					cmd.getOptionValue("patchprioritization"));
 
-		
+		if (cmd.hasOption("transformingredient"))
+			ConfigurationProperties.properties.setProperty("transformingredient", "true");
+
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();
