@@ -263,6 +263,24 @@ public class VarMappingTest {
 		
 	}
 
+	@Test
+	public void testIngredientWithoutVars(){
+		//We will try to put c3 (clearResult()) in c1.
+		List<CtVariable> varContextC1 = VariableResolver.searchVariablesInScope(c1);
+		
+		VarMapping vmapping2 = VariableResolver.mapVariables(varContextC1, c3);
+		//As the ingredient has not value, all collections must be empty
+		assertTrue(vmapping2.getNotMappedVariables().isEmpty());
+		assertTrue(vmapping2.getNotMappedVariables().isEmpty());
+		
+		List<Map<String, CtVariable>> allCombinationsOne = VariableResolver.findAllVarMappingCombination(vmapping2.getMappedVariables());
+		
+		log.debug(allCombinationsOne);
+		assertTrue(allCombinationsOne.isEmpty());
+		
+	}
+
+	
 	/**
 	 * //setup from UnivariateRealSolverUtils
 	 * 
