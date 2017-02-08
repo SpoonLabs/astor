@@ -40,9 +40,9 @@ import spoon.reflect.visitor.CtScanner;
  */
 @SuppressWarnings("rawtypes")
 public class VariableResolver {
-	
+
 	static ClusteringParser cluster = new ClusteringParser();
-	
+
 	private static Logger logger = Logger.getLogger(VariableResolver.class.getName());
 
 	/**
@@ -271,11 +271,11 @@ public class VariableResolver {
 		List<CtVariableAccess> notMappedVariables = new ArrayList<>();
 
 		ClassLoader classLoader = VariableResolver.class.getClassLoader();
-		
-		Map<String, List<String>> clusters = cluster.readClusterFile(
-				new File(classLoader.getResource("learningm70" + File.separator + ConfigurationProperties.getProperty("clusteringfilename")).getFile())
-						.toPath());
-		
+
+		Map<String, List<String>> clusters = cluster.readClusterFile(new File(classLoader
+				.getResource("learningm70" + File.separator + ConfigurationProperties.getProperty("clusteringfilename"))
+				.getFile()).toPath());
+
 		List<CtVariableAccess> variablesOutOfScope = retriveVariablesOutOfContext(varContext, ingredientCtElement);
 		logger.debug("vars out of context: " + variablesOutOfScope);
 		for (CtVariableAccess wOut : variablesOutOfScope) {
@@ -631,23 +631,30 @@ public class VariableResolver {
 			var.getVar().setVariable(varNew);
 		}
 	}
+
 	/**
 	 * 
 	 * Method that finds all combination of variables mappings Ex: if var 'a'
 	 * can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return
 	 * all combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2)
-	 * @param mappedVars  map of variables (out-of-scope) and candidate replacements of
-	 * @param currentCombination   current combination of variables
+	 * 
+	 * @param mappedVars
+	 *            map of variables (out-of-scope) and candidate replacements of
+	 * @param currentCombination
+	 *            current combination of variables
 	 * @return
 	 */
 	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
 			Map<VarWrapper, List<CtVariable>> mappedVars) {
-		
-		List<Map<String, CtVariable>> allCombinationsOne = new ArrayList<>();
-		List<VarWrapper> varNamesOne = new ArrayList<>(mappedVars.keySet());
-		
-		VariableResolver.findAllVarMappingCombination(mappedVars, varNamesOne, 0, new TreeMap<>(), allCombinationsOne);
 
+		List<Map<String, CtVariable>> allCombinationsOne = new ArrayList<>();
+		
+		if (!mappedVars.isEmpty()) {
+			List<VarWrapper> varNamesOne = new ArrayList<>(mappedVars.keySet());
+
+			VariableResolver.findAllVarMappingCombination(mappedVars, varNamesOne, 0, new TreeMap<>(),
+					allCombinationsOne);
+		}
 		return allCombinationsOne;
 	}
 
