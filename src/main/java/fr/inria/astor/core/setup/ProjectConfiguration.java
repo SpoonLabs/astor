@@ -74,7 +74,7 @@ public class ProjectConfiguration {
 
 	public void setOriginalDirSrc(List<String> dirs) {
 		for (String sub : dirs) {
-			this.setOriginalDirSrc(getOriginalProjectRootDir() + sub);
+			this.setOriginalDirSrc(getOriginalProjectRootDir() +File.separator + sub);
 		}
 	}
 
