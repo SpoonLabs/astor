@@ -88,7 +88,7 @@ public class CtLocationIngredientSpace extends AstorIngredientSpace<CtElement,Ct
 
 	@Override
 	public CtElement calculateLocation(CtElement elementToModify) {
-		return elementToModify.getParent(this.ctElementForSplitSpace);
+		return elementToModify.getParent(getCtElementForSplitSpace());
 	}
 	
 	@Override
