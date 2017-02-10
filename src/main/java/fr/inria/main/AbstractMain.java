@@ -10,6 +10,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.loop.AstorCoreEngine;
@@ -194,6 +196,8 @@ public abstract class AbstractMain {
 				+ SolutionVariantSortCriterion.class.getName());
 
 		options.addOption("transformingredient", false, "indicates if Astor transforms ingredients.");
+		
+		options.addOption("loglevel", true, "Indicates the log level. Values: "+ Arrays.toString(Level.getAllPossiblePriorities()));
 		
 	}
 
@@ -473,6 +477,10 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("transformingredient"))
 			ConfigurationProperties.properties.setProperty("transformingredient", "true");
 
+		if(cmd.hasOption("loglevel")){
+			String loglevelSelected = cmd.getOptionValue("loglevel");
+			LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
+		}
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Queue;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
@@ -139,7 +140,9 @@ public class ExecutableCloneIngredientStrategyTest {
 				//
 				"-ingredientstrategy", CloneIngredientSearchStrategy.class.getName(),
 				//
-				"-transformingredient", };
+				"-transformingredient",
+				//
+				"-loglevel",Level.DEBUG.toString()};
 		return args;
 	}
 
