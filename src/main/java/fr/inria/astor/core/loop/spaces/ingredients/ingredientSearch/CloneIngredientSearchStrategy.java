@@ -228,6 +228,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 								// Otherwise -> no
 								// VariableResolver.resetIngredient(mapping,
 								// originalMap);
+								continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
+										ingredient);
 							}
 						}
 					} else {
@@ -243,6 +245,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				}
 
 			}
+			
+			Stats.currentStat.incrementIngCounter(variant_id);
 
 			if (!continueSearching) {
 				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
@@ -379,8 +383,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			// similar the parent element is to the suspicious element.
 			// We can use a queue because the operator is fixed in the
 			// modification instance.
-			if (statements != null)
-				fixspace.addAll(statements);
+			fixspace.addAll(statements);
 		}
 
 		return fixspace;

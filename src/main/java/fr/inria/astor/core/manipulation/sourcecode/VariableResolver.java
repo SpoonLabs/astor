@@ -1,6 +1,7 @@
 package fr.inria.astor.core.manipulation.sourcecode;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -272,9 +273,8 @@ public class VariableResolver {
 
 		ClassLoader classLoader = VariableResolver.class.getClassLoader();
 
-		Map<String, List<String>> clusters = cluster.readClusterFile(new File(classLoader
-				.getResource("learningm70" + File.separator + ConfigurationProperties.getProperty("clusteringfilename"))
-				.getFile()).toPath());
+		Map<String, List<String>> clusters = cluster.readClusterFile(Paths.get(
+				ConfigurationProperties.getProperty("learningdir") + File.separator + ConfigurationProperties.getProperty("clusteringfilename")));
 
 		List<CtVariableAccess> variablesOutOfScope = retriveVariablesOutOfContext(varContext, ingredientCtElement);
 		logger.debug("vars out of context: " + variablesOutOfScope);
