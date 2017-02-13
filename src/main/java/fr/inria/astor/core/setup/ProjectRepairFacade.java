@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 
@@ -213,12 +215,19 @@ public class ProjectRepairFacade {
 			classPath.add(dep.getPath());
 		}
 
-		List<SuspiciousCode> suspiciousStatemens = faultLocalization.searchSuspicious(locationBytecode,
+		FaultLocalizationResult flResult = faultLocalization.searchSuspicious(locationBytecode,
 				testcasesToExecute, listTOInst, classPath, locationSrc);
 
+		List<SuspiciousCode> suspiciousStatemens = flResult.getCandidates();
+		 
 		if (suspiciousStatemens == null || suspiciousStatemens.isEmpty())
 			throw new IllegalArgumentException("No suspicious gen for analyze");
-
+		
+		List<String> failingTestCases = flResult.getFailingTestCases();
+		if(ConfigurationProperties.getPropertyBool("ignoreflakyinfl")){
+			addFlakyFailingTestToIgnoredList(failingTestCases);
+		}
+		
 		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
 		for (SuspiciousCode suspiciousCode : suspiciousStatemens) {
@@ -226,11 +235,30 @@ public class ProjectRepairFacade {
 				filtercandidates.add(suspiciousCode);
 			}
 		}
-
+		
 		return filtercandidates;
 	}
 
-
+	/**
+	 * It adds to the ignore list all failing TC that were not passed as argument. \
+	 * They are probably flaky test.
+	 * @param failingTestCases
+	 */
+	private void addFlakyFailingTestToIgnoredList(List<String> failingTestCases) {
+		//
+		if(ConfigurationProperties.getProperty("failing") == null)
+			return;
+		List<String> originalFailing = Arrays.asList(ConfigurationProperties.getProperty("failing").split(File.pathSeparator));
+		List<String> onlyFailingInFL = new ArrayList<>(failingTestCases);
+		//we remove those that we already know that fail
+		onlyFailingInFL.removeAll(originalFailing);
+		logger.debug("failing before "+ onlyFailingInFL+ ", added to the ignored list");
+		String ignoredTestCases =  ConfigurationProperties.getProperty("ignoredTestCases");
+		for (String failingFL : onlyFailingInFL) {
+			ignoredTestCases+=File.pathSeparator+failingFL;
+		}
+		ConfigurationProperties.properties.setProperty("ignoredTestCases",ignoredTestCases);
+	}
 
 	public ProjectConfiguration getProperties() {
 		return setUpProperties;

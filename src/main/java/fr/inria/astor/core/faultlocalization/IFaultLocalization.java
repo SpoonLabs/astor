@@ -3,7 +3,6 @@ package fr.inria.astor.core.faultlocalization;
 import java.util.List;
 import java.util.Set;
 
-import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 /**
  * API for fault localization
  * @author Matias Martinez
@@ -12,7 +11,7 @@ import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 public interface IFaultLocalization {
 
 	
-	public List<SuspiciousCode> searchSuspicious(
+	public FaultLocalizationResult searchSuspicious(
 			String location, 
 			List<String> testsToExecute, 
 			List<String> toInstrument,
