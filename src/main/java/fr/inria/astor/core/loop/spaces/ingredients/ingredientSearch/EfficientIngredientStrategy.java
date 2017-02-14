@@ -57,16 +57,17 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
 
 		int variant_id = modificationPoint.getProgramVariant().getId();
-		
+
 		int attempts = 0;
 
 		boolean continueSearching = true;
 
 		int elementsFromFixSpace = getSpaceSize(modificationPoint, operationType);
-		
+
 		Stats.currentStat.initializeIngCounter(variant_id);
-		
+
 		while (continueSearching && attempts < elementsFromFixSpace) {
+			
 			Ingredient randomIngredient = super.getFixIngredient(modificationPoint, operationType);
 
 			if (randomIngredient == null || randomIngredient.getCode() == null) {
@@ -75,70 +76,86 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 			CtElement elementFromIngredient = randomIngredient.getCode();
 
 			attempts++;
-			
-			
+
 			boolean alreadyApplied = alreadySelected(modificationPoint, elementFromIngredient, operationType);
 
-			if (!alreadyApplied && !elementFromIngredient.getSignature()
-					.equals(modificationPoint.getCodeElement().getSignature())) {
+			if (alreadyApplied) {
+				log.debug("Ingredient Already applied");
+				continue;
+			}
 
-				boolean transformIngredient = ConfigurationProperties.getPropertyBool("transformingredient");
-				if (transformIngredient) {
-					if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
-						log.debug("The modification point  has not any var in scope");
-					}
-					VarMapping mapping = VariableResolver.mapVariables(modificationPoint.getContextOfModificationPoint(), elementFromIngredient);
-					// if we map all variables
-					if (mapping.getNotMappedVariables().isEmpty()) {
-						if (mapping.getMappedVariables().isEmpty()) {
-							// nothing to transform, accept the ingredient
-							log.debug("The var Mapping is empty, we keep the ingredient");
-							continueSearching = false;
-						} else {// We have mappings between variables
-							log.debug("Ingredient before transformation: " + elementFromIngredient);
-							List<Map<String, CtVariable>> allCombinations = VariableResolver.findAllVarMappingCombination(mapping.getMappedVariables());
-							// TODO: here, we take the first one, what should we do with the rest?
-							if (allCombinations.size() > 0) {
-								Map<String, CtVariable> selectedTransformation = allCombinations.get(0);
-								log.debug("Transformation proposed: " + selectedTransformation);
-								// The ingredient is cloned, so we can modify its variables
-								Map<CtVariableAccess, CtVariableReference> originalMap = VariableResolver.convertIngredient(mapping, selectedTransformation);
-								log.debug("Ingredient after transformation: " + elementFromIngredient);
-								// TODO: do we need to revert the ingredient. If we try another var combination -> yes.
-								// Otherwise -> no
-								// VariableResolver.resetIngredient(mapping, originalMap);
-								continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
-										elementFromIngredient);
-							}
+			boolean sameCode = elementFromIngredient.getSignature()
+					.equals(modificationPoint.getCodeElement().getSignature());
+
+			if (sameCode) {
+				log.debug("Ingredient same that the mod point");
+				continue;
+			}
+
+			boolean transformIngredient = ConfigurationProperties.getPropertyBool("transformingredient");
+			if (transformIngredient) {
+				if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
+					log.debug("The modification point  has not any var in scope");
+				}
+				VarMapping mapping = VariableResolver.mapVariables(modificationPoint.getContextOfModificationPoint(),
+						elementFromIngredient);
+				// if we map all variables
+				if (mapping.getNotMappedVariables().isEmpty()) {
+					if (mapping.getMappedVariables().isEmpty()) {
+						// nothing to transform, accept the ingredient
+						log.debug("The var Mapping is empty, we keep the ingredient");
+						continueSearching = false;
+					} else {// We have mappings between variables
+						log.debug("Ingredient before transformation: " + elementFromIngredient);
+						List<Map<String, CtVariable>> allCombinations = VariableResolver
+								.findAllVarMappingCombination(mapping.getMappedVariables());
+						// TODO: here, we take the first one, what should we do
+						// with the rest?
+						if (allCombinations.size() > 0) {
+							Map<String, CtVariable> selectedTransformation = allCombinations.get(0);
+							log.debug("Transformation proposed: " + selectedTransformation);
+							// The ingredient is cloned, so we can modify its
+							// variables
+							Map<CtVariableAccess, CtVariableReference> originalMap = VariableResolver
+									.convertIngredient(mapping, selectedTransformation);
+							log.debug("Ingredient after transformation: " + elementFromIngredient);
+							// TODO: do we need to revert the ingredient. If we
+							// try another var combination -> yes.
+							// Otherwise -> no
+							// VariableResolver.resetIngredient(mapping,
+							// originalMap);
+							continueSearching = !VariableResolver.fitInPlace(
+									modificationPoint.getContextOfModificationPoint(), elementFromIngredient);
 						}
-					} else {
-						// here maybe we can put one counter of not mapped ingredients
-						log.debug("Vars not mapped: " + mapping.getNotMappedVariables());
 					}
 				} else {
-					// default behavior
-					continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
-							elementFromIngredient);
+					// here maybe we can put one counter of not mapped
+					// ingredients
+					log.debug("Vars not mapped: " + mapping.getNotMappedVariables());
 				}
+			} else {
+				// default behavior
+				continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
+						elementFromIngredient);
+			}
 
-				Stats.currentStat.incrementIngCounter(variant_id);
-				
-				if (!continueSearching) {
-					IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(),
-							elementFromIngredient);
-					
-					int ingCounter = Stats.currentStat.saveIngCounter(variant_id);
-					log.debug("---attempts on ingredient space: " + ingCounter );
-					
-					return new Ingredient(elementFromIngredient, scope);
-				}
+			Stats.currentStat.incrementIngCounter(variant_id);
 
-			}else{log.debug("Already applied");}
+			if (!continueSearching) {
+				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(),
+						elementFromIngredient);
 
+				// int ingCounter =
+				// Stats.currentStat.saveIngCounter(variant_id);
+				int ingCounter = Stats.currentStat.temporalIngCounter.get(variant_id);
+				log.debug("---attempts on ingredient space: " + ingCounter);
+
+				return new Ingredient(elementFromIngredient, scope);
+			}
 		}
-		Stats.currentStat.saveIngCounter(variant_id);
-		
-		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement().getSignature()+ ", search space size: "+elementsFromFixSpace);
+
+		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement().getSignature()
+				+ ", search space size: " + elementsFromFixSpace);
 		return null;
 
 	}
@@ -232,7 +249,8 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 	 */
 	protected boolean alreadySelected(ModificationPoint gen, CtElement fixElement, AstorOperator operator) {
 		// we add the instance identifier to the patch.
-		String lockey = gen.getCodeElement().getPosition().toString()+ "-"+gen.getCodeElement() + "-" + operator.toString();
+		String lockey = gen.getCodeElement().getPosition().toString() + "-" + gen.getCodeElement() + "-"
+				+ operator.toString();
 		String fix = "";
 		try {
 			fix = fixElement.toString();
