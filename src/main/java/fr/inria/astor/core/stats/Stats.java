@@ -11,6 +11,7 @@ import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 
 /**
  * Stores and manages statistics
+ * 
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
@@ -25,9 +26,10 @@ public class Stats {
 	// Ingredients
 	// Key: id, value: counter
 	public Map<Integer, Integer> temporalIngCounter = new HashedMap();
-	public List<Integer> ingAttemps = new ArrayList<>();
+	public List<Integer> ingAttemptsSuccessfulPatches = new ArrayList<>();
+	public List<Integer> ingAttemptsFailingPatches = new ArrayList<>();
 	//
-	
+
 	public int numberOfElementsToMutate = 0;
 	public StatCounter<String> sizeSpace = new StatCounter<String>();
 	public List<StatSpaceSize> sizeSpaceOfVariant = new ArrayList<StatSpaceSize>();
@@ -49,7 +51,8 @@ public class Stats {
 
 	public int numberOfAppliedOp = 0;
 	public int numberOfNotAppliedOp = 0;
-	// this property contains the number of modification points that the approach try to mutate
+	// this property contains the number of modification points that the
+	// approach try to mutate
 	// but it could. For instance, it takes as same ingredient one element that
 	// gen already containe
 	public int numberOfGenInmutated = 0;
@@ -129,6 +132,7 @@ public class Stats {
 		}
 		return currentStat;
 	}
+
 	public static Stats getCurrentStats() {
 
 		if (currentStat == null) {
@@ -146,61 +150,87 @@ public class Stats {
 		}
 		this.attemptsPerVariant.add(sizeSpaceOfVariant.size());
 	}
+
 	/**
-	 * Increments the counter for variant received as argument.
-	 * Return the counter
+	 * Increments the counter for variant received as argument. Return the
+	 * counter
+	 * 
 	 * @param idprogvariant
 	 * @return
 	 */
 	public int incrementIngCounter(Integer idprogvariant) {
 		Integer counter = 0;
-		if(!temporalIngCounter.containsKey(idprogvariant))
+		if (!temporalIngCounter.containsKey(idprogvariant))
 			temporalIngCounter.put(idprogvariant, new Integer(0));
-		else{
+		else {
 			counter = temporalIngCounter.get(idprogvariant);
 		}
 		counter++;
 		temporalIngCounter.put(idprogvariant, counter);
+		log.debug("Incrementing ingredient counter for variant "+idprogvariant + " to "+counter);
 		return counter;
 	}
-	
+
 	public void initializeIngCounter(Integer idprogvariant) {
 		temporalIngCounter.put(idprogvariant, new Integer(0));
 	}
-	
+
 	/**
-	 * Returns the counter for the program variant passed as argument.
-	 * It does not modify the counter.
+	 * Returns the counter for the program variant passed as argument. It does
+	 * not modify the counter.
+	 * 
 	 * @param idprogvariant
 	 * @return
 	 */
 	public int getIngCounter(Integer idprogvariant) {
-	
-		if(!temporalIngCounter.containsKey(idprogvariant))
+
+		if (!temporalIngCounter.containsKey(idprogvariant))
 			return 0;
-		else{
+		else {
 			return temporalIngCounter.get(idprogvariant);
 		}
-		
+
 	}
+
 	/**
-	 * Save variant counter and
-	 * Reset counter for the id received as argument.
+	 * Save variant counter and Reset counter for the id received as argument.
+	 * 
 	 * @param idprogvariant
 	 * @return
 	 */
-	public int saveIngCounter(Integer idprogvariant) {
+	public void storeIngCounterFromSuccessPatch(Integer idprogvariant) {
+		storeIngredientCounter(idprogvariant, ingAttemptsSuccessfulPatches);
+	}
+
+	/**
+	 * Save variant counter and Reset counter for the id received as argument.
+	 * 
+	 * @param idprogvariant
+	 * @return
+	 */
+	public void storeIngCounterFromFailingPatch(Integer idprogvariant) {
+		storeIngredientCounter(idprogvariant, ingAttemptsFailingPatches);
+	}
+
+	private Integer storeIngredientCounter(Integer idprogvariant, List<Integer> ingAttempts) {
 		Integer counter = temporalIngCounter.get(idprogvariant);
-		this.ingAttemps.add(counter);
+		if (counter == null) {
+			log.debug("Ingredient counter is Zero");
+			ingAttempts.add(0);
+		} else {
+			ingAttempts.add(counter);
+		}
 		temporalIngCounter.put(idprogvariant, 0);
 		return counter;
 	}
+
 	/**
 	 * Remove all values.
 	 */
 	public void resetIngCounter() {
 		temporalIngCounter.clear();
-		this.ingAttemps.clear();
+		this.ingAttemptsSuccessfulPatches.clear();
+		this.ingAttemptsFailingPatches.clear();
 	}
-	
+
 }

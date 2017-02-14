@@ -415,7 +415,7 @@ public abstract class AstorCoreEngine {
 			log.debug("-Valid?: " + validInstance + ", fitness " + programVariant.getFitness());
 			if (validInstance) {
 				log.info("-Found Solution, child variant #" + programVariant.getId());
-				saveStaticSucessful(generation);
+				saveStaticSucessful(programVariant.getId(),generation);
 				if (ConfigurationProperties.getPropertyBool("savesolution")) {
 					mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
 					mutatorSupporter.saveSolutionData(programVariant, srcOutput, generation);
@@ -427,17 +427,19 @@ public abstract class AstorCoreEngine {
 			currentStat.numberOfFailingCompilation++;
 			currentStat.setNotCompiles(programVariant.getId());
 			programVariant.setFitness(this.populationControler.getMaxFitnessValue());
-
 		}
+		//In case that the variant a) does not compile; b) compiles but it's not adequate
+		Stats.currentStat.storeIngCounterFromFailingPatch(programVariant.getId());
 		return false;
 
 	}
 
-	protected void saveStaticSucessful(int generation) {
+	protected void saveStaticSucessful(int variant_id,int generation) {
 		currentStat.patches++;
 		currentStat.genPatches.add(new StatPatch(generation, currentStat.passFailingval1, currentStat.passFailingval2));
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
+		Stats.currentStat.storeIngCounterFromSuccessPatch(variant_id);
 	}
 
 	/**

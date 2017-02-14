@@ -250,12 +250,13 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 
 			if (!continueSearching) {
 				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
-				int ingCounter = Stats.currentStat.saveIngCounter(variant_id);
+				//int ingCounter = Stats.currentStat.saveIngCounter(variant_id);
+				int ingCounter = Stats.currentStat.getIngCounter(variant_id);
 				log.debug("---attempts on ingredient space: " + ingCounter);
 				return new Ingredient(ingredient, scope);
 			}
 		}
-		Stats.currentStat.saveIngCounter(variant_id);
+		//Stats.currentStat.saveIngCounter(variant_id);
 
 		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement());
 		return null;

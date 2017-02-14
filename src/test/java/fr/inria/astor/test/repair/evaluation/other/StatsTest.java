@@ -27,29 +27,32 @@ public class StatsTest {
 		assertEquals(2,cs.getIngCounter(variantid));
 	
 		//Now, we variant
-		assertEquals(1,cs.incrementIngCounter(2));
-		assertEquals(1,cs.getIngCounter(2));
+		int variantid2 = 2;
+		assertEquals(1,cs.incrementIngCounter(variantid2));
+		assertEquals(1,cs.getIngCounter(variantid2));
 		assertEquals(2,cs.getIngCounter(variantid));
-		assertEquals(1,cs.getIngCounter(2));
+		assertEquals(1,cs.getIngCounter(variantid2));
 		assertEquals(3,cs.incrementIngCounter(variantid));
 		//
-		int counter_1 = cs.saveIngCounter(variantid);
+		cs.storeIngCounterFromSuccessPatch(variantid);
+		int counter_1 =  cs.ingAttemptsSuccessfulPatches.get(0);//first patch stored
 		assertEquals(3, counter_1);
 		
-		int counter_2 = cs.saveIngCounter(2);
+		cs.storeIngCounterFromSuccessPatch(variantid2);
+		int counter_2 =  cs.ingAttemptsSuccessfulPatches.get(1);//second patch stored
 		assertEquals(1, counter_2);
 
 		//two counters
-		assertEquals(2,cs.ingAttemps.size());
+		assertEquals(2,cs.ingAttemptsSuccessfulPatches.size());
 		//three attempts for the first variant (1st position)
-		assertEquals(3,(int)cs.ingAttemps.get(0));
+		assertEquals(3,(int)cs.ingAttemptsSuccessfulPatches.get(0));
 		//one attempt for the second variant
-		assertEquals(1,(int)cs.ingAttemps.get(1));
+		assertEquals(1,(int)cs.ingAttemptsSuccessfulPatches.get(1));
 		
 		cs.resetIngCounter();
 		assertTrue(cs.temporalIngCounter.isEmpty());
 
-		assertTrue(cs.ingAttemps.isEmpty());
+		assertTrue(cs.ingAttemptsSuccessfulPatches.isEmpty());
 	}
 
 }

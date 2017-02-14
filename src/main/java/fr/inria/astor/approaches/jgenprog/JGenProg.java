@@ -326,8 +326,9 @@ public class JGenProg extends AstorCoreEngine {
 	@Override
 	public void showResults() {
 		super.showResults();
-		log.info("ing_attempts:("+this.currentStat.ingAttemps.size()
-				+ ") "+this.currentStat.ingAttemps);
+		log.info("successful_ing_attempts ("+this.currentStat.ingAttemptsSuccessfulPatches.size()+ "): "+this.currentStat.ingAttemptsSuccessfulPatches);
+		log.info("failing_ing_attempts ("+this.currentStat.ingAttemptsFailingPatches.size()+ "): "+this.currentStat.ingAttemptsFailingPatches);
+		
 	}
 
 
