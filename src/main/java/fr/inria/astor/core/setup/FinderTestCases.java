@@ -58,7 +58,8 @@ public class FinderTestCases {
 	public static void updateRegressionTestCases(ProjectRepairFacade projectConfig) {
 		List<String> original = projectConfig.getProperties().getRegressionTestCases();
 		List<String> refined =	refineListofRegressionTestCases(original);
-		projectConfig.getProperties().setRegressionCases(refined);
+		if(!refined.isEmpty())
+			projectConfig.getProperties().setRegressionCases(refined);
 		log.debug("Refining list of test cases: original= "+original.size() 
 			+", refined= "+refined.size());
 	}
@@ -108,6 +109,7 @@ public class FinderTestCases {
 
 	private static List<String> retriveIgnoreTestCases() {
 		String list = ConfigurationProperties.getProperty("ignoredTestCases");
+		log.debug("to ignore "+ list );
 		String[] cases = list.split(File.pathSeparator);
 		return 	Arrays.asList(cases);
 	}
