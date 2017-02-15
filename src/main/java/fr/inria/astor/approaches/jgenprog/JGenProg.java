@@ -98,14 +98,20 @@ public class JGenProg extends AstorCoreEngine {
 	}
 	
 	protected void setFitnessOfPopulation(){
+		log.debug("Calculating fitness for original program variant.");
+		//temporal workaround for avoid changing the interface
+		String original = ConfigurationProperties.getProperty("forceExecuteRegression");
+		ConfigurationProperties.setProperty("forceExecuteRegression", Boolean.TRUE.toString());
 		boolean validInstance = validateInstance(originalVariant);
 		if (validInstance) {
 			throw new IllegalStateException("The application under repair has not failling test cases");
 		}
-
+		double fitness = originalVariant.getFitness();
+		log.debug("The original fitness is : "+fitness);
 		for (ProgramVariant initvariant : variants) {
-			initvariant.setFitness(originalVariant.getFitness());
+			initvariant.setFitness(fitness);
 		}
+		ConfigurationProperties.setProperty("forceExecuteRegression", original);//WA.
 		
 	} 
 
@@ -326,8 +332,8 @@ public class JGenProg extends AstorCoreEngine {
 	@Override
 	public void showResults() {
 		super.showResults();
-		log.info("successful_ing_attempts ("+this.currentStat.ingAttemptsSuccessfulPatches.size()+ "): "+this.currentStat.ingAttemptsSuccessfulPatches);
-		log.info("failing_ing_attempts ("+this.currentStat.ingAttemptsFailingPatches.size()+ "): "+this.currentStat.ingAttemptsFailingPatches);
+		log.info("\nsuccessful_ing_attempts ("+this.currentStat.ingAttemptsSuccessfulPatches.size()+ "): "+this.currentStat.ingAttemptsSuccessfulPatches);
+		log.info("\nfailing_ing_attempts ("+this.currentStat.ingAttemptsFailingPatches.size()+ "): "+this.currentStat.ingAttemptsFailingPatches);
 		
 	}
 

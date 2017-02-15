@@ -39,7 +39,7 @@ public class ProcessValidator extends ProgramValidator {
 	public ProgramVariantValidationResult validate(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
 
 		return this.validate(mutatedVariant, projectFacade,
-				Boolean.valueOf(ConfigurationProperties.getProperty("executeRegression")));
+				Boolean.valueOf(ConfigurationProperties.getProperty("forceExecuteRegression")));
 
 	}
 
@@ -50,11 +50,11 @@ public class ProcessValidator extends ProgramValidator {
 	 * 
 	 * @param mutatedVariant
 	 * @param projectFacade
-	 * @param executeRegression
+	 * @param forceExecuteRegression
 	 * @return
 	 */
 	public ProgramVariantValidationResult validate(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade,
-			boolean executeRegression) {
+			boolean forceExecuteRegression) {
 
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
@@ -78,22 +78,22 @@ public class ProcessValidator extends ProgramValidator {
 			if (trfailing == null) {
 				log.debug("**The validation 1 have not finished well**");
 				return null;
-			} else {
-				// If it is successful, execute regression
-				currentStats.numberOfTestcasesExecutedval1 += trfailing.casesExecuted;
-				currentStats.numberOfFailingTestCase = trfailing.casesExecuted;
-				log.debug(trfailing);
-				if (trfailing.wasSuccessful() && executeRegression) {
-					currentStats.numberOfRegressionTestExecution++;
-					currentStats.passFailingval2++;
-					return runRegression(mutatedVariant, projectFacade, bc);
-				} else {
-					ProgramVariantValidationResult r = new TestCasesProgramValidationResult(trfailing,
-							trfailing.wasSuccessful(), false);
-					return r;
-				}
-
 			}
+
+			// If it is successful, execute regression
+			currentStats.numberOfTestcasesExecutedval1 += trfailing.casesExecuted;
+			currentStats.numberOfFailingTestCase = trfailing.casesExecuted;
+			log.debug(trfailing);
+			if (trfailing.wasSuccessful() || forceExecuteRegression) {
+				currentStats.numberOfRegressionTestExecution++;
+				currentStats.passFailingval2++;
+				return runRegression(mutatedVariant, projectFacade, bc);
+			} else {
+				ProgramVariantValidationResult r = new TestCasesProgramValidationResult(trfailing,
+						trfailing.wasSuccessful(), false);
+				return r;
+			}
+
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			return null;
@@ -141,13 +141,12 @@ public class ProcessValidator extends ProgramValidator {
 			ProjectRepairFacade projectFacade, URL[] bc) {
 
 		JUnitExecutorProcess testProcessRunner = new JUnitIndirectExecutorProcess(false);// Dir
-		
+
 		if (ConfigurationProperties.getPropertyBool("testbystep"))
 			return executeRegressionTestingOneByOne(mutatedVariant, bc, testProcessRunner, projectFacade);
 		else
 			return executeRegressionTesting(mutatedVariant, bc, testProcessRunner, projectFacade);
 
-		
 	}
 
 	protected URL[] createClassPath(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade)
@@ -179,7 +178,6 @@ public class ProcessValidator extends ProgramValidator {
 		}
 		return bc;
 	}
-
 
 	protected ProgramVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc,
 			JUnitExecutorProcess p, ProjectRepairFacade projectFacade) {

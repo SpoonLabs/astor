@@ -57,7 +57,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 
 		try {
 			ProcessValidator validator = new ProcessValidator();
-			boolean executeAlloriginalValidation = true;
+			boolean executeAlloriginalValidation = false;
 			ProgramVariantValidationResult resultOriginal = validator.validate(currentVariant, projectFacade,
 					executeAlloriginalValidation);
 			if (resultOriginal == null || !resultOriginal.wasSuccessful()) {
