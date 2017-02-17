@@ -50,11 +50,7 @@ public class ValidationTest extends BaseEvolutionaryTest {
 				"-javacompliancelevel", "7", "-flthreshold", "0.5", "-out", out.getAbsolutePath(), "-scope", "local",
 				"-seed", "6010", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "30", "-testbystep",
 				//
-				"ignoredtestcases", "org.apache.commons.lang.LocaleUtilsTest",
-
-				//
-				
-				
+				"-ignoredtestcases", "org.apache.commons.lang.LocaleUtilsTest",	
 		};
 		try {
 			System.out.println(Arrays.toString(args));

@@ -4,10 +4,11 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
-import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.main.evolution.AstorMain;
 /**
  * Test for MutRepair engine. (it mutates if conditions)
@@ -60,9 +61,13 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 				"-seed","10"
 				};
 		System.out.println(Arrays.toString(args));
-		AstorMain m = new AstorMain();
-		m.execute(args);
-		assertTrue(m.getEngine().getSolutions().size() > 0);
+		AstorMain main1 = new AstorMain();
+		main1.execute(args);
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		log.debug("Solutions "+solutions);
+		assertNotNull(solutions);
+		assertTrue(solutions.size() > 0);
+
 	}
 	
 
