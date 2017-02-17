@@ -24,15 +24,13 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class GZoltarFaultLocalization implements IFaultLocalization{
+public class GZoltarFaultLocalization implements IFaultLocalization {
 
 	Logger logger = Logger.getLogger(GZoltarFaultLocalization.class.getName());
 
-	
-	public FaultLocalizationResult searchSuspicious(String location, List<String> testsToExecute, List<String> toInstrument,
-			Set<String> cp, String srcFolder) throws Exception {
-	
-		List<SuspiciousCode> candidates = new ArrayList<SuspiciousCode>();
+	public FaultLocalizationResult searchSuspicious(String location, List<String> testsToExecute,
+			List<String> toInstrument, Set<String> cp, String srcFolder) throws Exception {
+
 		List<String> failingTestCases = new ArrayList<String>();
 
 		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");
@@ -43,11 +41,10 @@ public class GZoltarFaultLocalization implements IFaultLocalization{
 		// Example: GZoltar gz = new
 		// GZoltar("C:\\Personal\\develop\\workspaceEvolution\\testProject\\target\\classes");
 
-		File projLocationFile =  new File(ConfigurationProperties.getProperty("location"));
-		String projLocation =projLocationFile.getAbsolutePath();
-		logger.debug("Gzoltar run over: "+projLocation + " , does it exist? "+projLocationFile.exists());
-		
-		
+		File projLocationFile = new File(ConfigurationProperties.getProperty("location"));
+		String projLocation = projLocationFile.getAbsolutePath();
+		logger.debug("Gzoltar run over: " + projLocation + " , does it exist? " + projLocationFile.exists());
+
 		GZoltar gz = new GZoltar(projLocation);
 
 		// 2. Add Package/Class names to instrument
@@ -80,33 +77,50 @@ public class GZoltarFaultLocalization implements IFaultLocalization{
 				failingTestCases.add(testName.split("\\#")[0]);
 			}
 		}
-		
+
 		logger.info("Gzoltar Test Result Total:" + sum[0] + ", fails: " + sum[1] + ", GZoltar suspicious "
 				+ gz.getSuspiciousStatements().size());
 
 		DecimalFormat df = new DecimalFormat("#.###");
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
+
+		List<Statement> gzCandidates = new ArrayList();
+
 		for (Statement gzoltarStatement : gz.getSuspiciousStatements()) {
 			String compName = gzoltarStatement.getMethod().getParent().getLabel();
-	
 			if (gzoltarStatement.getSuspiciousness() >= thr && isSource(compName, srcFolder)) {
-				logger.debug("Suspicious: line " + compName + " l: " + gzoltarStatement.getLineNumber() + ", susp "
-						+ df.format(gzoltarStatement.getSuspiciousness()));
-				SuspiciousCode suspcode = new SuspiciousCode(compName, gzoltarStatement.getMethod().toString(), gzoltarStatement.getLineNumber(),
-						gzoltarStatement.getSuspiciousness(),
-						gzoltarStatement.getCountMap());
-				candidates.add(suspcode);
-				
+				gzCandidates.add(gzoltarStatement);
+
 			}
 
 		}
-		int max = (candidates.size() < maxSuspCandidates) ? candidates.size() : maxSuspCandidates;
+		// If we do not have candidate due the threshold is to high, we add all
+		// as suspicious
+		if (gzCandidates.isEmpty()) {
+			gzCandidates.addAll(gz.getSuspiciousStatements());
 
-		Collections.sort(candidates, new ComparatorCandidates());
+		}
+		// we order the suspicious DESC
+		Collections.sort(gzCandidates, (o1, o2) -> Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()));
+
+		// We select the best X candidates.
+		int max = (gzCandidates.size() < maxSuspCandidates) ? gzCandidates.size() : maxSuspCandidates;
+	
+		List<SuspiciousCode> candidates = new ArrayList<SuspiciousCode>();
+
+		for (int i = 0; i < max; i++) {
+			Statement gzoltarStatement = gzCandidates.get(i);
+			String compName = gzoltarStatement.getMethod().getParent().getLabel();
+
+			logger.debug("Suspicious: line " + compName + " l: " + gzoltarStatement.getLineNumber() + ", susp "
+					+ df.format(gzoltarStatement.getSuspiciousness()));
+			SuspiciousCode suspcode = new SuspiciousCode(compName, gzoltarStatement.getMethod().toString(),
+					gzoltarStatement.getLineNumber(), gzoltarStatement.getSuspiciousness(),
+					gzoltarStatement.getCountMap());
+			candidates.add(suspcode);
+		}
 
 		logger.info("Gzoltar found: " + candidates.size() + " with susp > " + thr + ", we consider: " + max);
-
-		candidates = candidates.subList(0, max);
 
 		return new FaultLocalizationResult(candidates, failingTestCases);
 	}
