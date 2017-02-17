@@ -19,8 +19,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.martiansoftware.jsap.JSAPException;
-
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
@@ -32,6 +30,9 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+
+import com.martiansoftware.jsap.JSAPException;
+
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -55,48 +56,58 @@ import fr.inria.astor.core.stats.Stats;
  */
 public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends EfficientIngredientStrategy {
 
-	private Class<T> cls;
-	private TypeFilter<T> filter;
-	private List<String> distances; // Each item is a string of comma-separated
-									// values representing distances.
-	private Map<String, Integer> key2row; // String is row from src2txt. Integer
-											// is index into this.distances.
+	private final Class cls;
+	private TypeFilter typeFilter;
+	// Each item is a string of comma-separated values representing distances.
+	private List<String> distances;
+	// String is row from src2txt. Integer is index into this.distances.
+	private Map<String, Integer> key2row;
 	private Map<Integer, String> row2key;
-	private Map<String, T> key2element = new HashMap<>(); // Elements in scope.
-	private Map<T, List<T>> element2simlist = new HashMap<>(); // Cache of
-																// elements'
-																// similarity
-																// lists.
+	// Elements in scope.
+	private Map<String, T> key2element = new HashMap<>();
+	// Cache of elements' similarity lists.
+	private Map<T, List<T>> element2simlist = new HashMap<>();
 
-	public CloneIngredientSearchStrategy(@SuppressWarnings("rawtypes") IngredientSpace space)
+	public CloneIngredientSearchStrategy(IngredientSpace space)
 			throws ClassNotFoundException, IOException {
 		super(space);
+		cls = Class.forName(ConfigurationProperties.properties.getProperty("clonegranularity"));
 		setfilter();
 		readinput();
 	}
 
-	@SuppressWarnings("unchecked")
-	private void setfilter() throws ClassNotFoundException {
-		cls = (Class<T>) Class.forName(ConfigurationProperties.properties.getProperty("clonegranularity"));
-		if (cls.equals(CtType.class) || cls.equals(CtExecutable.class)) {
-			filter = new TypeFilter<T>(cls) {
+	private void setfilter() {
+		if (cls.equals(CtType.class)) {
+			typeFilter = new TypeFilter<CtType>(CtType.class) {
 				@Override
-				public boolean matches(T element) {
-					// Definition of "top level" T.
-					return element.getParent(cls) == null && !element.isImplicit()
+				public boolean matches(CtType element) {
+					// Definition of "top level" CtType.
+					return element.getParent(CtType.class) == null
+							&& !element.isImplicit();
+				}
+			};
+		} else if (cls.equals(CtExecutable.class)) {
+			typeFilter = new TypeFilter<CtExecutable>(CtExecutable.class) {
+				@Override
+				public boolean matches(CtExecutable element) {
+					// Definition of "top level" CtExecutable.
+					return element.getParent(CtExecutable.class) == null
+							&& !element.isImplicit()
 							&& !(element instanceof CtAnonymousExecutable);
 				}
 			};
 		} else {
+			log.error("Invalid clonegranularity");
 			throw new IllegalArgumentException();
 		}
+		log.debug("clonegranularity: " + cls.getName());
 	}
 
 	private void readinput() throws IOException {
 		// Read distance vectors stored in distances.csv file (e.g.,
 		// executables.distances.csv).
-		distances = read(Input.DISTANCES.getpath()); // Distance vectors will be
-														// parsed on demand.
+		// Distance vectors will be parsed on demand.
+		distances = read(Input.DISTANCES.getpath());
 
 		// Read keys stored in key file (e.g., executables.key).
 		List<String> keys = read(Input.KEYS.getpath());
@@ -141,17 +152,18 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		if (key2element.isEmpty())
 			key2element = queryelements().orElseThrow(RuntimeException::new);
 
-		T suspicious = modificationPoint.getCodeElement().getParent(filter);
+		T suspicious = (T) modificationPoint.getCodeElement().getParent(typeFilter);
 
 		if (suspicious == null) {
 			// TODO Count number of times modification point does not map to
 			// "top level" T.
 			log.info("Modification point does not map to \"top level\" "
-					+ ConfigurationProperties.properties.getProperty("clonegranularity") + ": " + modificationPoint);
+					+ cls.getName() + ": " + modificationPoint);
 			return null;
 		}
 
 		String key = getkey(suspicious);
+		log.debug("Suspicious element: " + key);
 
 		if (!key2element.containsKey(key)) {
 			log.error("Suspicious element is not in scope: " + key);
@@ -163,87 +175,84 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			computesimlist(suspicious);
 
 		Queue<CtCodeElement> fixspace = getfixspace(modificationPoint, op, suspicious);
-		log.debug("Fix space is empty? " + fixspace.isEmpty() + ", search space size: " + fixspace.size());
+		int searchSpaceSize = fixspace.size();
+		log.debug("Fix space is empty? " + fixspace.isEmpty());
 		if (fixspace.isEmpty())
 			return null;
 
 		boolean continueSearching = true;
-		CtElement ingredient;
-		boolean alreadyApplied;
 
 		int variant_id = modificationPoint.getProgramVariant().getId();
 		Stats.currentStat.initializeIngCounter(variant_id);
 
 		while (continueSearching) {
-			ingredient = getingredient(fixspace);
+			CtElement ingredient = getingredient(fixspace);
 			log.debug("Location to insert " + modificationPoint);
 			log.debug("-->Ingredient selected: " + ingredient);
 
 			if (ingredient == null)
-				break;
+				return null;
 
-			alreadyApplied = alreadySelected(modificationPoint, ingredient, op);
+			boolean alreadyApplied = alreadySelected(modificationPoint, ingredient, op);
 
-			if (!alreadyApplied && !ingredient.equals(modificationPoint.getCodeElement())) {
+			if (alreadyApplied) {
+				log.debug("Ingredient Already applied");
+				continue;
+			}
 
-				boolean transformIngredient = ConfigurationProperties.getPropertyBool("transformingredient");
-				if (transformIngredient) {
+			boolean sameCode = ingredient.equals(modificationPoint.getCodeElement());
 
-					if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
-						log.debug("The modification point  has not any var in scope");
-					}
-					// continueSearching =
-					// !VariableResolver.fitInPlace(mp.getContextOfModificationPoint(),
-					// ingredient);
-					// TODO: I wrote all branches even they are not necessaries
-					// to easily observe all cases.
-					VarMapping mapping = VariableResolver
-							.mapVariables(modificationPoint.getContextOfModificationPoint(), ingredient);
-					// if we map all variables
-					if (mapping.getNotMappedVariables().isEmpty()) {
+			if (sameCode) {
+				log.debug("Ingredient same that the mod point");
+				continue;
+			}
 
-						if (mapping.getMappedVariables().isEmpty()) {
-							// nothing to transform, accept the ingredient
-							log.debug("The var Mapping is empty, we keep the ingredient");
-							continueSearching = false;
-
-						} else {// We have mappings between variables
-							log.debug("Ingredient before transformation: " + ingredient);
-
-							List<Map<String, CtVariable>> allCombinations = VariableResolver
-									.findAllVarMappingCombination(mapping.getMappedVariables());
-							// TODO: here, we take the first one, what should we
-							// do with the rest?
-							if (allCombinations.size() > 0) {
-								Map<String, CtVariable> selectedTransformation = allCombinations.get(0);
-								log.debug("Transformation proposed: " + selectedTransformation);
-								// The ingredient is cloned, so we can modify
-								// its variables
-								Map<CtVariableAccess, CtVariableReference> originalMap = VariableResolver
-										.convertIngredient(mapping, selectedTransformation);
-
-								log.debug("Ingredient after transformation: " + ingredient);
-								// TODO: do we need to revert the ingredient. If
-								// we try another var combination -> yes.
-								// Otherwise -> no
-								// VariableResolver.resetIngredient(mapping,
-								// originalMap);
-								continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
-										ingredient);
-							}
-						}
-					} else {
-						// here maybe we can put one counter of not mapped
-						// ingredients
-						log.debug("Vars not mapped: " + mapping.getNotMappedVariables());
-					}
-
-				} else {
-					// default behavior
-					continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
-							ingredient);
+			boolean transformIngredient = ConfigurationProperties.getPropertyBool("transformingredient");
+			if (transformIngredient) {
+				if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
+					log.debug("The modification point  has not any var in scope");
 				}
-
+				// I wrote all branches even they are not necessaries to easily observe all cases.
+				VarMapping mapping = VariableResolver.mapVariables(modificationPoint.getContextOfModificationPoint(),
+						ingredient);
+				// if we map all variables
+				if (mapping.getNotMappedVariables().isEmpty()) {
+					if (mapping.getMappedVariables().isEmpty()) {
+						// nothing to transform, accept the ingredient
+						log.debug("The var Mapping is empty, we keep the ingredient");
+						continueSearching = false;
+					} else {// We have mappings between variables
+						log.debug("Ingredient before transformation: " + ingredient);
+						List<Map<String, CtVariable>> allCombinations = VariableResolver
+								.findAllVarMappingCombination(mapping.getMappedVariables());
+						// TODO: here, we take the first one, what should we
+						// do with the rest?
+						if (allCombinations.size() > 0) {
+							Map<String, CtVariable> selectedTransformation = allCombinations.get(0);
+							log.debug("Transformation proposed: " + selectedTransformation);
+							// The ingredient is cloned, so we can modify
+							// its variables
+							Map<CtVariableAccess, CtVariableReference> originalMap = VariableResolver
+									.convertIngredient(mapping, selectedTransformation);
+							log.debug("Ingredient after transformation: " + ingredient);
+							// TODO: do we need to revert the ingredient. If
+							// we try another var combination -> yes.
+							// Otherwise -> no
+							// VariableResolver.resetIngredient(mapping,
+							// originalMap);
+							continueSearching = !VariableResolver.fitInPlace(
+									modificationPoint.getContextOfModificationPoint(), ingredient);
+						}
+					}
+				} else {
+					// here maybe we can put one counter of not mapped
+					// ingredients
+					log.debug("Vars not mapped: " + mapping.getNotMappedVariables());
+				}
+			} else {
+				// default behavior
+				continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
+						ingredient);
 			}
 			
 			Stats.currentStat.incrementIngCounter(variant_id);
@@ -258,7 +267,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		}
 		//Stats.currentStat.saveIngCounter(variant_id);
 
-		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement());
+		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement()
+				+ ", search space size: " + searchSpaceSize);
 		return null;
 	}
 
@@ -269,34 +279,62 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		} else if (element instanceof CtType) {
 			key = ((CtType<?>) element).getQualifiedName();
 		} else {
+			log.error("Invalid clonegranularity");
 			throw new IllegalArgumentException();
 		}
 		return key;
 	}
 
-	@SuppressWarnings({ "unchecked" })
 	public Optional<Map<String, T>> queryelements() {
 		// Use ingredient space to get locations.
 		List<CtElement> locations = getIngredientSpace().getLocations();
+		if (locations == null || locations.size() == 0) {
+			log.error("There are no locations to analyze.");
+			throw new RuntimeException();
+		}
 		log.debug("Number of locations: " + locations.size());
 
 		// Use locations to get T elements.
-		TypeFilter<T> tf = new TypeFilter<>(cls);
-		Map<String, T> elements = locations.stream()
-				// .flatMap(l -> l.getElements(filter).stream())
-				.flatMap(l -> l.getElements(tf).stream()).collect(Collectors.toMap(e -> getkey((T) e), e -> e));
+		Map elements;
+		if (cls.equals(CtType.class)) {
+			elements = locations.stream()
+					.flatMap(l -> l.getElements(new TypeFilter<CtType>(CtType.class) {
+						@Override
+						public boolean matches(CtType element) {
+							// Definition of "top level" CtType.
+							return element.getParent(CtType.class) == null
+									&& !element.isImplicit();
+						}
+					}).stream())
+					.distinct()
+					.collect(Collectors.toMap(e -> getkey((T) e), e -> e));
+		} else if (cls.equals(CtExecutable.class)) {
+			elements = locations.stream()
+					.flatMap(l -> l.getElements(new TypeFilter<CtExecutable>(CtExecutable.class) {
+						@Override
+						public boolean matches(CtExecutable element) {
+							// Definition of "top level" CtExecutable.
+							return element.getParent(CtExecutable.class) == null
+									&& !element.isImplicit()
+									&& !(element instanceof CtAnonymousExecutable);
+						}
+					}).stream())
+					.distinct()
+					.collect(Collectors.toMap(e -> getkey((T) e), e -> e));
+		} else {
+			log.error("Invalid clonegranularity");
+			throw new IllegalArgumentException();
+		}
+
 		log.debug("Number of \"top level\" elements: " + elements.size());
-		// log.debug("top level elements "+elements);
+		// log.debug("\"Top level\" elements: " + elements.keySet().stream().collect(Collectors.joining(",")));
 		Set<String> orphans = new HashSet<>(elements.keySet());
 		orphans.removeAll(key2row.keySet());
 
-		// log.debug("keysToRow ("+key2row.keySet().size()+")
-		// "+key2row.keySet());
 		if (!orphans.isEmpty()) {
 			log.error("Number of \"top level\" elements that do not have a src2txt key: " + orphans.size());
 			log.error(orphans.stream().collect(Collectors.joining(",")));
-			// throw new RuntimeException();
-			// //org.apache.commons.math.analysis.solvers.UnivariateRealSolverUtils$LazyHolder#org.apache.commons.math.analysis.solvers.UnivariateRealSolverUtils$LazyHolder()
+			throw new RuntimeException();
 		}
 
 		return Optional.of(elements);
@@ -309,13 +347,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 
 		// The distance matrix should be square (for now).
 		if (key2row.size() != values.length) {
-			log.error(String.format("Distance vector on line %d has wrong dimension.", row + 1)); // row
-																									// is
-																									// 0-indexed
-																									// so
-																									// we
-																									// add
-																									// 1.
+			// row is 0-indexed so we add 1.
+			log.error(String.format("Distance vector on line %d has wrong dimension.", row + 1));
 			throw new RuntimeException();
 		}
 
@@ -341,25 +374,18 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 	}
 
 	public Queue<CtCodeElement> getfixspace(ModificationPoint mp, AstorOperator op, T suspicious) {
-		List<CtStatement> statements = null; // Statements (i.e., ingredients)
-												// extracted from elements.
-		String type = mp.getCodeElement().getClass().getSimpleName(); // The
-																		// modification
-																		// point's
-																		// type
-																		// in
-																		// case
-																		// we
-																		// selected
-																		// the
-																		// ReplaceOp.
-		Queue<CtCodeElement> fixspace = new LinkedList<>(); // FIFO queue where
-															// ingredients from
-															// similar elements
-															// are queued first.
+		// Statements (i.e., ingredients) extracted from elements.
+		List<CtStatement> statements = null;
+
+		// The modification point's type in case we selected the ReplaceOp.
+		String type = mp.getCodeElement().getClass().getSimpleName();
+
+		// FIFO queue where ingredients from similar elements are queued first.
+		Queue<CtCodeElement> fixspace = new LinkedList<>();
 
 		// Get the list of elements sorted by similarity.
 		List<T> simlist = element2simlist.get(suspicious);
+
 		log.debug("For " + suspicious.getSimpleName() + " simlist: " + simlist.size());
 		for (T element : simlist) {
 			try {
@@ -394,28 +420,27 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		CtCodeElement element = fixspace.poll();
 		if (element == null) // ??? Can .clone receive null?
 			return null;
-		return MutationSupporter.clone(element); // ??? Is it necessary to clone
-													// here?
+		return MutationSupporter.clone(element); // ??? Is it necessary to clone?
 	}
 }
 
 enum Input {
 	DISTANCES(".distances.csv"), KEYS(".key"), MAP(".map");
 
-	private final String learningdir; // Contains learning artifacts.
+	private final String learningdir;
 	private final String granularity;
 	private final String extension;
 
 	Input(String extension) {
-		learningdir = ConfigurationProperties.properties.getProperty("learningdir");
-		String tempCloneGranularity = ConfigurationProperties.properties.getProperty("clonegranularity");
+		this.learningdir = ConfigurationProperties.properties.getProperty("learningdir");
+		String granularity = ConfigurationProperties.properties.getProperty("clonegranularity");
 		// We pass from a class name to a granularity identifier:
-		granularity = tempCloneGranularity.split("\\.Ct")[1].toLowerCase() + "s";
+		this.granularity = granularity.split("\\.Ct")[1].toLowerCase() + "s";
 		this.extension = extension;
 	}
 
 	public Path getpath() {
-		return Paths.get(learningdir + File.separator + granularity + extension);
+		return Paths.get(this.learningdir + File.separator + this.granularity + this.extension);
 	}
 }
 
