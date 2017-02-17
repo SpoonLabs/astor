@@ -1,5 +1,7 @@
 package fr.inria.astor.test.repair.evaluation;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.util.Arrays;
 
@@ -18,7 +20,6 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 	@Test
 	//@Ignore
 	public void testMath85issue280() throws Exception {
-		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		String[] args = new String[] { 
 				"-dependencies", dep, "-mode", "mutation", "-failing",
@@ -31,9 +32,9 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 				"-maxtime", "15",
 				"-seed","10"};
 		System.out.println(Arrays.toString(args));
-		main1.main(args);
-		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")+File.separator+"AstorMain-math_85/");
-		
+		AstorMain m = new AstorMain();
+		m.execute(args);
+		assertTrue(m.getEngine().getSolutions().size() > 0);
 		//location= org.apache.commons.math.analysis.solvers.UnivariateRealSolverUtils
 		//		line= 198
 		//		original statement= if ((fa * fb) >= 0.0) {
@@ -42,7 +43,6 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 	
 	@Test
 	public void testMath288() throws Exception {
-		AstorMain main1 = new AstorMain();
 		File out = new File("./outputMutation/");
 			String[] args = new String[] {
 				"-dependencies", new File("./examples/libs/junit-4.4.jar").getAbsolutePath(),
@@ -60,9 +60,9 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 				"-seed","10"
 				};
 		System.out.println(Arrays.toString(args));
-		main1.main(args);
-		validatePatchExistence(ConfigurationProperties.getProperty("workingDirectory")
-				+File.separator+"AstorMain-Math-issue-288/");
+		AstorMain m = new AstorMain();
+		m.execute(args);
+		assertTrue(m.getEngine().getSolutions().size() > 0);
 	}
 	
 
