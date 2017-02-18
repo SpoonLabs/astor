@@ -228,6 +228,11 @@ public class ProjectRepairFacade {
 			addFlakyFailingTestToIgnoredList(failingTestCases);
 		}
 		
+		if(this.getProperties().getFailingTestCases().isEmpty()){
+			logger.debug("Failing test cases was not pass as argument: we use failings from FL "+flResult.getFailingTestCases());
+			getProperties().setFailingTestCases(failingTestCases);
+		}
+		
 		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
 		for (SuspiciousCode suspiciousCode : suspiciousStatemens) {
@@ -246,9 +251,9 @@ public class ProjectRepairFacade {
 	 */
 	private void addFlakyFailingTestToIgnoredList(List<String> failingTestCases) {
 		//
-		if(ConfigurationProperties.getProperty("failing") == null)
+		if(this.getProperties().getFailingTestCases() == null)
 			return;
-		List<String> originalFailing = Arrays.asList(ConfigurationProperties.getProperty("failing").split(File.pathSeparator));
+		List<String> originalFailing = this.getProperties().getFailingTestCases();
 		List<String> onlyFailingInFL = new ArrayList<>(failingTestCases);
 		//we remove those that we already know that fail
 		onlyFailingInFL.removeAll(originalFailing);

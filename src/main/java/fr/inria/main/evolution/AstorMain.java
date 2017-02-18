@@ -57,7 +57,7 @@ public class AstorMain extends AbstractMain {
 	public void initProject(String location, String projectName, String dependencies, String packageToInstrument,
 			double thfl, String failing) throws Exception {
 
-		List<String> failingList = Arrays.asList(failing.split(File.pathSeparator));
+		List<String> failingList = (failing !=null)?Arrays.asList(failing.split(File.pathSeparator)):new ArrayList<>();
 		String method = this.getClass().getSimpleName();
 		projectFacade = getProject(location, projectName, method, failingList, dependencies, true);
 		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());

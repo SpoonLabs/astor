@@ -191,16 +191,19 @@ public abstract class AbstractMain {
 		options.addOption("learningdir", true, "Learning Dir");
 
 		options.addOption("clonegranularity", true, "Clone granularity");
-		
-		options.addOption("patchprioritization", true, "(Optional) Indicates the class name of the class that orders patches. It must extend from "
-				+ SolutionVariantSortCriterion.class.getName());
+
+		options.addOption("patchprioritization", true,
+				"(Optional) Indicates the class name of the class that orders patches. It must extend from "
+						+ SolutionVariantSortCriterion.class.getName());
 
 		options.addOption("transformingredient", false, "indicates if Astor transforms ingredients.");
-		
-		options.addOption("loglevel", true, "Indicates the log level. Values: "+ Arrays.toString(Level.getAllPossiblePriorities()));
-		
-		options.addOption("timezone", true, "Timezone to be used in the process that Astor creates. Default: "+ConfigurationProperties.getProperty("timezone"));
-		
+
+		options.addOption("loglevel", true,
+				"Indicates the log level. Values: " + Arrays.toString(Level.getAllPossiblePriorities()));
+
+		options.addOption("timezone", true, "Timezone to be used in the process that Astor creates. Default: "
+				+ ConfigurationProperties.getProperty("timezone"));
+
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -286,20 +289,23 @@ public abstract class AbstractMain {
 
 		if (!this.isExample(cmd)) {
 			String dependenciespath = cmd.getOptionValue("dependencies");
-			String failing = cmd.getOptionValue("failing");
 			String location = cmd.getOptionValue("location");
 
 			// Process mandatory parameters.
-			if (failing == null || location == null) {
+			if (location == null) {
 				help();
 				return false;
 			}
+			ConfigurationProperties.properties.setProperty("location", location);
+
 			if (dependenciespath != null) {
 				ConfigurationProperties.properties.setProperty("dependenciespath", dependenciespath);
 			}
 
-			ConfigurationProperties.properties.setProperty("failing", failing);
-			ConfigurationProperties.properties.setProperty("location", location);
+			String failing = cmd.getOptionValue("failing");
+			if((failing != null))
+				ConfigurationProperties.properties.setProperty("failing", failing);
+
 		}
 
 		if (cmd.hasOption("package"))
@@ -479,15 +485,14 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("transformingredient"))
 			ConfigurationProperties.properties.setProperty("transformingredient", "true");
 
-		if(cmd.hasOption("loglevel")){
+		if (cmd.hasOption("loglevel")) {
 			String loglevelSelected = cmd.getOptionValue("loglevel");
 			LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
 		}
-		if(cmd.hasOption("timezone")){
-			ConfigurationProperties.properties.setProperty("timezone",
-					cmd.getOptionValue("timezone"));
+		if (cmd.hasOption("timezone")) {
+			ConfigurationProperties.properties.setProperty("timezone", cmd.getOptionValue("timezone"));
 		}
-		
+
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();
@@ -599,7 +604,7 @@ public abstract class AbstractMain {
 		if (dependencies != null) {
 			properties.setDependencies(dependencies);
 		}
-		
+
 		properties.setFailingTestCases(failingTestCases);
 
 		properties.setPackageToInstrument(ConfigurationProperties.getProperty("packageToInstrument"));
