@@ -199,6 +199,8 @@ public abstract class AbstractMain {
 		
 		options.addOption("loglevel", true, "Indicates the log level. Values: "+ Arrays.toString(Level.getAllPossiblePriorities()));
 		
+		options.addOption("timezone", true, "Timezone to be used in the process that Astor creates. Default: "+ConfigurationProperties.getProperty("timezone"));
+		
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -481,6 +483,11 @@ public abstract class AbstractMain {
 			String loglevelSelected = cmd.getOptionValue("loglevel");
 			LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
 		}
+		if(cmd.hasOption("timezone")){
+			ConfigurationProperties.properties.setProperty("timezone",
+					cmd.getOptionValue("timezone"));
+		}
+		
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();

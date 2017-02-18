@@ -13,6 +13,7 @@ import fr.inria.astor.junitexec.JUnitTestExecutor;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
+@Deprecated
 public class JUnitDirectExecutorProcess extends JUnitExecutorProcess {
 
 	

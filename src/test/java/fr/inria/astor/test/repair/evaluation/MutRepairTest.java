@@ -66,8 +66,9 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		log.debug("Solutions "+solutions);
 		assertNotNull(solutions);
-		assertTrue(solutions.size() > 0);
-
+		int nrsolutions = solutions.size();
+		assertEquals(1, nrsolutions);
+		
 	}
 	
 

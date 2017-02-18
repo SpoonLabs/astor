@@ -84,6 +84,9 @@ public abstract class JUnitExecutorProcess {
 				p_stdin.write("export TZ");
 				p_stdin.newLine();
 				p_stdin.flush();
+				p_stdin.write("echo $TZ");
+				p_stdin.newLine();
+				p_stdin.flush();
 				//Writing the command
 				p_stdin.write(toString(command));
 				p_stdin.newLine();
@@ -94,6 +97,7 @@ public abstract class JUnitExecutorProcess {
 				p_stdin.write("exit");
 				p_stdin.newLine();
 				p_stdin.flush();
+				
 			} catch (IOException e) {
 				log.error(e);
 			}
