@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -43,6 +44,7 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 	
 	
 	@Test
+	@Ignore
 	public void testMath288() throws Exception {
 		File out = new File("./outputMutation/");
 			String[] args = new String[] {
