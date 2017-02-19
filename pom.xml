@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>fr.inria.gforge.spoon</groupId>
 			<artifactId>spoon-core</artifactId>
-			<version>5.1.0</version>
+			<version>5.4.0</version>
 			<exclusions>
 			<exclusion>
           <groupId></groupId>

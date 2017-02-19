@@ -43,7 +43,7 @@ public class IfExpresionMutOp extends AstorOperator {
 			successful = true;
 			operation.setSuccessfulyApplied((successful));
 
-			log.debug(" applied: " + ctst.getParent().getSignature());
+			log.debug(" applied: " + ctst.getParent().toString());
 
 		} catch (Exception ex) {
 			log.error("Error applying an operation, exception: " + ex.getMessage());

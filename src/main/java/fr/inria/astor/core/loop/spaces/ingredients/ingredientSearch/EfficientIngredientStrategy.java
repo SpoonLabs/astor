@@ -84,8 +84,8 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 				continue;
 			}
 
-			boolean sameCode = elementFromIngredient.getSignature()
-					.equals(modificationPoint.getCodeElement().getSignature());
+			boolean sameCode = elementFromIngredient.toString()
+					.equals(modificationPoint.getCodeElement().toString());
 
 			if (sameCode) {
 				log.debug("Ingredient same that the mod point");
@@ -154,7 +154,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 			}
 		}
 
-		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement().getSignature()
+		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement().toString()
 				+ ", search space size: " + elementsFromFixSpace);
 		return null;
 

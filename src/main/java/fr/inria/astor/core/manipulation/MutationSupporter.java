@@ -184,6 +184,8 @@ public class MutationSupporter {
 		if (factory == null) {
 			factory = createFactory();
 			factory.getEnvironment().setLevel("OFF");
+			factory.getEnvironment().setSelfChecks(true);
+			
 		}
 		return factory;
 	}

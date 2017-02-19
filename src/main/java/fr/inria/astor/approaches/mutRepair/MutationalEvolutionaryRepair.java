@@ -160,12 +160,12 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	  */
 	public List<MutantCtElement> getMutants(CtIf targetIF) {
 		List<MutantCtElement> mutations = null;
-		if(this.mutantsCache.containsKey(targetIF.getCondition().getSignature())){
-			 mutations = clone(this.mutantsCache.get(targetIF.getCondition().getSignature()));
+		if(this.mutantsCache.containsKey(targetIF.getCondition().toString())){
+			 mutations = clone(this.mutantsCache.get(targetIF.getCondition().toString()));
 		}
 		else{
 			mutations = this.mutatorBinary.execute(targetIF.getCondition());
-			mutantsCache.put(targetIF.getCondition().getSignature(), mutations);
+			mutantsCache.put(targetIF.getCondition().toString(), mutations);
 		}
 		return mutations;
 	}

@@ -573,7 +573,7 @@ public abstract class AstorCoreEngine {
 			} else {// Not gen created
 				currentStat.numberOfGenInmutated++;
 				log.debug("---modifPoint " + (nroGen++) + " not mutation generated in  "
-						+ StringUtil.trunc(modificationPoint.getCodeElement().getSignature()));
+						+ StringUtil.trunc(modificationPoint.getCodeElement().toString()));
 				notmut++;
 			}
 		}
