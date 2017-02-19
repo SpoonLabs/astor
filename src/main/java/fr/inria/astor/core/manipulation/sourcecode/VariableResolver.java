@@ -42,7 +42,7 @@ import spoon.reflect.visitor.CtScanner;
 @SuppressWarnings("rawtypes")
 public class VariableResolver {
 
-	static ClusteringParser cluster = new ClusteringParser();
+	public static ClusteringParser cluster = new ClusteringParser();
 
 	private static Logger logger = Logger.getLogger(VariableResolver.class.getName());
 
@@ -60,9 +60,11 @@ public class VariableResolver {
 		List<CtVariable> varMatched = new ArrayList<>();
 		try {
 			CtTypeReference typeToFind = vartofind.getType();
+			
 			// First we search for compatible variables according to the type
 			List<CtVariable> types = compatiblesSubType(varContext, typeToFind);
 			if (types.isEmpty()) {
+				logger.debug("Not matched: type: "+typeToFind + " var:"+vartofind + " in context "+ varContext);
 				return varMatched;
 			}
 			// Then, we search
@@ -74,6 +76,8 @@ public class VariableResolver {
 					varMatched.add(ctVariableWithTypes);
 				}
 			}
+			logger.debug("Matching: type: "+typeToFind + " var:"+vartofind + " in context "+ varContext + " result: "+varMatched);
+			
 		} catch (Exception ex) {
 			logger.error("Variable verification error", ex);
 		}
@@ -481,9 +485,11 @@ public class VariableResolver {
 	 */
 	private static boolean checkParent(CtVariable var, CtElement rootElement) {
 
+		if(rootElement == null)
+			System.err.println("Error!");
 		CtElement parent = var;
-		while (parent != null) {
-			if (parent.equals(rootElement))
+		while (parent != null && !"unnamed package".equals(parent.toString())) {
+			if (parent.toString().equals(rootElement.toString()))
 				return true;
 			parent = parent.getParent();
 		}

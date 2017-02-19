@@ -17,6 +17,7 @@ import org.junit.Test;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VarWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
@@ -50,8 +51,14 @@ public class VarMappingTest {
 
 	@Before
 	public void setup() throws Exception {
-
+		engine = null;
+		c1 = null;
+		c3 = null;
+		ingredientCtElementC7 = null;
+		otherClassElementC8 = null;
+		
 		AstorMain main1 = new AstorMain();
+		MutationSupporter.factory = null;
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
 
@@ -76,9 +83,55 @@ public class VarMappingTest {
 		// UnivariateRealSolverUtils.java
 
 		otherClassElementC8 = pv.getModificationPoints().get(8).getCodeElement();
-
+		VariableResolver.cluster.getClusters().clear();
 	}
+	
+	@Test
+	public void testSameVariableTwiceOnIngredient(){
+		//a modified clustering for facilitating testing task
+		ConfigurationProperties.setProperty("clusteringfilename", "clustering_test.csv");
+		
+		// we take a ingredient from  QuinticFunction
+		// return (x-1)*(x-0.5)*x*(x+0.5)*(x+1); line 32.
+		CtMethod cm = getMethodFromClass(engine, "org.apache.commons.math.analysis.QuinticFunction", "value");
+		assertNotNull(cm);
+		CtStatement stmMultiplesXs = cm.getBody().getStatement(0);
+		assertNotNull(stmMultiplesXs);
 
+		log.debug("ingredient:  " + stmMultiplesXs);
+
+		List<CtVariable> varContextC3 = VariableResolver.searchVariablesInScope(c3);
+		// the ingredient has 5 Xs
+		VarMapping vmappingOnevar = VariableResolver.mapVariables(varContextC3, stmMultiplesXs);
+		assertEquals(5, vmappingOnevar.getMappedVariables().size());
+		assertEquals(5, vmappingOnevar.getMappedVariables().keySet().size());
+		assertTrue(vmappingOnevar.getNotMappedVariables().isEmpty());
+	
+		List<Map<String, CtVariable>> allCombinationsOne = VariableResolver.findAllVarMappingCombination(vmappingOnevar.getMappedVariables());
+		
+		log.debug(allCombinationsOne);
+		assertFalse(allCombinationsOne.isEmpty());
+		
+		CtElement cloned = engine.getMutatorSupporter().clone((CtCodeElement) stmMultiplesXs);
+
+		log.debug("Trying mapping " + allCombinationsOne.get(0));
+		Map<CtVariableAccess, CtVariableReference> originalMapOnevarTomap = VariableResolver
+				.convertIngredient(vmappingOnevar, allCombinationsOne.get(0));
+
+		assertEquals(5,originalMapOnevarTomap.size());
+		
+		assertFalse(cloned.equals(stmMultiplesXs));
+		
+		log.debug("5Xs after transformation: " + stmMultiplesXs);
+		
+		
+		VariableResolver.resetIngredient(vmappingOnevar, originalMapOnevarTomap);
+
+		log.debug("5Xs again original : " + stmMultiplesXs);
+		
+		assertTrue(cloned.equals(stmMultiplesXs));
+		
+	}
 	@Test
 	public void testVarsOutOfScope() throws Exception {
 
@@ -215,52 +268,7 @@ public class VarMappingTest {
 
 		
 	}
-	@Test
-	public void testSameVariableTwiceOnIngredient(){
-		//a modified clustering for facilitating testing task
-		ConfigurationProperties.setProperty("clusteringfilename", "clustering_test.csv");
-		
-		// we take a ingredient from  QuinticFunction
-		// return (x-1)*(x-0.5)*x*(x+0.5)*(x+1); line 32.
-		CtMethod cm = getMethodFromClass(engine, "org.apache.commons.math.analysis.QuinticFunction", "value");
-		assertNotNull(cm);
-		CtStatement stmMultiplesXs = cm.getBody().getStatement(0);
-		assertNotNull(stmMultiplesXs);
-
-		log.debug("ingredient:  " + stmMultiplesXs);
-
-		List<CtVariable> varContextC3 = VariableResolver.searchVariablesInScope(c3);
-		// the ingredient has 5 Xs
-		VarMapping vmappingOnevar = VariableResolver.mapVariables(varContextC3, stmMultiplesXs);
-		assertEquals(5, vmappingOnevar.getMappedVariables().size());
-		assertEquals(5, vmappingOnevar.getMappedVariables().keySet().size());
-		assertTrue(vmappingOnevar.getNotMappedVariables().isEmpty());
 	
-		List<Map<String, CtVariable>> allCombinationsOne = VariableResolver.findAllVarMappingCombination(vmappingOnevar.getMappedVariables());
-		
-		log.debug(allCombinationsOne);
-		assertFalse(allCombinationsOne.isEmpty());
-		
-		CtElement cloned = engine.getMutatorSupporter().clone((CtCodeElement) stmMultiplesXs);
-
-		log.debug("Trying mapping " + allCombinationsOne.get(0));
-		Map<CtVariableAccess, CtVariableReference> originalMapOnevarTomap = VariableResolver
-				.convertIngredient(vmappingOnevar, allCombinationsOne.get(0));
-
-		assertEquals(5,originalMapOnevarTomap.size());
-		
-		assertFalse(cloned.equals(stmMultiplesXs));
-		
-		log.debug("5Xs after transformation: " + stmMultiplesXs);
-		
-		
-		VariableResolver.resetIngredient(vmappingOnevar, originalMapOnevarTomap);
-
-		log.debug("5Xs again original : " + stmMultiplesXs);
-		
-		assertTrue(cloned.equals(stmMultiplesXs));
-		
-	}
 
 	@Test
 	public void testIngredientWithoutVars(){

@@ -282,7 +282,7 @@ public class VariableResolverTest {
 					out.getAbsolutePath(), "-scope", "package", "-seed", "10",
 					// Force not evolution
 					"-maxgen", "0",
-					//
+					"-population","1",	//
 					"-stopfirst", "true", "-maxtime", "100"
 
 			};
@@ -292,29 +292,29 @@ public class VariableResolverTest {
 			
 			List<ProgramVariant> variants = main1.getEngine().getVariants();
 			JGenProg jgp = (JGenProg) main1.getEngine();
-			ModificationPoint mp = variants.get(0).getModificationPoints().get(0);
+			ModificationPoint mp = findModPoint(variants.get(0).getModificationPoints(),"return minPos");//variants.get(0).getModificationPoints().get(0);
 			System.out.println("Mpoint \n"+mp);
+			System.out.println(mp.getCtClass());
 			
 			System.out.println("Mpoint Context \n"+mp.getContextOfModificationPoint());
 			
 			
 			IngredientSpace ispace = jgp.getIngredientStrategy().getIngredientSpace();
 			List<CtElement> ingredients = ispace.getIngredients(mp.getCodeElement()); 
-			for (int i = 0; i < ingredients.size(); i++) {
-				//System.out.println(i+ " "+ ingredients.get(i));
-			}
+			
 			
 			
 			//For with a induction variable
-			CtElement ifor = ingredients.get(46); //for (int i = tableau.getNumObjectiveFunctions() 
+			CtElement ifor = findElement(ingredients, "for (int i = tableau.getNumObjectiveFunctions");//ingredients.get(46); //for (int i = tableau.getNumObjectiveFunctions() 
 			assertTrue(ifor.toString().startsWith("for (int i = tableau.getNumObjectiveFunctions"));
 			assertTrue(ifor instanceof CtFor);
+			log.debug("fit? "+ifor+ " in context: "+mp.getContextOfModificationPoint());
 			boolean matchFor = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), ifor, true);
 			
 			//the variable 'i' is declared inside the ingredient, and event it does not exist  
 			assertTrue(matchFor);
 			
-			CtElement iif = ingredients.get(45); //if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i),
+			CtElement iif = findElement(ingredients, "if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i)");//ingredients.get(45); //if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i),
 			assertTrue(iif.toString().startsWith("if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i)"));
 			assertTrue(iif instanceof CtIf);
 			boolean matchIf = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iif, true);
@@ -323,14 +323,14 @@ public class VariableResolverTest {
 			assertFalse(matchIf);
 		
 			
-			CtElement iStaticSame = ingredients.get(0);//static setMaxIterations(org.apache.commons.math.optimization.linear.AbstractLinearOptimizer.DEFAULT_MAX_ITERATIONS)
+			CtElement iStaticSame = findElement(ingredients, "setMaxIterations(");//ingredients.get(0);//static setMaxIterations(org.apache.commons.math.optimization.linear.AbstractLinearOptimizer.DEFAULT_MAX_ITERATIONS)
 			assertTrue(iStaticSame instanceof CtInvocation);
 			assertTrue(iStaticSame.toString().startsWith("setMaxIterations("));
 			boolean matchStSame = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iStaticSame, true);
 			assertTrue(matchStSame);
 			
 			
-			CtElement iStaticDouble = ingredients.get(55);//static 
+			CtElement iStaticDouble = findElement(ingredients, "double minRatio = java.lang.Double.MAX_VALUE");//ingredients.get(55);//static 
 			assertTrue(iStaticDouble instanceof CtLocalVariable);
 			assertTrue(iStaticDouble.toString().startsWith("double minRatio = java.lang.Double.MAX_VALUE"));
 			boolean matchSt = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iStaticDouble, true);
@@ -338,6 +338,22 @@ public class VariableResolverTest {
 			
 			
 		}
+	
+	private ModificationPoint findModPoint(List<ModificationPoint> modificationPoints, String content) {
+		for (ModificationPoint modificationPoint : modificationPoints) {
+			if(modificationPoint.getCodeElement().toString().startsWith(content))
+				return modificationPoint;
+		}
+		return null;
+	}
+
+	private CtElement findElement(List<CtElement> ingredients,String tofind){
+		for (CtElement ingredient : ingredients) {
+			if(ingredient.toString().startsWith(tofind))
+				return ingredient;
+		}
+		return null;
+	}
 	
 	@Test
 	public void testLang39VariableIndutionBugFix() throws Exception{
