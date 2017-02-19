@@ -60,11 +60,10 @@ public class VariableResolver {
 		List<CtVariable> varMatched = new ArrayList<>();
 		try {
 			CtTypeReference typeToFind = vartofind.getType();
-			
+
 			// First we search for compatible variables according to the type
 			List<CtVariable> types = compatiblesSubType(varContext, typeToFind);
 			if (types.isEmpty()) {
-				logger.debug("Not matched: type: "+typeToFind + " var:"+vartofind + " in context "+ varContext);
 				return varMatched;
 			}
 			// Then, we search
@@ -76,8 +75,7 @@ public class VariableResolver {
 					varMatched.add(ctVariableWithTypes);
 				}
 			}
-			logger.debug("Matching: type: "+typeToFind + " var:"+vartofind + " in context "+ varContext + " result: "+varMatched);
-			
+
 		} catch (Exception ex) {
 			logger.error("Variable verification error", ex);
 		}
@@ -277,8 +275,9 @@ public class VariableResolver {
 
 		ClassLoader classLoader = VariableResolver.class.getClassLoader();
 
-		Map<String, List<String>> clusters = cluster.readClusterFile(Paths.get(
-				ConfigurationProperties.getProperty("learningdir") + File.separator + ConfigurationProperties.getProperty("clusteringfilename")));
+		Map<String, List<String>> clusters = cluster
+				.readClusterFile(Paths.get(ConfigurationProperties.getProperty("learningdir") + File.separator
+						+ ConfigurationProperties.getProperty("clusteringfilename")));
 
 		List<CtVariableAccess> variablesOutOfScope = retriveVariablesOutOfContext(varContext, ingredientCtElement);
 		logger.debug("vars out of context: " + variablesOutOfScope);
@@ -485,7 +484,7 @@ public class VariableResolver {
 	 */
 	private static boolean checkParent(CtVariable var, CtElement rootElement) {
 
-		if(rootElement == null)
+		if (rootElement == null)
 			System.err.println("Error!");
 		CtElement parent = var;
 		while (parent != null && !"unnamed package".equals(parent.toString())) {
@@ -654,7 +653,7 @@ public class VariableResolver {
 			Map<VarWrapper, List<CtVariable>> mappedVars) {
 
 		List<Map<String, CtVariable>> allCombinationsOne = new ArrayList<>();
-		
+
 		if (!mappedVars.isEmpty()) {
 			List<VarWrapper> varNamesOne = new ArrayList<>(mappedVars.keySet());
 

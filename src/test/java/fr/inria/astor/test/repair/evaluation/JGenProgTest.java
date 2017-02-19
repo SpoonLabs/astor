@@ -191,6 +191,35 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		assertTrue(javahome.endsWith("bin"));
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70PackageSolutions() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(),
+				//
+				"-scope", "package", 
+				"-seed", "10", 
+				"-maxgen", "500", 
+				"-stopfirst", "false",//two solutions
+				"-maxtime", "10"
+
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(2, solutions.size());
+		
+	}
 
 	/**
 	 * Testing injected bug at CharacterReader line 118, commit version 31be24.

@@ -35,7 +35,7 @@ public class EvoSuiteDSETest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10",
 				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
 				//PARAMETER TO TEST
 				"-validation", "evosuite",
