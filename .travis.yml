@@ -13,9 +13,7 @@ env:
   - TEST=fr.inria.astor.test.repair.evaluation.ValidationTest
   - TEST=fr.inria.astor.test.repair.evaluation.IngredientSpaceTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.EvoSuiteParticularClassesTest
-  - TEST=fr.inria.astor.test.repair.evaluation.regression.EvoSuiteDSETest
-  - TEST=fr.inria.astor.test.repair.evaluation.regression.EvoSuiteArgumentVariationTest 
-
+ 
 script:
   - mvn clean
   - mvn test -DskipTests
