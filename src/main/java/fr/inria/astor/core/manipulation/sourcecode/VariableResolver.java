@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -485,9 +486,9 @@ public class VariableResolver {
 	private static boolean checkParent(CtVariable var, CtElement rootElement) {
 
 		if (rootElement == null)
-			System.err.println("Error!");
+			logger.error("Error! root element null");
 		CtElement parent = var;
-		while (parent != null && !"unnamed package".equals(parent.toString())) {
+		while (parent != null && !CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(parent.toString())) {
 			if (parent.toString().equals(rootElement.toString()))
 				return true;
 			parent = parent.getParent();
