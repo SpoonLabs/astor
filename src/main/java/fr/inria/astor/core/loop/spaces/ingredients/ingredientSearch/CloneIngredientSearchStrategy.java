@@ -292,7 +292,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			log.error("There are no locations to analyze.");
 			throw new RuntimeException();
 		}
-		log.debug("Number of locations: " + locations.size());
+		log.debug("Number of locations: " + locations.size() + ", Scope "+ getIngredientSpace().getClass().getSimpleName());
+		locations.forEach(e -> log.debug("--> ing location: "+e.getShortRepresentation()));
 
 		// Use locations to get T elements.
 		Map elements;
