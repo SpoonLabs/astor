@@ -188,10 +188,11 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		while (continueSearching) {
 			CtElement ingredient = getingredient(fixspace);
 			log.debug("Location to insert " + modificationPoint);
-			log.debug("-->Ingredient selected: " + ingredient);
-
+		
 			if (ingredient == null)
 				return null;
+
+			log.debug("-->Ingredient selected: " + ingredient.getShortRepresentation());
 
 			boolean alreadyApplied = alreadySelected(modificationPoint, ingredient, op);
 
