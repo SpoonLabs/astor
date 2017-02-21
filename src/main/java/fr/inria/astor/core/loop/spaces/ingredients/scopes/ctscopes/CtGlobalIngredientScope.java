@@ -7,6 +7,7 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.CtLocationIngredientSpace;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
 
 /**
  * In the global strategy we always have the same key: the root ct element (the
@@ -43,5 +44,10 @@ public class CtGlobalIngredientScope extends CtLocationIngredientSpace {
 		} while (parent != null);
 
 		return root;
+	}
+	
+	@Override
+	public Class getCtElementForSplitSpace() {
+		return CtPackage.class;
 	}
 }
