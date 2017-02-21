@@ -64,7 +64,7 @@ public class ExecutableCloneIngredientStrategyTest {
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
 
 		Class typeCloneGranularityClass = CtExecutable.class;
-		String[] args = createCommandM70( learningDir, executableCloneGranularity);
+		String[] args = createCommandM70(learningDir, executableCloneGranularity);
 
 		log.debug(Arrays.toString(args));
 
@@ -106,6 +106,12 @@ public class ExecutableCloneIngredientStrategyTest {
 
 	static public String[] createCommandM70(File learningDir, Class cloneGranularityClass, int generations,
 			boolean transformIngredient) {
+		return createCommandM70(learningDir, cloneGranularityClass, generations, transformIngredient,
+				CtLocationIngredientSpace.class.getCanonicalName());
+	}
+
+	static public String[] createCommandM70(File learningDir, Class cloneGranularityClass, int generations,
+			boolean transformIngredient, String scope) {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
@@ -123,13 +129,15 @@ public class ExecutableCloneIngredientStrategyTest {
 				//
 				"-javacompliancelevel", "7", "-flthreshold", "0.1", "-out", out.getAbsolutePath(),
 				//
-				"-scope", CtLocationIngredientSpace.class.getCanonicalName(),
+				"-scope", scope,
 				//
 				"-seed", "10",
 
 				"-maxgen", Integer.toString(generations),
 				//
-				"-population", "3", "-stopfirst", "true",
+				"-population", "1",
+				//
+				"-stopfirst", "true",
 				//
 				"-maxtime", "100",
 				//
@@ -142,7 +150,7 @@ public class ExecutableCloneIngredientStrategyTest {
 				//
 				"-transformingredient",
 				//
-				"-loglevel",Level.DEBUG.toString()};
+				"-loglevel", Level.DEBUG.toString() };
 		return args;
 	}
 
@@ -159,8 +167,7 @@ public class ExecutableCloneIngredientStrategyTest {
 		Class typeCloneGranularityClass = CtExecutable.class;
 		int generations = 100;
 		boolean transformIngredient = true;
-		String[] args = createCommandM70( learningDir, executableCloneGranularity, generations,
-				transformIngredient);
+		String[] args = createCommandM70(learningDir, executableCloneGranularity, generations, transformIngredient);
 
 		log.debug(Arrays.toString(args));
 

@@ -13,6 +13,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.CtLocationIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope;
@@ -191,7 +192,7 @@ public class IngredientSpaceTest {
 		CtElement root = globalSpace.calculateLocation(pv.getModificationPoints().get(0).getCodeElement());
 		log.debug(root);
 		assertNotNull(root);
-		assertEquals("",root.toString());
+		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME,root.toString());
 		
 		CtElement root2 = globalSpace.calculateLocation(pv.getModificationPoints().get(1).getCodeElement());
 		assertNotNull(root2);
@@ -204,7 +205,7 @@ public class IngredientSpaceTest {
 		
 		assertNotNull(spaceglobal);
 		
-		assertEquals("unnamed package",((CtPackage)spaceglobal.get(0)).getSimpleName());
+		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME,((CtPackage)spaceglobal.get(0)).getSimpleName());
 		
 		
 		log.debug(((CtPackage)spaceglobal.get(0)).getSimpleName());
@@ -237,4 +238,109 @@ public class IngredientSpaceTest {
 
 		assertTrue(ingredientsfromK8.contains(point0));
 	}
+	
+	@Test
+	public void testLocalComplete() throws Exception{
+		AstorMain main1 = new AstorMain();
+		ClassLoader classLoader = getClass().getClassLoader();
+		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+
+		Class typeCloneGranularityClass = CtType.class;
+		
+		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(
+				//
+				learningDir,//
+				typeCloneGranularityClass,//
+				100,// 
+				true,//
+				CtClassIngredientSpace.class.getCanonicalName()//
+				);
+
+	
+		main1.execute(args);
+		engine = (JGenProg) main1.getEngine();
+
+		assertTrue(engine.getSolutions().size() > 0);
+		
+		IngredientSearchStrategy strategy = engine.getIngredientStrategy();
+		CtClassIngredientSpace space = 	(CtClassIngredientSpace) strategy.getIngredientSpace();
+		List<CtElement> locations = space.getLocations();
+		assertEquals(2, locations.size());
+		locations.forEach(e -> log.debug(e.getShortRepresentation()));
+		assertTrue(locations.get(0) instanceof CtClass);
+		CtClass susp = (CtClass) locations.get(0);
+		assertTrue(susp.getQualifiedName().equals("org.apache.commons.math.analysis.solvers.BisectionSolver")||
+				susp.getQualifiedName().equals("org.apache.commons.math.analysis.solvers.UnivariateRealSolverUtils")
+				);
+	}
+	
+	@Test
+	public void testPackageComplete() throws Exception{
+		AstorMain main1 = new AstorMain();
+		ClassLoader classLoader = getClass().getClassLoader();
+		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+
+		Class typeCloneGranularityClass = CtType.class;
+		
+		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(
+				//
+				learningDir,//
+				typeCloneGranularityClass,//
+				100,// 
+				true,//
+				CtPackageIngredientScope.class.getCanonicalName()//
+				);
+
+	
+		main1.execute(args);
+		engine = (JGenProg) main1.getEngine();
+
+		assertTrue(engine.getSolutions().size() > 0);
+		
+		IngredientSearchStrategy strategy = engine.getIngredientStrategy();
+		CtPackageIngredientScope space = 	(CtPackageIngredientScope) strategy.getIngredientSpace();
+		List<CtElement> locations = space.getLocations();
+		assertEquals(1, locations.size());
+		locations.forEach(e -> log.debug(e.getShortRepresentation()));
+		assertTrue(locations.get(0) instanceof CtPackage);
+		CtPackage susp = (CtPackage) locations.get(0);
+		assertTrue(susp.getQualifiedName().equals("org.apache.commons.math.analysis.solvers")
+			);
+	}
+	@Test
+	public void testGlobalComplete() throws Exception{
+		AstorMain main1 = new AstorMain();
+		ClassLoader classLoader = getClass().getClassLoader();
+		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+
+		Class typeCloneGranularityClass = CtType.class;
+		
+		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(
+				//
+				learningDir,//
+				typeCloneGranularityClass,//
+				100,// 
+				true,//
+				CtGlobalIngredientScope.class.getCanonicalName()//
+				);
+
+	
+		main1.execute(args);
+		engine = (JGenProg) main1.getEngine();
+
+		assertTrue(engine.getSolutions().size() > 0);
+		
+		IngredientSearchStrategy strategy = engine.getIngredientStrategy();
+		CtGlobalIngredientScope space = 	(CtGlobalIngredientScope) strategy.getIngredientSpace();
+		List<CtElement> locations = space.getLocations();
+		locations.forEach(e -> log.debug(e.getShortRepresentation()));
+		
+		assertEquals(1, locations.size());
+		assertTrue(locations.get(0) instanceof CtPackage);
+		//In global also is a package (the root)
+		CtPackage susp = (CtPackage) locations.get(0);
+		assertTrue(susp.getQualifiedName().equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)
+			);
+	}
+	
 }
