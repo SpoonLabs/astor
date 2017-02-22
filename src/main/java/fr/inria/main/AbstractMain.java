@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -24,6 +25,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.astor.core.validation.validators.ProgramValidator;
 import fr.inria.astor.util.TimeUtil;
 import spoon.reflect.factory.Factory;
 
@@ -76,7 +78,8 @@ public abstract class AbstractMain {
 		options.addOption("maxtime", true, "(Optional) maximum time (in minutes) to execute the whole experiment");
 
 		options.addOption("validation", true, "(Optional) type of validation: process|evosuite. Default:"
-				+ ConfigurationProperties.properties.getProperty("validation"));
+				+ ConfigurationProperties.properties.getProperty("validation")
+				+ "It accepts custormize validation prodedures, which must extend from "+ProgramValidator.class.getCanonicalName());
 		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default:"
 				+ ConfigurationProperties.properties.getProperty("flthreshold"));
 
@@ -148,7 +151,8 @@ public abstract class AbstractMain {
 				"(Optional) Random seed, for reproducible runs.  Default is whatever java.util.Random uses when not explicitly initialized.");
 
 		options.addOption("scope", true,
-				"(Optional) Scope of the ingredient seach space: Local (same class), package (classes from the same package) or global (all classes from the application under analysis). Default: local.");
+				"(Optional) Scope of the ingredient seach space: Local (same class), package (classes from the same package) or global (all classes from the application under analysis). Default: local."
+				+ " It accepts customize scopes, which must implement from "+AstorCtIngredientSpace.class.getCanonicalName());
 
 		options.addOption("skipfaultlocalization", false,
 				"The fault localization is skipped and all statements are considered");
