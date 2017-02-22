@@ -1,0 +1,16 @@
+JFreeChart 1.2.0-ea1
+--------------------
+30 June 2009
+
+This is an early access release of JFreeChart 1.2.0.  The main changes from 
+JFreeChart 1.0.x are:
+
+- removed JCommon dependency by copying required classes into the
+      org.jfree.chart.* package namespace;
+- dropped support for JDK 1.3.1, so that JDK 1.4.2 or later is now required;
+- removed all deprecated code;
+- added a selection mechanism to the ChartPanel class.
+
+JFreeChart 1.2.0 will be released during 2009, but it has not been decided
+yet exactly when the release will occur.  PLEASE NOTE THAT THERE WILL ALMOST
+CERTAINLY BE FURTHER API CHANGES BEFORE THE FINAL 1.2.0 RELEASE.
