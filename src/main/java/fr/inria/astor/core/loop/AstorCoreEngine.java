@@ -20,7 +20,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.WeightCtElement;
-import fr.inria.astor.core.faultlocalization.IFaultLocalization;
+import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
@@ -84,7 +84,7 @@ public abstract class AstorCoreEngine {
 	protected Date dateInitEvolution = new Date();
 
 	//
-	protected IFaultLocalization faultLocalization = null;
+	protected FaultLocalizationStrategy faultLocalization = null;
 
 	protected int generationsExecuted = 0;
 
@@ -924,11 +924,11 @@ public abstract class AstorCoreEngine {
 		return solutions;
 	}
 
-	public IFaultLocalization getFaultLocalization() {
+	public FaultLocalizationStrategy getFaultLocalization() {
 		return faultLocalization;
 	}
 
-	public void setFaultLocalization(IFaultLocalization faultLocalization) {
+	public void setFaultLocalization(FaultLocalizationStrategy faultLocalization) {
 		this.faultLocalization = faultLocalization;
 	}
 

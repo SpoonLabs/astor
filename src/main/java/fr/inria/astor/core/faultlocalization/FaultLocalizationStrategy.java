@@ -8,7 +8,7 @@ import java.util.Set;
  * @author Matias Martinez
  *
  */
-public interface IFaultLocalization {
+public interface FaultLocalizationStrategy {
 
 	
 	public FaultLocalizationResult searchSuspicious(

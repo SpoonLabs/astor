@@ -11,8 +11,6 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.faultlocalization.GZoltarFaultLocalization;
-import fr.inria.astor.core.faultlocalization.IFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
@@ -40,21 +38,15 @@ public class JGenProg extends AstorCoreEngine {
 	
 	public JGenProg(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
-		//By default, we use GZoltar fault localization
-		this.faultLocalization = new GZoltarFaultLocalization();
 	}
 
-	public JGenProg(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade, IFaultLocalization faultLocalization) throws JSAPException {
-		super(mutatorExecutor, projFacade);
-		this.faultLocalization = faultLocalization;
-	}
-	
+
 	public void createInitialPopulation() throws Exception {
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
 			// We dont use FL, so at this point the do not have suspicious
 			this.initPopulation(new ArrayList<SuspiciousCode>());
 		} else {
-			List<SuspiciousCode> suspicious = projectFacade.calculateSuspicious(faultLocalization);
+			List<SuspiciousCode> suspicious = projectFacade.calculateSuspicious(getFaultLocalization());
 			this.initPopulation(suspicious);
 		}
 	}

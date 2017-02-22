@@ -24,7 +24,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class GZoltarFaultLocalization implements IFaultLocalization {
+public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 	Logger logger = Logger.getLogger(GZoltarFaultLocalization.class.getName());
 

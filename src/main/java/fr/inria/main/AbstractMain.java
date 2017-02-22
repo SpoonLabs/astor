@@ -207,6 +207,10 @@ public abstract class AbstractMain {
 
 		options.addOption("timezone", true, "Timezone to be used in the process that Astor creates. Default: "
 				+ ConfigurationProperties.getProperty("timezone"));
+		
+		options.addOption("faultlocalization", true, "Class name of Fault locatication Strategy. Default:"
+				+ ConfigurationProperties.properties.getProperty("faultlocalization"));
+
 
 	}
 
@@ -496,7 +500,11 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("timezone")) {
 			ConfigurationProperties.properties.setProperty("timezone", cmd.getOptionValue("timezone"));
 		}
-
+		
+		if (cmd.hasOption("faultlocalization")) {
+			ConfigurationProperties.properties.setProperty("faultlocalization", cmd.getOptionValue("faultlocalization"));
+		}
+		
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();

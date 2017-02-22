@@ -14,6 +14,7 @@ import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.approaches.jkali.JKaliSpace;
 import fr.inria.astor.approaches.mutRepair.MutRepairSpace;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
@@ -57,7 +58,8 @@ public class AstorMain extends AbstractMain {
 	public void initProject(String location, String projectName, String dependencies, String packageToInstrument,
 			double thfl, String failing) throws Exception {
 
-		List<String> failingList = (failing !=null)?Arrays.asList(failing.split(File.pathSeparator)):new ArrayList<>();
+		List<String> failingList = (failing != null) ? Arrays.asList(failing.split(File.pathSeparator))
+				: new ArrayList<>();
 		String method = this.getClass().getSimpleName();
 		projectFacade = getProject(location, projectName, method, failingList, dependencies, true);
 		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
@@ -172,6 +174,9 @@ public class AstorMain extends AbstractMain {
 			astorCore = createEngineFromArgument(customengine, mutSupporter, projectFacade);
 
 		}
+		// Fault localization
+		String faulLocalizationClass = ConfigurationProperties.getProperty("faultlocalization");
+		astorCore.setFaultLocalization(createFaultLocalizatio(faulLocalizationClass));
 
 		// Now we define the commons properties
 
@@ -256,12 +261,27 @@ public class AstorMain extends AbstractMain {
 
 	}
 
+	private FaultLocalizationStrategy createFaultLocalizatio(String className) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(className);
+			object = classDefinition.newInstance();
+		} catch (Exception e) {
+			log.error("Loading FaultLocalization Strategy " + className + " --" + e);
+			throw new Exception("Error Loading Engine: " + e);
+		}
+		if (object instanceof FaultLocalizationStrategy)
+			return (FaultLocalizationStrategy) object;
+		else
+			throw new Exception(
+					"The strategy " + className + " does not extend from " + FaultLocalizationStrategy.class.getName());
+
+	}
+
 	private IngredientSearchStrategy retrieveIngredientStrategy(IngredientSpace ingredientspace) throws Exception {
 		String strategy = ConfigurationProperties.properties.getProperty("ingredientstrategy");
 		IngredientSearchStrategy st = null;
 		if (strategy == null || strategy.trim().isEmpty()) {
-			// AstorCtIngredientSpace ctIngredientSpace =
-			// (AstorCtIngredientSpace) ingredientspace;
 			st = new EfficientIngredientStrategy(ingredientspace);
 		} else {
 			st = loadCustomIngredientStrategy(strategy, ingredientspace);
@@ -332,7 +352,7 @@ public class AstorMain extends AbstractMain {
 			object = classDefinition.getConstructor(IngredientSpace.class).newInstance(ingredientSpace);
 		} catch (Exception e) {
 			log.error("Loading strategy " + customStrategyclassName + " --" + e);
-			throw new Exception("Loading strategy "+ customStrategyclassName + ": "  + e);
+			throw new Exception("Loading strategy " + customStrategyclassName + ": " + e);
 		}
 		if (object instanceof IngredientSearchStrategy)
 			return (IngredientSearchStrategy) object;
@@ -414,11 +434,12 @@ public class AstorMain extends AbstractMain {
 	}
 
 	/**
-	 * Load extensions point that are used for all approaches.
-	 * For the moment it loads only the "patch priorization point""
-	 * @throws Exception 
+	 * Load extensions point that are used for all approaches. For the moment it
+	 * loads only the "patch priorization point""
+	 * 
+	 * @throws Exception
 	 */
-	private boolean loadCommonExtensionPoints(AstorCoreEngine astorCore)  {
+	private boolean loadCommonExtensionPoints(AstorCoreEngine astorCore) {
 
 		String patchpriority = ConfigurationProperties.getProperty("patchprioritization");
 		if (patchpriority != null && !patchpriority.trim().isEmpty()) {

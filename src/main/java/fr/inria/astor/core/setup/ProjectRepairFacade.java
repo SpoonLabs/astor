@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
-import fr.inria.astor.core.faultlocalization.IFaultLocalization;
+import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 
 /**
@@ -173,7 +173,7 @@ public class ProjectRepairFacade {
 		return cp;
 	}
 
-	public List<SuspiciousCode> calculateSuspicious(IFaultLocalization faultLocalization) throws Exception {
+	public List<SuspiciousCode> calculateSuspicious(FaultLocalizationStrategy faultLocalization) throws Exception {
 		List<SuspiciousCode> candidates = this.calculateSuspicious(faultLocalization,
 				ConfigurationProperties.getProperty("location") + File.separator
 						+ ConfigurationProperties.getProperty("srcjavafolder"),
@@ -184,7 +184,7 @@ public class ProjectRepairFacade {
 		return candidates;
 	}
 
-	public List<SuspiciousCode> calculateSuspicious(IFaultLocalization faultLocalization, String locationSrc,
+	public List<SuspiciousCode> calculateSuspicious(FaultLocalizationStrategy faultLocalization, String locationSrc,
 			String locationBytecode, String packageToInst, String mutatorIdentifier, List<String> failingTest,
 			List<String> allTest, boolean mustRunAllTest) throws Exception {
 
