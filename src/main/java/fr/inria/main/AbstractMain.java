@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
+import fr.inria.astor.core.loop.population.FitnessFunction;
+import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
@@ -210,6 +212,17 @@ public abstract class AbstractMain {
 		
 		options.addOption("faultlocalization", true, "Class name of Fault locatication Strategy. Default:"
 				+ ConfigurationProperties.properties.getProperty("faultlocalization"));
+
+		
+		options.addOption("fitnessfunction", true,
+				"(Optional) Class name of Fitness function for evaluating a variant. It must extend from "
+						+ FitnessFunction.class.getCanonicalName()
+						+ " The classes must be included in the classpath.");
+		
+		options.addOption("populationcontroller", true,
+				"(Optional) class name that controls the population evolution. It must extend from  "
+						+ PopulationController.class.getCanonicalName()
+						+ " The classes must be included in the classpath.");
 
 
 	}
@@ -504,6 +517,15 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("faultlocalization")) {
 			ConfigurationProperties.properties.setProperty("faultlocalization", cmd.getOptionValue("faultlocalization"));
 		}
+		
+		if (cmd.hasOption("fitnessfunction")) {
+			ConfigurationProperties.properties.setProperty("fitnessfunction", cmd.getOptionValue("faultlocalization"));
+		}
+		
+		if (cmd.hasOption("populationcontroller")) {
+			ConfigurationProperties.properties.setProperty("populationcontroller", cmd.getOptionValue("faultlocalization"));
+		}
+		
 		
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
