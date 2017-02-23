@@ -19,7 +19,7 @@ import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.population.FitnessFunction;
-import fr.inria.astor.core.loop.population.FitnessPopulationController;
+import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
@@ -192,7 +192,8 @@ public class AstorMain extends AbstractMain {
 		}
 
 		// Pop controller
-		astorCore.setPopulationControler(new FitnessPopulationController());
+		String popControllerClass = ConfigurationProperties.getProperty("populationcontroller");
+		astorCore.setPopulationControler(createPopulationController(popControllerClass));
 		//
 		astorCore.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 
@@ -217,6 +218,23 @@ public class AstorMain extends AbstractMain {
 		}
 
 		return astorCore;
+
+	}
+
+	private PopulationController createPopulationController(String className) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(className);
+			object = classDefinition.newInstance();
+		} catch (Exception e) {
+			log.error("Loading FaultLocalization Strategy " + className + " --" + e);
+			throw new Exception("Error Loading Engine: " + e);
+		}
+		if (object instanceof PopulationController)
+			return (PopulationController) object;
+		else
+			throw new Exception(
+					"The strategy " + className + " does not extend from " + PopulationController.class.getName());
 
 	}
 

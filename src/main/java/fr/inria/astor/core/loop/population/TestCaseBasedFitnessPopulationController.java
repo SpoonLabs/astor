@@ -16,7 +16,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class FitnessPopulationController implements PopulationController {
+public class TestCaseBasedFitnessPopulationController implements PopulationController {
 
 	private Logger log = Logger.getLogger(Thread.currentThread().getName());
 
