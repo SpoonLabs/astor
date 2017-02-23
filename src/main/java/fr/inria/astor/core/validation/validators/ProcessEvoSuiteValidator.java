@@ -12,7 +12,7 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.validation.entity.TestResult;
@@ -53,20 +53,20 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 	 * @return
 	 */
 	@Override
-	public ProgramVariantValidationResult validate(ProgramVariant currentVariant, ProjectRepairFacade projectFacade) {
+	public TestCaseVariantValidationResult validate(ProgramVariant currentVariant, ProjectRepairFacade projectFacade) {
 
 		try {
 			ProcessValidator validator = new ProcessValidator();
 			boolean executeAlloriginalValidation = false;
-			ProgramVariantValidationResult resultOriginal = validator.validate(currentVariant, projectFacade,
+			TestCaseVariantValidationResult resultOriginal = validator.validate(currentVariant, projectFacade,
 					executeAlloriginalValidation);
-			if (resultOriginal == null || !resultOriginal.wasSuccessful()) {
+			if (resultOriginal == null || !resultOriginal.isSuccessful()) {
 				// It's not a solution, we discard this.
 				return resultOriginal;
 			}
 			boolean runESoverOriginalBuggyClass = ConfigurationProperties.getPropertyBool("evoRunOnBuggyClass");
 			
-			ProgramVariantValidationResult resultEvoExecution = runTestFromEvoSuite(currentVariant, projectFacade, runESoverOriginalBuggyClass);
+			TestCaseVariantValidationResult resultEvoExecution = runTestFromEvoSuite(currentVariant, projectFacade, runESoverOriginalBuggyClass);
 			log.info("Evo Result " + resultEvoExecution.toString());
 
 			EvoSuiteValidationResult evoResult = new EvoSuiteValidationResult();
@@ -82,7 +82,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 
 	
 	/** Generates and runs evosuite test cases **/
-	public ProgramVariantValidationResult runTestFromEvoSuite(ProgramVariant currentVariant,
+	public TestCaseVariantValidationResult runTestFromEvoSuite(ProgramVariant currentVariant,
 			ProjectRepairFacade projectFacade, boolean runOverOriginal) throws Exception {
 		log.info("Running Evosuite for variant " + currentVariant.currentMutatorIdentifier());
 
@@ -197,7 +197,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 		log.info("Process classpath " + classpathForRunTest);
 
 		ProcessEvoSuiteValidator evoProcess = new ProcessEvoSuiteValidator();
-		ProgramVariantValidationResult evoResult = evoProcess.executeRegressionTesting(
+		TestCaseVariantValidationResult evoResult = evoProcess.executeRegressionTesting(
 				Converters.toURLArray(classpathForRunTest.split(File.pathSeparator)), testToExecute);
 
 		return evoResult;

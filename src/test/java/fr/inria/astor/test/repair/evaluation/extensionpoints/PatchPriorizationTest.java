@@ -11,6 +11,7 @@ import org.junit.Test;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.extension.IdentifierPriorityCriterion;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.validation.validators.TestCasesProgramValidationResult;
 import fr.inria.main.evolution.AstorMain;
 
 /**
@@ -43,7 +44,7 @@ public class PatchPriorizationTest {
 		assertTrue(solutions.size() > 0);
 		assertEquals(2, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		assertTrue(variant.getValidationResult().isRegressionExecuted());
+		assertTrue(((TestCasesProgramValidationResult) variant.getValidationResult()).isRegressionExecuted());
 		//TODO: include new assertions
 	}
 }

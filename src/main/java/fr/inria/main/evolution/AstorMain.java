@@ -18,6 +18,7 @@ import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
+import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.FitnessPopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
@@ -176,7 +177,11 @@ public class AstorMain extends AbstractMain {
 		}
 		// Fault localization
 		String faulLocalizationClass = ConfigurationProperties.getProperty("faultlocalization");
-		astorCore.setFaultLocalization(createFaultLocalizatio(faulLocalizationClass));
+		astorCore.setFaultLocalization(createFaultLocalization(faulLocalizationClass));
+
+		// Fault localization
+		String fitnessFunctionClass = ConfigurationProperties.getProperty("fitnessfunction");
+		astorCore.setFitnessFunction(createFitnessFunction(fitnessFunctionClass));
 
 		// Now we define the commons properties
 
@@ -261,7 +266,7 @@ public class AstorMain extends AbstractMain {
 
 	}
 
-	private FaultLocalizationStrategy createFaultLocalizatio(String className) throws Exception {
+	private FaultLocalizationStrategy createFaultLocalization(String className) throws Exception {
 		Object object = null;
 		try {
 			Class classDefinition = Class.forName(className);
@@ -272,6 +277,23 @@ public class AstorMain extends AbstractMain {
 		}
 		if (object instanceof FaultLocalizationStrategy)
 			return (FaultLocalizationStrategy) object;
+		else
+			throw new Exception(
+					"The strategy " + className + " does not extend from " + FaultLocalizationStrategy.class.getName());
+
+	}
+
+	private FitnessFunction createFitnessFunction(String className) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(className);
+			object = classDefinition.newInstance();
+		} catch (Exception e) {
+			log.error("Loading FitnessFunction " + className + " --" + e);
+			throw new Exception("Error Loading Engine: " + e);
+		}
+		if (object instanceof FitnessFunction)
+			return (FitnessFunction) object;
 		else
 			throw new Exception(
 					"The strategy " + className + " does not extend from " + FaultLocalizationStrategy.class.getName());

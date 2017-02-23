@@ -94,11 +94,17 @@ public class JGenProg extends AstorCoreEngine {
 		//temporal workaround for avoid changing the interface
 		String original = ConfigurationProperties.getProperty("forceExecuteRegression");
 		ConfigurationProperties.setProperty("forceExecuteRegression", Boolean.TRUE.toString());
+		
+		//Initial validation and fitness 
 		boolean validInstance = validateInstance(originalVariant);
 		if (validInstance) {
 			throw new IllegalStateException("The application under repair has not failling test cases");
 		}
-		double fitness = originalVariant.getFitness();
+		
+		double fitness = this.fitnessFunction.calculateFitnessValue(originalVariant);
+		originalVariant.setFitness(fitness);
+		
+	
 		log.debug("The original fitness is : "+fitness);
 		for (ProgramVariant initvariant : variants) {
 			initvariant.setFitness(fitness);

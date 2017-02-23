@@ -294,7 +294,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			throw new RuntimeException();
 		}
 		log.debug("Number of locations: " + locations.size() + ", Scope "+ getIngredientSpace().getClass().getSimpleName());
-		locations.forEach(e -> log.debug("--> ing location: "+e.getShortRepresentation()));
+		//locations.forEach(e -> log.debug("--> ing location: "+e.getShortRepresentation()));
 
 		// Use locations to get T elements.
 		Map elements;
@@ -394,7 +394,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				IngredientProcessor<?, CtStatement> ipro = new IngredientProcessor<>(
 						new SingleStatementFixSpaceProcessor());
 				statements = ipro.createFixSpace(element);
-				log.debug(element.getSimpleName() + " from simlist, statements: (" + statements.size() + ")");
+				//log.debug(element.getSimpleName() + " from simlist, statements: (" + statements.size() + ")");
 			} catch (JSAPException e) {
 				log.error(e);
 			}

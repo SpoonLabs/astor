@@ -1,6 +1,6 @@
 package fr.inria.astor.core.validation.validators;
 
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.validation.entity.TestResult;
 
 /**
@@ -8,7 +8,7 @@ import fr.inria.astor.core.validation.entity.TestResult;
  * @author Matias Martinez
  *
  */
-public class TestCasesProgramValidationResult extends ProgramVariantValidationResult {
+public class TestCasesProgramValidationResult  implements  TestCaseVariantValidationResult {
 
 	int numberFailingTestCases = 0;
 	int numberPassingTestCases = 0;
@@ -44,7 +44,7 @@ public class TestCasesProgramValidationResult extends ProgramVariantValidationRe
 		this.resultSucess = resultSucess;
 	}
 
-	public boolean wasSuccessful() {
+	public boolean isSuccessful() {
 
 		return numberFailingTestCases == 0 && this.resultSucess;
 	}

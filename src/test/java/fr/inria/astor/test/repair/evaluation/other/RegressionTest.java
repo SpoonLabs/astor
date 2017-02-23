@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.validation.validators.TestCasesProgramValidationResult;
 import fr.inria.astor.test.repair.evaluation.BaseEvolutionaryTest;
 import fr.inria.main.evolution.AstorMain;
 /**
@@ -42,8 +43,10 @@ public class RegressionTest extends BaseEvolutionaryTest{
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		assertTrue(variant.getValidationResult().isRegressionExecuted());
-		assertEquals(2071, variant.getValidationResult().getCasesExecuted());
+		TestCasesProgramValidationResult validationResult = (TestCasesProgramValidationResult) variant.getValidationResult();
+		
+		assertTrue(validationResult.isRegressionExecuted());
+		assertEquals(2071, validationResult.getCasesExecuted());
 		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
 
 		
@@ -72,8 +75,9 @@ public class RegressionTest extends BaseEvolutionaryTest{
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		assertFalse(variant.getValidationResult().isRegressionExecuted());
-		assertEquals(12, variant.getValidationResult().getCasesExecuted());
+		TestCasesProgramValidationResult validationResult = (TestCasesProgramValidationResult) variant.getValidationResult();
+		assertFalse(validationResult.isRegressionExecuted());
+		assertEquals(12, validationResult.getCasesExecuted());
 		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
 
 		
@@ -103,12 +107,13 @@ public class RegressionTest extends BaseEvolutionaryTest{
 		assertTrue(main1.getEngine().getSolutions().isEmpty());
 		
 		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+		TestCasesProgramValidationResult validationResult = (TestCasesProgramValidationResult) variant.getValidationResult();
 		
-		assertFalse(variant.getValidationResult().isRegressionExecuted());
+		assertFalse(validationResult.isRegressionExecuted());
 		//The failing
-		assertEquals(12, variant.getValidationResult().getCasesExecuted());
-		assertEquals(1, variant.getValidationResult().getFailureCount());
-		assertEquals(11, variant.getValidationResult().getPassingTestCases());
+		assertEquals(12, validationResult.getCasesExecuted());
+		assertEquals(1, validationResult.getFailureCount());
+		assertEquals(11,validationResult.getPassingTestCases());
 
 		
 	}

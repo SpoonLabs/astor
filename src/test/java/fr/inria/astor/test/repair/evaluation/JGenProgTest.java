@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -119,7 +120,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		assertTrue(variant.getValidationResult().isRegressionExecuted());
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variant.getValidationResult();
+		
+		assertTrue(validationResult.isRegressionExecuted());
 
 		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
 
@@ -282,7 +285,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		assertTrue(variant.getValidationResult().isRegressionExecuted());
+		
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variant.getValidationResult();
+		
+		assertTrue(validationResult.isRegressionExecuted());
 
 	}
 

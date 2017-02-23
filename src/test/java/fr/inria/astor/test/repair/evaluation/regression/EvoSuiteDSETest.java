@@ -10,7 +10,7 @@ import java.io.File;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
 import fr.inria.main.evolution.AstorMain;
@@ -53,7 +53,7 @@ public class EvoSuiteDSETest {
 
 		
 		ProgramVariant variantSolutionDSE = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResultDSE = variantSolutionDSE.getValidationResult();
+		TestCaseVariantValidationResult validationResultDSE = (TestCaseVariantValidationResult) variantSolutionDSE.getValidationResult();
 	
 		
 		assertNotNull("Without validation",validationResultDSE);
@@ -61,9 +61,9 @@ public class EvoSuiteDSETest {
 		assertTrue(validationResultDSE instanceof EvoSuiteValidationResult);
 		EvoSuiteValidationResult esvalidationresultDSE = (EvoSuiteValidationResult) validationResultDSE;
 		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresultDSE.wasSuccessful());
+		assertTrue(esvalidationresultDSE.isSuccessful());
 		//Now, the extended validation must fail
-		assertFalse(esvalidationresultDSE.getEvoValidation().wasSuccessful());
+		assertFalse(esvalidationresultDSE.getEvoValidation().isSuccessful());
 		
 		//Results ES-DSE: evo_regression: |false|3|21|[test07(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Expecting exception: NullPointerException-, test18(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): endpoints do not specify an interval: 4, 369.837, 4, 369.837-, test06(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Exception was not thrown in org.apache.commons.math.analysis.solvers.BisectionSolver but in org.apache.commons.math.MathRuntimeException.createIllegalArgumentException(MathRuntimeException.java:305): org.evosuite.runtime.mock.java.lang.MockThrowable-]|
 
@@ -91,16 +91,16 @@ public class EvoSuiteDSETest {
 		
 		//
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
 		
 		assertNotNull("Without validation",validationResult);
 		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
 		assertTrue(validationResult instanceof EvoSuiteValidationResult);
 		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
 		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.wasSuccessful());
+		assertTrue(esvalidationresult.isSuccessful());
 		//Now, the extended validation must fail
-		assertFalse(esvalidationresult.getEvoValidation().wasSuccessful());
+		assertFalse(esvalidationresult.getEvoValidation().isSuccessful());
 		
 		
 	//	assertNotEquals(esvalidationresult.getEvoValidation().getFailureCount(),

@@ -87,7 +87,7 @@ public class ProgramVariant {
 	protected List<CtClass> modifiedClasses = new ArrayList<CtClass>();
 
 	
-	ProgramVariantValidationResult validationResult = null;
+	VariantValidationResult validationResult = null;
 	
 	public ProgramVariant(){
 		modificationPoints = new ArrayList<ModificationPoint>();
@@ -225,11 +225,11 @@ public class ProgramVariant {
 		this.modifiedClasses = resultedClasses;
 	}
 
-	public ProgramVariantValidationResult getValidationResult() {
+	public VariantValidationResult getValidationResult() {
 		return validationResult;
 	}
 
-	public void setValidationResult(ProgramVariantValidationResult validationResult) {
+	public void setValidationResult(VariantValidationResult validationResult) {
 		this.validationResult = validationResult;
 	}
 	

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -328,7 +328,7 @@ public class EvoSuiteFacade {
 
 	}
 
-	public ProgramVariantValidationResult saveAndExecuteEvoSuite(ProjectRepairFacade projectFacade,
+	public TestCaseVariantValidationResult saveAndExecuteEvoSuite(ProjectRepairFacade projectFacade,
 			ProgramVariant variant, List<CtClass> ctclasses) throws Exception {
 
 		String classpathForCompileSpoon = "";
@@ -367,7 +367,7 @@ public class EvoSuiteFacade {
 		logger.info("Process classpath " + classpathForRunTest);
 
 		ProcessEvoSuiteValidator evoProcess = new ProcessEvoSuiteValidator();
-		ProgramVariantValidationResult evoResult = evoProcess.executeRegressionTesting(
+		TestCaseVariantValidationResult evoResult = evoProcess.executeRegressionTesting(
 				Converters.toURLArray(classpathForRunTest.split(File.pathSeparator)), testToExecute);
 
 		return evoResult;

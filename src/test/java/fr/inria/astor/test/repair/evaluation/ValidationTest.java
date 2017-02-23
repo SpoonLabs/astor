@@ -14,7 +14,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
 import fr.inria.astor.core.validation.validators.RegressionValidation;
@@ -96,7 +96,7 @@ public class ValidationTest extends BaseEvolutionaryTest {
 			// assertTrue(main1.getEngine().getSolutions().size() > 0);
 			
 			ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-			ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
+			TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
 		
 			
 			assertNotNull("Without validation",validationResult);
@@ -104,9 +104,9 @@ public class ValidationTest extends BaseEvolutionaryTest {
 			assertTrue(validationResult instanceof EvoSuiteValidationResult);
 			EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
 			//The main validation must be true (due it is a solution)
-			assertTrue(esvalidationresult.getFailingTestValidation().wasSuccessful());
+			assertTrue(esvalidationresult.getFailingTestValidation().isSuccessful());
 			
-			assertTrue(esvalidationresult.getManualTestValidation().wasSuccessful());
+			assertTrue(esvalidationresult.getManualTestValidation().isSuccessful());
 			
 			assertNotNull(esvalidationresult.getEvoValidation());
 			
@@ -157,14 +157,14 @@ public class ValidationTest extends BaseEvolutionaryTest {
 		//generation= 240
 
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
 		
 		assertNotNull("Without validation",validationResult);
 		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
 		assertTrue(validationResult instanceof EvoSuiteValidationResult);
 		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
 		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.wasSuccessful());
+		assertTrue(esvalidationresult.isSuccessful());
 		//Now, the extended validation must fail
 		//assertFalse(esvalidationresult.getEvoValidation().wasSuccessful());
 		//log.info(esvalidationresult);
@@ -209,13 +209,13 @@ public class ValidationTest extends BaseEvolutionaryTest {
 
 		assertFalse(main1.getEngine().getMutatorSupporter().getTestClasses().contains(classes.get(0)));
 
-		ProgramVariantValidationResult result = fev.saveAndExecuteEvoSuite(main1.getEngine().getProjectFacade(), variant, classes);
+		TestCaseVariantValidationResult result = fev.saveAndExecuteEvoSuite(main1.getEngine().getProjectFacade(), variant, classes);
 	
 		log.debug(result);
 		
 		assertNotNull(result);
 		
-		assertTrue(result.wasSuccessful());
+		assertTrue(result.isSuccessful());
 		
 		
 		

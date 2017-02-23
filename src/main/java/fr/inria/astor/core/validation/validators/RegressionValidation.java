@@ -1,7 +1,7 @@
 package fr.inria.astor.core.validation.validators;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 
@@ -15,21 +15,21 @@ public class RegressionValidation extends ProcessValidator {
 	ProcessEvoSuiteValidator evoValidator = new ProcessEvoSuiteValidator();
 
 	@Override
-	public ProgramVariantValidationResult validate(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
+	public TestCaseVariantValidationResult validate(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
 
 		try {
 			boolean runESoverOriginalBuggyClass = ConfigurationProperties.getPropertyBool("evoRunOnBuggyClass");
-			ProgramVariantValidationResult failingValidation = super.runFailing(mutatedVariant, projectFacade);
+			TestCaseVariantValidationResult failingValidation = super.runFailing(mutatedVariant, projectFacade);
 			log.debug("Failing Val: " + failingValidation);
-			if (failingValidation != null && failingValidation.wasSuccessful()) {
+			if (failingValidation != null && failingValidation.isSuccessful()) {
 
 				// Now, the complete regression
-				ProgramVariantValidationResult regressionValidation = super.runRegression(mutatedVariant,
+				TestCaseVariantValidationResult regressionValidation = super.runRegression(mutatedVariant,
 						projectFacade);
 				log.debug("Manual Regression: " + regressionValidation);
 
 				// Now, Evosuite
-				ProgramVariantValidationResult evoSuiteRegressionValidation = evoValidator
+				TestCaseVariantValidationResult evoSuiteRegressionValidation = evoValidator
 						.runTestFromEvoSuite(mutatedVariant, projectFacade,runESoverOriginalBuggyClass);
 
 				log.debug("Evo Regression: " + evoSuiteRegressionValidation);

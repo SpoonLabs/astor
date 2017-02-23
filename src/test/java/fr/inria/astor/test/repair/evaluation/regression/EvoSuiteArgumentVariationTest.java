@@ -8,7 +8,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
 import fr.inria.astor.core.validation.validators.TestCasesProgramValidationResult;
@@ -51,16 +51,16 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 
 
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
 		
 		assertNotNull("Without validation",validationResult);
 		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
 		assertTrue(validationResult instanceof EvoSuiteValidationResult);
 		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
 		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.wasSuccessful());
+		assertTrue(esvalidationresult.isSuccessful());
 		//Now, the extended validation must fail
-		assertFalse(esvalidationresult.getEvoValidation().wasSuccessful());
+		assertFalse(esvalidationresult.getEvoValidation().isSuccessful());
 		
 		assertTrue(esvalidationresult.getEvoValidation().getFailureCount() > 0);
 		
@@ -89,16 +89,16 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 
 
 		ProgramVariant variantSolution2 = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult2 = variantSolution2.getValidationResult();
+		TestCaseVariantValidationResult validationResult2 = (TestCaseVariantValidationResult) variantSolution2.getValidationResult();
 		
 		assertNotNull("Without validation",validationResult2);
 		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
 		assertTrue(validationResult2 instanceof EvoSuiteValidationResult);
 		EvoSuiteValidationResult esvalidationresultExtendedBudget = (EvoSuiteValidationResult) validationResult2;
 		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresultExtendedBudget.wasSuccessful());
+		assertTrue(esvalidationresultExtendedBudget.isSuccessful());
 		//Now, the extended validation must fail
-		assertFalse(esvalidationresultExtendedBudget.getEvoValidation().wasSuccessful());
+		assertFalse(esvalidationresultExtendedBudget.getEvoValidation().isSuccessful());
 		
 		assertTrue(esvalidationresultExtendedBudget.getEvoValidation().getFailureCount() > 0);
 		
@@ -159,18 +159,18 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 		main1.execute(args);
 		
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
 		
 		assertNotNull("Without validation",validationResult);
 		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
 		assertTrue(validationResult instanceof EvoSuiteValidationResult);
 		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
 		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.wasSuccessful());
+		assertTrue(esvalidationresult.isSuccessful());
 		//Now, the extended validation must fail
 		
 		TestCasesProgramValidationResult evoValidation = (TestCasesProgramValidationResult) esvalidationresult.getEvoValidation();
-		assertFalse(evoValidation.wasSuccessful());
+		assertFalse(evoValidation.isSuccessful());
 		
 		assertTrue(evoValidation.getCasesExecuted() > 0);
 		
@@ -206,18 +206,18 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 		main1.execute(args);
 		
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
 		
 		assertNotNull("Without validation",validationResult);
 		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
 		assertTrue(validationResult instanceof EvoSuiteValidationResult);
 		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
 		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.wasSuccessful());
+		assertTrue(esvalidationresult.isSuccessful());
 		//Now, the extended validation must fail
 		
 		TestCasesProgramValidationResult evoValidation = (TestCasesProgramValidationResult) esvalidationresult.getEvoValidation();
-		assertFalse(evoValidation.wasSuccessful());
+		assertFalse(evoValidation.isSuccessful());
 		
 		assertTrue(evoValidation.getCasesExecuted() > 0);
 		
@@ -266,16 +266,16 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 
 
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		ProgramVariantValidationResult validationResult = variantSolution.getValidationResult();
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
 		
 		assertNotNull("Without validation",validationResult);
 		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
 		assertTrue(validationResult instanceof EvoSuiteValidationResult);
 		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
 		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.wasSuccessful());
+		assertTrue(esvalidationresult.isSuccessful());
 		//Now, the extended validation must fail
-		assertTrue(esvalidationresult.getEvoValidation().wasSuccessful());
+		assertTrue(esvalidationresult.getEvoValidation().isSuccessful());
 		
 		assertTrue(esvalidationresult.getEvoValidation().getCasesExecuted() > 0);
 		

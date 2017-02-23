@@ -10,7 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -36,7 +36,7 @@ public class ProcessValidator extends ProgramValidator {
 	 * @return
 	 */
 	@Override
-	public ProgramVariantValidationResult validate(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
+	public TestCaseVariantValidationResult validate(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
 
 		return this.validate(mutatedVariant, projectFacade,
 				Boolean.valueOf(ConfigurationProperties.getProperty("forceExecuteRegression")));
@@ -53,7 +53,7 @@ public class ProcessValidator extends ProgramValidator {
 	 * @param forceExecuteRegression
 	 * @return
 	 */
-	public ProgramVariantValidationResult validate(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade,
+	public TestCaseVariantValidationResult validate(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade,
 			boolean forceExecuteRegression) {
 
 		try {
@@ -89,7 +89,7 @@ public class ProcessValidator extends ProgramValidator {
 				currentStats.passFailingval2++;
 				return runRegression(mutatedVariant, projectFacade, bc);
 			} else {
-				ProgramVariantValidationResult r = new TestCasesProgramValidationResult(trfailing,
+				TestCaseVariantValidationResult r = new TestCasesProgramValidationResult(trfailing,
 						trfailing.wasSuccessful(), false);
 				return r;
 			}
@@ -100,7 +100,7 @@ public class ProcessValidator extends ProgramValidator {
 		}
 	}
 
-	public ProgramVariantValidationResult runFailing(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
+	public TestCaseVariantValidationResult runFailing(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
 
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
@@ -114,7 +114,7 @@ public class ProcessValidator extends ProgramValidator {
 			if (trfailing == null)
 				return null;
 			else {
-				ProgramVariantValidationResult validationResult = new TestCasesProgramValidationResult(trfailing,
+				TestCaseVariantValidationResult validationResult = new TestCasesProgramValidationResult(trfailing,
 						trfailing.wasSuccessful(), false);
 				return validationResult;
 			}
@@ -125,7 +125,7 @@ public class ProcessValidator extends ProgramValidator {
 		}
 	}
 
-	public ProgramVariantValidationResult runRegression(ProgramVariant mutatedVariant,
+	public TestCaseVariantValidationResult runRegression(ProgramVariant mutatedVariant,
 			ProjectRepairFacade projectFacade) {
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
@@ -137,7 +137,7 @@ public class ProcessValidator extends ProgramValidator {
 
 	}
 
-	protected ProgramVariantValidationResult runRegression(ProgramVariant mutatedVariant,
+	protected TestCaseVariantValidationResult runRegression(ProgramVariant mutatedVariant,
 			ProjectRepairFacade projectFacade, URL[] bc) {
 
 		JUnitExecutorProcess testProcessRunner = new JUnitIndirectExecutorProcess(false);// Dir
@@ -179,7 +179,7 @@ public class ProcessValidator extends ProgramValidator {
 		return bc;
 	}
 
-	protected ProgramVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc,
+	protected TestCaseVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc,
 			JUnitExecutorProcess p, ProjectRepairFacade projectFacade) {
 		log.debug("-Test Failing is passing, Executing regression");
 		long t1 = System.currentTimeMillis();
@@ -210,7 +210,7 @@ public class ProcessValidator extends ProgramValidator {
 		}
 	}
 
-	protected ProgramVariantValidationResult executeRegressionTestingOneByOne(ProgramVariant mutatedVariant, URL[] bc,
+	protected TestCaseVariantValidationResult executeRegressionTestingOneByOne(ProgramVariant mutatedVariant, URL[] bc,
 			JUnitExecutorProcess p, ProjectRepairFacade projectFacade) {
 
 		log.debug("-Test Failing is passing, Executing regression, One by one");

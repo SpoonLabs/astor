@@ -3,34 +3,34 @@ package fr.inria.astor.core.validation.validators;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 /**
  * Contains a set of Validation Results
  * @author Matias Martinez
  *
  */
-public class CompoundValidationResult extends ProgramVariantValidationResult {
+public class CompoundValidationResult implements  TestCaseVariantValidationResult {
 
-	protected Map<String,ProgramVariantValidationResult> validations = new HashMap<>();
+	protected Map<String,TestCaseVariantValidationResult> validations = new HashMap<>();
 	
 	public CompoundValidationResult() {
 		
 	}
 	
 
-	public void addValidation(String mode, ProgramVariantValidationResult p){
+	public void addValidation(String mode, TestCaseVariantValidationResult p){
 		this.validations.put(mode, p);
 	}
 	
 	
-	public  ProgramVariantValidationResult getValidation(String mode){
+	public  TestCaseVariantValidationResult getValidation(String mode){
 		return this.validations.get(mode);
 	}
 
 	@Override
-	public boolean wasSuccessful() {
-		for (ProgramVariantValidationResult  pv : this.validations.values()) {
-			if(!pv.wasSuccessful()){
+	public boolean isSuccessful() {
+		for (TestCaseVariantValidationResult  pv : this.validations.values()) {
+			if(!pv.isSuccessful()){
 				return false;
 			}
 		}
@@ -54,7 +54,7 @@ public class CompoundValidationResult extends ProgramVariantValidationResult {
 			return 0;
 		
 		int count = 0;
-		for (ProgramVariantValidationResult  pv : this.validations.values()) {
+		for (TestCaseVariantValidationResult  pv : this.validations.values()) {
 			if(pv != null)
 				count+= pv.getFailureCount();
 		}
@@ -80,7 +80,7 @@ public class CompoundValidationResult extends ProgramVariantValidationResult {
 	@Override
 	public int getPassingTestCases() {
 		int count = 0;
-		for (ProgramVariantValidationResult  pv : this.validations.values()) {
+		for (TestCaseVariantValidationResult  pv : this.validations.values()) {
 			count+= pv.getPassingTestCases();
 		}
 		

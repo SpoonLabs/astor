@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 
 /**
@@ -64,21 +63,7 @@ public class FitnessPopulationController implements PopulationController {
 
 	}
 
-	/**
-	 * In this case the fitness value is associate to the failures: LESS FITNESS
-	 * is better.
-	 */
-	@Override
-	public double getFitnessValue(ProgramVariant variant, ProgramVariantValidationResult result) {
 
-		return result.getFailureCount();
-	}
-	
-	@Override
-	public double getMaxFitnessValue() {
-
-		return Double.MAX_VALUE;
-	}
 
 	/**
 	 * Comparator to sort the variant in ascending mode according to the fitness

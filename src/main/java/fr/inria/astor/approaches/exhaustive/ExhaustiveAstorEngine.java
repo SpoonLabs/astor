@@ -86,10 +86,10 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 					if (solution) {
 						this.solutions.add(solutionVariant);
-						if (ConfigurationProperties.getPropertyBool("stopfirst"))
-							System.out.println(" modpoint analyzed "+modifPointsAnalyzed + ", operators "+operatorExecuted);
-						
-							//return;
+						if (ConfigurationProperties.getPropertyBool("stopfirst")){
+							log.debug(" modpoint analyzed "+modifPointsAnalyzed + ", operators "+operatorExecuted);
+							return;
+						}
 					}
 
 					// We undo the operator (for try the next one)
@@ -102,7 +102,7 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 					
 					if (maxGenerations <= operatorExecuted) {
 						log.debug("Max operator Applied "+operatorExecuted);
-						System.out.println("modpoint:"+modifPointsAnalyzed+ ":all:"+totalmodfpoints + ":operators:"+operatorExecuted);
+						log.debug("modpoint:"+modifPointsAnalyzed+ ":all:"+totalmodfpoints + ":operators:"+operatorExecuted);
 							return;
 					}
 				}

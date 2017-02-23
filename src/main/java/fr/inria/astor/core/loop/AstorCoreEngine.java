@@ -17,11 +17,12 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.ProgramVariantValidationResult;
+import fr.inria.astor.core.entities.VariantValidationResult;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.WeightCtElement;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
+import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
@@ -89,6 +90,10 @@ public abstract class AstorCoreEngine {
 	protected int generationsExecuted = 0;
 
 	protected SolutionVariantSortCriterion patchSortCriterion = null;
+	
+	protected FitnessFunction  fitnessFunction = null;
+	
+	
 	
 
 	/**
@@ -410,7 +415,11 @@ public abstract class AstorCoreEngine {
 			log.debug("-The child compiles: id " + programVariant.getId());
 			currentStat.numberOfRightCompilation++;
 			currentStat.setCompiles(programVariant.getId());
+			
 			boolean validInstance = validateInstance(programVariant);
+			double fitness = this.fitnessFunction.calculateFitnessValue(programVariant);
+			programVariant.setFitness(fitness);
+			
 
 			log.debug("-Valid?: " + validInstance + ", fitness " + programVariant.getFitness());
 			if (validInstance) {
@@ -426,7 +435,7 @@ public abstract class AstorCoreEngine {
 			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "+ compilation.getErrorList());
 			currentStat.numberOfFailingCompilation++;
 			currentStat.setNotCompiles(programVariant.getId());
-			programVariant.setFitness(this.populationControler.getMaxFitnessValue());
+			programVariant.setFitness(this.fitnessFunction.getWorstMaxFitnessValue());
 		}
 		//In case that the variant a) does not compile; b) compiles but it's not adequate
 		Stats.currentStat.storeIngCounterFromFailingPatch(programVariant.getId());
@@ -809,12 +818,11 @@ public abstract class AstorCoreEngine {
 			throws IllegalAccessException;
 
 	protected boolean validateInstance(ProgramVariant variant) {
-		ProgramVariantValidationResult validationResult;
+		
+		VariantValidationResult validationResult;
 
 		if ((validationResult = programValidator.validate(variant, projectFacade)) != null) {
-			double fitness = this.populationControler.getFitnessValue(variant, validationResult);
-			variant.setFitness(fitness);
-			boolean wasSuc = validationResult.wasSuccessful();
+			boolean wasSuc = validationResult.isSuccessful();
 			variant.setIsSolution(wasSuc);
 			variant.setValidationResult(validationResult);
 			return wasSuc;
@@ -950,5 +958,13 @@ public abstract class AstorCoreEngine {
 
 	public void setPatchSortCriterion(SolutionVariantSortCriterion patchSortCriterion) {
 		this.patchSortCriterion = patchSortCriterion;
+	}
+
+	public void setFitnessFunction(FitnessFunction fitnessFunction) {
+		this.fitnessFunction = fitnessFunction;
+	}
+
+	public FitnessFunction getFitnessFunction() {
+		return fitnessFunction;
 	}
 }
