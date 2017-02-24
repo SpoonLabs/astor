@@ -15,6 +15,10 @@ public class TestCaseFitnessFunction implements FitnessFunction {
 	 * is better.
 	 */
 	public double calculateFitnessValue(ProgramVariant variant) {
+		
+		if(variant.getValidationResult() == null)
+			return this.getWorstMaxFitnessValue();
+		
 		TestCaseVariantValidationResult result = (TestCaseVariantValidationResult) variant.getValidationResult();
 		return result.getFailureCount();
 	}
