@@ -60,7 +60,10 @@ public class ChartTest {
 				//
 				"-transformingredient",
 				//
-				"-loglevel", Level.DEBUG.toString()
+				"-loglevel", Level.INFO.toString(),
+				
+				//
+				"-customop","fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp"
 				//
 		};
 		System.out.println(Arrays.toString(args));

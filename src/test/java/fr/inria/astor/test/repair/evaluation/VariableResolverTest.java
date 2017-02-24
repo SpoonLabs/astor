@@ -26,7 +26,7 @@ import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
-import fr.inria.astor.core.manipulation.sourcecode.VarWrapper;
+import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.dpl.ExecutableCloneIngredientStrategyTest;
@@ -36,6 +36,7 @@ import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
@@ -44,6 +45,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
@@ -418,7 +420,93 @@ public class VariableResolverTest {
 	}
 
 	@Test
-	public void testBugVariableResolver() {
+	public void testBugVariableResolver2() {
+
+		File projectLocation = new File("./examples/exampleVarResolver/");
+		AstorMain main1 = new AstorMain();
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("");
+
+		Factory factory = launcher.createFactory();
+		factory.getEnvironment().setComplianceLevel(6);
+		SpoonCompiler compiler = launcher.createCompiler(factory);
+		compiler.setSourceClasspath(dep.split(File.pathSeparator));
+		compiler.addInputSource(new File(projectLocation.getAbsolutePath()));
+		compiler.build();
+
+		List<CtType<?>> types = factory.Type().getAll();
+		assertTrue(types.size() > 0);
+		log.info(types.get(0).toString());
+
+		List<CtMethod> mts = new ArrayList<>(types.get(0).getAllMethods());
+		CtMethod mt = types.get(0).getAllMethods().stream().filter(x -> x.getSimpleName().equals("test2")).findFirst()
+				.get();
+
+		System.out.println("Mthd : " + mt);
+
+		CtStatement l1 = mt.getBody().getStatement(1);
+		System.out.println(l1);
+		CtStatement l2 = mt.getBody().getStatement(2);
+		System.out.println(l2);
+
+		List<CtVariableAccess> vars2 = l2.getElements(new VAFilter());
+		System.out.println("vars access l2: " + vars2);
+
+		List<CtVariable> fields = l2.getParent(CtClass.class).getFields();
+
+		Map<VarAccessWrapper, List<CtVariable>> mapsVariables = new HashMap<>();
+
+		// let's take the second one (l2) and maps with fields
+		mapsVariables.put(new VarAccessWrapper(vars2.get(1)), fields);
+
+		assertEquals("l1 = l2", l2.toString());
+
+		VarMapping vm = new VarMapping(mapsVariables, new ArrayList<>());
+
+		assertTrue(vm.getMappedVariables().size() > 0);
+
+		System.out.println(vm.getMappedVariables());
+
+		List<Map<String, CtVariable>> allCombinations = VariableResolver
+				.findAllVarMappingCombination(vm.getMappedVariables());
+
+		assertTrue(allCombinations.size() > 0);
+
+		System.out.println("Combinations: " + allCombinations);
+		Map<VarAccessWrapper, CtVariableAccess> result = VariableResolver.convertIngredient(vm, allCombinations.get(0));
+
+		try {
+			// We force to print the line 2 (transformed)
+			System.out.println(l2);
+
+			assertEquals("l1 = f1", l2.toString());
+
+		} catch (ClassCastException e) {
+
+			e.printStackTrace();
+			Assert.fail();
+		}
+		//
+		System.out.println("before reset " + l2.toString());
+
+		CtAssignment assingL2 = (CtAssignment) l2;
+
+		CtVariableAccess assignment = (CtVariableAccess) assingL2.getAssignment();
+
+		assertEquals("java.lang.String", assignment.getType().toString());
+
+		// Revert
+
+		VariableResolver.resetIngredient(result);
+
+		assertEquals("l1 = l2", l2.toString());
+
+		System.out.println("After reset " + l2.toString());
+
+	}
+
+	@Test
+	public void testBugVariableResolver1() {
 
 		File projectLocation = new File("./examples/exampleVarResolver/");
 		AstorMain main1 = new AstorMain();
@@ -447,40 +535,227 @@ public class VariableResolverTest {
 		CtStatement l2 = mt.getBody().getStatement(1);
 		System.out.println(l2);
 
-		
 		List<CtVariable> vars1 = l1.getElements(new VarFilter());
 
 		System.out.println("vars: " + vars1);
-		
+
 		List<CtVariableAccess> vars2 = l2.getElements(new VAFilter());
 		System.out.println("vars access: " + vars2);
 
-		
-		Map<VarWrapper, List<CtVariable>> mapsVariables =new HashMap<>();
-		
-		mapsVariables.put(new VarWrapper(vars2.get(0)),vars1);
-		
+		Map<VarAccessWrapper, List<CtVariable>> mapsVariables = new HashMap<>();
+
+		mapsVariables.put(new VarAccessWrapper(vars2.get(0)), vars1);
+
+		assertEquals("java.lang.String l2 = f1", l2.toString());
+
 		VarMapping vm = new VarMapping(mapsVariables, new ArrayList<>());
-		
+
 		assertTrue(vm.getMappedVariables().size() > 0);
-	
+
 		System.out.println(vm.getMappedVariables());
-		
+
 		List<Map<String, CtVariable>> allCombinations = VariableResolver
 				.findAllVarMappingCombination(vm.getMappedVariables());
-		
+
 		assertTrue(allCombinations.size() > 0);
-		
-		
-		Map<CtVariableAccess, CtVariableReference> result = VariableResolver.convertIngredient(vm, allCombinations.get(0));
-	
-		try{
+
+		System.out.println("To convert " + allCombinations.get(0));
+		Map<VarAccessWrapper, CtVariableAccess> result = VariableResolver.convertIngredient(vm, allCombinations.get(0));
+
+		try {
+			// We force to print the line 2 (transformed)
 			System.out.println(l2);
-			Assert.fail();
-		}catch (Exception e) {
-			// must fail
+
+			assertEquals("java.lang.String l2 = l1", l2.toString());
+
+		} catch (ClassCastException e) {
+
 			e.printStackTrace();
+			Assert.fail();
 		}
+		//
+		System.out.println("before reset " + l2.toString());
+
+		CtLocalVariable assingL2 = (CtLocalVariable) l2;
+
+		CtVariableAccess assignment = (CtVariableAccess) assingL2.getAssignment();
+
+		assertEquals("java.lang.String", assignment.getType().toString());
+
+		VariableResolver.resetIngredient(result);
+
+		assertEquals("java.lang.String l2 = f1", l2.toString());
+
+		System.out.println("After reset " + l2.toString());
+	}
+
+	@Test
+	public void testBugVariableResolver3() {
+
+		File projectLocation = new File("./examples/exampleVarResolver/");
+		AstorMain main1 = new AstorMain();
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("");
+
+		Factory factory = launcher.createFactory();
+		factory.getEnvironment().setComplianceLevel(6);
+		SpoonCompiler compiler = launcher.createCompiler(factory);
+		compiler.setSourceClasspath(dep.split(File.pathSeparator));
+		compiler.addInputSource(new File(projectLocation.getAbsolutePath()));
+		compiler.build();
+
+		List<CtType<?>> types = factory.Type().getAll();
+		assertTrue(types.size() > 0);
+		log.info(types.get(0).toString());
+
+		List<CtMethod> mts = new ArrayList<>(types.get(0).getAllMethods());
+		CtMethod mt = types.get(0).getAllMethods().stream().filter(x -> x.getSimpleName().equals("test3")).findFirst()
+				.get();
+
+		System.out.println("Mthd : " + mt);
+
+		CtStatement l2 = mt.getBody().getStatement(1);
+		System.out.println(l2);
+
+		List<CtVariable> pars1 = l2.getParent(CtMethod.class).getParameters();
+
+		System.out.println("param: " + pars1);
+
+		List<CtVariableAccess> vars2 = l2.getElements(new VAFilter());
+		System.out.println("vars access: " + vars2);
+
+		Map<VarAccessWrapper, List<CtVariable>> mapsVariables = new HashMap<>();
+
+		mapsVariables.put(new VarAccessWrapper(vars2.get(0)), pars1);
+
+		assertEquals("java.lang.String l2 = f1", l2.toString());
+
+		VarMapping vm = new VarMapping(mapsVariables, new ArrayList<>());
+
+		assertTrue(vm.getMappedVariables().size() > 0);
+
+		System.out.println(vm.getMappedVariables());
+
+		List<Map<String, CtVariable>> allCombinations = VariableResolver
+				.findAllVarMappingCombination(vm.getMappedVariables());
+
+		assertTrue(allCombinations.size() > 0);
+
+		System.out.println("To convert " + allCombinations.get(0));
+		Map<VarAccessWrapper, CtVariableAccess> result = VariableResolver.convertIngredient(vm, allCombinations.get(0));
+
+		try {
+			// We force to print the line 2 (transformed)
+			System.out.println(l2);
+
+			assertEquals("java.lang.String l2 = p1", l2.toString());
+
+		} catch (ClassCastException e) {
+
+			e.printStackTrace();
+			Assert.fail();
+		}
+		//
+		System.out.println("before reset " + l2.toString());
+
+		CtLocalVariable assingL2 = (CtLocalVariable) l2;
+
+		CtVariableAccess assignment = (CtVariableAccess) assingL2.getAssignment();
+
+		assertEquals("java.lang.String", assignment.getType().toString());
+
+		// Revert
+		
+		VariableResolver.resetIngredient(result);
+
+		assertEquals("java.lang.String l2 = f1", l2.toString());
+
+		System.out.println("After reset " + l2.toString());
+	}
+
+	@Test
+	public void testBugVariableResolver4() {
+
+		File projectLocation = new File("./examples/exampleVarResolver/");
+		AstorMain main1 = new AstorMain();
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("");
+
+		Factory factory = launcher.createFactory();
+		factory.getEnvironment().setComplianceLevel(6);
+		SpoonCompiler compiler = launcher.createCompiler(factory);
+		compiler.setSourceClasspath(dep.split(File.pathSeparator));
+		compiler.addInputSource(new File(projectLocation.getAbsolutePath()));
+		compiler.build();
+
+		List<CtType<?>> types = factory.Type().getAll();
+		assertTrue(types.size() > 0);
+		log.info(types.get(0).toString());
+
+		List<CtMethod> mts = new ArrayList<>(types.get(0).getAllMethods());
+		CtMethod mt = types.get(0).getAllMethods().stream().filter(x -> x.getSimpleName().equals("test2")).findFirst()
+				.get();
+
+		System.out.println("Mthd : " + mt);
+
+		CtStatement l2 = mt.getBody().getStatement(2);
+		System.out.println(l2);
+
+		List<CtVariableAccess> vars2 = l2.getElements(new VAFilter());
+		System.out.println("vars access l2: " + vars2);
+
+		List<CtVariable> fields = l2.getParent(CtClass.class).getFields();
+
+		Map<VarAccessWrapper, List<CtVariable>> mapsVariables = new HashMap<>();
+
+		// let's take the second one (l1) and maps with fields
+		// L1 is a WRITE
+		mapsVariables.put(new VarAccessWrapper(vars2.get(0)), fields);
+
+		assertEquals("l1 = l2", l2.toString());
+
+		VarMapping vm = new VarMapping(mapsVariables, new ArrayList<>());
+
+		assertTrue(vm.getMappedVariables().size() > 0);
+
+		System.out.println(vm.getMappedVariables());
+
+		List<Map<String, CtVariable>> allCombinations = VariableResolver
+				.findAllVarMappingCombination(vm.getMappedVariables());
+
+		assertTrue(allCombinations.size() > 0);
+
+		System.out.println("Combinations: " + allCombinations);
+		Map<VarAccessWrapper, CtVariableAccess> result = VariableResolver.convertIngredient(vm, allCombinations.get(0));
+
+		try {
+			// We force to print the line 2 (transformed)
+			System.out.println(l2);
+
+			assertEquals("f1 = l2", l2.toString());
+
+		} catch (ClassCastException e) {
+
+			e.printStackTrace();
+			Assert.fail();
+		}
+		//
+		System.out.println("before reset " + l2.toString());
+
+		CtAssignment assingL2 = (CtAssignment) l2;
+
+		CtVariableAccess assignment = (CtVariableAccess) assingL2.getAssignment();
+
+		assertEquals("java.lang.String", assignment.getType().toString());
+
+		// Revert
+	
+		VariableResolver.resetIngredient(result);
+
+		assertEquals("l1 = l2", l2.toString());
+
+		System.out.println("After reset " + l2.toString());
+
 	}
 
 	public class VAFilter implements Filter<CtVariableAccess> {
@@ -495,6 +770,14 @@ public class VariableResolverTest {
 
 		@Override
 		public boolean matches(CtVariable element) {
+			return true;
+		}
+	};
+
+	public class FieldFilter implements Filter<CtField> {
+
+		@Override
+		public boolean matches(CtField element) {
 			return true;
 		}
 	};

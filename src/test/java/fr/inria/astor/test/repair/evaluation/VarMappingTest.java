@@ -22,7 +22,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredi
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
-import fr.inria.astor.core.manipulation.sourcecode.VarWrapper;
+import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.evolution.AstorMain;
@@ -33,7 +33,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtVariableReference;
 
 /**
  * 
@@ -120,16 +119,16 @@ public class VarMappingTest {
 		CtElement cloned = engine.getMutatorSupporter().clone((CtCodeElement) stmMultiplesXs);
 
 		log.debug("Trying mapping " + allCombinationsOne.get(0));
-		Map<CtVariableAccess, CtVariableReference> originalMapOnevarTomap = VariableResolver
+		Map<VarAccessWrapper, CtVariableAccess> originalMapOnevarTomap = VariableResolver
 				.convertIngredient(vmappingOnevar, allCombinationsOne.get(0));
 
-		assertEquals(5, originalMapOnevarTomap.size());
+		assertEquals(5, originalMapOnevarTomap.size());//Modified
 
 		assertFalse(cloned.equals(stmMultiplesXs));
 
 		log.debug("5Xs after transformation: " + stmMultiplesXs);
 
-		VariableResolver.resetIngredient(vmappingOnevar, originalMapOnevarTomap);
+		VariableResolver.resetIngredient(originalMapOnevarTomap);
 
 		log.debug("5Xs again original : " + stmMultiplesXs);
 
@@ -158,7 +157,7 @@ public class VarMappingTest {
 		List<CtVariable> varContextC1 = VariableResolver.searchVariablesInScope(c1);
 		// ingredient return (a + b) * .5
 		VarMapping vmapping1 = VariableResolver.mapVariables(varContextC1, otherClassElementC8);
-		Map<VarWrapper, List<CtVariable>> mapsVariablesOutC1 = vmapping1.getMappedVariables();
+		Map<VarAccessWrapper, List<CtVariable>> mapsVariablesOutC1 = vmapping1.getMappedVariables();
 		log.debug("mapping 1 -->" + mapsVariablesOutC1);
 		assertFalse(mapsVariablesOutC1.values().isEmpty());
 		assertEquals(2, mapsVariablesOutC1.keySet().size());
@@ -193,7 +192,7 @@ public class VarMappingTest {
 		List<CtVariable> varContextC3 = VariableResolver.searchVariablesInScope(c3);
 		VarMapping vmapping2 = VariableResolver.mapVariables(varContextC3, otherClassElementC8);
 
-		Map<VarWrapper, List<CtVariable>> mapsVariablesOutC2 = vmapping2.getMappedVariables();
+		Map<VarAccessWrapper, List<CtVariable>> mapsVariablesOutC2 = vmapping2.getMappedVariables();
 
 		log.debug("mapping 2 -->" + mapsVariablesOutC2 + "\n to we put in context: " + varContextC3);
 		// Here, the mapping must not be empty
@@ -231,14 +230,14 @@ public class VarMappingTest {
 
 		log.debug("Trying mapping " + allCombinations.get(0));
 
-		Map<CtVariableAccess, CtVariableReference> originalMap = VariableResolver.convertIngredient(vmapping2,
+		Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver.convertIngredient(vmapping2,
 				allCombinations.get(0));
 
 		log.debug("C8 after: " + otherClassElementC8);
 
 		assertFalse(cloned.equals(otherClassElementC8));
 
-		VariableResolver.resetIngredient(vmapping2, originalMap);
+		VariableResolver.resetIngredient(originalMap);
 
 		log.debug("C8 after reset: " + otherClassElementC8);
 
@@ -247,7 +246,7 @@ public class VarMappingTest {
 		// Now, let's analyze the second proposed var combination.
 		log.debug("Trying mapping " + allCombinations.get(1));
 
-		Map<CtVariableAccess, CtVariableReference> originalMap2 = VariableResolver.convertIngredient(vmapping2,
+		Map<VarAccessWrapper, CtVariableAccess> originalMap2 = VariableResolver.convertIngredient(vmapping2,
 				allCombinations.get(1));
 
 		log.debug("C8 after 2: " + otherClassElementC8);
@@ -257,7 +256,7 @@ public class VarMappingTest {
 		// ---
 		CtElement clonedMapped1 = engine.getMutatorSupporter().clone((CtCodeElement) otherClassElementC8);
 
-		VariableResolver.resetIngredient(vmapping2, originalMap2);
+		VariableResolver.resetIngredient(originalMap2);
 
 		log.debug("C8 after reset 2: " + otherClassElementC8);
 
@@ -267,7 +266,7 @@ public class VarMappingTest {
 		// ------
 		log.debug("Trying mapping " + allCombinations.get(2));
 
-		Map<CtVariableAccess, CtVariableReference> originalMap3 = VariableResolver.convertIngredient(vmapping2,
+		Map<VarAccessWrapper, CtVariableAccess> originalMap3 = VariableResolver.convertIngredient(vmapping2,
 				allCombinations.get(2));
 
 		log.debug("C8 after 2: " + otherClassElementC8);

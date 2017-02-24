@@ -7,10 +7,11 @@ import spoon.reflect.code.CtVariableAccess;
  * @author Matias Martinez
  *
  */
-public class VarWrapper {
-	CtVariableAccess var;
+public class VarAccessWrapper {
+	
+	private CtVariableAccess var;
 
-	public VarWrapper(CtVariableAccess var) {
+	public VarAccessWrapper(CtVariableAccess var) {
 		this.var = var;
 	}
 

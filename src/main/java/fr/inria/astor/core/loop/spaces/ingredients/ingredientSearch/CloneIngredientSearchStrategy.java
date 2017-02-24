@@ -42,6 +42,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -233,7 +234,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 							log.debug("Transformation proposed: " + selectedTransformation);
 							// The ingredient is cloned, so we can modify
 							// its variables
-							Map<CtVariableAccess, CtVariableReference> originalMap = VariableResolver
+							Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver
 									.convertIngredient(mapping, selectedTransformation);
 							log.debug("Ingredient after transformation: " + ingredient);
 							// TODO: do we need to revert the ingredient. If
@@ -260,13 +261,11 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 
 			if (!continueSearching) {
 				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
-				//int ingCounter = Stats.currentStat.saveIngCounter(variant_id);
 				int ingCounter = Stats.currentStat.getIngCounter(variant_id);
 				log.debug("---attempts on ingredient space: " + ingCounter);
 				return new Ingredient(ingredient, scope);
 			}
 		}
-		//Stats.currentStat.saveIngCounter(variant_id);
 
 		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement()
 				+ ", search space size: " + searchSpaceSize);

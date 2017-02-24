@@ -14,6 +14,7 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
+import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -21,7 +22,6 @@ import fr.inria.astor.core.stats.Stats;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtVariableReference;
 
 /**
  * Strategy based on {@link UniformRandomIngredientSearch}, which stores the
@@ -115,7 +115,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 							log.debug("Transformation proposed: " + selectedTransformation);
 							// The ingredient is cloned, so we can modify its
 							// variables
-							Map<CtVariableAccess, CtVariableReference> originalMap = VariableResolver
+							Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver
 									.convertIngredient(mapping, selectedTransformation);
 							log.debug("Ingredient after transformation: " + elementFromIngredient);
 							// TODO: do we need to revert the ingredient. If we

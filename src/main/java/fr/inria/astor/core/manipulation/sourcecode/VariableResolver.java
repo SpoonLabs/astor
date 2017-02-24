@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldRead;
@@ -30,9 +31,11 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtScanner;
+import spoon.support.reflect.code.CtFieldWriteImpl;
 
 /**
  * Variable manipulations: methods to analyze variables and scope
@@ -271,7 +274,7 @@ public class VariableResolver {
 	public static VarMapping mapVariables(List<CtVariable> varContext, CtElement ingredientCtElement) {
 
 		// var out-of scope, list of variables compatibles
-		Map<VarWrapper, List<CtVariable>> varMaps = new HashMap<>();
+		Map<VarAccessWrapper, List<CtVariable>> varMaps = new HashMap<>();
 		List<CtVariableAccess> notMappedVariables = new ArrayList<>();
 
 		ClassLoader classLoader = VariableResolver.class.getClassLoader();
@@ -293,7 +296,7 @@ public class VariableResolver {
 			logger.debug("--var  out of context: " + wOut + ", with wcluster " + wcluster);
 
 			boolean mapped = false;
-			VarWrapper varOutWrapper = new VarWrapper(wOut);
+			VarAccessWrapper varOutWrapper = new VarAccessWrapper(wOut);
 			for (String wordFromCluster : wcluster) {// In order
 
 				List<CtVariable> varExist = existVariableWithName(varContext, wordFromCluster);
@@ -607,18 +610,59 @@ public class VariableResolver {
 	 * @return it returns the original variable reference of each converted
 	 *         variable
 	 */
-	public static Map<CtVariableAccess, CtVariableReference> convertIngredient(VarMapping varMapping,
+	@SuppressWarnings("unchecked")
+	public static Map<VarAccessWrapper, CtVariableAccess> convertIngredient(VarMapping varMapping,
 			Map<String, CtVariable> mapToFollow) {
 
-		Map<CtVariableAccess, CtVariableReference> originalMap = new HashMap<>();
+		Map<VarAccessWrapper, CtVariableAccess> originalMap = new HashMap<>();
 
-		Map<VarWrapper, List<CtVariable>> mappedVars = varMapping.getMappedVariables();
-		for (VarWrapper var : mappedVars.keySet()) {
+		Map<VarAccessWrapper, List<CtVariable>> mappedVars = varMapping.getMappedVariables();
+		for (VarAccessWrapper var : mappedVars.keySet()) {
 			CtVariable varNew = mapToFollow.get(var.getVar().getVariable().getSimpleName());
-			originalMap.put(var.getVar(), var.getVar().getVariable());
-			var.getVar().setVariable(varNew.getReference());
-		}
+			//
+			CtVariableReference newVarReference = varNew.getReference();
 
+			CtVariableAccess originalVarAccessDestination = var.getVar();
+			CtVariableAccess newVarAccessDestination = null;
+
+			// if the var to reference is a local or parameter
+			if (newVarReference instanceof CtLocalVariableReference
+					|| newVarReference instanceof CtParameterReference) {
+				// let's check the destination Writes or Reads
+				if (originalVarAccessDestination instanceof CtFieldWrite
+						|| originalVarAccessDestination instanceof CtVariableWrite) {
+					// We replace the Write by a Var writter
+					newVarAccessDestination = MutationSupporter.getFactory().Core().createVariableWrite();
+					newVarAccessDestination.setVariable(newVarReference);
+
+				} else { // read
+					newVarAccessDestination = MutationSupporter.getFactory().Code().createVariableRead(newVarReference,
+							varNew.hasModifier(ModifierKind.STATIC));
+				}
+
+			} else
+			// else, if we want to reference a field
+			if (newVarReference instanceof CtFieldReference) {
+				// let's check the destination, write or read
+				if (originalVarAccessDestination instanceof CtFieldWrite<?>
+						|| originalVarAccessDestination instanceof CtFieldRead<?>) {
+					newVarAccessDestination = MutationSupporter.getFactory().Core().createFieldWrite();
+
+				} else {
+					newVarAccessDestination = MutationSupporter.getFactory().Core().createFieldRead();
+
+				}
+				newVarAccessDestination.setVariable(newVarReference);
+			}
+			// At the end, for all cases:
+			if (newVarAccessDestination != null) {
+				originalMap.put(new VarAccessWrapper(newVarAccessDestination), originalVarAccessDestination);
+				originalVarAccessDestination.replace(newVarAccessDestination);
+			} else {
+				logger.error("No destination resolved");
+			}
+
+		} // end for
 		return originalMap;
 	}
 
@@ -629,13 +673,13 @@ public class VariableResolver {
 	 * @param varMapping
 	 * @param original
 	 */
-	public static void resetIngredient(VarMapping varMapping, Map<CtVariableAccess, CtVariableReference> original) {
 
-		Map<VarWrapper, List<CtVariable>> mappedVars = varMapping.getMappedVariables();
-		for (VarWrapper var : mappedVars.keySet()) {
-			CtVariableReference varNew = original.get(var.getVar());
-			var.getVar().setVariable(varNew);
+	public static void resetIngredient(Map<VarAccessWrapper, CtVariableAccess> old) {
+		for (VarAccessWrapper newa : old.keySet()) {
+			newa.getVar().replace(old.get(newa));
+
 		}
+
 	}
 
 	/**
@@ -651,12 +695,12 @@ public class VariableResolver {
 	 * @return
 	 */
 	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
-			Map<VarWrapper, List<CtVariable>> mappedVars) {
+			Map<VarAccessWrapper, List<CtVariable>> mappedVars) {
 
 		List<Map<String, CtVariable>> allCombinationsOne = new ArrayList<>();
 
 		if (!mappedVars.isEmpty()) {
-			List<VarWrapper> varNamesOne = new ArrayList<>(mappedVars.keySet());
+			List<VarAccessWrapper> varNamesOne = new ArrayList<>(mappedVars.keySet());
 
 			VariableResolver.findAllVarMappingCombination(mappedVars, varNamesOne, 0, new TreeMap<>(),
 					allCombinationsOne);
@@ -680,8 +724,8 @@ public class VariableResolver {
 	 * @param allCombinations
 	 *            list that store all variable combinations
 	 */
-	public static void findAllVarMappingCombination(Map<VarWrapper, List<CtVariable>> mappedVars,
-			List<VarWrapper> varsName, int indexVar, Map<String, CtVariable> currentCombination,
+	public static void findAllVarMappingCombination(Map<VarAccessWrapper, List<CtVariable>> mappedVars,
+			List<VarAccessWrapper> varsName, int indexVar, Map<String, CtVariable> currentCombination,
 			List<Map<String, CtVariable>> allCombinations) {
 
 		// Stop condition
@@ -694,7 +738,7 @@ public class VariableResolver {
 
 		// Get the variable to change
 		// CtVariableAccess currentVar = varsName.get(indexVar).getVar();
-		VarWrapper currentVar = varsName.get(indexVar);
+		VarAccessWrapper currentVar = varsName.get(indexVar);
 		// get all possibles variables to replace
 		List<CtVariable> mapped = mappedVars.get(currentVar);
 
