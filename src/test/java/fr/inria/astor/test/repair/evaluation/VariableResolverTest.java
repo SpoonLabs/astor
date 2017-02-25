@@ -590,6 +590,58 @@ public class VariableResolverTest {
 	}
 
 	@Test
+	public void testBugNPE() {
+
+		File projectLocation = new File("./examples/exampleVRClassNotFould/");
+		AstorMain main1 = new AstorMain();
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("");
+
+		Factory factory = launcher.createFactory();
+		factory.getEnvironment().setComplianceLevel(6);
+		SpoonCompiler compiler = launcher.createCompiler(factory);
+		compiler.setSourceClasspath(dep.split(File.pathSeparator));
+		compiler.addInputSource(new File(projectLocation.getAbsolutePath()));
+		compiler.build();
+
+		List<CtType<?>> types = factory.Type().getAll();
+		assertTrue(types.size() > 0);
+		log.info(types.get(0).toString());
+
+		CtType<?> type1 = types.stream().filter(x -> x.getSimpleName().equals("Class1")).findFirst()
+				.get();
+		
+		CtType<?> type2 = types.stream().filter(x -> x.getSimpleName().equals("Class2")).findFirst()
+				.get();
+	
+		System.out.println(type1);
+		System.out.println(type2);
+		
+		CtMethod mt =  type2.getAllMethods().stream().filter(x -> x.getSimpleName().equals("test1")).findFirst().get();
+
+		System.out.println(mt);
+		
+		CtStatement st = mt.getBody().getStatement(0);
+		
+		
+		List<CtVariable> vars1 = st.getElements(new VarFilter());
+
+		System.out.println(vars1);
+		
+		CtMethod mt2 =  type2.getAllMethods().stream().filter(x -> x.getSimpleName().equals("test2")).findFirst().get();
+
+		CtStatement st2 = mt2.getBody().getStatement(1);
+		
+		ClassLoader classLoader = getClass().getClassLoader();
+		File learningDir = new File(classLoader.getResource("learningm1").getFile());
+	
+		ConfigurationProperties.setProperty("learningdir", learningDir.getAbsolutePath());
+		VarMapping vm = VariableResolver.mapVariables(vars1, st2);
+
+		System.out.println("map "+vm.getMappedVariables());
+	}
+	
+	@Test
 	public void testBugVariableResolver3() {
 
 		File projectLocation = new File("./examples/exampleVarResolver/");
