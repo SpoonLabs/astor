@@ -119,7 +119,7 @@ public class ProgramVariantFactory {
 				// For each suspicious code, we create one or more Gens (when it
 				// is possible)
 				List<SuspiciousModificationPoint> modifPoints = createModificationPoints(suspiciousCode, progInstance);
-				if (modifPoints != null)
+				if (modifPoints != null && !modifPoints.isEmpty())
 					progInstance.addModificationPoints(modifPoints);
 				else {
 					log.info("-any mod point created for suspicious " + suspiciousCode);

@@ -223,6 +223,10 @@ public abstract class AbstractMain {
 				"(Optional) class name that controls the population evolution. It must extend from  "
 						+ PopulationController.class.getCanonicalName()
 						+ " The classes must be included in the classpath.");
+		
+		options.addOption("filterfaultlocalization", true, "Indicates whether Astor filters the FL output. Default:"
+				+ ConfigurationProperties.properties.getProperty("filterfaultlocalization"));
+
 
 
 	}
@@ -525,7 +529,9 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("populationcontroller")) {
 			ConfigurationProperties.properties.setProperty("populationcontroller", cmd.getOptionValue("faultlocalization"));
 		}
-		
+		if (cmd.hasOption("filterfaultlocalization"))
+			ConfigurationProperties.properties.setProperty("filterfaultlocalization", cmd.getOptionValue("filterfaultlocalization"));
+
 		
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.

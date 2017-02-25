@@ -233,15 +233,22 @@ public class ProjectRepairFacade {
 			getProperties().setFailingTestCases(failingTestCases);
 		}
 		
-		List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
-
-		for (SuspiciousCode suspiciousCode : suspiciousStatemens) {
-			if (!suspiciousCode.getClassName().endsWith("Exception")) {
-				filtercandidates.add(suspiciousCode);
-			}
-		}
 		
-		return filtercandidates;
+		if(ConfigurationProperties.getPropertyBool("filterfaultlocalization")){
+			List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
+
+			for (SuspiciousCode suspiciousCode : suspiciousStatemens) {
+				if (!suspiciousCode.getClassName().endsWith("Exception")) {
+					filtercandidates.add(suspiciousCode);
+				}
+			}
+			return filtercandidates;
+		}
+		else
+			return suspiciousStatemens;
+			
+			
+	
 	}
 
 	/**
