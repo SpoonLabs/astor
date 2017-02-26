@@ -27,8 +27,10 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -302,9 +304,37 @@ public class VariableResolver {
 				List<CtVariable> varExist = existVariableWithName(varContext, wordFromCluster);
 				// check compatibility between varExist and wout
 				for (CtVariable varFromCluster : varExist) {
-					CtTypeReference typeref_i = varFromCluster.getType();
-					try {
-						if (typeref_i.isSubtypeOf(wOut.getType())) {
+					try {// Check if an existing variable (name taken from
+							// cluster)
+							// is compatible with with that one out of scope
+						CtTypeReference refCluster = varFromCluster.getType();
+						CtTypeReference refOut = wOut.getType();
+
+						boolean bothArray = false;
+						boolean notCompatible = false;
+						do {
+							// We check if types are arrays.
+							boolean clusterIsArray = refCluster instanceof CtArrayTypeReference;
+							boolean ourIsArray = refOut instanceof CtArrayTypeReference;
+
+							if (clusterIsArray ^ ourIsArray) {
+								notCompatible = true;
+								break;
+							}
+							// if both are arrays, we extract the component
+							// type, and we compare it again
+							bothArray = clusterIsArray && ourIsArray;
+							if (bothArray) {
+								refCluster = ((CtArrayTypeReference) refCluster).getComponentType();
+								refOut = ((CtArrayTypeReference) refOut).getComponentType();
+							}
+
+						} while (bothArray);
+
+						if (notCompatible)
+							continue;
+
+						if (refCluster.isSubtypeOf(refOut)) {
 							List<CtVariable> vars = varMaps.get(varOutWrapper);
 							if (vars == null) {
 								vars = new ArrayList<>();
@@ -312,11 +342,11 @@ public class VariableResolver {
 							}
 							vars.add(varFromCluster);
 							mapped = true;
-							// We do not break the loop, we want to find all
-							// mappings
+
 						}
 					} catch (Exception e) {
 						logger.error(e);
+						// e.printStackTrace();
 					}
 				}
 
@@ -329,22 +359,6 @@ public class VariableResolver {
 		}
 		VarMapping mappings = new VarMapping(varMaps, notMappedVariables);
 		return mappings;
-
-		// : finds all variables *out of scope* from 'Ing'.
-		// 2: for each var 'wout' from *out of scope* do
-		// 2.a: finds line 'Lwo' corresponding to 'out' var in clustering.csv to
-		// retrieve the cluster of 'wout'
-		// 2.b: for each word 'wcluster' from 'Lwo' // as they sorted by
-		// embedding
-		// distance, it iterates from left to right
-		// 2.b.1: Search if there is one variable 'wcontext' with name
-		// 'wcluster' in
-		// scope.// here, we invoke to the VariableResolver.
-		// 2.b.2: Check compatibility of types from 'wcontext' and 'wout' vars
-		// 2.b.2.1: if they are compatibles replace 'wout'' by 'wcontent' on
-		// 'Ing';
-		// break loop (2.b).
-		// 2.b.2.2: else (vars not compatibles) continue loop.
 
 	}
 

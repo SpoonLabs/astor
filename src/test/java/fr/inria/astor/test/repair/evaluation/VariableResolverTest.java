@@ -593,7 +593,6 @@ public class VariableResolverTest {
 	public void testBugNPE() {
 
 		File projectLocation = new File("./examples/exampleVRClassNotFould/");
-		AstorMain main1 = new AstorMain();
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("");
 
@@ -604,9 +603,15 @@ public class VariableResolverTest {
 		compiler.addInputSource(new File(projectLocation.getAbsolutePath()));
 		compiler.build();
 
+		
+		ClassLoader classLoader = getClass().getClassLoader();
+		File learningDir = new File(classLoader.getResource("learningm1").getFile());
+	
+		ConfigurationProperties.setProperty("learningdir", learningDir.getAbsolutePath());
+
+		
 		List<CtType<?>> types = factory.Type().getAll();
 		assertTrue(types.size() > 0);
-		log.info(types.get(0).toString());
 
 		CtType<?> type1 = types.stream().filter(x -> x.getSimpleName().equals("Class1")).findFirst()
 				.get();
@@ -614,31 +619,56 @@ public class VariableResolverTest {
 		CtType<?> type2 = types.stream().filter(x -> x.getSimpleName().equals("Class2")).findFirst()
 				.get();
 	
-		System.out.println(type1);
-		System.out.println(type2);
 		
-		CtMethod mt =  type2.getAllMethods().stream().filter(x -> x.getSimpleName().equals("test1")).findFirst().get();
+		CtMethod mt1 =  type2.getAllMethods().stream().filter(x -> x.getSimpleName().equals("test1")).findFirst().get();
+		CtStatement st = mt1.getBody().getStatement(0);
+		
+		List<CtVariable> varsContext = st.getElements(new VarFilter());
 
-		System.out.println(mt);
-		
-		CtStatement st = mt.getBody().getStatement(0);
-		
-		
-		List<CtVariable> vars1 = st.getElements(new VarFilter());
-
-		System.out.println(vars1);
-		
+		//
 		CtMethod mt2 =  type2.getAllMethods().stream().filter(x -> x.getSimpleName().equals("test2")).findFirst().get();
-
 		CtStatement st2 = mt2.getBody().getStatement(1);
 		
-		ClassLoader classLoader = getClass().getClassLoader();
-		File learningDir = new File(classLoader.getResource("learningm1").getFile());
-	
-		ConfigurationProperties.setProperty("learningdir", learningDir.getAbsolutePath());
-		VarMapping vm = VariableResolver.mapVariables(vars1, st2);
 
+		System.out.println("Comparing: "+ varsContext +" "+ st2);
+		VarMapping vm = VariableResolver.mapVariables(varsContext, st2);
+		assertTrue(vm.getMappedVariables().isEmpty());
 		System.out.println("map "+vm.getMappedVariables());
+		System.out.println("-----");
+	
+		//
+		CtMethod mt3 =  type2.getAllMethods().stream().filter(x -> x.getSimpleName().equals("test3")).findFirst().get();
+		System.out.println(mt3);
+		CtStatement ingredient =  mt3.getBody().getStatement(0);
+		System.out.println("Comparing: "+ varsContext +" "+ingredient);
+		VarMapping vm3 = VariableResolver.mapVariables(varsContext, ingredient);
+		System.out.println("map "+vm3.getMappedVariables());
+		assertTrue(vm3.getMappedVariables().isEmpty());
+		System.out.println("-----");
+		//
+		
+		//
+		System.out.println("Comparing: "+ varsContext +" "+ mt3.getBody().getStatement(0));
+		ingredient =  mt1.getBody().getStatement(0);
+		VarMapping vm4 = VariableResolver.mapVariables(varsContext, ingredient);
+		System.out.println("map "+vm4.getMappedVariables());
+		assertTrue(vm4.getMappedVariables().isEmpty());
+		System.out.println("-----");
+		//
+		
+		
+		List<CtVariable> varsContext2 = mt3.getBody().getStatement(1).getElements(new VarFilter());
+		System.out.println(varsContext2);
+		ingredient =  mt1.getBody().getStatement(1);
+		System.out.println("Comparing: "+ varsContext2 +" and "+ ingredient);
+		
+		VarMapping vm5 = VariableResolver.mapVariables(varsContext2, ingredient);
+
+		System.out.println("map 5 "+vm5.getMappedVariables());
+		
+		assertTrue(vm5.getMappedVariables().size() > 0);
+		
+		
 	}
 	
 	@Test
