@@ -94,7 +94,12 @@ public class AstorMain extends AbstractMain {
 		String customOp = ConfigurationProperties.getProperty("customop");
 		if (customOp != null && !customOp.isEmpty()) {
 			operatorSpace = createCustomOperatorSpace(customOp);
+		}else {
+			customOp = ConfigurationProperties.getProperty("operatorspace");
+			if(customOp != null && !customOp.isEmpty())
+				operatorSpace = createOperatorSpaceFromArgument(customOp);
 		}
+		
 
 		if (ExecutionMode.jKali.equals(mode)) {
 			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
@@ -281,6 +286,23 @@ public class AstorMain extends AbstractMain {
 		else
 			throw new Exception(
 					"The strategy " + className + " does not extend from " + ProgramValidator.class.getName());
+
+	}
+	
+	private OperatorSpace createOperatorSpaceFromArgument(String className) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(className);
+			object = classDefinition.newInstance();
+		} catch (Exception e) {
+			log.error("LoadingProcessValidator: " + className + " --" + e);
+			throw new Exception("Error Loading Engine: " + e);
+		}
+		if (object instanceof OperatorSpace)
+			return (OperatorSpace) object;
+		else
+			throw new Exception(
+					"The strategy " + className + " does not extend from " + OperatorSpace.class.getName());
 
 	}
 

@@ -22,6 +22,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
+import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
@@ -228,6 +229,9 @@ public abstract class AbstractMain {
 				+ ConfigurationProperties.properties.getProperty("filterfaultlocalization"));
 
 
+		options.addOption("operatorspace", true,
+				"Operator Space contains the operators. It must extends from "
+						+ OperatorSpace.class.getName());
 
 	}
 
@@ -532,6 +536,10 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("filterfaultlocalization"))
 			ConfigurationProperties.properties.setProperty("filterfaultlocalization", cmd.getOptionValue("filterfaultlocalization"));
 
+		if (cmd.hasOption("operatorspace"))
+			ConfigurationProperties.properties.setProperty("operatorspace", cmd.getOptionValue("operatorspace"));
+
+		
 		
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
