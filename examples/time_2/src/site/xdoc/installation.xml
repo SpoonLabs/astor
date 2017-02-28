@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<document>
+ <properties>
+  <title>Java date and time API - Download and Installation</title>
+  <author>Al Major</author>
+ </properties>
+
+<body>
+
+<section name="Download and Installation">
+<p>
+To use Joda-Time you need to
+<a href="download.html">download the latest version</a>.
+The download will contain the joda-time jar file.
+Once you add this to your classpath you will be able to use Joda-Time.
+</p>
+<p>
+The binary download also includes joda-time-sources.jar, which is a jar file
+of the source code suitable for linking to the jar file in IDEs such as Eclipse.
+</p>
+<p>
+The release notes for upgraders can be found here:
+<ul>
+<li><a href="upgradeto230.html">Version 2.3</a> - upgrade from Version 2.2</li>
+<li><a href="upgradeto220.html">Version 2.2</a> - upgrade from Version 2.1</li>
+<li><a href="upgradeto210.html">Version 2.1</a> - upgrade from Version 2.0</li>
+<li><a href="upgradeto200.html">Version 2.0</a> - upgrade from Version 1.6</li>
+<li><a href="upgradeto162.html">Version 1.6.2</a> - upgrade from Version 1.6.1</li>
+<li><a href="upgradeto161.html">Version 1.6.1</a> - upgrade from Version 1.6</li>
+<li><a href="upgradeto160.html">Version 1.6</a> - upgrade from Version 1.5</li>
+<li><a href="upgradeto152.html">Version 1.5.2</a> - upgrade from Version 1.5.1</li>
+<li><a href="upgradeto151.html">Version 1.5.1</a> - upgrade from Version 1.5</li>
+<li><a href="upgradeto150.html">Version 1.5</a> - upgrade from Version 1.4</li>
+<li><a href="upgradeto140.html">Version 1.4</a> - upgrade from Version 1.3</li>
+<li><a href="upgradeto130.html">Version 1.3</a> - upgrade from Version 1.2</li>
+<li><a href="upgradeto120.html">Version 1.2</a> - upgrade from Version 1.1</li>
+<li><a href="upgradeto110.html">Version 1.1</a> - upgrade from Version 1.0</li>
+<li><a href="upgradeto100.html">Version 1.0</a> - upgrade from Version 0.99</li>
+<li><a href="upgradeto099.html">Version 0.99</a> - upgrade from Version 0.98</li>
+</ul>
+</p>
+<p>
+If you want to build Joda-Time from source you will need
+<a href="http://ant.apache.org">Apache Ant</a> or <a href="http://maven.apache.org">Apache Maven</a>.
+Search to find out more about building using those tools.
+</p>
+</section>
+</body>
+</document>
