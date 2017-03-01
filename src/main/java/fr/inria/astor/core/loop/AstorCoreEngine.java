@@ -22,6 +22,7 @@ import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.WeightCtElement;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
+import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
@@ -72,7 +73,7 @@ public abstract class AstorCoreEngine {
 	// SPACES
 
 	protected OperatorSelectionStrategy operatorSelectionStrategy = null;
-	
+
 	protected OperatorSpace operatorSpace = null;
 
 	protected PopulationController populationControler = null;
@@ -90,11 +91,10 @@ public abstract class AstorCoreEngine {
 	protected int generationsExecuted = 0;
 
 	protected SolutionVariantSortCriterion patchSortCriterion = null;
-	
-	protected FitnessFunction  fitnessFunction = null;
-	
-	
-	
+
+	protected FitnessFunction fitnessFunction = null;
+
+	protected VariantCompiler compiler = null;
 
 	/**
 	 * 
@@ -104,7 +104,7 @@ public abstract class AstorCoreEngine {
 	public AstorCoreEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		this.mutatorSupporter = mutatorExecutor;
 		this.projectFacade = projFacade;
-		
+
 		this.currentStat = Stats.getCurrentStats();
 	}
 
@@ -139,19 +139,19 @@ public abstract class AstorCoreEngine {
 
 	}
 
-	public void atEnd(){
-		
+	public void atEnd() {
+
 		this.sortPatches();
 		this.showResults();
 	};
-	
+
 	/**
-	 * Sorts patches 
+	 * Sorts patches
 	 */
 	public void sortPatches() {
 		if (!getSolutions().isEmpty() && this.getPatchSortCriterion() != null) {
 			this.solutions = this.getPatchSortCriterion().priorize(getSolutions());
-			
+
 		}
 	}
 
@@ -372,8 +372,8 @@ public abstract class AstorCoreEngine {
 				boolean idem = original.equals(st.toString());
 				if (!idem) {
 					log.error("Error: the model was not the same from the original after this generation");
-					log.error("Undo Error: original: \n"+original);
-					log.error("Undo Error: modified: \n"+st.toString());
+					log.error("Undo Error: original: \n" + original);
+					log.error("Undo Error: modified: \n" + st.toString());
 					return false;
 				}
 			}
@@ -394,7 +394,7 @@ public abstract class AstorCoreEngine {
 
 		URL[] originalURL = projectFacade.getClassPathURLforProgramVariant(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
-		CompilationResult compilation = mutatorSupporter.compileOnMemoryProgramVariant(programVariant, originalURL);
+		CompilationResult compilation = compiler.compile(programVariant, originalURL);
 
 		boolean childCompiles = compilation.compiles();
 		programVariant.setCompilation(compilation);
@@ -415,16 +415,15 @@ public abstract class AstorCoreEngine {
 			log.debug("-The child compiles: id " + programVariant.getId());
 			currentStat.numberOfRightCompilation++;
 			currentStat.setCompiles(programVariant.getId());
-			
+
 			boolean validInstance = validateInstance(programVariant);
 			double fitness = this.fitnessFunction.calculateFitnessValue(programVariant);
 			programVariant.setFitness(fitness);
-			
 
 			log.debug("-Valid?: " + validInstance + ", fitness " + programVariant.getFitness());
 			if (validInstance) {
 				log.info("-Found Solution, child variant #" + programVariant.getId());
-				saveStaticSucessful(programVariant.getId(),generation);
+				saveStaticSucessful(programVariant.getId(), generation);
 				if (ConfigurationProperties.getPropertyBool("savesolution")) {
 					mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
 					mutatorSupporter.saveSolutionData(programVariant, srcOutput, generation);
@@ -432,18 +431,20 @@ public abstract class AstorCoreEngine {
 				return true;
 			}
 		} else {
-			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "+ compilation.getErrorList());
+			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "
+					+ compilation.getErrorList());
 			currentStat.numberOfFailingCompilation++;
 			currentStat.setNotCompiles(programVariant.getId());
 			programVariant.setFitness(this.fitnessFunction.getWorstMaxFitnessValue());
 		}
-		//In case that the variant a) does not compile; b) compiles but it's not adequate
+		// In case that the variant a) does not compile; b) compiles but it's
+		// not adequate
 		Stats.currentStat.storeIngCounterFromFailingPatch(programVariant.getId());
 		return false;
 
 	}
 
-	protected void saveStaticSucessful(int variant_id,int generation) {
+	protected void saveStaticSucessful(int variant_id, int generation) {
 		currentStat.patches++;
 		currentStat.genPatches.add(new StatPatch(generation, currentStat.passFailingval1, currentStat.passFailingval2));
 		currentStat.passFailingval1 = 0;
@@ -541,7 +542,7 @@ public abstract class AstorCoreEngine {
 
 		// For each gen of the program instance
 		List<ModificationPoint> modificationPointsToProcess = getGenList(variant);
-		//log.debug("modifPointsToProcess " + modificationPointsToProcess);
+		// log.debug("modifPointsToProcess " + modificationPointsToProcess);
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
 			// tp refactor
 			modificationPoint.identified = variant.getModificationPoints().indexOf(modificationPoint);
@@ -591,7 +592,7 @@ public abstract class AstorCoreEngine {
 			updateVariantGenList(variant, generation);
 		}
 		log.debug("\n--Summary Creation: for variant " + variant + " gen mutated: " + genMutated + " , gen not mut: "
-				+ notmut + ", gen not applied  " + notapplied );
+				+ notmut + ", gen not applied  " + notapplied);
 
 		currentStat.saveStats();
 
@@ -818,7 +819,7 @@ public abstract class AstorCoreEngine {
 			throws IllegalAccessException;
 
 	protected boolean validateInstance(ProgramVariant variant) {
-		
+
 		VariantValidationResult validationResult;
 
 		if ((validationResult = programValidator.validate(variant, projectFacade)) != null) {
@@ -879,7 +880,6 @@ public abstract class AstorCoreEngine {
 		this.programValidator.setStats(currentStat);
 	}
 
-
 	public String getSolutionData(List<ProgramVariant> variants, int generation) {
 		String line = "";
 		line += "\n --SOLUTIONS DESCRIPTION--\n";
@@ -909,21 +909,23 @@ public abstract class AstorCoreEngine {
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
 					line += "\nfixed statement= ";
 					if (genOperationInstance.getModified() != null)
-						//if fix content is the same that original buggy content, we do not write the patch, remaining empty the property fixed statement  
-						if(genOperationInstance.getModified().toString() != genOperationInstance.getOriginal().toString() )
-							line += genOperationInstance.getModified().toString();
-					else {
+						// if fix content is the same that original buggy
+						// content, we do not write the patch, remaining empty
+						// the property fixed statement
+						if (genOperationInstance.getModified().toString() != genOperationInstance.getOriginal()
+								.toString())
+						line += genOperationInstance.getModified().toString();
+						else {
 						line += genOperationInstance.getOriginal().toString();
-					}
+						}
 
 					line += "\ngeneration= " + Integer.toString(i);
 					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope() != null)
 							? genOperationInstance.getIngredientScope() : "-");
-		
 
 				}
 			}
-			line +="\nvalidation="+solutionVariant.getValidationResult().toString();
+			line += "\nvalidation=" + solutionVariant.getValidationResult().toString();
 		}
 		return line;
 	}
@@ -966,5 +968,13 @@ public abstract class AstorCoreEngine {
 
 	public FitnessFunction getFitnessFunction() {
 		return fitnessFunction;
+	}
+
+	public VariantCompiler getCompiler() {
+		return compiler;
+	}
+
+	public void setCompiler(VariantCompiler compiler) {
+		this.compiler = compiler;
 	}
 }

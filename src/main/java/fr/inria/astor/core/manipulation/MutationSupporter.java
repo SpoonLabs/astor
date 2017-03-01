@@ -1,7 +1,6 @@
 package fr.inria.astor.core.manipulation;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,11 +21,11 @@ import org.w3c.dom.Element;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
-import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.manipulation.bytecode.OutputWritter;
 import fr.inria.astor.core.manipulation.sourcecode.ROOTTYPE;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.OutputType;
+import spoon.compiler.Environment;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtClass;
@@ -52,72 +51,47 @@ public class MutationSupporter {
 
 	private Logger logger = Logger.getLogger(Thread.currentThread().getName());
 
-	/**
-	 * 
-	 */
-	private SpoonClassCompiler spoonClassCompiler = null;
+	private OutputWritter output;
 
-	/**
-	 * Spoon model generator
-	 */
-	private JDTBasedSpoonCompiler jdtSpoonModelBuilder = null;
-	
 	private List<CtClass> classes = new ArrayList<>();
 	private List<CtClass> testClasses = new ArrayList<>();
 
-	
 	public static Factory factory;
 
-
 	public MutationSupporter() {
-		this(getFactory());
+		this(getFactory(), getFactory().getEnvironment());
 	}
 
-	
-	public MutationSupporter(Factory factory) {
+	public MutationSupporter(Factory factory, Environment environment) {
 		this.factory = factory;
-		spoonClassCompiler = new SpoonClassCompiler(factory);
 		this.currentSupporter = this;
+		this.output = new OutputWritter(factory);
 	}
-	
+
 	public void buildModel(String srcPathToBuild, String[] classpath) {
 		boolean saveOutput = true;
-		buildModel(srcPathToBuild, classpath,saveOutput);
+		buildModel(srcPathToBuild, classpath, saveOutput);
 	}
-	
-	public void buildModel(String srcPathToBuild, String[] classpath, boolean saveOutput) {
 
+	public void buildModel(String srcPathToBuild, String[] classpath, boolean saveOutput) {
+		JDTBasedSpoonCompiler jdtSpoonModelBuilder = null;
 		logger.info("building model: " + srcPathToBuild + ", compliance level: "
 				+ factory.getEnvironment().getComplianceLevel());
 		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
-		
-		String[] sources = srcPathToBuild.split(File.pathSeparator); 
+
+		String[] sources = srcPathToBuild.split(File.pathSeparator);
 		for (String src : sources) {
-			if(!src.trim().isEmpty())
+			if (!src.trim().isEmpty())
 				jdtSpoonModelBuilder.addInputSource(new File(src));
 		}
-		
+
 		jdtSpoonModelBuilder.setSourceClasspath(classpath);
 		jdtSpoonModelBuilder.build();
-		if(saveOutput){
+		if (saveOutput) {
 			jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
 			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
-			//(OutputType.CLASSES);
 		}
 	}
-	
-	public void saveClassModel(String srcPathToBuild, String[] classpath, boolean saveOutput) {
-
-		logger.info("building model: " + srcPathToBuild + ", compliance level: "
-				+ factory.getEnvironment().getComplianceLevel());
-		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
-		
-			jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
-			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.CLASSES);
-	
-	}
-
-
 
 	/**
 	 * Saves Java File and Compiles it The Program Variant as well as the rest
@@ -130,20 +104,13 @@ public class MutationSupporter {
 	 */
 	public void saveSourceCodeOnDiskProgramVariant(ProgramVariant instance, String srcOutput) throws Exception {
 		// Set up the dir where we save the generated output
-		this.getSpoonClassCompiler().updateOutput(srcOutput);
+		this.output.updateOutput(srcOutput);
 
 		// For each class contemplated for the program variant,
 		for (CtClass ctclass : instance.getBuiltClasses().values()) {
 			this.generateSourceCodeFromCtClass(ctclass);
 		}
 
-	}
-
-	public CompilationResult compileOnMemoryProgramVariant(ProgramVariant instance, URL[] cp) {
-		List<CtClass> ctClasses = new ArrayList<CtClass>(instance.getBuiltClasses().values());
-		CompilationResult compilation2 = spoonClassCompiler.compileOnMemory(ctClasses, cp);
-
-		return compilation2;
 	}
 
 	/**
@@ -158,46 +125,37 @@ public class MutationSupporter {
 		SourcePosition sp = type.getPosition();
 		type.setPosition(null);
 
-		if (spoonClassCompiler == null || spoonClassCompiler.getJavaPrinter() == null) {
+		if (output == null || output.getJavaPrinter() == null) {
 			throw new IllegalArgumentException("Spoon compiler must be initialized");
 		}
-		spoonClassCompiler.saveSourceCode((CtClass) type);
-
+		// spoonClassCompiler.saveSourceCode((CtClass) type);
+		output.saveSourceCode((CtClass) type);
 		// --
 		// End Workarround
 		type.setPosition(sp);
 
 	}
 
-
-	
-
-
-	
-
-	public SpoonClassCompiler getSpoonClassCompiler() {
-		return this.spoonClassCompiler;
-	}
-
 	public static Factory getFactory() {
-		
+
 		if (factory == null) {
 			factory = createFactory();
 			factory.getEnvironment().setLevel("OFF");
 			factory.getEnvironment().setSelfChecks(true);
-			
+
 		}
 		return factory;
 	}
+
 	/**
 	 * Creates a new spoon factory.
+	 * 
 	 * @return
 	 */
-	public static Factory cleanFactory(){
+	public static Factory cleanFactory() {
 		factory = null;
 		return getFactory();
 	}
-
 
 	public void saveSolutionData(ProgramVariant childVariant, String srcOutput, int generation) {
 		try {
@@ -225,7 +183,8 @@ public class MutationSupporter {
 					op.setAttributeNode(attr_location);
 
 					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
-						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance.getModificationPoint();
+						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
+								.getModificationPoint();
 						int line = gs.getSuspicious().getLineNumber();
 						Attr attr_line = root.createAttribute("line");
 						attr_line.setValue(Integer.toString(line));
@@ -248,14 +207,14 @@ public class MutationSupporter {
 
 					if (genOperationInstance.getModified() != null) {
 						mod.setTextContent(genOperationInstance.getModified().toString());
-						
+
 						if (genOperationInstance.getIngredientScope() != null) {
 							Attr attr_ing = root.createAttribute("scope");
 							attr_ing.setValue(genOperationInstance.getIngredientScope().toString());
 							mod.setAttributeNode(attr_ing);
 						}
 					} else {
-						//mod.setTextContent(genOperationInstance.getOriginal().toString());
+						// mod.setTextContent(genOperationInstance.getOriginal().toString());
 						mod.setNodeValue(genOperationInstance.getOriginal().toString());
 					}
 
@@ -282,36 +241,45 @@ public class MutationSupporter {
 
 	public static final CtElement ROOT_ELEMENT = new ROOTTYPE();
 
-
 	public static CtCodeElement clone(CtCodeElement st) {
 		CtCodeElement cloned = factory.Core().clone(st);
-	
-		//cloned.setParent(ROOT_ELEMENT);
+
+		// cloned.setParent(ROOT_ELEMENT);
 		cloned.setParent(st.getParent());
 		return cloned;
 	}
 
-
-	
 	private static Factory createFactory() {
-		StandardEnvironment env = new StandardEnvironment();
+		Environment env = getEnvironment();
 		Factory factory = new FactoryImpl(new DefaultCoreFactory(), env);
-		// environment initialization
+
+		return factory;
+	}
+
+	public static Environment getEnvironment() {
+		StandardEnvironment env = new StandardEnvironment();
+
 		env.setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 		env.setVerbose(false);
 		env.setDebug(true);
 		env.setTabulationSize(5);
 		env.useTabulations(true);
-		return factory;
+		return env;
 	}
-	
+
 	public List<CtClass> getClasses() {
 		return classes;
 	}
 
-
 	public List<CtClass> getTestClasses() {
 		return testClasses;
 	}
-	
+
+	public OutputWritter getOutput() {
+		return output;
+	}
+
+	public void setOutput(OutputWritter output) {
+		this.output = output;
+	}
 }

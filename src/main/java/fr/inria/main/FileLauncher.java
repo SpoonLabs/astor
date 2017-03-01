@@ -26,7 +26,7 @@ public class FileLauncher {
 
 	public static Logger logger = Logger.getLogger(Thread.currentThread().getName());
 	
-	public Map<String, String> readJSOn(File f, int bugId, String path) {
+	public Map<String, String> readJSOn(File f, int bugId, String path, List<String> otherDep) {
 		
 		Map<String,String>  args = new HashMap<String, String>();
 		
@@ -92,6 +92,11 @@ public class FileLauncher {
 				System.out.println(cp);
 			}
 			
+			//
+			for (String odep : otherDep) {
+				libsS+= (path)+File.separator+odep+File.pathSeparator;
+			}
+			
 			///
 			args.put("-dependencies", libsS);
 			
@@ -128,11 +133,14 @@ public class FileLauncher {
 		}
 		return null;
 	}
-	
 	public String[] getCommand(String[] baseArg,File f, int bugId, String path){
+			return getCommand(baseArg, f, bugId, path, new ArrayList<>());
+	}
+	
+	public String[] getCommand(String[] baseArg,File f, int bugId, String path,List<String> otherDep){
 		ArrayList<String> newObj = new ArrayList<String>(Arrays.asList(baseArg));
 		
-		newObj.addAll(this.transform(this.readJSOn(f, bugId, path)));
+		newObj.addAll(this.transform(this.readJSOn(f, bugId, path,otherDep)));
 		
 		String[] completeCommand = new String[newObj.size()];
 		completeCommand = newObj.toArray(completeCommand);

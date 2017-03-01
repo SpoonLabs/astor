@@ -18,7 +18,9 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -341,8 +343,8 @@ public class EvoSuiteFacade {
 		String[] classpathForCreateModel = classpathForCompileSpoon.split(File.pathSeparator);
 
 		// Compile evo classes from spoon model
-		CompilationResult compilation = MutationSupporter.currentSupporter.getSpoonClassCompiler()
-				.compileOnMemory(ctclasses, Converters.toURLArray(classpathForCreateModel));
+		VariantCompiler compiler = new SpoonClassCompiler(MutationSupporter.getFactory());
+		CompilationResult compilation = compiler.compile(ctclasses, Converters.toURLArray(classpathForCreateModel));
 
 		if (!compilation.compiles() || compilation.getByteCodes().values().isEmpty()) {
 			logger.error("Error at compiling evotest classes");
@@ -355,7 +357,7 @@ public class EvoSuiteFacade {
 				.getOutDirWithPrefix("/evosuite/evosuite-tests_" + variant.currentMutatorIdentifier());
 		File fbyteEvo = new File(outPutTest);
 		logger.info("Saving evotest bytecode at " + fbyteEvo);
-		MutationSupporter.currentSupporter.getSpoonClassCompiler().saveByteCode(compilation, fbyteEvo);
+		MutationSupporter.currentSupporter.getOutput().saveByteCode(compilation, fbyteEvo);
 
 		List<String> testToExecute = new ArrayList<>();
 		for (CtClass evoTest : ctclasses) {

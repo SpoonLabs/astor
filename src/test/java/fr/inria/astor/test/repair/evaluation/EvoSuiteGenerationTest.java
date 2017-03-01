@@ -22,7 +22,9 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
@@ -136,8 +138,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String[] classpathForCreateModel = classpathForCompileSpoon.split(File.pathSeparator);
 
 		// Compile
-		CompilationResult compilation = MutationSupporter.currentSupporter.getSpoonClassCompiler()
-				.compileOnMemory(classes, Converters.toURLArray(classpathForCreateModel));
+		CompilationResult compilation = main1.getEngine().getCompiler().compile(classes, Converters.toURLArray(classpathForCreateModel));
 		assertFalse("Any bytecode", compilation.getByteCodes().values().isEmpty());
 
 		//// Save compiled
@@ -145,7 +146,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				.getOutDirWithPrefix("/evosuite/evosuite-tests_" + variant.currentMutatorIdentifier());
 		File fbyteEvo = new File(outPutTest);
 		log.info("Saving evotest bytecode at " + fbyteEvo);
-		MutationSupporter.currentSupporter.getSpoonClassCompiler().saveByteCode(compilation, fbyteEvo);
+		MutationSupporter.currentSupporter.getOutput().saveByteCode(compilation, fbyteEvo);
 		assertTrue(fbyteEvo.exists());
 		assertTrue(fbyteEvo.list().length > 0);
 
@@ -289,8 +290,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String[] classpathForEvoSuiteTest2 = classpathForCompileModel.split(File.pathSeparator);
 
 		// Compile (generation of evosuite bytecode) on memory
-		CompilationResult compilation = MutationSupporter.currentSupporter.getSpoonClassCompiler()
-				.compileOnMemory(classes, Converters.toURLArray(classpathForEvoSuiteTest2));
+		VariantCompiler compiler = new SpoonClassCompiler(MutationSupporter.getFactory());
+		CompilationResult compilation = compiler.compile(classes, Converters.toURLArray(classpathForEvoSuiteTest2));
 		assertFalse("Any bytecode", compilation.getByteCodes().values().isEmpty());
 
 		assertEquals("Other size", 2, compilation.getByteCodes().values().size());
@@ -309,7 +310,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		assertEquals(0, fbyteEvo.list().length);
 
 		// save the compilation of evosuitetest on disk
-		MutationSupporter.currentSupporter.getSpoonClassCompiler().saveByteCode(compilation, fbyteEvo);
+		MutationSupporter.currentSupporter.getOutput().saveByteCode(compilation, fbyteEvo);
 		assertTrue(fbyteEvo.exists());
 		assertTrue(fbyteEvo.list().length > 0);
 

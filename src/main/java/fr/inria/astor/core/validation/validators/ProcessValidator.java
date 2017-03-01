@@ -169,7 +169,7 @@ public class ProcessValidator extends ProgramValidator {
 
 		URL[] bc = null;
 		if (mutatedVariant.getCompilation() != null) {
-			MutationSupporter.currentSupporter.getSpoonClassCompiler().saveByteCode(mutatedVariant.getCompilation(),
+			MutationSupporter.currentSupporter.getOutput().saveByteCode(mutatedVariant.getCompilation(),
 					variantOutputFile);
 
 			bc = Converters.redefineURL(variantOutputFile, originalURL.toArray(new URL[0]));

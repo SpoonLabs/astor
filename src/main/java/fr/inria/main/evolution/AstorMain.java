@@ -18,6 +18,7 @@ import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
+import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
@@ -188,6 +189,10 @@ public class AstorMain extends AbstractMain {
 		String fitnessFunctionClass = ConfigurationProperties.getProperty("fitnessfunction");
 		astorCore.setFitnessFunction(createFitnessFunction(fitnessFunctionClass));
 
+		String compilerClass = ConfigurationProperties.getProperty("compiler");
+		astorCore.setCompiler(createCompiler(compilerClass));
+
+		
 		// Now we define the commons properties
 
 		if (operatorSpace != null) {
@@ -271,6 +276,24 @@ public class AstorMain extends AbstractMain {
 					"The strategy " + customEngine + " does not extend from " + AstorCoreEngine.class.getName());
 
 	}
+	
+	private VariantCompiler createCompiler(String className) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(className);
+			object = classDefinition.newInstance();
+		} catch (Exception e) {
+			log.error("Loading custom engine: " + className + " --" + e);
+			throw new Exception("Error Loading Engine: " + e);
+		}
+		if (object instanceof VariantCompiler)
+			return (VariantCompiler) object;
+		else
+			throw new Exception(
+					"The strategy " + className + " does not extend from " + VariantCompiler.class.getName());
+
+	}
+	
 
 	private ProgramValidator createProcessValidatorFromArgument(String className) throws Exception {
 		Object object = null;

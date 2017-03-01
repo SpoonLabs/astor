@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
+import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
@@ -232,6 +233,10 @@ public abstract class AbstractMain {
 		options.addOption("operatorspace", true,
 				"Operator Space contains the operators. It must extends from "
 						+ OperatorSpace.class.getName());
+		
+		options.addOption("compiler", true,
+				"Class used for compile a Program variant.  It must extends from "
+						+ VariantCompiler.class.getName());
 
 	}
 
@@ -539,7 +544,9 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("operatorspace"))
 			ConfigurationProperties.properties.setProperty("operatorspace", cmd.getOptionValue("operatorspace"));
 
-		
+		if (cmd.hasOption("compiler"))
+			ConfigurationProperties.properties.setProperty("compiler", cmd.getOptionValue("compiler"));
+
 		
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
