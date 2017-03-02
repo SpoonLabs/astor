@@ -38,6 +38,7 @@ public class InsertAfterOp extends InsertOp {
 		int position = operation.getLocationInParent();
 		position += 1;
 		boolean sucessful = remove(parentBlock, fix, position);
+		parentBlock.setImplicit(operation.isParentBlockImplicit());
 		return sucessful;
 	}
 }

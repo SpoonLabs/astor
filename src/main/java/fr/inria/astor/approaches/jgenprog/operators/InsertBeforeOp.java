@@ -38,8 +38,9 @@ public class InsertBeforeOp extends InsertOp {
 		CtStatement fix = (CtStatement) operation.getModified();
 		CtBlock<?> parentBlock = operation.getParentBlock();
 		int position = operation.getLocationInParent();
-		remove(parentBlock, fix, position);
-		return true;
+		boolean sucess = remove(parentBlock, fix, position);
+		parentBlock.setImplicit(operation.isParentBlockImplicit());
+		return sucess;
 
 	}
 

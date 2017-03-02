@@ -1,11 +1,9 @@
 package fr.inria.astor.approaches.jgenprog.operators;
 
-import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtExecutable;
 /**
  * Abstract insert operator
  * @author Matias Martinez
@@ -21,7 +19,6 @@ public abstract class InsertOp extends StatementLevelOperator {
 		// want to remove
 		if (fixStatement.equals(s)) {
 			parentBlock.getStatements().remove(pos);
-			this.updateBlockImplicitly(parentBlock, false);
 			return true;
 		} else {
 			System.out.println("\n fx: "+fixStatement + "\n"+(s));

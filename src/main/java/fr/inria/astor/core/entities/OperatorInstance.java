@@ -41,6 +41,7 @@ public class OperatorInstance {
 	 */
 	private CtBlock<?> parentBlock = null;
 
+	private boolean isParentBlockImplicit = false;
 	/**
 	 * Place where the operation is applied in parent
 	 */
@@ -94,6 +95,7 @@ public class OperatorInstance {
 
 	public void setParentBlock(CtBlock parentBlock) {
 		this.parentBlock = parentBlock;
+		this.isParentBlockImplicit = parentBlock.isImplicit();
 	}
 
 	public AstorOperator getOperationApplied() {
@@ -244,5 +246,13 @@ public class OperatorInstance {
 			log.error("Error: parent not found");
 			return -1;
 
+		}
+
+		public boolean isParentBlockImplicit() {
+			return isParentBlockImplicit;
+		}
+
+		public void setParentBlockImplicit(boolean isParentBlockImplicit) {
+			this.isParentBlockImplicit = isParentBlockImplicit;
 		}
 }

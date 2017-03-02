@@ -49,7 +49,7 @@ public class RemoveOp extends StatementLevelOperator {
 			if ((parentBlock.getStatements().isEmpty() && operation.getLocationInParent() == 0)
 					|| (parentBlock.getStatements().size() >= operation.getLocationInParent())) {
 				parentBlock.getStatements().add(operation.getLocationInParent(), ctst);
-				this.updateBlockImplicitly(parentBlock, true);
+				parentBlock.setImplicit(operation.isParentBlockImplicit());
 				return true;
 			} else {
 				log.error("Problems to recover, re-adding " + ctst + " at location " + operation.getLocationInParent()
