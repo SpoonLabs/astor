@@ -32,7 +32,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.dpl.ExecutableCloneIngredientStrategyTest;
 import fr.inria.main.evolution.AstorMain;
 import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
@@ -429,7 +429,7 @@ public class VariableResolverTest {
 
 		Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(6);
-		SpoonCompiler compiler = launcher.createCompiler(factory);
+		SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		compiler.setSourceClasspath(dep.split(File.pathSeparator));
 		compiler.addInputSource(new File(projectLocation.getAbsolutePath()));
 		compiler.build();
@@ -515,7 +515,7 @@ public class VariableResolverTest {
 
 		Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(6);
-		SpoonCompiler compiler = launcher.createCompiler(factory);
+		SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		compiler.setSourceClasspath(dep.split(File.pathSeparator));
 		compiler.addInputSource(new File(projectLocation.getAbsolutePath()));
 		compiler.build();
@@ -598,7 +598,7 @@ public class VariableResolverTest {
 
 		Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(6);
-		SpoonCompiler compiler = launcher.createCompiler(factory);
+		SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		compiler.setSourceClasspath(dep.split(File.pathSeparator));
 		compiler.addInputSource(new File(projectLocation.getAbsolutePath()));
 		compiler.build();
@@ -681,7 +681,7 @@ public class VariableResolverTest {
 
 		Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(6);
-		SpoonCompiler compiler = launcher.createCompiler(factory);
+		SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		compiler.setSourceClasspath(dep.split(File.pathSeparator));
 		compiler.addInputSource(new File(projectLocation.getAbsolutePath()));
 		compiler.build();
@@ -765,7 +765,7 @@ public class VariableResolverTest {
 
 		Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(6);
-		SpoonCompiler compiler = launcher.createCompiler(factory);
+		SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		compiler.setSourceClasspath(dep.split(File.pathSeparator));
 		compiler.addInputSource(new File(projectLocation.getAbsolutePath()));
 		compiler.build();

@@ -14,7 +14,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.evolution.AstorMain;
 import spoon.Launcher;
 import spoon.SpoonAPI;
-import spoon.compiler.SpoonCompiler;
+import spoon.SpoonModelBuilder;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 
@@ -88,7 +88,7 @@ public class ClosureTest {
 		
 		Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(6);
-		SpoonCompiler compiler  = launcher.createCompiler(factory);
+		SpoonModelBuilder compiler  = launcher.createCompiler(factory);
 		compiler.setSourceClasspath(dep.split(File.pathSeparator));
 		compiler.addInputSource(new File(projectLocation.getAbsolutePath()+File.separator+"src"));
 		compiler.build();
