@@ -10,6 +10,7 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 
 /**

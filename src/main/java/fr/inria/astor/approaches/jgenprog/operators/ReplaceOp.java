@@ -1,9 +1,7 @@
 package fr.inria.astor.approaches.jgenprog.operators;
 
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 /**
@@ -11,7 +9,7 @@ import spoon.reflect.code.CtStatement;
  * @author Matias Martinez
  *
  */
-public class ReplaceOp extends AstorOperator {
+public class ReplaceOp extends StatementLevelOperator{
 
 
 	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {
@@ -60,12 +58,6 @@ public class ReplaceOp extends AstorOperator {
 
 		}
 		return false;
-	}
-
-	@Override
-	public boolean canBeAppliedToPoint(ModificationPoint point) {
-		
-		return (point.getCodeElement() instanceof CtStatement);
 	}
 	
 	@Override
