@@ -9,6 +9,7 @@ import java.util.Queue;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
@@ -179,4 +180,76 @@ public class ExecutableCloneIngredientStrategyTest {
 
 	}
 
+	
+	public String[] commandLang1Clone(File out, boolean step) {
+		String libsdir = new File("./examples/libs/lang_common_lib").getAbsolutePath();
+		String dep = libsdir + File.separator + "cglib.jar"+File.pathSeparator //
+				+ libsdir + File.separator + "commons-io.jar"+File.pathSeparator //
+				+ File.separator + libsdir + "asm.jar"+File.pathSeparator  //
+				+ File.separator + libsdir + "easymock.jar";//
+
+	   //target/classes/  -bintestfolder  target/tests/  -srcjavafolder  src/main/java/  -srctestfolder  src/test/java/  
+	   
+	//	-learningdir  ../../out/learningdir/Lang/1/b/  -location  ../../dat/defects4j/Lang/1/b/  
+		
+	//	-dependencies  ../../dat/libs/Lang/cglib.jar:../../dat/libs/Lang/commons-io.jar:../../dat/libs/Lang/asm.jar:../../dat/libs/Lang/easymock.jar 
+
+		String[] args = new String[] {
+				///
+				"-dependencies", dep, "-mode", "statement", 
+				// "-failing", "org.apache.commons.lang3.math.NumberUtilsTest", //
+				"-location", new File("./examples/lang_1/").getAbsolutePath(),
+				//
+				"-package", "org.apache.commons",
+				//
+				"-srcjavafolder", "/src/main/java/",
+				//
+				"-srctestfolder", "/src/main/test/",
+				//
+				"-binjavafolder", "/target/classes/",
+				//
+				"-bintestfolder", "/target/test-classes/",
+				//
+				"-javacompliancelevel", "6",
+				//
+				"-flthreshold", "0.1",
+				//
+				"-population", "1",
+				//
+				"-out", out.getAbsolutePath(), 
+				"-scope", "package", 
+				"-seed", "1", 
+				"-maxgen", "50",
+				//
+				//
+				 "-ingredientstrategy",  "fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy",
+				"-scope",  "fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope",
+				"-learningdir",  "",
+				"-timezone",  "America/New_York",
+				"-stopfirst", "true", 
+				"-maxtime", "5", (step) ? "-testbystep" : "",
+				"-customop",  "fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
+				"-loglevel", "DEBUG",
+				
+				//	"-clonegranularity", cloneGranularityClass.getCanonicalName(),
+				//
+			//	"-ingredientstrategy", CloneIngredientSearchStrategy.class.getName(),
+				//
+			//	"-transformingredient",
+		};
+		return args;
+	}
+	
+	@Test
+	public void testCloneLang1RegressionFailing() throws Exception {
+		AstorMain main1 = new AstorMain();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		boolean stepbystep = false;
+		String[] args = commandLang1Clone(out, stepbystep);
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+		Assert.assertFalse(main1.getEngine().getMutatorSupporter().getFactory().Type().getAll().isEmpty());
+		
+	}
+	
 }
