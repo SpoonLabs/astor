@@ -2,6 +2,7 @@ package fr.inria.astor.core.manipulation;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class MutationSupporter {
 			if (!src.trim().isEmpty())
 				jdtSpoonModelBuilder.addInputSource(new File(src));
 		}
-
+		logger.info("Classpath for building SpoonModel "+ Arrays.toString(classpath));
 		jdtSpoonModelBuilder.setSourceClasspath(classpath);
 		jdtSpoonModelBuilder.build();
 		if (saveOutput) {

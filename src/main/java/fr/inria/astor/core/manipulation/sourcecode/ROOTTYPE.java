@@ -18,11 +18,11 @@ public class ROOTTYPE extends CtTypeImpl {
 		return "";
 	}
 
-	@Override
-	public boolean isSubtypeOf(CtTypeReference<?> arg0) {
+	//@Override
+	public boolean isSubtypeOf(CtTypeReference arg0) {
 		return false;
 	}
-
+	
 	
 
 }
