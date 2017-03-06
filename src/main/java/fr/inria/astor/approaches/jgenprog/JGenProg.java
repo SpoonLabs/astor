@@ -42,6 +42,10 @@ public class JGenProg extends AstorCoreEngine {
 
 
 	public void createInitialPopulation() throws Exception {
+		
+		//Creates the spoon model
+		initModel();
+		
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
 			// We dont use FL, so at this point the do not have suspicious
 			this.initPopulation(new ArrayList<SuspiciousCode>());
@@ -61,13 +65,6 @@ public class JGenProg extends AstorCoreEngine {
 	 */
 	public void initPopulation(List<SuspiciousCode> suspicious) throws Exception {
 
-		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
-			Factory fcurrent = MutationSupporter.getFactory();
-			log.debug("The Spoon Model was already built.");
-			Factory fnew = MutationSupporter.cleanFactory();
-			log.debug("New factory created? " + !fnew.equals(fcurrent));
-		}
-		initModel();
 
 		log.info("\n---- Initial suspicious size: " + suspicious.size());
 		initializePopulation(suspicious);
@@ -116,6 +113,14 @@ public class JGenProg extends AstorCoreEngine {
 
 
 	private void initModel() throws Exception {
+		
+		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
+			Factory fcurrent = MutationSupporter.getFactory();
+			log.debug("The Spoon Model was already built.");
+			Factory fnew = MutationSupporter.cleanFactory();
+			log.debug("New factory created? " + !fnew.equals(fcurrent));
+		}
+		
 		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
 		String[] cpArray = classpath.split(File.pathSeparator);
@@ -140,24 +145,7 @@ public class JGenProg extends AstorCoreEngine {
 		for (CtType c : mutatorSupporter.getFactory().Type().getAll()) {
 			c.accept(visitor);
 		}
-		//We divide the CtClasses from the model in two set:
-		//One that represents test cases, the other 'normal' classes (not test cases)
-		List<String> testcases = projectFacade.getProperties().getRegressionTestCases();
-		List<CtType<?>> types = mutatorSupporter.getFactory().Class().getAll();
 		
-		for (CtType<?> ctType : types) {
-
-			if (!(ctType instanceof CtClass)) {
-				continue;
-			}
-			if(testcases.contains(ctType.getQualifiedName())){
-				mutatorSupporter.getTestClasses().add((CtClass) ctType);
-			}else{
-				mutatorSupporter.getClasses().add((CtClass) ctType);
-			}
-		}
-		//We do not refine the test case list using the spoon model, due we do not create the model for test any more.
-		FinderTestCases.updateRegressionTestCases(projectFacade);
 	}
 
 	/**

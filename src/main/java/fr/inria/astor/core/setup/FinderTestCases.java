@@ -54,7 +54,7 @@ public class FinderTestCases {
 		return url;
 	}
 	
-	
+	@Deprecated
 	public static void updateRegressionTestCases(ProjectRepairFacade projectConfig) {
 		List<String> original = projectConfig.getProperties().getRegressionTestCases();
 		List<String> refined =	refineListofRegressionTestCases(original);
