@@ -68,9 +68,15 @@ public class AstorMain extends AbstractMain {
 
 		projectFacade.setupWorkingDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
-		FinderTestCases.findTestCasesForRegression(
-				projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
+		List<String> tr = null;
+		String regressionTC = ConfigurationProperties.getProperty("regressiontestcases");
+		if (regressionTC != null && !regressionTC.trim().isEmpty()) {
+			tr = Arrays.asList(regressionTC.split(File.pathSeparator));
+		} else
+			tr = FinderTestCases.findTestCasesForRegression(
+					projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
 
+		projectFacade.getProperties().setRegressionCases(tr);
 	}
 
 	/**
@@ -95,12 +101,11 @@ public class AstorMain extends AbstractMain {
 		String customOp = ConfigurationProperties.getProperty("customop");
 		if (customOp != null && !customOp.isEmpty()) {
 			operatorSpace = createCustomOperatorSpace(customOp);
-		}else {
+		} else {
 			customOp = ConfigurationProperties.getProperty("operatorspace");
-			if(customOp != null && !customOp.isEmpty())
+			if (customOp != null && !customOp.isEmpty())
 				operatorSpace = createOperatorSpaceFromArgument(customOp);
 		}
-		
 
 		if (ExecutionMode.jKali.equals(mode)) {
 			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
@@ -192,7 +197,6 @@ public class AstorMain extends AbstractMain {
 		String compilerClass = ConfigurationProperties.getProperty("compiler");
 		astorCore.setCompiler(createCompiler(compilerClass));
 
-		
 		// Now we define the commons properties
 
 		if (operatorSpace != null) {
@@ -276,7 +280,7 @@ public class AstorMain extends AbstractMain {
 					"The strategy " + customEngine + " does not extend from " + AstorCoreEngine.class.getName());
 
 	}
-	
+
 	private VariantCompiler createCompiler(String className) throws Exception {
 		Object object = null;
 		try {
@@ -293,7 +297,6 @@ public class AstorMain extends AbstractMain {
 					"The strategy " + className + " does not extend from " + VariantCompiler.class.getName());
 
 	}
-	
 
 	private ProgramValidator createProcessValidatorFromArgument(String className) throws Exception {
 		Object object = null;
@@ -311,7 +314,7 @@ public class AstorMain extends AbstractMain {
 					"The strategy " + className + " does not extend from " + ProgramValidator.class.getName());
 
 	}
-	
+
 	private OperatorSpace createOperatorSpaceFromArgument(String className) throws Exception {
 		Object object = null;
 		try {
@@ -324,8 +327,7 @@ public class AstorMain extends AbstractMain {
 		if (object instanceof OperatorSpace)
 			return (OperatorSpace) object;
 		else
-			throw new Exception(
-					"The strategy " + className + " does not extend from " + OperatorSpace.class.getName());
+			throw new Exception("The strategy " + className + " does not extend from " + OperatorSpace.class.getName());
 
 	}
 

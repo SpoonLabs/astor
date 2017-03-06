@@ -22,15 +22,11 @@ public class FinderTestCases {
 	
 	protected static Logger log = Logger.getLogger(FinderTestCases.class.getName());
 	
-	public  static void findTestCasesForRegression(String classPath, ProjectRepairFacade projectFacade) {
+	public  static List<String> findTestCasesForRegression(String classPath, ProjectRepairFacade projectFacade) {
 		String[] testClassesRegression = new TestClassesFinder().findIn(classpathFrom(classPath), false);
-		List<String> tr = new ArrayList<>();
-		String s = "";
-		for (String tcr : testClassesRegression) {
-			s+=tcr+File.pathSeparator;
-			tr.add(tcr);
-		}
-		projectFacade.getProperties().setRegressionCases(tr);
+		
+		return Arrays.asList(testClassesRegression);
+
 	}
 
 	private static URL[] classpathFrom(String classpath) {
