@@ -25,6 +25,8 @@ public class SuspiciousCode {
 	 */
 	double suspiciousValue;
 	
+	String fileName;
+	
 	/**
 	 * Key is the test identifier, value Numbers of time executed by that test.
 	 */
@@ -104,6 +106,14 @@ public class SuspiciousCode {
 
 	public void setCoverage(Map<Integer, Integer> coverage) {
 		this.coverage = coverage;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 }
