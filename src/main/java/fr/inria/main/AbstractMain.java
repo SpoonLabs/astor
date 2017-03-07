@@ -243,6 +243,8 @@ public abstract class AbstractMain {
 				+ "' . If the argument it is not specified, Astor automatically calculates them."
 						);
 		
+		options.addOption("manipulatesuper", false, "Allows to manipulate 'super' statements. Disable by default.");
+
 
 	}
 
@@ -555,6 +557,9 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("regressiontestcases"))
 			ConfigurationProperties.properties.setProperty("regressiontestcases", cmd.getOptionValue("regressiontestcases"));
+
+		if (cmd.hasOption("manipulatesuper"))
+			ConfigurationProperties.properties.setProperty("manipulatesuper", Boolean.TRUE.toString());
 
 		
 		// CLG believes, but is not totally confident in her belief, that this
