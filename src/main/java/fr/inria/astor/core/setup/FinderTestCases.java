@@ -25,9 +25,11 @@ public class FinderTestCases {
 	public  static List<String> findTestCasesForRegression(String classPath, ProjectRepairFacade projectFacade) {
 		String[] testClassesRegression = new TestClassesFinder().findIn(classpathFrom(classPath), false);
 		
-		return Arrays.asList(testClassesRegression);
-
+		List<String> tcregression =  Arrays.asList(testClassesRegression);
+		List<String> refined =	refineListofRegressionTestCases(tcregression);
+		return refined;
 	}
+	
 
 	private static URL[] classpathFrom(String classpath) {
 		String[] folderNames = classpath.split(File.pathSeparator);
@@ -49,16 +51,7 @@ public class FinderTestCases {
 		}
 		return url;
 	}
-	
-	@Deprecated
-	public static void updateRegressionTestCases(ProjectRepairFacade projectConfig) {
-		List<String> original = projectConfig.getProperties().getRegressionTestCases();
-		List<String> refined =	refineListofRegressionTestCases(original);
-		if(!refined.isEmpty())
-			projectConfig.getProperties().setRegressionCases(refined);
-		log.debug("Refining list of test cases: original= "+original.size() 
-			+", refined= "+refined.size());
-	}
+
 	
 	/**
 	 * This method refine the list of test cases received as parameter.
@@ -68,12 +61,11 @@ public class FinderTestCases {
 	private static List<String> refineListofRegressionTestCases(List<String> allTest) {
 			List<String> regressionCases = new ArrayList<String>();
 			List<String> ignoreTestcases = retriveIgnoreTestCases();
-			
-			log.debug("Ignored test cases: "+ignoreTestcases);
-			
-			if(ignoreTestcases.isEmpty())
+				
+			if(ignoreTestcases == null || ignoreTestcases.isEmpty())
 				return allTest;
 			
+			log.debug("Ignored test cases: "+ignoreTestcases);
 			
 			for (String candidateTest : allTest) {
 		
@@ -100,7 +92,9 @@ public class FinderTestCases {
 
 	private static List<String> retriveIgnoreTestCases() {
 		String list = ConfigurationProperties.getProperty("ignoredTestCases");
-		log.debug("to ignore "+ list );
+		if(list.trim().isEmpty())
+			return null;
+		log.debug("test cases to ignore "+ list );
 		String[] cases = list.split(File.pathSeparator);
 		return 	Arrays.asList(cases);
 	}
