@@ -238,7 +238,7 @@ public abstract class AbstractMain {
 				"Class used for compile a Program variant.  It must extends from "
 						+ VariantCompiler.class.getName());
 		
-		options.addOption("regressiontestcases", true,
+		options.addOption("regressiontestcases4fl", true,
 				"Classes names of test cases used in the regression, separated by '"+File.pathSeparator
 				+ "' . If the argument it is not specified, Astor automatically calculates them."
 						);
@@ -558,8 +558,8 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("compiler"))
 			ConfigurationProperties.properties.setProperty("compiler", cmd.getOptionValue("compiler"));
 
-		if (cmd.hasOption("regressiontestcases"))
-			ConfigurationProperties.properties.setProperty("regressiontestcases", cmd.getOptionValue("regressiontestcases"));
+		if (cmd.hasOption("regressiontestcases4fl"))
+			ConfigurationProperties.properties.setProperty("regressiontestcases4fl", cmd.getOptionValue("regressiontestcases4fl"));
 
 		if (cmd.hasOption("manipulatesuper"))
 			ConfigurationProperties.properties.setProperty("manipulatesuper", Boolean.TRUE.toString());

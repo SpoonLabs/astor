@@ -68,12 +68,7 @@ public class AstorMain extends AbstractMain {
 
 		projectFacade.setupWorkingDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
-		List<String> tr = null;
-		String regressionTC = ConfigurationProperties.getProperty("regressiontestcases");
-		if (regressionTC != null && !regressionTC.trim().isEmpty()) {
-			tr = Arrays.asList(regressionTC.split(File.pathSeparator));
-		} else
-			tr = FinderTestCases.findTestCasesForRegression(
+		List<String> tr = FinderTestCases.findTestCasesForRegression(
 					projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
 
 		projectFacade.getProperties().setRegressionCases(tr);

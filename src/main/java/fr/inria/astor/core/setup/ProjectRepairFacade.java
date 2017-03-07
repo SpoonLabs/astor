@@ -174,12 +174,21 @@ public class ProjectRepairFacade {
 	}
 
 	public List<SuspiciousCode> calculateSuspicious(FaultLocalizationStrategy faultLocalization) throws Exception {
+		
+		String regressionTC = ConfigurationProperties.getProperty("regressiontestcases4fl");
+		List<String> regressionTestForFaultLocalization = null;
+		if (regressionTC != null && !regressionTC.trim().isEmpty()) {
+			regressionTestForFaultLocalization  = Arrays.asList(regressionTC.split(File.pathSeparator));
+		}else
+				regressionTestForFaultLocalization =
+			 getProperties().getRegressionTestCases();
+			
 		List<SuspiciousCode> candidates = this.calculateSuspicious(faultLocalization,
 				ConfigurationProperties.getProperty("location") + File.separator
 						+ ConfigurationProperties.getProperty("srcjavafolder"),
 				getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT),
 				ConfigurationProperties.getProperty("packageToInstrument"), ProgramVariant.DEFAULT_ORIGINAL_VARIANT,
-				getProperties().getFailingTestCases(), getProperties().getRegressionTestCases(),
+				getProperties().getFailingTestCases(),regressionTestForFaultLocalization,
 				ConfigurationProperties.getPropertyBool("regressionforfaultlocalization"));
 		return candidates;
 	}

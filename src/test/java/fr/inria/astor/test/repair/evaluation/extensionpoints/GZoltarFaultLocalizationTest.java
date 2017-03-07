@@ -19,6 +19,7 @@ import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.GZoltarClientMasterFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.validation.validators.TestCasesProgramValidationResult;
 import fr.inria.main.evolution.AstorMain;
 /**
  * 
@@ -54,6 +55,9 @@ public class GZoltarFaultLocalizationTest {
 		}
 		assertTrue(hasBisection);
 		assertTrue(hasUniv);
+		
+		assertTrue( ((TestCasesProgramValidationResult)pv.getValidationResult()).getCasesExecuted() > 1000);
+		
 	}
 	
 	
@@ -103,7 +107,7 @@ public class GZoltarFaultLocalizationTest {
 				"-loglevel", "DEBUG",//
 				"-population", "1",
 				"-tmax2","1920000",
-				"-regressiontestcases","org.apache.commons.math.analysis.solvers.BisectionSolverTest:org.apache.commons.math.analysis.solvers.UnivariateRealSolverFactoryImplTest",
+				"-regressiontestcases4fl","org.apache.commons.math.analysis.solvers.BisectionSolverTest:org.apache.commons.math.analysis.solvers.UnivariateRealSolverFactoryImplTest",
 				(mansuper)?"-manipulatesuper":"",
 		}; 
 		return args;
@@ -148,7 +152,7 @@ public class GZoltarFaultLocalizationTest {
 				"-faultlocalization", GZoltarClientMasterFaultLocalization.class.getCanonicalName(),
 
 				//
-				"-regressiontestcases",
+				"-regressiontestcases4fl",
 				"org.apache.commons.lang3.BooleanUtilsTest:org.apache.commons.lang3.math.NumberUtilsTest:org.apache.commons.lang3.reflect.ConstructorUtilsTest:org.apache.commons.lang3.reflect.MethodUtilsTest",
 
 		};
