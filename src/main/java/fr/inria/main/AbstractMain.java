@@ -245,7 +245,10 @@ public abstract class AbstractMain {
 		
 		options.addOption("manipulatesuper", false, "Allows to manipulate 'super' statements. Disable by default.");
 
-
+		options.addOption("classestoinstrument", true,
+				"List of classes names that Astor instrument, separated by '"+File.pathSeparator
+				+ "' . If the argument it is not specified, Astor uses all classes from the program under repair."
+						);
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -560,6 +563,9 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("manipulatesuper"))
 			ConfigurationProperties.properties.setProperty("manipulatesuper", Boolean.TRUE.toString());
+
+		if (cmd.hasOption("classestoinstrument"))
+			ConfigurationProperties.properties.setProperty("classestoinstrument", cmd.getOptionValue("classestoinstrument"));
 
 		
 		// CLG believes, but is not totally confident in her belief, that this

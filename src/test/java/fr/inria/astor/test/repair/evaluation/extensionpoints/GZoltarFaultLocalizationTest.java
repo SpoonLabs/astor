@@ -44,6 +44,16 @@ public class GZoltarFaultLocalizationTest {
 		
 		assertTrue( pv.getModificationPoints().size() > 0);
 
+		boolean hasUniv = false;
+		boolean hasBisection = false;
+		for(ModificationPoint mp : pv.getModificationPoints()){
+			if("UnivariateRealSolverImpl".equals(mp.getCtClass().getSimpleName()))
+				hasUniv = true;;
+			if("BisectionSolver".equals(mp.getCtClass().getSimpleName()))	
+				hasBisection = true;
+		}
+		assertTrue(hasBisection);
+		assertTrue(hasUniv);
 	}
 	
 	
@@ -92,9 +102,10 @@ public class GZoltarFaultLocalizationTest {
 				"-jvm4testexecution", "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin/",
 				"-loglevel", "DEBUG",//
 				"-population", "1",
+				"-tmax2","1920000",
 				"-regressiontestcases","org.apache.commons.math.analysis.solvers.BisectionSolverTest:org.apache.commons.math.analysis.solvers.UnivariateRealSolverFactoryImplTest",
 				(mansuper)?"-manipulatesuper":"",
-		};
+		}; 
 		return args;
 	}
 
@@ -212,4 +223,29 @@ public class GZoltarFaultLocalizationTest {
 
 	}
 
+	@Test
+	public void testNewGzoltarMath70TestToInstrument() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = commandMath70(dep, out, 50, 0.5, false);
+		int initialSize = args.length;
+		args = Arrays.copyOf(args, args.length+2);
+		args[initialSize] = "-classestoinstrument";
+		args[initialSize+1] = "org.apache.commons.math.analysis.solvers.UnivariateRealSolverImpl";
+		
+		
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+		
+		ProgramVariant pv = main1.getEngine().getVariants().get(0);
+		
+		assertTrue( pv.getModificationPoints().size() > 0);
+		
+		for(ModificationPoint mp : pv.getModificationPoints()){
+			assertEquals("UnivariateRealSolverImpl",mp.getCtClass().getSimpleName());
+		}
+	}
+	
 }

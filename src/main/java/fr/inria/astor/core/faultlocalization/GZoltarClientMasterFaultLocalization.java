@@ -39,7 +39,10 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 		
 		String ncp = cp.stream().collect(Collectors.joining(File.pathSeparator)) + File.pathSeparator + locationBin;
 
-		String targetClasses = MutationSupporter.currentSupporter.getFactory().Type().getAll().stream().map(t -> t.getQualifiedName())
+		String targetClasses = ConfigurationProperties.getProperty("classestoinstrument");
+		
+		if(targetClasses == null || targetClasses.trim().isEmpty())
+			targetClasses = MutationSupporter.currentSupporter.getFactory().Type().getAll().stream().map(t -> t.getQualifiedName())
 				.collect(Collectors.joining(File.pathSeparator));
 		
 		String testNames = testsToExecute.stream().collect(Collectors.joining(File.pathSeparator));
