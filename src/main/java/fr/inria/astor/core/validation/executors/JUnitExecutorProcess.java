@@ -58,7 +58,6 @@ public abstract class JUnitExecutorProcess {
 			command.add(jvmPath);
 			command.add("-Xmx2048m");
 			command.add("-cp");
-			command.add("");
 			command.add(classpath);
 			command.add(classNameToCall());
 			command.addAll(cls);
