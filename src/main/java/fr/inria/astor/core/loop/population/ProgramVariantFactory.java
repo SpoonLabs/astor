@@ -143,12 +143,12 @@ public class ProgramVariantFactory {
 	private List<SuspiciousModificationPoint> createModificationPoints(ProgramVariant progInstance) {
 
 		List<SuspiciousModificationPoint> suspGen = new ArrayList<>();
-		List<CtClass<?>> classesFromModel = mutatorSupporter.getFactory().Class().getAll().stream().
+		List<CtClass> classesFromModel = mutatorSupporter.getFactory().Class().getAll().stream().
 					filter(CtClass.class::isInstance)
 					.map (sc -> (CtClass) sc)
 				    .collect(Collectors.toList());
 
-		for (CtClass<?> ctclasspointed : classesFromModel) {
+		for (CtClass ctclasspointed : classesFromModel) {
 			
 			List<String> allTest = projectFacade.getProperties().getRegressionTestCases();
 			String testn = ctclasspointed.getQualifiedName();
