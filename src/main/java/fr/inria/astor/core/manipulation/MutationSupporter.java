@@ -54,9 +54,6 @@ public class MutationSupporter {
 
 	private OutputWritter output;
 
-	private List<CtClass> classes = new ArrayList<>();
-	private List<CtClass> testClasses = new ArrayList<>();
-
 	public static Factory factory;
 
 	public MutationSupporter() {
@@ -268,13 +265,6 @@ public class MutationSupporter {
 		return env;
 	}
 
-	public List<CtClass> getClasses() {
-		return classes;
-	}
-
-	public List<CtClass> getTestClasses() {
-		return testClasses;
-	}
 
 	public OutputWritter getOutput() {
 		return output;

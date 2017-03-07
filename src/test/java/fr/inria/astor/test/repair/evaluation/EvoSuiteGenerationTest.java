@@ -126,8 +126,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		assertTrue("We do not have 2 spoon classes generated", classes.size() >= 2);
 
 		
-		assertFalse(main1.getEngine().getMutatorSupporter().getTestClasses().contains(classes.get(0)));
-
+	
 		// We save model, first Spoon
 		String classpathForCompileSpoon = "";
 		// ----------
@@ -208,8 +207,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		// Two classes: EvoTest + EvoScaffolding
 		assertEquals("We do not have 2 spoon classes generated", 2, classes.size());
 
-		assertFalse(main1.getEngine().getMutatorSupporter().getTestClasses().contains(classes.get(0)));
-
+		
 		TestCaseVariantValidationResult result = fev.saveAndExecuteEvoSuite(main1.getEngine().getProjectFacade(), variant, classes);
 	
 		assertNotNull(result);

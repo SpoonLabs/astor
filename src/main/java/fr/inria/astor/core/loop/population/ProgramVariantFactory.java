@@ -3,6 +3,7 @@ package fr.inria.astor.core.loop.population;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -142,9 +143,12 @@ public class ProgramVariantFactory {
 	private List<SuspiciousModificationPoint> createModificationPoints(ProgramVariant progInstance) {
 
 		List<SuspiciousModificationPoint> suspGen = new ArrayList<>();
-		List<CtClass> classesFromModel = mutatorSupporter.getClasses();
+		List<CtClass<?>> classesFromModel = mutatorSupporter.getFactory().Class().getAll().stream().
+					filter(CtClass.class::isInstance)
+					.map (sc -> (CtClass) sc)
+				    .collect(Collectors.toList());
 
-		for (CtClass ctclasspointed : classesFromModel) {
+		for (CtClass<?> ctclasspointed : classesFromModel) {
 			
 			List<String> allTest = projectFacade.getProperties().getRegressionTestCases();
 			String testn = ctclasspointed.getQualifiedName();

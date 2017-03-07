@@ -207,8 +207,7 @@ public class ValidationTest extends BaseEvolutionaryTest {
 		// Two classes: EvoTest + EvoScaffolding
 		//assertEquals("We do not have 2 spoon classes generated", 2, classes.size());
 
-		assertFalse(main1.getEngine().getMutatorSupporter().getTestClasses().contains(classes.get(0)));
-
+		
 		TestCaseVariantValidationResult result = fev.saveAndExecuteEvoSuite(main1.getEngine().getProjectFacade(), variant, classes);
 	
 		log.debug(result);
