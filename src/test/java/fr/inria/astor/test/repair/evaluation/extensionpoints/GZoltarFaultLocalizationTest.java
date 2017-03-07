@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.GZoltarClientMasterFaultLocalization;
@@ -36,18 +37,65 @@ public class GZoltarFaultLocalizationTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = commandMath70(dep, out, 50, 0.5, false);
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+		ProgramVariant pv = main1.getEngine().getVariants().get(0);
+		
+		assertTrue( pv.getModificationPoints().size() > 0);
+
+	}
+	
+	
+	@Test
+	public void testNewGzoltarMath70IncludeSuper() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = commandMath70(dep, out, 0, 0.1, false);
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+		
+		ProgramVariant pv = main1.getEngine().getVariants().get(0);
+		int v1 = pv.getModificationPoints().size();
+		System.out.println("suspicious v1 "+v1);
+		
+		//
+		args = commandMath70(dep, out, 0, 0.1, true);
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+		pv = main1.getEngine().getVariants().get(0);
+		int v2 = pv.getModificationPoints().size();
+		System.out.println("suspicious v2 "+v2);
+		
+		assertTrue(v2 > v1);
+		
+		boolean findsuper = false;
+		for(ModificationPoint mp : main1.getEngine().getVariants().get(0).getModificationPoints()){
+			if(mp.getCodeElement().toString().startsWith("super"))
+				findsuper = true;
+		}
+		assertTrue(findsuper);
+		
+		
+	}
+
+	private String[] commandMath70(String dep, File out, int generation, Double tr, boolean mansuper) {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", Double.toString(tr), "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generation), "-stopfirst", "true",
 				"-maxtime", "100", "-faultlocalization", GZoltarClientMasterFaultLocalization.class.getCanonicalName(),
 				"-jvm4testexecution", "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin/",
-				"-loglevel", "DEBUG" };
-		System.out.println(Arrays.toString(args));
-		main1.execute(args);
-
+				"-loglevel", "DEBUG",//
+				"-population", "1",
+				"-regressiontestcases","org.apache.commons.math.analysis.solvers.BisectionSolverTest:org.apache.commons.math.analysis.solvers.UnivariateRealSolverFactoryImplTest",
+				(mansuper)?"-manipulatesuper":"",
+		};
+		return args;
 	}
 
 	public String[] commandLang1(File out, boolean step) {

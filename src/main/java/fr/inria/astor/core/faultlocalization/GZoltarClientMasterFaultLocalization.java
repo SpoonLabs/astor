@@ -32,7 +32,8 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 			List<String> toInstrument, Set<String> cp, String srcFolder) throws Exception {
 
 		logger.info("GZoltar CM location " + locationBin);
-	
+		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");
+		logger.info("Gzoltar fault localization: min susp value parameter: " + thr);
 
 		Set<String> tcset = new HashSet<String>(testsToExecute);
 		
@@ -65,7 +66,7 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 			command.add("-Dtestclasses=" + testNames);
 			command.add("-diagnose");
 			command.add("-Dtimelimit="+ (long)(ConfigurationProperties.getPropertyDouble("tmax2")/1000) );//milliseconds to seconds
-			command.add("-Dloglevel=None");
+			//command.add("-Dloglevel=None");
 
 			Path foutput =Files.createTempDirectory("tempgz");
 			command.add("-Dgzoltar_data_dir="+foutput.toAbsolutePath());
@@ -122,7 +123,7 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 			//
 			
 			//
-			FaultLocalizationResult fl = parseOutputFile(foutput.toFile());
+			FaultLocalizationResult fl = parseOutputFile(foutput.toFile(), thr);
 			//
 			return fl;
 			//
@@ -196,7 +197,7 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 		}
 	}
 	
-	public FaultLocalizationResult parseOutputFile(File path){
+	public FaultLocalizationResult parseOutputFile(File path, Double thr){
 		File spectrapath = new File(path.getAbsolutePath()+ File.separator+ "spectra");
 		File testpath = new File(path.getAbsolutePath()+ File.separator+ "tests");
 		
@@ -208,7 +209,8 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 			while ((line = br.readLine()) != null) {
 				//System.out.println(line);
 				SuspiciousCode sc = parseLine(line);
-				if(sc != null && sc.getSuspiciousValue() > 0)
+				if(sc != null && sc.getSuspiciousValue() > 0 
+						&& sc.getSuspiciousValue() >= thr )
 					codes.add(sc);
 			}
 
