@@ -156,8 +156,8 @@ public class LangTest {
 		String libsdir = new File("./examples/libs/lang_common_lib").getAbsolutePath();
 		String dep = libsdir + File.separator + "cglib.jar"+File.pathSeparator //
 				+ libsdir + File.separator + "commons-io.jar"+File.pathSeparator //
-				+ File.separator + libsdir + "asm.jar"+File.pathSeparator  //
-				+ File.separator + libsdir + "easymock.jar";//
+				+ File.separator + libsdir + File.separator  + "asm.jar"+File.pathSeparator  //
+				+ File.separator + libsdir + File.separator  + "easymock.jar";//
 		String[] args = new String[] {
 				///
 				"-dependencies", dep, "-mode", "statement", // "-failing", "org.apache.commons.lang3.math.NumberUtilsTest", //
