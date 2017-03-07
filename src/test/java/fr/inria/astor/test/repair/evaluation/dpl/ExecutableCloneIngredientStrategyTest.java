@@ -185,8 +185,8 @@ public class ExecutableCloneIngredientStrategyTest {
 		String libsdir = new File("./examples/libs/lang_common_lib").getAbsolutePath();
 		String dep = libsdir + File.separator + "cglib.jar"+File.pathSeparator //
 				+ libsdir + File.separator + "commons-io.jar"+File.pathSeparator //
-				+ File.separator + libsdir + "asm.jar"+File.pathSeparator  //
-				+ File.separator + libsdir + "easymock.jar";//
+				+ File.separator + libsdir +File.separator + "asm.jar"+File.pathSeparator  //
+				+ File.separator + libsdir + File.separator +"easymock.jar";//
 
 	   //target/classes/  -bintestfolder  target/tests/  -srcjavafolder  src/main/java/  -srctestfolder  src/test/java/  
 	   
