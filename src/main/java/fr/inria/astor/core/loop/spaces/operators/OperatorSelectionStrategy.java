@@ -1,13 +1,14 @@
 package fr.inria.astor.core.loop.spaces.operators;
 
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 
 /**
  * Abstract class that represents a strategy for navigating a given operator space 
  * @author Matias Martinez
  *
  */
-public abstract class OperatorSelectionStrategy {
+public abstract class OperatorSelectionStrategy implements  AstorExtensionPoint {
 
 	
 	protected OperatorSpace operatorSpace;

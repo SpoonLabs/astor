@@ -21,6 +21,7 @@ import fr.inria.astor.core.entities.VariantValidationResult;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.WeightCtElement;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
+import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.loop.population.FitnessFunction;
@@ -46,7 +47,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public abstract class AstorCoreEngine {
+public abstract class AstorCoreEngine  implements AstorExtensionPoint{
 
 	/**
 	 * Initial identifier.

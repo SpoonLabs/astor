@@ -3,12 +3,14 @@ package fr.inria.astor.core.loop.spaces.operators;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
+
 /**
  * Includes all operator that an approach uses.
  * @author Matias Martinez
  *
  */
-public class OperatorSpace {
+public class OperatorSpace implements AstorExtensionPoint {
 
 	List<AstorOperator> operators = new ArrayList<>();
 	

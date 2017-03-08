@@ -11,7 +11,7 @@ import spoon.reflect.declaration.CtClass;
  * @author Matias Martinez
  *
  */
-public interface VariantCompiler {
+public interface VariantCompiler extends AstorExtensionPoint {
 
 	public CompilationResult compile(ProgramVariant instanceToCompile, URL[] classpath) ;
 

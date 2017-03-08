@@ -9,7 +9,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
  * @author matias
  *
  */
-public interface SolutionVariantSortCriterion {
+public interface SolutionVariantSortCriterion extends  AstorExtensionPoint{
 
 	/**
 	 * This method prioritizes patches. It receives a list of program variant
