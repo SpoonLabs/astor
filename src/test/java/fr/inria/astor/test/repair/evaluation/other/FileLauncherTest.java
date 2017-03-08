@@ -43,12 +43,12 @@ public class FileLauncherTest {
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location", location, "-flthreshold",
 				"0.5", "-scope", "local",
 				//
+				"-population","1",
 				"-seed", "10", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100"
+				,"-loglevel", Level.DEBUG.toString(),
 
 		};
-
 	
-		
 		String[] command = l.getCommand(args, new File(dataDir.getAbsolutePath()+"/math.json"), 70, location);
 
 		System.out.println(Arrays.toString(args));
@@ -90,7 +90,7 @@ public class FileLauncherTest {
 				//
 				"-location", location, "-flthreshold", "0.5", 
 				//
-				"-seed", "10", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100", 
+				"-seed", "1", "-maxgen", "500", "-stopfirst", "true", "-maxtime", "100", 
 				//
 				"-customop",
 				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",

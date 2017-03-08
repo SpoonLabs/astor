@@ -48,25 +48,9 @@ public class FileLauncher {
 			JSONObject  comp = (JSONObject) compliance.get(new Integer(bugId).toString());
 		
 			args.put("-javacompliancelevel", comp.get("source").toString());
-			
-			//	
-			String pack= (String) jsonObject.get("package");
-			
-			args.put("-package", pack);
-			
-			JSONArray libs = (JSONArray) jsonObject.get("libs");
-			
-			System.out.println(libs);
-			
-			//
-			Iterator<JSONObject> iterator = libs.iterator();
 			String libsS = "";
-			while (iterator.hasNext()) {
-				Object jsonLib= iterator.next();
-				System.out.println(jsonLib.toString());
-				libsS+=path + File.separator + jsonLib.toString() + File.pathSeparator;
-			}
-			//
+			//	
+		
 			
 			//CP
 			JSONObject srs ;
@@ -94,8 +78,28 @@ public class FileLauncher {
 			
 			//
 			for (String odep : otherDep) {
-				libsS+= (path)+File.separator+odep+File.pathSeparator;
+				libsS+=odep+File.pathSeparator;
 			}
+			//
+			
+			String pack= (String) jsonObject.get("package");
+			
+			args.put("-package", pack);
+			
+			JSONArray libs = (JSONArray) jsonObject.get("libs");
+			
+			System.out.println(libs);
+			
+			//
+			Iterator<JSONObject> iterator = libs.iterator();
+		
+			while (iterator.hasNext()) {
+				Object jsonLib= iterator.next();
+				System.out.println(jsonLib.toString());
+				libsS+=path + File.separator + jsonLib.toString() + File.pathSeparator;
+			}
+			//
+			
 			
 			///
 			args.put("-dependencies", libsS);
