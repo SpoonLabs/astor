@@ -133,7 +133,7 @@ public class AstorMain extends AbstractMain {
 				ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
 			} else {
 				//todo duplicate?
-				ingredientspace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE);
+				ingredientspace = loadSpace(scope, ingredientProcessors);//(IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE);
 				
 			}
 
@@ -167,7 +167,8 @@ public class AstorMain extends AbstractMain {
 				ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
 			} else {
 				//ingredientspace = createIngredientSpace(scope, ingredientProcessors);
-				ingredientspace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE);
+				ingredientspace = loadSpace(scope, ingredientProcessors);
+			//	ingredientspace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE);
 			}
 
 			// TODO: put in a strategy
@@ -389,6 +390,24 @@ public class AstorMain extends AbstractMain {
 		return false;
 	}
 
+	private IngredientSpace loadSpace(String customSpaceclassName,
+			List<AbstractFixSpaceProcessor<?>> ingredientProcessors) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(customSpaceclassName);
+			object = classDefinition.getConstructor(List.class).newInstance(ingredientProcessors);
+		} catch (Exception e) {
+			log.error("Loading strategy " + customSpaceclassName + " --" + e);
+			throw new Exception("Loading strategy: " + e);
+		}
+		if (object instanceof IngredientSpace)
+			return (IngredientSpace) object;
+		else
+			throw new Exception("The strategy " + customSpaceclassName + " does not extend from "
+					+ IngredientSpace.class.getName());
+
+	}
+	
 	/**
 	 * @param args
 	 * @throws Exception

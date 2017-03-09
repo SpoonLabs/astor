@@ -209,4 +209,12 @@ public abstract class AstorIngredientSpace<Q extends Object, K extends Object, I
 		return s;
 	}
 
+	public IngredientProcessor<Q, I> getIngredientProcessor() {
+		return ingredientProcessor;
+	}
+
+	public void setIngredientProcessor(IngredientProcessor<Q, I> ingredientProcessor) {
+		this.ingredientProcessor = ingredientProcessor;
+	}
+
 }

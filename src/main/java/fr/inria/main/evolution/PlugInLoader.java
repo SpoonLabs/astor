@@ -33,5 +33,21 @@ public class PlugInLoader {
 
 	}
 	
+	public  static AstorExtensionPoint loadPlugin(String className,Class type, Class[] typesConst, Object[] args) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(className);
+			object = classDefinition.getConstructor(typesConst).newInstance(args);
+		} catch (Exception e) {
+			log.error("Loading " + className + " --" + e);
+			throw new Exception("Error Loading Engine: " + e);
+		}
+		if (type.isInstance(object))
+			return (AstorExtensionPoint) object;
+		else
+			throw new Exception(
+					"The strategy " + className + " does not extend from " +type.getClass().getName());
+
+	}
 	
 }
