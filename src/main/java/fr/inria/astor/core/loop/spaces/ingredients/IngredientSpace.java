@@ -3,6 +3,7 @@ package fr.inria.astor.core.loop.spaces.ingredients;
 import java.util.List;
 
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import spoon.reflect.declaration.CtElement;
 
@@ -19,7 +20,7 @@ import spoon.reflect.declaration.CtElement;
  *         
  *         T type of the ingredient (e.g., a statement, if, a while, etc)
  */
-public interface IngredientSpace<Q extends Object, K extends Object, I extends CtElement, T extends Object> {
+public interface IngredientSpace<Q extends Object, K extends Object, I extends CtElement, T extends Object> extends AstorExtensionPoint {
 
 	/**
 	 * Creates the Space using the classes from a Variant
