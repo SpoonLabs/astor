@@ -275,7 +275,7 @@ public class AstorMain extends AbstractMain {
 		OperatorSpace customSpace = new OperatorSpace();
 		String[] operators = customOp.split(File.pathSeparator);
 		for (String op : operators) {
-			AstorOperator aop = (AstorOperator) PlugInLoader.loadPlugin(ExtensionPoints.CUSTOM_OPERATOR);
+			AstorOperator aop = (AstorOperator) PlugInLoader.loadPlugin(op, ExtensionPoints.CUSTOM_OPERATOR._class);
 			if (aop != null)
 				customSpace.register(aop);
 		}

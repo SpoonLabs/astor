@@ -9,8 +9,8 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 
 /**
@@ -19,7 +19,7 @@ import spoon.reflect.code.CtStatement;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public abstract class AstorOperator {
+public abstract class AstorOperator implements AstorExtensionPoint{
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 	
