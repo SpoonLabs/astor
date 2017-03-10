@@ -36,6 +36,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
+import fr.inria.astor.util.PatchDiffCalculator;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.astor.util.TimeUtil;
 import spoon.reflect.declaration.CtClass;
@@ -927,6 +928,9 @@ public abstract class AstorCoreEngine  implements AstorExtensionPoint{
 				}
 			}
 			line += "\nvalidation=" + solutionVariant.getValidationResult().toString();
+			PatchDiffCalculator cdiff = new PatchDiffCalculator();
+			String diffPatch = cdiff.getDiff(getProjectFacade(), solutionVariant);
+			line +="\ndiffpatch="+diffPatch;
 		}
 		return line;
 	}
