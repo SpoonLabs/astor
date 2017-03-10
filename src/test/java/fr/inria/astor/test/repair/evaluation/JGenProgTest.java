@@ -148,7 +148,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 
-	private String[] commandMath70(String dep, File out, int generations) {
+	public static String[] commandMath70(String dep, File out, int generations) {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
