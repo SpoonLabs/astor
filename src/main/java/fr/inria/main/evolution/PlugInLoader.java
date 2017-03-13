@@ -32,6 +32,9 @@ public class PlugInLoader {
 					"The strategy " + className + " does not extend from " +type.getClass().getName());
 
 	}
+	public  static AstorExtensionPoint loadPlugin(ExtensionPoints ep, Class[] typesConst, Object[] args) throws Exception{
+		return loadPlugin(ConfigurationProperties.getProperty(ep.identifier), ep._class, typesConst, args);
+	}
 	
 	public  static AstorExtensionPoint loadPlugin(String className,Class type, Class[] typesConst, Object[] args) throws Exception {
 		Object object = null;

@@ -69,7 +69,7 @@ public class AstorMain extends AbstractMain {
 		projectFacade.setupWorkingDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
 		List<String> tr = FinderTestCases.findTestCasesForRegression(
-					projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
+				projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
 
 		projectFacade.getProperties().setRegressionCases(tr);
 	}
@@ -132,9 +132,10 @@ public class AstorMain extends AbstractMain {
 			} else if ("local".equals(scope)) {
 				ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
 			} else {
-				//todo duplicate?
-				ingredientspace = loadSpace(scope, ingredientProcessors);//(IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE);
-				
+				// todo duplicate?
+				ingredientspace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
+						new Class[] { List.class }, new Object[] { ingredientProcessors });
+
 			}
 
 			IngredientSearchStrategy ingStrategy = retrieveIngredientStrategy(ingredientspace);
@@ -166,9 +167,8 @@ public class AstorMain extends AbstractMain {
 			} else if ("local".equals(scope)) {
 				ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
 			} else {
-				//ingredientspace = createIngredientSpace(scope, ingredientProcessors);
-				ingredientspace = loadSpace(scope, ingredientProcessors);
-			//	ingredientspace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE);
+				ingredientspace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
+						new Class[] { List.class }, new Object[] { ingredientProcessors });
 			}
 
 			// TODO: put in a strategy
@@ -186,14 +186,15 @@ public class AstorMain extends AbstractMain {
 
 		}
 		// Fault localization
-		
-		astorCore.setFaultLocalization((FaultLocalizationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.FAULT_LOCALIZATION));
+
+		astorCore.setFaultLocalization(
+				(FaultLocalizationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.FAULT_LOCALIZATION));
 
 		// Fault localization
 		astorCore.setFitnessFunction((FitnessFunction) PlugInLoader.loadPlugin(ExtensionPoints.FITNESS_FUNCTION));
 
 		astorCore.setCompiler((VariantCompiler) PlugInLoader.loadPlugin(ExtensionPoints.COMPILER));
-		
+
 		// Now we define the commons properties
 
 		if (operatorSpace != null) {
@@ -203,7 +204,8 @@ public class AstorMain extends AbstractMain {
 		}
 
 		// Population controller
-		astorCore.setPopulationControler((PopulationController) PlugInLoader.loadPlugin(ExtensionPoints.POPULATION_CONTROLLER));
+		astorCore.setPopulationControler(
+				(PopulationController) PlugInLoader.loadPlugin(ExtensionPoints.POPULATION_CONTROLLER));
 		//
 		astorCore.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 
@@ -230,7 +232,6 @@ public class AstorMain extends AbstractMain {
 		return astorCore;
 
 	}
-
 
 	/**
 	 * We create an instance of the Engine which name is passed as argument.
@@ -330,7 +331,6 @@ public class AstorMain extends AbstractMain {
 
 	}
 
-
 	@Override
 	public void run(String location, String projectName, String dependencies, String packageToInstrument, double thfl,
 			String failing) throws Exception {
@@ -380,7 +380,8 @@ public class AstorMain extends AbstractMain {
 		if (patchpriority != null && !patchpriority.trim().isEmpty()) {
 			SolutionVariantSortCriterion priorizStrategy = null;
 			try {
-				priorizStrategy = (SolutionVariantSortCriterion) PlugInLoader.loadPlugin(ExtensionPoints.SOLUTION_SORT_CRITERION);
+				priorizStrategy = (SolutionVariantSortCriterion) PlugInLoader
+						.loadPlugin(ExtensionPoints.SOLUTION_SORT_CRITERION);
 				astorCore.setPatchSortCriterion(priorizStrategy);
 				return true;
 			} catch (Exception e) {
@@ -390,24 +391,6 @@ public class AstorMain extends AbstractMain {
 		return false;
 	}
 
-	private IngredientSpace loadSpace(String customSpaceclassName,
-			List<AbstractFixSpaceProcessor<?>> ingredientProcessors) throws Exception {
-		Object object = null;
-		try {
-			Class classDefinition = Class.forName(customSpaceclassName);
-			object = classDefinition.getConstructor(List.class).newInstance(ingredientProcessors);
-		} catch (Exception e) {
-			log.error("Loading strategy " + customSpaceclassName + " --" + e);
-			throw new Exception("Loading strategy: " + e);
-		}
-		if (object instanceof IngredientSpace)
-			return (IngredientSpace) object;
-		else
-			throw new Exception("The strategy " + customSpaceclassName + " does not extend from "
-					+ IngredientSpace.class.getName());
-
-	}
-	
 	/**
 	 * @param args
 	 * @throws Exception
