@@ -30,54 +30,67 @@ public class TestCaseBasedFitnessPopulationController implements PopulationContr
 	 * @param childVariants
 	 */
 	public List<ProgramVariant> selectProgramVariantsForNextGeneration(List<ProgramVariant> parentVariants,
-			List<ProgramVariant> childVariants, int maxNumberInstances, ProgramVariantFactory variantFactory, ProgramVariant original, 
+			List<ProgramVariant> childVariants, int populationSize, ProgramVariantFactory variantFactory, ProgramVariant original, 
 			int generation) {
 		
-		List<ProgramVariant> currentVariants = new ArrayList<>(childVariants);
+		List<ProgramVariant> solutionsFromGeneration = new ArrayList<ProgramVariant>();
+		
+		List<ProgramVariant> newPopulation = new ArrayList<>(childVariants);
+		
 		if (ConfigurationProperties.getProperty("reintroduce").contains("parents")) {
-			currentVariants.addAll(parentVariants);
+			newPopulation.addAll(parentVariants);
 		}
-		int totalInstances = currentVariants.size();
+		
+		int totalInstances = newPopulation.size();
 
-		List<ProgramVariant> newPop = new ArrayList<ProgramVariant>();
-
-		Collections.sort(currentVariants, comparator);
+	
+		Collections.sort(newPopulation, comparator);
 
 		String variantsIds = "";
 
-		for (ProgramVariant programVariant : currentVariants) {
-			variantsIds += programVariant.getId() + "(f=" + programVariant.getFitness() + ")" + ", ";
-			
+		for (ProgramVariant programVariant : newPopulation) {
+			variantsIds += programVariant.getId() + "(f=" + programVariant.getFitness() + ")" ;
+			if(programVariant.isSolution()){
+				solutionsFromGeneration.add(programVariant);
+				variantsIds += "[SOL]";
+			}
+			variantsIds += ", ";
 		}
+		
 		log.debug("Variants to next generation from: " + totalInstances + "-->IDs: (" + variantsIds + ")");
 
-		int min = (currentVariants.size() > maxNumberInstances) ? maxNumberInstances : currentVariants.size();
-		newPop.addAll(currentVariants.subList(0, min));
+		if(!ConfigurationProperties.getProperty("reintroduce").contains("solutions")){
+			newPopulation.removeAll(solutionsFromGeneration);
+		}
+			
+		
+		int min = (newPopulation.size() > populationSize) ? populationSize : newPopulation.size();
+		newPopulation= newPopulation.subList(0, min);
 
 		variantsIds = "";
-		for (ProgramVariant programVariant : newPop) {
+		for (ProgramVariant programVariant : newPopulation) {
 			variantsIds += programVariant.getId() + "(f=" + programVariant.getFitness() + ")" + ", ";
 		}
 		log.debug("Selected to next generation: IDs" + totalInstances + "--> (" + variantsIds + ")");
-		
-		
 		//
+		
 		if (ConfigurationProperties.getProperty("reintroduce").contains("original")) {
-			// Create a new variant from the original parent
-			ProgramVariant parentNew = variantFactory.createProgramVariantFromAnother(original, generation);
-			parentNew.getOperations().clear();
-			parentNew.setParent(null);
-			if (!currentVariants.isEmpty()) {
+			if (!newPopulation.isEmpty()) {
 				// now replace for the "worse" child
-				currentVariants.remove(currentVariants.size() - 1);
-
-			}
-			currentVariants.add(parentNew);
-
+				newPopulation.remove(newPopulation.size() - 1);
+				}
+		}
+		
+		
+		while(newPopulation.size() < populationSize){
+			ProgramVariant originalVariant = variantFactory.createProgramVariantFromAnother(original, generation);
+			originalVariant.getOperations().clear();
+			originalVariant.setParent(null);
+			newPopulation.add(originalVariant);
 		}
 		
 			
-		return newPop;
+		return newPopulation;
 
 	}
 

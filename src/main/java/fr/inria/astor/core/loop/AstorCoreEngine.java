@@ -295,31 +295,20 @@ public abstract class AstorCoreEngine  implements AstorExtensionPoint{
 		// After analyze all variant
 		// New population creation:
 		// show all and search solutions:
-		List<ProgramVariant> solutionsFromGeneration = new ArrayList<ProgramVariant>();
-		List<ProgramVariant> currentVariants = new ArrayList<>();
-
+	
 		// We filter the solution from the rest
 		String solutionId = "";
 		for (ProgramVariant programVariant : temporalInstances) {
 			if (programVariant.isSolution()) {
-				solutionsFromGeneration.add(programVariant);
+				this.solutions.add(programVariant);
 				solutionId += programVariant.getId() + "(SOLUTION)(f=" + programVariant.getFitness() + ")" + ", ";
-			} else {
-				currentVariants.add(programVariant);
 			}
 		}
 		log.debug("\nEnd analysis generation - \nSolutions found:" + "--> (" + solutionId + ")");
 
-		this.solutions.addAll(solutionsFromGeneration);
+		
 
-		// We add the case that we do not have variants because all are
-		// solution, be we want continue searching new ones
-		if (currentVariants.isEmpty() && !solutionsFromGeneration.isEmpty()
-				&& !ConfigurationProperties.getPropertyBool("stopfirst")) {
-			currentVariants.addAll(solutionsFromGeneration);
-		}
-
-		variants = populationControler.selectProgramVariantsForNextGeneration(variants, currentVariants,
+		variants = populationControler.selectProgramVariantsForNextGeneration(variants, temporalInstances,
 				ConfigurationProperties.getPropertyInt("population"), variantFactory, originalVariant, generation);
 
 	}
