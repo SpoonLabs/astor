@@ -1,5 +1,6 @@
 package fr.inria.astor.approaches.exhaustive;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -8,12 +9,14 @@ import java.util.List;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
@@ -82,6 +85,7 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 					applyNewMutationOperationToSpoonElement(pointOperation);
 
+					log.debug("Operator:\n "+pointOperation);
 					boolean solution = processCreatedVariant(solutionVariant, generationsExecuted);
 
 					if (solution) {
@@ -119,47 +123,17 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 	 */
 	protected List<OperatorInstance> createInstancesOfOperators(SuspiciousModificationPoint modificationPoint) {
 		
+		log.debug("Creating instance of MP: "+modificationPoint.getCodeElement().getShortRepresentation());
 		ingredientSpace.defineSpace(originalVariant);
 		
 		List<OperatorInstance> ops = new ArrayList<>();
 		AstorOperator[] operators = getOperatorSpace().values();
 		for (AstorOperator astorOperator : operators) {
+			
 			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
-
-				
+				log.debug("Applying operator "+astorOperator + " from "+ Arrays.toString(operators));
 				if (astorOperator.needIngredient()) {
-
-					List<CtCodeElement>  ingredients = null;
-					if (astorOperator instanceof ReplaceOp) {
-						String type = modificationPoint.getCodeElement().getClass().getSimpleName();
-						ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
-
-					} else {
-						ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
-
-					}
-					
-					log.debug("Number of ingredients " + ingredients.size());
-					for (CtCodeElement ingredient : ingredients) {
-
-						List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
-						
-						if(!VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
-								ingredient))
-							continue;
-						
-						if (instances != null && instances.size() > 0) {
-							
-							for (OperatorInstance operatorInstance : instances) {
-								
-								operatorInstance.setModified(ingredient);
-								//operatorInstance.setIngredientScope(ingredient.getScope());
-								
-								//System.out.println("-->"+operatorInstance);
-								ops.add(operatorInstance);
-							}
-						}
-					}
+					createInstance(modificationPoint, ops, astorOperator);
 				}else{//if does not need ingredients
 					List<OperatorInstance> operatorInstances = astorOperator.createOperatorInstance(modificationPoint);
 					ops.addAll(operatorInstances);
@@ -167,18 +141,45 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 				}
 			}
 		}
-	/*	int opcount = 0;
-		for (AstorOperator astorOperator : operators) {
-			System.out.println(++opcount + " -aop->"+astorOperator);
-		}opcount = 0;
-		for (OperatorInstance operatorInstance : ops) {
-			System.out.println(++opcount + " -inop->"+operatorInstance);
-				
-		}
-		*/
-		//log.debug("Number modif "+ops.size());
+	
+		log.debug("\nNumber modififications to apply: "+ops.size());
 		return ops;
 
+	}
+
+	public void createInstance(SuspiciousModificationPoint modificationPoint, List<OperatorInstance> ops,
+			AstorOperator astorOperator) {
+		List<CtCodeElement>  ingredients = null;
+		if (astorOperator instanceof ReplaceOp) {
+			String type = modificationPoint.getCodeElement().getClass().getSimpleName();
+			ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
+
+		} else {
+			ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
+
+		}
+		
+		log.debug("Number of ingredients " + ingredients.size());
+		for (CtCodeElement ingredient : ingredients) {
+
+			List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
+			
+			if(!VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
+					ingredient))
+				continue;
+			
+			if (instances != null && instances.size() > 0) {
+				
+				for (OperatorInstance operatorInstance : instances) {
+					
+					operatorInstance.setModified(ingredient);
+					//operatorInstance.setIngredientScope(ingredient.getScope());
+					
+					//System.out.println("-->"+operatorInstance);
+					ops.add(operatorInstance);
+				}
+			}
+		}
 	}
 	
 	public IngredientSpace getIngredientSpace() {
