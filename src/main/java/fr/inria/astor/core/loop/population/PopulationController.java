@@ -19,6 +19,9 @@ public interface PopulationController extends  AstorExtensionPoint{
 	 * @return 
 	 */
 	public List<ProgramVariant> selectProgramVariantsForNextGeneration(List<ProgramVariant> parentVariants,
-			List<ProgramVariant> childVariants,int maxNumberInstances);
+			List<ProgramVariant> childVariants, 
+			int maxNumberInstances,ProgramVariantFactory variantFactory, ProgramVariant original, 
+			int generation
+			);
 
 }

@@ -320,21 +320,7 @@ public abstract class AstorCoreEngine  implements AstorExtensionPoint{
 		}
 
 		variants = populationControler.selectProgramVariantsForNextGeneration(variants, currentVariants,
-				ConfigurationProperties.getPropertyInt("population"));
-
-		if (ConfigurationProperties.getProperty("reintroduce").contains("original")) {
-			// Create a new variant from the original parent
-			ProgramVariant parentNew = this.variantFactory.createProgramVariantFromAnother(originalVariant, generation);
-			parentNew.getOperations().clear();
-			parentNew.setParent(null);
-			if (!variants.isEmpty()) {
-				// now replace for the "worse" child
-				variants.remove(variants.size() - 1);
-
-			}
-			variants.add(parentNew);
-
-		}
+				ConfigurationProperties.getPropertyInt("population"), variantFactory, originalVariant, generation);
 
 	}
 

@@ -30,7 +30,8 @@ public class TestCaseBasedFitnessPopulationController implements PopulationContr
 	 * @param childVariants
 	 */
 	public List<ProgramVariant> selectProgramVariantsForNextGeneration(List<ProgramVariant> parentVariants,
-			List<ProgramVariant> childVariants, int maxNumberInstances) {
+			List<ProgramVariant> childVariants, int maxNumberInstances, ProgramVariantFactory variantFactory, ProgramVariant original, 
+			int generation) {
 		
 		List<ProgramVariant> currentVariants = new ArrayList<>(childVariants);
 		if (ConfigurationProperties.getProperty("reintroduce").contains("parents")) {
@@ -58,6 +59,23 @@ public class TestCaseBasedFitnessPopulationController implements PopulationContr
 			variantsIds += programVariant.getId() + "(f=" + programVariant.getFitness() + ")" + ", ";
 		}
 		log.debug("Selected to next generation: IDs" + totalInstances + "--> (" + variantsIds + ")");
+		
+		
+		//
+		if (ConfigurationProperties.getProperty("reintroduce").contains("original")) {
+			// Create a new variant from the original parent
+			ProgramVariant parentNew = variantFactory.createProgramVariantFromAnother(original, generation);
+			parentNew.getOperations().clear();
+			parentNew.setParent(null);
+			if (!currentVariants.isEmpty()) {
+				// now replace for the "worse" child
+				currentVariants.remove(currentVariants.size() - 1);
+
+			}
+			currentVariants.add(parentNew);
+
+		}
+		
 			
 		return newPop;
 
