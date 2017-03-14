@@ -247,4 +247,91 @@ public class TypeCloneIngredientStrategyTestTest {
 		assertEquals("Wrong number of ingredients collected", 52, ingredientsToConsiderInser.size());
 		
 	}
+	
+	
+	
+	@Test
+	public void susp2testTypeCloneStrategyComplete() throws Exception {
+		AstorMain main1 = new AstorMain();
+		ClassLoader classLoader = getClass().getClassLoader();
+		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+
+		Class typeCloneGranularityClass = CtType.class;
+
+		String[] args = 
+				createCommandM70(learningDir, typeCloneGranularityClass, 0, false, CtClassIngredientSpace.class.getCanonicalName(), 0.1);
+
+		log.debug(Arrays.toString(args));
+
+		main1.execute(args);
+		JGenProg engine = (JGenProg) main1.getEngine();
+
+		IngredientSpace ingredientSpace = engine.getIngredientStrategy().getIngredientSpace();
+
+		assertTrue(ingredientSpace.getLocations().size() > 0);
+
+		IngredientSearchStrategy ingStrategy = engine.getIngredientStrategy();
+
+		assertNotNull(ingStrategy);
+
+		assertTrue(ingStrategy instanceof CloneIngredientSearchStrategy<?>);
+
+		CloneIngredientSearchStrategy<CtType> cloneStrategy = (CloneIngredientSearchStrategy<CtType>) ingStrategy;
+
+		Optional<?> elements = cloneStrategy.queryelements();
+
+		assertNotNull(elements);
+
+		Map<String, ?> mapKeys = (Map<String, ?>) elements.get();
+
+		//Using 0.1 of thr we have two locations. Using 0.5 we have only 1.
+		assertEquals(Double.valueOf(0.1), ConfigurationProperties.getPropertyDouble("flthreshold"));
+		
+		mapKeys.keySet().forEach(e-> System.out.println("key :"+e));
+		
+		assertEquals(2, mapKeys.keySet().size());
+
+		// Let's take the Program Variant
+		ProgramVariant pvariant = engine.getVariants().get(0);
+
+		ModificationPoint buggyStatementModPoint = pvariant.getModificationPoints().get(0);
+
+		assertEquals(72, buggyStatementModPoint.getCodeElement().getPosition().getEndLine());
+
+		AstorOperator testOperator = new ReplaceOp(); // We dont care about the
+														// operator here
+
+		CtType buggyClass = buggyStatementModPoint.getCtClass();
+
+		// Important:I had to invoke this method to execute computesimlist
+		// (it's private) before calling getfixspace()
+		Ingredient ingredientSelected = cloneStrategy.getFixIngredient(buggyStatementModPoint, testOperator);
+
+		assertNotNull(ingredientSelected);
+		
+		Queue<CtCodeElement> ingredientsToConsider = cloneStrategy.getfixspace(buggyStatementModPoint, testOperator,
+				buggyClass);
+
+		assertNotNull(ingredientsToConsider);
+
+		assertFalse(ingredientsToConsider.isEmpty());
+		
+		System.out.println("Buggy mp "+ buggyStatementModPoint);
+		System.out.println(ingredientsToConsider);
+
+		//The suspicious class has 9 return statements.
+		//4 returns from Bisection and 5 from Univariate
+		assertEquals("Wrong number of ingredients collected", 9, ingredientsToConsider.size());
+
+		log.debug("Ingredients to considers: "+ ingredientsToConsider);
+		
+		//Now, Insert operator
+		
+		Queue<CtCodeElement> ingredientsToConsiderInser = cloneStrategy.getfixspace(buggyStatementModPoint,new InsertAfterOp(),
+				buggyClass);
+		System.out.println(ingredientsToConsiderInser );
+		//the suspicious classes has 52 statements (it does not include super calls)
+		assertEquals("Wrong number of ingredients collected", 52, ingredientsToConsiderInser.size());
+		
+	}
 }

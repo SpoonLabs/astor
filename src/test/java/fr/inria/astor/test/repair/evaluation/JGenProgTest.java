@@ -219,7 +219,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-seed", "10", 
 				"-maxgen", "500", 
 				"-stopfirst", "false",//two solutions
-				"-maxtime", "10"
+				"-maxtime", "10",
+				"-population","1",
+				"-reintroduce","parents"
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -227,7 +229,42 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() >= 2);
-		
+		assertTrue(solutions.size() <= 3);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70PackageSolutionsEvolving() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(),
+				//
+				"-scope", "package", 
+				"-seed", "10", 
+				"-maxgen", "500", 
+				"-stopfirst", "false",//two solutions
+				"-maxtime", "10",
+				"-population","1",
+				"-reintroduce","parents-solutions"//Here we test.
+
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 3);
+		boolean withMultiple = false;
+		for (ProgramVariant programVariant : solutions) {
+			System.out.println("-->"+programVariant.getOperations().values());
+			withMultiple = withMultiple || programVariant.getOperations().values().size() >= 2;
+		}
+		assertTrue(withMultiple);
 	}
 
 	/**
