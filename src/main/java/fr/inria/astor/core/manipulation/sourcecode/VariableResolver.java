@@ -286,7 +286,7 @@ public class VariableResolver {
 						+ ConfigurationProperties.getProperty("clusteringfilename")));
 
 		List<CtVariableAccess> variablesOutOfScope = retriveVariablesOutOfContext(varContext, ingredientCtElement);
-		logger.debug("vars out of context: " + variablesOutOfScope);
+		logger.debug("#vars out of context: " + variablesOutOfScope.size());
 		for (CtVariableAccess wOut : variablesOutOfScope) {
 
 			List<String> wcluster = clusters.get(wOut.getVariable().getSimpleName());
@@ -295,7 +295,7 @@ public class VariableResolver {
 				logger.debug("variable our of scope without context: " + wOut);
 				continue;
 			}
-			logger.debug("--var  out of context: " + wOut + ", with wcluster " + wcluster);
+			logger.debug("--var  out of context: " + wOut + ", with wcluster size " + wcluster.size());
 
 			boolean mapped = false;
 			VarAccessWrapper varOutWrapper = new VarAccessWrapper(wOut);

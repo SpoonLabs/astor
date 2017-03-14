@@ -29,7 +29,7 @@ public class CommandSummaryTest {
 				"-scope", "package", 
 				"-seed", "10", 
 				"-maxgen", "500", 
-				"-stopfirst", "false",//two solutions
+				"-stopfirst", "false",
 				"-maxtime", "10",
 				"-population","1",
 				"-transformingredient"

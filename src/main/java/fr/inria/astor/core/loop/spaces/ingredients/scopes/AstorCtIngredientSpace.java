@@ -1,6 +1,5 @@
 package fr.inria.astor.core.loop.spaces.ingredients.scopes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;

@@ -167,7 +167,7 @@ public class Stats {
 		}
 		counter++;
 		temporalIngCounter.put(idprogvariant, counter);
-		log.debug("Incrementing ingredient counter for variant "+idprogvariant + " to "+counter);
+		//log.debug("Incrementing ingredient counter for variant "+idprogvariant + " to "+counter);
 		return counter;
 	}
 
