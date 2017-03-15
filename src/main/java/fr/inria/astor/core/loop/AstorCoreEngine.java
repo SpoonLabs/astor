@@ -35,10 +35,14 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
+import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
 import fr.inria.astor.util.PatchDiffCalculator;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.astor.util.TimeUtil;
+import fr.inria.main.evolution.ExtensionPoints;
+import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 
@@ -958,8 +962,46 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	/**
 	 * Load the extension Points according to the requirements of the engine
+	 * 
+	 * @throws Exception
 	 */
-	public void loadExtensionPoints() {
+	public void loadExtensionPoints() throws Exception {
+
+		// Fault localization
+
+		this.setFaultLocalization(
+				(FaultLocalizationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.FAULT_LOCALIZATION));
+
+		// Fault localization
+		this.setFitnessFunction((FitnessFunction) PlugInLoader.loadPlugin(ExtensionPoints.FITNESS_FUNCTION));
+
+		this.setCompiler((VariantCompiler) PlugInLoader.loadPlugin(ExtensionPoints.COMPILER));
+
+		// Population controller
+		this.setPopulationControler(
+				(PopulationController) PlugInLoader.loadPlugin(ExtensionPoints.POPULATION_CONTROLLER));
+		//
+
+		// We do the first validation using the standard validation (test suite
+		// process)
+		this.setProgramValidator(new ProcessValidator());
+
+		// Initialize Population
+		this.createInitialPopulation();
+
+		// After initializing population, we set up specific validation
+		// mechanism
+		// Select the kind of validation of a variant.
+		String validationArgument = ConfigurationProperties.properties.getProperty("validation");
+		if (validationArgument.equals("evosuite")) {
+			ProcessEvoSuiteValidator validator = new ProcessEvoSuiteValidator();
+			this.setProgramValidator(validator);
+		} else
+		// if validation is different to default (process)
+		if (!validationArgument.equals("process")) {
+			this.setProgramValidator((ProgramValidator) PlugInLoader.loadPlugin(ExtensionPoints.VALIDATION));
+		}
+
 	};
 
 }

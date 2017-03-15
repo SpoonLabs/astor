@@ -11,16 +11,12 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.approaches.exhaustive.ExhaustiveAstorEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
-import fr.inria.astor.approaches.jkali.JKaliSpace;
+import fr.inria.astor.approaches.jkali.JKaliEngine;
 import fr.inria.astor.approaches.mutRepair.MutRepairSpace;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
-import fr.inria.astor.core.loop.extension.VariantCompiler;
-import fr.inria.astor.core.loop.population.FitnessFunction;
-import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
@@ -39,9 +35,6 @@ import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
-import fr.inria.astor.core.validation.validators.ProcessValidator;
-import fr.inria.astor.core.validation.validators.ProgramValidator;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
 
@@ -103,12 +96,8 @@ public class AstorMain extends AbstractMain {
 		}
 
 		if (ExecutionMode.jKali.equals(mode)) {
-			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
-			if (operatorSpace == null)
-				operatorSpace = new JKaliSpace();
-			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
-			ConfigurationProperties.properties.setProperty("population", "1");
-
+			astorCore = new JKaliEngine(mutSupporter, projectFacade);
+			//
 		} else if (ExecutionMode.jGenProg.equals(mode)) {
 			astorCore = new JGenProg(mutSupporter, projectFacade);
 			if (operatorSpace == null)
@@ -186,53 +175,21 @@ public class AstorMain extends AbstractMain {
 
 		}
 		
-		//Loading extension Points
-		astorCore.loadExtensionPoints();
-		
-		// Fault localization
-
-		astorCore.setFaultLocalization(
-				(FaultLocalizationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.FAULT_LOCALIZATION));
-
-		// Fault localization
-		astorCore.setFitnessFunction((FitnessFunction) PlugInLoader.loadPlugin(ExtensionPoints.FITNESS_FUNCTION));
-
-		astorCore.setCompiler((VariantCompiler) PlugInLoader.loadPlugin(ExtensionPoints.COMPILER));
-
 		// Now we define the commons properties
 
 		if (operatorSpace != null) {
 			astorCore.setOperatorSpace(operatorSpace);
 		} else {
-			throw new Exception("The operator Space cannot be null");
+			//throw new Exception("The operator Space cannot be null");
 		}
-
-		// Population controller
-		astorCore.setPopulationControler(
-				(PopulationController) PlugInLoader.loadPlugin(ExtensionPoints.POPULATION_CONTROLLER));
-		//
+		
 		astorCore.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
+		
 
-		// We do the first validation using the standard validation (test suite
-		// process)
-		astorCore.setProgramValidator(new ProcessValidator());
-
-		// Initialize Population
-		astorCore.createInitialPopulation();
-
-		// After initializing population, we set up specific validation
-		// mechanism
-		// Select the kind of validation of a variant.
-		String validationArgument = ConfigurationProperties.properties.getProperty("validation");
-		if (validationArgument.equals("evosuite")) {
-			ProcessEvoSuiteValidator validator = new ProcessEvoSuiteValidator();
-			astorCore.setProgramValidator(validator);
-		} else
-		// if validation is different to default (process)
-		if (!validationArgument.equals("process")) {
-			astorCore.setProgramValidator((ProgramValidator) PlugInLoader.loadPlugin(ExtensionPoints.VALIDATION));
-		}
-
+		//Loading extension Points
+		astorCore.loadExtensionPoints();
+		
+		
 		return astorCore;
 
 	}

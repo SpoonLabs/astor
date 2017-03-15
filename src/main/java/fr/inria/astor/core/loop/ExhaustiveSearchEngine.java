@@ -38,9 +38,11 @@ public class ExhaustiveSearchEngine extends JGenProg {
 		generationsExecuted = 1;
 		// For each variant (one is enough)
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
-
+		
+		int v = 0;
 		for (ProgramVariant parentVariant : variants) {
 
+			log.debug("\n****\nanalyzing variant #"+ (++v)+" out of "+variants.size());
 			// We analyze each modifpoint of the variant i.e. suspicious statement
 			for (ModificationPoint modifPoint : parentVariant.getModificationPoints()) {
 				// We create all operators to apply in the modifpoint

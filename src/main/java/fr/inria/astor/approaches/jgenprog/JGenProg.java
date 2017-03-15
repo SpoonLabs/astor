@@ -322,6 +322,4 @@ public class JGenProg extends AstorCoreEngine {
 		log.info("\nfailing_ing_attempts ("+this.currentStat.ingAttemptsFailingPatches.size()+ "): "+this.currentStat.ingAttemptsFailingPatches);
 		
 	}
-
-
 }
