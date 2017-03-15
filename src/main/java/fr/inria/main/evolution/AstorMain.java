@@ -185,6 +185,10 @@ public class AstorMain extends AbstractMain {
 			astorCore = createEngineFromArgument(customengine, mutSupporter, projectFacade);
 
 		}
+		
+		//Loading extension Points
+		astorCore.loadExtensionPoints();
+		
 		// Fault localization
 
 		astorCore.setFaultLocalization(

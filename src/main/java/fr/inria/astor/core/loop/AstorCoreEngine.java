@@ -48,7 +48,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public abstract class AstorCoreEngine  implements AstorExtensionPoint{
+public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	/**
 	 * Initial identifier.
@@ -295,7 +295,7 @@ public abstract class AstorCoreEngine  implements AstorExtensionPoint{
 		// After analyze all variant
 		// New population creation:
 		// show all and search solutions:
-	
+
 		// We filter the solution from the rest
 		String solutionId = "";
 		for (ProgramVariant programVariant : temporalInstances) {
@@ -305,8 +305,6 @@ public abstract class AstorCoreEngine  implements AstorExtensionPoint{
 			}
 		}
 		log.debug("\nEnd analysis generation - \nSolutions found:" + "--> (" + solutionId + ")");
-
-		
 
 		variants = populationControler.selectProgramVariantsForNextGeneration(variants, temporalInstances,
 				ConfigurationProperties.getPropertyInt("population"), variantFactory, originalVariant, generation);
@@ -905,7 +903,7 @@ public abstract class AstorCoreEngine  implements AstorExtensionPoint{
 			line += "\nvalidation=" + solutionVariant.getValidationResult().toString();
 			PatchDiffCalculator cdiff = new PatchDiffCalculator();
 			String diffPatch = cdiff.getDiff(getProjectFacade(), solutionVariant);
-			line +="\ndiffpatch="+diffPatch;
+			line += "\ndiffpatch=" + diffPatch;
 		}
 		return line;
 	}
@@ -957,4 +955,11 @@ public abstract class AstorCoreEngine  implements AstorExtensionPoint{
 	public void setCompiler(VariantCompiler compiler) {
 		this.compiler = compiler;
 	}
+
+	/**
+	 * Load the extension Points according to the requirements of the engine
+	 */
+	public void loadExtensionPoints() {
+	};
+
 }
