@@ -28,7 +28,6 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -47,6 +46,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.util.StringUtil;
 
 /**
  * A strategy to pick an ingredient from the fix space using code fragments'
@@ -69,8 +69,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 	// Cache of elements' similarity lists.
 	private Map<T, List<T>> element2simlist = new HashMap<>();
 
-	public CloneIngredientSearchStrategy(IngredientSpace space)
-			throws ClassNotFoundException, IOException {
+	public CloneIngredientSearchStrategy(IngredientSpace space) throws ClassNotFoundException, IOException {
 		super(space);
 		cls = Class.forName(ConfigurationProperties.properties.getProperty("clonegranularity"));
 		setfilter();
@@ -83,8 +82,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				@Override
 				public boolean matches(CtType element) {
 					// Definition of "top level" CtType.
-					return element.getParent(CtType.class) == null
-							&& !element.isImplicit();
+					return element.getParent(CtType.class) == null && !element.isImplicit();
 				}
 			};
 		} else if (cls.equals(CtExecutable.class)) {
@@ -92,8 +90,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				@Override
 				public boolean matches(CtExecutable element) {
 					// Definition of "top level" CtExecutable.
-					return element.getParent(CtExecutable.class) == null
-							&& !element.isImplicit()
+					return element.getParent(CtExecutable.class) == null && !element.isImplicit()
 							&& !(element instanceof CtAnonymousExecutable);
 				}
 			};
@@ -158,8 +155,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		if (suspicious == null) {
 			// TODO Count number of times modification point does not map to
 			// "top level" T.
-			log.info("Modification point does not map to \"top level\" "
-					+ cls.getName() + ": " + modificationPoint);
+			log.info("Modification point does not map to \"top level\" " + cls.getName() + ": " + modificationPoint);
 			return null;
 		}
 
@@ -189,16 +185,16 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		while (continueSearching) {
 			CtElement ingredient = getingredient(fixspace);
 			log.debug("Location to insert " + modificationPoint);
-		
+
 			if (ingredient == null)
 				return null;
 
-			log.debug("-->Ingredient selected: " + ingredient.getShortRepresentation());
+			log.debug("-->Ingredient selected: " + StringUtil.trunc(ingredient.getShortRepresentation()));
 
 			boolean alreadyApplied = alreadySelected(modificationPoint, ingredient, op);
 
 			if (alreadyApplied) {
-				log.debug("Ingredient Already applied");
+				log.debug("Ingredient Already applied " + modificationPoint + " " + StringUtil.trunc(ingredient));
 				continue;
 			}
 
@@ -214,7 +210,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
 					log.debug("The modification point  has not any var in scope");
 				}
-				// I wrote all branches even they are not necessaries to easily observe all cases.
+				// I wrote all branches even they are not necessaries to easily
+				// observe all cases.
 				VarMapping mapping = VariableResolver.mapVariables(modificationPoint.getContextOfModificationPoint(),
 						ingredient);
 				// if we map all variables
@@ -242,8 +239,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 							// Otherwise -> no
 							// VariableResolver.resetIngredient(mapping,
 							// originalMap);
-							continueSearching = !VariableResolver.fitInPlace(
-									modificationPoint.getContextOfModificationPoint(), ingredient);
+							continueSearching = !VariableResolver
+									.fitInPlace(modificationPoint.getContextOfModificationPoint(), ingredient);
 						}
 					}
 				} else {
@@ -256,7 +253,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
 						ingredient);
 			}
-			
+
 			Stats.currentStat.incrementIngCounter(variant_id);
 
 			if (!continueSearching) {
@@ -292,43 +289,57 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			log.error("There are no locations to analyze.");
 			throw new RuntimeException();
 		}
-		log.debug("Number of locations: " + locations.size() + ", Scope "+ getIngredientSpace().getClass().getSimpleName());
-		//locations.forEach(e -> log.debug("--> ing location: "+e.getShortRepresentation()));
+		log.debug("Number of locations: " + locations.size() + ", Scope "
+				+ getIngredientSpace().getClass().getSimpleName());
+		// locations.forEach(e -> log.debug("--> ing location:
+		// "+e.getShortRepresentation()));
 
 		// Use locations to get T elements.
+		int i = 0;
 		Map elements;
 		if (cls.equals(CtType.class)) {
-			elements = locations.stream()
-					.flatMap(l -> l.getElements(new TypeFilter<CtType>(CtType.class) {
-						@Override
-						public boolean matches(CtType element) {
-							// Definition of "top level" CtType.
-							return element.getParent(CtType.class) == null
-									&& !element.isImplicit();
-						}
-					}).stream())
-					.distinct()
-					.collect(Collectors.toMap(e -> getkey((T) e), e -> e));
+			elements = locations.stream().flatMap(l -> l.getElements(new TypeFilter<CtType>(CtType.class) {
+				@Override
+				public boolean matches(CtType element) {
+					// Definition of "top level" CtType.
+					return element.getParent(CtType.class) == null && !element.isImplicit();
+				}
+			}).stream()).distinct().collect(Collectors.toMap(e -> getkey((T) e), e -> e));
 		} else if (cls.equals(CtExecutable.class)) {
-			elements = locations.stream()
-					.flatMap(l -> l.getElements(new TypeFilter<CtExecutable>(CtExecutable.class) {
-						@Override
-						public boolean matches(CtExecutable element) {
-							// Definition of "top level" CtExecutable.
-							return element.getParent(CtExecutable.class) == null
-									&& !element.isImplicit()
-									&& !(element instanceof CtAnonymousExecutable);
-						}
-					}).stream())
-					.distinct()
-					.collect(Collectors.toMap(e -> getkey((T) e), e -> e));
+		
+			elements = new HashMap<>();
+			for (CtElement location : locations) {
+				List<CtExecutable> elementsfromLocation = location
+						.getElements(new TypeFilter<CtExecutable>(CtExecutable.class) {
+							@Override
+							public boolean matches(CtExecutable element) {
+								// Definition of "top level" CtExecutable.
+								boolean t = element.getParent(CtExecutable.class) == null && !element.isImplicit()
+										&& !(element instanceof CtAnonymousExecutable);
+								return t;
+							}
+						});
+				for (CtExecutable ctExecutable : elementsfromLocation) {
+
+					CtExecutable previousValue = (CtExecutable) elements.put(getkey((T) ctExecutable), ctExecutable);
+					if (previousValue != null && !previousValue.equals(ctExecutable)) {
+						throw new RuntimeException();
+					}
+				}
+
+			}
+
 		} else {
 			log.error("Invalid clonegranularity");
 			throw new IllegalArgumentException();
 		}
-
+		int i2 = 0;
+		for (Object element : elements.keySet()) {
+			System.out.println(i2++ + "-->2" + element);
+		}
 		log.debug("Number of \"top level\" elements: " + elements.size());
-		// log.debug("\"Top level\" elements: " + elements.keySet().stream().collect(Collectors.joining(",")));
+		// log.debug("\"Top level\" elements: " +
+		// elements.keySet().stream().collect(Collectors.joining(",")));
 		Set<String> orphans = new HashSet<>(elements.keySet());
 		orphans.removeAll(key2row.keySet());
 
@@ -393,7 +404,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				IngredientProcessor<?, CtStatement> ipro = new IngredientProcessor<>(
 						new SingleStatementFixSpaceProcessor());
 				statements = ipro.createFixSpace(element);
-				//log.debug(element.getSimpleName() + " from simlist, statements: (" + statements.size() + ")");
+				// log.debug(element.getSimpleName() + " from simlist,
+				// statements: (" + statements.size() + ")");
 			} catch (JSAPException e) {
 				log.error(e);
 			}
@@ -421,7 +433,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		CtCodeElement element = fixspace.poll();
 		if (element == null) // ??? Can .clone receive null?
 			return null;
-		return MutationSupporter.clone(element); // ??? Is it necessary to clone?
+		return MutationSupporter.clone(element); // ??? Is it necessary to
+													// clone?
 	}
 }
 
