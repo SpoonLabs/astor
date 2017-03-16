@@ -45,6 +45,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.util.StringUtil;
 
@@ -224,10 +225,9 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 						log.debug("Ingredient before transformation: " + ingredient);
 						List<Map<String, CtVariable>> allCombinations = VariableResolver
 								.findAllVarMappingCombination(mapping.getMappedVariables());
-						// TODO: here, we take the first one, what should we
-						// do with the rest?
+				
 						if (allCombinations.size() > 0) {
-							Map<String, CtVariable> selectedTransformation = allCombinations.get(0);
+							Map<String, CtVariable> selectedTransformation = obtainCombination(allCombinations);
 							log.debug("Transformation proposed: " + selectedTransformation);
 							// The ingredient is cloned, so we can modify
 							// its variables
@@ -267,6 +267,16 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement()
 				+ ", search space size: " + searchSpaceSize);
 		return null;
+	}
+	
+	/**
+	 * Return a combination of variables.
+	 * @param allCombinations
+	 * @return
+	 */
+	public Map<String, CtVariable> obtainCombination(List<Map<String, CtVariable>> allCombinations) {
+		int value = RandomManager.nextInt(allCombinations.size());
+		return allCombinations.get(value);
 	}
 
 	private String getkey(T element) {
