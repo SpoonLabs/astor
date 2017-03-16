@@ -23,6 +23,8 @@ public class FinderTestCases {
 	protected static Logger log = Logger.getLogger(FinderTestCases.class.getName());
 	
 	public  static List<String> findTestCasesForRegression(String classPath, ProjectRepairFacade projectFacade) {
+		String cp = projectFacade.getProperties().getDependenciesString();
+		classPath +=File.pathSeparator + cp;
 		String[] testClassesRegression = new TestClassesFinder().findIn(classpathFrom(classPath), false);
 		
 		List<String> tcregression =  Arrays.asList(testClassesRegression);
