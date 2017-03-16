@@ -225,7 +225,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 						log.debug("Ingredient before transformation: " + ingredient);
 						List<Map<String, CtVariable>> allCombinations = VariableResolver
 								.findAllVarMappingCombination(mapping.getMappedVariables());
-				
+
 						if (allCombinations.size() > 0) {
 							Map<String, CtVariable> selectedTransformation = obtainCombination(allCombinations);
 							log.debug("Transformation proposed: " + selectedTransformation);
@@ -268,15 +268,21 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				+ ", search space size: " + searchSpaceSize);
 		return null;
 	}
-	
+
 	/**
 	 * Return a combination of variables.
+	 * 
 	 * @param allCombinations
 	 * @return
 	 */
 	public Map<String, CtVariable> obtainCombination(List<Map<String, CtVariable>> allCombinations) {
-		int value = RandomManager.nextInt(allCombinations.size());
-		return allCombinations.get(value);
+
+		if (ConfigurationProperties.getPropertyBool("randomcombination")) {
+			int value = RandomManager.nextInt(allCombinations.size());
+			return allCombinations.get(value);
+		} else {
+			return allCombinations.get(0);
+		}
 	}
 
 	private String getkey(T element) {
@@ -316,7 +322,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				}
 			}).stream()).distinct().collect(Collectors.toMap(e -> getkey((T) e), e -> e));
 		} else if (cls.equals(CtExecutable.class)) {
-		
+
 			elements = new HashMap<>();
 			for (CtElement location : locations) {
 				List<CtExecutable> elementsfromLocation = location
