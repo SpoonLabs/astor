@@ -72,7 +72,7 @@ public abstract class JUnitExecutorProcess {
 			pb.directory(new File((ConfigurationProperties.getProperty("location"))));
 			long t_start = System.currentTimeMillis();
 			p = pb.start();
-
+		
 			BufferedWriter p_stdin = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
 
 			try {
@@ -114,13 +114,12 @@ public abstract class JUnitExecutorProcess {
 			}
 
 			TestResult tr = getTestResult(p);
-			p.destroy();
-
+			p.destroyForcibly();
 			return tr;
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
 			log.info("The Process that runs JUnit test cases had problems: " + ex.getMessage());
 			if (p != null)
-				p.destroy();
+				p.destroyForcibly();
 		}
 		return null;
 	}

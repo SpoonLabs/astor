@@ -62,14 +62,14 @@ public abstract class JUnitExecutorProcessWait extends JUnitExecutorProcess {
 			long t_end = System.currentTimeMillis();
 
 			TestResult tr = getTestResult(p);
-			p.destroy();
+			p.destroyForcibly();
 			log.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
 
 			return tr;
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
 			log.error("The Process that runs JUnit test cases had problems: " + ex.getMessage());
 			if (p != null)
-				p.destroy();
+				p.destroyForcibly();
 		}
 		return null;
 	}

@@ -243,12 +243,12 @@ public class EvoSuiteFacade {
 
 			String out = readOut(p);
 			logger.debug("ES generation output: \n "+out);
-			p.destroy();
+			p.destroyForcibly();
 			return true;
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
 			logger.error(ex.getMessage(), ex);
 			if (p != null)
-				p.destroy();
+				p.destroyForcibly();
 		}
 		return false;
 	}

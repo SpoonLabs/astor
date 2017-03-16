@@ -103,7 +103,7 @@ public class PatchDiffCalculator {
 					dd += line + "\n";
 
 			}
-			process.destroy();
+			process.destroyForcibly();
 			return dd;
 		} catch (Exception e) {
 			e.printStackTrace();

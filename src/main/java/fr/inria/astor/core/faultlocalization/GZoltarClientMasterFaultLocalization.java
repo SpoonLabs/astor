@@ -118,7 +118,7 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 			logger.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
 
 			readOut(p);
-			p.destroy();
+			p.destroyForcibly();
 
 			long end = new Date().getTime();
 
@@ -133,7 +133,7 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
 			logger.info("The Process that runs JUnit test cases had problems: " + ex.getMessage());
 			if (p != null)
-				p.destroy();
+				p.destroyForcibly();
 		}
 		return null;
 	}
