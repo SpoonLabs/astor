@@ -1,6 +1,5 @@
 package fr.inria.astor.approaches.exhaustive;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -9,14 +8,12 @@ import java.util.List;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
-import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
@@ -124,7 +121,9 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 	protected List<OperatorInstance> createInstancesOfOperators(SuspiciousModificationPoint modificationPoint) {
 		
 		log.debug("Creating instance of MP: "+modificationPoint.getCodeElement().getShortRepresentation());
-		ingredientSpace.defineSpace(originalVariant);
+		
+		if(ingredientSpace != null)
+			ingredientSpace.defineSpace(originalVariant);
 		
 		List<OperatorInstance> ops = new ArrayList<>();
 		AstorOperator[] operators = getOperatorSpace().values();

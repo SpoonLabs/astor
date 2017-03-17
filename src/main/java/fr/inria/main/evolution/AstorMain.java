@@ -12,10 +12,9 @@ import fr.inria.astor.approaches.exhaustive.ExhaustiveAstorEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.approaches.jkali.JKaliEngine;
-import fr.inria.astor.approaches.mutRepair.MutRepairSpace;
+import fr.inria.astor.approaches.mutRepair.MutationalExhaustiveRepair;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
-import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
@@ -30,7 +29,6 @@ import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.loop.spaces.operators.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
-import fr.inria.astor.core.manipulation.filters.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
@@ -130,17 +128,11 @@ public class AstorMain extends AbstractMain {
 			IngredientSearchStrategy ingStrategy = retrieveIngredientStrategy(ingredientspace);
 
 			((JGenProg) astorCore).setIngredientStrategy(ingStrategy);
+			astorCore.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
-			astorCore = new ExhaustiveSearchEngine(mutSupporter, projectFacade);
-			if (operatorSpace == null)
-				operatorSpace = new MutRepairSpace();
-			// ConfigurationProperties.properties.setProperty("stopfirst",
-			// "false");
-			ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
-			ConfigurationProperties.properties.setProperty("population", "1");
-			ingredientProcessors.clear();
-			ingredientProcessors.add(new IFConditionFixSpaceProcessor());
+			astorCore = new MutationalExhaustiveRepair(mutSupporter, projectFacade);
+		
 		} else if (ExecutionMode.EXASTOR.equals(mode)) {
 			astorCore = new ExhaustiveAstorEngine(mutSupporter, projectFacade);
 			if (operatorSpace == null)
@@ -164,7 +156,8 @@ public class AstorMain extends AbstractMain {
 			IngredientSearchStrategy ingStrategy = null;// retrieveIngredientStrategy(ingredientspace);
 
 			((ExhaustiveAstorEngine) astorCore).setIngredientSpace(ingredientspace);
-
+			astorCore.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
+			
 		} else {
 			// If the execution mode is any of the predefined, Astor
 			// interpretates as
@@ -182,13 +175,13 @@ public class AstorMain extends AbstractMain {
 		} else {
 			//throw new Exception("The operator Space cannot be null");
 		}
-		
-		astorCore.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
-		
+
 
 		//Loading extension Points
 		astorCore.loadExtensionPoints();
 		
+		// Initialize Population
+		astorCore.createInitialPopulation();
 		
 		return astorCore;
 
