@@ -986,8 +986,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		// process)
 		this.setProgramValidator(new ProcessValidator());
 
-		// Initialize Population
-		this.createInitialPopulation();
 
 		// After initializing population, we set up specific validation
 		// mechanism
