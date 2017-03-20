@@ -358,7 +358,7 @@ public class JGenProg extends AstorCoreEngine {
 		IngredientSpace ingredientspace = PlugInLoader.loadIngredientSpace(ingredientProcessors);
 
 		IngredientSearchStrategy ingStrategy = (IngredientSearchStrategy) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, 
-				new Class[]{IngredientSpace.class}, new Object[]{jpgoperatorSpace}); //createCustomIngredientStrategy(strategy, ingredientspace);
+				new Class[]{IngredientSpace.class}, new Object[]{ingredientspace});
 	
 		if(ingStrategy == null){
 			ingStrategy =  new EfficientIngredientStrategy(ingredientspace);
