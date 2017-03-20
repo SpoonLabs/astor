@@ -5,6 +5,7 @@ import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.PopulationController;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
@@ -25,7 +26,8 @@ public enum ExtensionPoints {
 	SOLUTION_SORT_CRITERION("patchprioritization",SolutionVariantSortCriterion.class), 
 	VALIDATION("validation",ProgramValidator.class), //
 	CUSTOM_OPERATOR("customop",AstorOperator.class),//
-	OPERATORS_SPACE("operatorspace",OperatorSpace.class);
+	OPERATORS_SPACE("operatorspace",OperatorSpace.class),//
+	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy",IngredientSearchStrategy.class);//
 	
 	String identifier;
 	Class<?> _class;

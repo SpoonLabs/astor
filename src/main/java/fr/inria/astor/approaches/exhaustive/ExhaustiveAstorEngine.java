@@ -7,18 +7,24 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
+import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
+import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.code.CtCodeElement;
 
 /**
@@ -45,10 +51,10 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 		// For each variant (one is enough)
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 		int maxGenerations = ConfigurationProperties.getPropertyInt("maxGeneration");
-		//for stats
+		// for stats
 		int modifPointsAnalyzed = 0;
 		int operatorExecuted = 0;
-		
+
 		int totalmodfpoints = variants.get(0).getModificationPoints().size();
 		for (ProgramVariant parentVariant : variants) {
 
@@ -56,25 +62,24 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 			// statement
 			// TODO: let's be sure that is order by suspicousness
 			for (ModificationPoint modifPoint : parentVariant.getModificationPoints()) {
-				
-				modifPointsAnalyzed ++;
-				
-				log.debug("location to modify: "+modifPoint);
+
+				modifPointsAnalyzed++;
+
+				log.debug("location to modify: " + modifPoint);
 
 				// We create all operators to apply in the modifpoint
 				List<OperatorInstance> operatorInstances = createInstancesOfOperators(
 						(SuspiciousModificationPoint) modifPoint);
 
-				System.out.println("List of operators ("+operatorInstances.size()+") : "+operatorInstances);
-				
+				System.out.println("List of operators (" + operatorInstances.size() + ") : " + operatorInstances);
+
 				if (operatorInstances == null || operatorInstances.isEmpty())
 					continue;
-				
-				
+
 				for (OperatorInstance pointOperation : operatorInstances) {
-					
+
 					operatorExecuted++;
-					
+
 					// We validate the variant after applying the operator
 					ProgramVariant solutionVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
 							generationsExecuted);
@@ -82,13 +87,13 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 					applyNewMutationOperationToSpoonElement(pointOperation);
 
-					log.debug("Operator:\n "+pointOperation);
+					log.debug("Operator:\n " + pointOperation);
 					boolean solution = processCreatedVariant(solutionVariant, generationsExecuted);
 
 					if (solution) {
 						this.solutions.add(solutionVariant);
-						if (ConfigurationProperties.getPropertyBool("stopfirst")){
-							log.debug(" modpoint analyzed "+modifPointsAnalyzed + ", operators "+operatorExecuted);
+						if (ConfigurationProperties.getPropertyBool("stopfirst")) {
+							log.debug(" modpoint analyzed " + modifPointsAnalyzed + ", operators " + operatorExecuted);
 							return;
 						}
 					}
@@ -98,19 +103,20 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 					if (!belowMaxTime(dateInitEvolution, maxMinutes)) {
 						log.debug("Max time reached");
-							return;
+						return;
 					}
-					
+
 					if (maxGenerations <= operatorExecuted) {
-						log.debug("Max operator Applied "+operatorExecuted);
-						log.debug("modpoint:"+modifPointsAnalyzed+ ":all:"+totalmodfpoints + ":operators:"+operatorExecuted);
-							return;
+						log.debug("Max operator Applied " + operatorExecuted);
+						log.debug("modpoint:" + modifPointsAnalyzed + ":all:" + totalmodfpoints + ":operators:"
+								+ operatorExecuted);
+						return;
 					}
 				}
 			}
 		}
-		System.out.println("modpoint:"+modifPointsAnalyzed+ ":all:"+totalmodfpoints + ":operators:"+operatorExecuted);
-		
+		System.out.println(
+				"modpoint:" + modifPointsAnalyzed + ":all:" + totalmodfpoints + ":operators:" + operatorExecuted);
 
 	}
 
@@ -119,36 +125,36 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 	 * @return
 	 */
 	protected List<OperatorInstance> createInstancesOfOperators(SuspiciousModificationPoint modificationPoint) {
-		
-		log.debug("Creating instance of MP: "+modificationPoint.getCodeElement().getShortRepresentation());
-		
-		if(ingredientSpace != null)
+
+		log.debug("Creating instance of MP: " + modificationPoint.getCodeElement().getShortRepresentation());
+
+		if (ingredientSpace != null)
 			ingredientSpace.defineSpace(originalVariant);
-		
+
 		List<OperatorInstance> ops = new ArrayList<>();
 		AstorOperator[] operators = getOperatorSpace().values();
 		for (AstorOperator astorOperator : operators) {
-			
+
 			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
-				log.debug("Applying operator "+astorOperator + " from "+ Arrays.toString(operators));
+				log.debug("Applying operator " + astorOperator + " from " + Arrays.toString(operators));
 				if (astorOperator.needIngredient()) {
 					createInstance(modificationPoint, ops, astorOperator);
-				}else{//if does not need ingredients
+				} else {// if does not need ingredients
 					List<OperatorInstance> operatorInstances = astorOperator.createOperatorInstance(modificationPoint);
 					ops.addAll(operatorInstances);
-					
+
 				}
 			}
 		}
-	
-		log.debug("\nNumber modififications to apply: "+ops.size());
+
+		log.debug("\nNumber modififications to apply: " + ops.size());
 		return ops;
 
 	}
 
 	public void createInstance(SuspiciousModificationPoint modificationPoint, List<OperatorInstance> ops,
 			AstorOperator astorOperator) {
-		List<CtCodeElement>  ingredients = null;
+		List<CtCodeElement> ingredients = null;
 		if (astorOperator instanceof ReplaceOp) {
 			String type = modificationPoint.getCodeElement().getClass().getSimpleName();
 			ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
@@ -157,36 +163,55 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 			ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
 
 		}
-		
+
 		log.debug("Number of ingredients " + ingredients.size());
 		for (CtCodeElement ingredient : ingredients) {
 
 			List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
-			
-			if(!VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
-					ingredient))
+
+			if (!VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(), ingredient))
 				continue;
-			
+
 			if (instances != null && instances.size() > 0) {
-				
+
 				for (OperatorInstance operatorInstance : instances) {
-					
+
 					operatorInstance.setModified(ingredient);
-					//operatorInstance.setIngredientScope(ingredient.getScope());
-					
-					//System.out.println("-->"+operatorInstance);
+					// operatorInstance.setIngredientScope(ingredient.getScope());
+
+					// System.out.println("-->"+operatorInstance);
 					ops.add(operatorInstance);
 				}
 			}
 		}
 	}
-	
+
 	public IngredientSpace getIngredientSpace() {
 		return ingredientSpace;
 	}
 
 	public void setIngredientSpace(IngredientSpace ingredientSpace) {
 		this.ingredientSpace = ingredientSpace;
+	}
+
+	@Override
+	public void loadExtensionPoints() throws Exception {
+		super.loadExtensionPoints();
+
+		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
+		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
+
+		OperatorSpace jpgoperatorSpace = PlugInLoader.loadOperatorSpace();
+		if (jpgoperatorSpace == null)
+			jpgoperatorSpace = new jGenProgSpace();
+		this.setOperatorSpace(jpgoperatorSpace);
+
+		IngredientSpace ingredientspace = PlugInLoader.loadIngredientSpace(ingredientProcessors);
+
+		this.setIngredientSpace(ingredientspace);
+		this.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
+		this.setOperatorSpace(operatorSpace);
+
 	}
 
 }

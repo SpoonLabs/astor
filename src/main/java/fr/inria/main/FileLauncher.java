@@ -70,17 +70,16 @@ public class FileLauncher {
 			
 			}
 			
-			String[] cps =  srs.get(new Integer(max).toString()).toString().split(File.pathSeparator);
-			for(String cp : cps ){
-				libsS += (path)+File.separator+cp+File.pathSeparator;
-				System.out.println(cp);
-			}
-			
-			//
 			for (String odep : otherDep) {
 				libsS+=odep+File.pathSeparator;
 			}
-			//
+			
+			String[] cps =  srs.get(new Integer(max).toString()).toString().split(File.pathSeparator);
+			for(String cp : cps ){
+			//	libsS += (path)+File.separator+cp+File.pathSeparator;
+				System.out.println(cp);
+			}
+			
 			
 			String pack= (String) jsonObject.get("package");
 			
