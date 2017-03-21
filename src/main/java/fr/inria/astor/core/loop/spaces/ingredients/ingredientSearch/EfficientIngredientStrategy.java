@@ -19,6 +19,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.util.StringUtil;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
@@ -133,9 +134,11 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 					log.debug("Vars not mapped: " + mapping.getNotMappedVariables());
 				}
 			} else {
-				// default behavior
-				continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
+				boolean fit = VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
 						elementFromIngredient);
+				log.debug("fit? "+fit +" "+  StringUtil.trunc(elementFromIngredient));
+			
+				continueSearching = !fit;
 			}
 
 			Stats.currentStat.incrementIngCounter(variant_id);
@@ -144,9 +147,8 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(),
 						elementFromIngredient);
 
-				// int ingCounter =
-				// Stats.currentStat.saveIngCounter(variant_id);
-				int ingCounter = Stats.currentStat.temporalIngCounter.get(variant_id);
+			
+				int ingCounter = Stats.currentStat.temporalIngCounterByPatch.get(variant_id);
 				log.debug("---attempts on ingredient space: " + ingCounter);
 
 				return new Ingredient(elementFromIngredient, scope);
@@ -154,7 +156,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 		}
 
 		log.debug("--- no mutation left to apply in element "
-				+ modificationPoint.getCodeElement().getShortRepresentation() + ", search space size: "
+				+ StringUtil.trunc(modificationPoint.getCodeElement().getShortRepresentation()) + ", search space size: "
 				+ elementsFromFixSpace);
 		return null;
 
@@ -263,13 +265,20 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 			prev = new ArrayList<String>();
 			prev.add(fix);
 			appliedCache.put(lockey, prev);
+			log.debug("\nNew1: "+StringUtil.trunc(fix)
+					+ " in "+StringUtil.trunc(lockey));
 			return false;
 		} else {
 			// The element has mutation applied
-			if (prev.contains(fix))
+			if (prev.contains(fix)){
+				log.debug("\nAlready: "+StringUtil.trunc(fix)
+						+ " in "+StringUtil.trunc(lockey));
 				return true;
+			}
 			else {
 				prev.add(fix);
+				log.debug("\nNew2: "+StringUtil.trunc(fix)
+						+ " in "+StringUtil.trunc(lockey));
 				return false;
 			}
 		}

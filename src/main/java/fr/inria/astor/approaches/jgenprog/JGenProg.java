@@ -3,6 +3,7 @@ package fr.inria.astor.approaches.jgenprog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -28,6 +29,8 @@ import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.stats.Stats.Pair;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.declaration.CtElement;
@@ -326,9 +329,15 @@ public class JGenProg extends AstorCoreEngine {
 	@Override
 	public void showResults() {
 		super.showResults();
-		log.info("\nsuccessful_ing_attempts ("+this.currentStat.ingAttemptsSuccessfulPatches.size()+ "): "+this.currentStat.ingAttemptsSuccessfulPatches);
-		log.info("\nfailing_ing_attempts ("+this.currentStat.ingAttemptsFailingPatches.size()+ "): "+this.currentStat.ingAttemptsFailingPatches);
+		log.info("\nsuccessful_ing_attempts (#trials "+this.currentStat.ingAttemptsSuccessfulPatches.size()+ ", totalAttps "+Stats.sum(currentStat.ingAttemptsSuccessfulPatches)
+				+ "): "+this.currentStat.ingAttemptsSuccessfulPatches.stream().map(Pair::getAttempts).collect(Collectors.toList()));
+		log.info("\nfailing_ing_attempts (#trials "+this.currentStat.ingAttemptsFailingPatches.size()+ ", totalAttps "+Stats.sum(currentStat.ingAttemptsFailingPatches)
+				+ "): "+this.currentStat.ingAttemptsFailingPatches.stream().map(Pair::getAttempts).collect(Collectors.toList()));
 		
+		log.info("\ntotal Patch Attempts ("+this.currentStat.patch_attempts.size()+ "): "+this.currentStat.patch_attempts);
+		
+		log.info("\nsuccessful_ing_attempts_by_patch: "+this.currentStat.ingAttemptsSuccessfulPatches);
+		log.info("\nfailing_ing_attempts_by_failing: "+this.currentStat.ingAttemptsFailingPatches);
 	}
 
 

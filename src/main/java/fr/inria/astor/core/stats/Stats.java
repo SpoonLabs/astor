@@ -25,9 +25,14 @@ public class Stats {
 
 	// Ingredients
 	// Key: id, value: counter
-	public Map<Integer, Integer> temporalIngCounter = new HashedMap();
-	public List<Integer> ingAttemptsSuccessfulPatches = new ArrayList<>();
-	public List<Integer> ingAttemptsFailingPatches = new ArrayList<>();
+	public Map<Integer, Integer> temporalIngCounterByPatch = new HashedMap();
+	public List<Pair> ingAttemptsSuccessfulPatches = new ArrayList<>();
+	public List<Pair> ingAttemptsFailingPatches = new ArrayList<>();
+	//
+
+	// 
+	public Integer temporalIngCounterUntilPatch = 0;
+	public List<Integer> patch_attempts = new ArrayList<>();
 	//
 
 	public int numberOfElementsToMutate = 0;
@@ -160,19 +165,20 @@ public class Stats {
 	 */
 	public int incrementIngCounter(Integer idprogvariant) {
 		Integer counter = 0;
-		if (!temporalIngCounter.containsKey(idprogvariant))
-			temporalIngCounter.put(idprogvariant, new Integer(0));
+		if (!temporalIngCounterByPatch.containsKey(idprogvariant))
+			temporalIngCounterByPatch.put(idprogvariant, new Integer(0));
 		else {
-			counter = temporalIngCounter.get(idprogvariant);
+			counter = temporalIngCounterByPatch.get(idprogvariant);
 		}
 		counter++;
-		temporalIngCounter.put(idprogvariant, counter);
-		//log.debug("Incrementing ingredient counter for variant "+idprogvariant + " to "+counter);
+		temporalIngCounterByPatch.put(idprogvariant, counter);
+		// log.debug("Incrementing ingredient counter for variant
+		// "+idprogvariant + " to "+counter);
 		return counter;
 	}
 
 	public void initializeIngCounter(Integer idprogvariant) {
-		temporalIngCounter.put(idprogvariant, new Integer(0));
+		temporalIngCounterByPatch.put(idprogvariant, new Integer(0));
 	}
 
 	/**
@@ -184,10 +190,10 @@ public class Stats {
 	 */
 	public int getIngCounter(Integer idprogvariant) {
 
-		if (!temporalIngCounter.containsKey(idprogvariant))
+		if (!temporalIngCounterByPatch.containsKey(idprogvariant))
 			return 0;
 		else {
-			return temporalIngCounter.get(idprogvariant);
+			return temporalIngCounterByPatch.get(idprogvariant);
 		}
 
 	}
@@ -212,25 +218,67 @@ public class Stats {
 		storeIngredientCounter(idprogvariant, ingAttemptsFailingPatches);
 	}
 
-	private Integer storeIngredientCounter(Integer idprogvariant, List<Integer> ingAttempts) {
-		Integer counter = temporalIngCounter.get(idprogvariant);
+	private Integer storeIngredientCounter(Integer idprogvariant, List<Pair> ingAttempts) {
+		Integer counter = temporalIngCounterByPatch.get(idprogvariant);
 		if (counter == null) {
 			log.debug("Ingredient counter is Zero");
-			ingAttempts.add(0);
-		} else {
-			ingAttempts.add(counter);
+			counter = 0;
 		}
-		temporalIngCounter.put(idprogvariant, 0);
+		ingAttempts.add(new Pair(idprogvariant,counter));
+		temporalIngCounterByPatch.put(idprogvariant, 0);
+		//Stores the number of attempts (from a success or failing patch creation until finding a valid patch
+		temporalIngCounterUntilPatch+=counter;
+		
 		return counter;
+	}
+
+	/**Save the counter and reset it.
+	 * 
+	 * @param idprogvariant
+	 */
+	public void storePatchAttempts(Integer idprogvariant) {
+	
+		log.debug("\nAttempts to find patch Id "+idprogvariant+": "+temporalIngCounterUntilPatch
+				+", successful "+sum(this.ingAttemptsSuccessfulPatches)
+				+", failing "+sum(this.ingAttemptsFailingPatches));
+		this.patch_attempts.add(temporalIngCounterUntilPatch);
+		this.temporalIngCounterUntilPatch = 0;
+
 	}
 
 	/**
 	 * Remove all values.
 	 */
 	public void resetIngCounter() {
-		temporalIngCounter.clear();
+		this.temporalIngCounterByPatch.clear();
+		this.temporalIngCounterUntilPatch = 0;
 		this.ingAttemptsSuccessfulPatches.clear();
 		this.ingAttemptsFailingPatches.clear();
+		this.patch_attempts.clear();
 	}
 
+	public static int sum(List<Pair> el) {
+		return el.stream().mapToInt(Pair::getAttempts).sum();
+	}
+	
+	public class Pair{
+		int pvid;
+		int attempts;
+		public Pair(int pvid, int attempts) {
+			super();
+			this.pvid = pvid;
+			this.attempts = attempts;
+		}
+		public int getPvid() {
+			return pvid;
+		}
+		public int getAttempts() {
+			return attempts;
+		}
+		public String toString(){
+			return "(pv:"+pvid+",at:"+attempts+")";
+		}
+	};
+	
 }
+

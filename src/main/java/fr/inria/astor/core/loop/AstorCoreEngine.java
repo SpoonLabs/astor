@@ -429,6 +429,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
 		Stats.currentStat.storeIngCounterFromSuccessPatch(variant_id);
+		Stats.currentStat.storePatchAttempts(variant_id);
 	}
 
 	/**
@@ -985,7 +986,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		// We do the first validation using the standard validation (test suite
 		// process)
 		this.setProgramValidator(new ProcessValidator());
-
 
 		// After initializing population, we set up specific validation
 		// mechanism
