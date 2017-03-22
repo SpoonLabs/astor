@@ -93,8 +93,11 @@ public abstract class AbstractMain {
 
 		options.addOption("reintroduce", true,
 				"(Optional) indicates whether it reintroduces the original program in each generation (value: original), "
-						+ " introduces parent variant in next generation (value: parents), "
-						+ "introduces origina and parents (value: original-parents) or none (value: none). (default: original-parents)");
+						+ " reintroduces parent variant in next generation (value: parents), "
+						+ " reintroduce the solution in the next generation (value: solutions) "
+						+ " reintroduces origina and parents (value: original-parents) "
+						+ "or do not reintroduce nothing (value: none)."
+						+ "Default: "+ConfigurationProperties.properties.getProperty("reintroduce"));
 
 		options.addOption("tmax1", true,
 				"(Optional) maximum time (in miliseconds) for validating the failing test case ");
