@@ -152,7 +152,8 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 
 				int ingCounter = Stats.currentStat.temporalIngCounterByPatch.get(variant_id);
 				log.debug("---attempts on ingredient space: " + ingCounter);
-
+				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, ingCounter);
+				
 				return new Ingredient(elementFromIngredient, scope);
 			}
 		}//End while

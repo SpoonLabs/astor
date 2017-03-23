@@ -338,6 +338,8 @@ public class JGenProg extends AstorCoreEngine {
 		
 		log.info("\nsuccessful_ing_attempts_by_patch: "+this.currentStat.ingAttemptsSuccessfulPatches);
 		log.info("\nfailing_ing_attempts_by_patch: "+this.currentStat.ingAttemptsFailingPatches);
+		
+		log.info("\npvariants_with_transformed_ingredients: "+this.currentStat.successfulTransformedIngredients);
 	}
 
 

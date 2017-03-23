@@ -47,6 +47,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.stats.Stats.Pair;
 import fr.inria.astor.util.StringUtil;
 
 /**
@@ -252,16 +253,19 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				}
 			}
 
-			boolean fit = VariableResolver
+			boolean fits = VariableResolver
 					.fitInPlace(modificationPoint.getContextOfModificationPoint(), ingredient);
-			log.debug("fit? "+fit +" "+  StringUtil.trunc(ingredient));
+			log.debug("fit? "+fits +" "+  StringUtil.trunc(ingredient));
 			
-			continueSearching = !fit;
+			//we continue if the ingredient does not fit
+			continueSearching = !fits;
 			
-			if (!continueSearching) {
+			if (fits) {
 				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
 				int ingCounter = Stats.currentStat.getIngCounter(variant_id);
 				log.debug("---attempts on ingredient space: " + ingCounter);
+				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, ingCounter);
+				
 				return new Ingredient(ingredient, scope);
 			}
 		}

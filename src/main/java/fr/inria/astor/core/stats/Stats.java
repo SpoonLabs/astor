@@ -28,6 +28,7 @@ public class Stats {
 	public Map<Integer, Integer> temporalIngCounterByPatch = new HashedMap();
 	public List<Pair> ingAttemptsSuccessfulPatches = new ArrayList<>();
 	public List<Pair> ingAttemptsFailingPatches = new ArrayList<>();
+	public List<Pair> successfulTransformedIngredients = new ArrayList<>();
 	//
 
 	// 
@@ -232,6 +233,9 @@ public class Stats {
 		return counter;
 	}
 
+	public void storeSucessfulTransformedIngredient(int pvid, int attempts ){
+		this.successfulTransformedIngredients.add(new Pair(pvid, attempts));
+	}
 	/**Save the counter and reset it.
 	 * 
 	 * @param idprogvariant
