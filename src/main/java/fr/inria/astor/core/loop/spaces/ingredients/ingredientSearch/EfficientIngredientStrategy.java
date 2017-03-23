@@ -91,8 +91,11 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 				log.debug("Ingredient same that the mod point");
 				continue;
 			}
-
+		
 			boolean transformIngredient = ConfigurationProperties.getPropertyBool("transformingredient");
+			
+			Stats.currentStat.incrementIngCounter(variant_id);
+			
 			if (transformIngredient) {
 				if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
 					log.debug("The modification point  has not any var in scope");
@@ -124,36 +127,35 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 							// Otherwise -> no
 							// VariableResolver.resetIngredient(mapping,
 							// originalMap);
-							continueSearching = !VariableResolver.fitInPlace(
+							boolean fit = VariableResolver.fitInPlace(
 									modificationPoint.getContextOfModificationPoint(), elementFromIngredient);
+							continueSearching = !fit;
+							log.debug("fit? "+fit +" "+  StringUtil.trunc(elementFromIngredient));
 						}
 					}
 				} else {
 					// here maybe we can put one counter of not mapped
 					// ingredients
 					log.debug("Vars not mapped: " + mapping.getNotMappedVariables());
+					continue;
 				}
-			} else {
-				boolean fit = VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
-						elementFromIngredient);
-				log.debug("fit? "+fit +" "+  StringUtil.trunc(elementFromIngredient));
-			
-				continueSearching = !fit;
 			}
 
-			Stats.currentStat.incrementIngCounter(variant_id);
-
-			if (!continueSearching) {
+			boolean fit = VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
+					elementFromIngredient);
+			log.debug("fit? "+fit +" "+  StringUtil.trunc(elementFromIngredient));
+			continueSearching = !fit;
+		
+			if (fit) {
 				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(),
 						elementFromIngredient);
 
-			
 				int ingCounter = Stats.currentStat.temporalIngCounterByPatch.get(variant_id);
 				log.debug("---attempts on ingredient space: " + ingCounter);
 
 				return new Ingredient(elementFromIngredient, scope);
 			}
-		}
+		}//End while
 
 		log.debug("--- no mutation left to apply in element "
 				+ StringUtil.trunc(modificationPoint.getCodeElement().getShortRepresentation()) + ", search space size: "

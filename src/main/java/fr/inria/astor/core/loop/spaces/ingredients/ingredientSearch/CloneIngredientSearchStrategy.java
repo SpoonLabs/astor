@@ -206,6 +206,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				continue;
 			}
 
+			Stats.currentStat.incrementIngCounter(variant_id);
+			
 			boolean transformIngredient = ConfigurationProperties.getPropertyBool("transformingredient");
 			if (transformIngredient) {
 				if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
@@ -239,23 +241,23 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 							// Otherwise -> no
 							// VariableResolver.resetIngredient(mapping,
 							// originalMap);
-							continueSearching = !VariableResolver
-									.fitInPlace(modificationPoint.getContextOfModificationPoint(), ingredient);
+							
 						}
 					}
 				} else {
 					// here maybe we can put one counter of not mapped
 					// ingredients
 					log.debug("Vars not mapped: " + mapping.getNotMappedVariables());
+					continue;
 				}
-			} else {
-				// default behavior
-				continueSearching = !VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
-						ingredient);
 			}
 
-			Stats.currentStat.incrementIngCounter(variant_id);
-
+			boolean fit = VariableResolver
+					.fitInPlace(modificationPoint.getContextOfModificationPoint(), ingredient);
+			log.debug("fit? "+fit +" "+  StringUtil.trunc(ingredient));
+			
+			continueSearching = !fit;
+			
 			if (!continueSearching) {
 				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
 				int ingCounter = Stats.currentStat.getIngCounter(variant_id);
