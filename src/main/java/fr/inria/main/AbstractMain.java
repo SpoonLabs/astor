@@ -18,6 +18,7 @@ import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.loop.population.FitnessFunction;
+import fr.inria.astor.core.loop.population.PopulationConformation;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
@@ -92,11 +93,14 @@ public abstract class AbstractMain {
 						+ ConfigurationProperties.properties.getProperty("maxsuspcandidates"));
 
 		options.addOption("reintroduce", true,
-				"(Optional) indicates whether it reintroduces the original program in each generation (value: original), "
-						+ " reintroduces parent variant in next generation (value: parents), "
-						+ " reintroduce the solution in the next generation (value: solutions) "
+				"(Optional) indicates whether it reintroduces the original program in each generation (value: "
+				+PopulationConformation.ORIGINAL.toString()+ "), "
+						+ " reintroduces parent variant in next generation (value: "
+						+PopulationConformation.PARENTS.toString()+ "), "
+						+ " reintroduce the solution in the next generation (value: "
+						+PopulationConformation.SOLUTIONS.toString()	+ ") "
 						+ " reintroduces origina and parents (value: original-parents) "
-						+ "or do not reintroduce nothing (value: none)."
+						+ "or do not reintroduce nothing (value: none).  More than one option can be written, separated by: "+File.pathSeparator
 						+ "Default: "+ConfigurationProperties.properties.getProperty("reintroduce"));
 
 		options.addOption("tmax1", true,

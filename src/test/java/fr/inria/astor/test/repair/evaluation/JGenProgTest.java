@@ -17,9 +17,11 @@ import org.junit.Test;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.loop.population.PopulationConformation;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -106,8 +108,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 50;
 		String[] args = commandMath70(dep, out,generations);
-		System.out.println(Arrays.toString(args));
-		main1.execute(args);
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-stopfirst", "false");
+		
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
@@ -221,7 +226,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-stopfirst", "false",//two solutions
 				"-maxtime", "10",
 				"-population","1",
-				"-reintroduce","parents"
+				"-reintroduce",PopulationConformation.PARENTS.toString()
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -251,7 +256,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-stopfirst", "false",//two solutions
 				"-maxtime", "10",
 				"-population","1",
-				"-reintroduce","parents-solutions"//Here we test.
+				"-reintroduce",PopulationConformation.PARENTS.toString()
+				+File.pathSeparator+PopulationConformation.SOLUTIONS.toString()//Here we test.
 
 		};
 		System.out.println(Arrays.toString(args));

@@ -42,7 +42,7 @@ public class TestCaseBasedFitnessPopulationController implements PopulationContr
 
 		// If parents can be evolved, we add it to the new population.
 		// Otherwise, they are discarded.
-		if (ConfigurationProperties.getProperty("reintroduce").contains("parents")) {
+		if (ConfigurationProperties.getProperty("reintroduce").contains(PopulationConformation.PARENTS.toString())) {
 			newPopulation.addAll(parentVariants);
 		}
 
@@ -67,7 +67,7 @@ public class TestCaseBasedFitnessPopulationController implements PopulationContr
 
 		// If solution can be evolved, we keep them, otherwise, they are
 		// discarded.
-		if (!ConfigurationProperties.getProperty("reintroduce").contains("solutions")) {
+		if (!ConfigurationProperties.getProperty("reintroduce").contains(PopulationConformation.SOLUTIONS.toString())) {
 			newPopulation.removeAll(solutionsFromGeneration);
 		}
 
@@ -83,7 +83,7 @@ public class TestCaseBasedFitnessPopulationController implements PopulationContr
 		//
 		// If the original variant has to be reintroduced on each generation, we
 		// remove the "worst" variant from those selected in the previous step.
-		if (ConfigurationProperties.getProperty("reintroduce").contains("original")) {
+		if (ConfigurationProperties.getProperty("reintroduce").contains(PopulationConformation.ORIGINAL.toString())) {
 			if (!newPopulation.isEmpty()) {
 				// now replace for the "worse" child
 				newPopulation.remove(newPopulation.size() - 1);
