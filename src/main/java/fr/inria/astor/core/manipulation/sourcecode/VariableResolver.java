@@ -749,15 +749,17 @@ public class VariableResolver {
 			return;
 		}
 
-		// Get the variable to map 
+		// Get the variable to map
 		VarAccessWrapper currentVar = varsNamesToCombine.get(indexVar);
 		// get all possibles variables to replace
 		List<CtVariable> mapped = mappedVars.get(currentVar);
 
 		// If we have already analyze the variales
 		if (currentCombination.containsKey(currentVar.getVar().getVariable().getSimpleName())) {
-			findAllVarMappingCombination(mappedVars, varsNamesToCombine, indexVar + 1, currentCombination, allCombinations);
+			findAllVarMappingCombination(mappedVars, varsNamesToCombine, indexVar + 1, currentCombination,
+					allCombinations);
 		} else {//
+			int numberCombination = 0;
 			// for each mapping candidate
 			for (CtVariable varFromMap : mapped) {
 				// we create the new var combination from the previous one
@@ -765,10 +767,16 @@ public class VariableResolver {
 				// we add the map for the variable to the new combination
 				newCombination.put(currentVar.getVar().getVariable().getSimpleName(), varFromMap);
 				// we call recursive to continue mapping the remaining variables
-				findAllVarMappingCombination(mappedVars, varsNamesToCombine, indexVar + 1, newCombination, allCombinations);
+				findAllVarMappingCombination(mappedVars, varsNamesToCombine, indexVar + 1, newCombination,
+						allCombinations);
+				numberCombination++;
+				// we want a given number of combinations of each var.
+				// when it reaches this number, it stops continue finding new
+				// combinations.
+				if (numberCombination == ConfigurationProperties.getPropertyInt("maxVarCombination")) {
+					break;
+				}
 			}
 		}
 	}
-
-
 }

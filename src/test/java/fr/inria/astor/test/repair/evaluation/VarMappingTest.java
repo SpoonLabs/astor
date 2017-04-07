@@ -25,6 +25,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
@@ -50,6 +51,10 @@ public class VarMappingTest {
 	CtElement ingredientCtElementC7 = null;
 	CtElement otherClassElementC8 = null;
 
+	ClassLoader classLoader = getClass().getClassLoader();
+	File learningDir = new File(classLoader.getResource("learningm70").getFile());
+	Class typeCloneGranularityClass = CtType.class;
+
 	@Before
 	public void setup() throws Exception {
 		engine = null;
@@ -60,22 +65,20 @@ public class VarMappingTest {
 
 		AstorMain main1 = new AstorMain();
 		MutationSupporter.factory = null;
-		ClassLoader classLoader = getClass().getClassLoader();
-		File learningDir = new File(classLoader.getResource("learningm70").getFile());
-
-		Class typeCloneGranularityClass = CtType.class;
-
+		
 		ConfigurationProperties.setProperty("clusteringfilename", "clustering_test.csv");
 		String[] args = createCommandM70(learningDir, typeCloneGranularityClass, 100, true,
-				CtClassIngredientSpace.class.getCanonicalName())
-
-		;
+				CtClassIngredientSpace.class.getCanonicalName());
 
 		log.debug(Arrays.toString(args));
 
 		main1.execute(args);
 		engine = (JGenProg) main1.getEngine();
 
+		searchCtElements();
+	}
+
+	private void searchCtElements() {
 		ProgramVariant pv = engine.getVariants().get(0);
 		// C1:.BisectionSolver l: 66,
 		c1 = pv.getModificationPoints().get(0).getCodeElement();
@@ -353,6 +356,45 @@ public class VarMappingTest {
 				//
 				"-loglevel", Level.DEBUG.toString() };
 		return args;
+	}
+	
+	/**
+	 * @throws Exception 
+	 * 
+	 */
+	@Test
+	public void testAllVarCombinationLimited() throws Exception {
+		
+		
+		String[] args = createCommandM70(learningDir, typeCloneGranularityClass, 100, true,
+				CtClassIngredientSpace.class.getCanonicalName());
+		CommandSummary cs = new CommandSummary(args);
+		//We one only one combination of variables:
+		cs.command.put("-maxVarCombination", "1");
+		
+		AstorMain main1 = new AstorMain();
+		MutationSupporter.factory = null;
+		main1.execute(cs.flat());
+		engine = (JGenProg) main1.getEngine();
+
+		searchCtElements();
+
+		assertEquals(1,(int)ConfigurationProperties.getPropertyInt("maxVarCombination"));
+		List<CtVariable> varContextC3 = VariableResolver.searchVariablesInScope(c3);//
+
+		// We try to insert C8 (a + b ...) in the place ofC3 (clearResult)
+		VarMapping vmapping2 = VariableResolver.mapVariables(varContextC3, otherClassElementC8);
+
+		List<Map<String, CtVariable>> allCombinations = VariableResolver
+				.findAllVarMappingCombination(vmapping2.getMappedVariables());
+
+		System.out.println(allCombinations);
+		
+		assertFalse(allCombinations.isEmpty());
+		//As difference of  the default case, we keep one combination
+		assertEquals(1, allCombinations.size());
+
+
 	}
 
 }

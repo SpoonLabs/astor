@@ -256,6 +256,8 @@ public abstract class AbstractMain {
 				"List of classes names that Astor instrument, separated by '"+File.pathSeparator
 				+ "' . If the argument it is not specified, Astor uses all classes from the program under repair."
 						);
+		options.addOption("maxVarCombination", true,
+				"Max number of combinations per variable out-of-scope. Default: "+ConfigurationProperties.getPropertyInt("maxVarCombination"));
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -574,7 +576,9 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("classestoinstrument"))
 			ConfigurationProperties.properties.setProperty("classestoinstrument", cmd.getOptionValue("classestoinstrument"));
 
-		
+		if (cmd.hasOption("maxVarCombination"))
+			ConfigurationProperties.properties.setProperty("maxVarCombination", cmd.getOptionValue("maxVarCombination"));
+
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();
