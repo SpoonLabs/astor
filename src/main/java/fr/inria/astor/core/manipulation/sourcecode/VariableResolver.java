@@ -704,19 +704,18 @@ public class VariableResolver {
 	 * 
 	 * @param mappedVars
 	 *            map of variables (out-of-scope) and candidate replacements of
-	 * @param currentCombination
-	 *            current combination of variables
 	 * @return
 	 */
 	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
 			Map<VarAccessWrapper, List<CtVariable>> mappedVars) {
 
+		// current combination of variables
 		List<Map<String, CtVariable>> allCombinationsOne = new ArrayList<>();
 
 		if (!mappedVars.isEmpty()) {
-			List<VarAccessWrapper> varNamesOne = new ArrayList<>(mappedVars.keySet());
+			List<VarAccessWrapper> varNamesToCombine = new ArrayList<>(mappedVars.keySet());
 
-			VariableResolver.findAllVarMappingCombination(mappedVars, varNamesOne, 0, new TreeMap<>(),
+			VariableResolver.findAllVarMappingCombination(mappedVars, varNamesToCombine, 0, new TreeMap<>(),
 					allCombinationsOne);
 		}
 		return allCombinationsOne;
@@ -729,8 +728,8 @@ public class VariableResolver {
 	 * 
 	 * @param mappedVars
 	 *            map of variables (out-of-scope) and candidate replacements of
-	 * @param varsName
-	 *            names of all variables
+	 * @param varsNamesToCombine
+	 *            names of all variables (out of scope)
 	 * @param indexVar
 	 *            current variable under analysis
 	 * @param currentCombination
@@ -739,35 +738,37 @@ public class VariableResolver {
 	 *            list that store all variable combinations
 	 */
 	public static void findAllVarMappingCombination(Map<VarAccessWrapper, List<CtVariable>> mappedVars,
-			List<VarAccessWrapper> varsName, int indexVar, Map<String, CtVariable> currentCombination,
+			List<VarAccessWrapper> varsNamesToCombine, int indexVar, Map<String, CtVariable> currentCombination,
 			List<Map<String, CtVariable>> allCombinations) {
 
 		// Stop condition
 		// If we have analyzed all variables, we add the combination to the
 		// result
-		if (varsName.size() == indexVar) {
+		if (varsNamesToCombine.size() == indexVar) {
 			allCombinations.add(currentCombination);
 			return;
 		}
 
-		// Get the variable to change
-		// CtVariableAccess currentVar = varsName.get(indexVar).getVar();
-		VarAccessWrapper currentVar = varsName.get(indexVar);
+		// Get the variable to map 
+		VarAccessWrapper currentVar = varsNamesToCombine.get(indexVar);
 		// get all possibles variables to replace
 		List<CtVariable> mapped = mappedVars.get(currentVar);
 
+		// If we have already analyze the variales
 		if (currentCombination.containsKey(currentVar.getVar().getVariable().getSimpleName())) {
-			findAllVarMappingCombination(mappedVars, varsName, indexVar + 1, currentCombination, allCombinations);
-		}
-
-		// for each mapping candidate
-		for (CtVariable varFromMap : mapped) {
-			// we create the new var combination from the previous one
-			Map<String, CtVariable> newCombination = new TreeMap<>(currentCombination);
-			// we add the map for the variable to the new combination
-			newCombination.put(currentVar.getVar().getVariable().getSimpleName(), varFromMap);
-			// we call recursive to continue mapping the remaining variables
-			findAllVarMappingCombination(mappedVars, varsName, indexVar + 1, newCombination, allCombinations);
+			findAllVarMappingCombination(mappedVars, varsNamesToCombine, indexVar + 1, currentCombination, allCombinations);
+		} else {//
+			// for each mapping candidate
+			for (CtVariable varFromMap : mapped) {
+				// we create the new var combination from the previous one
+				Map<String, CtVariable> newCombination = new TreeMap<>(currentCombination);
+				// we add the map for the variable to the new combination
+				newCombination.put(currentVar.getVar().getVariable().getSimpleName(), varFromMap);
+				// we call recursive to continue mapping the remaining variables
+				findAllVarMappingCombination(mappedVars, varsNamesToCombine, indexVar + 1, newCombination, allCombinations);
+			}
 		}
 	}
+
+
 }
