@@ -183,7 +183,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 
 		int variant_id = modificationPoint.getProgramVariant().getId();
 		Stats.currentStat.initializeIngCounter(variant_id);
-
+		//counts the number of transformations done for an ingredients.
+		int numberOfIngredientTransformationsDone = 0;
 		while (continueSearching) {
 			CtElement ingredient = getingredient(fixspace);
 			log.debug("Location to insert " + modificationPoint);
@@ -237,6 +238,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 							Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver
 									.convertIngredient(mapping, selectedTransformation);
 							log.debug("Ingredient after transformation: " + ingredient);
+							numberOfIngredientTransformationsDone++;
 							// TODO: do we need to revert the ingredient. If
 							// we try another var combination -> yes.
 							// Otherwise -> no
@@ -262,9 +264,9 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			
 			if (fits) {
 				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
-				int ingCounter = Stats.currentStat.getIngCounter(variant_id);
-				log.debug("---attempts on ingredient space: " + ingCounter);
-				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, ingCounter);
+				//int ingCounter = Stats.currentStat.getIngCounter(variant_id);
+				//log.debug("---attempts on ingredient space: " + ingCounter);
+				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, numberOfIngredientTransformationsDone);
 				
 				return new Ingredient(ingredient, scope);
 			}

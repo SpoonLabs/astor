@@ -233,8 +233,8 @@ public class Stats {
 		return counter;
 	}
 
-	public void storeSucessfulTransformedIngredient(int pvid, int attempts ){
-		this.successfulTransformedIngredients.add(new Pair(pvid, attempts));
+	public void storeSucessfulTransformedIngredient(int pvid, int transformations ){
+		this.successfulTransformedIngredients.add(new Pair(pvid, transformations));
 	}
 	/**Save the counter and reset it.
 	 * 
