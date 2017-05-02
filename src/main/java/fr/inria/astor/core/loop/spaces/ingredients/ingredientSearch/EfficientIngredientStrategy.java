@@ -66,7 +66,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 		int elementsFromFixSpace = getSpaceSize(modificationPoint, operationType);
 
 		Stats.currentStat.initializeIngCounter(variant_id);
-
+		int numberOfIngredientTransformationsDone = 0;
 		while (continueSearching && attempts < elementsFromFixSpace) {
 
 			Ingredient randomIngredient = super.getFixIngredient(modificationPoint, operationType);
@@ -115,6 +115,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 						// TODO: here, we take the first one, what should we do
 						// with the rest?
 						if (allCombinations.size() > 0) {
+							numberOfIngredientTransformationsDone++;
 							Map<String, CtVariable> selectedTransformation = allCombinations.get(0);
 							log.debug("Transformation proposed: " + selectedTransformation);
 							// The ingredient is cloned, so we can modify its
@@ -150,9 +151,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(),
 						elementFromIngredient);
 
-				int ingCounter = Stats.currentStat.temporalIngCounterByPatch.get(variant_id);
-				log.debug("---attempts on ingredient space: " + ingCounter);
-				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, ingCounter);
+				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, numberOfIngredientTransformationsDone);
 				
 				return new Ingredient(elementFromIngredient, scope);
 			}
