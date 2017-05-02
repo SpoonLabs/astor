@@ -16,7 +16,7 @@ Matias Martinez, Martin Monperrus, "ASTOR: A Program Repair Library for Java", i
      booktitle = {Proceedings of ISSTA, Demonstration Track},
      year = {2016},
     url = {https://hal.archives-ouvertes.fr/hal-01321615/document},
-   }
+    }
 
 Matias Martinez, Martin Monperrus. "ASTOR: Evolutionary Automatic Software Repair for Java". Technical Report hal-01075976, Inria; 2014. 
 
