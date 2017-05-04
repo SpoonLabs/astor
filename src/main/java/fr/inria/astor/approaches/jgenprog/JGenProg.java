@@ -93,8 +93,13 @@ public class JGenProg extends AstorCoreEngine {
 		if (this.ingredientSearchStrategy != null) {
 			this.ingredientSearchStrategy.getIngredientSpace().defineSpace(originalVariant);
 		}
-
-		 setFitnessOfPopulation();
+		if(ConfigurationProperties.getPropertyBool("skipfitnessinitialpopulation")){
+			log.debug("Calculating fitness");
+			setFitnessOfPopulation();
+		}else{
+			log.debug("Fitness for initial population is disable");
+		}
+		
 	}
 	
 	protected void setFitnessOfPopulation(){
