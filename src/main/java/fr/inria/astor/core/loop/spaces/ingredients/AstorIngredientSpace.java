@@ -179,6 +179,14 @@ public abstract class AstorIngredientSpace<Q extends Object, K extends Object, I
 	public List<K> getLocations() {
 		return new ArrayList<K>(this.fixSpaceByLocation.keySet());
 	}
+	
+	public List<I> getAllIngredients(){
+		List<I> ingredients = new ArrayList<>();
+		for( List<I> listIng : this.fixSpaceByLocation.values()){
+			ingredients.addAll(listIng);
+		};
+		return ingredients;
+	}
 
 	public String toString() {
 		String s = "--Space: " + this.spaceScope() + "\n";
