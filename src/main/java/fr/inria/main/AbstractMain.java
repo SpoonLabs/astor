@@ -292,8 +292,7 @@ public abstract class AbstractMain {
 	}
 
 	public boolean processArguments(String[] args) throws Exception {
-		log.info("command line arguments: " + Arrays.toString(args).replace(",", " "));
-
+	
 		ConfigurationProperties.clear();
 
 		CommandLine cmd = null;
@@ -578,6 +577,9 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("maxVarCombination"))
 			ConfigurationProperties.properties.setProperty("maxVarCombination", cmd.getOptionValue("maxVarCombination"));
+
+		
+		log.info("command line arguments: " + Arrays.toString(args).replace(",", " "));
 
 		// CLG believes, but is not totally confident in her belief, that this
 		// is a reasonable place to initialize the random number generator.
