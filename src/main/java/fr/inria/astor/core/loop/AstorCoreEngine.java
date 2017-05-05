@@ -359,7 +359,16 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 		return true;
 	}
+	
+	public void saveVariant(ProgramVariant programVariant) throws Exception{
 
+		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier());
+		log.debug("\n-Saving child on disk variant #" + programVariant.getId() + " at " + srcOutput);
+		// This method should be refactored, and replace by the
+		// output from memory compilation
+		mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
+		
+	}
 	/**
 	 * 
 	 * Compiles and validates a created variant.
@@ -380,13 +389,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		storeModifiedModel(programVariant);
 
-		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier());
-
+		
 		if (ConfigurationProperties.getPropertyBool("saveall")) {
-			log.debug("\n-Saving child on disk variant #" + programVariant.getId() + " at " + srcOutput);
-			// This method should be refactored, and replace by the
-			// output from memory compilation
-			mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
+			this.saveVariant(programVariant);
 		}
 
 		if (childCompiles) {
@@ -404,8 +409,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				log.info("-Found Solution, child variant #" + programVariant.getId());
 				saveStaticSucessful(programVariant.getId(), generation);
 				if (ConfigurationProperties.getPropertyBool("savesolution")) {
-					mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
-					mutatorSupporter.saveSolutionData(programVariant, srcOutput, generation);
+					//mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
+					saveVariant(programVariant);
+					
 				}
 				return true;
 			}
