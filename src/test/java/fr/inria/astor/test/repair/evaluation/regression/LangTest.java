@@ -11,11 +11,15 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
 import fr.inria.astor.core.validation.validators.RegressionValidation;
 import fr.inria.astor.core.validation.validators.TestCasesProgramValidationResult;
+import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.declaration.CtExecutable;
 
 /**
  * 
@@ -35,14 +39,56 @@ public class LangTest {
 		Assert.assertFalse(main1.getEngine().getMutatorSupporter().getFactory().Type().getAll().isEmpty());
 		
 	}
+	
+	@Test
+	public void testLang63OneSingle() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-3.8.1.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		boolean stepbystep = true;
+		String[] args = commandLang63(dep, out, stepbystep);
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution
+				.getValidationResult();
+
+		assertNotNull("Without validation", validationResult);
+		
+	}
 
 	@Test
-	@Ignore
+	public void testLang8Clone() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = getLangCommonLibs();//new File("./examples/libs/junit-3.8.1.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		boolean stepbystep = true;
+		CommandSummary cs  = commandLang8(dep, out, stepbystep);
+		String[] args = cs.flat();
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		/*assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution
+				.getValidationResult();
+
+		assertNotNull("Without validation", validationResult);
+		*/
+		
+	}
+	
+	@Test
+	//@Ignore
 	public void testLang63RegressionFailing() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-3.8.1.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		boolean stepbystep = false;
+		boolean stepbystep = true;
 		String[] args = commandLang63(dep, out, stepbystep);
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
@@ -121,17 +167,71 @@ public class LangTest {
 				"/src/main/test/", "-binjavafolder", "/target/classes", "-bintestfolder", "/target/test-classes",
 				"-javacompliancelevel", "4", "-flthreshold", "0.1",
 				//
-				"-out", out.getAbsolutePath(), "-scope", "package", "-seed", "6320", "-maxgen", "50",
+				"-out", out.getAbsolutePath(), "-scope", "package", "-seed", "60", "-maxgen", "200",
 				//
-				"-stopfirst", "true", "-maxtime", "30", (step) ? "-testbystep" : "", "-validation",
-				RegressionValidation.class.getName(),
+				//"-stopfirst", "true", 
+				"-maxtime", "10", (step) ? "-testbystep" : "",
+				//		"-validation",	RegressionValidation.class.getName(),
 				//
-				"ignoredtestcases", "org.apache.commons.lang.LocaleUtilsTest",
+			"-ignoredtestcases", "org.apache.commons.lang.LocaleUtilsTest",
+				"-timezone"
+				, "America/New_York"
 
 		};
 		return args;
 	}
 
+	public CommandSummary commandLang8(String dep, File out, boolean step) {
+		
+		ClassLoader classLoader = getClass().getClassLoader();
+		File learningDir = new File(classLoader.getResource("learninglang8").getFile());
+		Class cloneGranularityClass = CtExecutable.class;
+		String scope = CtClassIngredientSpace.class.getCanonicalName();
+		
+		
+		String[] args = new String[] { 
+				"-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.lang3.time.FastDateFormat_PrinterTest"+File.pathSeparator
+				+"org.apache.commons.lang3.time.FastDatePrinterTest", 
+				//
+				"-location",
+				new File("./examples/lang_8/").getAbsolutePath(),
+				//
+				//
+				//"-package", "org.apache.commons", 
+				"-srcjavafolder", "/src/main/java/", "-srctestfolder",
+				"/src/test/java/", "-binjavafolder", "/target/classes/",//
+				"-bintestfolder", "/target/tests/",
+				"-javacompliancelevel", "6", 
+				"-flthreshold", "0.1",
+				//
+				"-out", out.getAbsolutePath(), 
+				"-scope", "package", 
+				"-seed", "60", 
+				"-maxgen", "200",
+				//
+				"-stopfirst", "true", 
+				"-maxtime", "10", (step) ? "-testbystep" : "",
+				//		"-validation",	RegressionValidation.class.getName(),
+				//
+		//	"-ignoredtestcases", "org.apache.commons.lang.LocaleUtilsTest",
+				"-timezone"
+				, "America/New_York",
+				//
+				"-scope", scope,
+				//
+				"-learningdir", learningDir.getAbsolutePath(),
+				//
+				"-clonegranularity", cloneGranularityClass.getCanonicalName(),
+				//
+				"-ingredientstrategy", CloneIngredientSearchStrategy.class.getName(),
+				//
+				"-transformingredient",
+
+		};
+		return new CommandSummary(args);
+	}
+	
 	public String[] commandLang55(String dep, File out, boolean step) {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 				"org.apache.commons.lang.time.StopWatchTest", //
@@ -153,11 +253,7 @@ public class LangTest {
 	}
 
 	public String[] commandLang1(File out, boolean step) {
-		String libsdir = new File("./examples/libs/lang_common_lib").getAbsolutePath();
-		String dep = libsdir + File.separator + "cglib.jar"+File.pathSeparator //
-				+ libsdir + File.separator + "commons-io.jar"+File.pathSeparator //
-				+ File.separator + libsdir + File.separator  + "asm.jar"+File.pathSeparator  //
-				+ File.separator + libsdir + File.separator  + "easymock.jar";//
+		String dep = getLangCommonLibs();
 		String[] args = new String[] {
 				///
 				"-dependencies", dep, "-mode", "statement", // "-failing", "org.apache.commons.lang3.math.NumberUtilsTest", //
@@ -185,6 +281,15 @@ public class LangTest {
 
 		};
 		return args;
+	}
+
+	private String getLangCommonLibs() {
+		String libsdir = new File("./examples/libs/lang_common_lib").getAbsolutePath();
+		String dep = libsdir + File.separator + "cglib.jar"+File.pathSeparator //
+				+ libsdir + File.separator + "commons-io.jar"+File.pathSeparator //
+				+ File.separator + libsdir + File.separator  + "asm.jar"+File.pathSeparator  //
+				+ File.separator + libsdir + File.separator  + "easymock.jar";//
+		return dep;
 	}
 
 }

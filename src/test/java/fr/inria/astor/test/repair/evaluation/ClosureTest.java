@@ -131,7 +131,9 @@ public class ClosureTest {
 							,"-transformingredient",
 				"-learningdir",learningDir.getAbsolutePath()
 				,
-				"-loglevel","INFO"//
+				"-loglevel","DEBUG",//
+				"-tmax1","0",//
+				"-tmax2","0",
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
