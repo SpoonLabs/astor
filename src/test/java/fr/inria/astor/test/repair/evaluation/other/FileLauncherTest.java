@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class FileLauncherTest {
 	
 		String[] command = l.getCommand(args, new File(dataDir.getAbsolutePath()+"/math.json"), 70, location);
 
-		System.out.println(Arrays.toString(args));
+		//System.out.println(Arrays.toString(args));
 
 		AstorMain main1 = new AstorMain();
 
@@ -105,13 +106,45 @@ public class FileLauncherTest {
 		};
 		String timeLibs = "/Users/matias/develop/defects4j/framework/projects/Time/lib/";
 		String[] command = l.getCommand(args, new File(dataDir.getAbsolutePath()+"/time.json"), 2, timeLibs);
-		System.out.println(Arrays.toString(args));
+		//System.out.println(Arrays.toString(args));
 
 		AstorMain main1 = new AstorMain();
 
 		main1.execute(command);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+
+	}
+	
+	@Test
+	public void testClosure1() throws Exception {
+
+		FileLauncher l = new FileLauncher();
+
+		String location = new File("/Users/matias/develop/extractedbug/closure/" + "/closure_1").getAbsolutePath();
+		String[] args = new String[] { "-mode", "statement",
+				"-location", location, "-flthreshold",
+				"0.5", "-scope", "local",
+				//
+				"-population","1",
+				"-seed", "10", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100"
+				,"-loglevel", Level.DEBUG.toString(),
+
+		};
+	
+		String libsLocation = location+ "/lib/";
+		//List<String> dd = Arrays.asList(new String[]{location});
+		String[] command = l.getCommand(args, new File(dataDir.getAbsolutePath()+"/closure.json"), 1, libsLocation, location,new ArrayList<>());
+
+		//System.out.println(Arrays.toString(args));
+
+		AstorMain main1 = new AstorMain();
+
+		main1.execute(command);
+
+		List<ProgramVariant> 	solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 

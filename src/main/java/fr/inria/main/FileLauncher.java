@@ -26,7 +26,7 @@ public class FileLauncher {
 
 	public static Logger logger = Logger.getLogger(Thread.currentThread().getName());
 	
-	public Map<String, String> readJSOn(File f, int bugId, String path, List<String> otherDep) {
+	public Map<String, String> readJSOn(File f, int bugId, String pathDependencies, String projectLocation, List<String> otherDep) {
 		
 		Map<String,String>  args = new HashMap<String, String>();
 		
@@ -43,7 +43,7 @@ public class FileLauncher {
 
 			JSONObject compliance = (JSONObject) jsonObject.get("complianceLevel");
 			
-			System.out.println(compliance.keySet());
+			//System.out.println(compliance.keySet());
 			
 			JSONObject  comp = (JSONObject) compliance.get(new Integer(bugId).toString());
 		
@@ -61,10 +61,10 @@ public class FileLauncher {
 			for(Object key: srs.keySet()){
 				
 				Integer k = new Integer(key.toString());
-				System.out.println(k);
-				System.out.println(srs.get(key));
+				//System.out.println(k);
+				//System.out.println(srs.get(key));
 				if( bugId <= k && k < max){
-					System.out.println("xx");
+					//System.out.println("xx");
 					 max = k;
 				}
 			
@@ -76,8 +76,8 @@ public class FileLauncher {
 			
 			String[] cps =  srs.get(new Integer(max).toString()).toString().split(File.pathSeparator);
 			for(String cp : cps ){
-			//	libsS += (path)+File.separator+cp+File.pathSeparator;
-				System.out.println(cp);
+				libsS += (projectLocation)+File.separator+cp+File.pathSeparator;
+				//System.out.println(cp);
 			}
 			
 			
@@ -87,15 +87,15 @@ public class FileLauncher {
 			
 			JSONArray libs = (JSONArray) jsonObject.get("libs");
 			
-			System.out.println(libs);
+			//System.out.println(libs);
 			
 			//
 			Iterator<JSONObject> iterator = libs.iterator();
 		
 			while (iterator.hasNext()) {
 				Object jsonLib= iterator.next();
-				System.out.println(jsonLib.toString());
-				libsS+=path + File.separator + jsonLib.toString() + File.pathSeparator;
+				//System.out.println(jsonLib.toString());
+				libsS+=pathDependencies + File.separator + jsonLib.toString() + File.pathSeparator;
 			}
 			//
 			
@@ -105,45 +105,43 @@ public class FileLauncher {
 			
 			//
 			srs = (JSONObject) jsonObject.get("src");
-			System.out.println(srs);
+			//System.out.println(srs);
 			max = 1000;
 			for(Object key: srs.keySet()){
 				
 				Integer k = new Integer(key.toString());
-				System.out.println(k);
-				System.out.println(srs.get(key));
+				//System.out.println(k);
+				//System.out.println(srs.get(key));
 				if( bugId <= k && k < max){
-					System.out.println("xx");
-					 max = k;
+					max = k;
 				}
 			
 			}
-			System.out.println("max "+ max);
+		//	System.out.println("max "+ max);
 			JSONObject srsk = (JSONObject) srs.get(new Integer(max).toString());
-			System.out.println(srsk);
+		//	System.out.println(srsk);
 			String s = srsk.get("binjava").toString();
-			System.out.println(s);
+		//	System.out.println(s);
 			args.put("-srctestfolder", srsk.get("srctest").toString());
 			args.put("-srcjavafolder", srsk.get("srcjava").toString());
 			args.put("-binjavafolder", srsk.get("binjava").toString());
 			args.put("-bintestfolder", srsk.get("bintest").toString());
-			
-	
-			System.out.println("-->\n "+args);	
+			//	System.out.println("-->\n "+args);	
 			return args;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	public String[] getCommand(String[] baseArg,File f, int bugId, String path){
-			return getCommand(baseArg, f, bugId, path, new ArrayList<>());
+	public String[] getCommand(String[] baseArg,File f, int bugId, String pathDependencies){
+			return getCommand(baseArg, f, bugId, pathDependencies, null,new ArrayList<>());
 	}
 	
-	public String[] getCommand(String[] baseArg,File f, int bugId, String path,List<String> otherDep){
+	public String[] getCommand(String[] baseArg,File f, int bugId, String pathDependencies,String projectLocation, List<String> otherDep){
+		
 		ArrayList<String> newObj = new ArrayList<String>(Arrays.asList(baseArg));
 		
-		newObj.addAll(this.transform(this.readJSOn(f, bugId, path,otherDep)));
+		newObj.addAll(this.transform(this.readJSOn(f, bugId, pathDependencies,projectLocation,otherDep)));
 		
 		String[] completeCommand = new String[newObj.size()];
 		completeCommand = newObj.toArray(completeCommand);
