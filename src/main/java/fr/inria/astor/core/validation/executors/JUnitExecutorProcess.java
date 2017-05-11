@@ -3,6 +3,7 @@ package fr.inria.astor.core.validation.executors;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -42,6 +43,8 @@ public abstract class JUnitExecutorProcess {
 		return execute(jvmPath, urlArrayToString(classpath), classesToExecute, waitTime);
 	}
 
+	boolean outputInFile = ConfigurationProperties.getPropertyBool("processoutputinfile");
+
 	public TestResult execute(String jvmPath, String classpath, List<String> classesToExecute, int waitTime) {
 		Process p = null;
 		jvmPath += File.separator + "java";
@@ -52,6 +55,9 @@ public abstract class JUnitExecutorProcess {
 		List<String> cls = new ArrayList<>(classesToExecute);
 
 		try {
+			File ftemp = null;
+			if (outputInFile)
+				ftemp = File.createTempFile("out", "txt");
 
 			List<String> command = new ArrayList<String>();
 
@@ -64,19 +70,21 @@ public abstract class JUnitExecutorProcess {
 
 			printCommandToExecute(command);
 
-			// ProcessBuilder pb = new ProcessBuilder(command.toArray(new
-			// String[command.size()]));
 			ProcessBuilder pb = new ProcessBuilder("/bin/bash");
-			pb.redirectOutput();
+
+			if (outputInFile) {
+				pb.redirectOutput(ftemp);
+			} else
+				pb.redirectOutput();
 			pb.redirectErrorStream(true);
 			pb.directory(new File((ConfigurationProperties.getProperty("location"))));
 			long t_start = System.currentTimeMillis();
 			p = pb.start();
-		
+
 			BufferedWriter p_stdin = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
 
 			try {
-				//Set up the timezone
+				// Set up the timezone
 				String timeZone = ConfigurationProperties.getProperty("timezone");
 				p_stdin.write("TZ=\"" + timeZone + "\"");
 				p_stdin.newLine();
@@ -87,17 +95,17 @@ public abstract class JUnitExecutorProcess {
 				p_stdin.write("echo $TZ");
 				p_stdin.newLine();
 				p_stdin.flush();
-				//Writing the command
+				// Writing the command
 				p_stdin.write(toString(command));
+
 				p_stdin.newLine();
 				p_stdin.flush();
-				
 
 				// end
 				p_stdin.write("exit");
 				p_stdin.newLine();
 				p_stdin.flush();
-				
+
 			} catch (IOException e) {
 				log.error(e);
 			}
@@ -113,7 +121,12 @@ public abstract class JUnitExecutorProcess {
 				p.exitValue();
 			}
 
-			TestResult tr = getTestResult(p);
+			BufferedReader output = null;
+			if (outputInFile)
+				output = new BufferedReader(new FileReader(ftemp.getAbsolutePath()));
+			else
+				output = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			TestResult tr = getTestResult(output);
 			p.destroyForcibly();
 			return tr;
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
@@ -136,7 +149,7 @@ public abstract class JUnitExecutorProcess {
 	 * @param p
 	 * @return
 	 */
-	protected abstract TestResult getTestResult(Process p);
+	protected abstract TestResult getTestResult(BufferedReader br);
 
 	protected String urlArrayToString(URL[] urls) {
 		String s = "";

@@ -264,8 +264,6 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			
 			if (fits) {
 				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
-				//int ingCounter = Stats.currentStat.getIngCounter(variant_id);
-				//log.debug("---attempts on ingredient space: " + ingCounter);
 				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, numberOfIngredientTransformationsDone);
 				
 				return new Ingredient(ingredient, scope);
