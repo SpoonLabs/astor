@@ -60,7 +60,8 @@ public class LangTest {
 		
 	}
 
-	@Test
+	//@Test
+	@Ignore
 	public void testLang8Clone() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = getLangCommonLibs();//new File("./examples/libs/junit-3.8.1.jar").getAbsolutePath();
@@ -82,8 +83,8 @@ public class LangTest {
 		
 	}
 	
-	@Test
-	//@Ignore
+	//@Test
+	@Ignore
 	public void testLang63RegressionFailing() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-3.8.1.jar").getAbsolutePath();
@@ -158,6 +159,7 @@ public class LangTest {
 		assertTrue(main1.getEngine().getSolutions().size() > 0);
 	}
 
+	
 	public String[] commandLang63(String dep, File out, boolean step) {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 				"org.apache.commons.lang.time.DurationFormatUtilsTest", "-location",
