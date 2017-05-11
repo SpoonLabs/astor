@@ -47,8 +47,12 @@ public class LangTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		boolean stepbystep = true;
 		String[] args = commandLang63(dep, out, stepbystep);
-		System.out.println(Arrays.toString(args));
-		main1.execute(args);
+		CommandSummary command = new CommandSummary(args);
+		System.out.println(Arrays.toString(command.flat()));
+		command.command.put("testexecutorclass","JUnitExternalExecutor");
+		command.command.put("population", "1");
+		command.command.put("mode", "jkali");
+		main1.execute(command.flat());
 
 		assertTrue(main1.getEngine().getSolutions().size() > 0);
 
@@ -161,7 +165,10 @@ public class LangTest {
 
 	
 	public String[] commandLang63(String dep, File out, boolean step) {
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, 
+				"-mode", 
+				"statement", 
+				"-failing",
 				"org.apache.commons.lang.time.DurationFormatUtilsTest", "-location",
 				new File("./examples/lang_63/").getAbsolutePath(),
 				//
@@ -169,9 +176,9 @@ public class LangTest {
 				"/src/main/test/", "-binjavafolder", "/target/classes", "-bintestfolder", "/target/test-classes",
 				"-javacompliancelevel", "4", "-flthreshold", "0.1",
 				//
-				"-out", out.getAbsolutePath(), "-scope", "package", "-seed", "60", "-maxgen", "200",
+				"-out", out.getAbsolutePath(), "-scope", "package", "-seed", "1", "-maxgen", "200",
 				//
-				//"-stopfirst", "true", 
+				"-stopfirst", "true", 
 				"-maxtime", "10", (step) ? "-testbystep" : "",
 				//		"-validation",	RegressionValidation.class.getName(),
 				//
