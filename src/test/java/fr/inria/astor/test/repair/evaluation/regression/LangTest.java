@@ -49,12 +49,12 @@ public class LangTest {
 		String[] args = commandLang63(dep, out, stepbystep);
 		CommandSummary command = new CommandSummary(args);
 		System.out.println(Arrays.toString(command.flat()));
-		command.command.put("testexecutorclass","JUnitExternalExecutor");
-		command.command.put("population", "1");
-		command.command.put("mode", "jkali");
+		command.command.put("-parameters" ,"testexecutorclass"+File.pathSeparator+"JUnitExternalExecutor");
+		command.command.put("-population", "1");
+		command.command.put("-mode", "jkali");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertFalse("Solution not found",main1.getEngine().getSolutions().isEmpty());
 
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
 		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution
@@ -64,6 +64,31 @@ public class LangTest {
 		
 	}
 
+	@Test
+	public void testLang63OneSingleJUnitNologExternalExecutor() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-3.8.1.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		boolean stepbystep = true;
+		String[] args = commandLang63(dep, out, stepbystep);
+		CommandSummary command = new CommandSummary(args);
+		System.out.println(Arrays.toString(command.flat()));
+		String testExecutorClassName = "JUnitNologExternalExecutor";
+		command.command.put( "-parameters" ,"testexecutorclass"+File.pathSeparator+testExecutorClassName);
+		command.command.put("-population", "1");
+		command.command.put("-mode", "jkali");
+		main1.execute(command.flat());
+
+		assertEquals("Incorrectly saved Property ",testExecutorClassName, ConfigurationProperties.getProperty("testexecutorclass"));
+		assertFalse("Solution not found",main1.getEngine().getSolutions().isEmpty());
+
+		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution
+				.getValidationResult();
+
+		assertNotNull("Without validation", validationResult);
+		
+	}
 	//@Test
 	@Ignore
 	public void testLang8Clone() throws Exception {
