@@ -148,7 +148,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 			continueSearching = !fit;
 		
 			if (fit) {
-				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(),
+				IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(),
 						elementFromIngredient);
 
 				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, numberOfIngredientTransformationsDone);
@@ -194,53 +194,9 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 		return allIng.size();
 	}
 
-	@Deprecated
-	protected IngredientSpaceScope determineIngredientScope(CtElement modificationpoint, CtElement selectedFix,
-			List<?> ingredients) {
-		// This is the original ingredient scope
-		IngredientSpaceScope orig = determineIngredientScope(modificationpoint, selectedFix);
 
-		String fixStr = selectedFix.toString();
 
-		// Now, we search for equivalent fixes with different scopes
-		for (Object ing : ingredients) {
-			try {
-				ing.toString();
-			} catch (Exception e) {
-				// if we cannot print the ingredient, we return
-				log.error(e.toString());
-				continue;
-			}
-			// if it's the same fix
-			if (ing.toString().equals(fixStr)) {
-				IngredientSpaceScope n = determineIngredientScope(modificationpoint, (CtElement) ing);
-				// if the scope of the ingredient ing is narrower than the fix,
-				// we keep it.
-				if (n.ordinal() < orig.ordinal()) {
-					orig = n;
-					// if it's local, we return
-					if (IngredientSpaceScope.values()[0].equals(orig))
-						return orig;
-				}
-
-			}
-		}
-		return orig;
-	}
-
-	protected IngredientSpaceScope determineIngredientScope(CtElement ingredient, CtElement fix) {
-
-		File ingp = ingredient.getPosition().getFile();
-		File fixp = fix.getPosition().getFile();
-
-		if (ingp.getAbsolutePath().equals(fixp.getAbsolutePath())) {
-			return IngredientSpaceScope.LOCAL;
-		}
-		if (ingp.getParentFile().getAbsolutePath().equals(fixp.getParentFile().getAbsolutePath())) {
-			return IngredientSpaceScope.PACKAGE;
-		}
-		return IngredientSpaceScope.GLOBAL;
-	}
+	
 
 	/**
 	 * Check if the ingredient was already used

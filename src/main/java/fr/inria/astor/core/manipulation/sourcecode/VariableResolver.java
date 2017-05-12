@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.reflect.code.CtBlock;
@@ -27,7 +28,6 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -37,7 +37,6 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtScanner;
-import spoon.support.reflect.code.CtFieldWriteImpl;
 
 /**
  * Variable manipulations: methods to analyze variables and scope
@@ -779,4 +778,53 @@ public class VariableResolver {
 			}
 		}
 	}
+	
+	public static IngredientSpaceScope determineIngredientScope(CtElement ingredient, CtElement fix) {
+
+		File ingp = ingredient.getPosition().getFile();
+		File fixp = fix.getPosition().getFile();
+
+		if (ingp.getAbsolutePath().equals(fixp.getAbsolutePath())) {
+			return IngredientSpaceScope.LOCAL;
+		}
+		if (ingp.getParentFile().getAbsolutePath().equals(fixp.getParentFile().getAbsolutePath())) {
+			return IngredientSpaceScope.PACKAGE;
+		}
+		return IngredientSpaceScope.GLOBAL;
+	}
+	
+	@Deprecated
+	protected IngredientSpaceScope determineIngredientScope(CtElement modificationpoint, CtElement selectedFix,
+			List<?> ingredients) {
+		// This is the original ingredient scope
+		IngredientSpaceScope orig = VariableResolver.determineIngredientScope(modificationpoint, selectedFix);
+
+		String fixStr = selectedFix.toString();
+
+		// Now, we search for equivalent fixes with different scopes
+		for (Object ing : ingredients) {
+			try {
+				ing.toString();
+			} catch (Exception e) {
+				// if we cannot print the ingredient, we return
+				logger.error(e.toString());
+				continue;
+			}
+			// if it's the same fix
+			if (ing.toString().equals(fixStr)) {
+				IngredientSpaceScope n = VariableResolver.determineIngredientScope(modificationpoint, (CtElement) ing);
+				// if the scope of the ingredient ing is narrower than the fix,
+				// we keep it.
+				if (n.ordinal() < orig.ordinal()) {
+					orig = n;
+					// if it's local, we return
+					if (IngredientSpaceScope.values()[0].equals(orig))
+						return orig;
+				}
+
+			}
+		}
+		return orig;
+	}
+	
 }

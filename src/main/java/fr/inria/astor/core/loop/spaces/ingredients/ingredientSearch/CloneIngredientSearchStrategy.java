@@ -263,7 +263,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			continueSearching = !fits;
 			
 			if (fits) {
-				IngredientSpaceScope scope = determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
+				IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
 				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, numberOfIngredientTransformationsDone);
 				
 				return new Ingredient(ingredient, scope);
