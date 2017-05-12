@@ -258,6 +258,10 @@ public abstract class AbstractMain {
 						);
 		options.addOption("maxVarCombination", true,
 				"Max number of combinations per variable out-of-scope. Default: "+ConfigurationProperties.getPropertyInt("maxVarCombination"));
+	
+		options.addOption("parameters", true,
+				"Parameters, divided by "+File.pathSeparator);
+	
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -578,6 +582,15 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("maxVarCombination"))
 			ConfigurationProperties.properties.setProperty("maxVarCombination", cmd.getOptionValue("maxVarCombination"));
 
+		if (cmd.hasOption("parameters")){
+			String[] pars = cmd.getOptionValue("parameters").split(File.pathSeparator);
+			for (int i = 0; i < pars.length; i = i + 2) {
+				String key = pars[i];
+				String value = pars[i+1];
+				ConfigurationProperties.properties.setProperty(key, value);
+
+			}
+		}
 		
 		log.info("command line arguments: " + Arrays.toString(args).replace(",", " "));
 
