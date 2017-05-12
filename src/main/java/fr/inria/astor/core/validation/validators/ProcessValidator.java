@@ -223,15 +223,17 @@ public class ProcessValidator extends ProgramValidator {
 			parcial.add(tc);
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
 
-			TestResult trregression = p.execute(jvmPath, bc, parcial, ConfigurationProperties.getPropertyInt("tmax2"));
-			if (trregression == null) {
+			TestResult singleTestResult = p.execute(jvmPath, bc, parcial, ConfigurationProperties.getPropertyInt("tmax2"));
+			//log.debug("TR "+singleTestResult );
+			if (singleTestResult == null) {
 				log.debug("The validation 2 have not finished well");
 				return null;
 			} else {
-				trregressionall.getFailures().addAll(trregression.getFailures());
-				trregressionall.getSuccessTest().addAll(trregression.getSuccessTest());
-				trregressionall.failures += trregression.getFailures().size();
-				trregressionall.casesExecuted += trregression.getCasesExecuted();
+				trregressionall.getFailures().addAll(singleTestResult.getFailures());
+				trregressionall.getSuccessTest().addAll(singleTestResult.getSuccessTest());
+				trregressionall.failures += singleTestResult.failures;
+				trregressionall.casesExecuted += singleTestResult.getCasesExecuted();
+				
 			}
 		}
 		long t2 = System.currentTimeMillis();
