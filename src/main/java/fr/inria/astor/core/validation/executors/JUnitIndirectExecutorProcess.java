@@ -40,27 +40,29 @@ public class JUnitIndirectExecutorProcess extends JUnitExecutorProcess {
 		log.debug("Analyzing output from process");
 		TestResult tr = new TestResult();
 		boolean success = false;
-		String out = "";
+		String processOut = "";
 		try {
 			String line;
 			while ((line = in.readLine()) != null) {
-				out += line + "\n";
+				processOut += line + "\n";
 				if (line.startsWith(JUnitTestExecutor.OUTSEP)) {
-					String[] s = line.split(JUnitTestExecutor.OUTSEP);
-					int nrtc = Integer.valueOf(s[1]);
+					String[] resultPrinted = line.split(JUnitTestExecutor.OUTSEP);
+					int nrtc = Integer.valueOf(resultPrinted[1]);
 					tr.casesExecuted = nrtc;
-					int failing = Integer.valueOf(s[2]);
-					tr.failures = failing;
-					if (!"".equals(s[3])) {
-						String[] falinglist = s[3].replace("[", "").replace("]", "").split(",");
-						for (String string : falinglist) {
-							if (!string.trim().isEmpty())
-								tr.failTest.add(string.trim());
+					int nrfailing = Integer.valueOf(resultPrinted[2]);
+					tr.failures = nrfailing;
+					if (resultPrinted.length > 3 &&!"".equals(resultPrinted[3])) {
+						String[] failingTestList = resultPrinted[3].replace("[", "").replace("]", "").split(",");
+						for (String failingTest : failingTestList) {
+							failingTest = failingTest.trim();
+							if (!failingTest.isEmpty() && !failingTest.equals("-"))
+								tr.failTest.add(failingTest);
 						}
 					}
 					success = true;
 				}
 			}
+			//log.debug("Process output:\n"+ out);
 			in.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -68,7 +70,7 @@ public class JUnitIndirectExecutorProcess extends JUnitExecutorProcess {
 		if (success)
 			return tr;
 		else {
-			log.error("Error reading the validation process\n output: \n" + out);
+			log.error("Error reading the validation process\n output: \n" + processOut);
 			return null;
 		}
 	}
