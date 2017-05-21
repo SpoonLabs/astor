@@ -7,7 +7,9 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.RandomManager;
@@ -23,7 +25,7 @@ import spoon.reflect.declaration.CtElement;
  * @param <I>
  *
  */
-public class UniformRandomIngredientSearch extends AstorCtSearchStrategy {
+public class UniformRandomIngredientSearch extends IngredientSearchStrategy {
 
 	public UniformRandomIngredientSearch(IngredientSpace space) {
 		super(space);
@@ -63,7 +65,7 @@ public class UniformRandomIngredientSearch extends AstorCtSearchStrategy {
 	}
 
 	@Override
-	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
+	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType, IngredientTransformationStrategy ingredientTransformation) {
 
 		String type = null;
 		if (operationType instanceof ReplaceOp) {
