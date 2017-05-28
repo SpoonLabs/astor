@@ -724,6 +724,7 @@ public class VariableResolver {
 	 * Method that finds all combination of variables mappings Ex: if var 'a'
 	 * can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return
 	 * all combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2)
+	 * It calculates at most 'maxVarCombination', where 
 	 * 
 	 * @param mappedVars
 	 *            map of variables (out-of-scope) and candidate replacements of
