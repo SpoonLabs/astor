@@ -13,6 +13,11 @@ public class Ingredient {
 	CtElement code;
 	IngredientSpaceScope scope;
 	
+	public Ingredient(CtElement element) {
+		super();
+		this.code = element;
+	}
+	
 	public Ingredient(CtElement element, IngredientSpaceScope scope) {
 		super();
 		this.code = element;
