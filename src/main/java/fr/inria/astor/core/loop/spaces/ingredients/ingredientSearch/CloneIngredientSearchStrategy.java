@@ -19,17 +19,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.visitor.filter.TypeFilter;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
@@ -37,18 +26,26 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientProcessor;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.ClusterIngredientTransformation;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
-import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
-import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
-import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.core.stats.Stats.Pair;
 import fr.inria.astor.util.StringUtil;
+import fr.inria.main.evolution.ExtensionPoints;
+import fr.inria.main.evolution.PlugInLoader;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtAnonymousExecutable;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 /**
  * A strategy to pick an ingredient from the fix space using code fragments'
@@ -70,12 +67,19 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 	private Map<String, T> key2element = new HashMap<>();
 	// Cache of elements' similarity lists.
 	private Map<T, List<T>> element2simlist = new HashMap<>();
-
-	public CloneIngredientSearchStrategy(IngredientSpace space) throws ClassNotFoundException, IOException {
+	
+	private IngredientTransformationStrategy ingTransformationStrategy = null;
+	
+	public CloneIngredientSearchStrategy(IngredientSpace space) throws Exception {
 		super(space);
 		cls = Class.forName(ConfigurationProperties.properties.getProperty("clonegranularity"));
 		setfilter();
 		readinput();
+		
+		this.ingTransformationStrategy = (IngredientTransformationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
+		if(this.ingTransformationStrategy == null){
+			this.ingTransformationStrategy = new ClusterIngredientTransformation();
+		}
 	}
 
 	private void setfilter() {
@@ -168,7 +172,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			log.error("Suspicious element is not in scope: " + key);
 			throw new RuntimeException();
 		}
-
+		
 		// element2simlist is a cache of element-specific similarity lists.
 		if (!element2simlist.containsKey(suspicious))
 			computesimlist(suspicious);
@@ -210,64 +214,15 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 
 			Stats.currentStat.incrementIngCounter(variant_id);
 			
-			boolean transformIngredient = ConfigurationProperties.getPropertyBool("transformingredient");
-			if (transformIngredient) {
-				if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
-					log.debug("The modification point  has not any var in scope");
-				}
-				// I wrote all branches even they are not necessaries to easily
-				// observe all cases.
-				VarMapping mapping = VariableResolver.mapVariables(modificationPoint.getContextOfModificationPoint(),
-						ingredient);
-				// if we map all variables
-				if (mapping.getNotMappedVariables().isEmpty()) {
-					if (mapping.getMappedVariables().isEmpty()) {
-						// nothing to transform, accept the ingredient
-						log.debug("The var Mapping is empty, we keep the ingredient");
-						continueSearching = false;
-					} else {// We have mappings between variables
-						log.debug("Ingredient before transformation: " + ingredient);
-						List<Map<String, CtVariable>> allCombinations = VariableResolver
-								.findAllVarMappingCombination(mapping.getMappedVariables());
-
-						if (allCombinations.size() > 0) {
-							Map<String, CtVariable> selectedTransformation = obtainCombination(allCombinations);
-							log.debug("Transformation proposed: " + selectedTransformation);
-							// The ingredient is cloned, so we can modify
-							// its variables
-							Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver
-									.convertIngredient(mapping, selectedTransformation);
-							log.debug("Ingredient after transformation: " + ingredient);
-							numberOfIngredientTransformationsDone++;
-							// TODO: do we need to revert the ingredient. If
-							// we try another var combination -> yes.
-							// Otherwise -> no
-							// VariableResolver.resetIngredient(mapping,
-							// originalMap);
-							
-						}
-					}
-				} else {
-					// here maybe we can put one counter of not mapped
-					// ingredients
-					log.debug("Vars not mapped: " + mapping.getNotMappedVariables());
-					continue;
-				}
-			}
-
-			boolean fits = VariableResolver
-					.fitInPlace(modificationPoint.getContextOfModificationPoint(), ingredient);
-			log.debug("fit? "+fits +" "+  StringUtil.trunc(ingredient));
+			Ingredient ingredientToModify = new Ingredient(ingredient);
 			
-			//we continue if the ingredient does not fit
-			continueSearching = !fits;
-			
-			if (fits) {
-				IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
-				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, numberOfIngredientTransformationsDone);
-				
-				return new Ingredient(ingredient, scope);
+			List<Ingredient> ingredientsTransformed = ingTransformationStrategy.transform(modificationPoint, ingredientToModify);
+			if(ingredientsTransformed == null ){
+				log.debug("Ingredients transf list is null");
 			}
+			
+			if(ingredientsTransformed.size() > 0)
+				return ingredientsTransformed.get(0);
 		}
 
 		log.debug("--- no mutation left to apply in element " + modificationPoint.getCodeElement()

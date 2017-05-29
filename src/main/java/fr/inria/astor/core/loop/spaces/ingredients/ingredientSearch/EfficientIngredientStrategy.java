@@ -1,6 +1,5 @@
 package fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,7 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
@@ -66,7 +66,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 		int elementsFromFixSpace = getSpaceSize(modificationPoint, operationType);
 
 		Stats.currentStat.initializeIngCounter(variant_id);
-		int numberOfIngredientTransformationsDone = 0;
+
 		while (continueSearching && attempts < elementsFromFixSpace) {
 
 			Ingredient randomIngredient = super.getFixIngredient(modificationPoint, operationType);
@@ -91,75 +91,16 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 				log.debug("Ingredient same that the mod point");
 				continue;
 			}
-		
-			boolean transformIngredient = ConfigurationProperties.getPropertyBool("transformingredient");
-			
-			Stats.currentStat.incrementIngCounter(variant_id);
-			
-			if (transformIngredient) {
-				if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
-					log.debug("The modification point  has not any var in scope");
-				}
-				VarMapping mapping = VariableResolver.mapVariables(modificationPoint.getContextOfModificationPoint(),
-						elementFromIngredient);
-				// if we map all variables
-				if (mapping.getNotMappedVariables().isEmpty()) {
-					if (mapping.getMappedVariables().isEmpty()) {
-						// nothing to transform, accept the ingredient
-						log.debug("The var Mapping is empty, we keep the ingredient");
-						continueSearching = false;
-					} else {// We have mappings between variables
-						log.debug("Ingredient before transformation: " + elementFromIngredient);
-						List<Map<String, CtVariable>> allCombinations = VariableResolver
-								.findAllVarMappingCombination(mapping.getMappedVariables());
-						// TODO: here, we take the first one, what should we do
-						// with the rest?
-						if (allCombinations.size() > 0) {
-							numberOfIngredientTransformationsDone++;
-							Map<String, CtVariable> selectedTransformation = allCombinations.get(0);
-							log.debug("Transformation proposed: " + selectedTransformation);
-							// The ingredient is cloned, so we can modify its
-							// variables
-							Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver
-									.convertIngredient(mapping, selectedTransformation);
-							log.debug("Ingredient after transformation: " + elementFromIngredient);
-							// TODO: do we need to revert the ingredient. If we
-							// try another var combination -> yes.
-							// Otherwise -> no
-							// VariableResolver.resetIngredient(mapping,
-							// originalMap);
-							boolean fit = VariableResolver.fitInPlace(
-									modificationPoint.getContextOfModificationPoint(), elementFromIngredient);
-							continueSearching = !fit;
-							log.debug("fit? "+fit +" "+  StringUtil.trunc(elementFromIngredient));
-						}
-					}
-				} else {
-					// here maybe we can put one counter of not mapped
-					// ingredients
-					log.debug("Vars not mapped: " + mapping.getNotMappedVariables());
-					continue;
-				}
-			}
-
-			boolean fit = VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
+			IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(),
 					elementFromIngredient);
-			log.debug("fit? "+fit +" "+  StringUtil.trunc(elementFromIngredient));
-			continueSearching = !fit;
-		
-			if (fit) {
-				IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(),
-						elementFromIngredient);
+			randomIngredient.setScope(scope);
+			return randomIngredient;
 
-				Stats.currentStat.storeSucessfulTransformedIngredient(variant_id, numberOfIngredientTransformationsDone);
-				
-				return new Ingredient(elementFromIngredient, scope);
-			}
-		}//End while
+		} // End while
 
 		log.debug("--- no mutation left to apply in element "
-				+ StringUtil.trunc(modificationPoint.getCodeElement().getShortRepresentation()) + ", search space size: "
-				+ elementsFromFixSpace);
+				+ StringUtil.trunc(modificationPoint.getCodeElement().getShortRepresentation())
+				+ ", search space size: " + elementsFromFixSpace);
 		return null;
 
 	}
@@ -194,10 +135,6 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 		return allIng.size();
 	}
 
-
-
-	
-
 	/**
 	 * Check if the ingredient was already used
 	 * 
@@ -223,20 +160,16 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 			prev = new ArrayList<String>();
 			prev.add(fix);
 			appliedCache.put(lockey, prev);
-			log.debug("\nNew1: "+StringUtil.trunc(fix)
-					+ " in "+StringUtil.trunc(lockey));
+			log.debug("\nNew1: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
 			return false;
 		} else {
 			// The element has mutation applied
-			if (prev.contains(fix)){
-				log.debug("\nAlready: "+StringUtil.trunc(fix)
-						+ " in "+StringUtil.trunc(lockey));
+			if (prev.contains(fix)) {
+				log.debug("\nAlready: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
 				return true;
-			}
-			else {
+			} else {
 				prev.add(fix);
-				log.debug("\nNew2: "+StringUtil.trunc(fix)
-						+ " in "+StringUtil.trunc(lockey));
+				log.debug("\nNew2: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
 				return false;
 			}
 		}

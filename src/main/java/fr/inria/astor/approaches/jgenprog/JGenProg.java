@@ -18,6 +18,9 @@ import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.DefaultIngredientTransformation;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
@@ -26,6 +29,7 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
@@ -46,17 +50,17 @@ import spoon.reflect.factory.Factory;
 public class JGenProg extends AstorCoreEngine {
 
 	IngredientSearchStrategy ingredientSearchStrategy;
-	
+	IngredientTransformationStrategy ingredientTransformationStrategy;
+
 	public JGenProg(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
 	}
 
-
 	public void createInitialPopulation() throws Exception {
-		
-		//Creates the spoon model
+
+		// Creates the spoon model
 		initModel();
-		
+
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
 			// We dont use FL, so at this point the do not have suspicious
 			this.initPopulation(new ArrayList<SuspiciousCode>());
@@ -66,7 +70,6 @@ public class JGenProg extends AstorCoreEngine {
 		}
 	}
 
-	
 	/**
 	 * By default, it initializes the spoon model. It should not be created
 	 * before. Otherwise, an exception occurs.
@@ -75,7 +78,6 @@ public class JGenProg extends AstorCoreEngine {
 	 * @throws Exception
 	 */
 	public void initPopulation(List<SuspiciousCode> suspicious) throws Exception {
-
 
 		log.info("\n---- Initial suspicious size: " + suspicious.size());
 		initializePopulation(suspicious);
@@ -93,50 +95,47 @@ public class JGenProg extends AstorCoreEngine {
 		if (this.ingredientSearchStrategy != null) {
 			this.ingredientSearchStrategy.getIngredientSpace().defineSpace(originalVariant);
 		}
-		if(!ConfigurationProperties.getPropertyBool("skipfitnessinitialpopulation")){
+		if (!ConfigurationProperties.getPropertyBool("skipfitnessinitialpopulation")) {
 			log.debug("Calculating fitness");
 			setFitnessOfPopulation();
-		}else{
+		} else {
 			log.debug("Fitness for initial population is disable");
 		}
-		
+
 	}
-	
-	protected void setFitnessOfPopulation(){
+
+	protected void setFitnessOfPopulation() {
 		log.debug("Calculating fitness for original program variant.");
-		//temporal workaround for avoid changing the interface
+		// temporal workaround for avoid changing the interface
 		String original = ConfigurationProperties.getProperty("forceExecuteRegression");
 		ConfigurationProperties.setProperty("forceExecuteRegression", Boolean.TRUE.toString());
-		
-		//Initial validation and fitness 
+
+		// Initial validation and fitness
 		boolean validInstance = validateInstance(originalVariant);
 		if (validInstance) {
 			throw new IllegalStateException("The application under repair has not failling test cases");
 		}
-		
+
 		double fitness = this.fitnessFunction.calculateFitnessValue(originalVariant);
 		originalVariant.setFitness(fitness);
-		
-	
-		log.debug("The original fitness is : "+fitness);
+
+		log.debug("The original fitness is : " + fitness);
 		for (ProgramVariant initvariant : variants) {
 			initvariant.setFitness(fitness);
 		}
-		ConfigurationProperties.setProperty("forceExecuteRegression", original);//WA.
-		
-	} 
+		ConfigurationProperties.setProperty("forceExecuteRegression", original);// WA.
 
-
+	}
 
 	private void initModel() throws Exception {
-		
+
 		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
 			Factory fcurrent = MutationSupporter.getFactory();
 			log.debug("The Spoon Model was already built.");
 			Factory fnew = MutationSupporter.cleanFactory();
 			log.debug("New factory created? " + !fnew.equals(fcurrent));
 		}
-		
+
 		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
 		String[] cpArray = classpath.split(File.pathSeparator);
@@ -152,16 +151,17 @@ public class JGenProg extends AstorCoreEngine {
 					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
 			mutatorSupporter.buildModel(codeLocation, cpArray);
 		}
-		
-		/////ONCE ASTOR HAS BUILT THE MODEL,
-		/////We apply different processes and manipulation over it.
-		
-		//We process the model to add blocks as parent of statement which are not contained in a block
+
+		///// ONCE ASTOR HAS BUILT THE MODEL,
+		///// We apply different processes and manipulation over it.
+
+		// We process the model to add blocks as parent of statement which are
+		// not contained in a block
 		BlockReificationScanner visitor = new BlockReificationScanner();
 		for (CtType c : mutatorSupporter.getFactory().Type().getAll()) {
 			c.accept(visitor);
 		}
-		
+
 	}
 
 	/**
@@ -189,8 +189,8 @@ public class JGenProg extends AstorCoreEngine {
 	}
 
 	/**
-	 * This method updates modification point of a variant according to a created
-	 * GenOperationInstance
+	 * This method updates modification point of a variant according to a
+	 * created GenOperationInstance
 	 * 
 	 * @param variant
 	 *            variant to modify the modification point information
@@ -212,11 +212,11 @@ public class JGenProg extends AstorCoreEngine {
 	 * @throws IllegalAccessException
 	 */
 	@Override
-	protected OperatorInstance createOperatorInstanceForPoint(ModificationPoint modificationPoint) throws IllegalAccessException {
+	protected OperatorInstance createOperatorInstanceForPoint(ModificationPoint modificationPoint)
+			throws IllegalAccessException {
 		SuspiciousModificationPoint suspModificationPoint = (SuspiciousModificationPoint) modificationPoint;
 
-		
-		AstorOperator operationType =  operatorSelectionStrategy.getNextOperator(suspModificationPoint);
+		AstorOperator operationType = operatorSelectionStrategy.getNextOperator(suspModificationPoint);
 
 		if (operationType == null) {
 			log.debug("Operation Null");
@@ -230,23 +230,35 @@ public class JGenProg extends AstorCoreEngine {
 		operation.setOperationApplied(operationType);
 		operation.setModificationPoint(suspModificationPoint);
 		operation.defineParentInformation(suspModificationPoint);
-		
-		if(operationType.needIngredient()){
-			Ingredient fix = null;
-			fix = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operationType);
-			if(fix == null){
+
+		if (operationType.needIngredient()) {
+			Ingredient ingredient = null;
+			ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operationType);
+			if (ingredient == null) {
 				log.debug("Any ingredient for this point, we discard it");
 				return null;
-			}else{
-				operation.setModified(fix.getCode());
-				operation.setIngredientScope(fix.getScope());
+			} else {
+
+				if (ingredientSearchStrategy != null) {
+					List<Ingredient> ingredientsAfterTransformation = ingredientTransformationStrategy
+							.transform(modificationPoint, ingredient);
+					if (ingredientsAfterTransformation == null || ingredientsAfterTransformation.isEmpty()) {
+						log.debug("The transformation steategy has not returned any transformed ingredient");
+						return null;
+					} else {
+						// TODO: we take the first one
+						ingredient = ingredientsAfterTransformation.get(0);
+					}
+				}
+
+				operation.setModified(ingredient.getCode());
+				operation.setIngredientScope(ingredient.getScope());
 			}
 		}
 
 		return operation;
 	}
 
-	
 	@Override
 	protected void undoOperationToSpoonElement(OperatorInstance operation) {
 		operation.undoModification();
@@ -263,7 +275,6 @@ public class JGenProg extends AstorCoreEngine {
 
 	}
 
-
 	/**
 	 * 
 	 */
@@ -272,7 +283,7 @@ public class JGenProg extends AstorCoreEngine {
 			throws IllegalAccessException {
 
 		operationInstance.applyModification();
-	
+
 	}
 
 	public IngredientSearchStrategy getIngredientStrategy() {
@@ -285,47 +296,47 @@ public class JGenProg extends AstorCoreEngine {
 
 	@Override
 	public void prepareNextGeneration(List<ProgramVariant> temporalInstances, int generation) {
-		
+
 		super.prepareNextGeneration(temporalInstances, generation);
-		if(false || ConfigurationProperties.getPropertyBool("applyCrossover")){
+		if (false || ConfigurationProperties.getPropertyBool("applyCrossover")) {
 			int numberVariants = this.variants.size();
-			if(numberVariants <= 1){
+			if (numberVariants <= 1) {
 				log.debug("CO|Not Enough variants to apply Crossover");
 				return;
 			}
-			
-			//We randomly choose the two variants to crossover
+
+			// We randomly choose the two variants to crossover
 			ProgramVariant v1 = this.variants.get(RandomManager.nextInt(numberVariants));
 			ProgramVariant v2 = this.variants.get(RandomManager.nextInt(numberVariants));
-			//Same instance
-			if(v1 == v2){
+			// Same instance
+			if (v1 == v2) {
 				log.debug("CO|randomless chosen the same variant to apply crossover");
 				return;
 			}
-			
-			if(v1.getOperations().isEmpty() || v2.getOperations().isEmpty()){
+
+			if (v1.getOperations().isEmpty() || v2.getOperations().isEmpty()) {
 				log.debug("CO|Not Enough ops to apply Crossover");
 				return;
 			}
-			//we randomly select the generations to apply
+			// we randomly select the generations to apply
 			int rgen1index = RandomManager.nextInt(v1.getOperations().keySet().size()) + 1;
 			int rgen2index = RandomManager.nextInt(v2.getOperations().keySet().size()) + 1;
-			
+
 			List<OperatorInstance> ops1 = v1.getOperations((int) v1.getOperations().keySet().toArray()[rgen1index]);
 			List<OperatorInstance> ops2 = v2.getOperations((int) v2.getOperations().keySet().toArray()[rgen2index]);
-	
-			OperatorInstance opinst1 = ops1.remove((int)RandomManager.nextInt(ops1.size()));
-			OperatorInstance opinst2 = ops2.remove((int)RandomManager.nextInt(ops2.size()));
-			
-			if(opinst1 == null || opinst2 == null){
+
+			OperatorInstance opinst1 = ops1.remove((int) RandomManager.nextInt(ops1.size()));
+			OperatorInstance opinst2 = ops2.remove((int) RandomManager.nextInt(ops2.size()));
+
+			if (opinst1 == null || opinst2 == null) {
 				log.debug("CO|We could not retrieve a operator");
 				return;
 			}
-			
-			//The generation of both new operators is the Last one.
-			//In the first variant we put the operator taken from the 2 one.
+
+			// The generation of both new operators is the Last one.
+			// In the first variant we put the operator taken from the 2 one.
 			v1.putModificationInstance(generation, opinst2);
-			//In the second variant we put the operator taken from the 1 one.
+			// In the second variant we put the operator taken from the 1 one.
 			v2.putModificationInstance(generation, opinst1);
 			//
 		}
@@ -334,34 +345,38 @@ public class JGenProg extends AstorCoreEngine {
 	@Override
 	public void showResults() {
 		super.showResults();
-		log.info("\nsuccessful_ing_attempts (#trials "+this.currentStat.ingAttemptsSuccessfulPatches.size()+ ", totalAttps "+Stats.sum(currentStat.ingAttemptsSuccessfulPatches)
-				+ "): "+this.currentStat.ingAttemptsSuccessfulPatches.stream().map(Pair::getAttempts).collect(Collectors.toList()));
-		log.info("\nfailing_ing_attempts (#trials "+this.currentStat.ingAttemptsFailingPatches.size()+ ", totalAttps "+Stats.sum(currentStat.ingAttemptsFailingPatches)
-				+ "): "+this.currentStat.ingAttemptsFailingPatches.stream().map(Pair::getAttempts).collect(Collectors.toList()));
-		
-		log.info("\ntotal Patch Attempts ("+this.currentStat.patch_attempts.size()+ "): "+this.currentStat.patch_attempts);
-		
-		log.info("\nsuccessful_ing_attempts_by_patch: "+this.currentStat.ingAttemptsSuccessfulPatches);
-		log.info("\nfailing_ing_attempts_by_patch: "+this.currentStat.ingAttemptsFailingPatches);
-		
-		log.info("\npvariants_with_transformed_ingredients: "+this.currentStat.successfulTransformedIngredients);
-	}
+		log.info("\nsuccessful_ing_attempts (#trials " + this.currentStat.ingAttemptsSuccessfulPatches.size()
+				+ ", totalAttps " + Stats.sum(currentStat.ingAttemptsSuccessfulPatches) + "): "
+				+ this.currentStat.ingAttemptsSuccessfulPatches.stream().map(Pair::getAttempts)
+						.collect(Collectors.toList()));
+		log.info("\nfailing_ing_attempts (#trials " + this.currentStat.ingAttemptsFailingPatches.size()
+				+ ", totalAttps " + Stats.sum(currentStat.ingAttemptsFailingPatches) + "): "
+				+ this.currentStat.ingAttemptsFailingPatches.stream().map(Pair::getAttempts)
+						.collect(Collectors.toList()));
 
+		log.info("\ntotal Patch Attempts (" + this.currentStat.patch_attempts.size() + "): "
+				+ this.currentStat.patch_attempts);
+
+		log.info("\nsuccessful_ing_attempts_by_patch: " + this.currentStat.ingAttemptsSuccessfulPatches);
+		log.info("\nfailing_ing_attempts_by_patch: " + this.currentStat.ingAttemptsFailingPatches);
+
+		log.info("\npvariants_with_transformed_ingredients: " + this.currentStat.successfulTransformedIngredients);
+	}
 
 	@Override
 	public void loadExtensionPoints() throws Exception {
 		super.loadExtensionPoints();
-		
+
 		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
 		// Fix Space
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
-		
+
 		OperatorSpace jpgoperatorSpace = PlugInLoader.loadOperatorSpace();
-		if(jpgoperatorSpace == null)
+		if (jpgoperatorSpace == null)
 			jpgoperatorSpace = new jGenProgSpace();
-		
+
 		this.setOperatorSpace(jpgoperatorSpace);
-		
+
 		// We retrieve strategy for navigating operator space
 		String opStrategyClassName = ConfigurationProperties.properties.getProperty("opselectionstrategy");
 		if (opStrategyClassName != null) {
@@ -373,16 +388,26 @@ public class JGenProg extends AstorCoreEngine {
 		}
 		IngredientSpace ingredientspace = PlugInLoader.loadIngredientSpace(ingredientProcessors);
 
-		IngredientSearchStrategy ingStrategy = (IngredientSearchStrategy) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, 
-				new Class[]{IngredientSpace.class}, new Object[]{ingredientspace});
-	
-		if(ingStrategy == null){
-			ingStrategy =  new EfficientIngredientStrategy(ingredientspace);
+		IngredientSearchStrategy ingStrategy = (IngredientSearchStrategy) PlugInLoader.loadPlugin(
+				ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[] { IngredientSpace.class },
+				new Object[] { ingredientspace });
+
+		if (ingStrategy == null) {
+			ingStrategy = new EfficientIngredientStrategy(ingredientspace);
 		}
 
 		this.setIngredientStrategy(ingStrategy);
 		this.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
-	
+
+		ExtensionPoints ep = ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY;
+		String ingredientTransformationStrategyClassName = ConfigurationProperties.properties
+				.getProperty(ep.identifier);
+		if (ingredientTransformationStrategyClassName == null) {
+			this.ingredientTransformationStrategy = new DefaultIngredientTransformation();
+		} else {
+			PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
+		}
+
 	}
 
 	private OperatorSelectionStrategy createOperationSelectionStrategy(String opSelectionStrategyClassName,

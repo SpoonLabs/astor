@@ -65,7 +65,7 @@ public class UniformRandomIngredientSearch extends IngredientSearchStrategy {
 	}
 
 	@Override
-	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType, IngredientTransformationStrategy ingredientTransformation) {
+	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
 
 		String type = null;
 		if (operationType instanceof ReplaceOp) {
@@ -78,7 +78,7 @@ public class UniformRandomIngredientSearch extends IngredientSearchStrategy {
 		} else {
 			selectedIngredient = this.getRandomElementFromSpace(modificationPoint.getCodeElement(), type);
 		}
-
+		
 		return new Ingredient(selectedIngredient, null);
 
 	}
