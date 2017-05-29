@@ -9,7 +9,7 @@ import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy2;
+import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy4Exhaustive;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
@@ -50,10 +50,10 @@ public class ExhausitiveCloneEngine extends ExhaustiveAstorEngine {
 		log.debug("\n---------\n STEP 1:-----Find Ingredients------");
 		log.debug("\n->ModPoint: \n"+modificationPoint.getCodeElement());
 		
-		CloneIngredientSearchStrategy2 s = null;
+		CloneIngredientSearchStrategy4Exhaustive repairengine = null;
 		
 		try {
-			s = new CloneIngredientSearchStrategy2<>(ingredientSpace);
+			repairengine = new CloneIngredientSearchStrategy4Exhaustive(ingredientSpace);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -68,7 +68,7 @@ public class ExhausitiveCloneEngine extends ExhaustiveAstorEngine {
 
 		}
 		
-		ingredients = s.getAllFixIngredient(modificationPoint, astorOperator);
+		ingredients = repairengine.getAllFixIngredient(modificationPoint, astorOperator);
 		
 		if(ingredients == null || ingredients.isEmpty()){
 			log.debug("Any ingredient for mp "+ modificationPoint + " and op "+astorOperator);
