@@ -26,18 +26,18 @@ public class LoopExpressionFixSpaceProcessor extends AbstractFixSpaceProcessor<C
 	@Override
 	public void process(CtLoop element) {
 		if(element instanceof CtFor){
-			addAll(((CtFor)element).getExpression());
+			addExpressionAndSubexpressions(((CtFor)element).getExpression());
 		}
 		if(element instanceof CtWhile){
-			addAll(((CtWhile)element).getLoopingExpression());
+			addExpressionAndSubexpressions(((CtWhile)element).getLoopingExpression());
 		}
 		if(element instanceof CtDo){
-			addAll(((CtDo)element).getLoopingExpression());
+			addExpressionAndSubexpressions(((CtDo)element).getLoopingExpression());
 		}
 		
 	}
 	
-	public void addAll(CtExpression  ctExp1){
+	public void addExpressionAndSubexpressions(CtExpression  ctExp1){
 		List<CtExpression<Boolean>> ctExp = ExpressionRevolver.getExpressions(ctExp1);
 		for (CtExpression ctExpression : ctExp) {
 			super.add(ctExpression);
