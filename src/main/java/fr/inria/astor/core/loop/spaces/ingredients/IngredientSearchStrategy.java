@@ -3,6 +3,7 @@ package fr.inria.astor.core.loop.spaces.ingredients;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 
 /**
@@ -36,7 +37,8 @@ public abstract class IngredientSearchStrategy implements  AstorExtensionPoint {
 	 *            operation applied to the modif point
 	 * @return an ingredient
 	 */
-	public abstract Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType);
+	public abstract Ingredient getFixIngredient(ModificationPoint modificationPoint, 
+			AstorOperator operationType);
 
 	public IngredientSpace getIngredientSpace() {
 		return ingredientSpace;

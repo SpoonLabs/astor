@@ -1,9 +1,11 @@
 package fr.inria.astor.test.repair.evaluation.dpl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Queue;
 
@@ -38,7 +40,7 @@ public class ExecutableCloneIngredientStrategyTest {
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	@Test
-	public void testInputProperties() throws ClassNotFoundException, IOException {
+	public void testInputProperties() throws Exception {
 
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());

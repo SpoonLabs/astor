@@ -9,7 +9,6 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
 /**
