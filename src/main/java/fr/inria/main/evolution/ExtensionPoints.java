@@ -7,6 +7,7 @@ import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
@@ -27,10 +28,12 @@ public enum ExtensionPoints {
 	VALIDATION("validation",ProgramValidator.class), //
 	CUSTOM_OPERATOR("customop",AstorOperator.class),//
 	OPERATORS_SPACE("operatorspace",OperatorSpace.class),//
-	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy",IngredientSearchStrategy.class);//
+	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy",IngredientSearchStrategy.class),//
+	INGREDIENT_TRANSFORM_STRATEGY("ingredienttransformstrategy", IngredientTransformationStrategy.class);
 	
-	String identifier;
-	Class<?> _class;
+	public String identifier;
+	public Class<?> _class;
+	
 	ExtensionPoints(String id, Class<?> _class){
 		 this.identifier = id;
 		 this._class = _class;
