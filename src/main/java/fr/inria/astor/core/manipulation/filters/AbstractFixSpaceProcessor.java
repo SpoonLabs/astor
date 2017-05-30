@@ -3,6 +3,7 @@ package fr.inria.astor.core.manipulation.filters;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeElement;
@@ -15,7 +16,7 @@ import spoon.reflect.code.CtCodeElement;
  * 
  * @param <T>
  */
-public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends AbstractProcessor<T> {
+public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends AbstractProcessor<T> implements AstorExtensionPoint {
 
 	
 	public static boolean mustClone = true;
