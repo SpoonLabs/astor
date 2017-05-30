@@ -368,9 +368,22 @@ public class JGenProg extends AstorCoreEngine {
 		super.loadExtensionPoints();
 
 		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
+		
 		// Fix Space
-		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
-
+		ExtensionPoints epoint = ExtensionPoints.INGREDIENT_PROCESSOR;
+		if(!ConfigurationProperties.hasProperty(epoint.identifier)){
+			//By default, we use statements as granularity level.
+			ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
+		}else{
+			//We load custom processors
+			String ingrProcessors = ConfigurationProperties.getProperty(epoint.identifier);
+			String[] in = ingrProcessors.split(File.pathSeparator);
+			for (String processor : in) {
+				AbstractFixSpaceProcessor proc_i = (AbstractFixSpaceProcessor) PlugInLoader.loadPlugin(processor, epoint._class);
+				ingredientProcessors.add(proc_i);
+			}
+		}
+		
 		OperatorSpace jpgoperatorSpace = PlugInLoader.loadOperatorSpace();
 		if (jpgoperatorSpace == null)
 			jpgoperatorSpace = new jGenProgSpace();
