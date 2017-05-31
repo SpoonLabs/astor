@@ -69,9 +69,7 @@ public abstract class AstorOperator implements AstorExtensionPoint{
 	 * @param point location to modify
 	 * @return
 	 */
-	public  boolean canBeAppliedToPoint(ModificationPoint point){
-		return (point.getCodeElement() instanceof CtStatement);
-	};
+	public  abstract boolean canBeAppliedToPoint(ModificationPoint point);
 	
 	/**
 	 * Operator name
