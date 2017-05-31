@@ -221,7 +221,7 @@ public class OperatorInstance {
 			}
 
 		} else {
-			log.error("Parent different to block");
+			log.debug("Attention: parent different to block");
 		}
 		return false;
 	}
