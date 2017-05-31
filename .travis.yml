@@ -14,6 +14,7 @@ env:
   - TEST=fr.inria.astor.test.repair.evaluation.IngredientSpaceTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.EvoSuiteParticularClassesTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.LangTest
+  - TEST=fr.inria.astor.test.repair.evaluation.operators.ExpressionOperatorTest
  
 script:
   - mvn clean
