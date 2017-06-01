@@ -212,7 +212,7 @@ public class JGenProg extends AstorCoreEngine {
 	 * @throws IllegalAccessException
 	 */
 	@Override
-	protected OperatorInstance createOperatorInstanceForPoint(ModificationPoint modificationPoint)
+	public OperatorInstance createOperatorInstanceForPoint(ModificationPoint modificationPoint)
 			throws IllegalAccessException {
 		SuspiciousModificationPoint suspModificationPoint = (SuspiciousModificationPoint) modificationPoint;
 
