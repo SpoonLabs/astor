@@ -62,7 +62,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	 * @throws IllegalAccessException
 	 */
 	 @Override
-	protected OperatorInstance createOperatorInstanceForPoint(ModificationPoint gen) throws IllegalAccessException {
+	public OperatorInstance createOperatorInstanceForPoint(ModificationPoint gen) throws IllegalAccessException {
 		ModificationPoint genSusp =  gen;
 							
 		AstorOperator operationType = new ReplaceOp();
