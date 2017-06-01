@@ -12,7 +12,7 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez
  *
  */
-public class ExpressionOperator extends AstorOperator {
+public class ExpressionReplaceOperator extends ReplaceOp {
 
 	@Override
 	public boolean applyChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
@@ -55,4 +55,11 @@ public class ExpressionOperator extends AstorOperator {
 	 	return (point.getCodeElement() instanceof CtExpression);
 	}
 
+	/**
+	 * The replace operator *needs* an ingredient.
+	 * @return
+	 */
+	public boolean needIngredient() {
+		return true;
+	}
 }
