@@ -61,13 +61,11 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 
 		int attempts = 0;
 
-		boolean continueSearching = true;
-
 		int elementsFromFixSpace = getSpaceSize(modificationPoint, operationType);
 
 		Stats.currentStat.initializeIngCounter(variant_id);
 
-		while (continueSearching && attempts < elementsFromFixSpace) {
+		while (attempts < elementsFromFixSpace) {
 
 			Ingredient randomIngredient = super.getFixIngredient(modificationPoint, operationType);
 
@@ -76,10 +74,12 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 			}
 			CtElement elementFromIngredient = randomIngredient.getCode();
 
-			attempts++;
-
 			boolean alreadyApplied = alreadySelected(modificationPoint, elementFromIngredient, operationType);
 
+			attempts = appliedCache.get(getKey(modificationPoint, operationType)).size();
+			log.debug(String.format("\nattempts {%d} total %d", attempts, elementsFromFixSpace));
+			
+			
 			if (alreadyApplied) {
 				log.debug("Ingredient Already applied");
 				continue;
@@ -91,9 +91,12 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 				log.debug("Ingredient same that the mod point");
 				continue;
 			}
+			
+			
 			IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(),
 					elementFromIngredient);
 			randomIngredient.setScope(scope);
+			
 			return randomIngredient;
 
 		} // End while
@@ -146,8 +149,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 	 */
 	protected boolean alreadySelected(ModificationPoint gen, CtElement fixElement, AstorOperator operator) {
 		// we add the instance identifier to the patch.
-		String lockey = gen.getCodeElement().getPosition().toString() + "-" + gen.getCodeElement() + "-"
-				+ operator.toString();
+		String lockey = getKey(gen, operator);
 		String fix = "";
 		try {
 			fix = fixElement.toString();
@@ -165,7 +167,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 		} else {
 			// The element has mutation applied
 			if (prev.contains(fix)) {
-				log.debug("\nAlready: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
+				//log.debug("\nAlready: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
 				return true;
 			} else {
 				prev.add(fix);
@@ -173,6 +175,12 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 				return false;
 			}
 		}
+	}
+
+	private String getKey(ModificationPoint gen, AstorOperator operator) {
+		String lockey = gen.getCodeElement().getPosition().toString() + "-" + gen.getCodeElement() + "-"
+				+ operator.toString();
+		return lockey;
 	}
 
 }
