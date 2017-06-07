@@ -5,6 +5,7 @@ import java.util.List;
 
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeElement;
 
@@ -20,8 +21,12 @@ public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends
 
 	
 	public static boolean mustClone = true;
-	public static boolean allowsDuplicateIngredients = true;
+	boolean allowsDuplicateIngredients = false;
 	
+	
+	public AbstractFixSpaceProcessor(){
+		allowsDuplicateIngredients = ConfigurationProperties.getPropertyBool("duplicateingredientsinspace");
+	}
 	/**
 	 * This list saves the result
 	 */

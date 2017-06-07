@@ -15,6 +15,7 @@ import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
@@ -24,6 +25,7 @@ import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.other.FakeIngredientStrategy;
 import fr.inria.astor.test.repair.evaluation.other.ShortestIngredientSearchStrategy;
+import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
@@ -370,6 +372,65 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 		assertTrue(ctLocations.get(0) instanceof spoon.reflect.declaration.CtClass);
 	}
 
+	
+	@Test
+	public void testMath70WithCtLocationAvoidDuplicatesInSpace() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(),
+				"-stopfirst","true",
+				"-seed", "10", "-maxgen", "100", 
+				"-scope",	CtLocationIngredientSpace.class.getCanonicalName() ,
+				"-parameters","duplicateingredientsinspace:false"
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		//At least one solution in local scope mode.
+		assertTrue(solutions.size() > 0);
+
+		//We retrieve the engine
+		JGenProg jgp = (JGenProg) main1.getEngine();
+		IngredientSpace ispace = jgp.getIngredientStrategy().getIngredientSpace();
+		//List of locations considered by the space
+		List<CtElement> ctLocations = ispace.getLocations();
+		//Only one class has suspicious: org.apache.commons.math.analysis.solvers.BisectionSolver
+		assertEquals(1, ctLocations.size());
+		//Now, we location is a CtClass (see CTLocationIngredientScope#calculateLocation)
+		assertTrue(ctLocations.get(0) instanceof spoon.reflect.declaration.CtClass);
+		
+		ProgramVariant pv = solutions.get(0);
+		ModificationPoint mp = pv.getModificationPoints().get(7);
+		assertEquals("return solve(f, min, max)",mp.getCodeElement().toString());
+		assertEquals(72,((SuspiciousModificationPoint)mp).getSuspicious().getLineNumber());
+		
+		List ingredientsWithoutDuplicates = jgp.getIngredientStrategy().getIngredientSpace().getIngredients(mp.getCodeElement(), mp.getCodeElement().getClass().getSimpleName());
+		assertEquals(3, ingredientsWithoutDuplicates.size());
+		
+		
+		//Now, with duplicates:
+		
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put(	"-parameters","duplicateingredientsinspace:true");
+		main1.execute(cs.flat());
+		jgp = (JGenProg) main1.getEngine();
+		pv = solutions.get(0);
+		mp = pv.getModificationPoints().get(7);
+		assertEquals("return solve(f, min, max)",mp.getCodeElement().toString());
+		assertEquals(72,((SuspiciousModificationPoint)mp).getSuspicious().getLineNumber());
+		
+		List ingredientsWithDuplicates = jgp.getIngredientStrategy().getIngredientSpace().getIngredients(mp.getCodeElement(), mp.getCodeElement().getClass().getSimpleName());
+		assertEquals(4, ingredientsWithDuplicates.size());
+		
+		
+	}
 	
 	
 }
