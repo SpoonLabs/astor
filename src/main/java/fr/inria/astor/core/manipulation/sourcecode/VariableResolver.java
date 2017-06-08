@@ -301,10 +301,14 @@ public class VariableResolver {
 				List<CtVariable> varExist = existVariableWithName(varContext, wordFromCluster);
 				// check compatibility between varExist and wout
 				for (CtVariable varInScope : varExist) {
-					boolean compatibleVariables = areVarsCompatible( variableOutScope, varInScope);
-					if(compatibleVariables){
-						addVarMappingAsResult(varsMaps, varOutWrapper, varInScope);
-						mapped = true;
+					boolean sameNames = variableOutScope.getVariable().getSimpleName()
+							.equals(varInScope.getSimpleName());
+					if (!sameNames) {
+						boolean compatibleVariables = areVarsCompatible(variableOutScope, varInScope);
+						if (compatibleVariables) {
+							addVarMappingAsResult(varsMaps, varOutWrapper, varInScope);
+							mapped = true;
+						}
 					}
 				}
 
@@ -319,30 +323,34 @@ public class VariableResolver {
 		return mappings;
 
 	}
-	public  static VarMapping mapVariablesFromContext(List<CtVariable> varContext, CtElement ingredientCtElement) {
+
+	public static VarMapping mapVariablesFromContext(List<CtVariable> varContext, CtElement ingredientCtElement) {
 
 		// var out-of scope, list of variables compatibles
 		Map<VarAccessWrapper, List<CtVariable>> varsMaps = new HashMap<>();
-		
+
 		List<CtVariableAccess> varsNotMapped = new ArrayList<>();
 
-
-		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContext, ingredientCtElement);
+		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContext,
+				ingredientCtElement);
 		logger.debug("#vars out of context: " + variablesOutOfScope.size());
-		//For each var out of scopt
-		for (CtVariableAccess variableOutScope: variablesOutOfScope) {
-				
-				boolean mapped = false;
-				VarAccessWrapper varOutWrapper = new VarAccessWrapper(variableOutScope);
-				//For each var in context
-				for (CtVariable  varInScope: varContext) {
-				
-					boolean compatibleVariables = areVarsCompatible( variableOutScope, varInScope);
-					if(compatibleVariables){
+		// For each var out of scopt
+		for (CtVariableAccess variableOutScope : variablesOutOfScope) {
+
+			boolean mapped = false;
+			VarAccessWrapper varOutWrapper = new VarAccessWrapper(variableOutScope);
+			// For each var in context
+			for (CtVariable varInScope : varContext) {
+
+				boolean sameNames = variableOutScope.getVariable().getSimpleName().equals(varInScope.getSimpleName());
+				if (!sameNames) {
+					boolean compatibleVariables = areVarsCompatible(variableOutScope, varInScope);
+					if (compatibleVariables) {
 						addVarMappingAsResult(varsMaps, varOutWrapper, varInScope);
 						mapped = true;
 					}
 				}
+			}
 			// if the var was not matched, we put in list of variables out of
 			// scope not mapped.
 			if (!mapped)
@@ -353,16 +361,16 @@ public class VariableResolver {
 		return mappings;
 
 	}
-	
+
 	/**
 	 * Return true if the variables are compatible
-	 * @param varOutScope 
+	 * 
+	 * @param varOutScope
 	 * @param varInScope
 	 * @return
 	 */
 	public static boolean areVarsCompatible(CtVariableAccess varOutScope, CtVariable varInScope) {
-	
-		
+
 		try {// Check if an existing variable (name taken from
 				// cluster)
 				// is compatible with with that one out of scope
@@ -378,7 +386,7 @@ public class VariableResolver {
 
 				if (clusterIsArray ^ ourIsArray) {
 					notCompatible = true;
-					
+
 				}
 				// if both are arrays, we extract the component
 				// type, and we compare it again
@@ -402,8 +410,8 @@ public class VariableResolver {
 		return false;
 	}
 
-	private static void addVarMappingAsResult(Map<VarAccessWrapper, List<CtVariable>> varMaps, VarAccessWrapper varOutWrapper,
-			CtVariable varInContext) {
+	private static void addVarMappingAsResult(Map<VarAccessWrapper, List<CtVariable>> varMaps,
+			VarAccessWrapper varOutWrapper, CtVariable varInContext) {
 		List<CtVariable> vars = varMaps.get(varOutWrapper);
 		if (vars == null) {
 			vars = new ArrayList<>();
@@ -774,8 +782,8 @@ public class VariableResolver {
 	/**
 	 * Method that finds all combination of variables mappings Ex: if var 'a'
 	 * can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return
-	 * all combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2)
-	 * It calculates at most 'maxVarCombination', where 
+	 * all combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2) It calculates at most
+	 * 'maxVarCombination', where
 	 * 
 	 * @param mappedVars
 	 *            map of variables (out-of-scope) and candidate replacements of
@@ -830,7 +838,7 @@ public class VariableResolver {
 			}
 		}
 	}
-	
+
 	public static IngredientSpaceScope determineIngredientScope(CtElement ingredient, CtElement fix) {
 
 		File ingp = ingredient.getPosition().getFile();
@@ -844,7 +852,7 @@ public class VariableResolver {
 		}
 		return IngredientSpaceScope.GLOBAL;
 	}
-	
+
 	@Deprecated
 	protected IngredientSpaceScope determineIngredientScope(CtElement modificationpoint, CtElement selectedFix,
 			List<?> ingredients) {
@@ -878,5 +886,5 @@ public class VariableResolver {
 		}
 		return orig;
 	}
-	
+
 }
