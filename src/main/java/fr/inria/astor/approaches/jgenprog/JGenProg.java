@@ -244,8 +244,7 @@ public class JGenProg extends AstorCoreEngine {
 						log.debug("The transformation steategy has not returned any transformed ingredient");
 						return null;
 					} else {
-						// TODO: we take the first one
-						ingredient = ingredientsAfterTransformation.get(0);
+						ingredient = ingredientsAfterTransformation.get(RandomManager.nextInt(ingredientsAfterTransformation.size()));
 					}
 				}
 
