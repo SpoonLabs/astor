@@ -108,7 +108,7 @@ public class VarMappingTest {
 
 		List<CtVariable> varContextC3 = VariableResolver.searchVariablesInScope(c3);
 		// the ingredient has 5 Xs
-		VarMapping vmappingOnevar = VariableResolver.mapVariables(varContextC3, stmMultiplesXs);
+		VarMapping vmappingOnevar = VariableResolver.mapVariablesUsingCluster(varContextC3, stmMultiplesXs);
 		assertEquals(5, vmappingOnevar.getMappedVariables().size());
 		assertEquals(5, vmappingOnevar.getMappedVariables().keySet().size());
 		assertTrue(vmappingOnevar.getNotMappedVariables().isEmpty());
@@ -159,7 +159,7 @@ public class VarMappingTest {
 
 		List<CtVariable> varContextC1 = VariableResolver.searchVariablesInScope(c1);
 		// ingredient return (a + b) * .5
-		VarMapping vmapping1 = VariableResolver.mapVariables(varContextC1, otherClassElementC8);
+		VarMapping vmapping1 = VariableResolver.mapVariablesUsingCluster(varContextC1, otherClassElementC8);
 		Map<VarAccessWrapper, List<CtVariable>> mapsVariablesOutC1 = vmapping1.getMappedVariables();
 		log.debug("mapping 1 -->" + mapsVariablesOutC1);
 		assertFalse(mapsVariablesOutC1.values().isEmpty());
@@ -182,7 +182,7 @@ public class VarMappingTest {
 		assertEquals(2, varsScopeStmSetup.size());
 		log.debug("context of Setup method " + varsScopeStmSetup);
 
-		VarMapping vmapping3 = VariableResolver.mapVariables(varsScopeStmSetup, otherClassElementC8);
+		VarMapping vmapping3 = VariableResolver.mapVariablesUsingCluster(varsScopeStmSetup, otherClassElementC8);
 		assertTrue(vmapping3.getMappedVariables().isEmpty());
 		assertFalse(vmapping3.getNotMappedVariables().isEmpty());
 		assertEquals(2, vmapping3.getNotMappedVariables().size());
@@ -193,7 +193,7 @@ public class VarMappingTest {
 	public void testMappingTwoVars() {
 		// We try to insert C8 (a + b ...) in the place ofC3 (clearResult)
 		List<CtVariable> varContextC3 = VariableResolver.searchVariablesInScope(c3);
-		VarMapping vmapping2 = VariableResolver.mapVariables(varContextC3, otherClassElementC8);
+		VarMapping vmapping2 = VariableResolver.mapVariablesUsingCluster(varContextC3, otherClassElementC8);
 
 		Map<VarAccessWrapper, List<CtVariable>> mapsVariablesOutC2 = vmapping2.getMappedVariables();
 
@@ -219,7 +219,7 @@ public class VarMappingTest {
 		List<CtVariable> varContextC3 = VariableResolver.searchVariablesInScope(c3);//
 
 		// We try to insert C8 (a + b ...) in the place ofC3 (clearResult)
-		VarMapping vmapping2 = VariableResolver.mapVariables(varContextC3, otherClassElementC8);
+		VarMapping vmapping2 = VariableResolver.mapVariablesUsingCluster(varContextC3, otherClassElementC8);
 
 		List<Map<String, CtVariable>> allCombinations = VariableResolver
 				.findAllVarMappingCombination(vmapping2.getMappedVariables());
@@ -281,7 +281,7 @@ public class VarMappingTest {
 		// We will try to put c3 (clearResult()) in c1.
 		List<CtVariable> varContextC1 = VariableResolver.searchVariablesInScope(c1);
 
-		VarMapping vmapping2 = VariableResolver.mapVariables(varContextC1, c3);
+		VarMapping vmapping2 = VariableResolver.mapVariablesUsingCluster(varContextC1, c3);
 		// As the ingredient has not value, all collections must be empty
 		assertTrue(vmapping2.getNotMappedVariables().isEmpty());
 		assertTrue(vmapping2.getNotMappedVariables().isEmpty());
@@ -383,7 +383,7 @@ public class VarMappingTest {
 		List<CtVariable> varContextC3 = VariableResolver.searchVariablesInScope(c3);//
 
 		// We try to insert C8 (a + b ...) in the place ofC3 (clearResult)
-		VarMapping vmapping2 = VariableResolver.mapVariables(varContextC3, otherClassElementC8);
+		VarMapping vmapping2 = VariableResolver.mapVariablesUsingCluster(varContextC3, otherClassElementC8);
 
 		List<Map<String, CtVariable>> allCombinations = VariableResolver
 				.findAllVarMappingCombination(vmapping2.getMappedVariables());

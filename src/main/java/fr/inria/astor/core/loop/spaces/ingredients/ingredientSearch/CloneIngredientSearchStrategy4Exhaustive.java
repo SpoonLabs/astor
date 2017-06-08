@@ -219,7 +219,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 					log.debug("The modification point  has not any var in scope");
 				}
 				// I wrote all branches even they are not necessaries to easily observe all cases.
-				VarMapping mapping = VariableResolver.mapVariables(modificationPoint.getContextOfModificationPoint(),
+				VarMapping mapping = VariableResolver.mapVariablesUsingCluster(modificationPoint.getContextOfModificationPoint(),
 						ingredient);
 				// if we map all variables
 				if (mapping.getNotMappedVariables().isEmpty()) {
@@ -534,7 +534,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 					log.debug("The modification point  has not any var in scope");
 				}
 				// I wrote all branches even they are not necessaries to easily observe all cases.
-				VarMapping mapping = VariableResolver.mapVariables(modificationPoint.getContextOfModificationPoint(),
+				VarMapping mapping = VariableResolver.mapVariablesUsingCluster(modificationPoint.getContextOfModificationPoint(),
 						ingredient);
 				// if we map all variables
 				if (mapping.getNotMappedVariables().isEmpty()) {

@@ -626,7 +626,7 @@ public class VariableResolverTest {
 		
 
 		System.out.println("Comparing: "+ varsContext +" "+ st2);
-		VarMapping vm = VariableResolver.mapVariables(varsContext, st2);
+		VarMapping vm = VariableResolver.mapVariablesUsingCluster(varsContext, st2);
 		assertTrue(vm.getMappedVariables().isEmpty());
 		System.out.println("map "+vm.getMappedVariables());
 		System.out.println("-----");
@@ -636,7 +636,7 @@ public class VariableResolverTest {
 		System.out.println(mt3);
 		CtStatement ingredient =  mt3.getBody().getStatement(0);
 		System.out.println("Comparing: "+ varsContext +" "+ingredient);
-		VarMapping vm3 = VariableResolver.mapVariables(varsContext, ingredient);
+		VarMapping vm3 = VariableResolver.mapVariablesUsingCluster(varsContext, ingredient);
 		System.out.println("map "+vm3.getMappedVariables());
 		assertTrue(vm3.getMappedVariables().isEmpty());
 		System.out.println("-----");
@@ -645,7 +645,7 @@ public class VariableResolverTest {
 		//
 		System.out.println("Comparing: "+ varsContext +" "+ mt3.getBody().getStatement(0));
 		ingredient =  mt1.getBody().getStatement(0);
-		VarMapping vm4 = VariableResolver.mapVariables(varsContext, ingredient);
+		VarMapping vm4 = VariableResolver.mapVariablesUsingCluster(varsContext, ingredient);
 		System.out.println("map "+vm4.getMappedVariables());
 		assertTrue(vm4.getMappedVariables().isEmpty());
 		System.out.println("-----");
@@ -657,7 +657,7 @@ public class VariableResolverTest {
 		ingredient =  mt1.getBody().getStatement(1);
 		System.out.println("Comparing: "+ varsContext2 +" and "+ ingredient);
 		
-		VarMapping vm5 = VariableResolver.mapVariables(varsContext2, ingredient);
+		VarMapping vm5 = VariableResolver.mapVariablesUsingCluster(varsContext2, ingredient);
 
 		System.out.println("map 5 "+vm5.getMappedVariables());
 		

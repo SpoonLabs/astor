@@ -272,7 +272,7 @@ public class VariableResolver {
 	/**
 	 * 
 	 */
-	public static VarMapping mapVariables(List<CtVariable> varContext, CtElement ingredientCtElement) {
+	public static VarMapping mapVariablesUsingCluster(List<CtVariable> varContext, CtElement ingredientCtElement) {
 
 		// var out-of scope, list of variables compatibles
 		Map<VarAccessWrapper, List<CtVariable>> varMaps = new HashMap<>();
