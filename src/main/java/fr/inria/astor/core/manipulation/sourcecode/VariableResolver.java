@@ -275,10 +275,8 @@ public class VariableResolver {
 	public static VarMapping mapVariablesUsingCluster(List<CtVariable> varContext, CtElement ingredientCtElement) {
 
 		// var out-of scope, list of variables compatibles
-		Map<VarAccessWrapper, List<CtVariable>> varMaps = new HashMap<>();
-		List<CtVariableAccess> notMappedVariables = new ArrayList<>();
-
-		ClassLoader classLoader = VariableResolver.class.getClassLoader();
+		Map<VarAccessWrapper, List<CtVariable>> varsMaps = new HashMap<>();
+		List<CtVariableAccess> varsNotMapped = new ArrayList<>();
 
 		Map<String, List<String>> clusters = cluster
 				.readClusterFile(Paths.get(ConfigurationProperties.getProperty("learningdir") + File.separator
@@ -286,66 +284,27 @@ public class VariableResolver {
 
 		List<CtVariableAccess> variablesOutOfScope = retriveVariablesOutOfContext(varContext, ingredientCtElement);
 		logger.debug("#vars out of context: " + variablesOutOfScope.size());
-		for (CtVariableAccess wOut : variablesOutOfScope) {
+		for (CtVariableAccess variableOutScope : variablesOutOfScope) {
 
-			List<String> wcluster = clusters.get(wOut.getVariable().getSimpleName());
+			List<String> wcluster = clusters.get(variableOutScope.getVariable().getSimpleName());
 
 			if (wcluster == null) {
-				logger.debug("variable our of scope without context: " + wOut);
+				logger.debug("variable our of scope without context: " + variableOutScope);
 				continue;
 			}
-			logger.debug("--var  out of context: " + wOut + ", with wcluster size " + wcluster.size());
+			logger.debug("--var  out of context: " + variableOutScope + ", with wcluster size " + wcluster.size());
 
 			boolean mapped = false;
-			VarAccessWrapper varOutWrapper = new VarAccessWrapper(wOut);
+			VarAccessWrapper varOutWrapper = new VarAccessWrapper(variableOutScope);
 			for (String wordFromCluster : wcluster) {// In order
 
 				List<CtVariable> varExist = existVariableWithName(varContext, wordFromCluster);
 				// check compatibility between varExist and wout
-				for (CtVariable varFromCluster : varExist) {
-					try {// Check if an existing variable (name taken from
-							// cluster)
-							// is compatible with with that one out of scope
-						CtTypeReference refCluster = varFromCluster.getType();
-						CtTypeReference refOut = wOut.getType();
-
-						boolean bothArray = false;
-						boolean notCompatible = false;
-						do {
-							// We check if types are arrays.
-							boolean clusterIsArray = refCluster instanceof CtArrayTypeReference;
-							boolean ourIsArray = refOut instanceof CtArrayTypeReference;
-
-							if (clusterIsArray ^ ourIsArray) {
-								notCompatible = true;
-								break;
-							}
-							// if both are arrays, we extract the component
-							// type, and we compare it again
-							bothArray = clusterIsArray && ourIsArray;
-							if (bothArray) {
-								refCluster = ((CtArrayTypeReference) refCluster).getComponentType();
-								refOut = ((CtArrayTypeReference) refOut).getComponentType();
-							}
-
-						} while (bothArray);
-
-						if (notCompatible)
-							continue;
-
-						if (refCluster.isSubtypeOf(refOut)) {
-							List<CtVariable> vars = varMaps.get(varOutWrapper);
-							if (vars == null) {
-								vars = new ArrayList<>();
-								varMaps.put(varOutWrapper, vars);
-							}
-							vars.add(varFromCluster);
-							mapped = true;
-
-						}
-					} catch (Exception e) {
-						logger.error(e);
-						// e.printStackTrace();
+				for (CtVariable varInScope : varExist) {
+					boolean compatibleVariables = areVarsCompatible( variableOutScope, varInScope);
+					if(compatibleVariables){
+						addVarMappingAsResult(varsMaps, varOutWrapper, varInScope);
+						mapped = true;
 					}
 				}
 
@@ -353,12 +312,104 @@ public class VariableResolver {
 			// if the var was not matched, we put in list of variables out of
 			// scope not mapped.
 			if (!mapped)
-				notMappedVariables.add(wOut);
+				varsNotMapped.add(variableOutScope);
 
 		}
-		VarMapping mappings = new VarMapping(varMaps, notMappedVariables);
+		VarMapping mappings = new VarMapping(varsMaps, varsNotMapped);
 		return mappings;
 
+	}
+	public  static VarMapping mapVariablesFromContext(List<CtVariable> varContext, CtElement ingredientCtElement) {
+
+		// var out-of scope, list of variables compatibles
+		Map<VarAccessWrapper, List<CtVariable>> varsMaps = new HashMap<>();
+		
+		List<CtVariableAccess> varsNotMapped = new ArrayList<>();
+
+
+		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContext, ingredientCtElement);
+		logger.debug("#vars out of context: " + variablesOutOfScope.size());
+		//For each var out of scopt
+		for (CtVariableAccess variableOutScope: variablesOutOfScope) {
+				
+				boolean mapped = false;
+				VarAccessWrapper varOutWrapper = new VarAccessWrapper(variableOutScope);
+				//For each var in context
+				for (CtVariable  varInScope: varContext) {
+				
+					boolean compatibleVariables = areVarsCompatible( variableOutScope, varInScope);
+					if(compatibleVariables){
+						addVarMappingAsResult(varsMaps, varOutWrapper, varInScope);
+						mapped = true;
+					}
+				}
+			// if the var was not matched, we put in list of variables out of
+			// scope not mapped.
+			if (!mapped)
+				varsNotMapped.add(variableOutScope);
+
+		}
+		VarMapping mappings = new VarMapping(varsMaps, varsNotMapped);
+		return mappings;
+
+	}
+	
+	/**
+	 * Return true if the variables are compatible
+	 * @param varOutScope 
+	 * @param varInScope
+	 * @return
+	 */
+	public static boolean areVarsCompatible(CtVariableAccess varOutScope, CtVariable varInScope) {
+	
+		
+		try {// Check if an existing variable (name taken from
+				// cluster)
+				// is compatible with with that one out of scope
+			CtTypeReference refCluster = varInScope.getType();
+			CtTypeReference refOut = varOutScope.getType();
+
+			boolean bothArray = false;
+			boolean notCompatible = false;
+			do {
+				// We check if types are arrays.
+				boolean clusterIsArray = refCluster instanceof CtArrayTypeReference;
+				boolean ourIsArray = refOut instanceof CtArrayTypeReference;
+
+				if (clusterIsArray ^ ourIsArray) {
+					notCompatible = true;
+					
+				}
+				// if both are arrays, we extract the component
+				// type, and we compare it again
+				bothArray = clusterIsArray && ourIsArray;
+				if (bothArray) {
+					refCluster = ((CtArrayTypeReference) refCluster).getComponentType();
+					refOut = ((CtArrayTypeReference) refOut).getComponentType();
+				}
+
+			} while (bothArray);
+
+			if (notCompatible)
+				return false;
+
+			if (refCluster.isSubtypeOf(refOut)) {
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		return false;
+	}
+
+	private static void addVarMappingAsResult(Map<VarAccessWrapper, List<CtVariable>> varMaps, VarAccessWrapper varOutWrapper,
+			CtVariable varInContext) {
+		List<CtVariable> vars = varMaps.get(varOutWrapper);
+		if (vars == null) {
+			vars = new ArrayList<>();
+			varMaps.put(varOutWrapper, vars);
+		}
+		vars.add(varInContext);
 	}
 
 	/**
