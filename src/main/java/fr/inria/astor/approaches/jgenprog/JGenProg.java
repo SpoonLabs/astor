@@ -18,7 +18,6 @@ import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.DefaultIngredientTransformation;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
@@ -29,7 +28,6 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
-import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
@@ -418,7 +416,7 @@ public class JGenProg extends AstorCoreEngine {
 		if (ingredientTransformationStrategyClassName == null) {
 			this.ingredientTransformationStrategy = new DefaultIngredientTransformation();
 		} else {
-			PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
+			this.ingredientTransformationStrategy =  (IngredientTransformationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
 		}
 
 	}
@@ -438,5 +436,21 @@ public class JGenProg extends AstorCoreEngine {
 		else
 			throw new Exception("The strategy " + opSelectionStrategyClassName + " does not extend from "
 					+ OperatorSelectionStrategy.class.getName());
+	}
+
+	public IngredientSearchStrategy getIngredientSearchStrategy() {
+		return ingredientSearchStrategy;
+	}
+
+	public void setIngredientSearchStrategy(IngredientSearchStrategy ingredientSearchStrategy) {
+		this.ingredientSearchStrategy = ingredientSearchStrategy;
+	}
+
+	public IngredientTransformationStrategy getIngredientTransformationStrategy() {
+		return ingredientTransformationStrategy;
+	}
+
+	public void setIngredientTransformationStrategy(IngredientTransformationStrategy ingredientTransformationStrategy) {
+		this.ingredientTransformationStrategy = ingredientTransformationStrategy;
 	}
 }
