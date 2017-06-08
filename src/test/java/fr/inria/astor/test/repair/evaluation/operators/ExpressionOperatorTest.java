@@ -13,14 +13,20 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.AstorIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
+import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
+import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.test.repair.evaluation.regression.MathTests;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
@@ -30,6 +36,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtVariable;
 
 /**
  * 
@@ -228,4 +235,102 @@ public class ExpressionOperatorTest {
 
 	}
 
+	
+	/**
+	 * This test uses a new ingredient space specially created to manage expressions.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testM70ExpressionAdaptation() throws Exception {
+
+		CommandSummary command = MathTests.getMath70Command();
+		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				+ ExpressionIngredientSpaceProcessor.class.getCanonicalName()
+				+  File.pathSeparator
+				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier
+				+  File.pathSeparator
+				+ InScopeVarsTransformation.class.getCanonicalName());
+		command.command.put("-maxgen", "0");// Avoid evolution
+		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put("-scope", ExpressionIngredientSpace.class.getName());
+		command.command.put("-flthreshold", "0.1");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		List<ProgramVariant> variantss = main1.getEngine().getVariants();
+		assertTrue(variantss.size() > 0);
+
+		JGenProg engine = (JGenProg) main1.getEngine();
+		ModificationPoint modificationPoint = variantss.get(0).getModificationPoints().get(14);
+
+		assertEquals("i < (maximalIterationCount)", modificationPoint.getCodeElement().toString());
+
+		// Let's inspect the ingredient space:
+		ExpressionIngredientSpace ingredientSpace = (ExpressionIngredientSpace) engine.getIngredientStrategy()
+				.getIngredientSpace();
+		assertNotNull(ingredientSpace);
+		assertTrue(ExpressionIngredientSpace.class.isInstance(ingredientSpace));
+		
+
+		log.debug("Ingredient \n:" + ingredientSpace.getAllIngredients());
+
+		// Let's test the creation of a operator instance.
+		OperatorInstance opInstance = engine.createOperatorInstanceForPoint(modificationPoint);
+		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(opInstance.getOriginal(),
+				ExpressionReplaceOperator.class.getName());
+		
+		
+		
+		log.debug("\nAll ingredients "+ ingredients);
+		
+		CtCodeElement ingredientTargeted = ingredients.get(4);
+		
+		assertEquals("maximumIterations <= 0", ingredientTargeted.toString());
+		
+		
+		IngredientTransformationStrategy transfStrategy = engine.getIngredientTransformationStrategy();
+		assertNotNull(transfStrategy);
+		
+		
+		assertTrue(InScopeVarsTransformation.class.isInstance(transfStrategy));
+		
+		InScopeVarsTransformation inScopeStrategy = (InScopeVarsTransformation) transfStrategy;
+		
+		
+		VarMapping mapping = VariableResolver.mapVariablesFromContext(modificationPoint.getContextOfModificationPoint(),
+				 ingredientTargeted);
+		
+		List<CtVariable> variablesMapped =  mapping.getMappedVariables().values().iterator().next();
+		assertNotNull(variablesMapped);
+		
+		//[protected int maximalIterationCount;, protected int defaultMaximalIterationCount;, protected int iterationCount;, int i = 0]
+		assertEquals(4, variablesMapped.size());
+	
+		
+		List<Ingredient> transformedIngredients = inScopeStrategy.transform(modificationPoint, new Ingredient(ingredientTargeted));
+		
+		log.debug("\nTransformed ingredients "+ transformedIngredients);
+		assertEquals(4, transformedIngredients.size());
+		
+		
+		for (CtVariable ctVariableInScope : variablesMapped) {
+				
+			boolean ingredientTransformedHasVarInScope = false;
+			for (Ingredient ingredient : transformedIngredients) {
+				System.out.println(String.format(" %s %s ", ingredient.getCode().toString(), (ctVariableInScope.getSimpleName())));
+				if(ingredient.getCode().toString().contains(ctVariableInScope.getSimpleName())){
+					ingredientTransformedHasVarInScope = true;
+					break;
+				}
+			}
+			assertTrue(ingredientTransformedHasVarInScope);
+			
+		}
+		
+		
+	}
+
+	
 }
