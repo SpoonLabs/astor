@@ -39,5 +39,10 @@ public class Ingredient {
 	public void setScope(IngredientSpaceScope scope) {
 		this.scope = scope;
 	}
+
+	@Override
+	public String toString() {
+		return "Ingredient [code=" + code + "]";
+	}
 	
 }
