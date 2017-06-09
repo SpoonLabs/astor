@@ -31,20 +31,20 @@ public class InScopeVarsTransformation extends ClusterIngredientTransformation
 
 		List<Ingredient> result = new ArrayList<>();
 
-		CtCodeElement ctIngredient = (CtCodeElement) ingredient.getCode();
+		CtCodeElement codeElementToModify = (CtCodeElement) ingredient.getCode();
 
 		if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
 			logger.debug("The modification point  has not any var in scope");
 		}
 
 		VarMapping mapping = VariableResolver.mapVariablesFromContext(modificationPoint.getContextOfModificationPoint(),
-				ctIngredient);
+				codeElementToModify);
 		// if we map all variables
 		if (mapping.getNotMappedVariables().isEmpty()) {
 			if (mapping.getMappedVariables().isEmpty()) {
 				// nothing to transform, accept the ingredient
 				logger.debug("Any transf sucessful: The var Mapping is empty, we keep the ingredient");
-				result.add(new Ingredient(ctIngredient));
+				result.add(new Ingredient(codeElementToModify));
 
 			} else {// We have mappings between variables
 				logger.debug("Ingredient before transformation: " + ingredient);
@@ -56,14 +56,13 @@ public class InScopeVarsTransformation extends ClusterIngredientTransformation
 					// getOneCombination(allCombinations);
 					for (Map<String, CtVariable> selectedTransformation : allCombinations) {
 
-						logger.debug("Transformation proposed: " + selectedTransformation);
+						//logger.debug("Transformation proposed: " + selectedTransformation);
 						// The ingredient is cloned, so we can modify
 						// its variables
 						Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver
 								.convertIngredient(mapping, selectedTransformation);
-						logger.debug("Ingredient after transformation: " + ingredient);
 						// Cloned transformed element
-						CtCodeElement codeElementCloned = MutationSupporter.clone(ctIngredient);
+						CtCodeElement codeElementCloned = MutationSupporter.clone(codeElementToModify);
 						Ingredient ingredient4Combination = new Ingredient(codeElementCloned, null);
 						result.add(ingredient4Combination);
 
