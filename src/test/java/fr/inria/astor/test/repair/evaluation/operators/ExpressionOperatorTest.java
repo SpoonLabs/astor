@@ -6,7 +6,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -36,6 +38,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 
 /**
@@ -168,7 +171,8 @@ public class ExpressionOperatorTest {
 	}
 
 	/**
-	 * This test uses a new ingredient space specially created to manage expressions.
+	 * This test uses a new ingredient space specially created to manage
+	 * expressions.
 	 * 
 	 * @throws Exception
 	 */
@@ -235,9 +239,9 @@ public class ExpressionOperatorTest {
 
 	}
 
-	
 	/**
-	 * This test uses a new ingredient space specially created to manage expressions.
+	 * This test uses a new ingredient space specially created to manage
+	 * expressions.
 	 * 
 	 * @throws Exception
 	 */
@@ -245,12 +249,11 @@ public class ExpressionOperatorTest {
 	public void testM70ExpressionAdaptation() throws Exception {
 
 		CommandSummary command = MathTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
-				+ ExpressionIngredientSpaceProcessor.class.getCanonicalName()
-				+  File.pathSeparator
-				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier
-				+  File.pathSeparator
-				+ InScopeVarsTransformation.class.getCanonicalName());
+		command.command.put("-parameters",
+				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+						+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
+						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
+						+ InScopeVarsTransformation.class.getCanonicalName());
 		command.command.put("-maxgen", "0");// Avoid evolution
 		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", ExpressionIngredientSpace.class.getName());
@@ -272,7 +275,6 @@ public class ExpressionOperatorTest {
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 		assertTrue(ExpressionIngredientSpace.class.isInstance(ingredientSpace));
-		
 
 		log.debug("Ingredient \n:" + ingredientSpace.getAllIngredients());
 
@@ -280,57 +282,76 @@ public class ExpressionOperatorTest {
 		OperatorInstance opInstance = engine.createOperatorInstanceForPoint(modificationPoint);
 		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(opInstance.getOriginal(),
 				ExpressionReplaceOperator.class.getName());
-		
-		
-		
-		log.debug("\nAll ingredients "+ ingredients);
-		
+
+		log.debug("\nAll ingredients " + ingredients);
+
 		CtCodeElement ingredientTargeted = ingredients.get(4);
-		
+
 		assertEquals("maximumIterations <= 0", ingredientTargeted.toString());
-		
-		
+
 		IngredientTransformationStrategy transfStrategy = engine.getIngredientTransformationStrategy();
 		assertNotNull(transfStrategy);
-		
-		
+
 		assertTrue(InScopeVarsTransformation.class.isInstance(transfStrategy));
-		
+
 		InScopeVarsTransformation inScopeStrategy = (InScopeVarsTransformation) transfStrategy;
-		
-		
+
 		VarMapping mapping = VariableResolver.mapVariablesFromContext(modificationPoint.getContextOfModificationPoint(),
-				 ingredientTargeted);
-		
-		List<CtVariable> variablesMapped =  mapping.getMappedVariables().values().iterator().next();
+				ingredientTargeted);
+
+		List<CtVariable> variablesMapped = mapping.getMappedVariables().values().iterator().next();
 		assertNotNull(variablesMapped);
-		
-		//[protected int maximalIterationCount;, protected int defaultMaximalIterationCount;, protected int iterationCount;, int i = 0]
+
+		// [protected int maximalIterationCount;, protected int
+		// defaultMaximalIterationCount;, protected int iterationCount;, int i =
+		// 0]
 		assertEquals(4, variablesMapped.size());
-	
-		
-		List<Ingredient> transformedIngredients = inScopeStrategy.transform(modificationPoint, new Ingredient(ingredientTargeted));
-		
-		log.debug("\nTransformed ingredients "+ transformedIngredients);
+
+		List<Ingredient> transformedIngredients = inScopeStrategy.transform(modificationPoint,
+				new Ingredient(ingredientTargeted));
+
+		log.debug("\nTransformed ingredients " + transformedIngredients);
 		assertEquals(4, transformedIngredients.size());
-		
-		
+
 		for (CtVariable ctVariableInScope : variablesMapped) {
-				
+
 			boolean ingredientTransformedHasVarInScope = false;
 			for (Ingredient ingredient : transformedIngredients) {
-				System.out.println(String.format(" %s %s ", ingredient.getCode().toString(), (ctVariableInScope.getSimpleName())));
-				if(ingredient.getCode().toString().contains(ctVariableInScope.getSimpleName())){
+				System.out.println(
+						String.format(" %s %s ", ingredient.getCode().toString(), (ctVariableInScope.getSimpleName())));
+				if (ingredient.getCode().toString().contains(ctVariableInScope.getSimpleName())) {
 					ingredientTransformedHasVarInScope = true;
 					break;
 				}
 			}
 			assertTrue(ingredientTransformedHasVarInScope);
-			
+
 		}
+		List<OperatorInstance> operatorsCreated = new ArrayList<>();
+
+		for (int i = 0; i < 10; i++) {
+			log.debug("\n OPERATION: \n " + i);
+			OperatorInstance opi = engine.createOperatorInstanceForPoint(modificationPoint);
+			// if(opi != null)
+			operatorsCreated.add(opi);
+			// else
+			// log.debug("\n NULL OPERATION: \n "+i);
+		}
+
+		log.debug("ops " + operatorsCreated);
+		for (OperatorInstance operatorInstance : operatorsCreated) {
+			log.debug("\n opInstance: " + operatorInstance);
+
+		}
+
+		List<String> ingredientsUsed = operatorsCreated.stream().map(OperatorInstance::getModified)
+				.map(CtElement::toString).distinct().collect(Collectors.toList());
+
+		log.debug("".format("ingredients used in ops [%d] %s", ingredientsUsed.size(), ingredientsUsed));
 		
+		assertEquals(operatorsCreated.size(),ingredientsUsed.size());
 		
+
 	}
 
-	
 }

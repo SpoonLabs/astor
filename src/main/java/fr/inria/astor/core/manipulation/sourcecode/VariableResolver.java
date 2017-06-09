@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -754,90 +755,7 @@ public class VariableResolver {
 
 	}
 
-	/**
-	 * 
-	 * Method that finds all combination of variables mappings Ex: if var 'a'
-	 * can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return
-	 * all combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2)
-	 * 
-	 * @param mappedVars
-	 *            map of variables (out-of-scope) and candidate replacements of
-	 * @return
-	 */
-	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
-			Map<VarAccessWrapper, List<CtVariable>> mappedVars) {
 
-		// current combination of variables
-		List<Map<String, CtVariable>> allCombinationsOne = new ArrayList<>();
-
-		if (!mappedVars.isEmpty()) {
-			List<VarAccessWrapper> varNamesToCombine = new ArrayList<>(mappedVars.keySet());
-
-			VariableResolver.findAllVarMappingCombination(mappedVars, varNamesToCombine, 0, new TreeMap<>(),
-					allCombinationsOne);
-		}
-		return allCombinationsOne;
-	}
-
-	/**
-	 * Method that finds all combination of variables mappings Ex: if var 'a'
-	 * can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return
-	 * all combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2) It calculates at most
-	 * 'maxVarCombination', where
-	 * 
-	 * @param mappedVars
-	 *            map of variables (out-of-scope) and candidate replacements of
-	 * @param varsNamesToCombine
-	 *            names of all variables (out of scope)
-	 * @param indexVar
-	 *            current variable under analysis
-	 * @param currentCombination
-	 *            current combination of variables
-	 * @param allCombinations
-	 *            list that store all variable combinations
-	 */
-	public static void findAllVarMappingCombination(Map<VarAccessWrapper, List<CtVariable>> mappedVars,
-			List<VarAccessWrapper> varsNamesToCombine, int indexVar, Map<String, CtVariable> currentCombination,
-			List<Map<String, CtVariable>> allCombinations) {
-
-		// Stop condition
-		// If we have analyzed all variables, we add the combination to the
-		// result
-		if (varsNamesToCombine.size() == indexVar) {
-			allCombinations.add(currentCombination);
-			return;
-		}
-
-		// Get the variable to map
-		VarAccessWrapper currentVar = varsNamesToCombine.get(indexVar);
-		// get all possibles variables to replace
-		List<CtVariable> mapped = mappedVars.get(currentVar);
-
-		// If we have already analyze the variales
-		if (currentCombination.containsKey(currentVar.getVar().getVariable().getSimpleName())) {
-			findAllVarMappingCombination(mappedVars, varsNamesToCombine, indexVar + 1, currentCombination,
-					allCombinations);
-		} else {//
-			int numberCombination = 0;
-			// for each mapping candidate
-			for (CtVariable varFromMap : mapped) {
-				// we create the new var combination from the previous one
-				Map<String, CtVariable> newCombination = new TreeMap<>(currentCombination);
-				// we add the map for the variable to the new combination
-				newCombination.put(currentVar.getVar().getVariable().getSimpleName(), varFromMap);
-				// we call recursive to continue mapping the remaining variables
-				findAllVarMappingCombination(mappedVars, varsNamesToCombine, indexVar + 1, newCombination,
-						allCombinations);
-				numberCombination++;
-				// we want a given number of combinations of each var.
-				// when it reaches this number, it stops continue finding new
-				// combinations.
-				if (numberCombination == ConfigurationProperties.getPropertyInt("maxVarCombination")) {
-					break;
-				}
-			}
-		}
-	}
 
 	public static IngredientSpaceScope determineIngredientScope(CtElement ingredient, CtElement fix) {
 
@@ -885,6 +803,82 @@ public class VariableResolver {
 			}
 		}
 		return orig;
+	}
+	/**
+	 * 
+	 * Method that finds all combination of variables mappings Ex: if var 'a'
+	 * can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return
+	 * all combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2)
+	 * 
+	 * @param mappedVars
+	 *            map of variables (out-of-scope) and candidate replacements of
+	 * @return
+	 */
+	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
+			Map<VarAccessWrapper, List<CtVariable>> mappedVars) {
+		
+		if(mappedVars.isEmpty()){
+			return new ArrayList<Map<String,CtVariable>>();
+		}
+		
+		List<VarAccessWrapper> varsNamesToCombine = new ArrayList<>(mappedVars.keySet());
+
+		List<Map<String, CtVariable>> allCombinations = new ArrayList<>();
+		allCombinations.add(new TreeMap<>());
+		
+		int maxNumberCombinations = ConfigurationProperties.getPropertyInt("maxVarCombination");
+		
+		
+		int numberTotalComb = 1;
+		int max = -1;
+		for (VarAccessWrapper currentVar : varsNamesToCombine) {
+
+			List<CtVariable> mapped = mappedVars.get(currentVar);
+			int numberCompVar = mapped.size();
+			if (numberCompVar > max )max = numberCompVar;
+			logger.debug("".format("Number compatible vars of %s : %d", currentVar.getVar().getVariable().getSimpleName(),numberCompVar));
+			numberTotalComb*=numberCompVar;
+		}
+		double maxPerVar = Math.pow(numberTotalComb, 1.0/varsNamesToCombine.size());
+		double maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0/varsNamesToCombine.size());
+		logger.debug("".format("Max per var %f , %f  ",maxPerVar,maxPerVarLimit));
+		
+		int partialAnalyzed = 0;
+		for (VarAccessWrapper currentVar : varsNamesToCombine) {
+
+			List<Map<String, CtVariable>> generationCombinations = new ArrayList<>();
+
+			List<CtVariable> mapped = mappedVars.get(currentVar);
+			
+			// for each mapping candidate
+			for (CtVariable varFromMap : mapped) {
+				//We count the variables that can be mapped for that combination.
+				int varsAnalyzed = 0;	
+				for (Map<String, CtVariable> previousCombination : allCombinations) {
+					
+					// we create the new var combination from the previous one
+					Map<String, CtVariable> newCombination = new TreeMap<>(previousCombination);
+					// we add the map for the variable to the new combination
+					newCombination.put(currentVar.getVar().getVariable().getSimpleName(), varFromMap);
+					generationCombinations.add(newCombination);
+					
+					varsAnalyzed++;
+					
+					if(varsAnalyzed>maxPerVarLimit){
+						//logger.debug("".format("Limit %d", varsAnalyzed++));
+						break;
+					}
+				}
+
+			}
+			allCombinations = generationCombinations;
+		}
+		//FIlter combinations that are empty
+		allCombinations = allCombinations.stream().filter(e -> !e.isEmpty()).collect(Collectors.toList());
+		
+		logger.debug("#Var combinations obtained: "+allCombinations.size());
+		
+		return allCombinations;
 	}
 
 }
