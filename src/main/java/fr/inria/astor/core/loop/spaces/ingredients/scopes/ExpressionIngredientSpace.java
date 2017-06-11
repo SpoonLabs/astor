@@ -11,6 +11,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
@@ -53,9 +54,12 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 					if (!mkp.containsKey(keyLocation, typeExpression, returnTypeExpression)){
 							ingredientsKey = new CacheList<CtCodeElement>();
 							mkp.put(keyLocation, typeExpression, returnTypeExpression, ingredientsKey  );
-							log.debug(" Adding "+keyLocation+ " " +typeExpression+ " " +returnTypeExpression);
+							log.debug(" Adding new key location: "+keyLocation+ " " +typeExpression+ " " +returnTypeExpression);
 					}
-					ingredientsKey.add(ctIngredient);
+					if(ConfigurationProperties.getPropertyBool("duplicateingredientsinspace")
+							||  !ingredientsKey.contains(ctIngredient)){
+						ingredientsKey.add(ctIngredient);
+					}
 				}
 			}
 		}
@@ -87,7 +91,7 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 
 	@Override
 	public List<CtCodeElement> getIngredients(CtElement element, String type) {
-		log.debug("\nQuering: "+element.getClass().getCanonicalName());
+		log.debug("\nExpression Ingredient Quering: "+element.getClass().getCanonicalName());
 		
 		if(element instanceof CtExpression){
 			String keyLocation = mapKey(element);
