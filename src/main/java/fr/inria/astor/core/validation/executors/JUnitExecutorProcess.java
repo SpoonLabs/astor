@@ -113,10 +113,9 @@ public abstract class JUnitExecutorProcess {
 			//
 			p.waitFor(waitTime, TimeUnit.MILLISECONDS);
 			long t_end = System.currentTimeMillis();
-			log.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
+			//log.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
 
 			if (!avoidInterruption) {
-				log.debug("Running Exit Value");
 				// We force obtaining the exit value.
 				p.exitValue();
 			}
