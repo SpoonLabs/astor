@@ -60,15 +60,16 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 		int variant_id = modificationPoint.getProgramVariant().getId();
 
 		int attempts = 0;
+		int alreadyAnalyzed = 0;
 
 		int elementsFromFixSpace = getSpaceSize(modificationPoint, operationType);
 
 		Stats.currentStat.initializeIngCounter(variant_id);
 
-		while (attempts < elementsFromFixSpace) {
+		while (alreadyAnalyzed < elementsFromFixSpace) {
 
 			Ingredient randomIngredient = super.getFixIngredient(modificationPoint, operationType);
-
+			
 			if (randomIngredient == null || randomIngredient.getCode() == null) {
 				return null;
 			}
@@ -76,9 +77,19 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 
 			boolean alreadyApplied = alreadySelected(modificationPoint, elementFromIngredient, operationType);
 
-			attempts = appliedCache.get(getKey(modificationPoint, operationType)).size();
-			log.debug(String.format("\nattempts {%d} total %d", attempts, elementsFromFixSpace));
+			alreadyAnalyzed = appliedCache.get(getKey(modificationPoint, operationType)).size();
 			
+			log.debug(String.format("\nattempts %d total %d", alreadyAnalyzed, elementsFromFixSpace));
+			
+			//List ingredients = getSpace(modificationPoint, operationType);
+			//log.debug("Printing space of size "+elementsFromFixSpace);
+			//ingredients.stream().forEach(e -> log.debug(e));
+			
+			attempts++;
+			if(attempts > (elementsFromFixSpace*3)){
+				log.error("Error: breaking loop in efficient ingredient search after # attempts "+attempts);
+				return null;
+			}
 			
 			if (alreadyApplied) {
 				log.debug("Ingredient Already applied");
@@ -93,9 +104,9 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 			}
 			
 			
-			IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(),
-					elementFromIngredient);
-			randomIngredient.setScope(scope);
+			//IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(),
+			//		elementFromIngredient);
+			//randomIngredient.setScope(scope);
 			
 			return randomIngredient;
 
@@ -120,22 +131,28 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 
 		String type = null;
 
-		if (operationType instanceof ReplaceOp) {
-			type = modificationPoint.getCodeElement().getClass().getSimpleName();
-		}
-
-		List<?> allIng = null;
-		if (type == null) {
-			allIng = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement());
-		} else {
-			allIng = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
-		}
+		List<?> allIng = getSpace(modificationPoint, operationType);
 
 		if (allIng == null || allIng.isEmpty()) {
 			return 0;
 		}
 
 		return allIng.size();
+	}
+
+	private List<?> getSpace(ModificationPoint modificationPoint, AstorOperator operationType) {
+		String typeOperation = null;
+		if (operationType instanceof ReplaceOp) {
+			typeOperation = modificationPoint.getCodeElement().getClass().getSimpleName();
+		}
+
+		List<?> allIng = null;
+		if (typeOperation == null) {
+			allIng = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement());
+		} else {
+			allIng = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement(), typeOperation);
+		}
+		return allIng;
 	}
 
 	/**
@@ -167,7 +184,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 		} else {
 			// The element has mutation applied
 			if (prev.contains(fix)) {
-				//log.debug("\nAlready: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
+				log.debug("\nAlready: " + StringUtil.trunc(fix) + " in " + (lockey));
 				return true;
 			} else {
 				prev.add(fix);
