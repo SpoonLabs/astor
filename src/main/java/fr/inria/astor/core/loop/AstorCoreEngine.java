@@ -102,6 +102,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected VariantCompiler compiler = null;
 
+	
+	private int nrGenerationWithoutModificatedVariant = 0;
+	
 	/**
 	 * 
 	 * @param mutatorExecutor
@@ -136,6 +139,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.debug("\n----------Running generation/iteraction " + generationsExecuted + ", population size: "
 					+ this.variants.size());
 			stop = processGenerations(generationsExecuted);
+			
+			if(this.nrGenerationWithoutModificatedVariant >= ConfigurationProperties.getPropertyInt("nomodificationconvergence")){
+				log.error("".format("Stopping main loop at %d generation", generationsExecuted));
+				break;
+			}
 		}
 		// At the end
 		long startT = dateInitEvolution.getTime();
@@ -239,11 +247,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 */
 	private boolean processGenerations(int generation) throws Exception {
 
-		log.debug("\n***** Generation " + generation);
-		boolean foundSolution = false;
+		log.debug("\n***** Generation " + generation+ " : "+this.nrGenerationWithoutModificatedVariant);
+		boolean foundSolution = false, foundOneVariant=false;
 
 		List<ProgramVariant> temporalInstances = new ArrayList<ProgramVariant>();
-
+		
 		currentStat.numberGenerations++;
 
 		for (ProgramVariant parentVariant : variants) {
@@ -265,7 +273,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				foundSolution = true;
 				newVariant.setBornDate(new Date());
 			}
-
+			foundOneVariant = true;
 			// Finally, reverse the changes done by the child
 			reverseOperationInModel(newVariant, generation);
 			boolean validation = this.validateReversedOriginalVariant(newVariant);
@@ -275,7 +283,13 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		}
 		prepareNextGeneration(temporalInstances, generation);
-
+		
+		if(!foundOneVariant)
+			this.nrGenerationWithoutModificatedVariant++;
+		else{
+			this.nrGenerationWithoutModificatedVariant = 0;
+		}
+		
 		return foundSolution;
 	}
 
