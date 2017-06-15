@@ -231,26 +231,30 @@ public class JGenProg extends AstorCoreEngine {
 
 		if (operationType.needIngredient()) {
 			Ingredient ingredient = null;
-			ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operationType);
-			if (ingredient == null) {
-				log.debug("Any ingredient for this point, we discard it");
-				return null;
-			} else {
+			do {
 
-				if (ingredientSearchStrategy != null) {
-					List<Ingredient> ingredientsAfterTransformation = ingredientTransformationStrategy
-							.transform(modificationPoint, ingredient);
-					if (ingredientsAfterTransformation == null || ingredientsAfterTransformation.isEmpty()) {
-						log.debug("The transformation steategy has not returned any transformed ingredient");
-						return null;
-					} else {
-						ingredient = ingredientsAfterTransformation.get(RandomManager.nextInt(ingredientsAfterTransformation.size()));
+				ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operationType);
+				if (ingredient == null) {
+					log.debug("Any ingredient for this point, we discard it");
+					return null;
+				} else {
+
+					if (ingredientTransformationStrategy != null) {
+						List<Ingredient> ingredientsAfterTransformation = ingredientTransformationStrategy
+								.transform(modificationPoint, ingredient);
+						if (ingredientsAfterTransformation == null || ingredientsAfterTransformation.isEmpty()) {
+							log.debug("The transformation steategy has not returned any transformed ingredient");
+						 ingredient = null;
+						} else {
+							ingredient = ingredientsAfterTransformation
+									.get(RandomManager.nextInt(ingredientsAfterTransformation.size()));
+						}
 					}
-				}
 
-				operation.setModified(ingredient.getCode());
-				operation.setIngredientScope(ingredient.getScope());
-			}
+				}
+			} while (ingredient == null);
+			operation.setModified(ingredient.getCode());
+			operation.setIngredientScope(ingredient.getScope());
 		}
 
 		return operation;
@@ -365,22 +369,23 @@ public class JGenProg extends AstorCoreEngine {
 		super.loadExtensionPoints();
 
 		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
-		
+
 		// Fix Space
 		ExtensionPoints epoint = ExtensionPoints.INGREDIENT_PROCESSOR;
-		if(!ConfigurationProperties.hasProperty(epoint.identifier)){
-			//By default, we use statements as granularity level.
+		if (!ConfigurationProperties.hasProperty(epoint.identifier)) {
+			// By default, we use statements as granularity level.
 			ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
-		}else{
-			//We load custom processors
+		} else {
+			// We load custom processors
 			String ingrProcessors = ConfigurationProperties.getProperty(epoint.identifier);
 			String[] in = ingrProcessors.split(File.pathSeparator);
 			for (String processor : in) {
-				AbstractFixSpaceProcessor proc_i = (AbstractFixSpaceProcessor) PlugInLoader.loadPlugin(processor, epoint._class);
+				AbstractFixSpaceProcessor proc_i = (AbstractFixSpaceProcessor) PlugInLoader.loadPlugin(processor,
+						epoint._class);
 				ingredientProcessors.add(proc_i);
 			}
 		}
-		
+
 		OperatorSpace jpgoperatorSpace = PlugInLoader.loadOperatorSpace();
 		if (jpgoperatorSpace == null)
 			jpgoperatorSpace = new jGenProgSpace();
@@ -415,7 +420,8 @@ public class JGenProg extends AstorCoreEngine {
 		if (ingredientTransformationStrategyClassName == null) {
 			this.ingredientTransformationStrategy = new DefaultIngredientTransformation();
 		} else {
-			this.ingredientTransformationStrategy =  (IngredientTransformationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
+			this.ingredientTransformationStrategy = (IngredientTransformationStrategy) PlugInLoader
+					.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
 		}
 
 	}
