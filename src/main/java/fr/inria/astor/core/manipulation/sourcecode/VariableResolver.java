@@ -871,7 +871,7 @@ public class VariableResolver {
 					generationCombinations.add(newCombination);
 				}
 				varsAnalyzed++;
-				if(varsAnalyzed>maxPerVarLimit){
+				if(varsAnalyzed>= ((int) maxPerVarLimit)){
 					//logger.debug("".format("Limit %d", varsAnalyzed++));
 					break;
 				}

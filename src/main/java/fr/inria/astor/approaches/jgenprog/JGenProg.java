@@ -231,28 +231,11 @@ public class JGenProg extends AstorCoreEngine {
 
 		if (operationType.needIngredient()) {
 			Ingredient ingredient = null;
-			do {
-
-				ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operationType);
-				if (ingredient == null) {
-					log.debug("Any ingredient for this point, we discard it");
-					return null;
-				} else {
-
-					if (ingredientTransformationStrategy != null) {
-						List<Ingredient> ingredientsAfterTransformation = ingredientTransformationStrategy
-								.transform(modificationPoint, ingredient);
-						if (ingredientsAfterTransformation == null || ingredientsAfterTransformation.isEmpty()) {
-							log.debug("The transformation steategy has not returned any transformed ingredient");
-						 ingredient = null;
-						} else {
-							ingredient = ingredientsAfterTransformation
-									.get(RandomManager.nextInt(ingredientsAfterTransformation.size()));
-						}
-					}
-
-				}
-			} while (ingredient == null);
+			ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operationType);
+			if (ingredient == null) {
+				log.debug("Any ingredient for this point, we discard it");
+				return null;
+			}
 			operation.setModified(ingredient.getCode());
 			operation.setIngredientScope(ingredient.getScope());
 		}
