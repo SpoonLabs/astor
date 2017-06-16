@@ -52,8 +52,7 @@ public class InScopeVarsTransformation extends ClusterIngredientTransformation
 						.findAllVarMappingCombination(mapping.getMappedVariables());
 
 				if (allCombinations.size() > 0) {
-					// Map<String, CtVariable> selectedTransformation =
-					// getOneCombination(allCombinations);
+								
 					for (Map<String, CtVariable> selectedTransformation : allCombinations) {
 
 						//logger.debug("Transformation proposed: " + selectedTransformation);

@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.RandomManager;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
@@ -836,24 +838,30 @@ public class VariableResolver {
 			List<CtVariable> mapped = mappedVars.get(currentVar);
 			int numberCompVar = mapped.size();
 			if (numberCompVar > max )max = numberCompVar;
-			logger.debug("".format("Number compatible vars of %s : %d", currentVar.getVar().getVariable().getSimpleName(),numberCompVar));
+			logger.debug(String.format("Number compatible vars of %s : %d", currentVar.getVar().getVariable().getSimpleName(),numberCompVar));
 			numberTotalComb*=numberCompVar;
 		}
+		logger.debug("Total number combinations "+numberTotalComb);
 		double maxPerVar = Math.pow(numberTotalComb, 1.0/varsNamesToCombine.size());
 		double maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0/varsNamesToCombine.size());
-		logger.debug("".format("Max per var %f , %f  ",maxPerVar,maxPerVarLimit));
+		logger.debug(String.format("Max per var %f , %f  ",maxPerVar,maxPerVarLimit));
 		
-		int partialAnalyzed = 0;
+		
 		for (VarAccessWrapper currentVar : varsNamesToCombine) {
 
 			List<Map<String, CtVariable>> generationCombinations = new ArrayList<>();
 
 			List<CtVariable> mapped = mappedVars.get(currentVar);
 			
+			List<CtVariable> randomlySortedVariables = new ArrayList<>(mapped);
+			Collections.shuffle(randomlySortedVariables, RandomManager.getRandom());
+			
+			int varsAnalyzed = 0;	
 			// for each mapping candidate
 			for (CtVariable varFromMap : mapped) {
 				//We count the variables that can be mapped for that combination.
-				int varsAnalyzed = 0;	
+				//logger.debug("Var "+varFromMap.getSimpleName());
+				
 				for (Map<String, CtVariable> previousCombination : allCombinations) {
 					
 					// we create the new var combination from the previous one
@@ -861,13 +869,11 @@ public class VariableResolver {
 					// we add the map for the variable to the new combination
 					newCombination.put(currentVar.getVar().getVariable().getSimpleName(), varFromMap);
 					generationCombinations.add(newCombination);
-					
-					varsAnalyzed++;
-					
-					if(varsAnalyzed>maxPerVarLimit){
-						//logger.debug("".format("Limit %d", varsAnalyzed++));
-						break;
-					}
+				}
+				varsAnalyzed++;
+				if(varsAnalyzed>maxPerVarLimit){
+					//logger.debug("".format("Limit %d", varsAnalyzed++));
+					break;
 				}
 
 			}
