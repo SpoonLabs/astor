@@ -544,6 +544,7 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("loglevel")) {
 			String loglevelSelected = cmd.getOptionValue("loglevel");
+			ConfigurationProperties.properties.setProperty("loglevel", loglevelSelected);
 			LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
 		}
 		if (cmd.hasOption("timezone")) {

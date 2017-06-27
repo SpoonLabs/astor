@@ -6,7 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.ParseException;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 import fr.inria.astor.approaches.exhaustive.ExhaustiveAstorEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
@@ -66,17 +70,16 @@ public class AstorMain extends AbstractMain {
 
 		if (ExecutionMode.jKali.equals(mode)) {
 			astorCore = new JKaliEngine(mutSupporter, projectFacade);
-		
+
 		} else if (ExecutionMode.jGenProg.equals(mode)) {
 			astorCore = new JGenProg(mutSupporter, projectFacade);
-			
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
 			astorCore = new MutationalExhaustiveRepair(mutSupporter, projectFacade);
-		
+
 		} else if (ExecutionMode.EXASTOR.equals(mode)) {
 			astorCore = new ExhaustiveAstorEngine(mutSupporter, projectFacade);
-			
+
 		} else {
 			// If the execution mode is any of the predefined, Astor
 			// interpretates as
@@ -87,12 +90,12 @@ public class AstorMain extends AbstractMain {
 
 		}
 
-		//Loading extension Points
+		// Loading extension Points
 		astorCore.loadExtensionPoints();
-		
+
 		// Initialize Population
 		astorCore.createInitialPopulation();
-		
+
 		return astorCore;
 
 	}
@@ -214,12 +217,29 @@ public class AstorMain extends AbstractMain {
 		double thfl = ConfigurationProperties.getPropertyDouble("flthreshold");
 		String projectName = ConfigurationProperties.getProperty("projectIdentifier");
 
+		setupLogging();
+		
 		run(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
 	}
 
 	public AstorCoreEngine getEngine() {
 		return astorCore;
+	}
+
+	public void setupLogging() {
+
+		if (ConfigurationProperties.getPropertyBool("disablelog")) {
+			Logger.getRootLogger().getLoggerRepository().resetConfiguration();
+			ConsoleAppender console = new ConsoleAppender();
+			String PATTERN = "%m%n";
+			console.setLayout(new PatternLayout(PATTERN));
+			console.activateOptions();
+			Logger.getRootLogger().addAppender(console);
+			
+			String loglevelSelected = ConfigurationProperties.properties.getProperty("loglevel");
+			LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
+		}
 	}
 
 }
