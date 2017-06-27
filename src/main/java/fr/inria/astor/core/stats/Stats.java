@@ -1,11 +1,17 @@
 package fr.inria.astor.core.stats;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.keyvalue.MultiKey;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 
@@ -77,6 +83,10 @@ public class Stats {
 	public int numberOfTestcasesExecutedval2 = 0;
 
 	public int unfinishValidation = 0;
+	
+	//key are value, values are abundancy
+	public Map<Integer, Integer> ingredientSpaceSize = new HashedMap();
+	public Map<Integer, Integer> combinationByIngredientSize = new HashedMap();
 
 	public void printStats() {
 		log.info(toString());
@@ -284,5 +294,47 @@ public class Stats {
 		}
 	};
 	
+	public void  addSize(Map<Integer,Integer> attempts, int size){
+		
+		Integer counter = 0;
+		if (attempts.containsKey(size)){
+			counter = attempts.get(size);
+		}
+		counter++;
+		attempts.put(size, counter);
+	;
+		
+		
+	}
+	
+	public void toJSON(String output, Map<Integer,Integer> attempts, String filename) {
+		JSONObject space = new JSONObject();
+		
+
+		JSONArray list = new JSONArray();
+		space.put("space", list);
+		int total=0;
+		for (Integer key : attempts.keySet()) {
+			JSONObject keyjson = new JSONObject();
+				keyjson.put("a", key);
+				int num = attempts.get(key);
+				keyjson.put("v", num );
+				total+=num;
+				list.add(keyjson);
+		}
+		space.put("allAttempts",total);//Times the space was called
+		String fileName = output + "/"+filename+".json";
+		try (FileWriter file = new FileWriter(fileName)) {
+
+			file.write(space.toJSONString());
+			file.flush();
+			log.info("Storing ing JSON at "+fileName);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			log.error("Problem storing ing json file"+ e.toString());
+		}
+
+	}
 }
 

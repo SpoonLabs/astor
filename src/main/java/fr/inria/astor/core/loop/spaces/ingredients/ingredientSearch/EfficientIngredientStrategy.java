@@ -16,6 +16,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTra
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
@@ -133,7 +134,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 				return null;
 			}
 			log.debug(String.format("Valid Transformed ingredients (%d):",ingredientsAfterTransformation.size()));
-			
+			Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, ingredientsAfterTransformation.size());
 			//log.debug(String.format("Valid Transformed ingredients (%d): %s",ingredientsAfterTransformation.size(),ingredientsAfterTransformation));
 			//ingredientsAfterTransformation.stream().forEach(e->log.debug(e.getCode().toString()));
 			

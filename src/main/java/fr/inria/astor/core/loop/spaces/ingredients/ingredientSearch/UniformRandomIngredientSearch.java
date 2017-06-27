@@ -13,6 +13,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTra
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.astor.core.stats.Stats;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 
@@ -59,6 +60,8 @@ public class UniformRandomIngredientSearch extends IngredientSearchStrategy {
 
 	protected CtCodeElement getRandomElementFromSpace(CtElement location, String type) {
 		List<CtCodeElement> elements = this.ingredientSpace.getIngredients(location, type);
+		//logger.info("IngSpaceSize: "+elements.size());
+		Stats.currentStat.addSize(Stats.currentStat.ingredientSpaceSize, elements.size());
 		if (elements == null)
 			return null;
 		return getRandomStatementFromSpace(elements);
