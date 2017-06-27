@@ -841,7 +841,7 @@ public class VariableResolver {
 			logger.debug(String.format("Number compatible vars of %s : %d", currentVar.getVar().getVariable().getSimpleName(),numberCompVar));
 			numberTotalComb*=numberCompVar;
 		}
-		logger.debug("Total number combinations "+numberTotalComb);
+		logger.debug("Teoricalcombinations: "+numberTotalComb);
 		double maxPerVar = Math.pow(numberTotalComb, 1.0/varsNamesToCombine.size());
 		double maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0/varsNamesToCombine.size());
 		logger.debug(String.format("Max per var %f , %f  ",maxPerVar,maxPerVarLimit));
@@ -882,7 +882,7 @@ public class VariableResolver {
 		//FIlter combinations that are empty
 		allCombinations = allCombinations.stream().filter(e -> !e.isEmpty()).collect(Collectors.toList());
 		
-		logger.debug("#Var combinations obtained: "+allCombinations.size());
+		logger.debug("NrVarCombinationsConsidered: "+allCombinations.size());
 		
 		return allCombinations;
 	}

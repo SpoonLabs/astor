@@ -115,8 +115,10 @@ public class OperatorInstance {
 	}
 
 	public String toString() {
-		return "" + this.getOperationApplied() + ": `" + StringUtil.trunc(this.original) + " ` ---> `" + StringUtil.trunc(modified) +"` at pos "+getLocationInParent()+" of parent `"+ StringUtil.trunc(parentBlock)
-				+ "`";
+		return "OP_INSTANCE:\n" + this.getOperationApplied() + ": `" 
+	+ StringUtil.trunc(this.original) + " ` -topatch--> `" 
+				+ StringUtil.trunc(modified) +"` at l: "+this.original.getPosition().getLine()+" on "+ this.original.getPosition().getFile().getAbsolutePath()
+				;
 	}
 
 	public ModificationPoint getModificationPoint() {

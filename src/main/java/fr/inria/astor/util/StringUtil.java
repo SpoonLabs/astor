@@ -19,7 +19,8 @@ public class StringUtil {
 	
 	public static String trunc(String s){
 		String s1 = s.replace("\n" , " ");
-		s1=(s1.length()>25)?(s1.substring(0, 25)+"[...]"):s1;
+		int limit = 100;
+		s1=(s1.length()>limit)?(s1.substring(0, limit)+"[...]"):s1;
 		return s1;
 	}
 	
