@@ -21,7 +21,7 @@ public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends
 
 	
 	public static boolean mustClone = true;
-	boolean allowsDuplicateIngredients = false;
+	public boolean allowsDuplicateIngredients = false;
 	
 	
 	public AbstractFixSpaceProcessor(){
@@ -33,11 +33,17 @@ public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends
 	public static List<CtCodeElement> spaceElements = new ArrayList<CtCodeElement>();
 
 	public void add(CtCodeElement st) {
-		CtCodeElement code = st; 
-		if (mustClone()) {
-			code = MutationSupporter.clone(st);
+		
+		if(st == null ||st.getParent() == null){
+			return;
 		}
+		
 		if (allowsDuplicateIngredients ||  !contains(st)) {
+			CtCodeElement code = st; 
+			
+			if (mustClone()) {
+				code = MutationSupporter.clone(st);
+			}
 			spaceElements.add(code);
 		}
 	}
