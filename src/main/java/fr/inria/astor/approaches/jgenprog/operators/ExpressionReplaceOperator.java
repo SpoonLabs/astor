@@ -30,6 +30,12 @@ public class ExpressionReplaceOperator extends ReplaceOp {
 		//Finally,  we update the modification point (i.e., Astor Representation)
 		opInstance.getModificationPoint().setCodeElement(elFixIngredient );
 		
+		boolean change = !opInstance.getModificationPoint().getCodeElement().toString().equals(elementOriginalCloned.toString());
+		
+		if(!change)
+			log.error("Replacement does not work for " );
+		
+		
 		return true;
 	}
 
