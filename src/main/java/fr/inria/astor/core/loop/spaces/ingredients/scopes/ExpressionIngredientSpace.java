@@ -1,19 +1,32 @@
 package fr.inria.astor.core.loop.spaces.ingredients.scopes;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.keyvalue.MultiKey;
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -25,7 +38,11 @@ import spoon.reflect.declaration.CtType;
  */
 public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 
-	MultiKeyMap mkp = new MultiKeyMap();
+	public MultiKeyMap mkp = new MultiKeyMap();
+
+	public List<CtCodeElement> allElementsFromSpace = new ArrayList<>();
+
+	public MapList<String, CtCodeElement> linkTemplateElements = new MapList<>();
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
@@ -35,19 +52,19 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 
 	@Override
 	public void defineSpace(ProgramVariant variant) {
-		// List<CtType<?>> affected =
-		// MutationSupporter.getFactory().Type().getAll();
-		List<CtType<?>> affected = variant.getAffectedClasses();
+		 List<CtType<?>> affected =
+		 MutationSupporter.getFactory().Type().getAll();
+		//List<CtType<?>> affected = variant.getAffectedClasses();
 		log.debug("Creating Expression Ingredient space: ");
 		for (CtType<?> classToProcess : affected) {
 
 			List<CtCodeElement> ingredients = this.ingredientProcessor.createFixSpace(classToProcess);
 			AbstractFixSpaceProcessor.mustClone = true;
 
-			for (CtCodeElement ctIngredient : ingredients) {
-				String keyLocation = mapKey(ctIngredient);
-				if (ctIngredient instanceof CtExpression) {
-					CtExpression ctExpr = (CtExpression) ctIngredient;
+			for (CtCodeElement originalIngredient : ingredients) {
+				String keyLocation = mapKey(originalIngredient);
+				if (originalIngredient instanceof CtExpression) {
+					CtExpression ctExpr = (CtExpression) originalIngredient;
 					String typeExpression = ctExpr.getClass().getSimpleName();
 
 					if (ctExpr.getType() == null) {
@@ -56,6 +73,7 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 
 					String returnTypeExpression = (ctExpr.getType() != null) ? ctExpr.getType().getSimpleName()
 							: "null";
+
 					List<CtCodeElement> ingredientsKey = (List<CtCodeElement>) mkp.get(keyLocation, typeExpression,
 							returnTypeExpression);
 
@@ -65,20 +83,45 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 						log.debug(" Adding new key location: " + keyLocation + " " + typeExpression + " "
 								+ returnTypeExpression);
 					}
-					if (ConfigurationProperties.getPropertyBool("duplicateingredientsinspace")
-							|| !ingredientsKey.contains(ctIngredient)) {
-						ingredientsKey.add(ctIngredient);
-						log.debug("Adding ingredient: "+ ctIngredient);
+
+					if (ConfigurationProperties.getPropertyBool("applytemplates")) {
+
+						CtCodeElement templateElement = MutationSupporter.clone(ctExpr);
+						formatIngredient(templateElement);
+
+						log.debug("Adding ingredient: " + originalIngredient);
+						log.debug("Template ingredient: " + templateElement + " "
+								+ ingredientsKey.contains(templateElement));
+
+						if (ConfigurationProperties.getPropertyBool("duplicateingredientsinspace")
+								|| !ingredientsKey.contains(templateElement)) {
+							ingredientsKey.add(templateElement);
+							this.allElementsFromSpace.add(templateElement);
+						}
+						//We must always link elements, beyond the template is duplicate or new
+						// linking
+						this.linkTemplateElements.add(templateElement.toString(), originalIngredient);
+
+					} else {
+
+						if (ConfigurationProperties.getPropertyBool("duplicateingredientsinspace")
+								|| !ingredientsKey.contains(originalIngredient)) {
+							log.debug("Adding ingredient: " + originalIngredient);
+							ingredientsKey.add(originalIngredient);
+							// all
+							this.allElementsFromSpace.add(originalIngredient);
+						}
 					}
 				}
 			}
 		}
 		int nrIng = 0;
-		//Printing summary: 
+		// Printing summary:
 		for (Object ingList : mkp.values()) {
-			nrIng+= ((List)ingList).size();
+			nrIng += ((List) ingList).size();
 		}
-		log.info("".format("Ingredient search space info : number keys %d , number values %d ", mkp.keySet().size(), nrIng));
+		log.info(String.format("Ingredient search space info : number keys %d , number values %d ", mkp.keySet().size(),
+				nrIng));
 
 	}
 
@@ -107,12 +150,16 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 
 	@Override
 	public List<CtCodeElement> getIngredients(CtElement element, String type) {
-		
+
 		if (element instanceof CtExpression) {
+
+			if (!(element instanceof CtStatement))
+				return allElementsFromSpace;
+
 			String keyLocation = mapKey(element);
 			CtExpression ctExpr = (CtExpression) element;
 			String typeExpression = ctExpr.getClass().getSimpleName();
-			String returnTypeExpression = (ctExpr.getType() == null)? "null" :ctExpr.getType().getSimpleName();
+			String returnTypeExpression = (ctExpr.getType() == null) ? "null" : ctExpr.getType().getSimpleName();
 			List ingredients = (List<CtCodeElement>) mkp.get(keyLocation, typeExpression, returnTypeExpression);
 			return ingredients;
 		}
@@ -135,5 +182,74 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 		return allIngredients;
 	}
 
+	@SuppressWarnings("unchecked")
+	public void toJSON(String output) {
+		JSONObject space = new JSONObject();
+		
+
+		JSONArray list = new JSONArray();
+		space.put("nrall", this.allElementsFromSpace.size());
+		space.put("space", list);
+
+		for (Object key : mkp.keySet()) {
+			JSONObject keyjson = new JSONObject();
+			MultiKey mk = (MultiKey) key;
+			keyjson.put("key", Arrays.toString(mk.getKeys()));
+			list.add(keyjson);
+			JSONArray ingredients = new JSONArray();
+			keyjson.put("ingredients", ingredients);
+			List ings = (List) mkp.get(key);
+			keyjson.put("nringredients", ings.size());
+
+			for (Object v : ings) {
+				ingredients.add(v.toString());
+			}
+			;
+
+		}
+
+		String fileName = output + "ingredients.json";
+		try (FileWriter file = new FileWriter(fileName)) {
+
+			file.write(space.toJSONString());
+			file.flush();
+			log.info("Storing ing JSON at "+fileName);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			log.error("Problem storing ing json file"+ e.toString());
+		}
+
+	}
+
+	public void formatIngredient(CtElement ingredientCtElement) {
+
+		// log.debug("\n------" + ingredientCtElement);
+		List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(ingredientCtElement, true);
+		Map<String, String> varMappings = new HashMap<>();
+		int nrvar = 0;
+		for (int i = 0; i < varAccessCollected.size(); i++) {
+			CtVariableAccess var = varAccessCollected.get(i);
+
+			// log.debug("var b-->" + var.getVariable());
+			String abstractName = "";
+			if (!varMappings.containsKey(var.getVariable().getSimpleName())) {
+				String currentTypeName = var.getVariable().getType().getSimpleName();
+				if (currentTypeName.contains("?")){
+					//Any change in case of ?
+					abstractName = var.getVariable().getSimpleName();
+				}else{
+					abstractName = "_" + currentTypeName + "_" + nrvar;
+				}
+				varMappings.put(var.getVariable().getSimpleName(), abstractName);
+				nrvar++;
+			} else {
+				abstractName = varMappings.get(var.getVariable().getSimpleName());
+			}
+
+			var.getVariable().setSimpleName(abstractName);
+		}
+
+	}
 
 }

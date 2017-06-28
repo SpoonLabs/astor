@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.Ingredient;
@@ -18,6 +19,7 @@ import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.DefaultIngredientTransformation;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
@@ -237,7 +239,7 @@ public class JGenProg extends AstorCoreEngine {
 				return null;
 			}
 			operation.setModified(ingredient.getCode());
-			operation.setIngredientScope(ingredient.getScope());
+			operation.setIngredient(ingredient);
 		}
 
 		return operation;
@@ -329,22 +331,32 @@ public class JGenProg extends AstorCoreEngine {
 	@Override
 	public void showResults() {
 		super.showResults();
-		log.info("\nsuccessful_ing_attempts (#trials " + this.currentStat.ingAttemptsSuccessfulPatches.size()
-				+ ", totalAttps " + Stats.sum(currentStat.ingAttemptsSuccessfulPatches) + "): "
-				+ this.currentStat.ingAttemptsSuccessfulPatches.stream().map(Pair::getAttempts)
-						.collect(Collectors.toList()));
-		log.info("\nfailing_ing_attempts (#trials " + this.currentStat.ingAttemptsFailingPatches.size()
-				+ ", totalAttps " + Stats.sum(currentStat.ingAttemptsFailingPatches) + "): "
-				+ this.currentStat.ingAttemptsFailingPatches.stream().map(Pair::getAttempts)
-						.collect(Collectors.toList()));
+		if (ConfigurationProperties.getPropertyBool("logsattemps")) {
+			log.info("\nsuccessful_ing_attempts (#trials " + this.currentStat.ingAttemptsSuccessfulPatches.size()
+					+ ", totalAttps " + Stats.sum(currentStat.ingAttemptsSuccessfulPatches) + "): "
+					+ this.currentStat.ingAttemptsSuccessfulPatches.stream().map(Pair::getAttempts)
+							.collect(Collectors.toList()));
+			log.info("\nfailing_ing_attempts (#trials " + this.currentStat.ingAttemptsFailingPatches.size()
+					+ ", totalAttps " + Stats.sum(currentStat.ingAttemptsFailingPatches) + "): "
+					+ this.currentStat.ingAttemptsFailingPatches.stream().map(Pair::getAttempts)
+							.collect(Collectors.toList()));
 
-		log.info("\ntotal Patch Attempts (" + this.currentStat.patch_attempts.size() + "): "
-				+ this.currentStat.patch_attempts);
+			log.info("\ntotal Patch Attempts (" + this.currentStat.patch_attempts.size() + "): "
+					+ this.currentStat.patch_attempts);
 
-		log.info("\nsuccessful_ing_attempts_by_patch: " + this.currentStat.ingAttemptsSuccessfulPatches);
-		log.info("\nfailing_ing_attempts_by_patch: " + this.currentStat.ingAttemptsFailingPatches);
+			log.info("\nsuccessful_ing_attempts_by_patch: " + this.currentStat.ingAttemptsSuccessfulPatches);
+			log.info("\nfailing_ing_attempts_by_patch: " + this.currentStat.ingAttemptsFailingPatches);
 
-		log.info("\npvariants_with_transformed_ingredients: " + this.currentStat.successfulTransformedIngredients);
+			log.info("\npvariants_with_transformed_ingredients: " + this.currentStat.successfulTransformedIngredients);
+		}
+		if (this.ingredientSearchStrategy.getIngredientSpace() instanceof ExpressionIngredientSpace) {
+			ExpressionIngredientSpace space = (ExpressionIngredientSpace) this.ingredientSearchStrategy
+					.getIngredientSpace();
+			space.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource());
+			Stats.currentStat.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(), Stats.currentStat.ingredientSpaceSize, "ingredientSpaceSize");
+			Stats.currentStat.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(), Stats.currentStat.combinationByIngredientSize, "combinationsTemplatesingredientSpaceSize");
+			
+		}
 	}
 
 	@Override
