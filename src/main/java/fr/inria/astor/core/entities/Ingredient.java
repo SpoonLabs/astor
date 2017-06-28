@@ -12,7 +12,15 @@ public class Ingredient {
 	
 	CtElement code;
 	IngredientSpaceScope scope;
+	CtElement derivedFrom;
 	
+	public Ingredient(CtElement code, IngredientSpaceScope scope, CtElement derivedFrom) {
+		super();
+		this.code = code;
+		this.derivedFrom = derivedFrom;
+		this.scope = scope;
+	}
+
 	public Ingredient(CtElement element) {
 		super();
 		this.code = element;
@@ -39,10 +47,19 @@ public class Ingredient {
 	public void setScope(IngredientSpaceScope scope) {
 		this.scope = scope;
 	}
+	
+	public CtElement getDerivedFrom() {
+		return derivedFrom;
+	}
+
+	public void setDerivedFrom(CtElement derivedFrom) {
+		this.derivedFrom = derivedFrom;
+	}
 
 	@Override
 	public String toString() {
 		return "Ingredient [code=" + code + "]";
 	}
+
 	
 }
