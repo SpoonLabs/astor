@@ -16,7 +16,7 @@ import spoon.reflect.declaration.CtElement;
  * 
  */
 public class OperatorInstance {
-	
+
 	protected Logger log = Logger.getLogger(OperatorInstance.class.getName());
 
 	/**
@@ -52,19 +52,22 @@ public class OperatorInstance {
 	 */
 	private Exception exceptionAtApplied = null;
 	private boolean successfulyApplied = true;
-	
-	private IngredientSpaceScope ingredientScope = null;
-	
-	public OperatorInstance (){}
-	
+
+	private Ingredient ingredient = null;
+
+	public OperatorInstance() {
+	}
+
 	/**
-	 * Creates a modification instance 
+	 * Creates a modification instance
+	 * 
 	 * @param modificationPoint
 	 * @param operationApplied
 	 * @param original
 	 * @param modified
 	 */
-	public OperatorInstance(ModificationPoint modificationPoint, AstorOperator operationApplied, CtElement original, CtElement modified) {
+	public OperatorInstance(ModificationPoint modificationPoint, AstorOperator operationApplied, CtElement original,
+			CtElement modified) {
 		super();
 		this.modificationPoint = modificationPoint;
 		this.operator = operationApplied;
@@ -115,10 +118,9 @@ public class OperatorInstance {
 	}
 
 	public String toString() {
-		return "OP_INSTANCE:\n" + this.getOperationApplied() + ": `" 
-	+ StringUtil.trunc(this.original) + " ` -topatch--> `" 
-				+ StringUtil.trunc(modified) +"` at l: "+this.original.getPosition().getLine()+" on "+ this.original.getPosition().getFile().getAbsolutePath()
-				;
+		return "OP_INSTANCE:\n" + this.getOperationApplied() + ": `" + StringUtil.trunc(this.original)
+				+ " ` -topatch--> `" + StringUtil.trunc(modified) + "` at l: " + this.original.getPosition().getLine()
+				+ " on " + this.original.getPosition().getFile().getAbsolutePath();
 	}
 
 	public ModificationPoint getModificationPoint() {
@@ -189,34 +191,29 @@ public class OperatorInstance {
 	}
 
 	public IngredientSpaceScope getIngredientScope() {
-		return ingredientScope;
-	}
-
-	public void setIngredientScope(IngredientSpaceScope ingredientScope) {
-		this.ingredientScope = ingredientScope;
+		return (ingredient != null) ? ingredient.scope : null;
 	}
 
 	public boolean applyModification() {
 		return operator.applyChangesInModel(this, this.getModificationPoint().getProgramVariant());
 	}
 
-	
 	public boolean undoModification() {
 		return operator.undoChangesInModel(this, this.getModificationPoint().getProgramVariant());
 	}
-	
+
 	public void updateProgramVariant() {
-		//todo opflex
+		// todo opflex
 		operator.updateProgramVariant(this, this.getModificationPoint().getProgramVariant());
 	}
-	
+
 	public boolean defineParentInformation(ModificationPoint genSusp) {
 		CtElement targetStmt = genSusp.getCodeElement();
 		CtElement cparent = targetStmt.getParent();
 		if ((cparent != null && (cparent instanceof CtBlock))) {
 			CtBlock parentBlock = (CtBlock) cparent;
 			int location = locationInParent(parentBlock, targetStmt);
-			if(location >= 0){
+			if (location >= 0) {
 				this.setParentBlock(parentBlock);
 				this.setLocationInParent(location);
 				return true;
@@ -227,34 +224,43 @@ public class OperatorInstance {
 		}
 		return false;
 	}
-		
-		/**
-		 * Return the position of the element in the block. It searches the same
-		 * object instance
-		 * 
-		 * @param parentBlock
-		 * @param line
-		 * @param element
-		 * @return
-		 */
-		private int locationInParent(CtBlock parentBlock, CtElement element) {
-			int pos = 0;
-			for (CtStatement s : parentBlock.getStatements()) {
-				if (s == element)// the same object
-					return pos;
-				pos++;
-			}
 
-			log.error("Error: parent not found");
-			return -1;
-
+	/**
+	 * Return the position of the element in the block. It searches the same
+	 * object instance
+	 * 
+	 * @param parentBlock
+	 * @param line
+	 * @param element
+	 * @return
+	 */
+	private int locationInParent(CtBlock parentBlock, CtElement element) {
+		int pos = 0;
+		for (CtStatement s : parentBlock.getStatements()) {
+			if (s == element)// the same object
+				return pos;
+			pos++;
 		}
 
-		public boolean isParentBlockImplicit() {
-			return isParentBlockImplicit;
-		}
+		log.error("Error: parent not found");
+		return -1;
 
-		public void setParentBlockImplicit(boolean isParentBlockImplicit) {
-			this.isParentBlockImplicit = isParentBlockImplicit;
-		}
+	}
+
+	public boolean isParentBlockImplicit() {
+		return isParentBlockImplicit;
+	}
+
+	public void setParentBlockImplicit(boolean isParentBlockImplicit) {
+		this.isParentBlockImplicit = isParentBlockImplicit;
+	}
+
+	public Ingredient getIngredient() {
+		return ingredient;
+	}
+
+	public void setIngredient(Ingredient ingredient) {
+		this.ingredient = ingredient;
+		this.modified = ingredient.code;
+	}
 }
