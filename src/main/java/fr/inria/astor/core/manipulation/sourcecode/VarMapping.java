@@ -40,5 +40,12 @@ public class VarMapping {
 	public void setNotMappedVariables(List<CtVariableAccess> notMappedVariables) {
 		this.notMappedVariables = notMappedVariables;
 	}
+	
+	public String toString(){
+		return "[mapped vars: ("+ mappedVariables.keySet().size() +")"+mappedVariables+
+				"\nnot mapped: ("+ notMappedVariables.size() +")"+notMappedVariables
+				+"]"
+		;
+	}
 
 }
