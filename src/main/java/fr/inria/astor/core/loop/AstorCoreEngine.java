@@ -908,7 +908,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
 					line += "\nfixed statement= ";
-					if (genOperationInstance.getModified() != null)
+					if (genOperationInstance.getModified() != null){
 						// if fix content is the same that original buggy
 						// content, we do not write the patch, remaining empty
 						// the property fixed statement
@@ -918,10 +918,16 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 						else {
 						line += genOperationInstance.getOriginal().toString();
 						}
-
+						//Information about types Parents
+						line += "\nPatch kind= "+genOperationInstance.getModified().getClass().getSimpleName()+ "|"+genOperationInstance.getModified().getParent().getClass().getSimpleName();
+					}
 					line += "\ngeneration= " + Integer.toString(i);
 					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope() != null)
 							? genOperationInstance.getIngredientScope() : "-");
+					
+					if (genOperationInstance.getIngredient() != null && genOperationInstance.getIngredient().getDerivedFrom() != null)
+						line += "\ningredientParent= " + 
+							genOperationInstance.getIngredient().getDerivedFrom() ;
 
 				}
 			}
