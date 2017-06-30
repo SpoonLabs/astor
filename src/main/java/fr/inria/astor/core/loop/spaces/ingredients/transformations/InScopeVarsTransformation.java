@@ -27,11 +27,11 @@ public class InScopeVarsTransformation extends ClusterIngredientTransformation
 	protected Logger logger = Logger.getLogger(InScopeVarsTransformation.class.getName());
 
 	@Override
-	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient ingredient) {
+	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient baseIngredient) {
 
 		List<Ingredient> result = new ArrayList<>();
 
-		CtCodeElement codeElementToModify = (CtCodeElement) ingredient.getCode();
+		CtCodeElement codeElementToModify = (CtCodeElement) baseIngredient.getCode();
 
 		if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
 			logger.debug("The modification point  has not any var in scope");
@@ -47,7 +47,7 @@ public class InScopeVarsTransformation extends ClusterIngredientTransformation
 				result.add(new Ingredient(codeElementToModify));
 
 			} else {// We have mappings between variables
-				logger.debug("Ingredient before transformation: " + ingredient);
+				logger.debug("Ingredient before transformation: " + baseIngredient);
 				List<Map<String, CtVariable>> allCombinations = VariableResolver
 						.findAllVarMappingCombination(mapping.getMappedVariables());
 
