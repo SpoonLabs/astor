@@ -10,9 +10,9 @@ import spoon.reflect.declaration.CtElement;
  */
 public class Ingredient {
 	
-	CtElement code;
-	IngredientSpaceScope scope;
-	CtElement derivedFrom;
+	protected CtElement code;
+	protected IngredientSpaceScope scope;
+	protected CtElement derivedFrom;
 	
 	public Ingredient(CtElement code, IngredientSpaceScope scope, CtElement derivedFrom) {
 		super();
