@@ -80,8 +80,7 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 					if (!mkp.containsKey(keyLocation, typeExpression, returnTypeExpression)) {
 						ingredientsKey = new CacheList<CtCodeElement>();
 						mkp.put(keyLocation, typeExpression, returnTypeExpression, ingredientsKey);
-						log.debug(" Adding new key location: " + keyLocation + " " + typeExpression + " "
-								+ returnTypeExpression);
+						
 					}
 
 					if (ConfigurationProperties.getPropertyBool("applytemplates")) {
@@ -106,7 +105,7 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 
 						if (ConfigurationProperties.getPropertyBool("duplicateingredientsinspace")
 								|| !ingredientsKey.contains(originalIngredient)) {
-							log.debug("Adding ingredient: " + originalIngredient);
+							//log.debug("Adding ingredient: " + originalIngredient);
 							ingredientsKey.add(originalIngredient);
 							// all
 							this.allElementsFromSpace.add(originalIngredient);

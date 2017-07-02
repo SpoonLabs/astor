@@ -33,7 +33,6 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 
 	IngredientTransformationStrategy ingredientTransformationStrategy;
 
-	
 	public EfficientIngredientStrategy(IngredientSpace space) {
 		super(space);
 		ExtensionPoints ep = ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY;
@@ -74,34 +73,37 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
 
 		int attempts = 0;
-		
+
 		int elementsFromFixSpace = getSpaceSize(modificationPoint, operationType);
 
-		while ( attempts < elementsFromFixSpace) {
+		while (attempts < elementsFromFixSpace) {
 
 			log.debug(String.format("\nAttempts Ingredients  %d total %d", attempts, elementsFromFixSpace));
 
-			Ingredient randomIngredient = super.getFixIngredient(modificationPoint, operationType);
+			Ingredient baseIngredient = super.getFixIngredient(modificationPoint, operationType);
 
-			if (randomIngredient == null || randomIngredient.getCode() == null) {
+			if (baseIngredient == null || baseIngredient.getCode() == null) {
 				return null;
 			}
 
-			Ingredient ingredient = getRandomTransformedElement(modificationPoint, operationType, randomIngredient);
-			
-			
+			Ingredient refinedIngredient = getNotUsedTransformedElement(modificationPoint, operationType,
+					baseIngredient);
+
 			attempts++;
 			if (attempts > (elementsFromFixSpace * 3)) {
 				log.error("Error: breaking loop in efficient ingredient search after # attempts " + attempts);
-				return null;//break
+				return null;// break
 			}
 
 			// IngredientSpaceScope scope =
 			// VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(),
 			// elementFromIngredient);
 			// randomIngredient.setScope(scope);
-			if(ingredient != null)
-				return ingredient;
+			if (refinedIngredient != null) {
+
+				refinedIngredient.setDerivedFrom(baseIngredient.getCode());
+				return refinedIngredient;
+			}
 
 		} // End while
 
@@ -112,20 +114,28 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 
 	}
 
-	private Ingredient getRandomTransformedElement(ModificationPoint modificationPoint, AstorOperator operator,
-			Ingredient randomIngredient) {
-		
-		log.debug("Ingredient "+randomIngredient);
+	/**
+	 * Returns randomly an ingredient
+	 * 
+	 * @param modificationPoint
+	 * @param operator
+	 * @param baseIngredient
+	 * @return
+	 */
+	protected Ingredient getNotUsedTransformedElement(ModificationPoint modificationPoint, AstorOperator operator,
+			Ingredient baseIngredient) {
+
+		log.debug("Ingredient " + baseIngredient);
 		List<Ingredient> ingredientsAfterTransformation = null;
 		if (ingredientTransformationStrategy != null) {
-			String key = getKey(modificationPoint, operator) + randomIngredient.toString();
+			String key = getKey(modificationPoint, operator) + baseIngredient.toString();
 			if (appliedIngredientsCache.containsKey(key)) {
 				log.debug("Retrieving already calculated transformations");
 				ingredientsAfterTransformation = appliedIngredientsCache.get(key);
 			} else {
 				log.debug("Calculating transformations");
 				ingredientsAfterTransformation = ingredientTransformationStrategy.transform(modificationPoint,
-						randomIngredient);
+						baseIngredient);
 				appliedIngredientsCache.put(key, ingredientsAfterTransformation);
 			}
 
@@ -133,39 +143,49 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 				log.debug("The transformation steategy has not returned any Valid transformed ingredient");
 				return null;
 			}
-			log.debug(String.format("Valid Transformed ingredients (%d):",ingredientsAfterTransformation.size()));
-			Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, ingredientsAfterTransformation.size());
-			//log.debug(String.format("Valid Transformed ingredients (%d): %s",ingredientsAfterTransformation.size(),ingredientsAfterTransformation));
-			//ingredientsAfterTransformation.stream().forEach(e->log.debug(e.getCode().toString()));
-			
+			log.debug(String.format("Valid Transformed ingredients (%d):", ingredientsAfterTransformation.size()));
+			Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
+					ingredientsAfterTransformation.size());
+
 			Ingredient transformedIngredient = null;
 			int attempts = 0;
 			do {
 				// we select one randomly
-				transformedIngredient = ingredientsAfterTransformation
-						.get(RandomManager.nextInt(ingredientsAfterTransformation.size()));
-				
-				attempts++;
-				log.debug(String.format("\nAttempts In Transformed Ingredient  %d total %d", attempts, ingredientsAfterTransformation.size()));
+				transformedIngredient = getOneIngredientFromList(ingredientsAfterTransformation);
 
-				if(transformedIngredient.getCode().toString().equals(modificationPoint.getCodeElement().toString())){
+				attempts++;
+				log.debug(String.format("\nAttempts In Transformed Ingredient  %d total %d", attempts,
+						ingredientsAfterTransformation.size()));
+
+				if (transformedIngredient.getCode().toString().equals(modificationPoint.getCodeElement().toString())) {
 					log.debug("Ingredient idem to buggy statement, discarting it.");
 					continue;
 				}
-				
+
 				// we check if was applyed
 				boolean alreadyApplied = alreadySelected(modificationPoint, transformedIngredient.getCode(), operator);
-				
-			
+
 				if (!alreadyApplied) {
+					boolean removed = ingredientsAfterTransformation.remove(transformedIngredient);
+					if (!removed) {
+						log.debug("Not Removing ingredient from cache");
+					}
+
 					return transformedIngredient;
 				}
-				
+
 			} while (transformedIngredient == null && attempts <= (ingredientsAfterTransformation.size() * 3));
 			log.debug(String.format("After %d attempts, we could find an ingredient in a space of size %d", attempts,
 					ingredientsAfterTransformation.size()));
 		}
 		return null;
+	}
+
+	protected Ingredient getOneIngredientFromList(List<Ingredient> ingredientsAfterTransformation) {
+		Ingredient transformedIngredient;
+		transformedIngredient = ingredientsAfterTransformation
+				.get(RandomManager.nextInt(ingredientsAfterTransformation.size()));
+		return transformedIngredient;
 	}
 
 	/**
@@ -243,7 +263,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 		}
 	}
 
-	private String getKey(ModificationPoint gen, AstorOperator operator) {
+	protected String getKey(ModificationPoint gen, AstorOperator operator) {
 		String lockey = gen.getCodeElement().getPosition().toString() + "-" + gen.getCodeElement() + "-"
 				+ operator.toString();
 		return lockey;
