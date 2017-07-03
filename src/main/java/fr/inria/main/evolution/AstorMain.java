@@ -218,7 +218,7 @@ public class AstorMain extends AbstractMain {
 		String projectName = ConfigurationProperties.getProperty("projectIdentifier");
 
 		setupLogging();
-		
+
 		run(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
 	}
@@ -236,9 +236,10 @@ public class AstorMain extends AbstractMain {
 			console.setLayout(new PatternLayout(PATTERN));
 			console.activateOptions();
 			Logger.getRootLogger().addAppender(console);
-			
+
 			String loglevelSelected = ConfigurationProperties.properties.getProperty("loglevel");
-			LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
+			if (loglevelSelected != null)
+				LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
 		}
 	}
 
