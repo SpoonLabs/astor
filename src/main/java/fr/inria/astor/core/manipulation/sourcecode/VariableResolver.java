@@ -757,8 +757,6 @@ public class VariableResolver {
 
 	}
 
-
-
 	public static IngredientSpaceScope determineIngredientScope(CtElement ingredient, CtElement fix) {
 
 		File ingp = ingredient.getPosition().getFile();
@@ -806,6 +804,12 @@ public class VariableResolver {
 		}
 		return orig;
 	}
+
+	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
+			Map<VarAccessWrapper, List<CtVariable>> mappedVars) {
+		return findAllVarMappingCombination(mappedVars, true);
+	}
+
 	/**
 	 * 
 	 * Method that finds all combination of variables mappings Ex: if var 'a'
@@ -817,53 +821,56 @@ public class VariableResolver {
 	 * @return
 	 */
 	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
-			Map<VarAccessWrapper, List<CtVariable>> mappedVars) {
-		
-		if(mappedVars.isEmpty()){
-			return new ArrayList<Map<String,CtVariable>>();
+			Map<VarAccessWrapper, List<CtVariable>> mappedVars, boolean random) {
+
+		if (mappedVars.isEmpty()) {
+			return new ArrayList<Map<String, CtVariable>>();
 		}
-		
+
 		List<VarAccessWrapper> varsNamesToCombine = new ArrayList<>(mappedVars.keySet());
 
 		List<Map<String, CtVariable>> allCombinations = new ArrayList<>();
 		allCombinations.add(new TreeMap<>());
-		
+
 		int maxNumberCombinations = ConfigurationProperties.getPropertyInt("maxVarCombination");
-		
-		
+
 		int numberTotalComb = 1;
 		int max = -1;
 		for (VarAccessWrapper currentVar : varsNamesToCombine) {
 
 			List<CtVariable> mapped = mappedVars.get(currentVar);
 			int numberCompVar = mapped.size();
-			if (numberCompVar > max )max = numberCompVar;
-			logger.debug(String.format("Number compatible vars of %s : %d", currentVar.getVar().getVariable().getSimpleName(),numberCompVar));
-			numberTotalComb*=numberCompVar;
+			if (numberCompVar > max)
+				max = numberCompVar;
+			logger.debug(String.format("Number compatible vars of %s : %d",
+					currentVar.getVar().getVariable().getSimpleName(), numberCompVar));
+			numberTotalComb *= numberCompVar;
 		}
-		logger.debug("Teoricalcombinations: "+numberTotalComb);
-		double maxPerVar = Math.pow(numberTotalComb, 1.0/varsNamesToCombine.size());
-		double maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0/varsNamesToCombine.size());
-		logger.debug(String.format("Max per var %f , %f  ",maxPerVar,maxPerVarLimit));
-		
-		
+		logger.debug("Teoricalcombinations: " + numberTotalComb);
+		double maxPerVar = Math.pow(numberTotalComb, 1.0 / varsNamesToCombine.size());
+		double maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0 / varsNamesToCombine.size());
+		logger.debug(String.format("Max per var %f , %f  ", maxPerVar, maxPerVarLimit));
+
 		for (VarAccessWrapper currentVar : varsNamesToCombine) {
 
 			List<Map<String, CtVariable>> generationCombinations = new ArrayList<>();
 
 			List<CtVariable> mapped = mappedVars.get(currentVar);
-			
-			List<CtVariable> randomlySortedVariables = new ArrayList<>(mapped);
-			Collections.shuffle(randomlySortedVariables, RandomManager.getRandom());
-			
-			int varsAnalyzed = 0;	
+
+			List<CtVariable> sortedVariables = new ArrayList<>(mapped);
+
+			if (random) {
+				Collections.shuffle(sortedVariables, RandomManager.getRandom());
+			}
+
+			int varsAnalyzed = 0;
 			// for each mapping candidate
-			for (CtVariable varFromMap : mapped) {
-				//We count the variables that can be mapped for that combination.
-				//logger.debug("Var "+varFromMap.getSimpleName());
-				
+			for (CtVariable varFromMap : sortedVariables) {
+				// We count the variables that can be mapped for that
+				// combination.
+
 				for (Map<String, CtVariable> previousCombination : allCombinations) {
-					
+
 					// we create the new var combination from the previous one
 					Map<String, CtVariable> newCombination = new TreeMap<>(previousCombination);
 					// we add the map for the variable to the new combination
@@ -871,19 +878,19 @@ public class VariableResolver {
 					generationCombinations.add(newCombination);
 				}
 				varsAnalyzed++;
-				if(varsAnalyzed>= ((int) maxPerVarLimit)){
-					//logger.debug("".format("Limit %d", varsAnalyzed++));
+				if (varsAnalyzed >= ((int) maxPerVarLimit)) {
+					// logger.debug("".format("Limit %d", varsAnalyzed++));
 					break;
 				}
 
 			}
 			allCombinations = generationCombinations;
 		}
-		//FIlter combinations that are empty
+		// FIlter combinations that are empty
 		allCombinations = allCombinations.stream().filter(e -> !e.isEmpty()).collect(Collectors.toList());
-		
-		logger.debug("NrVarCombinationsConsidered: "+allCombinations.size());
-		
+
+		logger.debug("NrVarCombinationsConsidered: " + allCombinations.size());
+
 		return allCombinations;
 	}
 
