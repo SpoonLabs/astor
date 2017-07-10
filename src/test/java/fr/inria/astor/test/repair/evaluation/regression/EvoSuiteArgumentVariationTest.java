@@ -228,6 +228,59 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 		//assertTrue("Another test case name failing",evoValidation.getTestResult().getFailures().contains("test07(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Expecting exception: NullPointerException-"));
 		
 	}
+	
+	@Test
+	public void testM70Dependencies() throws Exception{
+		
+		String[] args = new String[] { "-dependencies", new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
+				, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				 (new File("./examples/math_70")).getAbsolutePath()
+					, "-scope", "local", "-seed", "10",
+				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
+				"-validation", "evosuite",
+				//Argument to test
+				 " -validation","fr.inria.astor.core.validation.validators.RegressionValidation,"
+				 ,"-ESParameters",
+				 //Originally used:
+				 //"-Dassertion_timeout=1800:-Dminimization_timeout=1800:-Djunit_check_timeout=1800:-Dwrite_junit_timeout=300:-Dinitialization_timeout=300:-Dglobal_timeout=18000:-Dsearch_budget=100000:-Dstopping_condition=MaxStatements:-Dno_runtime_dependency=true:-Dsandbox=false:-Dp_reflection_on_private=0.0:-Dreflection_start_percent=1.0:-Dp_functional_mocking=0.0:-Dfunctional_mocking_percent=1.0:-mem=2000"
+				//"-Dassertion_timeout=1800:-Dminimization_timeout=1800:-Djunit_check_timeout=1800:-Dwrite_junit_timeout=300:-Dinitialization_timeout=300:-Dglobal_timeout=18000:-Dsearch_budget=100000:-Dstopping_condition=MaxStatements:"
+				//+ 
+				"-Dno_runtime_dependency=true",
+				 "-parameters",
+				  "evosuitejar:./lib/evosuite-master-1.0.6-SNAPSHOT.jar"
+				 //
+		};
+		AstorMain main1 = new AstorMain();
+		main1.execute(args);
+		
+		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
+		
+		assertNotNull("Without validation",validationResult);
+		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
+		assertTrue(validationResult instanceof EvoSuiteValidationResult);
+		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
+		//The main validation must be true (due it is a solution)
+		assertTrue(esvalidationresult.isSuccessful());
+		//Now, the extended validation must fail
+		
+		TestCasesProgramValidationResult evoValidation = (TestCasesProgramValidationResult) esvalidationresult.getEvoValidation();
+		assertFalse(evoValidation.isSuccessful());
+		
+		assertTrue(evoValidation.getCasesExecuted() > 0);
+		
+		assertEquals(1,evoValidation.getFailureCount());
+		
+		//assertEquals("test07(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Expecting exception: NullPointerException-]",//
+		//		evoValidation.getTestResult().getFailures());
+		//assertTrue("Another test case name failing",evoValidation.getTestResult().getFailures().contains("test07(org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest): Expecting exception: NullPointerException-"));
+		
+	}
+	
 	public void testDirectArg(){
 		//String args = "-ESParameters  -Dglobal_timeout:240:-seed:64:-Drandom_seed:64:-Dsearch_budget:220:-Dstopping_condition:MAXGENERATIONS:-Dsandbox:false:-Dno_runtime_dependency:true:-mem:3000 '";
 	}

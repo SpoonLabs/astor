@@ -42,7 +42,7 @@ import spoon.reflect.declaration.CtClass;
 public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 	@Before
-	public void setUp() throws Exception{
+	public void setUp() throws Exception {
 		super.setUp();
 		// For running the test cases, We use the JVM that runs Astor
 		String javahome = System.getProperty("java.home");
@@ -52,8 +52,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		ConfigurationProperties.properties.setProperty("jvm4testexecution", javahome);
 		ConfigurationProperties.properties.setProperty("jvm4evosuitetestexecution", javahome);
 	}
-	
-	
+
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testGenerateEvosuiteTestsStepByStep() throws Exception {
@@ -85,12 +84,15 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 		log.info("Executing evosuite");
 		EvoSuiteFacade fev = new EvoSuiteFacade();
-		String outES = main1.getEngine().getProjectFacade().getInDirWithPrefix(ConfigurationProperties.getProperty("evosuiteresultfolder"));
-		
-		List<String> affectedTypes = variant.getAffectedClasses().stream().
-				map(e -> e.getQualifiedName()).collect(Collectors.toList());
-		
-		boolean executed = fev.runEvosuite(variant, affectedTypes,main1.getEngine().getProjectFacade(), outES, true);//fev.runEvosuite(variant, main1.getEngine().getProjectFacade(), outES);
+		String outES = main1.getEngine().getProjectFacade()
+				.getInDirWithPrefix(ConfigurationProperties.getProperty("evosuiteresultfolder"));
+
+		List<String> affectedTypes = variant.getAffectedClasses().stream().map(e -> e.getQualifiedName())
+				.collect(Collectors.toList());
+
+		boolean executed = fev.runEvosuite(variant, affectedTypes, main1.getEngine().getProjectFacade(), outES, true);// fev.runEvosuite(variant,
+																														// main1.getEngine().getProjectFacade(),
+																														// outES);
 		assertTrue(executed);
 
 		// CHECKING EVO OUTPUT
@@ -119,14 +121,13 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		// We create the Spoon model for the evosuite test generated
 		List<CtClass> classes = fev.reificateEvoSuiteTest(testEScodepath, classpathForModelizeEvoSuiteTest);
 		// Two classes: EvoTest + EvoScaffolding
-		//assertEquals("We do not have 2 spoon classes generated", 2, classes.size());
+		// assertEquals("We do not have 2 spoon classes generated", 2,
+		// classes.size());
 
-		classes.stream().forEach(e -> log.info("Classes generated "+e.getQualifiedName()));
-	
+		classes.stream().forEach(e -> log.info("Classes generated " + e.getQualifiedName()));
+
 		assertTrue("We do not have 2 spoon classes generated", classes.size() >= 2);
 
-		
-	
 		// We save model, first Spoon
 		String classpathForCompileSpoon = "";
 		// ----------
@@ -137,7 +138,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String[] classpathForCreateModel = classpathForCompileSpoon.split(File.pathSeparator);
 
 		// Compile
-		CompilationResult compilation = main1.getEngine().getCompiler().compile(classes, Converters.toURLArray(classpathForCreateModel));
+		CompilationResult compilation = main1.getEngine().getCompiler().compile(classes,
+				Converters.toURLArray(classpathForCreateModel));
 		assertFalse("Any bytecode", compilation.getByteCodes().values().isEmpty());
 
 		//// Save compiled
@@ -159,8 +161,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		log.info("Process classpath " + classpathForRunTest);
 
 		ProcessEvoSuiteValidator evoProcess = new ProcessEvoSuiteValidator();
-		TestCaseVariantValidationResult evoResult = evoProcess
-				.executeRegressionTesting(Converters.toURLArray(classpathForRunTest.split(File.pathSeparator)), testToExecute);
+		TestCaseVariantValidationResult evoResult = evoProcess.executeRegressionTesting(
+				Converters.toURLArray(classpathForRunTest.split(File.pathSeparator)), testToExecute);
 
 		assertNotNull("Test execution null", evoResult);
 		assertEquals("have a failure", evoResult.getFailureCount(), 0);
@@ -168,6 +170,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		assertTrue("Not exec", evoResult.getPassingTestCases() > 0);
 
 	}
+
 	@Test
 	public void testCompleteEvosuiteTests() throws Exception {
 		AstorMain main1 = new AstorMain();
@@ -197,26 +200,25 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		ProgramVariant variant = main1.getEngine().getVariants().get(0);
 
 		main1.getEngine().processCreatedVariant(variant, 1);
-		
+
 		log.info("Executing evosuite");
 		EvoSuiteFacade fev = new EvoSuiteFacade();
-		
+
 		List<CtClass> classes = fev.createEvoTestModel(main1.getEngine().getProjectFacade(), variant);
-	
-		//Failing
+
+		// Failing
 		// Two classes: EvoTest + EvoScaffolding
 		assertEquals("We do not have 2 spoon classes generated", 2, classes.size());
 
-		
-		TestCaseVariantValidationResult result = fev.saveAndExecuteEvoSuite(main1.getEngine().getProjectFacade(), variant, classes);
-	
+		TestCaseVariantValidationResult result = fev.saveAndExecuteEvoSuite(main1.getEngine().getProjectFacade(),
+				variant, classes);
+
 		assertNotNull(result);
-		
+
 		assertTrue(result.isSuccessful());
-		
+
 	}
-	
-	
+
 	@Test
 	public void testjGenProgWithEvoSuiteTests() throws Exception {
 		AstorMain main1 = new AstorMain();
@@ -228,21 +230,16 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "local", "-seed", "10",
-				"-stopfirst", "true",
-				"-population", 
-				"1", "-stopfirst", "true", "-maxtime", "100",
-				"-validation","evosuite","-maxgen","250"
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-stopfirst", "true", "-population", "1",
+				"-stopfirst", "true", "-maxtime", "100", "-validation", "evosuite", "-maxgen", "250"
 
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
-		//One solution
-		assertEquals(1,main1.getEngine().getSolutions().size());
-	
-		
+		// One solution
+		assertEquals(1, main1.getEngine().getSolutions().size());
+
 	}
-	
 
 	/**
 	 * We take the output of evosuite, we generate the spoon model, then we
@@ -255,36 +252,33 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 	public void testCompileSaveAndRunEvoSuiteTestStepByStep() throws Exception {
 
 		MutationSupporter.currentSupporter = new MutationSupporter();
-	
+
 		// Classpath to build a Spoon Model
 		String classpath4BuildModel = new File("./examples/libs/junit-4.4.jar").getAbsolutePath() + File.pathSeparator
 				+ new File("./examples/evo_suite_test/math_70_spooned//bin//default").getAbsolutePath()
 				+ File.pathSeparator + new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath();
 
-		
-		
 		EvoSuiteFacade fev = new EvoSuiteFacade();
 
 		List<CtClass> classes = fev.reificateEvoSuiteTest(
 				// We have all project code files... we should put only those
-				new File("./examples/evo_suite_test/math_70_spooned/evosuite/evosuite-tests")
-						.getAbsolutePath(),
+				new File("./examples/evo_suite_test/math_70_spooned/evosuite/evosuite-tests").getAbsolutePath(),
 				classpath4BuildModel.split(File.pathSeparator));
-		
+
 		// Two classes: EvoTest + EvoScaffolding
-		//assertEquals("We do not have 2 classes generated", 2, classes.size());
-		//System.out.println("classes generated \n"+classes.stream().d);
-		classes.forEach(e->System.out.println("ES class generated: "+e.getSimpleName()));
-		assertTrue("We do not have 2 classes generated", classes.size() >=2);
+		// assertEquals("We do not have 2 classes generated", 2,
+		// classes.size());
+		// System.out.println("classes generated \n"+classes.stream().d);
+		classes.forEach(e -> System.out.println("ES class generated: " + e.getSimpleName()));
+		assertTrue("We do not have 2 classes generated", classes.size() >= 2);
 
 		String classpathForCompileModel = new File("./examples/libs/junit-4.4.jar").getAbsolutePath()
 				+ File.pathSeparator
 				+ new File("./examples/evo_suite_test/math_70_spooned/bin/default").getAbsolutePath()
 				+ File.pathSeparator + new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath();
 
-		log.info("Classpath "+classpathForCompileModel);
-		
-		
+		log.info("Classpath " + classpathForCompileModel);
+
 		String[] classpathForEvoSuiteTest2 = classpathForCompileModel.split(File.pathSeparator);
 
 		// Compile (generation of evosuite bytecode) on memory
@@ -332,8 +326,6 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		assertTrue("Not successfull", evoResult.isSuccessful());
 		assertTrue("Not exec", evoResult.getPassingTestCases() > 0);
 	}
-	
-	
 
 	@SuppressWarnings("rawtypes")
 	@Test
@@ -348,13 +340,10 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "400", "-population", "1", 
-				"-stopfirst", "true", 
-				"-maxtime", "20",
-				//PARAMETER TO TEST
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "400", "-population", "1",
+				"-stopfirst", "true", "-maxtime", "20",
+				// PARAMETER TO TEST
 				"-validation", "evosuite"
-				
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -363,72 +352,61 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 		assertEquals(1, main1.getEngine().getSolutions().size());
 
-
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
-		
-		assertNotNull("Without validation",validationResult);
-		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution
+				.getValidationResult();
+
+		assertNotNull("Without validation", validationResult);
+		// As we execute jgp in evosuite validation mode, we expect
+		// eSvalidationResult
 		assertTrue(validationResult instanceof EvoSuiteValidationResult);
 		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
-		//The main validation must be true (due it is a solution)
+		// The main validation must be true (due it is a solution)
 		assertTrue(esvalidationresult.isSuccessful());
-		//Now, the extended validation must fail
+		// Now, the extended validation must fail
 		assertFalse(esvalidationresult.getEvoValidation().isSuccessful());
-		
+
 		assertTrue(esvalidationresult.getEvoValidation().getFailureCount() > 0);
-		
+
 		assertTrue(esvalidationresult.getEvoValidation().getCasesExecuted() > 0);
-		
-		
+
 	}
-	
-	
-	
-	
+
 	@Test
-	public void testM70Regression() throws Exception{
-		String command = "-mode,statement,"
-				+ "-location,"+ (new File("./examples/math_70")).getAbsolutePath()
-				+ ","+ "-dependencies,"+new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
-				+ ",out,"+new File(ConfigurationProperties.getProperty("workingDirectory"))
-			
+	public void testM70Regression() throws Exception {
+		String command = "-mode,statement," + "-location," + (new File("./examples/math_70")).getAbsolutePath() + ","
+				+ "-dependencies," + new File("./examples/libs/junit-4.11.jar").getAbsolutePath() + ",out,"
+				+ new File(ConfigurationProperties.getProperty("workingDirectory"))
+
 				+ ",-failing,org.apache.commons.math.analysis.solvers.BisectionSolverTest,"
-				+ "-package,org.apache.commons,"
-				+ "-javacompliancelevel,7,"
-				+ "-maxgen,1000000,"
-				+ "-seed,1,"
-				+ "-stopfirst,true,"
-				+ "-scope,package,-maxtime,10,"
-				+ "-population,1,"
-				+ "-srcjavafolder,src/java/,"
-				+ "-srctestfolder,src/test/,-binjavafolder,target/classes/,"
-				+ "-bintestfolder,target/test-classes/,"
-				+ "-flthreshold,0.1,"
-				+ "-validation,"+fr.inria.astor.core.validation.validators.RegressionValidation.class.getCanonicalName()
-				+",-testbystep"
-				;
+				+ "-package,org.apache.commons," + "-javacompliancelevel,7," + "-maxgen,1000000," + "-seed,1,"
+				+ "-stopfirst,true," + "-scope,package,-maxtime,10," + "-population,1," + "-srcjavafolder,src/java/,"
+				+ "-srctestfolder,src/test/,-binjavafolder,target/classes/," + "-bintestfolder,target/test-classes/,"
+				+ "-flthreshold,0.1," + "-validation,"
+				+ fr.inria.astor.core.validation.validators.RegressionValidation.class.getCanonicalName()
+				+ ",-testbystep";
 		String[] args = command.split(",");
 		AstorMain main1 = new AstorMain();
 		main1.execute(args);
-	
+
 		assertEquals(1, main1.getEngine().getSolutions().size());
 
-
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
-		
-		assertNotNull("Without validation",validationResult);
-		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution
+				.getValidationResult();
+
+		assertNotNull("Without validation", validationResult);
+		// As we execute jgp in evosuite validation mode, we expect
+		// eSvalidationResult
 		assertTrue(validationResult instanceof EvoSuiteValidationResult);
 		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
-		//The main validation must be true (due it is a solution)
+		// The main validation must be true (due it is a solution)
 		assertTrue(esvalidationresult.isSuccessful());
-		//Now, the extended validation must fail
+		// Now, the extended validation must fail
 		assertFalse(esvalidationresult.getEvoValidation().isSuccessful());
-		
+
 		assertTrue(esvalidationresult.getEvoValidation().getFailureCount() > 0);
-		
+
 		assertTrue(esvalidationresult.getEvoValidation().getCasesExecuted() > 0);
 	}
 
@@ -442,16 +420,16 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 	public void testBugProcessDoesNotReturn() throws Exception {
 
 		String command =
-		// Java location
-		"/Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/bin//java "
-				// memory
-				+ "-Xmx2048m " + "-cp "
-				// Classpath
-				+ "/Users/matias/develop/code/astor/target/test-classes:/Users/matias/develop/code/astor/target/classes:/Users/matias/.m2/repository/fr/inria/gforge/spoon/spoon-core/4.4.1/spoon-core-4.4.1.jar:/Users/matias/.m2/repository/org/eclipse/jdt/org.eclipse.jdt.core/3.12.0.v20150913-1717/org.eclipse.jdt.core-3.12.0.v20150913-1717.jar:/Users/matias/.m2/repository/com/martiansoftware/jsap/2.1/jsap-2.1.jar:/Users/matias/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:/Users/matias/.m2/repository/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar:/Users/matias/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar:/Users/matias/.m2/repository/com/gzoltar/gzoltar/0.1.1/gzoltar-0.1.1.jar:/Users/matias/.m2/repository/junit/junit/4.11/junit-4.11.jar:/Users/matias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/matias/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar:/Users/matias/develop/Eclipse.app/Contents/Eclipse/configuration/org.eclipse.osgi/214/0/.cp/:/Users/matias/develop/Eclipse.app/Contents/Eclipse/configuration/org.eclipse.osgi/213/0/.cp/:/Users/matias/develop/code/astor/./examples/libs/junit-4.4.jar:/Users/matias/develop/code/astor/./outputMutation/math_70_spooned/bin/default/:/Users/matias/develop/wsastor/testES/libs/evosuite-1.0.3.jar:"
-				// TestGenerated by Evosuite
-				+ "/Users/matias/develop/code/astor/outputMutation/math_70_spooned/bin/evosuite/evosuite-tests/: "
-				// jUnit and arguments
-				+ "fr.inria.astor.junitexec.JUnitTestExecutor org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest";
+				// Java location
+				"/Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/bin//java "
+						// memory
+						+ "-Xmx2048m " + "-cp "
+						// Classpath
+						+ "/Users/matias/develop/code/astor/target/test-classes:/Users/matias/develop/code/astor/target/classes:/Users/matias/.m2/repository/fr/inria/gforge/spoon/spoon-core/4.4.1/spoon-core-4.4.1.jar:/Users/matias/.m2/repository/org/eclipse/jdt/org.eclipse.jdt.core/3.12.0.v20150913-1717/org.eclipse.jdt.core-3.12.0.v20150913-1717.jar:/Users/matias/.m2/repository/com/martiansoftware/jsap/2.1/jsap-2.1.jar:/Users/matias/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:/Users/matias/.m2/repository/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar:/Users/matias/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar:/Users/matias/.m2/repository/com/gzoltar/gzoltar/0.1.1/gzoltar-0.1.1.jar:/Users/matias/.m2/repository/junit/junit/4.11/junit-4.11.jar:/Users/matias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/matias/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar:/Users/matias/develop/Eclipse.app/Contents/Eclipse/configuration/org.eclipse.osgi/214/0/.cp/:/Users/matias/develop/Eclipse.app/Contents/Eclipse/configuration/org.eclipse.osgi/213/0/.cp/:/Users/matias/develop/code/astor/./examples/libs/junit-4.4.jar:/Users/matias/develop/code/astor/./outputMutation/math_70_spooned/bin/default/:/Users/matias/develop/wsastor/testES/libs/evosuite-1.0.3.jar:"
+						// TestGenerated by Evosuite
+						+ "/Users/matias/develop/code/astor/outputMutation/math_70_spooned/bin/evosuite/evosuite-tests/: "
+						// jUnit and arguments
+						+ "fr.inria.astor.junitexec.JUnitTestExecutor org.apache.commons.math.analysis.solvers.BisectionSolver_ESTest";
 		System.out.println("Running ");
 
 		Process process = new ProcessBuilder(command.split(" ")).start();
@@ -472,132 +450,114 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		}
 	}
 
-	
-	
-
 	@Test
 	public void testValidationWrongArgumentValue() throws Exception {
 		AstorMain main1 = new AstorMain();
-		try{
-		// Running Astor
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
-				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "200", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
-				//PARAMETER TO TEST
-				"-validation", "wrongargument"
+		try {
+			// Running Astor
+			String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+			File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+			String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+					"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+					new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons",
+					"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
+					"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5",
+					"-out", out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "200", "-population",
+					"1", "-stopfirst", "true", "-maxtime", "100",
+					// PARAMETER TO TEST
+					"-validation", "wrongargument"
 
-		};
-		
-		main1.execute(args);
-		fail();
-		}catch(Exception e){}
+			};
+
+			main1.execute(args);
+			fail();
+		} catch (Exception e) {
+		}
 	}
 
 	@Test
-	public void testM70() throws Exception{
+	public void testM70() throws Exception {
 		String command = "-mode,statement,"
-				//+ "-location,"+ (new File(".")).getAbsolutePath()
-				
-					+ "-location,"+ (new File("./examples/math_70")).getAbsolutePath()
-				+ ","+ "-dependencies,"+new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
-				//+ ","
-				+ ",out,"+new File(ConfigurationProperties.getProperty("workingDirectory"))
-				//+ "-dependencies,"+(new File("./examples/libs/")).getAbsolutePath()
+				// + "-location,"+ (new File(".")).getAbsolutePath()
+
+				+ "-location," + (new File("./examples/math_70")).getAbsolutePath() + "," + "-dependencies,"
+				+ new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
+				// + ","
+				+ ",out," + new File(ConfigurationProperties.getProperty("workingDirectory"))
+				// + "-dependencies,"+(new
+				// File("./examples/libs/")).getAbsolutePath()
 				+ ",-failing,org.apache.commons.math.analysis.solvers.BisectionSolverTest,"
 				+ "-package,org.apache.commons,"
-				//+ "-jvm4testexecution,/home/mmartinez/jdk1.8.0_45/bin/"
-				+ "-javacompliancelevel,7,"
-				+ "-maxgen,1000000,"
-				+ "-seed,6001,"
-				+ "-stopfirst,true,"
-				+ "-scope,package,-maxtime,10,"
-				+ "-population,1,"
-				+ "-srcjavafolder,src/java/,"
-				+ "-srctestfolder,src/test/,-binjavafolder,target/classes/,"
-				+ "-bintestfolder,target/test-classes/,"
+				// + "-jvm4testexecution,/home/mmartinez/jdk1.8.0_45/bin/"
+				+ "-javacompliancelevel,7," + "-maxgen,1000000," + "-seed,6001," + "-stopfirst,true,"
+				+ "-scope,package,-maxtime,10," + "-population,1," + "-srcjavafolder,src/java/,"
+				+ "-srctestfolder,src/test/,-binjavafolder,target/classes/," + "-bintestfolder,target/test-classes/,"
 				+ "-flthreshold,0.1,"
-				//+ " -validation,fr.inria.astor.core.validation.validators.RegressionValidation,"
-				;
+		// + "
+		// -validation,fr.inria.astor.core.validation.validators.RegressionValidation,"
+		;
 		String[] args = command.split(",");
 		AstorMain main1 = new AstorMain();
 		main1.execute(args);
 	}
-	
-	
-	
-	
-	
 
-	
 	@SuppressWarnings("rawtypes")
-	//@Test
+	// @Test
 	public void testNonDeterministimsMath70WithEvosuiteTests() throws Exception {
-	
 
-		int numberRuns = 3,inum = 0;
-	
-		//For storying the results
-		int executed = -1, failing = -1; 
-	
-		
-		while (inum < numberRuns){
-		
+		int numberRuns = 3, inum = 0;
+
+		// For storying the results
+		int executed = -1, failing = -1;
+
+		while (inum < numberRuns) {
+
 			AstorMain main1 = new AstorMain();
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
-				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
-				"-validation", "evosuite"
+			String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+			File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+			String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+					"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+					new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons",
+					"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
+					"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5",
+					"-out", out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "250", "-population",
+					"1", "-stopfirst", "true", "-maxtime", "100", "-validation", "evosuite"
 
-		};
-		System.out.println(Arrays.toString(args));
+			};
+			System.out.println(Arrays.toString(args));
 
-		main1.execute(args);
+			main1.execute(args);
 
-		assertEquals(1, main1.getEngine().getSolutions().size());
+			assertEquals(1, main1.getEngine().getSolutions().size());
 
+			ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
+			TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution
+					.getValidationResult();
 
-		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
-		
-		assertNotNull("Without validation",validationResult);
-		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
-		assertTrue(validationResult instanceof EvoSuiteValidationResult);
-		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
-		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.isSuccessful());
-	
-		///
-		if(executed == -1){
-			executed = esvalidationresult.getEvoValidation().getCasesExecuted();
-			failing = esvalidationresult.getEvoValidation().getFailureCount();
-		}else{
-			
-			assertEquals(esvalidationresult.getEvoValidation().getFailureCount(), failing);
-			
-			assertEquals(esvalidationresult.getEvoValidation().getCasesExecuted(), executed);
-		
-		}
-	
-		
-		inum ++;
-		
+			assertNotNull("Without validation", validationResult);
+			// As we execute jgp in evosuite validation mode, we expect
+			// eSvalidationResult
+			assertTrue(validationResult instanceof EvoSuiteValidationResult);
+			EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
+			// The main validation must be true (due it is a solution)
+			assertTrue(esvalidationresult.isSuccessful());
+
+			///
+			if (executed == -1) {
+				executed = esvalidationresult.getEvoValidation().getCasesExecuted();
+				failing = esvalidationresult.getEvoValidation().getFailureCount();
+			} else {
+
+				assertEquals(esvalidationresult.getEvoValidation().getFailureCount(), failing);
+
+				assertEquals(esvalidationresult.getEvoValidation().getCasesExecuted(), executed);
+
+			}
+
+			inum++;
+
 		}
 	}
-	
-	
-	
-	
+
 	
 }
