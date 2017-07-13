@@ -1,7 +1,9 @@
 package fr.inria.astor.util;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 /**
  * @author Matias Martinez
  *
@@ -9,8 +11,10 @@ import java.util.Map;
  */
 public class MapCounter<K> extends HashMap<K, Integer> {
 
+	Map<K, Double> probMap = null;
+	boolean changeSinceLastCreation = false;
 	public void add(K key) {
-		
+		changeSinceLastCreation = true;
 		if (!containsKey(key))
 			this.put(key, new Integer(1));
 		else {
@@ -27,7 +31,11 @@ public class MapCounter<K> extends HashMap<K, Integer> {
 	
 	public Map<K, Double> getProbabilies(){
 		
-		Map<K, Double> h = new HashMap<K, Double>();
+		if(!changeSinceLastCreation){
+			return  probMap;
+		}
+		changeSinceLastCreation = false;
+		probMap = new HashMap<K, Double>();
 		
 		int size = 0;
 		for (Integer values : this.values()) {
@@ -38,10 +46,15 @@ public class MapCounter<K> extends HashMap<K, Integer> {
 			int vofKey = this.get(key);
 			
 			double probKey = (double)vofKey / (double) size;
-			h.put(key, probKey);
+			probMap.put(key, probKey);
 		}
 		
-		return h;
+		probMap = probMap.entrySet().stream()
+				.sorted(Map.Entry.<K, Double>comparingByValue().reversed())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+				(oldValue, newValue) -> oldValue, LinkedHashMap::new));
+		
+		return probMap;
 	}
-	
+
 }
