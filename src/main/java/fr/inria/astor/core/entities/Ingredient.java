@@ -58,7 +58,7 @@ public class Ingredient {
 
 	@Override
 	public String toString() {
-		return "Ingredient [code=" + code + "]";
+		return "Ingredient [code=" + getCode() + "]";
 	}
 
 	
