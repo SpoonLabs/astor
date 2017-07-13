@@ -161,7 +161,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations), "-stopfirst", "true",
 				"-maxtime", "100",
-				//"-loglevel","DEBUG",
+				"-loglevel","INFO",
+				"-parameters","disablelog:false"
 
 		};
 		return args;
