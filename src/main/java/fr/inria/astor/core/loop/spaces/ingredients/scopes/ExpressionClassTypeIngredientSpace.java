@@ -25,7 +25,6 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
@@ -36,8 +35,10 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
+public class ExpressionClassTypeIngredientSpace extends AstorCtIngredientSpace {
 
+	public IngredientSpaceScope scope;
+	
 	public MultiKeyMap mkp = new MultiKeyMap();
 
 	public List<CtCodeElement> allElementsFromSpace = new ArrayList<>();
@@ -46,15 +47,14 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
-	public ExpressionIngredientSpace(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
+	public ExpressionClassTypeIngredientSpace(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
 		super(processors);
 	}
 
 	@Override
 	public void defineSpace(ProgramVariant variant) {
-		 List<CtType<?>> affected =
-		 MutationSupporter.getFactory().Type().getAll();
-		//List<CtType<?>> affected = variant.getAffectedClasses();
+		
+		List<CtType<?>> affected = obtainClassesFromScope(variant);
 		log.debug("Creating Expression Ingredient space: ");
 		for (CtType<?> classToProcess : affected) {
 
@@ -83,7 +83,7 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 						
 					}
 
-					if (ConfigurationProperties.getPropertyBool("applytemplates")) {
+					if (ConfigurationProperties.getPropertyBool("cleantemplates")) {
 
 						CtCodeElement templateElement = MutationSupporter.clone(ctExpr);
 						formatIngredient(templateElement);
@@ -124,6 +124,20 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 
 	}
 
+	private List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {
+
+		if(IngredientSpaceScope.PACKAGE.equals(scope)){
+			return variant.getAffectedClasses();
+		}
+		if(IngredientSpaceScope.LOCAL.equals(scope)){
+			return variant.getAffectedClasses();
+		}
+		if(IngredientSpaceScope.GLOBAL.equals(scope)){
+			return MutationSupporter.getFactory().Type().getAll();
+		}
+		return null;
+	}
+
 	@Override
 	public IngredientSpaceScope spaceScope() {
 		return null;
@@ -131,8 +145,17 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 
 	@Override
 	public String calculateLocation(CtElement elementToModify) {
-
-		return elementToModify.getParent(CtPackage.class).getQualifiedName();
+		
+		if(IngredientSpaceScope.PACKAGE.equals(scope)){
+			return elementToModify.getParent(CtPackage.class).getQualifiedName();
+		}else if(IngredientSpaceScope.LOCAL.equals(scope)){
+			return elementToModify.getParent(CtType.class).getQualifiedName();
+		}else
+			if(IngredientSpaceScope.GLOBAL.equals(scope))
+				return "Global";
+		
+		return null;
+		
 	}
 
 	@Override
@@ -142,18 +165,8 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 	}
 
 	@Override
-	public List<CtCodeElement> getIngredients(CtElement location) {
-		log.error("Not supported operation");
-		return null;
-	}
-
-	@Override
-	public List<CtCodeElement> getIngredients(CtElement element, String type) {
-
+	public List<CtCodeElement> getIngredients(CtElement element) {
 		if (element instanceof CtExpression) {
-
-			if (!(element instanceof CtStatement))
-				return allElementsFromSpace;
 
 			String keyLocation = mapKey(element);
 			CtExpression ctExpr = (CtExpression) element;
@@ -164,6 +177,11 @@ public class ExpressionIngredientSpace extends AstorCtIngredientSpace {
 		}
 		log.error("Element is not a expression: " + element.getClass().getCanonicalName());
 		return null;
+	}
+
+	@Override
+	public List<CtCodeElement> getIngredients(CtElement element, String type) {
+		return getIngredients(element);
 	}
 
 	@Override

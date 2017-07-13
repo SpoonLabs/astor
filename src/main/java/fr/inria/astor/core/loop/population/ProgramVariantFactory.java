@@ -123,7 +123,7 @@ public class ProgramVariantFactory {
 				if (modifPoints != null && !modifPoints.isEmpty())
 					progInstance.addModificationPoints(modifPoints);
 				else {
-					log.debug("-any mod point created for suspicious " + suspiciousCode);
+					//log.debug("-any mod point created for suspicious " + suspiciousCode);
 				}
 
 			}
