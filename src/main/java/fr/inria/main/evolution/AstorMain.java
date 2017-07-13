@@ -12,6 +12,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import fr.inria.astor.approaches.cardumen.CardumenApproach;
 import fr.inria.astor.approaches.exhaustive.ExhaustiveAstorEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jkali.JKaliEngine;
@@ -68,7 +69,10 @@ public class AstorMain extends AbstractMain {
 		astorCore = null;
 		MutationSupporter mutSupporter = new MutationSupporter();
 
-		if (ExecutionMode.jKali.equals(mode)) {
+		if (ExecutionMode.CARDUMEN.equals(mode)) {
+			astorCore = new CardumenApproach(mutSupporter, projectFacade);
+
+		} else if (ExecutionMode.jKali.equals(mode)) {
 			astorCore = new JKaliEngine(mutSupporter, projectFacade);
 
 		} else if (ExecutionMode.jGenProg.equals(mode)) {
@@ -136,9 +140,11 @@ public class AstorMain extends AbstractMain {
 		long startT = System.currentTimeMillis();
 		initProject(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
-		String mode = ConfigurationProperties.getProperty("mode");
+		String mode = ConfigurationProperties.getProperty("mode").toLowerCase();
 
-		if ("statement".equals(mode) || "jgenprog".equals(mode))
+		if ("cardumen".equals(mode))
+			astorCore = createEngine(ExecutionMode.CARDUMEN);
+		else if ("statement".equals(mode) || "jgenprog".equals(mode))
 			astorCore = createEngine(ExecutionMode.jGenProg);
 		else if ("statement-remove".equals(mode) || "jkali".equals(mode))
 			astorCore = createEngine(ExecutionMode.jKali);
@@ -149,8 +155,8 @@ public class AstorMain extends AbstractMain {
 		else if ("exhaustive".equals(mode) || "exastor".equals(mode))
 			astorCore = createEngine(ExecutionMode.EXASTOR);
 		else {
-			System.err.println("Unknown mode of execution: '" + mode
-					+ "', know modes are: jgenprog, jkali, jmutrepair or custom.");
+			System.err.println("Unknown mode of execution: '" + mode + "',  modes are: "
+					+ Arrays.toString(ExecutionMode.values()));
 			return;
 		}
 
