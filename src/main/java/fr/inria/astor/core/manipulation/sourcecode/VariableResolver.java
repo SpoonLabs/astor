@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -420,7 +422,8 @@ public class VariableResolver {
 			vars = new ArrayList<>();
 			varMaps.put(varOutWrapper, vars);
 		}
-		vars.add(varInContext);
+		if(!vars.stream().filter(e-> e.getSimpleName().equals(varInContext.getSimpleName())).findAny().isPresent())
+			vars.add(varInContext);
 	}
 
 	/**
@@ -464,17 +467,26 @@ public class VariableResolver {
 		for (CtVariableAccess ctVariableAccess : varAccessCollected) {
 			CtVariableReference varref = ctVariableAccess.getVariable();
 
-			// an access to a static must be a static field.
-			if (!(varref instanceof CtFieldReference)) {
-				continue;
-			}
-
-			CtVariable var = varref.getDeclaration();
-			if (var == null || var.getModifiers().contains(ModifierKind.STATIC)) {
+			if (isStatic(varref)) {
 				statics.add(ctVariableAccess);
 			}
 		}
 		return statics;
+	}
+
+	public static boolean isStatic(CtVariableReference varref) {
+
+		if (!(varref instanceof CtFieldReference)) {
+			return false;
+		}
+
+		CtVariable var = varref.getDeclaration();
+		// if (var == null || var.getModifiers().contains(ModifierKind.STATIC))
+		// {
+		if (var != null && var.getModifiers().contains(ModifierKind.STATIC)) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -834,9 +846,17 @@ public class VariableResolver {
 
 		int maxNumberCombinations = ConfigurationProperties.getPropertyInt("maxVarCombination");
 
-		int numberTotalComb = 1;
+		long numberTotalComb = 1;
 		int max = -1;
+		Set<String> vars = new HashSet<>();
+
 		for (VarAccessWrapper currentVar : varsNamesToCombine) {
+
+			if (vars.contains(currentVar.getVar().getVariable().getSimpleName())) {
+				continue;
+			}
+
+			vars.add(currentVar.getVar().getVariable().getSimpleName());
 
 			List<CtVariable> mapped = mappedVars.get(currentVar);
 			int numberCompVar = mapped.size();
@@ -849,9 +869,20 @@ public class VariableResolver {
 		logger.debug("Teoricalcombinations: " + numberTotalComb);
 		double maxPerVar = Math.pow(numberTotalComb, 1.0 / varsNamesToCombine.size());
 		double maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0 / varsNamesToCombine.size());
+
+		if (numberTotalComb < maxNumberCombinations) {
+			maxPerVarLimit = max;
+		}
+
 		logger.debug(String.format("Max per var %f , %f  ", maxPerVar, maxPerVarLimit));
 
 		for (VarAccessWrapper currentVar : varsNamesToCombine) {
+
+			if (allCombinations.size() > 0
+					&& allCombinations.get(0).containsKey(currentVar.getVar().getVariable().getSimpleName())) {
+				logger.debug("Var already mapped: " + currentVar.getVar().getVariable().getSimpleName());
+				continue;
+			}
 
 			List<Map<String, CtVariable>> generationCombinations = new ArrayList<>();
 
@@ -879,7 +910,6 @@ public class VariableResolver {
 				}
 				varsAnalyzed++;
 				if (varsAnalyzed >= ((int) maxPerVarLimit)) {
-					// logger.debug("".format("Limit %d", varsAnalyzed++));
 					break;
 				}
 
