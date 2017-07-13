@@ -279,4 +279,12 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 		return lockey;
 	}
 
+	public IngredientTransformationStrategy getIngredientTransformationStrategy() {
+		return ingredientTransformationStrategy;
+	}
+
+	public void setIngredientTransformationStrategy(IngredientTransformationStrategy ingredientTransformationStrategy) {
+		this.ingredientTransformationStrategy = ingredientTransformationStrategy;
+	}
+
 }
