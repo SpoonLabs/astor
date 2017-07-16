@@ -1,23 +1,19 @@
 package fr.inria.astor.approaches.cardumen;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
-import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionClassTypeIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
-import fr.inria.astor.core.loop.spaces.ingredients.transformations.DefaultIngredientTransformation;
-import fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.ProbabilisticTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
@@ -25,9 +21,7 @@ import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.loop.spaces.operators.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
-import fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
-import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.main.evolution.ExtensionPoints;
@@ -92,7 +86,10 @@ public class CardumenApproach extends JGenProg{
 		
 		//command.command.put("-scope", ExpressionIngredientSpace.class.getName());
 		//IngredientSpace ingredientspace = PlugInLoader.loadIngredientSpace(ingredientProcessors);
-		ExpressionTypeIngredientSpace ingredientspace  = new ExpressionTypeIngredientSpace(ingredientProcessors);
+		ExpressionTypeIngredientSpace ingredientspace  = 
+				((ConfigurationProperties.getPropertyBool("uniformreplacement"))?
+				new ExpressionClassTypeIngredientSpace(ingredientProcessors):
+				new ExpressionTypeIngredientSpace(ingredientProcessors));
 		String scope = ConfigurationProperties.getProperty(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE.identifier);
 		if(scope != null){
 			ingredientspace.scope = IngredientSpaceScope.valueOf(scope.toUpperCase());
@@ -126,9 +123,6 @@ public class CardumenApproach extends JGenProg{
 
 		
 		//Transformation strategy:
-		
-		
-		
 		//----
 		ConfigurationProperties.setProperty("cleantemplates","true");
 		

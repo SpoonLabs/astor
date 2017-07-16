@@ -71,18 +71,7 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 					if (ctExpr.getType() == null) {
 						continue;
 					}
-
-					String returnTypeExpression = (ctExpr.getType() != null) ? ctExpr.getType().getSimpleName()
-							: "null";
-
-					List<CtCodeElement> ingredientsKey = (List<CtCodeElement>) mkp.get(keyLocation,
-							returnTypeExpression);
-
-					if (!mkp.containsKey(keyLocation, returnTypeExpression)) {
-						ingredientsKey = new CacheList<CtCodeElement>();
-						mkp.put(keyLocation, returnTypeExpression, ingredientsKey);
-
-					}
+					List<CtCodeElement> ingredientsKey = getIngrediedientsFromKey(keyLocation, ctExpr);
 
 					if (ConfigurationProperties.getPropertyBool("cleantemplates")) {
 
@@ -127,7 +116,7 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 
 	}
 
-	private List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {
+	protected List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {
 
 		if (IngredientSpaceScope.PACKAGE.equals(scope)) {
 			return variant.getAffectedClasses();
@@ -273,4 +262,17 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 
 	}
 
+	protected List<CtCodeElement> getIngrediedientsFromKey(String keyLocation, CtExpression ctExpr) {
+
+		String returnTypeExpression = (ctExpr.getType() != null) ? ctExpr.getType().getSimpleName() : "null";
+
+		List<CtCodeElement> ingredientsKey = (List<CtCodeElement>) mkp.get(keyLocation, returnTypeExpression);
+
+		if (!mkp.containsKey(keyLocation, returnTypeExpression)) {
+			ingredientsKey = new CacheList<CtCodeElement>();
+			mkp.put(keyLocation, returnTypeExpression, ingredientsKey);
+
+		}
+		return ingredientsKey;
+	}
 }
