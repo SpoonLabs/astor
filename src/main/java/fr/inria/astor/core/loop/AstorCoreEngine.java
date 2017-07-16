@@ -907,6 +907,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					}
 
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
+					line += "\nBuggy kind= "+genOperationInstance.getOriginal().getClass().getSimpleName()+ "|"+genOperationInstance.getOriginal().getParent().getClass().getSimpleName();
+					
 					line += "\nfixed statement= ";
 					if (genOperationInstance.getModified() != null){
 						// if fix content is the same that original buggy
@@ -919,6 +921,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 						line += genOperationInstance.getOriginal().toString();
 						}
 						//Information about types Parents
+						
 						line += "\nPatch kind= "+genOperationInstance.getModified().getClass().getSimpleName()+ "|"+genOperationInstance.getModified().getParent().getClass().getSimpleName();
 					}
 					line += "\ngeneration= " + Integer.toString(i);
