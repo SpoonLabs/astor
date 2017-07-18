@@ -146,6 +146,8 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 				log.debug(
 						"The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
 								+ baseIngredient);
+				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
+						0);
 				return null;
 			}
 			log.debug(String.format("Valid Transformed ingredients (%d):", ingredientsAfterTransformation.size()));
