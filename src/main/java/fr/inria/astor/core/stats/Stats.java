@@ -323,13 +323,14 @@ public class Stats {
 				list.add(keyjson);
 		}
 		space.put("allAttempts",total);//Times the space was called
-		String fileName = output + "/"+filename+".json";
-		try (FileWriter file = new FileWriter(fileName)) {
+		String absoluteFileName = output + "/"+filename+".json";
+		try (FileWriter file = new FileWriter(absoluteFileName)) {
 
 			file.write(space.toJSONString());
 			file.flush();
-			log.info("Storing ing JSON at "+fileName);
-
+			log.info("Storing ing JSON at "+absoluteFileName);
+			log.info(filename+":"+space.toJSONString());
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			log.error("Problem storing ing json file"+ e.toString());

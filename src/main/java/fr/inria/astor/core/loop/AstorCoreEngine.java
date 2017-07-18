@@ -186,7 +186,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		for (ProgramVariant variant : variants) {
 			log.debug("f " + variant.getFitness() + ", " + variant);
 		}
-
+		log.debug("\nNumber suspicious:" + this.variants.size());
+		
 		if (!solutions.isEmpty()) {
 			log.info("\nSolution details");
 			log.info(getSolutionData(solutions, generationsExecuted));
