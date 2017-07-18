@@ -422,7 +422,7 @@ public class VariableResolver {
 			vars = new ArrayList<>();
 			varMaps.put(varOutWrapper, vars);
 		}
-		if(!vars.stream().filter(e-> e.getSimpleName().equals(varInContext.getSimpleName())).findAny().isPresent())
+		if (!vars.stream().filter(e -> e.getSimpleName().equals(varInContext.getSimpleName())).findAny().isPresent())
 			vars.add(varInContext);
 	}
 
@@ -773,6 +773,9 @@ public class VariableResolver {
 
 		File ingp = ingredient.getPosition().getFile();
 		File fixp = fix.getPosition().getFile();
+
+		if (ingp == null || fixp == null)
+			return null;
 
 		if (ingp.getAbsolutePath().equals(fixp.getAbsolutePath())) {
 			return IngredientSpaceScope.LOCAL;

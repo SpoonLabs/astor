@@ -118,11 +118,18 @@ public class OperatorInstance {
 	}
 
 	public String toString() {
-		return "OP_INSTANCE:\n" + this.getOperationApplied() + ":("
-				+this.original.getClass().getCanonicalName() + ") `" + StringUtil.trunc(this.original)
-				+ " ` -topatch--> `" + StringUtil.trunc(modified) + "` ("
-				+ ((this.modified!=null)?this.modified.getClass().getCanonicalName():"null" )+ ") at l: " + this.original.getPosition().getLine()
-				+ " on " + this.original.getPosition().getFile().getAbsolutePath();
+		String repst = "OP_INSTANCE:\n";
+
+		repst += this.getOperationApplied() + ":(" + this.original.getClass().getCanonicalName() + ") `"
+				+ StringUtil.trunc(this.original) + " ` -topatch--> `" + StringUtil.trunc(modified);
+
+		repst += "` (" + ((this.modified != null) ? this.modified.getClass().getCanonicalName() : "null") + ") ";
+
+		if (this.original.getPosition() != null && this.original.getPosition().getFile() != null) {
+			repst += "at l: " + this.original.getPosition().getLine() + " on "
+					+ this.original.getPosition().getFile().getAbsolutePath();
+		}
+		return repst;
 	}
 
 	public ModificationPoint getModificationPoint() {
