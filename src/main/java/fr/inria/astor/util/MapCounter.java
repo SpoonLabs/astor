@@ -28,6 +28,11 @@ public class MapCounter<K> extends HashMap<K, Integer> {
 		.forEach(System.out::println);
 	}
 
+	public Map sorted(){
+		return this.entrySet().stream().sorted(Map.Entry.<K, Integer>comparingByValue().reversed())
+		.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+				(oldValue, newValue) -> oldValue, LinkedHashMap::new));
+	}
 	
 	public Map<K, Double> getProbabilies(){
 		
