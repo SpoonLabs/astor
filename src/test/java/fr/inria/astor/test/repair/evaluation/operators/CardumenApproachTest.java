@@ -634,4 +634,39 @@ public class CardumenApproachTest {
 
 		assertTrue(cardumen.getSolutions().size() > 0);
 	}
+	
+	@Test
+	public void testCardumentM70EvolveUniformreplacement() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+
+		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
+		command.command.put("-flthreshold", "0.01");
+		command.command.put("-maxtime", "60");
+		command.command.put("-seed", "400");
+		command.command.put("-maxgen", "200");
+		command.command.put("-population", "1");
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-parameters", "disablelog:true:uniformreplacement:true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+				.getIngredientSpace();
+		assertNotNull(ingredientSpace);
+
+		for(Object keys : ingredientSpace.mkp.keySet()){
+			System.out.println(keys+ ": ");
+			System.out.println(ingredientSpace.mkp.get(keys));
+		}
+		
+		assertTrue(cardumen.getSolutions().size() > 0);
+		
+		
+	}
+
 }
