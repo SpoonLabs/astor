@@ -111,9 +111,15 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 		for (Object ingList : mkp.values()) {
 			nrIng += ((List) ingList).size();
 		}
+		
+
+		//sort links
+		this.linkTemplateElements = this.linkTemplateElements.getSorted();
 		log.info(String.format("Ingredient search space info : number keys %d , number values %d ", mkp.keySet().size(),
 				nrIng));
-
+		
+		this.linkTemplateElements.forEach((e,v) -> log.debug(String.format("k: %s v: %d ", e,v.size())));
+		
 	}
 
 	protected List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {

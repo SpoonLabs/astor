@@ -72,7 +72,10 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 
 					CtCodeElement templateElement = elements.get(index);
 
-					return new Ingredient(templateElement);
+					Ingredient refinedIngredient = getNotUsedTransformedElement(modificationPoint, operationType,
+							new Ingredient(templateElement));
+					
+					return refinedIngredient;
 				}
 			}
 
