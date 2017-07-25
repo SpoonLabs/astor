@@ -27,7 +27,7 @@ public class ExpressionReplaceOperator extends ReplaceOp {
 		try {
 			opInstance.getModificationPoint().getCodeElement().replace(elFixIngredient);
 		} catch (Exception e) {
-			log.error("error to mod " + elementOriginalCloned + " to " + elFixIngredient);
+			log.error("error to modify " + elementOriginalCloned + " to " + elFixIngredient);
 			log.equals(e);
 			opInstance.setExceptionAtApplied(e);
 			return false;
@@ -43,7 +43,7 @@ public class ExpressionReplaceOperator extends ReplaceOp {
 				.equals(elementOriginalCloned.toString());
 
 		if (!change)
-			log.error("Replacement does not work for ");
+			log.error("Replacement does not work for  modify " + elementOriginalCloned + " to " + elFixIngredient);
 
 		return true;
 	}
