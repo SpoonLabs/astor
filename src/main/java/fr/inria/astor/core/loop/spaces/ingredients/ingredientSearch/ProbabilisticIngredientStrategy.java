@@ -11,6 +11,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionTypeIngredie
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtCodeElement;
 
@@ -47,7 +48,9 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 
 			// Ingredients from space
 			List<CtCodeElement> elements = space.getIngredients(modificationPoint.getCodeElement());
-
+			log.debug("IngSpaceSize for  "+ modificationPoint.getCodeElement()+": "+elements.size() + " "+elements);
+			Stats.currentStat.addSize(Stats.currentStat.ingredientSpaceSize, elements.size());
+			
 			// ingredients to string
 
 			List<String> elements2String = new ArrayList<>();

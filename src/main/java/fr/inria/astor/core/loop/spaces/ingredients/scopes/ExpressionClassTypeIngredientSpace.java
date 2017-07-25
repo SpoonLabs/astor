@@ -1,34 +1,13 @@
 package fr.inria.astor.core.loop.spaces.ingredients.scopes;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.keyvalue.MultiKey;
-import org.apache.commons.collections.map.MultiKeyMap;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
-import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
-import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
 
 /**
  * 

@@ -150,7 +150,7 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 						0);
 				return null;
 			}
-			log.debug(String.format("Valid Transformed ingredients (%d):", ingredientsAfterTransformation.size()));
+			log.debug(String.format("Valid Transformed ingredients in mp: %s,  base ingr: %s, : size (%d) ", modificationPoint.getCodeElement(), baseIngredient,ingredientsAfterTransformation.size()));
 			Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
 					ingredientsAfterTransformation.size());
 
