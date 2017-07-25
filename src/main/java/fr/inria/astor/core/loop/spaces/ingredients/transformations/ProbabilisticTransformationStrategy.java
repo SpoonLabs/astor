@@ -111,6 +111,12 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 
 				List<VarCombinationForIngredient> allCombinations = findAllVarMappingCombinationUsingProbab(
 						mapping.getMappedVariables(), modificationPoint);
+				
+				//logger.debug("--mp "+modificationPoint);
+				//logger.debug("--mpe "+modificationPoint.getCodeElement());
+				//logger.debug("--baseIng "+baseIngredient);
+				//logger.debug("== "+allCombinations);
+				
 				if (allCombinations.size() > 0) {
 
 					for (VarCombinationForIngredient varCombinationForIngredient : allCombinations) {
@@ -124,12 +130,13 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 		} else {
 			logger.debug("Any transformation was sucessful: Vars not mapped: " + mapping.getNotMappedVariables());
 			String varContext = "";
-			for (CtVariable context : modificationPoint.getContextOfModificationPoint()){
-				varContext += context.getSimpleName()  + " "+context.getType().getQualifiedName() + ", ";
+			for (CtVariable context : modificationPoint.getContextOfModificationPoint()) {
+				varContext += context.getSimpleName() + " " + context.getType().getQualifiedName() + ", ";
 			}
-			logger.debug("context "+varContext);
+			logger.debug("context " + varContext);
 			for (CtVariableAccess ingredient : mapping.getNotMappedVariables()) {
-					logger.debug("---out_of_context: "+ingredient.getVariable().getSimpleName() + ": "+ingredient.getVariable().getType().getQualifiedName());
+				logger.debug("---out_of_context: " + ingredient.getVariable().getSimpleName() + ": "
+						+ ingredient.getVariable().getType().getQualifiedName());
 			}
 		}
 
@@ -151,22 +158,33 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 
 			VarCombinationForIngredient varCombinationWrapper = new VarCombinationForIngredient(varMapping);
 
-			MapCounter gramCounterSize = ngrams.ngrams[varCombinationWrapper.getSize()];
+			int sizeCombination = varCombinationWrapper.getSize();
+			MapCounter gramCounterSize = ngrams.ngrams[sizeCombination];
 
+			MapCounter gramCounterSizeGlobal = this.ngglobal.ngrams[sizeCombination];
+			gramCounterSizeGlobal.getProbabilies();
 			if (gramCounterSize == null) { // Ingredient size bigger than all
 											// statements from the class
 				// logger.debug("Map is null for " + gramCounterSize);
 				// logger.debug("Using global");
-				gramCounterSize = this.ngglobal.ngrams[varCombinationWrapper.getSize()];
+				gramCounterSize = gramCounterSizeGlobal;
+
 			} else {
 				// logger.debug("Okey!");
 			}
 
 			Double probability = (Double) gramCounterSize.getProbabilies()
 					.get(varCombinationWrapper.getCombinationString());
-
+			if (false) {
+				logger.debug("--c: " + varCombinationWrapper.getCombinationString());
+				logger.debug("--L--" + gramCounterSize.sorted());
+				logger.debug("--Lp--" + gramCounterSize.getProbabilies());
+				logger.debug("--G--" + gramCounterSizeGlobal.sorted());
+				logger.debug("--Gp--" + gramCounterSizeGlobal.getProbabilies());
+			}
 			if (probability == null) {
-				//logger.debug("Error null: " + varCombinationWrapper.getCombinationString());
+				// logger.debug("Error null: " +
+				// varCombinationWrapper.getCombinationString());
 			}
 			varCombinationWrapper.setProbality((probability != null) ? probability : 0);
 			allCom.add(varCombinationWrapper);
@@ -197,15 +215,15 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 				public int compare(CtVariable e1, CtVariable e2) {
 					Double d2 = probabilities.get(e2.getSimpleName());
 					Double d1 = probabilities.get(e1.getSimpleName());
-					
+
 					if (d2 == null && d1 == null)
 						return 0;
-					
-					if (d2 == null){
+
+					if (d2 == null) {
 						logger.debug("nf2 " + e2.getSimpleName());
 						return -1;
 					}
-					if (d1 == null){
+					if (d1 == null) {
 						logger.debug("nf1 " + e1.getSimpleName());
 						return 1;
 					}
