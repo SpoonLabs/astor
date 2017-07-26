@@ -634,7 +634,7 @@ public class CardumenApproachTest {
 
 		assertTrue(cardumen.getSolutions().size() > 0);
 	}
-	
+
 	@Test
 	public void testCardumentM70EvolveUniformreplacement() throws Exception {
 		CommandSummary command = MathTests.getMath70Command();
@@ -659,14 +659,97 @@ public class CardumenApproachTest {
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
-		for(Object keys : ingredientSpace.mkp.keySet()){
-			System.out.println(keys+ ": ");
+		for (Object keys : ingredientSpace.mkp.keySet()) {
+			System.out.println(keys + ": ");
 			System.out.println(ingredientSpace.mkp.get(keys));
 		}
-		
+
 		assertTrue(cardumen.getSolutions().size() > 0);
+
+	}
+
+	@Test
+	public void testCardumentM70EvolveUniformreplacementMostUsedTemplate() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+
+		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
+		command.command.put("-flthreshold", "0.01");
+		command.command.put("-maxtime", "60");
+		command.command.put("-seed", "400");
+		command.command.put("-maxgen", "200");
+		command.command.put("-population", "1");
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-stopfirst", "false");
+		command.command.put("-parameters", "disablelog:true:uniformreplacement:true:frequenttemplate:true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+				.getIngredientSpace();
+		assertNotNull(ingredientSpace);
+
+		assertTrue(cardumen.getSolutions().size() > 0);
+
+	}
+
+	@Test
+	public void testCardumentM70Suspicious() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+
+		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
+		Integer maxsusp = 2;
+		command.command.put("-maxsuspcandidates", maxsusp.toString());
+
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxtime", "60");
+		command.command.put("-seed", "400");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-stopfirst", "false");
+		command.command.put("-parameters", "disablelog:true:uniformreplacement:true:frequenttemplate:true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+
+		assertEquals((int) maxsusp, cardumen.getVariants().get(0).getModificationPoints().size());
+
 		
 		
+		main1 = new AstorMain();
+		maxsusp = 100;
+		command.command.put("-maxsuspcandidates", maxsusp.toString());
+		command.command.put("-flthreshold", "0.9");
+
+		main1.execute(command.flat());
+
+		cardumen = (CardumenApproach) main1.getEngine();
+
+		assertEquals(1, cardumen.getVariants().get(0).getModificationPoints().size());
+
+		//
+
+		main1 = new AstorMain();
+		maxsusp = 100;
+		command.command.put("-maxsuspcandidates", maxsusp.toString());
+		command.command.put("-flthreshold", "0.000000001");
+		command.command.put("-parameters", "limitbysuspicious:false");
+
+		main1.execute(command.flat());
+
+		cardumen = (CardumenApproach) main1.getEngine();
+
+		assertTrue(cardumen.getVariants().get(0).getModificationPoints().size() > 50);
+
 	}
 
 }

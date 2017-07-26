@@ -88,7 +88,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		for (Statement gzoltarStatement : gz.getSuspiciousStatements()) {
 			String compName = gzoltarStatement.getMethod().getParent().getLabel();
-			if (gzoltarStatement.getSuspiciousness() >= thr && isSource(compName, srcFolder)) {
+			if (isSource(compName, srcFolder) && (!ConfigurationProperties.getPropertyBool("limitbysuspicious")
+					|| (gzoltarStatement.getSuspiciousness() >= thr))) {
 				gzCandidates.add(gzoltarStatement);
 
 			}
@@ -105,7 +106,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		// We select the best X candidates.
 		int max = (gzCandidates.size() < maxSuspCandidates) ? gzCandidates.size() : maxSuspCandidates;
-	
+
 		List<SuspiciousCode> candidates = new ArrayList<SuspiciousCode>();
 
 		for (int i = 0; i < max; i++) {

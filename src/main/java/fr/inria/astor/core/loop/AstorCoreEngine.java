@@ -908,7 +908,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					}
 
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
-					line += "\nBuggy kind= "+genOperationInstance.getOriginal().getClass().getSimpleName()+ "|"+genOperationInstance.getOriginal().getParent().getClass().getSimpleName();
+					line += "\nbuggy kind= "+genOperationInstance.getOriginal().getClass().getSimpleName()+ "|"+genOperationInstance.getOriginal().getParent().getClass().getSimpleName();
 					
 					line += "\nfixed statement= ";
 					if (genOperationInstance.getModified() != null){
