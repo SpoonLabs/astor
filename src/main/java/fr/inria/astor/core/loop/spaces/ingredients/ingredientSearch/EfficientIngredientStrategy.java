@@ -302,42 +302,21 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 	public void setIngredientTransformationStrategy(IngredientTransformationStrategy ingredientTransformationStrategy) {
 		this.ingredientTransformationStrategy = ingredientTransformationStrategy;
 	}
-	
-	
-	
+
 	/**
 	 * 
 	 * @param fixSpace
 	 * @return
 	 */
 	protected CtCodeElement getRandomStatementFromSpace(List<CtCodeElement> fixSpace) {
+		if (fixSpace == null)
+			return null;
 		int size = fixSpace.size();
 		int index = RandomManager.nextInt(size);
 		return fixSpace.get(index);
 
 	}
 
-	/**
-	 * Return a cloned CtStatement from the fix space in a randomly way
-	 * 
-	 * @return
-	 */
-	protected CtCodeElement getRandomElementFromSpace(CtElement location) {
-		CtCodeElement originalPicked = getRandomStatementFromSpace(this.ingredientSpace.getIngredients(location));
-		CtCodeElement cloned = MutationSupporter.clone(originalPicked);
-		return cloned;
-	}
-
-	protected CtCodeElement getRandomElementFromSpace(CtElement location, String type) {
-		List<CtCodeElement> elements = this.ingredientSpace.getIngredients(location, type);
-		//logger.info("IngSpaceSize: "+elements.size());
-		Stats.currentStat.addSize(Stats.currentStat.ingredientSpaceSize, elements.size());
-		if (elements == null)
-			return null;
-		return getRandomStatementFromSpace(elements);
-	}
-
-	
 	public Ingredient getRandomFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
 
 		String type = null;
@@ -346,19 +325,22 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 		}
 
 		CtElement selectedIngredient = null;
+
+		List<CtCodeElement> elements = null;
 		if (type == null) {
-			selectedIngredient = this.getRandomElementFromSpace(modificationPoint.getCodeElement());
+			elements = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement());
+
 		} else {
-			selectedIngredient = this.getRandomElementFromSpace(modificationPoint.getCodeElement(), type);
+
+			elements = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
+
 		}
-		
+
+		Stats.currentStat.addSize(Stats.currentStat.ingredientSpaceSize, elements.size());
+
+		selectedIngredient = getRandomStatementFromSpace(elements);
 		return new Ingredient(selectedIngredient, null);
 
 	}
-
-
-	
-	
-	
 
 }
