@@ -167,7 +167,6 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 
 			String keyLocation = mapKey(element);
 			CtExpression ctExpr = (CtExpression) element;
-			// String typeExpression = ctExpr.getClass().getSimpleName();
 			String returnTypeExpression = (ctExpr.getType() == null) ? "null" : ctExpr.getType().getSimpleName();
 			List ingredients = (List<CtCodeElement>) mkp.get(keyLocation, returnTypeExpression);
 			return ingredients;
