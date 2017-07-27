@@ -135,21 +135,35 @@ public class EfficientIngredientStrategy extends UniformRandomIngredientSearch {
 			if (appliedIngredientsCache.containsKey(key)) {
 				log.debug("Retrieving already calculated transformations");
 				ingredientsAfterTransformation = appliedIngredientsCache.get(key);
+				
+				//We try two cases: null (template cannot be instantiated) or empty (all combination were already tested)
+				if(ingredientsAfterTransformation == null){
+					log.debug("Already instantiated template byt without valid instance on this MP, update stats "
+							+ baseIngredient);
+					Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,0);
+					return null;
+				}else if (ingredientsAfterTransformation.isEmpty()){
+					log.debug("All instances were already tried, exit without update stats."
+							+ baseIngredient);
+					return null;
+				}
+				
+				
 			} else {
 				log.debug("Calculating transformations");
 				ingredientsAfterTransformation = ingredientTransformationStrategy.transform(modificationPoint,
 						baseIngredient);
-				appliedIngredientsCache.put(key, ingredientsAfterTransformation);
+				if(ingredientsAfterTransformation != null && !ingredientsAfterTransformation.isEmpty())
+						appliedIngredientsCache.put(key, ingredientsAfterTransformation);
+				else{
+					log.debug("The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
+									+ baseIngredient);
+					appliedIngredientsCache.put(key, null);
+					Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,0);
+					return null;
+				}
 			}
-
-			if (ingredientsAfterTransformation == null || ingredientsAfterTransformation.isEmpty()) {
-				log.debug(
-						"The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
-								+ baseIngredient);
-				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
-						0);
-				return null;
-			}
+			
 			log.debug(String.format("Valid Transformed ingredients in mp: %s,  base ingr: %s, : size (%d) ", modificationPoint.getCodeElement(), baseIngredient,ingredientsAfterTransformation.size()));
 			Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
 					ingredientsAfterTransformation.size());
