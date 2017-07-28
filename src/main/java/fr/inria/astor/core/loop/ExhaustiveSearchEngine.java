@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.IngredientBasedRepairApproach;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -23,7 +24,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class ExhaustiveSearchEngine extends JGenProg {
+public class ExhaustiveSearchEngine extends IngredientBasedRepairApproach {
 
 	public ExhaustiveSearchEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
