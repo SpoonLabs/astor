@@ -11,7 +11,6 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionTypeIngredie
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
-import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtCodeElement;
 
@@ -39,21 +38,40 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 		return ingredientsAfterTransformation.get(0);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private CtCodeElement getTemplateByWeighted(List<CtCodeElement> elements, List<String> elements2String,
+			LinkedHashMap<String, Double> probs) {
+		// Random value
+		Double randomElement = RandomManager.nextDouble();
+
+		int i = 0;
+		for (String template : probs.keySet()) {
+			double probTemplate = probs.get(template);
+			if (randomElement <= probTemplate) {
+				int index = elements2String.indexOf(template);
+				CtCodeElement templateElement = elements.get(index);
+				log.debug("BI with prob "+probTemplate+" "+(i++) +" "+templateElement);
+				return templateElement;
+			}
+		}
+		return null;
+	}
+
+	List<String> elements2String = null;
+	LinkedHashMap<String, Double> probs = null;
+
 	@Override
-	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
+	public List<CtCodeElement> getNotExhaustedBaseElements(ModificationPoint modificationPoint,
+			AstorOperator operationType) {
+
+		List<CtCodeElement> elements = super.getNotExhaustedBaseElements(modificationPoint, operationType);
 
 		if (ConfigurationProperties.getPropertyBool("frequenttemplate")) {
+			log.debug("Defining template order for "+modificationPoint);
 			ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace) this.getIngredientSpace();
 
 			// Ingredients from space
-			List<CtCodeElement> elements = space.getIngredients(modificationPoint.getCodeElement());
-			log.debug("IngSpaceSize for  "+ modificationPoint.getCodeElement()+": "+elements.size() + " "+elements);
-			Stats.currentStat.addSize(Stats.currentStat.ingredientSpaceSize, elements.size());
-			
 			// ingredients to string
-
-			List<String> elements2String = new ArrayList<>();
+			elements2String = new ArrayList<>();
 			for (CtCodeElement cm : elements) {
 				elements2String.add(cm.toString());
 			}
@@ -63,32 +81,21 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 			mp.keySet().removeIf(e -> !elements2String.contains(e));
 
 			// Obtaining accumulate frequency of elements
-			LinkedHashMap<String, Double> probs = mp.getProb();
-
-			// Random value
-			Double randomElement = RandomManager.nextDouble();
-
-			for (String template : probs.keySet()) {
-				double probTemplate = probs.get(template);
-				if (randomElement <= probTemplate) {
-					int index = elements2String.indexOf(template);
-
-					CtCodeElement templateElement = elements.get(index);
-
-					Ingredient refinedIngredient = getNotUsedTransformedElement(modificationPoint, operationType,
-							new Ingredient(templateElement));
-					
-					return refinedIngredient;
-				}
-			}
-
-		} else {
-			// By default
-			return super.getFixIngredient(modificationPoint, operationType);
+			probs = mp.getProb();
 
 		}
+		return elements;
 
-		return null;
+	}
+
+	@Override
+	protected CtCodeElement getRandomStatementFromSpace(List<CtCodeElement> fixSpace) {
+
+		if (ConfigurationProperties.getPropertyBool("frequenttemplate"))
+
+			return getTemplateByWeighted(fixSpace, elements2String, probs);
+		else
+			return super.getRandomStatementFromSpace(fixSpace);
 	}
 
 }

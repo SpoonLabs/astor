@@ -15,10 +15,10 @@ import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.DefaultIngredientTransformation;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
-import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.util.MapList;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
@@ -36,6 +36,7 @@ import spoon.reflect.declaration.CtType;
 public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 	IngredientTransformationStrategy ingredientTransformationStrategy;
+	protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	public EfficientIngredientStrategy(IngredientSpace space) {
 		super(space);
@@ -55,13 +56,12 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 		}
 	}
 
-	protected Logger log = Logger.getLogger(this.getClass().getName());
-
 	/**
 	 * Ingredients already selected
 	 */
-	protected Map<String, List<String>> appliedCache = new HashMap<String, List<String>>();
-	protected Map<String, List<Ingredient>> appliedIngredientsCache = new HashMap<String, List<Ingredient>>();
+	public Map<String, List<String>> appliedCache = new HashMap<String, List<String>>();
+	public Map<String, List<Ingredient>> appliedIngredientsCache = new HashMap<String, List<Ingredient>>();
+	public MapList<String, CtElement> exhaustTemplates = new MapList<>();
 
 	/**
 	 * Return an ingredient. As it has a cache, it never returns twice the same
@@ -76,29 +76,37 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 	@Override
 	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
 
-		int attempts = 0;
+		int attemptsBaseIngredients = 0;
 
-		int elementsFromFixSpace = getSpaceSize(modificationPoint, operationType);
+		List<CtCodeElement> baseElements = getNotExhaustedBaseElements(modificationPoint, operationType);
 
-		while (attempts < elementsFromFixSpace) {
+		if (baseElements.isEmpty()) {
+			log.debug("Any template available for mp " + modificationPoint);
+			log.debug("Exahustived templates " + this.exhaustTemplates.get(getKey(modificationPoint, operationType)));
+			return null;
+		}
 
-			log.debug(String.format("\n****getIng******\nAttempts Ingredients  %d total %d", attempts,
-					elementsFromFixSpace));
+		int elementsFromFixSpace = baseElements.size();
+		log.debug("Templates availables" + elementsFromFixSpace);
 
-			Ingredient baseIngredient = this.getRandomFixIngredient(modificationPoint, operationType);
+		Stats.currentStat.addSize(Stats.currentStat.ingredientSpaceSize, baseElements.size());
+
+		while (attemptsBaseIngredients < elementsFromFixSpace) {
+
+			log.debug(String.format("\n****getIng******\nAttempts Base Ingredients  %d total %d",
+					attemptsBaseIngredients, elementsFromFixSpace));
+
+			Ingredient baseIngredient = new Ingredient(getRandomStatementFromSpace(baseElements), null);
 
 			if (baseIngredient == null || baseIngredient.getCode() == null) {
+
 				return null;
 			}
 
 			Ingredient refinedIngredient = getNotUsedTransformedElement(modificationPoint, operationType,
 					baseIngredient);
 
-			attempts++;
-			if (attempts > (elementsFromFixSpace * 3)) {
-				log.error("Error: breaking loop in efficient ingredient search after # attempts " + attempts);
-				return null;// break
-			}
+			attemptsBaseIngredients++;
 
 			if (refinedIngredient != null) {
 
@@ -115,25 +123,15 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 	}
 
-	/**
-	 * Returns randomly an ingredient
-	 * 
-	 * @param modificationPoint
-	 * @param operator
-	 * @param baseIngredient
-	 * @return
-	 */
-	public Ingredient getNotUsedTransformedElement(ModificationPoint modificationPoint, AstorOperator operator,
+	public List<Ingredient> getInstancesFromBase(ModificationPoint modificationPoint, AstorOperator operator,
 			Ingredient baseIngredient) {
-
-		log.debug("\n--\nIngredient  base" + baseIngredient + " from "
-				+ ((CtType) baseIngredient.getCode().getParent(CtType.class)).getQualifiedName());
 		List<Ingredient> ingredientsAfterTransformation = null;
+		String keyBaseIngredient = getBaseIngredientKey(modificationPoint, operator, baseIngredient);
+
 		if (ingredientTransformationStrategy != null) {
-			String key = getKey(modificationPoint, operator) + baseIngredient.toString();
-			if (appliedIngredientsCache.containsKey(key)) {
+			if (appliedIngredientsCache.containsKey(keyBaseIngredient)) {
 				log.debug("Retrieving already calculated transformations");
-				ingredientsAfterTransformation = appliedIngredientsCache.get(key);
+				ingredientsAfterTransformation = appliedIngredientsCache.get(keyBaseIngredient);
 
 				// We try two cases: null (template cannot be instantiated) or
 				// empty (all combination were already tested)
@@ -152,59 +150,102 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 				ingredientsAfterTransformation = ingredientTransformationStrategy.transform(modificationPoint,
 						baseIngredient);
 				if (ingredientsAfterTransformation != null && !ingredientsAfterTransformation.isEmpty())
-					appliedIngredientsCache.put(key, ingredientsAfterTransformation);
+					appliedIngredientsCache.put(keyBaseIngredient, ingredientsAfterTransformation);
 				else {
 					log.debug(
 							"The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
 									+ baseIngredient);
-					appliedIngredientsCache.put(key, null);
+					appliedIngredientsCache.put(keyBaseIngredient, null);
 					Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, 0);
+					exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
 					return null;
 				}
 			}
-
-			log.debug(String.format("Valid Transformed ingredients in mp: %s,  base ingr: %s, : size (%d) ",
-					modificationPoint.getCodeElement(), baseIngredient, ingredientsAfterTransformation.size()));
-			Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
-					ingredientsAfterTransformation.size());
-
-			Ingredient transformedIngredient = null;
-			int attempts = 0;
-			while (attempts <= ingredientsAfterTransformation.size()) {
-				// we select one randomly
-				transformedIngredient = getOneIngredientFromList(ingredientsAfterTransformation);
-
-				if (transformedIngredient == null) {
-					log.debug("transformed ingredient null");
-					continue;
-				}
-
-				boolean removed = ingredientsAfterTransformation.remove(transformedIngredient);
-				if (!removed) {
-					log.debug("Not Removing ingredient from cache");
-				}
-
-				attempts++;
-				log.debug(String.format("\nAttempts In Transformed Ingredient  %d total %d", attempts,
-						ingredientsAfterTransformation.size()));
-
-				if (transformedIngredient.getCode().toString().equals(modificationPoint.getCodeElement().toString())) {
-					log.debug("Ingredient idem to buggy statement, discarting it.");
-					continue;
-				}
-
-				// we check if was applyed
-				boolean alreadyApplied = alreadySelected(modificationPoint, transformedIngredient.getCode(), operator);
-
-				if (!alreadyApplied) {
-					return transformedIngredient;
-				}
-
-			}
-			log.debug(String.format("After %d attempts, we could NOT find an ingredient in a space of size %d",
-					attempts, ingredientsAfterTransformation.size()));
 		}
+		return ingredientsAfterTransformation;
+	}
+
+	public Ingredient getNotUsedTransformedElement(ModificationPoint modificationPoint, AstorOperator operator,
+			Ingredient baseIngredient) {
+		List<Ingredient> ingredientsAfterTransformation = getInstancesFromBase(modificationPoint, operator,
+				baseIngredient);
+		if (ingredientsAfterTransformation == null) {
+			return null;
+		}
+
+		return this.getNotUsedTransformedElement(modificationPoint, operator, baseIngredient,
+				ingredientsAfterTransformation);
+	}
+
+	/**
+	 * Returns randomly an ingredient
+	 * 
+	 * @param modificationPoint
+	 * @param operator
+	 * @param baseIngredient
+	 * @return
+	 */
+	public Ingredient getNotUsedTransformedElement(ModificationPoint modificationPoint, AstorOperator operator,
+			Ingredient baseIngredient, List<Ingredient> ingredientsAfterTransformation) {
+
+		log.debug("\n--\nIngredient  base" + baseIngredient + " from "
+				+ ((CtType) baseIngredient.getCode().getParent(CtType.class)).getQualifiedName());
+
+		log.debug(String.format("Valid Transformed ingredients in mp: %s,  base ingr: %s, : size (%d) ",
+				modificationPoint.getCodeElement(), baseIngredient, ingredientsAfterTransformation.size()));
+		Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, ingredientsAfterTransformation.size());
+
+		if (ingredientsAfterTransformation.isEmpty()) {
+			log.debug("No combination for  " + baseIngredient);
+			return null;
+		}
+
+		Ingredient transformedIngredient = null;
+		int attempts = 0;
+		while (attempts <= ingredientsAfterTransformation.size()) {
+
+			transformedIngredient = getOneIngredientFromList(ingredientsAfterTransformation);
+
+			if (transformedIngredient == null) {
+				log.debug("transformed ingredient null for " + modificationPoint.getCodeElement());
+				continue;
+			}
+
+			boolean removed = ingredientsAfterTransformation.remove(transformedIngredient);
+			if (!removed) {
+				log.debug("Not Removing ingredient from cache");
+			} else {
+				if (ingredientsAfterTransformation.isEmpty()) {
+					exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
+				}
+			}
+
+			attempts++;
+			log.debug(String.format("\nAttempts In Transformed Ingredient  %d total %d", attempts,
+					ingredientsAfterTransformation.size()));
+
+			if (transformedIngredient.getCode().toString().equals(modificationPoint.getCodeElement().toString())) {
+				log.debug("Ingredient idem to buggy statement, discarting it.");
+				continue;
+			}
+
+			// we check if was applyed
+			boolean alreadyApplied = alreadySelected(modificationPoint, transformedIngredient.getCode(), operator);
+
+			if (!alreadyApplied) {
+				return transformedIngredient;
+			}
+
+		}
+		log.debug(String.format("After %d attempts, we could NOT find an ingredient in a space of size %d", attempts,
+				ingredientsAfterTransformation.size()));
 		return null;
+
+	}
+
+	private String getBaseIngredientKey(ModificationPoint modificationPoint, AstorOperator operator,
+			Ingredient baseIngredient) {
+		return getKey(modificationPoint, operator) + baseIngredient.toString();
 	}
 
 	protected Ingredient getOneIngredientFromList(List<Ingredient> ingredientsAfterTransformation) {
@@ -289,8 +330,8 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 		}
 	}
 
-	protected String getKey(ModificationPoint gen, AstorOperator operator) {
-		String lockey = gen.getCodeElement().getPosition().toString() + "-" + gen.getCodeElement() + "-"
+	public String getKey(ModificationPoint modPoint, AstorOperator operator) {
+		String lockey = modPoint.getCodeElement().getPosition().toString() + "-" + modPoint.getCodeElement() + "-"
 				+ operator.toString();
 		return lockey;
 	}
@@ -317,30 +358,30 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 	}
 
-	public Ingredient getRandomFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
+	public List<CtCodeElement> getNotExhaustedBaseElements(ModificationPoint modificationPoint,
+			AstorOperator operationType) {
 
 		String type = null;
 		if (operationType instanceof ReplaceOp) {
 			type = modificationPoint.getCodeElement().getClass().getSimpleName();
 		}
 
-		CtElement selectedIngredient = null;
-
 		List<CtCodeElement> elements = null;
 		if (type == null) {
 			elements = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement());
 
 		} else {
-
 			elements = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
-
 		}
 
-		Stats.currentStat.addSize(Stats.currentStat.ingredientSpaceSize, elements.size());
+		List<CtCodeElement> uniques = new ArrayList<>(elements);
 
-		selectedIngredient = getRandomStatementFromSpace(elements);
-		return new Ingredient(selectedIngredient, null);
+		String key = getKey(modificationPoint, operationType);
+		List<CtElement> exhaustives = this.exhaustTemplates.get(key);
 
+		if (exhaustives != null) {
+			boolean removed = uniques.removeAll(exhaustives);
+		}
+		return uniques;
 	}
-
 }
