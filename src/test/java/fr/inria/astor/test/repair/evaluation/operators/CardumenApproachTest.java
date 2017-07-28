@@ -16,12 +16,15 @@ import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.DynamicIngredient;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.ProbabilisticTransformationStrategy;
+import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
 import fr.inria.astor.test.repair.evaluation.regression.MathTests;
 import fr.inria.astor.util.CommandSummary;
@@ -621,7 +624,7 @@ public class CardumenApproachTest {
 		command.command.put("-maxgen", "200");
 		command.command.put("-population", "1");
 		command.command.put("-scope", scope.toString().toLowerCase());
-		command.command.put("-parameters", "disablelog:true");
+		command.command.put("-parameters", "disablelog:false");
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
@@ -723,8 +726,6 @@ public class CardumenApproachTest {
 
 		assertEquals((int) maxsusp, cardumen.getVariants().get(0).getModificationPoints().size());
 
-		
-		
 		main1 = new AstorMain();
 		maxsusp = 100;
 		command.command.put("-maxsuspcandidates", maxsusp.toString());
@@ -750,6 +751,157 @@ public class CardumenApproachTest {
 
 		assertTrue(cardumen.getVariants().get(0).getModificationPoints().size() > 50);
 
+	}
+
+	@Test
+	public void testCardumentM70AssertStats() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+
+		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxtime", "60");
+		command.command.put("-seed", "400");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-stopfirst", "false");
+		command.command.put("-parameters", "disablelog:true:uniformreplacement:true:frequenttemplate:true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		Stats.createStat();
+		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+
+		EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) cardumen.getIngredientStrategy();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+				.getIngredientSpace();
+		assertNotNull(ingredientSpace);
+
+		assertEquals(0, Stats.createStat().combinationByIngredientSize.size());
+		assertEquals(0, Stats.createStat().ingredientSpaceSize.size());
+
+		ModificationPoint mp1 = cardumen.getVariants().get(0).getModificationPoints().get(0);
+
+		AstorOperator op1 = cardumen.getOperatorSpace().getOperators().get(0);
+		List elements = estrategy.getNotExhaustedBaseElements(mp1, op1);
+		int initialIngredients = elements.size();
+		assertEquals(elements.size(), ingredientSpace.getIngredients(mp1.getCodeElement()).size());
+
+		assertTrue(elements.size() > 0);
+
+		// assertEquals(0, Stats.createStat().ingredientSpaceSize.get());
+
+		List<CtCodeElement> bases1 = estrategy.getNotExhaustedBaseElements(mp1, op1);
+
+		assertNotNull(bases1);
+
+		CtCodeElement base1 = bases1.get(0);
+		assertNotNull(base1);
+		System.out.println(base1);
+		// assertEquals(1, (int)
+		// Stats.getCurrentStats().ingredientSpaceSize.get(bases.size()));
+
+		List<Ingredient> ingredientsAfterTransformation = estrategy.getInstancesFromBase(mp1, op1,
+				new Ingredient(base1));
+		int conmbination1 = ingredientsAfterTransformation.size();
+		assertTrue(conmbination1 > 0);
+
+		int nrcomb = ingredientsAfterTransformation.size();
+		Ingredient ins1 = estrategy.getNotUsedTransformedElement(mp1, op1, new Ingredient(base1),
+				ingredientsAfterTransformation);
+
+		assertNotNull(ins1);
+		System.out.println(Stats.currentStat.combinationByIngredientSize);
+
+		assertTrue(Stats.currentStat.combinationByIngredientSize.containsKey(nrcomb));
+		assertEquals(1, (int) Stats.currentStat.combinationByIngredientSize.get(nrcomb));
+
+		for (int i = 1; i < nrcomb; i++) {
+			System.out.println("-->" + i);
+			Ingredient ins1i = estrategy.getNotUsedTransformedElement(mp1, op1, new Ingredient(base1),
+					ingredientsAfterTransformation);
+			assertNotNull(ins1i);
+			assertEquals(i + 1, Stats.currentStat.combinationByIngredientSize.keySet().size());
+			System.out.println(Stats.currentStat.combinationByIngredientSize);
+			assertTrue(Stats.currentStat.combinationByIngredientSize.containsKey(nrcomb - i));
+			assertEquals(1, (int) Stats.currentStat.combinationByIngredientSize.get(nrcomb - i));
+			if (i != 120)
+				assertNull(estrategy.exhaustTemplates.get(estrategy.getKey(mp1, op1)));
+		}
+		for (int i : Stats.currentStat.combinationByIngredientSize.keySet()) {
+			assertTrue("--" + i, i <= 121 && i > 0);
+		}
+		assertEquals(nrcomb, Stats.currentStat.combinationByIngredientSize.keySet().size());
+
+		Ingredient ins1i = estrategy.getNotUsedTransformedElement(mp1, op1, new Ingredient(base1),
+				ingredientsAfterTransformation);
+		assertNull(ins1i);
+
+		// adding the zero
+		for (int i : Stats.currentStat.combinationByIngredientSize.keySet()) {
+			assertTrue("--" + i, i <= 121 && i >= 0);
+		}
+
+		assertEquals(nrcomb + 1, Stats.currentStat.combinationByIngredientSize.keySet().size());
+
+		assertEquals(1, estrategy.exhaustTemplates.keySet().size());
+		assertTrue(!estrategy.exhaustTemplates.get(estrategy.getKey(mp1, op1)).isEmpty());
+		assertTrue(estrategy.exhaustTemplates.get(estrategy.getKey(mp1, op1)).contains(base1));
+
+		CtCodeElement base2 = bases1.get(1);
+		assertNotNull(base2);
+		System.out.println(base2);
+		assertEquals(1, estrategy.exhaustTemplates.keySet().size());
+
+		List<CtCodeElement> bases2 = estrategy.getNotExhaustedBaseElements(mp1, op1);
+
+		assertNotNull(bases2);
+
+		List<Ingredient> ingredientsAfterTransformationNull = estrategy.getInstancesFromBase(mp1, op1,
+				new Ingredient(base1));
+		assertNull(ingredientsAfterTransformationNull);
+
+		List<Ingredient> ingredientsAfterTransformation2 = estrategy.getInstancesFromBase(mp1, op1,
+				new Ingredient(base2));
+
+		int conmbination2 = ingredientsAfterTransformation2.size();
+		assertTrue(conmbination2 > 0);
+		int nrcomb2 = ingredientsAfterTransformation2.size();
+		assertEquals(bases1.size(), bases2.size() + 1);
+
+		assertFalse(bases2.contains(base1));
+
+		List<CtCodeElement> bases3 = estrategy.getNotExhaustedBaseElements(mp1, op1);
+
+		System.out.println("b3 " + bases3);
+		CtCodeElement base3 = bases3.get(2);
+
+		List<Ingredient> ingredientsAfterTransformation3 = estrategy.getInstancesFromBase(mp1, op1,
+				new Ingredient(base3));
+		System.out.println(ingredientsAfterTransformation3.size());
+		assertTrue(ingredientsAfterTransformation3.size() > 0);
+
+		for (int i = 1; i <= 11; i++) {
+			System.out.println("-->" + i);
+			Ingredient ins3i = estrategy.getNotUsedTransformedElement(mp1, op1, new Ingredient(base3),
+					ingredientsAfterTransformation3);
+			assertNotNull(ins3i);
+			// assertEquals(i + 1,
+			// Stats.currentStat.combinationByIngredientSize.keySet().size());
+			System.out.println(Stats.currentStat.combinationByIngredientSize);
+			assertEquals(" "+i, 2, (int) Stats.currentStat.combinationByIngredientSize.get(11+1-i));
+		}
+
+		Ingredient ins3n = estrategy.getNotUsedTransformedElement(mp1, op1, new Ingredient(base3),
+				ingredientsAfterTransformation3);
+		assertNull(ins3n);
+
+		assertTrue(estrategy.exhaustTemplates.get(estrategy.getKey(mp1, op1)).contains(base3));
+
+		List<CtCodeElement> bases4 = estrategy.getNotExhaustedBaseElements(mp1, op1);
+		assertFalse(bases4.contains(base3));
 	}
 
 }
