@@ -80,7 +80,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 		List<CtCodeElement> baseElements = getNotExhaustedBaseElements(modificationPoint, operationType);
 
-		if (baseElements.isEmpty()) {
+		if (baseElements == null || baseElements.isEmpty()) {
 			log.debug("Any template available for mp " + modificationPoint);
 			log.debug("Exahustived templates " + this.exhaustTemplates.get(getKey(modificationPoint, operationType)));
 			return null;
@@ -374,6 +374,9 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			elements = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
 		}
 
+		if(elements == null)
+			return null;
+		
 		List<CtCodeElement> uniques = new ArrayList<>(elements);
 
 		String key = getKey(modificationPoint, operationType);

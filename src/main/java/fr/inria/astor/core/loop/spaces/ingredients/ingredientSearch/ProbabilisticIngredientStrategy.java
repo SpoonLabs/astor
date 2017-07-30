@@ -65,6 +65,9 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 
 		List<CtCodeElement> elements = super.getNotExhaustedBaseElements(modificationPoint, operationType);
 
+		if(elements == null){
+			return null;
+		}
 		if (ConfigurationProperties.getPropertyBool("frequenttemplate")) {
 			log.debug("Defining template order for "+modificationPoint);
 			ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace) this.getIngredientSpace();
