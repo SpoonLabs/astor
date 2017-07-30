@@ -12,6 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
+import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine;
 import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -904,4 +905,27 @@ public class CardumenApproachTest {
 		assertFalse(bases4.contains(base3));
 	}
 
+	@Test
+	public void testCardumentM70Exhausitve() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+
+		command.command.put("-mode", ExecutionMode.custom.name());
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxtime", "60");
+		command.command.put("-population", "1");
+		command.command.put("-customengine",CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-parameters", "limitbysuspicious:false:"
+				+ "disablelog:true:uniformreplacement:true:frequenttemplate:true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		Stats.createStat();
+		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+		
+		
+		
+	}
 }
