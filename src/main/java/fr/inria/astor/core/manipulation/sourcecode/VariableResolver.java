@@ -847,37 +847,10 @@ public class VariableResolver {
 		List<Map<String, CtVariable>> allCombinations = new ArrayList<>();
 		allCombinations.add(new TreeMap<>());
 
-		int maxNumberCombinations = ConfigurationProperties.getPropertyInt("maxVarCombination");
+		Number[] maxValues = getMaxCombination(mappedVars, varsNamesToCombine);
 
-		long numberTotalComb = 1;
-		int max = -1;
-		Set<String> vars = new HashSet<>();
-
-		for (VarAccessWrapper currentVar : varsNamesToCombine) {
-
-			if (vars.contains(currentVar.getVar().getVariable().getSimpleName())) {
-				continue;
-			}
-
-			vars.add(currentVar.getVar().getVariable().getSimpleName());
-
-			List<CtVariable> mapped = mappedVars.get(currentVar);
-			int numberCompVar = mapped.size();
-			if (numberCompVar > max)
-				max = numberCompVar;
-			logger.debug(String.format("Number compatible vars of %s : %d",
-					currentVar.getVar().getVariable().getSimpleName(), numberCompVar));
-			numberTotalComb *= numberCompVar;
-		}
-		logger.debug("Teoricalcombinations: " + numberTotalComb);
-		double maxPerVar = Math.pow(numberTotalComb, 1.0 / varsNamesToCombine.size());
-		double maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0 / varsNamesToCombine.size());
-
-		if (numberTotalComb < maxNumberCombinations) {
-			maxPerVarLimit = max;
-		}
-
-		logger.debug(String.format("Max per var %f , %f  ", maxPerVar, maxPerVarLimit));
+		long numberTotalComb = (long) maxValues[0];
+		double maxPerVarLimit = (double) maxValues[1];
 
 		for (VarAccessWrapper currentVar : varsNamesToCombine) {
 
@@ -927,4 +900,46 @@ public class VariableResolver {
 		return allCombinations;
 	}
 
+	public static Number[] getMaxCombination(Map<VarAccessWrapper, List<CtVariable>> mappedVars,
+			List<VarAccessWrapper> varsNamesToCombine) {
+		
+		int maxNumberCombinations = ConfigurationProperties.getPropertyInt("maxVarCombination");
+
+		int max = -1;
+		long numberTotalComb = 1;
+		Set<String> vars = new HashSet<>();
+
+		for (VarAccessWrapper currentVar : varsNamesToCombine) {
+
+			if (vars.contains(currentVar.getVar().getVariable().getSimpleName())) {
+				continue;
+			}
+
+			vars.add(currentVar.getVar().getVariable().getSimpleName());
+
+			List<CtVariable> mapped = mappedVars.get(currentVar);
+			int numberCompVar = mapped.size();
+			if (numberCompVar > max)
+				max = numberCompVar;
+			logger.debug(String.format("Number compatible vars of %s : %d",
+					currentVar.getVar().getVariable().getSimpleName(), numberCompVar));
+			numberTotalComb *= numberCompVar;
+		}
+		
+		logger.debug("Teoricalcombinations: " + numberTotalComb);
+		double maxPerVarLimit = 0;
+
+		if (numberTotalComb < maxNumberCombinations) {
+			//We dont need to cut vars
+			maxPerVarLimit = max;
+		}
+		else{
+			
+			maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0 / varsNamesToCombine.size());
+		}
+
+		logger.debug(String.format("Max per var %f, total number comb: %d  ", maxPerVarLimit, numberTotalComb));
+
+		return new Number[] { numberTotalComb, maxPerVarLimit };
+	}
 }

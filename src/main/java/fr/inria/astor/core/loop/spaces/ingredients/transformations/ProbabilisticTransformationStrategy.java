@@ -162,13 +162,18 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 			MapCounter gramCounterSize = ngrams.ngrams[sizeCombination];
 
 			MapCounter gramCounterSizeGlobal = this.ngglobal.ngrams[sizeCombination];
-			gramCounterSizeGlobal.getProbabilies();
+			//gramCounterSizeGlobal.getProbabilies();
 			if (gramCounterSize == null) { // Ingredient size bigger than all
 											// statements from the class
 				// logger.debug("Map is null for " + gramCounterSize);
 				// logger.debug("Using global");
 				gramCounterSize = gramCounterSizeGlobal;
-
+				if(gramCounterSizeGlobal == null ){
+					logger.error("No grams for combination size "+sizeCombination);
+					return  allCom;
+				}
+					
+					
 			} else {
 				// logger.debug("Okey!");
 			}

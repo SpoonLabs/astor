@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.keyvalue.MultiKey;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -892,7 +893,7 @@ public class CardumenApproachTest {
 			// assertEquals(i + 1,
 			// Stats.currentStat.combinationByIngredientSize.keySet().size());
 			System.out.println(Stats.currentStat.combinationByIngredientSize);
-			assertEquals(" "+i, 2, (int) Stats.currentStat.combinationByIngredientSize.get(11+1-i));
+			assertEquals(" " + i, 2, (int) Stats.currentStat.combinationByIngredientSize.get(11 + 1 - i));
 		}
 
 		Ingredient ins3n = estrategy.getNotUsedTransformedElement(mp1, op1, new Ingredient(base3),
@@ -909,7 +910,35 @@ public class CardumenApproachTest {
 	public void testCardumentM70Exhausitve() throws Exception {
 		CommandSummary command = MathTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+
+		command.command.put("-mode", ExecutionMode.custom.name());
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxtime", "60");
+		command.command.put("-population", "1");
+		command.command.put("-customengine", CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-parameters",
+				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:true:frequenttemplate:true");
+		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-maxVarCombination", "100000000");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		Stats.createStat();
+		CardumenExhaustiveEngine cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+
+		assertEquals(100605077, cardumen.totalIngredients);
+		assertEquals(100605077, cardumen.totalIngredientsCutted);
+		assertEquals(38222, cardumen.totalBases);
+		assertEquals(0, cardumen.attemptsCutted);
+	}
+	
+	@Test
+	public void testCardumentM70ExhausitveMaxLimited() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.custom.name());
 		command.command.put("-flthreshold", "0.1");
@@ -919,12 +948,19 @@ public class CardumenApproachTest {
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters", "limitbysuspicious:false:"
 				+ "disablelog:true:uniformreplacement:true:frequenttemplate:true");
+		command.command.put("-loglevel",Level.DEBUG.toString());
+		command.command.put("-maxVarCombination",
+				 "1000");
+
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
 		Stats.createStat();
-		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+		CardumenExhaustiveEngine cardumen = (CardumenExhaustiveEngine) main1.getEngine();
 		
+		assertEquals(100605077,cardumen.totalIngredients);
+		assertTrue(100605077 > cardumen.totalIngredientsCutted);
+		assertEquals(38222,cardumen.totalBases);
 		
 		
 	}

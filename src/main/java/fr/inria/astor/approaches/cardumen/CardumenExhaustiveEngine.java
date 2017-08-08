@@ -1,12 +1,15 @@
 package fr.inria.astor.approaches.cardumen;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -14,9 +17,12 @@ import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
+import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtVariable;
 
 /**
  * Exhaustive Search Engine
@@ -31,14 +37,14 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 		super(mutatorExecutor, projFacade);
 	}
 
-	int totalIngredients = 0;
-	int totalBases = 0;
-	int totalAttempts = 0;
+	public long totalIngredients = 0;
+	public long totalBases = 0;
+	public long totalAttempts = 0;
+	public long totalIngredientsCutted = 0;
+	public long attemptsCutted = 0;
 
 	@Override
 	public void startEvolution() throws Exception {
-
-		ConfigurationProperties.setProperty("maxVarCombination", "100000000");
 
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
@@ -59,7 +65,7 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 				AstorOperator pointOperation = this.getOperatorSpace().getOperators().get(0);
 
 				try {
-					log.info("mod_point " + modifPoint);
+					log.info("exa: mod_point " + modifPoint);
 				} catch (Exception e) {
 				}
 				EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) this.getIngredientStrategy();
@@ -72,21 +78,109 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 
 				totalBases += elements.size();
 				for (CtCodeElement baseIngredient : elements) {
-					List<Ingredient> ingredientsAfterTransformation = estrategy.getInstancesFromBase(modifPoint,
-							pointOperation, new Ingredient(baseIngredient));
-					if (ingredientsAfterTransformation != null) {
-						int conmbinationOfBaseIngredient = ingredientsAfterTransformation.size();
-						totalIngredients += conmbinationOfBaseIngredient;
+
+					long nrIngredients[] = getNrIngredients(modifPoint, baseIngredient);
+
+					if ((long) nrIngredients[0] != nrIngredients[1]) {
+						// log.debug("Different " + maxValues[0] + " " +
+						// countedLimited);
+						// log.debug("");
+						attemptsCutted++;
 					}
+
+					totalIngredients += nrIngredients[0];
+					totalIngredientsCutted += nrIngredients[1];
+
+					log.debug("-nrIng-" + Arrays.toString(nrIngredients));
+					// Commented due to ingredients are cutted
+					/*
+					 * List<Ingredient> ingredientsAfterTransformation =
+					 * estrategy.getInstancesFromBase(modifPoint,
+					 * pointOperation, new Ingredient(baseIngredient)); /* if
+					 * (ingredientsAfterTransformation != null) { int
+					 * conmbinationOfBaseIngredient =
+					 * ingredientsAfterTransformation.size(); totalIngredients
+					 * += conmbinationOfBaseIngredient; }
+					 */
+
 					totalAttempts += 1;
 				}
 			}
 		}
-		log.debug("totalmp: " + getVariants().get(0).getModificationPoints().size());
-		log.debug("totalBases: " + totalBases);
-		log.debug("totalAttempts: " + totalAttempts);
-		log.debug("totalIngredients: " + totalIngredients);
+		log.info("totalmp: " + getVariants().get(0).getModificationPoints().size());
+		log.info("totalBases: " + totalBases);
+		log.info("totalAttempts: " + totalAttempts);
+		log.info("totalCutsAttempts: " + attemptsCutted);
+		log.info("totalIngredients: " + totalIngredients);
+		log.info("totalCutIngredients: " + totalIngredientsCutted);
 
+	}
+
+	private long[] getNrIngredients(ModificationPoint modificationPoint, CtCodeElement baseIngredient) {
+		CtCodeElement codeElementToModifyFromBase = (CtCodeElement) baseIngredient;
+
+		if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
+			return new long[] { 0, 0 };
+		}
+
+		VarMapping mapping = VariableResolver.mapVariablesFromContext(modificationPoint.getContextOfModificationPoint(),
+				codeElementToModifyFromBase);
+
+		// if we map all variables
+		if (mapping.getNotMappedVariables().isEmpty()) {
+			if (mapping.getMappedVariables().isEmpty()) {
+				// nothing to transform, accept the ingredient
+				return new long[] { 1, 1 };
+
+			} else {// We have mappings between variables
+
+				Map<VarAccessWrapper, List<CtVariable>> mappedVars = mapping.getMappedVariables();
+				List<VarAccessWrapper> varsNamesToCombine = new ArrayList<>(mappedVars.keySet());
+
+				Number[] maxValues = VariableResolver.getMaxCombination(mappedVars, varsNamesToCombine);
+
+				long countedLimited = countLimited(mappedVars, (double) maxValues[1]);
+
+				return new long[] { (long) maxValues[0], countedLimited };
+			}
+
+		}
+		return new long[] { 0, 0 };
+	}
+
+	public static long countLimited(Map<VarAccessWrapper, List<CtVariable>> mappedVars,
+			double maxPerVarLimit /* = (double) maxValues[1]; */) {
+
+		if (mappedVars.isEmpty()) {
+			return 0;
+		}
+
+		List<VarAccessWrapper> varsNamesToCombine = new ArrayList<>(mappedVars.keySet());
+
+		long allCombinationl = 1;
+
+		Set<String> mappedV = new HashSet<>();
+
+		for (VarAccessWrapper currentVar : varsNamesToCombine) {
+
+			if (mappedV.contains(currentVar.getVar().getVariable().getSimpleName())) {
+				continue;
+			}
+			mappedV.add(currentVar.getVar().getVariable().getSimpleName());
+
+			List<CtVariable> mapped = mappedVars.get(currentVar);
+			if (mapped.isEmpty()) {
+				log.debug("===empty");
+				continue;
+			}
+			long maxVarAnalyzed = (mapped.size() > maxPerVarLimit) ? (long) maxPerVarLimit : mapped.size();
+			log.debug("-sizes--" + mapped.size() + " " + maxPerVarLimit);
+			allCombinationl = allCombinationl * (int) maxVarAnalyzed;
+
+		}
+		log.debug("-allComb--" + allCombinationl);
+
+		return allCombinationl;
 	}
 
 	/**
@@ -112,10 +206,12 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 	@Override
 	public void showResults() {
 		super.showResults();
-		log.debug("\ntotalmp: " + getVariants().get(0).getModificationPoints().size());
-		log.debug("\ntotalBases: " + totalBases);
-		log.debug("\ntotalAttempts: " + totalAttempts);
-		log.debug("\ntotalIngredients: " + totalIngredients);
+		log.info("\ntotalmp: " + getVariants().get(0).getModificationPoints().size());
+		log.info("\ntotalBases: " + totalBases);
+		log.info("\ntotalAttempts: " + totalAttempts);
+		log.info("totalCutsAttempts: " + attemptsCutted);
+		log.info("\ntotalIngredients: " + totalIngredients);
+		log.info("\ntotalCutsIngredients: " + totalIngredientsCutted);
 	}
 
 }

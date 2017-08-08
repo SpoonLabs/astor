@@ -64,7 +64,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 */
 	protected Stats currentStat = null;
 
-	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
+	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	protected ProgramVariantFactory variantFactory;
 
