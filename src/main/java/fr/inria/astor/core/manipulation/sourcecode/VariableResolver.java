@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.NGramManager;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
@@ -822,7 +824,7 @@ public class VariableResolver {
 
 	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
 			Map<VarAccessWrapper, List<CtVariable>> mappedVars) {
-		return findAllVarMappingCombination(mappedVars, true);
+		return findAllVarMappingCombination(mappedVars, true, null);
 	}
 
 	/**
@@ -836,7 +838,7 @@ public class VariableResolver {
 	 * @return
 	 */
 	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
-			Map<VarAccessWrapper, List<CtVariable>> mappedVars, boolean random) {
+			Map<VarAccessWrapper, List<CtVariable>> mappedVars, boolean random, NGramManager manager) {
 
 		if (mappedVars.isEmpty()) {
 			return new ArrayList<Map<String, CtVariable>>();
@@ -868,6 +870,22 @@ public class VariableResolver {
 
 			if (random) {
 				Collections.shuffle(sortedVariables, RandomManager.getRandom());
+			} else if (manager != null) {
+				logger.debug("Sorting variables by 1-gram");
+				Collections.sort(sortedVariables, new Comparator<CtVariable>() {
+
+					@Override
+					public int compare(CtVariable v1, CtVariable v2) {
+						String s1 = v1.getSimpleName();
+						String s2 = v2.getSimpleName();
+						
+						Double p1 = (Double) manager.getNgglobal().ngrams[1].getProbabilies().get(s1);
+						Double p2 = (Double) manager.getNgglobal().ngrams[1].getProbabilies().get(s2);
+						//logger.debug("vars "+s1+" - "+s2+ ": "+p1+ " "+p2);
+						return Double.compare(p2, p1);
+					}
+				});
+				//logger.debug("vars sorted "+sortedVariables);
 			}
 
 			int varsAnalyzed = 0;
@@ -902,7 +920,7 @@ public class VariableResolver {
 
 	public static Number[] getMaxCombination(Map<VarAccessWrapper, List<CtVariable>> mappedVars,
 			List<VarAccessWrapper> varsNamesToCombine) {
-		
+
 		int maxNumberCombinations = ConfigurationProperties.getPropertyInt("maxVarCombination");
 
 		int max = -1;
@@ -925,16 +943,15 @@ public class VariableResolver {
 					currentVar.getVar().getVariable().getSimpleName(), numberCompVar));
 			numberTotalComb *= numberCompVar;
 		}
-		
+
 		logger.debug("Teoricalcombinations: " + numberTotalComb);
 		double maxPerVarLimit = 0;
 
 		if (numberTotalComb < maxNumberCombinations) {
-			//We dont need to cut vars
+			// We dont need to cut vars
 			maxPerVarLimit = max;
-		}
-		else{
-			
+		} else {
+
 			maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0 / varsNamesToCombine.size());
 		}
 

@@ -35,9 +35,7 @@ import spoon.reflect.declaration.CtVariable;
 public class ProbabilisticTransformationStrategy implements IngredientTransformationStrategy {
 
 	protected Logger logger = Logger.getLogger(ProbabilisticTransformationStrategy.class.getName());
-
-	protected Map<String, NGrams> ngramsSplitted = null;
-	protected NGrams ngglobal = null;
+	protected NGramManager ngramManager = new NGramManager(null, null);
 
 	public ProbabilisticTransformationStrategy() {
 		super();
@@ -46,40 +44,18 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 
 	public ProbabilisticTransformationStrategy(Map<String, NGrams> ngramsSplitted, NGrams ngramsGlobal) {
 		super();
-		this.ngramsSplitted = ngramsSplitted;
-		this.ngglobal = ngramsGlobal;
+		ngramManager = new NGramManager(ngramsSplitted, ngramsGlobal);
 	}
 
 	public void calculateGramsProbs() throws JSAPException {
-		logger.debug("Calculating N-grams");
-		this.ngglobal = new NGrams();
-		this.ngramsSplitted = new HashMap<>();
-
-		AbstractFixSpaceProcessor<?> elementProcessor = new SpecialStatementFixSpaceProcessor();
-		Boolean mustCloneOriginalValue = ConfigurationProperties.getPropertyBool("duplicateingredientsinspace");
-		// Forcing to duplicate
-		ConfigurationProperties.setProperty("duplicateingredientsinspace", "true");
-
-		List<CtType<?>> all = MutationSupporter.getFactory().Type().getAll();
-
-		GramProcessor pt = new GramProcessor(elementProcessor);
-		for (CtType<?> ctType : all) {
-			NGrams ng = pt.calculateGrams4Class(ctType);
-			ngramsSplitted.put(ctType.getQualifiedName(), ng);
-
-		}
-
-		ngglobal = pt.calculateGlobal(all);
-
-		// reset property clone
-		ConfigurationProperties.setProperty("duplicateingredientsinspace", Boolean.toString(mustCloneOriginalValue));
-
+		this.ngramManager.init();
 	}
 
 	@Override
 	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient baseIngredient) {
 
-		if (ngramsSplitted == null || this.ngglobal == null) {
+		if (!this.ngramManager.initialized()) {
+			// if (ngramsSplitted == null || this.ngglobal == null) {
 			logger.debug("Initializing probabilistics");
 			try {
 				calculateGramsProbs();
@@ -111,12 +87,12 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 
 				List<VarCombinationForIngredient> allCombinations = findAllVarMappingCombinationUsingProbab(
 						mapping.getMappedVariables(), modificationPoint);
-				
-				//logger.debug("--mp "+modificationPoint);
-				//logger.debug("--mpe "+modificationPoint.getCodeElement());
-				//logger.debug("--baseIng "+baseIngredient);
-				//logger.debug("== "+allCombinations);
-				
+
+				// logger.debug("--mp "+modificationPoint);
+				// logger.debug("--mpe "+modificationPoint.getCodeElement());
+				// logger.debug("--baseIng "+baseIngredient);
+				// logger.debug("== "+allCombinations);
+
 				if (allCombinations.size() > 0) {
 
 					for (VarCombinationForIngredient varCombinationForIngredient : allCombinations) {
@@ -146,12 +122,12 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 	public List<VarCombinationForIngredient> findAllVarMappingCombinationUsingProbab(
 			Map<VarAccessWrapper, List<CtVariable>> mappedVars, ModificationPoint mpoint) {
 
-		NGrams ngrams = this.ngramsSplitted.get(mpoint.getCtClass().getQualifiedName());
+		NGrams ngrams = this.ngramManager.getNgramsSplitted().get(mpoint.getCtClass().getQualifiedName());
 
 		sortPotentialVarsByProb(mappedVars, ngrams);
 
 		List<Map<String, CtVariable>> allWithoutOrder = VariableResolver.findAllVarMappingCombination(mappedVars,
-				false);
+				false, this.ngramManager);
 
 		List<VarCombinationForIngredient> allCom = new ArrayList<>();
 		for (Map<String, CtVariable> varMapping : allWithoutOrder) {
@@ -161,19 +137,18 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 			int sizeCombination = varCombinationWrapper.getSize();
 			MapCounter gramCounterSize = ngrams.ngrams[sizeCombination];
 
-			MapCounter gramCounterSizeGlobal = this.ngglobal.ngrams[sizeCombination];
-			//gramCounterSizeGlobal.getProbabilies();
+			MapCounter gramCounterSizeGlobal = this.ngramManager.getNgglobal().ngrams[sizeCombination];
+			// gramCounterSizeGlobal.getProbabilies();
 			if (gramCounterSize == null) { // Ingredient size bigger than all
 											// statements from the class
 				// logger.debug("Map is null for " + gramCounterSize);
 				// logger.debug("Using global");
 				gramCounterSize = gramCounterSizeGlobal;
-				if(gramCounterSizeGlobal == null ){
-					logger.error("No grams for combination size "+sizeCombination);
-					return  allCom;
+				if (gramCounterSizeGlobal == null) {
+					logger.error("No grams for combination size " + sizeCombination);
+					return allCom;
 				}
-					
-					
+
 			} else {
 				// logger.debug("Okey!");
 			}

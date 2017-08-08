@@ -343,9 +343,9 @@ public class GramBasedRepairTest {
 		// Calculate
 		transformationStrategy.calculateGramsProbs();
 
-		NGrams ngglobals = transformationStrategy.ngglobal;
+		NGrams ngglobals = transformationStrategy.ngramManager.ngglobal;
 
-		Map<String, NGrams> ngramsByClass = transformationStrategy.ngramsSplitted;
+		Map<String, NGrams> ngramsByClass = transformationStrategy.ngramManager.ngramsSplitted;
 
 		assertTrue(Arrays.asList(ngglobals.ngrams).stream().filter(e -> e != null).findFirst().isPresent());
 		assertTrue(ngramsByClass.keySet().size() > 0);
