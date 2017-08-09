@@ -38,6 +38,7 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 	}
 
 	public long totalIngredients = 0;
+	public long totalmp = 0;
 	public long totalBases = 0;
 	public long totalAttempts = 0;
 	public long totalIngredientsCutted = 0;
@@ -54,11 +55,15 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 
 		totalIngredients = 0;
 		totalBases = 0;
+	
 		for (ProgramVariant parentVariant : variants) {
 
 			log.debug("\n****\nanalyzing variant #" + (++v) + " out of " + variants.size());
 			// We analyze each modifpoint of the variant i.e. suspicious
 			// statement
+			
+			totalmp =  parentVariant.getModificationPoints().size();
+			
 			for (ModificationPoint modifPoint : parentVariant.getModificationPoints()) {
 				// We create all operators to apply in the modifpoint
 
@@ -209,7 +214,7 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 		log.info("\ntotalmp: " + getVariants().get(0).getModificationPoints().size());
 		log.info("\ntotalBases: " + totalBases);
 		log.info("\ntotalAttempts: " + totalAttempts);
-		log.info("totalCutsAttempts: " + attemptsCutted);
+		log.info("\ntotalCutsAttempts: " + attemptsCutted);
 		log.info("\ntotalIngredients: " + totalIngredients);
 		log.info("\ntotalCutsIngredients: " + totalIngredientsCutted);
 	}

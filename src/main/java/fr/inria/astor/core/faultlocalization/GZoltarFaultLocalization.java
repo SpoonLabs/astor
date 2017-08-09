@@ -101,6 +101,11 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			gzCandidates.addAll(gz.getSuspiciousStatements());
 
 		}
+
+		if (!ConfigurationProperties.getPropertyBool("considerzerovaluesusp")) {
+			gzCandidates.removeIf(susp -> (susp.getSuspiciousness() == 0));
+		}
+
 		// we order the suspicious DESC
 		Collections.sort(gzCandidates, (o1, o2) -> Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()));
 
