@@ -871,23 +871,24 @@ public class VariableResolver {
 			if (random) {
 				Collections.shuffle(sortedVariables, RandomManager.getRandom());
 			} else if (manager != null) {
-				logger.debug("Sorting variables by 1-gram");
+				//logger.debug("Sorting variables by 1-gram");
 				Collections.sort(sortedVariables, new Comparator<CtVariable>() {
 
 					@Override
 					public int compare(CtVariable v1, CtVariable v2) {
 						String s1 = v1.getSimpleName();
 						String s2 = v2.getSimpleName();
-						
+
 						Double p1 = (Double) manager.getNgglobal().ngrams[1].getProbabilies().get(s1);
 						Double p2 = (Double) manager.getNgglobal().ngrams[1].getProbabilies().get(s2);
-						//logger.debug("vars "+s1+" - "+s2+ ": "+p1+ " "+p2);
+						// logger.debug("vars "+s1+" - "+s2+ ": "+p1+ " "+p2);
 						return Double.compare(p2, p1);
 					}
 				});
-				//logger.debug("vars sorted "+sortedVariables);
+				// logger.debug("vars sorted "+sortedVariables);
 			}
 
+			// Now, let's create the combinations:
 			int varsAnalyzed = 0;
 			// for each mapping candidate
 			for (CtVariable varFromMap : sortedVariables) {
@@ -903,7 +904,7 @@ public class VariableResolver {
 					generationCombinations.add(newCombination);
 				}
 				varsAnalyzed++;
-				if (varsAnalyzed >= ((int) maxPerVarLimit)) {
+				if (varsAnalyzed >= ((int) (Math.ceil(maxPerVarLimit)))) {
 					break;
 				}
 
@@ -913,7 +914,14 @@ public class VariableResolver {
 		// FIlter combinations that are empty
 		allCombinations = allCombinations.stream().filter(e -> !e.isEmpty()).collect(Collectors.toList());
 
-		logger.debug("NrVarCombinationsConsidered: " + allCombinations.size());
+		int maxNumberCombinations = ConfigurationProperties.getPropertyInt("maxVarCombination");
+
+		logger.debug("NrVarCombinationsConsideredBeforeCutting: " + allCombinations.size());
+		if (allCombinations.size() > maxNumberCombinations) {
+			allCombinations = allCombinations.subList(0, maxNumberCombinations);
+		}
+
+		logger.debug("NrVarCombinationsConsideredAfter: " + allCombinations.size());
 
 		return allCombinations;
 	}
@@ -925,8 +933,9 @@ public class VariableResolver {
 
 		int max = -1;
 		long numberTotalComb = 1;
+		int nrVarsWithMorethan1Possibilities = 0;
 		Set<String> vars = new HashSet<>();
-
+		// Here the code for calculating the total number of combinations
 		for (VarAccessWrapper currentVar : varsNamesToCombine) {
 
 			if (vars.contains(currentVar.getVar().getVariable().getSimpleName())) {
@@ -937,8 +946,13 @@ public class VariableResolver {
 
 			List<CtVariable> mapped = mappedVars.get(currentVar);
 			int numberCompVar = mapped.size();
+			
 			if (numberCompVar > max)
 				max = numberCompVar;
+			
+			if (numberCompVar > 1)
+				nrVarsWithMorethan1Possibilities++;
+			
 			logger.debug(String.format("Number compatible vars of %s : %d",
 					currentVar.getVar().getVariable().getSimpleName(), numberCompVar));
 			numberTotalComb *= numberCompVar;
@@ -952,11 +966,12 @@ public class VariableResolver {
 			maxPerVarLimit = max;
 		} else {
 
-			maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0 / varsNamesToCombine.size());
+			maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0 / nrVarsWithMorethan1Possibilities);
 		}
 
 		logger.debug(String.format("Max per var %f, total number comb: %d  ", maxPerVarLimit, numberTotalComb));
 
 		return new Number[] { numberTotalComb, maxPerVarLimit };
 	}
+
 }
