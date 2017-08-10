@@ -45,7 +45,7 @@ public class ProgramVariantFactory {
 	protected List<AbstractFixSpaceProcessor<?>> processors = null;
 
 	protected boolean resetOperations;
-	
+
 	protected ProjectRepairFacade projectFacade;
 
 	public ProgramVariantFactory() {
@@ -69,9 +69,9 @@ public class ProgramVariantFactory {
 	 */
 	public List<ProgramVariant> createInitialPopulation(List<SuspiciousCode> suspiciousList, int maxNumberInstances,
 			PopulationController populationControler, ProjectRepairFacade projectFacade) throws Exception {
-		
+
 		this.projectFacade = projectFacade;
-		
+
 		List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
 
 		for (int ins = 1; ins <= maxNumberInstances; ins++) {
@@ -117,25 +117,30 @@ public class ProgramVariantFactory {
 
 		if (!suspiciousList.isEmpty()) {
 			for (SuspiciousCode suspiciousCode : suspiciousList) {
-				// For each suspicious code, we create one or more Gens (when it
+				// For each suspicious code, we create one or more ModPoint
+				// (when it
 				// is possible)
 				List<SuspiciousModificationPoint> modifPoints = createModificationPoints(suspiciousCode, progInstance);
-				if (modifPoints != null && !modifPoints.isEmpty())
+				if (modifPoints != null && !modifPoints.isEmpty()) {
 					progInstance.addModificationPoints(modifPoints);
-				else {
-					//log.debug("-any mod point created for suspicious " + suspiciousCode);
 				}
 
 			}
 			log.info("Total suspicious from FL: " + suspiciousList.size() + ",  "
 					+ progInstance.getModificationPoints().size());
 		} else {
-			// We do not have suspicious, so, we create modification for each statement
+			// We do not have suspicious, so, we create modification for each
+			// statement
 
 			List<SuspiciousModificationPoint> pointsFromAllStatements = createModificationPoints(progInstance);
 			progInstance.getModificationPoints().addAll(pointsFromAllStatements);
 		}
 		log.info("Total ModPoint created: " + progInstance.getModificationPoints().size());
+		int maxModPoints = ConfigurationProperties.getPropertyInt("maxmodificationpoints");
+		if (progInstance.getModificationPoints().size() > maxModPoints) {
+			progInstance.setModificationPoints(progInstance.getModificationPoints().subList(0, maxModPoints));
+			log.info("Reducing Total ModPoint created to: " + progInstance.getModificationPoints().size());
+		}
 		return progInstance;
 	}
 
@@ -143,21 +148,19 @@ public class ProgramVariantFactory {
 	private List<SuspiciousModificationPoint> createModificationPoints(ProgramVariant progInstance) {
 
 		List<SuspiciousModificationPoint> suspGen = new ArrayList<>();
-		List<CtClass> classesFromModel = mutatorSupporter.getFactory().Class().getAll().stream().
-					filter(CtClass.class::isInstance)
-					.map (sc -> (CtClass) sc)
-				    .collect(Collectors.toList());
+		List<CtClass> classesFromModel = mutatorSupporter.getFactory().Class().getAll().stream()
+				.filter(CtClass.class::isInstance).map(sc -> (CtClass) sc).collect(Collectors.toList());
 
 		for (CtClass ctclasspointed : classesFromModel) {
-			
+
 			List<String> allTest = projectFacade.getProperties().getRegressionTestCases();
 			String testn = ctclasspointed.getQualifiedName();
-			if(allTest.contains(testn) ){
-				//it's a test, we ignore it
-				log.debug("ModifPoints creation: Ignoring test case "+testn);
+			if (allTest.contains(testn)) {
+				// it's a test, we ignore it
+				log.debug("ModifPoints creation: Ignoring test case " + testn);
 				continue;
 			}
-			
+
 			if (!progInstance.getBuiltClasses().containsKey(ctclasspointed.getQualifiedName())) {
 				// TODO: clone or not?
 				// CtClass ctclasspointed = getCtClassCloned(className);
@@ -198,7 +201,8 @@ public class ProgramVariantFactory {
 	 * @param progInstance
 	 * @return
 	 */
-	private List<SuspiciousModificationPoint> createModificationPoints(SuspiciousCode suspiciousCode, ProgramVariant progInstance) {
+	private List<SuspiciousModificationPoint> createModificationPoints(SuspiciousCode suspiciousCode,
+			ProgramVariant progInstance) {
 
 		List<SuspiciousModificationPoint> suspGen = new ArrayList<SuspiciousModificationPoint>();
 
@@ -247,8 +251,8 @@ public class ProgramVariantFactory {
 			suspGen.add(modifPoint);
 			log.debug("--ModifPoint:" + ctElement.getClass().getSimpleName() + ", suspValue "
 					+ suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
-					+ ((ctElement.getPosition().getFile() == null)?"-null-file-": 
-					ctElement.getPosition().getFile().getName()));
+					+ ((ctElement.getPosition().getFile() == null) ? "-null-file-"
+							: ctElement.getPosition().getFile().getName()));
 		}
 		return suspGen;
 	}

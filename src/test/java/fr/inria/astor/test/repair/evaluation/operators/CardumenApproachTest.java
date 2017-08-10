@@ -627,6 +627,7 @@ public class CardumenApproachTest {
 		command.command.put("-population", "1");
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters", "disablelog:false");
+		command.command.put("-maxVarCombination", "100");
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
@@ -963,5 +964,121 @@ public class CardumenApproachTest {
 		assertEquals(38222,cardumen.totalBases);
 		
 		
+	}
+	
+	@Test
+	public void testCardumentM70ExhausitveMaxSuspiciousLimited() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+
+		command.command.put("-mode", ExecutionMode.custom.name());
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxtime", "60");
+		command.command.put("-population", "1");
+		command.command.put("-customengine",CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
+				+ "disablelog:false:uniformreplacement:false:frequenttemplate:false");
+		command.command.put("-loglevel",Level.DEBUG.toString());
+		command.command.put("-maxVarCombination",
+				 "100");
+		command.command.put("-maxsuspcandidates", "1000");
+
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		Stats.createStat();
+		CardumenExhaustiveEngine cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+		
+		assertEquals(12,cardumen.totalmp);
+		
+		
+		command.command.put("-maxsuspcandidates", "3");
+		main1.execute(command.flat());
+		Stats.createStat();
+		cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+		assertEquals(3,cardumen.totalmp);
+		
+		
+	//	assertEquals(100605077,cardumen.totalIngredients);
+	//	assertTrue(100605077 > cardumen.totalIngredientsCutted);
+	//	assertEquals(38222,cardumen.totalBases);
+		
+		
+	}
+	
+	@Test
+	public void testCardumentM70MaxModPoints() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		
+		int maxModPoints = 7;//Let's say 7, the number of MP over this configuration is 12.
+		
+		command.command.put("-mode", ExecutionMode.custom.name());
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-customengine",CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-parameters", "maxmodificationpoints:"
+				+maxModPoints+ ":skipfitnessinitialpopulation:true:limitbysuspicious:false");
+		command.command.put("-loglevel",Level.DEBUG.toString());
+		
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		Stats.createStat();
+		
+		assertEquals(maxModPoints, main1.getEngine().getVariants().get(0).getModificationPoints().size());
+	}
+	
+	
+	@Test
+	public void testCardumentM70ExhausitveReplacement() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		boolean uniformreplacement = false;
+		command.command.put("-mode", ExecutionMode.custom.name());
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxtime", "60");
+		command.command.put("-population", "1");
+		command.command.put("-customengine",CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
+				+ "disablelog:false:uniformreplacement:"+Boolean.toString(uniformreplacement));
+		command.command.put("-loglevel",Level.DEBUG.toString());
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		Stats.createStat();
+		assertFalse(ConfigurationProperties.getPropertyBool("uniformreplacement"));
+		
+		CardumenExhaustiveEngine cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+		
+		assertEquals(12,cardumen.totalmp);
+		long tingNotUnif = cardumen.totalIngredientsCutted;
+		long tingNotUnifall = cardumen.totalIngredients;
+		
+		//changing property
+		
+		uniformreplacement = true;
+		
+		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
+				+ "disablelog:false:uniformreplacement:"+Boolean.toString(uniformreplacement));
+		
+		cardumen = null;
+		main1.execute(command.flat());
+		Stats.createStat();
+		cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+		assertTrue(ConfigurationProperties.getPropertyBool("uniformreplacement"));
+		long tingUnif = cardumen.totalIngredientsCutted;
+		long tingUnifall = cardumen.totalIngredients;
+		System.out.println(tingNotUnif+" > "+tingUnif);
+		assertTrue(tingNotUnif+" > "+tingUnif,tingNotUnif>tingUnif);
+		System.out.println(tingNotUnifall+" > "+tingUnifall);
+		assertTrue(tingNotUnifall+" > "+tingUnifall,tingNotUnifall>tingUnifall);
 	}
 }
