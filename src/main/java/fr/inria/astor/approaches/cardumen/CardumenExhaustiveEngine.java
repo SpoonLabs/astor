@@ -20,8 +20,10 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtVariable;
 
 /**
@@ -55,15 +57,16 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 
 		totalIngredients = 0;
 		totalBases = 0;
-	
+
 		for (ProgramVariant parentVariant : variants) {
 
 			log.debug("\n****\nanalyzing variant #" + (++v) + " out of " + variants.size());
 			// We analyze each modifpoint of the variant i.e. suspicious
 			// statement
-			
-			totalmp =  parentVariant.getModificationPoints().size();
-			
+
+			totalmp = parentVariant.getModificationPoints().size();
+			int mp = 0;
+			int total =  parentVariant.getModificationPoints().size();
 			for (ModificationPoint modifPoint : parentVariant.getModificationPoints()) {
 				// We create all operators to apply in the modifpoint
 
@@ -80,10 +83,20 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 				if (elements == null) {
 					continue;
 				}
-
+				mp++;
 				totalBases += elements.size();
+				int base = 0;
 				for (CtCodeElement baseIngredient : elements) {
-
+					base++;
+					log.debug("\nMP:  ("+(mp)+"/"+total+ ")"+ modifPoint.getCodeElement().getClass().getCanonicalName() +  
+							" ("+ ((CtExpression)modifPoint.getCodeElement()).getType().getQualifiedName()
+							+ ") \nBase: ("+base + "/"+elements.size()+") "+
+							baseIngredient.getClass().getCanonicalName()
+							+ " ("+
+							((CtExpression)baseIngredient).getType().getQualifiedName()
+							+ ")"
+							
+							);
 					long nrIngredients[] = getNrIngredients(modifPoint, baseIngredient);
 
 					if ((long) nrIngredients[0] != nrIngredients[1]) {
@@ -97,16 +110,6 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 					totalIngredientsCutted += nrIngredients[1];
 
 					log.debug("-nrIng-" + Arrays.toString(nrIngredients));
-					// Commented due to ingredients are cutted
-					/*
-					 * List<Ingredient> ingredientsAfterTransformation =
-					 * estrategy.getInstancesFromBase(modifPoint,
-					 * pointOperation, new Ingredient(baseIngredient)); /* if
-					 * (ingredientsAfterTransformation != null) { int
-					 * conmbinationOfBaseIngredient =
-					 * ingredientsAfterTransformation.size(); totalIngredients
-					 * += conmbinationOfBaseIngredient; }
-					 */
 
 					totalAttempts += 1;
 				}
@@ -178,12 +181,20 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 				log.debug("===empty");
 				continue;
 			}
-			long maxVarAnalyzed = (mapped.size() > maxPerVarLimit) ? (long) maxPerVarLimit : mapped.size();
+			double maxVarRounded = Math.ceil(maxPerVarLimit);
+			long maxVarAnalyzed = (mapped.size() > maxVarRounded) ? (long) maxVarRounded : mapped.size();
 			log.debug("-sizes--" + mapped.size() + " " + maxPerVarLimit);
 			allCombinationl = allCombinationl * (int) maxVarAnalyzed;
 
 		}
-		log.debug("-allComb--" + allCombinationl);
+		log.debug("-allComb all--" + allCombinationl);
+
+		int maxNumberCombinations = ConfigurationProperties.getPropertyInt("maxVarCombination");
+
+		if (allCombinationl > maxNumberCombinations) {
+			return maxNumberCombinations;
+		}
+		log.debug("-allComb cutted--" + allCombinationl);
 
 		return allCombinationl;
 	}
