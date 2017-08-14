@@ -882,6 +882,14 @@ public class VariableResolver {
 						Double p1 = (Double) manager.getNgglobal().ngrams[1].getProbabilies().get(s1);
 						Double p2 = (Double) manager.getNgglobal().ngrams[1].getProbabilies().get(s2);
 						// logger.debug("vars "+s1+" - "+s2+ ": "+p1+ " "+p2);
+						if(p1 == null){
+							logger.error("Var not found in global ngram: "+s1);
+							return 1;
+						}
+						if(p2 == null){
+							logger.error("Var not found in global ngram: "+s2);
+							return -1;
+						}
 						return Double.compare(p2, p1);
 					}
 				});
