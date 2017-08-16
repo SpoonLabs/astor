@@ -1,6 +1,7 @@
 package fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,39 +128,43 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			Ingredient baseIngredient) {
 		List<Ingredient> ingredientsAfterTransformation = null;
 		String keyBaseIngredient = getBaseIngredientKey(modificationPoint, operator, baseIngredient);
+		
+		if (appliedIngredientsCache.containsKey(keyBaseIngredient)) {
+			log.debug("Retrieving already calculated transformations");
+			ingredientsAfterTransformation = appliedIngredientsCache.get(keyBaseIngredient);
 
-		if (ingredientTransformationStrategy != null) {
-			if (appliedIngredientsCache.containsKey(keyBaseIngredient)) {
-				log.debug("Retrieving already calculated transformations");
-				ingredientsAfterTransformation = appliedIngredientsCache.get(keyBaseIngredient);
-
-				// We try two cases: null (template cannot be instantiated) or
-				// empty (all combination were already tested)
-				if (ingredientsAfterTransformation == null) {
-					log.debug("Already instantiated template byt without valid instance on this MP, update stats "
-							+ baseIngredient);
-					Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, 0);
-					return null;
-				} else if (ingredientsAfterTransformation.isEmpty()) {
-					log.debug("All instances were already tried, exit without update stats." + baseIngredient);
-					return null;
-				}
-
+			// We try two cases: null (template cannot be instantiated) or
+			// empty (all combination were already tested)
+			if (ingredientsAfterTransformation == null) {
+				log.debug("Already instantiated template but without valid instance on this MP, update stats "
+						+ baseIngredient);
+				//Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, 0);
+				return null;
+			} else if (ingredientsAfterTransformation.isEmpty()) {
+				log.debug("All instances were already tried, exit without update stats." + baseIngredient);
+				return null;
 			} else {
-				log.debug("Calculating transformations");
-				ingredientsAfterTransformation = ingredientTransformationStrategy.transform(modificationPoint,
-						baseIngredient);
-				if (ingredientsAfterTransformation != null && !ingredientsAfterTransformation.isEmpty())
-					appliedIngredientsCache.put(keyBaseIngredient, ingredientsAfterTransformation);
-				else {
-					log.debug(
-							"The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
-									+ baseIngredient);
-					appliedIngredientsCache.put(keyBaseIngredient, null);
-					Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, 0);
-					exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
-					return null;
-				}
+				// We have still ingredients to apply
+				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
+						ingredientsAfterTransformation.size());
+			}
+
+		} else {
+			log.debug("Calculating transformations");
+			ingredientsAfterTransformation = ingredientTransformationStrategy.transform(modificationPoint,
+					baseIngredient);
+			if (ingredientsAfterTransformation != null && !ingredientsAfterTransformation.isEmpty()) {
+				appliedIngredientsCache.put(keyBaseIngredient, ingredientsAfterTransformation);
+				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
+						ingredientsAfterTransformation.size());
+			} else {
+				log.debug(
+						"The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
+								+ baseIngredient);
+				
+				appliedIngredientsCache.put(keyBaseIngredient, null);
+				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, 0);
+				exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
 			}
 		}
 		return ingredientsAfterTransformation;
@@ -185,7 +190,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 	 * @param baseIngredient
 	 * @return
 	 */
-	public Ingredient getNotUsedTransformedElement(ModificationPoint modificationPoint, AstorOperator operator,
+	private Ingredient getNotUsedTransformedElement(ModificationPoint modificationPoint, AstorOperator operator,
 			Ingredient baseIngredient, List<Ingredient> ingredientsAfterTransformation) {
 
 		log.debug("\n--\nIngredient  base" + baseIngredient + " from "
@@ -193,7 +198,6 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 		log.debug(String.format("Valid Transformed ingredients in mp: %s,  base ingr: %s, : size (%d) ",
 				modificationPoint.getCodeElement(), baseIngredient, ingredientsAfterTransformation.size()));
-		Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, ingredientsAfterTransformation.size());
 
 		if (ingredientsAfterTransformation.isEmpty()) {
 			log.debug("No combination for  " + baseIngredient);
@@ -374,9 +378,9 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			elements = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
 		}
 
-		if(elements == null)
+		if (elements == null)
 			return null;
-		
+
 		List<CtCodeElement> uniques = new ArrayList<>(elements);
 
 		String key = getKey(modificationPoint, operationType);

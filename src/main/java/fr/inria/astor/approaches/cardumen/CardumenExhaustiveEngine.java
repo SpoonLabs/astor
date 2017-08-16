@@ -22,6 +22,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.stats.Stats;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtVariable;
@@ -66,7 +67,7 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 
 			totalmp = parentVariant.getModificationPoints().size();
 			int mp = 0;
-			int total =  parentVariant.getModificationPoints().size();
+			int total = parentVariant.getModificationPoints().size();
 			for (ModificationPoint modifPoint : parentVariant.getModificationPoints()) {
 				// We create all operators to apply in the modifpoint
 
@@ -78,31 +79,33 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 				}
 				EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) this.getIngredientStrategy();
 
-				List<CtCodeElement> elements = estrategy.getNotExhaustedBaseElements(modifPoint, pointOperation);
+				List<CtCodeElement> baseElements = estrategy.getNotExhaustedBaseElements(modifPoint, pointOperation);
 
-				if (elements == null) {
+				if (baseElements == null) {
 					continue;
 				}
 				mp++;
-				totalBases += elements.size();
+				totalBases += baseElements.size();
+				Stats.currentStat.addSize(Stats.currentStat.ingredientSpaceSize, baseElements.size());
+
 				int base = 0;
-				for (CtCodeElement baseIngredient : elements) {
+				for (CtCodeElement baseIngredient : baseElements) {
 					base++;
-					log.debug("\nMP:  ("+(mp)+"/"+total+ ")"+ modifPoint.getCodeElement().getClass().getCanonicalName() +  
-							" ("+ ((CtExpression)modifPoint.getCodeElement()).getType().getQualifiedName()
-							+ ") \nBase: ("+base + "/"+elements.size()+") "+
-							baseIngredient.getClass().getCanonicalName()
-							+ " ("+
-							((CtExpression)baseIngredient).getType().getQualifiedName()
-							+ ")"
-							
-							);
-					long nrIngredients[] = getNrIngredients(modifPoint, baseIngredient);
+					log.debug("\nMP:  (" + (mp) + "/" + total + ")"
+							+ modifPoint.getCodeElement().getClass().getCanonicalName() + " ("
+							+ ((CtExpression) modifPoint.getCodeElement()).getType().getQualifiedName() + ") \nBase: ("
+							+ base + "/" + baseElements.size() + ") " + baseIngredient.getClass().getCanonicalName()
+							+ " (" + ((CtExpression) baseIngredient).getType().getQualifiedName() + ")"
+
+					);
+					long[] nrIngredients = getNrIngredients(modifPoint, baseIngredient);
+					System.out.println("--#ingr> " + nrIngredients[0]);
+					long spacesize = nrIngredients[0];
+					
+					Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, (spacesize));
+					
 
 					if ((long) nrIngredients[0] != nrIngredients[1]) {
-						// log.debug("Different " + maxValues[0] + " " +
-						// countedLimited);
-						// log.debug("");
 						attemptsCutted++;
 					}
 

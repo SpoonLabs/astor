@@ -41,6 +41,28 @@ public class MathTests {
 	}
 	
 	
+	public static CommandSummary getMath42Command(){
+		String dep = new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 50;
+		
+		
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.optimization.linear.SimplexSolverTestt", "-location",
+				new File("/Users/matias/develop/extractedbug/math/math_42").getAbsolutePath(), 
+				"-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.1", "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "410", "-maxgen", Integer.toString(generations), "-stopfirst", "true",
+				"-maxtime", "100",
+				//"-loglevel","DEBUG",
+
+		};
+		return new CommandSummary(args);
+		
+	}
+	
+	
 	@Test
 	public void testMath1() throws Exception {
 
