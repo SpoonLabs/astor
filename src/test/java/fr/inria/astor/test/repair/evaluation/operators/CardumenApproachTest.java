@@ -15,7 +15,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
-import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine;
+import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine4Stats;
 import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -1029,7 +1029,7 @@ public class CardumenApproachTest {
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
-		command.command.put("-customengine", CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters",
 				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
@@ -1039,7 +1039,7 @@ public class CardumenApproachTest {
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
 		Stats.createStat();
-		CardumenExhaustiveEngine cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
 		assertEquals(100605077, cardumen.totalIngredients);
 		assertEquals(100605077, cardumen.totalIngredientsCutted);
@@ -1057,7 +1057,7 @@ public class CardumenApproachTest {
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
-		command.command.put("-customengine", CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters",
 				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
@@ -1067,7 +1067,7 @@ public class CardumenApproachTest {
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
 		Stats.createStat();
-		CardumenExhaustiveEngine cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
 		assertEquals(86299730, cardumen.totalIngredients);
 		assertTrue(86299730 > cardumen.totalIngredientsCutted);
@@ -1086,7 +1086,7 @@ public class CardumenApproachTest {
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
-		command.command.put("-customengine", CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
 				+ "disablelog:false:uniformreplacement:false:frequenttemplate:false");
@@ -1097,14 +1097,14 @@ public class CardumenApproachTest {
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
 		Stats.createStat();
-		CardumenExhaustiveEngine cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
 		assertEquals(12, cardumen.totalmp);
 
 		command.command.put("-maxsuspcandidates", "3");
 		main1.execute(command.flat());
 		Stats.createStat();
-		cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+		cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 		assertEquals(3, cardumen.totalmp);
 
 		// assertEquals(100605077,cardumen.totalIngredients);
@@ -1126,7 +1126,7 @@ public class CardumenApproachTest {
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxgen", "0");
 		command.command.put("-population", "1");
-		command.command.put("-customengine", CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters",
 				"maxmodificationpoints:" + maxModPoints + ":skipfitnessinitialpopulation:true:limitbysuspicious:false");
@@ -1149,7 +1149,7 @@ public class CardumenApproachTest {
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
-		command.command.put("-customengine", CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
 				+ "disablelog:false:uniformreplacement:" + Boolean.toString(uniformreplacement));
@@ -1160,7 +1160,7 @@ public class CardumenApproachTest {
 		Stats.createStat();
 		assertFalse(ConfigurationProperties.getPropertyBool("uniformreplacement"));
 
-		CardumenExhaustiveEngine cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
 		assertEquals(12, cardumen.totalmp);
 		long tingNotUnif = cardumen.totalIngredientsCutted;
@@ -1176,7 +1176,7 @@ public class CardumenApproachTest {
 		cardumen = null;
 		main1.execute(command.flat());
 		Stats.createStat();
-		cardumen = (CardumenExhaustiveEngine) main1.getEngine();
+		cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 		assertTrue(ConfigurationProperties.getPropertyBool("uniformreplacement"));
 		long tingUnif = cardumen.totalIngredientsCutted;
 		long tingUnifall = cardumen.totalIngredients;
@@ -1197,7 +1197,7 @@ public class CardumenApproachTest {
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
-		command.command.put("-customengine", CardumenExhaustiveEngine.class.getCanonicalName());
+		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
 				+ "disablelog:false:uniformreplacement:" + Boolean.toString(uniformreplacement));

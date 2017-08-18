@@ -33,9 +33,9 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  * 
  */
-public class CardumenExhaustiveEngine extends CardumenApproach {
+public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 
-	public CardumenExhaustiveEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+	public CardumenExhaustiveEngine4Stats(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 	}
