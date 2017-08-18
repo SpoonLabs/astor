@@ -150,7 +150,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		long endT = System.currentTimeMillis();
 		log.info("Time Repair Loop (s): " + (endT - startT) / 1000d);
 		currentStat.timeIteraction = ((endT - startT));
-
+		log.info("generationsexecuted: "+this.generationsExecuted);	
 	}
 
 	public void atEnd() {
