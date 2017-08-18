@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -78,14 +79,17 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			}
 		}
 
+		int gzPositives = gz.getSuspiciousStatements().stream().filter(x -> x.getSuspiciousness() > 0)
+				 .collect(Collectors.toList()).size(); 
+		
 		logger.info("Gzoltar Test Result Total:" + sum[0] + ", fails: " + sum[1] + ", GZoltar suspicious "
-				+ gz.getSuspiciousStatements().size());
+				+ gz.getSuspiciousStatements().size() + ", with positive susp "+gzPositives);
 
 		DecimalFormat df = new DecimalFormat("#.###");
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
 
 		List<Statement> gzCandidates = new ArrayList();
-
+		
 		for (Statement gzoltarStatement : gz.getSuspiciousStatements()) {
 			String compName = gzoltarStatement.getMethod().getParent().getLabel();
 			if (isSource(compName, srcFolder) && (!ConfigurationProperties.getPropertyBool("limitbysuspicious")
