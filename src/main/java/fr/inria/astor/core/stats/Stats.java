@@ -85,8 +85,8 @@ public class Stats {
 	public int unfinishValidation = 0;
 	
 	//key are value, values are abundancy
-	public Map<Integer, Integer> ingredientSpaceSize = new HashedMap();
-	public Map<Integer, Integer> combinationByIngredientSize = new HashedMap();
+	public Map<Long, Long> ingredientSpaceSize = new HashedMap();
+	public Map<Long, Long> combinationByIngredientSize = new HashedMap();
 
 	public void printStats() {
 		log.info(toString());
@@ -294,11 +294,25 @@ public class Stats {
 		}
 	};
 	
-	public void  addSize(Map<Integer,Integer> attempts, int size){
+	public void  addSize(Map<Long,Long> attempts, Integer sizep){
 		
-		Integer counter = 0;
+		Long size = new Long(sizep);
+		Long counter = 0l;
 		if (attempts.containsKey(size)){
-			counter = attempts.get(size);
+			counter = attempts.get((long)size);
+		}
+		counter++;
+		attempts.put(size, counter);
+	;
+		
+		
+	}
+public void  addSize(Map<Long,Long> attempts, long sizep){
+		
+		Long size = new Long(sizep);
+		Long counter = 0l;
+		if (attempts.containsKey(size)){
+			counter = attempts.get((long)size);
 		}
 		counter++;
 		attempts.put(size, counter);
@@ -307,17 +321,17 @@ public class Stats {
 		
 	}
 	
-	public void toJSON(String output, Map<Integer,Integer> attempts, String filename) {
+	public void toJSON(String output, Map<Long,Long> attempts, String filename) {
 		JSONObject space = new JSONObject();
 		
 
 		JSONArray list = new JSONArray();
 		space.put("space", list);
 		int total=0;
-		for (Integer key : attempts.keySet()) {
+		for (Long key : attempts.keySet()) {
 			JSONObject keyjson = new JSONObject();
 				keyjson.put("a", key);
-				int num = attempts.get(key);
+				long num = attempts.get(key);
 				keyjson.put("v", num );
 				total+=num;
 				list.add(keyjson);
