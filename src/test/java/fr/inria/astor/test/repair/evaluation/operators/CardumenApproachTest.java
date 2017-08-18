@@ -645,6 +645,34 @@ public class CardumenApproachTest {
 	}
 
 	@Test
+	public void testCardumentM70EvolveNotUniformreplacement() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		// Configuration for paper experiment
+		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxtime", "60");
+		command.command.put("-population", "1");
+		command.command.put("-maxgen", "100");
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-parameters",
+				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
+		command.command.put("-loglevel", Level.INFO.toString());
+		command.command.put("-maxVarCombination", "1000");
+		command.command.put("-stopfirst", "false");
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+				.getIngredientSpace();
+		assertNotNull(ingredientSpace);
+
+	}
+
+	@Test
 	public void testCardumentM70EvolveUniformreplacement() throws Exception {
 		CommandSummary command = MathTests.getMath70Command();
 
@@ -806,7 +834,7 @@ public class CardumenApproachTest {
 
 		CtCodeElement base1 = bases1.get(0);
 		assertNotNull(base1);
-		System.out.println("base 1:"+base1);
+		System.out.println("base 1:" + base1);
 
 		// assertEquals(1, (int)
 		// Stats.getCurrentStats().ingredientSpaceSize.get(bases.size()));
@@ -966,31 +994,29 @@ public class CardumenApproachTest {
 				new Ingredient(base4));
 		System.out.println("mp5 " + Stats.currentStat.combinationByIngredientSize);
 		assertTrue(Stats.currentStat.combinationByIngredientSize.containsKey((long) 1));
-		
+
 		assertEquals(before + 1, Stats.currentStat.combinationByIngredientSize.get((long) 1), 0);
 
 		assertTrue(ingredientsAfterTransformation4.size() > 0);
 
-		
 		System.out.println("--------BASE 5----------");
-		
-		SuspiciousModificationPoint mp7 = (SuspiciousModificationPoint) cardumen.getVariants().get(0).getModificationPoints().get(7);
+
+		SuspiciousModificationPoint mp7 = (SuspiciousModificationPoint) cardumen.getVariants().get(0)
+				.getModificationPoints().get(7);
 		assertTrue(mp7.getSuspicious().getClassName().contains("UnivariateRealSolverUtils"));
 		assertEquals("solve(_UnivariateRealFunction_0, _double_1, _double_2)", base1.toString());
-		
-		
+
 		assertFalse(Stats.currentStat.combinationByIngredientSize.containsKey((long) 0));
-		
+
 		List<Ingredient> ingredientsAfterTransformation5 = estrategy.getInstancesFromBase(mp7, op1,
 				new Ingredient(base1));
-		
-		assertTrue(ingredientsAfterTransformation5.isEmpty() );
-	
+
+		assertTrue(ingredientsAfterTransformation5.isEmpty());
+
 		assertTrue(Stats.currentStat.combinationByIngredientSize.containsKey((long) 0));
-		
+
 		assertEquals(1, Stats.currentStat.combinationByIngredientSize.get((long) 0), 0);
 
-		
 	}
 
 	@Test
@@ -1006,7 +1032,7 @@ public class CardumenApproachTest {
 		command.command.put("-customengine", CardumenExhaustiveEngine.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters",
-				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:true:frequenttemplate:true");
+				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
 		command.command.put("-loglevel", Level.DEBUG.toString());
 		command.command.put("-maxVarCombination", "100000000");
 
@@ -1026,7 +1052,7 @@ public class CardumenApproachTest {
 		CommandSummary command = MathTests.getMath70Command();
 
 		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
-
+		// Configuration for paper experiment
 		command.command.put("-mode", ExecutionMode.custom.name());
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
@@ -1034,7 +1060,7 @@ public class CardumenApproachTest {
 		command.command.put("-customengine", CardumenExhaustiveEngine.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters",
-				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:true:frequenttemplate:true");
+				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
 		command.command.put("-loglevel", Level.DEBUG.toString());
 		command.command.put("-maxVarCombination", "1000");
 
@@ -1043,9 +1069,10 @@ public class CardumenApproachTest {
 		Stats.createStat();
 		CardumenExhaustiveEngine cardumen = (CardumenExhaustiveEngine) main1.getEngine();
 
-		assertEquals(100605077, cardumen.totalIngredients);
-		assertTrue(100605077 > cardumen.totalIngredientsCutted);
-		assertEquals(38222, cardumen.totalBases);
+		assertEquals(86299730, cardumen.totalIngredients);
+		assertTrue(86299730 > cardumen.totalIngredientsCutted);
+		assertEquals(26915, cardumen.totalIngredientsCutted);
+		assertEquals(160, cardumen.totalBases);
 
 	}
 

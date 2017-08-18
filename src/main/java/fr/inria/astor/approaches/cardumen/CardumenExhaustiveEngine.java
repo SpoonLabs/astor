@@ -28,9 +28,9 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtVariable;
 
 /**
- * Exhaustive Search Engine
+ * Exhaustive Search Engine For statistics
  * 
- * @author Matias Martinez, matias.martinez@inria.fr
+ * @author Matias Martinez
  * 
  */
 public class CardumenExhaustiveEngine extends CardumenApproach {
@@ -46,6 +46,7 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 	public long totalAttempts = 0;
 	public long totalIngredientsCutted = 0;
 	public long attemptsCutted = 0;
+	public long totalBasesWithZeros = 0;
 
 	@Override
 	public void startEvolution() throws Exception {
@@ -58,7 +59,7 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 
 		totalIngredients = 0;
 		totalBases = 0;
-
+		totalBasesWithZeros = 0;
 		for (ProgramVariant parentVariant : variants) {
 
 			log.debug("\n****\nanalyzing variant #" + (++v) + " out of " + variants.size());
@@ -76,6 +77,7 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 				try {
 					log.info("exa: mod_point " + modifPoint);
 				} catch (Exception e) {
+					log.error(e);
 				}
 				EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) this.getIngredientStrategy();
 
@@ -99,18 +101,20 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 
 					);
 					long[] nrIngredients = getNrIngredients(modifPoint, baseIngredient);
-					System.out.println("--#ingr> " + nrIngredients[0]);
+
 					long spacesize = nrIngredients[0];
-					
-					Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, (spacesize));
-					
+					long cuttedspacesize = nrIngredients[1];
+					Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, (cuttedspacesize));
+					if (nrIngredients[0] == 0) {
+						totalBasesWithZeros++;
+					}
 
 					if ((long) nrIngredients[0] != nrIngredients[1]) {
 						attemptsCutted++;
 					}
 
-					totalIngredients += nrIngredients[0];
-					totalIngredientsCutted += nrIngredients[1];
+					totalIngredients += spacesize;
+					totalIngredientsCutted += cuttedspacesize;
 
 					log.debug("-nrIng-" + Arrays.toString(nrIngredients));
 
@@ -124,10 +128,11 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 		log.info("totalCutsAttempts: " + attemptsCutted);
 		log.info("totalIngredients: " + totalIngredients);
 		log.info("totalCutIngredients: " + totalIngredientsCutted);
+		log.info("totalBasesWithZeros: " + totalBasesWithZeros);
 
 	}
 
-	private long[] getNrIngredients(ModificationPoint modificationPoint, CtCodeElement baseIngredient) {
+	public static long[] getNrIngredients(ModificationPoint modificationPoint, CtCodeElement baseIngredient) {
 		CtCodeElement codeElementToModifyFromBase = (CtCodeElement) baseIngredient;
 
 		if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
@@ -231,6 +236,7 @@ public class CardumenExhaustiveEngine extends CardumenApproach {
 		log.info("\ntotalCutsAttempts: " + attemptsCutted);
 		log.info("\ntotalIngredients: " + totalIngredients);
 		log.info("\ntotalCutsIngredients: " + totalIngredientsCutted);
+		log.info("\ntotalBasesWithZeros: " + totalBasesWithZeros);
 	}
 
 }

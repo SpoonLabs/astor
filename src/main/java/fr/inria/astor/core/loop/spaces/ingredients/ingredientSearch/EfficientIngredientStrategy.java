@@ -1,13 +1,11 @@
 package fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -128,7 +126,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			Ingredient baseIngredient) {
 		List<Ingredient> ingredientsAfterTransformation = null;
 		String keyBaseIngredient = getBaseIngredientKey(modificationPoint, operator, baseIngredient);
-		
+
 		if (appliedIngredientsCache.containsKey(keyBaseIngredient)) {
 			log.debug("Retrieving already calculated transformations");
 			ingredientsAfterTransformation = appliedIngredientsCache.get(keyBaseIngredient);
@@ -138,7 +136,6 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			if (ingredientsAfterTransformation == null) {
 				log.debug("Already instantiated template but without valid instance on this MP, update stats "
 						+ baseIngredient);
-				//Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, 0);
 				return null;
 			} else if (ingredientsAfterTransformation.isEmpty()) {
 				log.debug("All instances were already tried, exit without update stats." + baseIngredient);
@@ -157,11 +154,12 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 				appliedIngredientsCache.put(keyBaseIngredient, ingredientsAfterTransformation);
 				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
 						ingredientsAfterTransformation.size());
+
 			} else {
 				log.debug(
 						"The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
 								+ baseIngredient);
-				
+
 				appliedIngredientsCache.put(keyBaseIngredient, null);
 				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, 0);
 				exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
@@ -233,7 +231,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 				continue;
 			}
 
-			// we check if was applyed
+			// we check if was applied
 			boolean alreadyApplied = alreadySelected(modificationPoint, transformedIngredient.getCode(), operator);
 
 			if (!alreadyApplied) {
