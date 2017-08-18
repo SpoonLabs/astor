@@ -871,7 +871,7 @@ public class VariableResolver {
 			if (random) {
 				Collections.shuffle(sortedVariables, RandomManager.getRandom());
 			} else if (manager != null) {
-				//logger.debug("Sorting variables by 1-gram");
+				// logger.debug("Sorting variables by 1-gram");
 				Collections.sort(sortedVariables, new Comparator<CtVariable>() {
 
 					@Override
@@ -881,13 +881,17 @@ public class VariableResolver {
 
 						Double p1 = (Double) manager.getNgglobal().ngrams[1].getProbabilies().get(s1);
 						Double p2 = (Double) manager.getNgglobal().ngrams[1].getProbabilies().get(s2);
-						// logger.debug("vars "+s1+" - "+s2+ ": "+p1+ " "+p2);
-						if(p1 == null){
-							logger.error("Var not found in global ngram: "+s1);
+
+						if (p1 == null && p2 == null) {
+							return 0;
+						}
+
+						if (p1 == null) {
+							logger.error("Var not found in global ngram: " + s1);
 							return 1;
 						}
-						if(p2 == null){
-							logger.error("Var not found in global ngram: "+s2);
+						if (p2 == null) {
+							logger.error("Var not found in global ngram: " + s2);
 							return -1;
 						}
 						return Double.compare(p2, p1);
@@ -954,13 +958,13 @@ public class VariableResolver {
 
 			List<CtVariable> mapped = mappedVars.get(currentVar);
 			int numberCompVar = mapped.size();
-			
+
 			if (numberCompVar > max)
 				max = numberCompVar;
-			
+
 			if (numberCompVar > 1)
 				nrVarsWithMorethan1Possibilities++;
-			
+
 			logger.debug(String.format("Number compatible vars of %s : %d",
 					currentVar.getVar().getVariable().getSimpleName(), numberCompVar));
 			numberTotalComb *= numberCompVar;
