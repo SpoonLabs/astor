@@ -42,7 +42,8 @@ public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
 	protected IngredientSearchStrategy ingredientSearchStrategy;
 	protected IngredientTransformationStrategy ingredientTransformationStrategy;
 
-	public IngredientBasedRepairApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
+	public IngredientBasedRepairApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 	}
 
@@ -339,13 +340,16 @@ public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
 
 			log.info("\npvariants_with_transformed_ingredients: " + this.currentStat.successfulTransformedIngredients);
 		}
-		if (this.ingredientSearchStrategy.getIngredientSpace() instanceof ExpressionTypeIngredientSpace) {
+		if (this.ingredientSearchStrategy != null
+				&& this.ingredientSearchStrategy.getIngredientSpace() instanceof ExpressionTypeIngredientSpace) {
 			ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace) this.ingredientSearchStrategy
 					.getIngredientSpace();
 			space.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource());
-			Stats.currentStat.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(), Stats.currentStat.ingredientSpaceSize, "ingredientSpaceSize");
-			Stats.currentStat.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(), Stats.currentStat.combinationByIngredientSize, "combinationsTemplatesingredientSpaceSize");
-			
+			Stats.currentStat.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(),
+					Stats.currentStat.ingredientSpaceSize, "ingredientSpaceSize");
+			Stats.currentStat.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(),
+					Stats.currentStat.combinationByIngredientSize, "combinationsTemplatesingredientSpaceSize");
+
 		}
 	}
 
