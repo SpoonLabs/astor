@@ -2,6 +2,7 @@ ASTOR
 =====
 
 [![Build Status](https://travis-ci.org/SpoonLabs/astor.svg?branch=master)](https://travis-ci.org/SpoonLabs/astor)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FSpoonLabs%2Fastor.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FSpoonLabs%2Fastor?ref=badge_shield)
 
 Astor is an automatic software repair framework in Java for Java. It contains an implementation of state of the art repair approaches such as GenProg and Kali.
 
@@ -169,3 +170,7 @@ Contacts
 --------
 matias.sebastian.martinez@gmail.com
 martin.monperrus@univ-lille1.fr
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FSpoonLabs%2Fastor.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FSpoonLabs%2Fastor?ref=badge_large)
