@@ -1,5 +1,6 @@
 package fr.inria.astor.core.loop;
 
+import java.io.File;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -14,23 +15,26 @@ import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.VariantValidationResult;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.entities.VariantValidationResult;
 import fr.inria.astor.core.entities.WeightCtElement;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
+import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
+import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.StatPatch;
@@ -44,7 +48,9 @@ import fr.inria.astor.util.TimeUtil;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 
 /**
  * Evolutionary program transformation Loop
@@ -102,9 +108,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected VariantCompiler compiler = null;
 
-	
 	private int nrGenerationWithoutModificatedVariant = 0;
-	
+
 	/**
 	 * 
 	 * @param mutatorExecutor
@@ -139,8 +144,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.debug("\n----------Running generation/iteraction " + generationsExecuted + ", population size: "
 					+ this.variants.size());
 			stop = processGenerations(generationsExecuted);
-			
-			if(this.nrGenerationWithoutModificatedVariant >= ConfigurationProperties.getPropertyInt("nomodificationconvergence")){
+
+			if (this.nrGenerationWithoutModificatedVariant >= ConfigurationProperties
+					.getPropertyInt("nomodificationconvergence")) {
 				log.error("".format("Stopping main loop at %d generation", generationsExecuted));
 				break;
 			}
@@ -150,7 +156,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		long endT = System.currentTimeMillis();
 		log.info("Time Repair Loop (s): " + (endT - startT) / 1000d);
 		currentStat.timeIteraction = ((endT - startT));
-		log.info("generationsexecuted: "+this.generationsExecuted);	
+		log.info("generationsexecuted: " + this.generationsExecuted);
 	}
 
 	public void atEnd() {
@@ -187,7 +193,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.debug("f " + variant.getFitness() + ", " + variant);
 		}
 		log.debug("\nNumber suspicious:" + this.variants.size());
-		
+
 		if (!solutions.isEmpty()) {
 			log.info("\nSolution details");
 			log.info(getSolutionData(solutions, generationsExecuted));
@@ -239,6 +245,20 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 	}
 
+	public void createInitialPopulation() throws Exception {
+
+		// Creates the spoon model
+		initModel();
+
+		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
+			// We dont use FL, so at this point the do not have suspicious
+			this.initPopulation(new ArrayList<SuspiciousCode>());
+		} else {
+			List<SuspiciousCode> suspicious = projectFacade.calculateSuspicious(getFaultLocalization());
+			this.initPopulation(suspicious);
+		}
+	}
+
 	/**
 	 * Process a generation i: loops over all instances
 	 * 
@@ -248,11 +268,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 */
 	private boolean processGenerations(int generation) throws Exception {
 
-		log.debug("\n***** Generation " + generation+ " : "+this.nrGenerationWithoutModificatedVariant);
-		boolean foundSolution = false, foundOneVariant=false;
+		log.debug("\n***** Generation " + generation + " : " + this.nrGenerationWithoutModificatedVariant);
+		boolean foundSolution = false, foundOneVariant = false;
 
 		List<ProgramVariant> temporalInstances = new ArrayList<ProgramVariant>();
-		
+
 		currentStat.numberGenerations++;
 
 		for (ProgramVariant parentVariant : variants) {
@@ -284,13 +304,13 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		}
 		prepareNextGeneration(temporalInstances, generation);
-		
-		if(!foundOneVariant)
+
+		if (!foundOneVariant)
 			this.nrGenerationWithoutModificatedVariant++;
-		else{
+		else {
 			this.nrGenerationWithoutModificatedVariant = 0;
 		}
-		
+
 		return foundSolution;
 	}
 
@@ -374,16 +394,17 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 		return true;
 	}
-	
-	public void saveVariant(ProgramVariant programVariant) throws Exception{
+
+	public void saveVariant(ProgramVariant programVariant) throws Exception {
 
 		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier());
 		log.debug("\n-Saving child on disk variant #" + programVariant.getId() + " at " + srcOutput);
 		// This method should be refactored, and replace by the
 		// output from memory compilation
 		mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
-		
+
 	}
+
 	/**
 	 * 
 	 * Compiles and validates a created variant.
@@ -404,7 +425,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		storeModifiedModel(programVariant);
 
-		
 		if (ConfigurationProperties.getPropertyBool("saveall")) {
 			this.saveVariant(programVariant);
 		}
@@ -424,9 +444,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				log.info("-Found Solution, child variant #" + programVariant.getId());
 				saveStaticSucessful(programVariant.getId(), generation);
 				if (ConfigurationProperties.getPropertyBool("savesolution")) {
-					//mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
+					// mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant,
+					// srcOutput);
 					saveVariant(programVariant);
-					
+
 				}
 				return true;
 			}
@@ -710,6 +731,13 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	}
 
+	/**
+	 * This method updates gens of a variant according to a created
+	 * GenOperationInstance
+	 * 
+	 * @param variant
+	 * @param operationofGen
+	 */
 	private void updateVariantGenList(ProgramVariant variant, int generation) {
 		List<OperatorInstance> operations = variant.getOperations().get(generation);
 
@@ -718,31 +746,27 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 	}
 
-	public abstract void createInitialPopulation() throws Exception;
+	public OperatorInstance createOperatorInstanceForPoint(ModificationPoint modificationPoint)
+			throws IllegalAccessException {
+		SuspiciousModificationPoint suspModificationPoint = (SuspiciousModificationPoint) modificationPoint;
 
-	/**
-	 * This method updates gens of a variant according to a created
-	 * GenOperationInstance
-	 * 
-	 * @param variant
-	 * @param operationofGen
-	 */
-	protected abstract void updateVariantGenList(ProgramVariant variant, OperatorInstance operation);
+		AstorOperator operationType = operatorSelectionStrategy.getNextOperator(suspModificationPoint);
 
-	/**
-	 * Create a Gen Mutation for a given CtElement
-	 * 
-	 * @param ctElementPointed
-	 * @param className
-	 * @param suspValue
-	 * @return
-	 * @throws IllegalAccessException
-	 */
-	protected abstract OperatorInstance createOperatorInstanceForPoint(ModificationPoint genProgInstance)
-			throws IllegalAccessException;
+		if (operationType == null) {
+			log.debug("Operation Null");
+			return null;
+		}
 
-	protected abstract void undoOperationToSpoonElement(OperatorInstance operation);
+		CtElement targetStmt = suspModificationPoint.getCodeElement();
 
+		OperatorInstance operation = new OperatorInstance();
+		operation.setOriginal(targetStmt);
+		operation.setOperationApplied(operationType);
+		operation.setModificationPoint(suspModificationPoint);
+		operation.defineParentInformation(suspModificationPoint);
+
+		return operation;
+	}
 	/**
 	 * Apply a mutation generated in previous generation to a model
 	 * 
@@ -806,18 +830,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 		return !(operations.isEmpty());
 	}
-
-	protected abstract void applyPreviousMutationOperationToSpoonElement(OperatorInstance operation)
-			throws IllegalAccessException;
-
-	/**
-	 * Apply a given Mutation to the node referenced by the operation
-	 * 
-	 * @param operation
-	 * @throws IllegalAccessException
-	 */
-	protected abstract void applyNewMutationOperationToSpoonElement(OperatorInstance operation)
-			throws IllegalAccessException;
 
 	protected boolean validateInstance(ProgramVariant variant) {
 
@@ -908,30 +920,32 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					}
 
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
-					line += "\nbuggy kind= "+genOperationInstance.getOriginal().getClass().getSimpleName()+ "|"+genOperationInstance.getOriginal().getParent().getClass().getSimpleName();
-					
+					line += "\nbuggy kind= " + genOperationInstance.getOriginal().getClass().getSimpleName() + "|"
+							+ genOperationInstance.getOriginal().getParent().getClass().getSimpleName();
+
 					line += "\nfixed statement= ";
-					if (genOperationInstance.getModified() != null){
+					if (genOperationInstance.getModified() != null) {
 						// if fix content is the same that original buggy
 						// content, we do not write the patch, remaining empty
 						// the property fixed statement
 						if (genOperationInstance.getModified().toString() != genOperationInstance.getOriginal()
 								.toString())
-						line += genOperationInstance.getModified().toString();
+							line += genOperationInstance.getModified().toString();
 						else {
-						line += genOperationInstance.getOriginal().toString();
+							line += genOperationInstance.getOriginal().toString();
 						}
-						//Information about types Parents
-						
-						line += "\nPatch kind= "+genOperationInstance.getModified().getClass().getSimpleName()+ "|"+genOperationInstance.getModified().getParent().getClass().getSimpleName();
+						// Information about types Parents
+
+						line += "\nPatch kind= " + genOperationInstance.getModified().getClass().getSimpleName() + "|"
+								+ genOperationInstance.getModified().getParent().getClass().getSimpleName();
 					}
 					line += "\ngeneration= " + Integer.toString(i);
 					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope() != null)
 							? genOperationInstance.getIngredientScope() : "-");
-					
-					if (genOperationInstance.getIngredient() != null && genOperationInstance.getIngredient().getDerivedFrom() != null)
-						line += "\ningredientParent= " + 
-							genOperationInstance.getIngredient().getDerivedFrom() ;
+
+					if (genOperationInstance.getIngredient() != null
+							&& genOperationInstance.getIngredient().getDerivedFrom() != null)
+						line += "\ningredientParent= " + genOperationInstance.getIngredient().getDerivedFrom();
 
 				}
 			}
@@ -1031,5 +1045,176 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 
 	};
+
+	/////
+
+	/**
+	 * By default, it initializes the spoon model. It should not be created
+	 * before. Otherwise, an exception occurs.
+	 * 
+	 * @param suspicious
+	 * @throws Exception
+	 */
+	public void initPopulation(List<SuspiciousCode> suspicious) throws Exception {
+
+		log.info("\n---- Initial suspicious size: " + suspicious.size());
+		initializePopulation(suspicious);
+
+		if (originalVariant == null) {
+			log.error("Any variant for analyze ");
+			return;
+		}
+
+		if (originalVariant.getModificationPoints().isEmpty()) {
+			log.error("Variant with any gen");
+			return;
+		}
+
+		if (!ConfigurationProperties.getPropertyBool("skipfitnessinitialpopulation")) {
+			log.debug("Calculating fitness");
+			setFitnessOfPopulation();
+		} else {
+			log.debug("Fitness for initial population is disable");
+		}
+
+	}
+
+	protected void setFitnessOfPopulation() {
+		log.debug("Calculating fitness for original program variant.");
+		// temporal workaround for avoid changing the interface
+		String original = ConfigurationProperties.getProperty("forceExecuteRegression");
+		ConfigurationProperties.setProperty("forceExecuteRegression", Boolean.TRUE.toString());
+
+		// Initial validation and fitness
+		boolean validInstance = validateInstance(originalVariant);
+		if (validInstance) {
+			throw new IllegalStateException("The application under repair has not failling test cases");
+		}
+
+		double fitness = this.fitnessFunction.calculateFitnessValue(originalVariant);
+		originalVariant.setFitness(fitness);
+
+		log.debug("The original fitness is : " + fitness);
+		for (ProgramVariant initvariant : variants) {
+			initvariant.setFitness(fitness);
+		}
+		ConfigurationProperties.setProperty("forceExecuteRegression", original);// WA.
+
+	}
+
+	private void initModel() throws Exception {
+
+		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
+			Factory fcurrent = MutationSupporter.getFactory();
+			log.debug("The Spoon Model was already built.");
+			Factory fnew = MutationSupporter.cleanFactory();
+			log.debug("New factory created? " + !fnew.equals(fcurrent));
+		}
+
+		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		String classpath = projectFacade.getProperties().getDependenciesString();
+		String[] cpArray = classpath.split(File.pathSeparator);
+
+		try {
+			mutatorSupporter.buildModel(codeLocation, cpArray);
+			log.debug("Spoon Model built from location: " + codeLocation);
+		} catch (Exception e) {
+			log.error("Problem compiling the model with compliance level "
+					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
+			log.error(e.getMessage());
+			mutatorSupporter.getFactory().getEnvironment()
+					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
+			mutatorSupporter.buildModel(codeLocation, cpArray);
+		}
+
+		///// ONCE ASTOR HAS BUILT THE MODEL,
+		///// We apply different processes and manipulation over it.
+
+		// We process the model to add blocks as parent of statement which are
+		// not contained in a block
+		BlockReificationScanner visitor = new BlockReificationScanner();
+		for (CtType c : mutatorSupporter.getFactory().Type().getAll()) {
+			c.accept(visitor);
+		}
+
+	}
+
+	/**
+	 * Creates the variants from the suspicious code
+	 * 
+	 * @param suspicious
+	 * @throws Exception
+	 */
+	private void initializePopulation(List<SuspiciousCode> suspicious) throws Exception {
+
+		variantFactory.setMutatorExecutor(getMutatorSupporter());
+
+		this.variants = variantFactory.createInitialPopulation(suspicious,
+				ConfigurationProperties.getPropertyInt("population"), populationControler, projectFacade);
+
+		if (variants.isEmpty()) {
+			throw new IllegalArgumentException("Any variant created from list of suspicious");
+		}
+		// We save the first variant
+		this.originalVariant = variants.get(0);
+
+		if (originalVariant.getModificationPoints().isEmpty()) {
+			throw new IllegalStateException("Variant without any modification point. It must have at least one.");
+		}
+	}
+
+	/**
+	 * This method updates modification point of a variant according to a
+	 * created GenOperationInstance
+	 * 
+	 * @param variant
+	 *            variant to modify the modification point information
+	 * @param operationofGen
+	 *            operator to apply in the variant.
+	 */
+	protected void updateVariantGenList(ProgramVariant variant, OperatorInstance operation) {
+		operation.getOperationApplied().updateProgramVariant(operation, variant);
+	}
+
+	protected void undoOperationToSpoonElement(OperatorInstance operation) {
+		operation.undoModification();
+
+	}
+
+	protected void applyPreviousMutationOperationToSpoonElement(OperatorInstance operation)
+			throws IllegalAccessException {
+		this.applyNewMutationOperationToSpoonElement(operation);
+
+	}
+
+	/**
+	 * Apply a given Mutation to the node referenced by the operation
+	 * 
+	 * @param operation
+	 * @throws IllegalAccessException
+	 */
+	protected void applyNewMutationOperationToSpoonElement(OperatorInstance operationInstance)
+			throws IllegalAccessException {
+
+		operationInstance.applyModification();
+
+	}
+
+	protected OperatorSelectionStrategy createOperationSelectionStrategy(String opSelectionStrategyClassName,
+			OperatorSpace space) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(opSelectionStrategyClassName);
+			object = classDefinition.getConstructor(OperatorSpace.class).newInstance(space);
+		} catch (Exception e) {
+			log.error("Loading strategy " + opSelectionStrategyClassName + " --" + e);
+			throw new Exception("Loading strategy: " + e);
+		}
+		if (object instanceof OperatorSelectionStrategy)
+			return (OperatorSelectionStrategy) object;
+		else
+			throw new Exception("The strategy " + opSelectionStrategyClassName + " does not extend from "
+					+ OperatorSelectionStrategy.class.getName());
+	}
 
 }
