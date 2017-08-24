@@ -35,5 +35,5 @@ after_success:
 
 notifications:
   email:
-    - martin.monperrus@univ-lille1.fr
+    - martin.monperrus@gnieh.org
     - matias.sebastian.martinez@gmail.com
