@@ -3,7 +3,7 @@ ASTOR
 
 [![Build Status](https://travis-ci.org/SpoonLabs/astor.svg?branch=master)](https://travis-ci.org/SpoonLabs/astor)
 
-Astor is an automatic software repair framework in Java for Java. It contains an implementation of state of the art repair approaches such as GenProg and Kali.
+Astor is an automatic software repair framework in Java for Java. It contains the new state of the art repair approach named DeepRepair, and an implementation of state of the art repair approaches such as GenProg and Kali (named jGenProg and jKali, respectively).
 
 
 If you use Astor for academic purposes, please cite the appropriate publication:
@@ -16,16 +16,6 @@ Matias Martinez, Martin Monperrus, "[ASTOR: A Program Repair Library for Java](h
      booktitle = {Proceedings of ISSTA},
      year = {2016},
      doi = {10.1145/2931037.2948705},
-    }
-
-Matias Martinez, Martin Monperrus. "[ASTOR: Evolutionary Automatic Software Repair for Java](https://arxiv.org/pdf/1410.6651)". Technical Report hal-01075976, Inria; 2014. 
-
-    @techreport{hal-01075976,
-     TITLE = {{ASTOR: Evolutionary Automatic Software Repair for Java}},
-     AUTHOR = {Martinez, Matias and Monperrus, Martin},
-     INSTITUTION = {{Inria}},
-     YEAR = {2014}
-     NUMBER = {hal-01075976}
     }
 
 
@@ -45,7 +35,7 @@ Execution
 -------
 We provide an implementation of GenProg repair algorithm called jGenProg.The class to run it is:
 
-    fr.inria.main.evolution.MainjGenProg
+    fr.inria.main.evolution.AstorMain
 
 After the execution of a repair attempt, Astor writes in the output folder (property `workingDirectory` in the mentioned file), a folder with all the variants that fulfill the goals i.e., repair the bugs.
 Each variant folder contains the files that Astor has analyzed (and eventually modified). Additionally, it contains a file called 'Patch.xml' that summarized all changes done in the variant.
@@ -70,7 +60,7 @@ Getting started:
 
 
 Minimum arguments:
-    java fr.inria.main.evolution.MainjGenProg 
+    java fr.inria.main.evolution.AstorMain 
     -mode statement 
 
     -location "location of the project to repair" 
@@ -102,6 +92,9 @@ If you use command line, the -cp argument of java must include the absolute path
 
 **Output**:
 
+Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
+
+Moreover, Astot saves the patched version of the program on disk.
 The Astor's output is located in folder "./outputMutation". You can change it through command line argument '-out'. Inside the folder "/src/" Astor stores the source code of the solutions that it found.
 
 Folder “default” contains the original program, without any modification. It's a sanity check, it’s the output of spoon without applying any processor over the spoon model of the application under repair.
@@ -168,4 +161,4 @@ Due to limitation of fault localization, repair is impossible in a constructor f
 Contacts
 --------
 matias.sebastian.martinez@gmail.com
-martin.monperrus@univ-lille1.fr
+martin.monperrus@csc.kth.se
