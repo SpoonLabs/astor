@@ -31,7 +31,8 @@ public enum ExtensionPoints {
 	OPERATORS_SPACE("operatorspace",OperatorSpace.class),//
 	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy",IngredientSearchStrategy.class),//
 	INGREDIENT_TRANSFORM_STRATEGY("ingredienttransformstrategy", IngredientTransformationStrategy.class),//
-	INGREDIENT_PROCESSOR("ingredientprocessor",AbstractFixSpaceProcessor.class);
+	INGREDIENT_PROCESSOR("ingredientprocessor",AbstractFixSpaceProcessor.class),
+	CLONE_GRANULARITY("clonegranularity",Class.class);
 	
 	public String identifier;
 	public Class<?> _class;

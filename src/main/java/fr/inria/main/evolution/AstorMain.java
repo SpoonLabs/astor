@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
+import fr.inria.astor.approaches.deepRepepair.DeepRepairEngine;
 import fr.inria.astor.approaches.exhaustive.ExhaustiveAstorEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jkali.JKaliEngine;
@@ -69,7 +70,10 @@ public class AstorMain extends AbstractMain {
 		astorCore = null;
 		MutationSupporter mutSupporter = new MutationSupporter();
 
-		if (ExecutionMode.CARDUMEN.equals(mode)) {
+		if (ExecutionMode.DeepRepair.equals(mode)) {
+			astorCore = new DeepRepairEngine(mutSupporter, projectFacade);
+
+		} else if (ExecutionMode.CARDUMEN.equals(mode)) {
 			astorCore = new CardumenApproach(mutSupporter, projectFacade);
 
 		} else if (ExecutionMode.jKali.equals(mode)) {
@@ -142,7 +146,9 @@ public class AstorMain extends AbstractMain {
 
 		String mode = ConfigurationProperties.getProperty("mode").toLowerCase();
 
-		if ("cardumen".equals(mode))
+		if ("deeprepair".equals(mode))
+			astorCore = createEngine(ExecutionMode.DeepRepair);
+		else if ("cardumen".equals(mode))
 			astorCore = createEngine(ExecutionMode.CARDUMEN);
 		else if ("statement".equals(mode) || "jgenprog".equals(mode))
 			astorCore = createEngine(ExecutionMode.jGenProg);

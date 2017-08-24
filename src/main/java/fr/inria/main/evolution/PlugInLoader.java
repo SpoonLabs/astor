@@ -28,10 +28,27 @@ public class PlugInLoader {
 
 	public static AstorExtensionPoint loadPlugin(ExtensionPoints ep) throws Exception {
 		String property = ConfigurationProperties.getProperty(ep.identifier);
-		if(property == null || property.trim().isEmpty())
+		if (property == null || property.trim().isEmpty())
 			return null;
-		
+
 		return loadPlugin(property, ep._class);
+	}
+
+	public static Class loadClassFromProperty(ExtensionPoints ep) throws Exception {
+		String property = ConfigurationProperties.getProperty(ep.identifier);
+		if (property == null || property.trim().isEmpty())
+			return null;
+
+		Class classDefinition = null;
+		try {
+			classDefinition = Class.forName(property);
+
+		} catch (Exception e) {
+			log.error("Loading " + property + " --" + e);
+			throw new Exception("Error Loading Engine: " + e);
+		}
+
+		return classDefinition;
 	}
 
 	public static AstorExtensionPoint loadPlugin(String className, Class type) throws Exception {
@@ -53,9 +70,9 @@ public class PlugInLoader {
 	public static AstorExtensionPoint loadPlugin(ExtensionPoints ep, Class[] typesConst, Object[] args)
 			throws Exception {
 		String property = ConfigurationProperties.getProperty(ep.identifier);
-		if(property == null || property.trim().isEmpty())
+		if (property == null || property.trim().isEmpty())
 			return null;
-		
+
 		return loadPlugin(property, ep._class, typesConst, args);
 	}
 
@@ -90,7 +107,7 @@ public class PlugInLoader {
 		}
 		return operatorSpace;
 	}
-	
+
 	public static IngredientSpace loadIngredientSpace(List<AbstractFixSpaceProcessor<?>> ingredientProcessors)
 			throws JSAPException, Exception {
 		// The ingredients for build the patches

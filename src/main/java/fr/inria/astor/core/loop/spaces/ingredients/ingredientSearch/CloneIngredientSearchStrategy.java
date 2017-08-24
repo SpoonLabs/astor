@@ -67,19 +67,29 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 	private Map<String, T> key2element = new HashMap<>();
 	// Cache of elements' similarity lists.
 	private Map<T, List<T>> element2simlist = new HashMap<>();
-	
+
 	private IngredientTransformationStrategy ingTransformationStrategy = null;
-	
+
 	public CloneIngredientSearchStrategy(IngredientSpace space) throws Exception {
 		super(space);
 		cls = Class.forName(ConfigurationProperties.properties.getProperty("clonegranularity"));
 		setfilter();
 		readinput();
-		
-		this.ingTransformationStrategy = (IngredientTransformationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
-		if(this.ingTransformationStrategy == null){
+
+		this.ingTransformationStrategy = (IngredientTransformationStrategy) PlugInLoader
+				.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
+		if (this.ingTransformationStrategy == null) {
 			this.ingTransformationStrategy = new ClusterIngredientTransformation();
 		}
+	}
+
+	public CloneIngredientSearchStrategy(IngredientSpace space, Class _cloneClass,
+			IngredientTransformationStrategy ingredientTransformationStrategy) throws Exception {
+		super(space);
+		cls = _cloneClass;
+		setfilter();
+		readinput();
+		this.ingTransformationStrategy = ingredientTransformationStrategy;
 	}
 
 	private void setfilter() {
@@ -172,7 +182,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			log.error("Suspicious element is not in scope: " + key);
 			throw new RuntimeException();
 		}
-		
+
 		// element2simlist is a cache of element-specific similarity lists.
 		if (!element2simlist.containsKey(suspicious))
 			computesimlist(suspicious);
@@ -187,7 +197,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 
 		int variant_id = modificationPoint.getProgramVariant().getId();
 		Stats.currentStat.initializeIngCounter(variant_id);
-		//counts the number of transformations done for an ingredients.
+		// counts the number of transformations done for an ingredients.
 		int numberOfIngredientTransformationsDone = 0;
 		while (continueSearching) {
 			CtElement ingredient = getingredient(fixspace);
@@ -213,15 +223,16 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			}
 
 			Stats.currentStat.incrementIngCounter(variant_id);
-			
+
 			Ingredient ingredientToModify = new Ingredient(ingredient);
-			
-			List<Ingredient> ingredientsTransformed = ingTransformationStrategy.transform(modificationPoint, ingredientToModify);
-			if(ingredientsTransformed == null ){
+
+			List<Ingredient> ingredientsTransformed = ingTransformationStrategy.transform(modificationPoint,
+					ingredientToModify);
+			if (ingredientsTransformed == null) {
 				log.debug("Ingredients transf list is null");
 			}
-			
-			if(ingredientsTransformed.size() > 0)
+
+			if (ingredientsTransformed.size() > 0)
 				return ingredientsTransformed.get(0);
 		}
 
@@ -412,6 +423,10 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 			return null;
 		return MutationSupporter.clone(element); // ??? Is it necessary to
 													// clone?
+	}
+
+	public Class getCls() {
+		return cls;
 	}
 }
 
