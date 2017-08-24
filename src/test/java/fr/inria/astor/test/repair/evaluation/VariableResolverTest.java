@@ -27,7 +27,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.test.repair.evaluation.dpl.ExecutableCloneIngredientStrategyTest;
+import fr.inria.astor.test.repair.evaluation.dpl.DeepRepairTest;
 import fr.inria.main.evolution.AstorMain;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
@@ -393,7 +393,7 @@ public class VariableResolverTest {
 
 		Class typeCloneGranularityClass = CtType.class;
 
-		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(learningDir, typeCloneGranularityClass);
+		String[] args = DeepRepairTest.createCommandM70ForNotEvolve(learningDir, typeCloneGranularityClass);
 
 		log.debug(Arrays.toString(args));
 

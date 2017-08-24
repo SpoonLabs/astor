@@ -19,7 +19,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtClassIngred
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
-import fr.inria.astor.test.repair.evaluation.dpl.ExecutableCloneIngredientStrategyTest;
+import fr.inria.astor.test.repair.evaluation.dpl.DeepRepairTest;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
@@ -48,7 +48,7 @@ public class IngredientSpaceTest {
 
 		Class typeCloneGranularityClass = CtType.class;
 		
-		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(learningDir,typeCloneGranularityClass);
+		String[] args = DeepRepairTest.createCommandM70ForNotEvolve(learningDir,typeCloneGranularityClass);
 
 	
 		main1.execute(args);
@@ -247,7 +247,7 @@ public class IngredientSpaceTest {
 
 		Class typeCloneGranularityClass = CtType.class;
 		
-		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(
+		String[] args = DeepRepairTest.createDeepRepairCommandM70(
 				//
 				learningDir,//
 				typeCloneGranularityClass,//
@@ -282,7 +282,7 @@ public class IngredientSpaceTest {
 
 		Class typeCloneGranularityClass = CtType.class;
 		
-		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(
+		String[] args = DeepRepairTest.createDeepRepairCommandM70(
 				//
 				learningDir,//
 				typeCloneGranularityClass,//
@@ -315,7 +315,7 @@ public class IngredientSpaceTest {
 
 		Class typeCloneGranularityClass = CtType.class;
 		
-		String[] args = ExecutableCloneIngredientStrategyTest.createCommandM70(
+		String[] args = DeepRepairTest.createDeepRepairCommandM70(
 				//
 				learningDir,//
 				typeCloneGranularityClass,//
