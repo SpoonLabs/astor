@@ -494,8 +494,41 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
 
 		String diff = variant.getPatchDiff();
-		log.debug("Patch: "+ diff);
-		
-		
+		log.debug("Patch: " + diff);
+
 	}
+
+	@Test
+	public void testMath70StopAtXVariantsSolution() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(),
+				//
+				"-scope", "package", "-seed", "10", "-maxgen", "500", "-stopfirst", "false", "-maxtime", "10",
+				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString()
+
+		};
+		System.out.println(Arrays.toString(args));
+		CommandSummary command = new CommandSummary(args);
+
+		command.command.put("-parameters", "maxnumbersolutions:2");
+		main1.execute(command.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertEquals(2, solutions.size());
+
+		command.command.put("-parameters", "maxnumbersolutions:1");
+		main1.execute(command.flat());
+
+		solutions = main1.getEngine().getSolutions();
+		assertEquals(1, solutions.size());
+
+	}
+
 }
