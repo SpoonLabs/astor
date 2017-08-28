@@ -89,7 +89,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10" };
+				"-maxgen", "200", "-scope", "package", "-seed", "10" };
 		System.out.println(Arrays.toString(args));
 		main1.main(args);
 		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
@@ -446,7 +446,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-location", new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons",
 				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
 				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-maxgen", "0", "-maxtime", "10","-stopfirst","true"
+				out.getAbsolutePath(), "-maxgen", "0", "-maxtime", "10", "-stopfirst", "true"
 
 		};
 		CommandSummary command = new CommandSummary(args);
@@ -464,15 +464,38 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		assertEquals(AstorOutputStatus.TIME_OUT, engine.getOutputStatus());
 
-		
 		command.command.put("-maxtime", "60");
 		command.command.put("-maxgen", "100");
 		main1.execute(command.flat());
 		engine = main1.getEngine();
 
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, engine.getOutputStatus());
+
+	}
+
+	@Test
+	public void testMath70DiffOfSolution() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 50;
+		String[] args = commandMath70(dep, out, generations);
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-stopfirst", "true");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+		ProgramVariant variant = solutions.get(0);
+		assertFalse(variant.getPatchDiff().isEmpty());
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
+
+		String diff = variant.getPatchDiff();
+		log.debug("Patch: "+ diff);
 		
 		
 	}
-
 }

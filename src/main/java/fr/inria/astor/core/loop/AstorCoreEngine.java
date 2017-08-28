@@ -161,7 +161,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			try {
 				boolean solutionFound = processGenerations(generationsExecuted);
 
-				stopSearch = solutionFound && ConfigurationProperties.getPropertyBool("stopfirst");
+				stopSearch = solutionFound && 
+						//one solution
+						(ConfigurationProperties.getPropertyBool("stopfirst")
+						//or nr solutions are greater than max allowed
+						|| (this.solutions.size() >= ConfigurationProperties.getPropertyInt("maxnumbersolutions")));
 
 				if (stopSearch) {
 					log.debug("\n Max Solution found " + this.solutions.size());
@@ -192,10 +196,20 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public void atEnd() {
-
+		this.computePatchDiff(this.solutions);
 		this.sortPatches();
 		this.showResults();
 	};
+
+	protected void computePatchDiff(List<ProgramVariant> solutions) {
+
+		PatchDiffCalculator cdiff = new PatchDiffCalculator();
+		for (ProgramVariant solutionVariant : solutions) {
+			String diffPatch = cdiff.getDiff(getProjectFacade(), solutionVariant);
+			solutionVariant.setPatchDiff(diffPatch);
+		}
+	
+	}
 
 	/**
 	 * Sorts patches
@@ -983,8 +997,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				}
 			}
 			line += "\nvalidation=" + solutionVariant.getValidationResult().toString();
-			PatchDiffCalculator cdiff = new PatchDiffCalculator();
-			String diffPatch = cdiff.getDiff(getProjectFacade(), solutionVariant);
+			String diffPatch = solutionVariant.getPatchDiff();
 			line += "\ndiffpatch=" + diffPatch;
 		}
 		return line;
