@@ -17,11 +17,13 @@ import org.junit.Test;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.population.PopulationConformation;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -107,10 +109,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 50;
-		String[] args = commandMath70(dep, out,generations);
+		String[] args = commandMath70(dep, out, generations);
 		CommandSummary cs = new CommandSummary(args);
 		cs.command.put("-stopfirst", "false");
-		
+
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
 
@@ -118,8 +120,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variant.getValidationResult();
-		
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variant
+				.getValidationResult();
+
 		assertTrue(validationResult.isRegressionExecuted());
 
 		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
@@ -159,10 +162,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations), "-stopfirst", "true",
-				"-maxtime", "100",
-				"-loglevel","INFO",
-				"-parameters","disablelog:false"
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
+				"-stopfirst", "true", "-maxtime", "100", "-loglevel", "INFO", "-parameters", "disablelog:false"
 
 		};
 		return args;
@@ -207,7 +208,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		assertTrue(javahome.endsWith("bin"));
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMath70PackageSolutions() throws Exception {
@@ -221,13 +222,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-scope", "package", 
-				"-seed", "10", 
-				"-maxgen", "500", 
-				"-stopfirst", "false",//two solutions
-				"-maxtime", "10",
-				"-population","1",
-				"-reintroduce",PopulationConformation.PARENTS.toString()
+				"-scope", "package", "-seed", "10", "-maxgen", "500", "-stopfirst", "false", // two
+																								// solutions
+				"-maxtime", "10", "-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString()
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -237,7 +234,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() >= 2);
 		assertTrue(solutions.size() <= 3);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMath70PackageSolutionsEvolving() throws Exception {
@@ -251,14 +248,12 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-scope", "package", 
-				"-seed", "10", 
-				"-maxgen", "500", 
-				"-stopfirst", "false",//two solutions
-				"-maxtime", "10",
-				"-population","1",
-				"-reintroduce",PopulationConformation.PARENTS.toString()
-				+File.pathSeparator+PopulationConformation.SOLUTIONS.toString()//Here we test.
+				"-scope", "package", "-seed", "10", "-maxgen", "500", "-stopfirst", "false", // two
+																								// solutions
+				"-maxtime", "10", "-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString()
+						+ File.pathSeparator + PopulationConformation.SOLUTIONS.toString()// Here
+																							// we
+																							// test.
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -268,7 +263,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 3);
 		boolean withMultiple = false;
 		for (ProgramVariant programVariant : solutions) {
-			System.out.println("-->"+programVariant.getOperations().values());
+			System.out.println("-->" + programVariant.getOperations().values());
 			withMultiple = withMultiple || programVariant.getOperations().values().size() >= 2;
 		}
 		assertTrue(withMultiple);
@@ -335,9 +330,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		
-		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variant.getValidationResult();
-		
+
+		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variant
+				.getValidationResult();
+
 		assertTrue(validationResult.isRegressionExecuted());
 
 	}
@@ -435,8 +431,48 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		List<String> deducedFailingTest = main1.getEngine().getProjectFacade().getProperties().getFailingTestCases();
 		assertNotNull(deducedFailingTest);
 		assertEquals(1, deducedFailingTest.size());
-		log.debug("deduced: "+deducedFailingTest);
+		log.debug("deduced: " + deducedFailingTest);
 		assertTrue(deducedFailingTest.contains(originalFailing));
+	}
+
+	@Test
+	public void testMath70Outputg() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", //
+
+				"-location", new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons",
+				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-maxgen", "0", "-maxtime", "10","-stopfirst","true"
+
+		};
+		CommandSummary command = new CommandSummary(args);
+		System.out.println(Arrays.toString(args));
+		main1.execute(command.flat());
+		AstorCoreEngine engine = main1.getEngine();
+
+		assertEquals(AstorOutputStatus.MAX_GENERATION, engine.getOutputStatus());
+
+		command.command.put("-maxgen", "10");
+		command.command.put("-maxtime", "0");
+
+		main1.execute(command.flat());
+		engine = main1.getEngine();
+
+		assertEquals(AstorOutputStatus.TIME_OUT, engine.getOutputStatus());
+
+		
+		command.command.put("-maxtime", "60");
+		command.command.put("-maxgen", "100");
+		main1.execute(command.flat());
+		engine = main1.getEngine();
+
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, engine.getOutputStatus());
+		
+		
 	}
 
 }

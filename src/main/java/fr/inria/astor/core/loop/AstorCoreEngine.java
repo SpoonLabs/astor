@@ -45,6 +45,7 @@ import fr.inria.astor.core.validation.validators.ProgramValidator;
 import fr.inria.astor.util.PatchDiffCalculator;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.astor.util.TimeUtil;
+import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.declaration.CtClass;
@@ -110,6 +111,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	private int nrGenerationWithoutModificatedVariant = 0;
 
+	// Flag, output status
+	protected AstorOutputStatus outputStatus = null;
+
 	/**
 	 * 
 	 * @param mutatorExecutor
@@ -127,7 +131,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		log.info("\n----Starting Solution Search");
 
 		generationsExecuted = 0;
-		boolean stop = false;
+		boolean stopSearch = false;
 
 		currentStat.passFailingval1 = 0;
 		currentStat.passFailingval2 = 0;
@@ -136,21 +140,49 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 
-		while (!this.variants.isEmpty() && (!stop || !ConfigurationProperties.getPropertyBool("stopfirst"))
-				&& (generationsExecuted < ConfigurationProperties.getPropertyInt("maxGeneration")
-						&& belowMaxTime(dateInitEvolution, maxMinutes))
-				&& limitDate()) {
+		while (!stopSearch) {
+
+			if (!(generationsExecuted < ConfigurationProperties.getPropertyInt("maxGeneration"))) {
+				log.debug("\n Max generation reached " + generationsExecuted);
+				this.outputStatus = AstorOutputStatus.MAX_GENERATION;
+				break;
+			}
+
+			if (!(belowMaxTime(dateInitEvolution, maxMinutes) )) {//&& limitDate()
+
+				log.debug("\n Max time reached " + generationsExecuted);
+				this.outputStatus = AstorOutputStatus.TIME_OUT;
+				break;
+			}
+
 			generationsExecuted++;
 			log.debug("\n----------Running generation/iteraction " + generationsExecuted + ", population size: "
 					+ this.variants.size());
-			stop = processGenerations(generationsExecuted);
+			try {
+				boolean solutionFound = processGenerations(generationsExecuted);
+
+				stopSearch = solutionFound && ConfigurationProperties.getPropertyBool("stopfirst");
+
+				if (stopSearch) {
+					log.debug("\n Max Solution found " + this.solutions.size());
+					this.outputStatus = AstorOutputStatus.STOP_BY_PATCH_FOUND;
+				}
+
+			} catch (Exception e) {
+				log.error("Error at generation " + generationsExecuted + "\n" + e);
+				this.outputStatus = AstorOutputStatus.ERROR;
+				break;
+			}
 
 			if (this.nrGenerationWithoutModificatedVariant >= ConfigurationProperties
 					.getPropertyInt("nomodificationconvergence")) {
-				log.error("".format("Stopping main loop at %d generation", generationsExecuted));
+				log.error(String.format("Stopping main loop at %d generation", generationsExecuted));
+				this.outputStatus = AstorOutputStatus.CONVERGED;
 				break;
 			}
 		}
+
+		//
 		// At the end
 		long startT = dateInitEvolution.getTime();
 		long endT = System.currentTimeMillis();
@@ -212,7 +244,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * @return
 	 */
 	protected boolean belowMaxTime(Date dateInit, int maxMinutes) {
-		if (TimeUtil.deltaInMinutes(dateInit) <= maxMinutes) {
+		if (TimeUtil.deltaInMinutes(dateInit) < maxMinutes) {
 			return true;
 		} else {
 			log.info("\n No more time for operating");
@@ -767,6 +799,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		return operation;
 	}
+
 	/**
 	 * Apply a mutation generated in previous generation to a model
 	 * 
@@ -1215,6 +1248,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		else
 			throw new Exception("The strategy " + opSelectionStrategyClassName + " does not extend from "
 					+ OperatorSelectionStrategy.class.getName());
+	}
+
+	public AstorOutputStatus getOutputStatus() {
+		return outputStatus;
+	}
+
+	public void setOutputStatus(AstorOutputStatus outputStatus) {
+		this.outputStatus = outputStatus;
 	}
 
 }
