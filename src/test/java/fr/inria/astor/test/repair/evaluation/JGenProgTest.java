@@ -531,4 +531,36 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 
+	/**
+	 * Math 70 bug can be fixed by replacing a method invocation inside a return
+	 * statement. + return solve(f, min, max); - return solve(min, max); One
+	 * solution with local scope, another with package
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70LocalSolutionJUExLog() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 50;
+		String[] args = commandMath70(dep, out, generations);
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-stopfirst", "false");
+
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-parameters", "disablelog:false");
+		cs.append("-parameters", "testexecutorclass:JUnitExternalExecutor");
+
+		assertEquals(4, cs.command.get("-parameters").split(File.pathSeparator).length);
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+
+	}
+
 }
