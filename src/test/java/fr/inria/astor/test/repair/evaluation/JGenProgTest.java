@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -548,6 +549,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		String[] args = commandMath70(dep, out, generations);
 		CommandSummary cs = new CommandSummary(args);
 		cs.command.put("-stopfirst", "false");
+		cs.command.put("-seed", "0");
+		cs.command.put("-scope", "package");
 
 		cs.command.put("-loglevel", "DEBUG");
 		cs.command.put("-parameters", "disablelog:false");
@@ -561,6 +564,46 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 
+	}
+
+	/**
+	 * Math 70 bug can be fixed by replacing a method invocation inside a return
+	 * statement. + return solve(f, min, max); - return solve(min, max); One
+	 * solution with local scope, another with package
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70LogFile() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 200;
+		String[] args = commandMath70(dep, out, generations);
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-seed", "0");
+		cs.command.put("-scope", "package");
+
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-parameters", "disablelog:false");
+		cs.append("-parameters", "testexecutorclass:JUnitExternalExecutor");
+		File fileLog = File.createTempFile("logTest", ".log");
+		cs.append("-parameters", "logfilepath:"+fileLog.getAbsolutePath());
+		
+		assertEquals(6, cs.command.get("-parameters").split(File.pathSeparator).length);
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+		
+		List<String> logInStringList = Files.readAllLines(fileLog.toPath());
+		assertTrue(logInStringList.size() > 0);
+		System.out.println(logInStringList.get(0));
+		
 	}
 
 }
