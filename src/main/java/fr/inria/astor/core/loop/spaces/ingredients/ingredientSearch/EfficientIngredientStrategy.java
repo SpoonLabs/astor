@@ -158,7 +158,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			} else {
 				log.debug(
 						"The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
-								+ baseIngredient);
+								+ StringUtil.trunc(baseIngredient.toString()));
 
 				appliedIngredientsCache.put(keyBaseIngredient, null);
 				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, 0);
@@ -198,7 +198,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 				modificationPoint.getCodeElement(), baseIngredient, ingredientsAfterTransformation.size()));
 
 		if (ingredientsAfterTransformation.isEmpty()) {
-			log.debug("No combination for  " + baseIngredient);
+			log.debug("No combination ");
 			return null;
 		}
 
