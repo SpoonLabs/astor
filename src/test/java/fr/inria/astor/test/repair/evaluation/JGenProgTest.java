@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -586,12 +587,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		cs.command.put("-seed", "0");
 		cs.command.put("-scope", "package");
 
-		cs.command.put("-loglevel", "DEBUG");
 		cs.command.put("-parameters", "disablelog:false");
 		cs.append("-parameters", "testexecutorclass:JUnitExternalExecutor");
 		File fileLog = File.createTempFile("logTest", ".log");
-		cs.append("-parameters", "logfilepath:"+fileLog.getAbsolutePath());
-		
+		cs.append("-parameters", "logfilepath:" + fileLog.getAbsolutePath());
+
 		assertEquals(6, cs.command.get("-parameters").split(File.pathSeparator).length);
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -599,11 +599,39 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
-		
+
+		assertEquals(Level.INFO.toString(), ConfigurationProperties.getProperty("loglevel"));
 		List<String> logInStringList = Files.readAllLines(fileLog.toPath());
 		assertTrue(logInStringList.size() > 0);
 		System.out.println(logInStringList.get(0));
-		
+
+		boolean allInfo = true;
+		for (String lineLog : logInStringList) {
+			if (lineLog.startsWith("[DEBUG]")) {
+				allInfo = false;
+				break;
+			}
+		}
+
+		assertTrue("a debug line found", allInfo);
+
+		// Reset log file
+		assertTrue(fileLog.delete());
+		assertTrue(fileLog.createNewFile());
+		cs.command.put("-loglevel", Level.DEBUG.toString());
+		main1.execute(cs.flat());
+
+		logInStringList = Files.readAllLines(fileLog.toPath());
+		assertTrue(logInStringList.size() > 0);
+		boolean existDebugLog = false;
+		for (String lineLog : logInStringList) {
+			if (lineLog.startsWith("[DEBUG]")) {
+				existDebugLog = true;
+				break;
+			}
+		}
+		assertTrue("Any debug line", existDebugLog);
+
 	}
 
 }

@@ -245,10 +245,10 @@ public class AstorMain extends AbstractMain {
 		String patternLayout = "";
 		if (ConfigurationProperties.getPropertyBool("disablelog")) {
 			patternLayout = "%m%n";
-		}else{
-			patternLayout = ConfigurationProperties.getProperty("logpatternlayout") ;
+		} else {
+			patternLayout = ConfigurationProperties.getProperty("logpatternlayout");
 		}
-		
+
 		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
 		ConsoleAppender console = new ConsoleAppender();
 		console.setLayout(new PatternLayout(patternLayout));
@@ -258,14 +258,14 @@ public class AstorMain extends AbstractMain {
 		String loglevelSelected = ConfigurationProperties.properties.getProperty("loglevel");
 		if (loglevelSelected != null)
 			LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
-
+		
 		
 		if (ConfigurationProperties.hasProperty("logfilepath")) {
 			FileAppender fa = new FileAppender();
 			String filePath = ConfigurationProperties.getProperty("logfilepath");
 			File fileLog = new File(filePath);
 			fileLog.mkdirs();
-			
+
 			fa.setName("FileLogger");
 			fa.setFile(fileLog.getAbsolutePath());
 			fa.setLayout(new PatternLayout(patternLayout));
@@ -273,7 +273,7 @@ public class AstorMain extends AbstractMain {
 			fa.setAppend(true);
 			fa.activateOptions();
 			Logger.getRootLogger().addAppender(fa);
-			this.log.info("Log file at: "+filePath);
+			this.log.info("Log file at: " + filePath);
 		}
 	}
 
