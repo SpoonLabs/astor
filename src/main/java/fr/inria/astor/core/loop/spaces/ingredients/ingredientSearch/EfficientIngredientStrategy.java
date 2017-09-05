@@ -138,7 +138,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 						+ baseIngredient);
 				return null;
 			} else if (ingredientsAfterTransformation.isEmpty()) {
-				log.debug("All instances were already tried, exit without update stats." + baseIngredient);
+				log.debug("All instances were already tried, exit without update stats." + StringUtil.trunc(baseIngredient.getCode()));
 				return null;
 			} else {
 				// We have still ingredients to apply
@@ -158,7 +158,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			} else {
 				log.debug(
 						"The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
-								+ StringUtil.trunc(baseIngredient.toString()));
+								+ StringUtil.trunc(baseIngredient.getCode()));
 
 				appliedIngredientsCache.put(keyBaseIngredient, null);
 				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, 0);
@@ -191,14 +191,14 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 	private Ingredient getNotUsedTransformedElement(ModificationPoint modificationPoint, AstorOperator operator,
 			Ingredient baseIngredient, List<Ingredient> ingredientsAfterTransformation) {
 
-		log.debug("\n--\nIngredient  base" + baseIngredient + " from "
+		log.debug("\n--\nIngredient  base: " + StringUtil.trunc(baseIngredient.getCode()) + " from "
 				+ ((CtType) baseIngredient.getCode().getParent(CtType.class)).getQualifiedName());
 
 		log.debug(String.format("Valid Transformed ingredients in mp: %s,  base ingr: %s, : size (%d) ",
-				modificationPoint.getCodeElement(), baseIngredient, ingredientsAfterTransformation.size()));
+				StringUtil.trunc(modificationPoint.getCodeElement()), StringUtil.trunc(baseIngredient.getCode()), ingredientsAfterTransformation.size()));
 
 		if (ingredientsAfterTransformation.isEmpty()) {
-			log.debug("No combination ");
+			log.debug("No more combination");
 			return null;
 		}
 
