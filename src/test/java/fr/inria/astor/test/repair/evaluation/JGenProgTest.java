@@ -546,10 +546,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		int generations = 50;
+		int generations = 200;
 		String[] args = commandMath70(dep, out, generations);
 		CommandSummary cs = new CommandSummary(args);
-		cs.command.put("-stopfirst", "false");
+		cs.command.put("-stopfirst", "true");
 		cs.command.put("-seed", "0");
 		cs.command.put("-scope", "package");
 
