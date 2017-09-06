@@ -323,7 +323,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		for (ProgramVariant parentVariant : variants) {
 
-			log.debug("\n**\n*-Parent Variant: " + parentVariant);
+			log.debug("**Parent Variant: " + parentVariant);
 
 			this.saveOriginalVariant(parentVariant);
 			ProgramVariant newVariant = createNewProgramVariant(parentVariant, generation);
@@ -389,7 +389,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				solutionId += programVariant.getId() + "(SOLUTION)(f=" + programVariant.getFitness() + ")" + ", ";
 			}
 		}
-		log.debug("\nEnd analysis generation - \nSolutions found:" + "--> (" + solutionId + ")");
+		log.debug("End analysis generation - Solutions found:" + "--> (" + solutionId + ")");
 
 		variants = populationControler.selectProgramVariantsForNextGeneration(variants, temporalInstances,
 				ConfigurationProperties.getPropertyInt("population"), variantFactory, originalVariant, generation);

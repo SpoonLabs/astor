@@ -81,7 +81,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 		if (baseElements == null || baseElements.isEmpty()) {
 			log.debug("Any template available for mp " + modificationPoint);
-			log.debug("Exahustived templates " + this.exhaustTemplates.get(getKey(modificationPoint, operationType)));
+			log.debug("#templates already used: " + this.exhaustTemplates.get(getKey(modificationPoint, operationType)).size());
 			return null;
 		}
 
@@ -92,7 +92,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 		while (attemptsBaseIngredients < elementsFromFixSpace) {
 
-			log.debug(String.format("\n****getIng******\nAttempts Base Ingredients  %d total %d",
+			log.debug(String.format("Attempts Base Ingredients  %d total %d",
 					attemptsBaseIngredients, elementsFromFixSpace));
 
 			Ingredient baseIngredient = new Ingredient(getRandomStatementFromSpace(baseElements), null);
@@ -191,7 +191,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 	private Ingredient getNotUsedTransformedElement(ModificationPoint modificationPoint, AstorOperator operator,
 			Ingredient baseIngredient, List<Ingredient> ingredientsAfterTransformation) {
 
-		log.debug("\n--\nIngredient  base: " + StringUtil.trunc(baseIngredient.getCode()) + " from "
+		log.debug("\nIngredient  base: " + StringUtil.trunc(baseIngredient.getCode()) + " from "
 				+ ((CtType) baseIngredient.getCode().getParent(CtType.class)).getQualifiedName());
 
 		log.debug(String.format("Valid Transformed ingredients in mp: %s,  base ingr: %s, : size (%d) ",
@@ -317,16 +317,16 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			prev = new ArrayList<String>();
 			prev.add(fix);
 			appliedCache.put(lockey, prev);
-			log.debug("\nNew1: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
+			log.debug("\nChache: New Element with new Key: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
 			return false;
 		} else {
 			// The element has mutation applied
 			if (prev.contains(fix)) {
-				log.debug("\nAlready: " + StringUtil.trunc(fix) + " in " + (lockey));
+				log.debug("\nChache: Already stored: " + StringUtil.trunc(fix) + " in " + (lockey));
 				return true;
 			} else {
 				prev.add(fix);
-				log.debug("\nNew2: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
+				log.debug("\nChache: New Element with existing Key: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
 				return false;
 			}
 		}
