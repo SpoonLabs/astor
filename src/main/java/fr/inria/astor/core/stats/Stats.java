@@ -28,8 +28,13 @@ import fr.inria.astor.util.TimeUtil;
  *
  */
 public class Stats {
-
-	public enum TypeStat {
+	/**
+	 * Stats related to Astor execution.
+	 * 
+	 * @author Matias Martinez
+	 *
+	 */
+	public enum GeneralStat {
 		TOTAL_TIME, NR_GENERATIONS, NR_RIGHT_COMPILATIONS, NR_FAILLING_COMPILATIONS, NR_FAILING_VALIDATION_PROCESS
 	};
 
@@ -99,7 +104,7 @@ public class Stats {
 	/**
 	 * General stats (Not related to any patch)
 	 */
-	private Map<TypeStat, Object> statsValues = new HashMap<>();
+	private Map<GeneralStat, Object> generalStats = new HashMap<>();
 
 	public static Stats getCurrentStat() {
 		return currentStat;
@@ -125,23 +130,23 @@ public class Stats {
 		this.statsOfPatches = statsOfPatches;
 	}
 
-	public void increment(TypeStat type) {
-		Object v = this.statsValues.get(type);
+	public void increment(GeneralStat type) {
+		Object v = this.generalStats.get(type);
 		if (v == null) {
 			Counter c = new Counter();
-			this.statsValues.put(type, c);
+			this.generalStats.put(type, c);
 			c.increment();
 		} else if (v instanceof Counter) {
 			((Counter) v).increment();
 		}
 	}
 
-	public Map<TypeStat, Object> getStatsValues() {
-		return statsValues;
+	public Map<GeneralStat, Object> getGeneralStats() {
+		return generalStats;
 	}
 
-	public void setStatsValues(Map<TypeStat, Object> statsValues) {
-		this.statsValues = statsValues;
+	public void setGeneralStats(Map<GeneralStat, Object> statsValues) {
+		this.generalStats = statsValues;
 	}
 
 	public static Stats createStat() {
@@ -244,10 +249,10 @@ public class Stats {
 		StringBuffer buff = new StringBuffer();
 		buff.append(System.getProperty("line.separator"));
 
-		for (TypeStat generalStat : TypeStat.values()) {
+		for (GeneralStat generalStat : GeneralStat.values()) {
 			buff.append(generalStat.name());
 			buff.append("=");
-			buff.append(this.getStatsValues().get(generalStat));
+			buff.append(this.getGeneralStats().get(generalStat));
 			buff.append(System.getProperty("line.separator"));
 		}
 
@@ -294,8 +299,8 @@ public class Stats {
 		JSONArray patchlistJson = new JSONArray();
 		statsjsonRoot.put("patches", patchlistJson);
 
-		for (TypeStat generalStat : TypeStat.values()) {
-			statsjsonRoot.put(generalStat.name(), this.getStatsValues().get(generalStat));
+		for (GeneralStat generalStat : GeneralStat.values()) {
+			statsjsonRoot.put(generalStat.name(), this.getGeneralStats().get(generalStat));
 		}
 
 		List<PatchStat> statsForPatches = this.getStatsOfPatches();

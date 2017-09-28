@@ -15,7 +15,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.stats.Stats.TypeStat;
+import fr.inria.astor.core.stats.Stats.GeneralStat;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
 import fr.inria.astor.core.validation.executors.JUnitIndirectExecutorProcess;
@@ -223,7 +223,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 
 		
 		if (trregression == null) {
-			currentStats.increment(TypeStat.NR_FAILING_VALIDATION_PROCESS);
+			currentStats.increment(GeneralStat.NR_FAILING_VALIDATION_PROCESS);
 			
 			boolean error = true;
 			return new TestCasesProgramValidationResult(error);

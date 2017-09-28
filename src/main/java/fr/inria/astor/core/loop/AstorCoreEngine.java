@@ -41,7 +41,7 @@ import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.PatchStat.HunkStat;
 import fr.inria.astor.core.stats.PatchStat.PatchStats;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.core.stats.Stats.TypeStat;
+import fr.inria.astor.core.stats.Stats.GeneralStat;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
@@ -195,7 +195,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		long startT = dateInitEvolution.getTime();
 		long endT = System.currentTimeMillis();
 		log.info("Time Repair Loop (s): " + (endT - startT) / 1000d);
-		currentStat.getStatsValues().put(TypeStat.TOTAL_TIME, ((endT - startT)));
+		currentStat.getGeneralStats().put(GeneralStat.TOTAL_TIME, ((endT - startT)));
 		log.info("generationsexecuted: " + this.generationsExecuted);
 	}
 
@@ -340,7 +340,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		List<ProgramVariant> temporalInstances = new ArrayList<ProgramVariant>();
 
-		currentStat.increment(TypeStat.NR_GENERATIONS);
+		currentStat.increment(GeneralStat.NR_GENERATIONS);
 
 		for (ProgramVariant parentVariant : variants) {
 
@@ -499,7 +499,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		if (childCompiles) {
 
 			log.debug("-The child compiles: id " + programVariant.getId());
-			currentStat.increment(TypeStat.NR_RIGHT_COMPILATIONS);
+			currentStat.increment(GeneralStat.NR_RIGHT_COMPILATIONS);
 
 			boolean validInstance = validateInstance(programVariant);
 			double fitness = this.fitnessFunction.calculateFitnessValue(programVariant);
@@ -520,7 +520,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		} else {
 			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "
 					+ compilation.getErrorList());
-			currentStat.increment(TypeStat.NR_FAILLING_COMPILATIONS);
+			currentStat.increment(GeneralStat.NR_FAILLING_COMPILATIONS);
 			programVariant.setFitness(this.fitnessFunction.getWorstMaxFitnessValue());
 		}
 		// In case that the variant a) does not compile; b) compiles but it's

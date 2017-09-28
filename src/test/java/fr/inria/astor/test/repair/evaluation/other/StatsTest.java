@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.core.stats.Stats.TypeStat;
+import fr.inria.astor.core.stats.Stats.GeneralStat;
 
 /**
  * Test of ingredient counter
@@ -66,23 +66,23 @@ public class StatsTest {
 	public void testIncrement(){
 		Stats st = Stats.createStat();
 		
-		assertFalse(st.getStatsValues().containsKey(TypeStat.NR_GENERATIONS));
+		assertFalse(st.getGeneralStats().containsKey(GeneralStat.NR_GENERATIONS));
 		
-		st.increment(TypeStat.NR_GENERATIONS);
-		assertEquals(st.getStatsValues().get(TypeStat.NR_GENERATIONS), 1);
+		st.increment(GeneralStat.NR_GENERATIONS);
+		assertEquals(st.getGeneralStats().get(GeneralStat.NR_GENERATIONS), 1);
 		
-		assertTrue(st.getStatsValues().containsKey(TypeStat.NR_GENERATIONS));
-		assertFalse(st.getStatsValues().containsKey(TypeStat.NR_FAILING_VALIDATION_PROCESS));
+		assertTrue(st.getGeneralStats().containsKey(GeneralStat.NR_GENERATIONS));
+		assertFalse(st.getGeneralStats().containsKey(GeneralStat.NR_FAILING_VALIDATION_PROCESS));
 		
-		st.increment(TypeStat.NR_FAILING_VALIDATION_PROCESS);
-		assertEquals(st.getStatsValues().get(TypeStat.NR_FAILING_VALIDATION_PROCESS), 1);
+		st.increment(GeneralStat.NR_FAILING_VALIDATION_PROCESS);
+		assertEquals(st.getGeneralStats().get(GeneralStat.NR_FAILING_VALIDATION_PROCESS), 1);
 		
-		st.increment(TypeStat.NR_GENERATIONS);
-		assertEquals(st.getStatsValues().get(TypeStat.NR_GENERATIONS), 2);
+		st.increment(GeneralStat.NR_GENERATIONS);
+		assertEquals(st.getGeneralStats().get(GeneralStat.NR_GENERATIONS), 2);
 		
 		
-		st.increment(TypeStat.NR_GENERATIONS);
-		assertEquals(st.getStatsValues().get(TypeStat.NR_GENERATIONS), 3);
+		st.increment(GeneralStat.NR_GENERATIONS);
+		assertEquals(st.getGeneralStats().get(GeneralStat.NR_GENERATIONS), 3);
 		
 	}
 
