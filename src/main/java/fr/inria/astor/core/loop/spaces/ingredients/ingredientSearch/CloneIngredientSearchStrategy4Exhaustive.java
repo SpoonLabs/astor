@@ -188,7 +188,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 		boolean continueSearching = true;
 
 		int variant_id = modificationPoint.getProgramVariant().getId();
-		Stats.currentStat.initializeIngCounter(variant_id);
+		Stats.currentStat.getIngredientsStats().initializeIngCounter(variant_id);
 
 		while (continueSearching) {
 			CtElement ingredient = getingredient(fixspace);
@@ -261,11 +261,11 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 						ingredient);
 			}
 			
-			Stats.currentStat.incrementIngCounter(variant_id);
+			Stats.currentStat.getIngredientsStats().incrementIngCounter(variant_id);
 
 			if (!continueSearching) {
 				IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
-				int ingCounter = Stats.currentStat.getIngCounter(variant_id);
+				int ingCounter = Stats.currentStat.getIngredientsStats().getIngCounter(variant_id);
 				log.debug("---attempts on ingredient space: " + ingCounter);
 				return new Ingredient(ingredient, scope);
 			}
@@ -498,7 +498,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 			return null;
 
 		int variant_id = modificationPoint.getProgramVariant().getId();
-		Stats.currentStat.initializeIngCounter(variant_id);
+		Stats.currentStat.getIngredientsStats().initializeIngCounter(variant_id);
 
 		//for all
 	//	while (continueSearching) {
@@ -568,7 +568,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 								IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
 								
 								//TODO: move to main
-								int ingCounter = Stats.currentStat.getIngCounter(variant_id);
+								int ingCounter = Stats.currentStat.getIngredientsStats().getIngCounter(variant_id);
 								log.debug("---attempts on ingredient space: " + ingCounter);
 								//
 								allIngredients.add((CtCodeElement) ingredient);
@@ -589,7 +589,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 			}
 			
 		//Move to main
-		Stats.currentStat.incrementIngCounter(variant_id);
+		Stats.currentStat.getIngredientsStats().incrementIngCounter(variant_id);
 
 		}
 

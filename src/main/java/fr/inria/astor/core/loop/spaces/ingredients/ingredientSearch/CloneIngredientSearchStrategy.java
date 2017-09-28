@@ -196,7 +196,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		boolean continueSearching = true;
 
 		int variant_id = modificationPoint.getProgramVariant().getId();
-		Stats.currentStat.initializeIngCounter(variant_id);
+		Stats.currentStat.getIngredientsStats().initializeIngCounter(variant_id);
 		// counts the number of transformations done for an ingredients.
 		int numberOfIngredientTransformationsDone = 0;
 		while (continueSearching) {
@@ -222,7 +222,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 				continue;
 			}
 
-			Stats.currentStat.incrementIngCounter(variant_id);
+			Stats.currentStat.getIngredientsStats().incrementIngCounter(variant_id);
 
 			Ingredient ingredientToModify = new Ingredient(ingredient);
 

@@ -20,8 +20,8 @@ import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.stats.IngredientStats.Pair;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.core.stats.Stats.Pair;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -95,32 +95,16 @@ public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
 	public void showResults() {
 		super.showResults();
 		if (ConfigurationProperties.getPropertyBool("logsattemps")) {
-			log.info("\nsuccessful_ing_attempts (#trials " + this.currentStat.ingAttemptsSuccessfulPatches.size()
-					+ ", totalAttps " + Stats.sum(currentStat.ingAttemptsSuccessfulPatches) + "): "
-					+ this.currentStat.ingAttemptsSuccessfulPatches.stream().map(Pair::getAttempts)
-							.collect(Collectors.toList()));
-			log.info("\nfailing_ing_attempts (#trials " + this.currentStat.ingAttemptsFailingPatches.size()
-					+ ", totalAttps " + Stats.sum(currentStat.ingAttemptsFailingPatches) + "): "
-					+ this.currentStat.ingAttemptsFailingPatches.stream().map(Pair::getAttempts)
-							.collect(Collectors.toList()));
-
-			log.info("\ntotal Patch Attempts (" + this.currentStat.patch_attempts.size() + "): "
-					+ this.currentStat.patch_attempts);
-
-			log.info("\nsuccessful_ing_attempts_by_patch: " + this.currentStat.ingAttemptsSuccessfulPatches);
-			log.info("\nfailing_ing_attempts_by_patch: " + this.currentStat.ingAttemptsFailingPatches);
-
-			log.info("\npvariants_with_transformed_ingredients: " + this.currentStat.successfulTransformedIngredients);
-		}
+}
 		if (this.ingredientSearchStrategy != null
 				&& this.ingredientSearchStrategy.getIngredientSpace() instanceof ExpressionTypeIngredientSpace) {
 			ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace) this.ingredientSearchStrategy
 					.getIngredientSpace();
 			space.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource());
-			Stats.currentStat.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(),
-					Stats.currentStat.ingredientSpaceSize, "ingredientSpaceSize");
-			Stats.currentStat.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(),
-					Stats.currentStat.combinationByIngredientSize, "combinationsTemplatesingredientSpaceSize");
+			Stats.currentStat.getIngredientsStats().toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(),
+					Stats.currentStat.getIngredientsStats().ingredientSpaceSize, "ingredientSpaceSize");
+			Stats.currentStat.getIngredientsStats().toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(),
+					Stats.currentStat.getIngredientsStats().combinationByIngredientSize, "combinationsTemplatesingredientSpaceSize");
 
 		}
 	}

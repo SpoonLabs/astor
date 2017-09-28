@@ -88,7 +88,7 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 				}
 				mp++;
 				totalBases += baseElements.size();
-				Stats.currentStat.addSize(Stats.currentStat.ingredientSpaceSize, baseElements.size());
+				Stats.currentStat.getIngredientsStats().addSize(Stats.currentStat.getIngredientsStats().ingredientSpaceSize, baseElements.size());
 
 				int base = 0;
 				for (CtCodeElement baseIngredient : baseElements) {
@@ -104,7 +104,7 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 
 					long spacesize = nrIngredients[0];
 					long cuttedspacesize = nrIngredients[1];
-					Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, (cuttedspacesize));
+					Stats.currentStat.getIngredientsStats().addSize(Stats.currentStat.getIngredientsStats().combinationByIngredientSize, (cuttedspacesize));
 					if (nrIngredients[0] == 0) {
 						totalBasesWithZeros++;
 					}

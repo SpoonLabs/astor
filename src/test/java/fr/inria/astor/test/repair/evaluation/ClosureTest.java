@@ -30,14 +30,14 @@ public class ClosureTest {
 	public void testClosure1() throws Exception {
 		File projectLocation = new File("./examples/closure_1");
 		AstorMain main1 = new AstorMain();
-		File dirLibs = new File(projectLocation.getAbsolutePath()+File.separator+"/lib/");
+		File dirLibs = new File(projectLocation.getAbsolutePath() + File.separator + "/lib/");
 		String dep = getDependencies(projectLocation, dirLibs);
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] {//
-				"-dependencies", dep,//
+		String[] args = new String[] { //
+				"-dependencies", dep, //
 				"-mode", "statement", //
 				"-location", projectLocation.getAbsolutePath(), //
-				//"-package", "com.google",
+				// "-package", "com.google",
 				"-srcjavafolder", "/src/:/test/", //
 				"-srctestfolder", "/test/", //
 				"-binjavafolder", "/build/classes/", //
@@ -47,7 +47,7 @@ public class ClosureTest {
 				"-out", out.getAbsolutePath(), //
 				"-scope", "local", //
 				"-seed", "10", //
-				"-maxgen", "0", //No run
+				"-maxgen", "0", // No run
 				"-stopfirst", "true", //
 				"-maxtime", "100"//
 
@@ -56,7 +56,68 @@ public class ClosureTest {
 		main1.execute(args);
 
 	}
-	
+	@Test
+	public void testClosure3() throws Exception {
+		// fr.inria.main.evolution.MainjGenProg -mode statement -location . -id
+		// Closure -dependencies
+		// "+projectLocation.getAbsolutePath()+"/build/classes:"+projectLocation.getAbsolutePath()+"/build/test:"+projectLocation.getAbsolutePath()+"/build/lib/rhino.jar:"+projectLocation.getAbsolutePath()+"/lib/ant.jar:"+projectLocation.getAbsolutePath()+"/lib/ant-launcher.jar:"+projectLocation.getAbsolutePath()+"/lib/args4j.jar:"+projectLocation.getAbsolutePath()+"/lib/guava.jar:"+projectLocation.getAbsolutePath()+"/lib/jarjar.jar:"+projectLocation.getAbsolutePath()+"/lib/json.jar:"+projectLocation.getAbsolutePath()+"/lib/jsr305.jar:"+projectLocation.getAbsolutePath()+"/lib/junit.jar:"+projectLocation.getAbsolutePath()+"/lib/caja-r4314.jar:"+projectLocation.getAbsolutePath()+"/lib/protobuf-java.jar:/home/mmartinez/defects4j-repair/src/python/core/../../..//libs/astor.jar
+		// -failing
+		// com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:
+		// -package com.google -jvm4testexecution
+		// /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -jvm4evosuitetestexecution
+		// /home/mmartinez/jdk1.8.0_45/bin/ -javacompliancelevel 6 -maxgen
+		// 1000000 -seed 3 -maxtime 120 -stopfirst false -population 1
+		// -srcjavafolder src/ -srctestfolder test -binjavafolder build/classes/
+		// -bintestfolder build/test/ -flthreshold 0.1 -excludeRegression
+		// -maxgen 100000000 -loglevel DEBUG -parameters
+		// tmax2:1960000:ingredientprocessor:fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation
+		// -scope
+		// fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace
+		// -customop
+		// fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator
+		// ;echo "
+
+		File projectLocation = new File("./examples/closure_1");
+		AstorMain main1 = new AstorMain();
+		File dirLibs = new File(projectLocation.getAbsolutePath() + File.separator + "/lib/");
+		String dep = getDependencies(projectLocation, dirLibs);
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String dep2 = 
+				""+projectLocation.getAbsolutePath()+"/build/classes:"+projectLocation.getAbsolutePath()+"/build/test:"+projectLocation.getAbsolutePath()+"/build/lib/rhino.jar:"+projectLocation.getAbsolutePath()+"/lib/ant.jar:"+projectLocation.getAbsolutePath()+"/lib/ant-launcher.jar:"+projectLocation.getAbsolutePath()+"/lib/args4j.jar:"+projectLocation.getAbsolutePath()+"/lib/guava.jar:"+projectLocation.getAbsolutePath()+"/lib/jarjar.jar:"+projectLocation.getAbsolutePath()+"/lib/json.jar:"+projectLocation.getAbsolutePath()+"/lib/jsr305.jar:"+projectLocation.getAbsolutePath()+"/lib/junit.jar:"+projectLocation.getAbsolutePath()+"/lib/caja-r4314.jar:"+projectLocation.getAbsolutePath()+"/lib/protobuf-java.jar:";
+		String testExecutorClassName = "JUnitNologExternalExecutor";	
+		String[] args = new String[] { //
+				"-dependencies", dep2, //
+				"-mode", "statement", //
+				"-population","1",//
+				"-failing", "com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:",
+				"-location", projectLocation.getAbsolutePath(), //
+				 "-package", "com.google",
+				"-srcjavafolder", "/src/", //
+				"-srctestfolder", "/test/", //
+				"-binjavafolder", "/build/classes/", //
+				"-bintestfolder", "/build/test/", //
+				"-javacompliancelevel", "6", //
+				"-flthreshold", "0.1", //
+				"-out", out.getAbsolutePath(), //
+				"-scope", "local", //
+				"-seed", "3", //
+				"-maxgen", "1000", // No run
+				"-stopfirst", "true", //
+				"-maxtime", "100",//
+				"-parameters"
+				 ,"testexecutorclass"+File.pathSeparator+testExecutorClassName+":tmax2:1960000:ingredientprocessor:fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation"
+				,"-scope",
+				"fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace"
+				,"-customop"
+				,"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator",
+				
+		};
+		
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+	}
+
 	@Test
 	public void testClosure1Learning() throws Exception {
 		File projectLocation = new File("./examples/closure_1");
@@ -64,10 +125,10 @@ public class ClosureTest {
 		File dirLibs = new File(projectLocation.getAbsolutePath() + File.separator + "/lib/");
 		String dep = getDependencies(projectLocation, dirLibs);
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		
+
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningclosure1b").getFile());
-		
+
 		/*
 		 * fr.inria.main.AbstractMain.processArguments(AbstractMain.java:275) -
 		 * command line arguments: [-out
@@ -108,33 +169,32 @@ public class ClosureTest {
 				"-mode", "statement", //
 				"-location", projectLocation.getAbsolutePath(), //
 				// "-package", "com.google",
-				"-srcjavafolder", "/src/", ////"/src/:/test/", //
+				"-srcjavafolder", "/src/", //// "/src/:/test/", //
 				"-srctestfolder", "/test/", //
 				"-binjavafolder", "/build/classes/", //
 				"-bintestfolder", "/build/test/", //
 				"-javacompliancelevel", "6", //
 				"-flthreshold", "0.5", //
 				"-out", out.getAbsolutePath(), //
-				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace",//"local", //
+				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace", // "local",
+																												// //
 				"-seed", "1", //
 				"-maxgen", "100000", // No run
 				"-stopfirst", "true", //
-				"-maxtime", "100",//
-				"-population", "1",//
-				"-flthreshold", "0.1",//
+				"-maxtime", "100", //
+				"-population", "1", //
+				"-flthreshold", "0.1", //
 				"-failing",
-		"com.google.javascript.jscomp.IntegrationTest:com.google.javascript.jscomp.RemoveUnusedVarsTest:com.google.javascript.jscomp.CommandLineRunnerTest",
-				"-customop","fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:"
+				"com.google.javascript.jscomp.IntegrationTest:com.google.javascript.jscomp.RemoveUnusedVarsTest:com.google.javascript.jscomp.CommandLineRunnerTest",
+				"-customop",
+				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:"
 						+ "fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
-				"-ingredientstrategy","fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy", //
-				"-clonegranularity","spoon.reflect.declaration.CtExecutable"
-							,"-transformingredient",
-				"-learningdir",learningDir.getAbsolutePath()
-				,
-				"-loglevel","DEBUG",//
-				"-tmax1","0",//
-				"-tmax2","0",
-		};
+				"-ingredientstrategy",
+				"fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy", //
+				"-clonegranularity", "spoon.reflect.declaration.CtExecutable", "-transformingredient", "-learningdir",
+				learningDir.getAbsolutePath(), "-loglevel", "DEBUG", //
+				"-tmax1", "0", //
+				"-tmax2", "0", };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 

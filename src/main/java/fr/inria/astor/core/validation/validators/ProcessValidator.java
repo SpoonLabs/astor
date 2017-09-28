@@ -14,6 +14,7 @@ import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.stats.Stats.TypeStat;
 import fr.inria.astor.core.validation.entity.TestResult;
 import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
 import fr.inria.astor.core.validation.executors.JUnitIndirectExecutorProcess;
@@ -63,8 +64,6 @@ public class ProcessValidator extends ProgramValidator {
 
 			log.debug("-Running first validation");
 
-			currentStats.numberOfFailingTestCaseExecution++;
-
 			long t1 = System.currentTimeMillis();
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
 
@@ -72,21 +71,14 @@ public class ProcessValidator extends ProgramValidator {
 					projectFacade.getProperties().getFailingTestCases(),
 					ConfigurationProperties.getPropertyInt("tmax1"));
 			long t2 = System.currentTimeMillis();
-			currentStats.time1Validation.add((t2 - t1));
 
-			currentStats.passFailingval1++;
 			if (trfailing == null) {
 				log.debug("**The validation 1 have not finished well**");
 				return null;
 			}
 
-			// If it is successful, execute regression
-			currentStats.numberOfTestcasesExecutedval1 += trfailing.casesExecuted;
-			currentStats.numberOfFailingTestCase = trfailing.casesExecuted;
 			log.debug(trfailing);
 			if (trfailing.wasSuccessful() || forceExecuteRegression) {
-				currentStats.numberOfRegressionTestExecution++;
-				currentStats.passFailingval2++;
 				return runRegression(mutatedVariant, projectFacade, bc);
 			} else {
 				TestCaseVariantValidationResult r = new TestCasesProgramValidationResult(trfailing,
@@ -100,7 +92,8 @@ public class ProcessValidator extends ProgramValidator {
 		}
 	}
 
-	public TestCaseVariantValidationResult runFailing(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
+	public TestCaseVariantValidationResult runFailing(ProgramVariant mutatedVariant,
+			ProjectRepairFacade projectFacade) {
 
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
@@ -182,7 +175,7 @@ public class ProcessValidator extends ProgramValidator {
 	protected TestCaseVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc,
 			JUnitExecutorProcess p, ProjectRepairFacade projectFacade) {
 		log.debug("-Test Failing is passing, Executing regression");
-		long t1 = System.currentTimeMillis();
+		
 		List<String> testCasesRegression = projectFacade.getProperties().getRegressionTestCases();
 
 		String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
@@ -194,17 +187,12 @@ public class ProcessValidator extends ProgramValidator {
 			log.error("Any test case for regression testing");
 			return null;
 		}
-
-		long t2 = System.currentTimeMillis();
-		currentStats.time2Validation.add((t2 - t1));
-
+		
 		if (trregression == null) {
-			currentStats.unfinishValidation++;
+			currentStats.increment(TypeStat.NR_FAILING_VALIDATION_PROCESS);
 			return null;
 		} else {
 			log.debug(trregression);
-			currentStats.numberOfTestcasesExecutedval2 += trregression.casesExecuted;
-			currentStats.numberOfRegressionTestCases = trregression.casesExecuted;
 			return new TestCasesProgramValidationResult(trregression, trregression.wasSuccessful(),
 					(trregression != null));
 		}
@@ -223,8 +211,8 @@ public class ProcessValidator extends ProgramValidator {
 			parcial.add(tc);
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
 
-			TestResult singleTestResult = p.execute(jvmPath, bc, parcial, ConfigurationProperties.getPropertyInt("tmax2"));
-			//log.debug("TR "+singleTestResult );
+			TestResult singleTestResult = p.execute(jvmPath, bc, parcial,
+					ConfigurationProperties.getPropertyInt("tmax2"));
 			if (singleTestResult == null) {
 				log.debug("The validation 2 have not finished well");
 				return null;
@@ -233,13 +221,10 @@ public class ProcessValidator extends ProgramValidator {
 				trregressionall.getSuccessTest().addAll(singleTestResult.getSuccessTest());
 				trregressionall.failures += singleTestResult.failures;
 				trregressionall.casesExecuted += singleTestResult.getCasesExecuted();
-				
+
 			}
 		}
 		long t2 = System.currentTimeMillis();
-		currentStats.time2Validation.add((t2 - t1));
-		currentStats.numberOfTestcasesExecutedval2 += trregressionall.casesExecuted;
-		currentStats.numberOfRegressionTestCases = trregressionall.casesExecuted;
 		log.debug(trregressionall);
 		return new TestCasesProgramValidationResult(trregressionall, true, trregressionall.wasSuccessful());
 

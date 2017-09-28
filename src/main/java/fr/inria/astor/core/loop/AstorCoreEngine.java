@@ -37,8 +37,8 @@ import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.stats.StatPatch;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.stats.Stats.TypeStat;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
@@ -123,18 +123,17 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.mutatorSupporter = mutatorExecutor;
 		this.projectFacade = projFacade;
 
-		this.currentStat = Stats.getCurrentStats();
+		this.currentStat = Stats.getCurrentStat();
 	}
 
 	public void startEvolution() throws Exception {
 
 		log.info("\n----Starting Solution Search");
 
+		this.currentStat = Stats.createStat();
+
 		generationsExecuted = 0;
 		boolean stopSearch = false;
-
-		currentStat.passFailingval1 = 0;
-		currentStat.passFailingval2 = 0;
 
 		dateInitEvolution = new Date();
 
@@ -148,7 +147,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				break;
 			}
 
-			if (!(belowMaxTime(dateInitEvolution, maxMinutes) )) {//&& limitDate()
+			if (!(belowMaxTime(dateInitEvolution, maxMinutes))) {// &&
+																	// limitDate()
 
 				log.debug("\n Max time reached " + generationsExecuted);
 				this.outputStatus = AstorOutputStatus.TIME_OUT;
@@ -161,11 +161,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			try {
 				boolean solutionFound = processGenerations(generationsExecuted);
 
-				stopSearch = solutionFound && 
-						//one solution
+				stopSearch = solutionFound &&
+				// one solution
 						(ConfigurationProperties.getPropertyBool("stopfirst")
-						//or nr solutions are greater than max allowed
-						|| (this.solutions.size() >= ConfigurationProperties.getPropertyInt("maxnumbersolutions")));
+								// or nr solutions are greater than max allowed
+								|| (this.solutions.size() >= ConfigurationProperties
+										.getPropertyInt("maxnumbersolutions")));
 
 				if (stopSearch) {
 					log.debug("\n Max Solution found " + this.solutions.size());
@@ -191,7 +192,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		long startT = dateInitEvolution.getTime();
 		long endT = System.currentTimeMillis();
 		log.info("Time Repair Loop (s): " + (endT - startT) / 1000d);
-		currentStat.timeIteraction = ((endT - startT));
+		currentStat.getStatsValues().put(TypeStat.TOTAL_TIME, ((endT - startT)));
 		log.info("generationsexecuted: " + this.generationsExecuted);
 	}
 
@@ -208,7 +209,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			String diffPatch = cdiff.getDiff(getProjectFacade(), solutionVariant);
 			solutionVariant.setPatchDiff(diffPatch);
 		}
-	
+
 	}
 
 	/**
@@ -319,7 +320,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		List<ProgramVariant> temporalInstances = new ArrayList<ProgramVariant>();
 
-		currentStat.numberGenerations++;
+		currentStat.increment(TypeStat.NR_GENERATIONS);
 
 		for (ProgramVariant parentVariant : variants) {
 
@@ -478,8 +479,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		if (childCompiles) {
 
 			log.debug("-The child compiles: id " + programVariant.getId());
-			currentStat.numberOfRightCompilation++;
-			currentStat.setCompiles(programVariant.getId());
+			currentStat.increment(TypeStat.NR_RIGHT_COMPILATIONS);
 
 			boolean validInstance = validateInstance(programVariant);
 			double fitness = this.fitnessFunction.calculateFitnessValue(programVariant);
@@ -500,24 +500,19 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		} else {
 			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "
 					+ compilation.getErrorList());
-			currentStat.numberOfFailingCompilation++;
-			currentStat.setNotCompiles(programVariant.getId());
+			currentStat.increment(TypeStat.NR_FAILLING_COMPILATIONS);
 			programVariant.setFitness(this.fitnessFunction.getWorstMaxFitnessValue());
 		}
 		// In case that the variant a) does not compile; b) compiles but it's
 		// not adequate
-		Stats.currentStat.storeIngCounterFromFailingPatch(programVariant.getId());
+		Stats.currentStat.getIngredientsStats().storeIngCounterFromFailingPatch(programVariant.getId());
 		return false;
 
 	}
 
 	protected void saveStaticSucessful(int variant_id, int generation) {
-		currentStat.patches++;
-		currentStat.genPatches.add(new StatPatch(generation, currentStat.passFailingval1, currentStat.passFailingval2));
-		currentStat.passFailingval1 = 0;
-		currentStat.passFailingval2 = 0;
-		Stats.currentStat.storeIngCounterFromSuccessPatch(variant_id);
-		Stats.currentStat.storePatchAttempts(variant_id);
+		Stats.currentStat.getIngredientsStats().storeIngCounterFromSuccessPatch(variant_id);
+		Stats.currentStat.getIngredientsStats().storePatchAttempts(variant_id);
 	}
 
 	/**
@@ -606,7 +601,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		int genMutated = 0, notmut = 0, notapplied = 0;
 		int nroGen = 0;
 
-		this.currentStat.sizeSpaceOfVariant.clear();
+		this.currentStat.getIngredientsStats().sizeSpaceOfVariant.clear();
 
 		// For each gen of the program instance
 		List<ModificationPoint> modificationPointsToProcess = getGenList(variant);
@@ -621,9 +616,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			if (!multiPointMutation && alreadyModified(modificationPoint, variant.getOperations(), generation))
 				continue;
 
-			this.currentStat.typeOfElementsSelectedForModifying
-					.add(modificationPoint.getCodeElement().getClass().getSimpleName());
-
 			modificationPoint.setProgramVariant(variant);
 			OperatorInstance modificationInstance = createOperatorInstanceForPoint(modificationPoint);
 
@@ -633,12 +625,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 				if (ConfigurationProperties.getPropertyBool("uniqueoptogen") && alreadyApplied(modificationInstance)) {
 					log.debug("---Operation already applied to the gen " + modificationInstance);
-					currentStat.setAlreadyApplied(variant.getId());
+					currentStat.getIngredientsStats().setAlreadyApplied(variant.getId());
 					continue;
 				}
 
 				log.debug("operation " + modificationInstance);
-				currentStat.numberOfAppliedOp++;
 				variant.putModificationInstance(generation, modificationInstance);
 
 				oneOperationCreated = true;
@@ -649,7 +640,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				}
 
 			} else {// Not gen created
-				currentStat.numberOfGenInmutated++;
 				log.debug("---modifPoint " + (nroGen++) + " not mutation generated in  "
 						+ StringUtil.trunc(modificationPoint.getCodeElement().toString()));
 				notmut++;
@@ -662,7 +652,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		log.debug("\n--Summary Creation: for variant " + variant + " gen mutated: " + genMutated + " , gen not mut: "
 				+ notmut + ", gen not applied  " + notapplied);
 
-		currentStat.saveStats();
+		currentStat.getIngredientsStats().commitStatsOfTrial();
 
 		return oneOperationCreated;
 	}

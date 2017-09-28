@@ -81,19 +81,20 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 		if (baseElements == null || baseElements.isEmpty()) {
 			log.debug("Any template available for mp " + modificationPoint);
-			log.debug("#templates already used: " + this.exhaustTemplates.get(getKey(modificationPoint, operationType)).size());
+			log.debug("#templates already used: "
+					+ this.exhaustTemplates.get(getKey(modificationPoint, operationType)).size());
 			return null;
 		}
 
 		int elementsFromFixSpace = baseElements.size();
 		log.debug("Templates availables" + elementsFromFixSpace);
 
-		Stats.currentStat.addSize(Stats.currentStat.ingredientSpaceSize, baseElements.size());
+		Stats.currentStat.getIngredientsStats().addSize(Stats.currentStat.getIngredientsStats().ingredientSpaceSize, baseElements.size());
 
 		while (attemptsBaseIngredients < elementsFromFixSpace) {
 
-			log.debug(String.format("Attempts Base Ingredients  %d total %d",
-					attemptsBaseIngredients, elementsFromFixSpace));
+			log.debug(String.format("Attempts Base Ingredients  %d total %d", attemptsBaseIngredients,
+					elementsFromFixSpace));
 
 			Ingredient baseIngredient = new Ingredient(getRandomStatementFromSpace(baseElements), null);
 
@@ -138,11 +139,13 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 						+ baseIngredient);
 				return null;
 			} else if (ingredientsAfterTransformation.isEmpty()) {
-				log.debug("All instances were already tried, exit without update stats." + StringUtil.trunc(baseIngredient.getCode()));
+				log.debug("All instances were already tried, exit without update stats."
+						+ StringUtil.trunc(baseIngredient.getCode()));
 				return null;
 			} else {
 				// We have still ingredients to apply
-				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
+				Stats.currentStat.getIngredientsStats().addSize(
+						Stats.currentStat.getIngredientsStats().combinationByIngredientSize,
 						ingredientsAfterTransformation.size());
 			}
 
@@ -152,7 +155,8 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 					baseIngredient);
 			if (ingredientsAfterTransformation != null && !ingredientsAfterTransformation.isEmpty()) {
 				appliedIngredientsCache.put(keyBaseIngredient, ingredientsAfterTransformation);
-				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize,
+				Stats.currentStat.getIngredientsStats().addSize(
+						Stats.currentStat.getIngredientsStats().combinationByIngredientSize,
 						ingredientsAfterTransformation.size());
 
 			} else {
@@ -161,7 +165,8 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 								+ StringUtil.trunc(baseIngredient.getCode()));
 
 				appliedIngredientsCache.put(keyBaseIngredient, null);
-				Stats.currentStat.addSize(Stats.currentStat.combinationByIngredientSize, 0);
+				Stats.currentStat.getIngredientsStats()
+						.addSize(Stats.currentStat.getIngredientsStats().combinationByIngredientSize, 0);
 				exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
 			}
 		}
@@ -195,7 +200,8 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 				+ ((CtType) baseIngredient.getCode().getParent(CtType.class)).getQualifiedName());
 
 		log.debug(String.format("Valid Transformed ingredients in mp: %s,  base ingr: %s, : size (%d) ",
-				StringUtil.trunc(modificationPoint.getCodeElement()), StringUtil.trunc(baseIngredient.getCode()), ingredientsAfterTransformation.size()));
+				StringUtil.trunc(modificationPoint.getCodeElement()), StringUtil.trunc(baseIngredient.getCode()),
+				ingredientsAfterTransformation.size()));
 
 		if (ingredientsAfterTransformation.isEmpty()) {
 			log.debug("No more combination");
@@ -317,7 +323,8 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			prev = new ArrayList<String>();
 			prev.add(fix);
 			appliedCache.put(lockey, prev);
-			log.debug("\nChache: New Element with new Key: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
+			log.debug(
+					"\nChache: New Element with new Key: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
 			return false;
 		} else {
 			// The element has mutation applied
@@ -326,7 +333,8 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 				return true;
 			} else {
 				prev.add(fix);
-				log.debug("\nChache: New Element with existing Key: " + StringUtil.trunc(fix) + " in " + StringUtil.trunc(lockey));
+				log.debug("\nChache: New Element with existing Key: " + StringUtil.trunc(fix) + " in "
+						+ StringUtil.trunc(lockey));
 				return false;
 			}
 		}
