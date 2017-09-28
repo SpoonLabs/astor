@@ -126,14 +126,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.mutatorSupporter = mutatorExecutor;
 		this.projectFacade = projFacade;
 
-		this.currentStat = Stats.getCurrentStat();
+		this.currentStat = Stats.createStat();
 	}
 
 	public void startEvolution() throws Exception {
 
 		log.info("\n----Starting Solution Search");
-
-		this.currentStat = Stats.createStat();
 
 		generationsExecuted = 0;
 		boolean stopSearch = false;

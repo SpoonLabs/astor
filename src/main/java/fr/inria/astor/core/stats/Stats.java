@@ -114,6 +114,10 @@ public class Stats {
 		Stats.currentStat = currentStat;
 	}
 
+	private Stats() {
+
+	}
+
 	public IngredientStats getIngredientsStats() {
 		return ingredientsStats;
 	}
