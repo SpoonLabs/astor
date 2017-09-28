@@ -60,6 +60,14 @@ public class ProjectConfiguration {
 		this.internalProperties.put(ProjectPropertiesEnum.workingDirBytecode, outDir);
 	}
 
+	public String getWorkingDirRoot() {
+		return (String) this.internalProperties.get(ProjectPropertiesEnum.workingDirRoot);
+	}
+
+	public void setWorkingDirRoot(String outDir) {
+		this.internalProperties.put(ProjectPropertiesEnum.workingDirRoot, outDir);
+	}
+
 	public String getTestDirSrc() {
 		return (String) this.internalProperties.get(ProjectPropertiesEnum.testDirSrc);
 	}
@@ -74,7 +82,7 @@ public class ProjectConfiguration {
 
 	public void setOriginalDirSrc(List<String> dirs) {
 		for (String sub : dirs) {
-			this.setOriginalDirSrc(getOriginalProjectRootDir() +File.separator + sub);
+			this.setOriginalDirSrc(getOriginalProjectRootDir() + File.separator + sub);
 		}
 	}
 
@@ -159,7 +167,6 @@ public class ProjectConfiguration {
 	public void setOriginalTestBinDir(String dir) {
 		this.internalProperties.put(ProjectPropertiesEnum.originalTestBinDir, dir);
 	}
-
 
 	public void setDependencies(String libPath) {
 		String[] s = libPath.split(File.pathSeparator);
@@ -255,7 +262,7 @@ public class ProjectConfiguration {
 		}
 		try {
 			jvmPath += File.separator + "java";
-			
+
 			List<String> command = new ArrayList<String>();
 			command.add(jvmPath);
 			command.add("-version");

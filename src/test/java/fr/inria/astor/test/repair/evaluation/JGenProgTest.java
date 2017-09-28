@@ -7,12 +7,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileReader;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,6 +28,8 @@ import fr.inria.astor.core.loop.population.PopulationConformation;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.stats.PatchStat.HunkStat;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
@@ -155,6 +161,35 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 			assertNotNull(ctcProgVariant);
 			assertEquals(ctspoon, aff);
 		}
+		// Stats
+		Stats stats = Stats.createStat();
+		assertNotNull(stats);
+
+		assertNotNull(stats.getStatsOfPatches());
+
+		assertTrue(stats.getStatsOfPatches().size() > 0);
+
+		String jsonpath = main1.getEngine().getProjectFacade().getProperties().getWorkingDirRoot() + File.separator
+				+ ConfigurationProperties.getProperty("jsonoutputname") + ".json";
+		File filejson = new File(jsonpath);
+		assertTrue(filejson.exists());
+
+		JSONParser parser = new JSONParser();
+
+		Object obj = parser.parse(new FileReader(filejson));
+
+		JSONObject jsonroot = (JSONObject) obj;
+
+		// loop array
+		JSONArray msg = (JSONArray) jsonroot.get("patches");
+		assertEquals(1, msg.size());
+		JSONObject pob = (JSONObject) msg.get(0);
+
+		JSONArray hunks = (JSONArray) pob.get("patchhunks");
+		assertEquals(1, hunks.size());
+		JSONObject hunkob = (JSONObject) hunks.get(0);
+		assertEquals("return solve(f, min, max)", hunkob.get(HunkStat.PATCH_HUNK_CODE.name()));
+		assertEquals("return solve(min, max)", hunkob.get(HunkStat.ORIGINAL_CODE.name()));
 
 	}
 

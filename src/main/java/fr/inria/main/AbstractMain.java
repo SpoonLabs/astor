@@ -82,9 +82,11 @@ public abstract class AbstractMain {
 
 		options.addOption("maxtime", true, "(Optional) maximum time (in minutes) to execute the whole experiment");
 
-		options.addOption("validation", true, "(Optional) type of validation: process|evosuite. Default:"
-				+ ConfigurationProperties.properties.getProperty("validation")
-				+ "It accepts custormize validation prodedures, which must extend from "+ProgramValidator.class.getCanonicalName());
+		options.addOption("validation", true,
+				"(Optional) type of validation: process|evosuite. Default:"
+						+ ConfigurationProperties.properties.getProperty("validation")
+						+ "It accepts custormize validation prodedures, which must extend from "
+						+ ProgramValidator.class.getCanonicalName());
 		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default:"
 				+ ConfigurationProperties.properties.getProperty("flthreshold"));
 
@@ -94,14 +96,15 @@ public abstract class AbstractMain {
 
 		options.addOption("reintroduce", true,
 				"(Optional) indicates whether it reintroduces the original program in each generation (value: "
-				+PopulationConformation.ORIGINAL.toString()+ "), "
+						+ PopulationConformation.ORIGINAL.toString() + "), "
 						+ " reintroduces parent variant in next generation (value: "
-						+PopulationConformation.PARENTS.toString()+ "), "
+						+ PopulationConformation.PARENTS.toString() + "), "
 						+ " reintroduce the solution in the next generation (value: "
-						+PopulationConformation.SOLUTIONS.toString()	+ ") "
+						+ PopulationConformation.SOLUTIONS.toString() + ") "
 						+ " reintroduces origina and parents (value: original-parents) "
-						+ "or do not reintroduce nothing (value: none).  More than one option can be written, separated by: "+File.pathSeparator
-						+ "Default: "+ConfigurationProperties.properties.getProperty("reintroduce"));
+						+ "or do not reintroduce nothing (value: none).  More than one option can be written, separated by: "
+						+ File.pathSeparator + "Default: "
+						+ ConfigurationProperties.properties.getProperty("reintroduce"));
 
 		options.addOption("tmax1", true,
 				"(Optional) maximum time (in miliseconds) for validating the failing test case ");
@@ -163,7 +166,8 @@ public abstract class AbstractMain {
 
 		options.addOption("scope", true,
 				"(Optional) Scope of the ingredient seach space: Local (same class), package (classes from the same package) or global (all classes from the application under analysis). Default: local."
-				+ " It accepts customize scopes, which must implement from "+AstorCtIngredientSpace.class.getCanonicalName());
+						+ " It accepts customize scopes, which must implement from "
+						+ AstorCtIngredientSpace.class.getCanonicalName());
 
 		options.addOption("skipfaultlocalization", false,
 				"The fault localization is skipped and all statements are considered");
@@ -218,50 +222,42 @@ public abstract class AbstractMain {
 
 		options.addOption("timezone", true, "Timezone to be used in the process that Astor creates. Default: "
 				+ ConfigurationProperties.getProperty("timezone"));
-		
+
 		options.addOption("faultlocalization", true, "Class name of Fault locatication Strategy. Default:"
 				+ ConfigurationProperties.properties.getProperty("faultlocalization"));
 
-		
 		options.addOption("fitnessfunction", true,
 				"(Optional) Class name of Fitness function for evaluating a variant. It must extend from "
-						+ FitnessFunction.class.getCanonicalName()
-						+ " The classes must be included in the classpath.");
-		
+						+ FitnessFunction.class.getCanonicalName() + " The classes must be included in the classpath.");
+
 		options.addOption("populationcontroller", true,
 				"(Optional) class name that controls the population evolution. It must extend from  "
 						+ PopulationController.class.getCanonicalName()
 						+ " The classes must be included in the classpath.");
-		
+
 		options.addOption("filterfaultlocalization", true, "Indicates whether Astor filters the FL output. Default:"
 				+ ConfigurationProperties.properties.getProperty("filterfaultlocalization"));
 
-
 		options.addOption("operatorspace", true,
-				"Operator Space contains the operators. It must extends from "
-						+ OperatorSpace.class.getName());
-		
+				"Operator Space contains the operators. It must extends from " + OperatorSpace.class.getName());
+
 		options.addOption("compiler", true,
-				"Class used for compile a Program variant.  It must extends from "
-						+ VariantCompiler.class.getName());
-		
+				"Class used for compile a Program variant.  It must extends from " + VariantCompiler.class.getName());
+
 		options.addOption("regressiontestcases4fl", true,
-				"Classes names of test cases used in the regression, separated by '"+File.pathSeparator
-				+ "' . If the argument it is not specified, Astor automatically calculates them."
-						);
-		
+				"Classes names of test cases used in the regression, separated by '" + File.pathSeparator
+						+ "' . If the argument it is not specified, Astor automatically calculates them.");
+
 		options.addOption("manipulatesuper", false, "Allows to manipulate 'super' statements. Disable by default.");
 
-		options.addOption("classestoinstrument", true,
-				"List of classes names that Astor instrument, separated by '"+File.pathSeparator
-				+ "' . If the argument it is not specified, Astor uses all classes from the program under repair."
-						);
-		options.addOption("maxVarCombination", true,
-				"Max number of combinations per variable out-of-scope. Default: "+ConfigurationProperties.getPropertyInt("maxVarCombination"));
-	
-		options.addOption("parameters", true,
-				"Parameters, divided by "+File.pathSeparator);
-	
+		options.addOption("classestoinstrument", true, "List of classes names that Astor instrument, separated by '"
+				+ File.pathSeparator
+				+ "' . If the argument it is not specified, Astor uses all classes from the program under repair.");
+		options.addOption("maxVarCombination", true, "Max number of combinations per variable out-of-scope. Default: "
+				+ ConfigurationProperties.getPropertyInt("maxVarCombination"));
+
+		options.addOption("parameters", true, "Parameters, divided by " + File.pathSeparator);
+
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -296,7 +292,7 @@ public abstract class AbstractMain {
 	}
 
 	public boolean processArguments(String[] args) throws Exception {
-	
+
 		ConfigurationProperties.clear();
 
 		CommandLine cmd = null;
@@ -360,7 +356,7 @@ public abstract class AbstractMain {
 			}
 
 			String failing = cmd.getOptionValue("failing");
-			if((failing != null))
+			if ((failing != null))
 				ConfigurationProperties.properties.setProperty("failing", failing);
 
 		}
@@ -549,20 +545,23 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("timezone")) {
 			ConfigurationProperties.properties.setProperty("timezone", cmd.getOptionValue("timezone"));
 		}
-		
+
 		if (cmd.hasOption("faultlocalization")) {
-			ConfigurationProperties.properties.setProperty("faultlocalization", cmd.getOptionValue("faultlocalization"));
+			ConfigurationProperties.properties.setProperty("faultlocalization",
+					cmd.getOptionValue("faultlocalization"));
 		}
-		
+
 		if (cmd.hasOption("fitnessfunction")) {
 			ConfigurationProperties.properties.setProperty("fitnessfunction", cmd.getOptionValue("faultlocalization"));
 		}
-		
+
 		if (cmd.hasOption("populationcontroller")) {
-			ConfigurationProperties.properties.setProperty("populationcontroller", cmd.getOptionValue("faultlocalization"));
+			ConfigurationProperties.properties.setProperty("populationcontroller",
+					cmd.getOptionValue("faultlocalization"));
 		}
 		if (cmd.hasOption("filterfaultlocalization"))
-			ConfigurationProperties.properties.setProperty("filterfaultlocalization", cmd.getOptionValue("filterfaultlocalization"));
+			ConfigurationProperties.properties.setProperty("filterfaultlocalization",
+					cmd.getOptionValue("filterfaultlocalization"));
 
 		if (cmd.hasOption("operatorspace"))
 			ConfigurationProperties.properties.setProperty("operatorspace", cmd.getOptionValue("operatorspace"));
@@ -571,27 +570,30 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("compiler", cmd.getOptionValue("compiler"));
 
 		if (cmd.hasOption("regressiontestcases4fl"))
-			ConfigurationProperties.properties.setProperty("regressiontestcases4fl", cmd.getOptionValue("regressiontestcases4fl"));
+			ConfigurationProperties.properties.setProperty("regressiontestcases4fl",
+					cmd.getOptionValue("regressiontestcases4fl"));
 
 		if (cmd.hasOption("manipulatesuper"))
 			ConfigurationProperties.properties.setProperty("manipulatesuper", Boolean.TRUE.toString());
 
 		if (cmd.hasOption("classestoinstrument"))
-			ConfigurationProperties.properties.setProperty("classestoinstrument", cmd.getOptionValue("classestoinstrument"));
+			ConfigurationProperties.properties.setProperty("classestoinstrument",
+					cmd.getOptionValue("classestoinstrument"));
 
 		if (cmd.hasOption("maxVarCombination"))
-			ConfigurationProperties.properties.setProperty("maxVarCombination", cmd.getOptionValue("maxVarCombination"));
+			ConfigurationProperties.properties.setProperty("maxVarCombination",
+					cmd.getOptionValue("maxVarCombination"));
 
-		if (cmd.hasOption("parameters")){
+		if (cmd.hasOption("parameters")) {
 			String[] pars = cmd.getOptionValue("parameters").split(File.pathSeparator);
 			for (int i = 0; i < pars.length; i = i + 2) {
 				String key = pars[i];
-				String value = pars[i+1];
+				String value = pars[i + 1];
 				ConfigurationProperties.properties.setProperty(key, value);
 
 			}
 		}
-		
+
 		log.info("command line arguments: " + Arrays.toString(args).replace(",", " "));
 
 		// CLG believes, but is not totally confident in her belief, that this
@@ -683,12 +685,13 @@ public abstract class AbstractMain {
 			projectIdentifier = locFile.getName();
 		}
 
-		String key = File.separator + method + "-" + projectIdentifier + File.separator;
-		String workingDirForSource = ConfigurationProperties.getProperty("workingDirectory") + key + "/src/";
-		String workingDirForBytecode = ConfigurationProperties.getProperty("workingDirectory") + key + "/bin/";
+		String projectUnderRepairKeyFolder = File.separator + method + "-" + projectIdentifier + File.separator;
+		String workingdir = ConfigurationProperties.getProperty("workingDirectory");
+		String workingDirForSource = workingdir + projectUnderRepairKeyFolder + "/src/";
+		String workingDirForBytecode = workingdir + projectUnderRepairKeyFolder + "/bin/";
 		String originalProjectRoot = location + File.separator;
-
 		ProjectConfiguration properties = new ProjectConfiguration();
+		properties.setWorkingDirRoot(workingdir + projectUnderRepairKeyFolder);
 		properties.setWorkingDirForSource(workingDirForSource);
 		properties.setWorkingDirForBytecode(workingDirForBytecode);
 		properties.setOriginalAppBinDir(

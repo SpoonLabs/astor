@@ -6,6 +6,7 @@ package fr.inria.astor.core.setup;
  *
  */
 public enum ProjectPropertiesEnum {
+	workingDirRoot,
 	workingDirSource,
 	workingDirBytecode,
 	testDirSrc,

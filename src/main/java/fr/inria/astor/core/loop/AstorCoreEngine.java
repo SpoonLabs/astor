@@ -37,6 +37,9 @@ import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.stats.PatchStat;
+import fr.inria.astor.core.stats.PatchStat.HunkStat;
+import fr.inria.astor.core.stats.PatchStat.PatchStats;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.Stats.TypeStat;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
@@ -199,7 +202,18 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	public void atEnd() {
 		this.computePatchDiff(this.solutions);
 		this.sortPatches();
+		this.printFinalStatus();
+		// Recreate statistiques of patches
+		if (!solutions.isEmpty()) {
+			List<PatchStat> patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted,
+					dateInitEvolution);
+			this.currentStat.setStatsOfPatches(patchInfo);
+		}
+
 		this.showResults();
+		String output = this.projectFacade.getProperties().getWorkingDirRoot();
+		// Save into JSON
+		this.currentStat.statsToJSON(output);
 	};
 
 	protected void computePatchDiff(List<ProgramVariant> solutions) {
@@ -222,7 +236,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 	}
 
-	public void showResults() {
+	public void printFinalStatus() {
 		log.info("\n----SUMMARY_EXECUTION---");
 		if (!this.solutions.isEmpty()) {
 			log.debug("End Repair Loops: Found solution");
@@ -242,10 +256,16 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		log.debug("\nNumber suspicious:" + this.variants.size());
 
 		if (!solutions.isEmpty()) {
-			log.info("\nSolution details");
-			log.info(getSolutionData(solutions, generationsExecuted));
-
+			List<PatchStat> patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted,
+					dateInitEvolution);
+			this.currentStat.setStatsOfPatches(patchInfo);
 		}
+
+	}
+
+	public void showResults() {
+
+		log.info(this.currentStat.statsToString());
 
 	}
 
