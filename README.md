@@ -94,13 +94,13 @@ If you use command line, the -cp argument of java must include the absolute path
 
 Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
 
-Moreover, Astot saves the patched version of the program on disk.
-The Astor's output is located in folder "./outputMutation". You can change it through command line argument '-out'. Inside the folder "/src/" Astor stores the source code of the solutions that it found.
+Moreover, Astor saves the patched version of the program on disk.
+The Astor's output is located in folder "./outputMutation". You can change it through command line argument '-out'. There Astor writes a JSON file which summarizes the information of each patch found (location, code modified, etc.) and some statistics.
+Inside the folder "/src/" Astor stores the source code of the solutions that it found.
 
 Folder “default” contains the original program, without any modification. It's a sanity check, it’s the output of spoon without applying any processor over the spoon model of the application under repair.
 
 Each folder "variant-x" is a valid solution to the repair problem (passes all tests). There is an command line argument `saveall` that allows you to save all variants that Astor generates, even they are not solution.
-For each variant x that is solution, Astor summarizes all changes applied to variant x inside the file '/variant-x/patch.xml'.
 
 ### jKali
 
