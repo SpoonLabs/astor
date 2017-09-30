@@ -3,7 +3,6 @@ package fr.inria.astor.core.loop.spaces.ingredients.transformations;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,18 +12,13 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
-import fr.inria.astor.core.manipulation.filters.SpecialStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarCombinationForIngredient;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
-import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.MapCounter;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 
 /**
@@ -55,7 +49,7 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient baseIngredient) {
 
 		if (!this.ngramManager.initialized()) {
-			// if (ngramsSplitted == null || this.ngglobal == null) {
+
 			logger.debug("Initializing probabilistics");
 			try {
 				calculateGramsProbs();
@@ -88,11 +82,6 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 				List<VarCombinationForIngredient> allCombinations = findAllVarMappingCombinationUsingProbab(
 						mapping.getMappedVariables(), modificationPoint);
 
-				// logger.debug("--mp "+modificationPoint);
-				// logger.debug("--mpe "+modificationPoint.getCodeElement());
-				// logger.debug("--baseIng "+baseIngredient);
-				// logger.debug("== "+allCombinations);
-
 				if (allCombinations.size() > 0) {
 
 					for (VarCombinationForIngredient varCombinationForIngredient : allCombinations) {
@@ -119,6 +108,14 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 		return result;
 	}
 
+	
+	/**
+	 * Returns a list of var combinations, sorted by probabilities.
+	 * 
+	 * @param mappedVars
+	 * @param mpoint
+	 * @return
+	 */
 	public List<VarCombinationForIngredient> findAllVarMappingCombinationUsingProbab(
 			Map<VarAccessWrapper, List<CtVariable>> mappedVars, ModificationPoint mpoint) {
 
@@ -127,7 +124,7 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 		sortPotentialVarsByProb(mappedVars, ngrams);
 
 		List<Map<String, CtVariable>> allWithoutOrder = VariableResolver.findAllVarMappingCombination(mappedVars,
-				false, this.ngramManager);
+				this.ngramManager);
 
 		List<VarCombinationForIngredient> allCom = new ArrayList<>();
 		for (Map<String, CtVariable> varMapping : allWithoutOrder) {

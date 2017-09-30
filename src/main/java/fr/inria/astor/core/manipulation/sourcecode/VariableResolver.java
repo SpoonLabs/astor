@@ -824,7 +824,8 @@ public class VariableResolver {
 
 	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
 			Map<VarAccessWrapper, List<CtVariable>> mappedVars) {
-		return findAllVarMappingCombination(mappedVars, true, null);
+		NGramManager managerngram = null;
+		return findAllVarMappingCombination(mappedVars, managerngram);
 	}
 
 	/**
@@ -838,7 +839,7 @@ public class VariableResolver {
 	 * @return
 	 */
 	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
-			Map<VarAccessWrapper, List<CtVariable>> mappedVars, boolean random, NGramManager manager) {
+			Map<VarAccessWrapper, List<CtVariable>> mappedVars, NGramManager managerngram) {
 
 		if (mappedVars.isEmpty()) {
 			return new ArrayList<Map<String, CtVariable>>();
@@ -868,10 +869,11 @@ public class VariableResolver {
 
 			List<CtVariable> sortedVariables = new ArrayList<>(mapped);
 
-			if (random) {
+			if (managerngram == null) {
+				logger.debug("Sorting variables Randomly");
 				Collections.shuffle(sortedVariables, RandomManager.getRandom());
-			} else if (manager != null) {
-				// logger.debug("Sorting variables by 1-gram");
+			} else {
+				logger.debug("Sorting variables by 1-gram");
 				Collections.sort(sortedVariables, new Comparator<CtVariable>() {
 
 					@Override
@@ -879,8 +881,8 @@ public class VariableResolver {
 						String s1 = v1.getSimpleName();
 						String s2 = v2.getSimpleName();
 
-						Double p1 = (Double) manager.getNgglobal().ngrams[1].getProbabilies().get(s1);
-						Double p2 = (Double) manager.getNgglobal().ngrams[1].getProbabilies().get(s2);
+						Double p1 = (Double) managerngram.getNgglobal().ngrams[1].getProbabilies().get(s1);
+						Double p2 = (Double) managerngram.getNgglobal().ngrams[1].getProbabilies().get(s2);
 
 						if (p1 == null && p2 == null) {
 							return 0;

@@ -36,7 +36,6 @@ public class CardumenApproach extends JGenProg{
 
 	public CardumenApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
-	
 		
 	}
 
