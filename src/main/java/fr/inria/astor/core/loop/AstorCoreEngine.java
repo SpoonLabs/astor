@@ -38,10 +38,10 @@ import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.PatchStat;
-import fr.inria.astor.core.stats.PatchStat.HunkStat;
-import fr.inria.astor.core.stats.PatchStat.PatchStats;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
+import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.core.stats.Stats.GeneralStat;
+import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
@@ -193,7 +193,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		long startT = dateInitEvolution.getTime();
 		long endT = System.currentTimeMillis();
 		log.info("Time Repair Loop (s): " + (endT - startT) / 1000d);
-		currentStat.getGeneralStats().put(GeneralStat.TOTAL_TIME, ((endT - startT)));
+		currentStat.getGeneralStats().put(GeneralStatEnum.TOTAL_TIME, ((endT - startT)));
 		log.info("generationsexecuted: " + this.generationsExecuted);
 	}
 
@@ -338,7 +338,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		List<ProgramVariant> temporalInstances = new ArrayList<ProgramVariant>();
 
-		currentStat.increment(GeneralStat.NR_GENERATIONS);
+		currentStat.increment(GeneralStatEnum.NR_GENERATIONS);
 
 		for (ProgramVariant parentVariant : variants) {
 
@@ -497,7 +497,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		if (childCompiles) {
 
 			log.debug("-The child compiles: id " + programVariant.getId());
-			currentStat.increment(GeneralStat.NR_RIGHT_COMPILATIONS);
+			currentStat.increment(GeneralStatEnum.NR_RIGHT_COMPILATIONS);
 
 			boolean validInstance = validateInstance(programVariant);
 			double fitness = this.fitnessFunction.calculateFitnessValue(programVariant);
@@ -518,7 +518,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		} else {
 			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "
 					+ compilation.getErrorList());
-			currentStat.increment(GeneralStat.NR_FAILLING_COMPILATIONS);
+			currentStat.increment(GeneralStatEnum.NR_FAILLING_COMPILATIONS);
 			programVariant.setFitness(this.fitnessFunction.getWorstMaxFitnessValue());
 		}
 		// In case that the variant a) does not compile; b) compiles but it's

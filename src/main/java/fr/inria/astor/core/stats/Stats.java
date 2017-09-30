@@ -17,8 +17,8 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.stats.PatchStat.HunkStat;
-import fr.inria.astor.core.stats.PatchStat.PatchStats;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
+import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.util.TimeUtil;
 
 /**
@@ -34,7 +34,7 @@ public class Stats {
 	 * @author Matias Martinez
 	 *
 	 */
-	public enum GeneralStat {
+	public enum GeneralStatEnum {
 		TOTAL_TIME, NR_GENERATIONS, NR_RIGHT_COMPILATIONS, NR_FAILLING_COMPILATIONS, NR_FAILING_VALIDATION_PROCESS
 	};
 
@@ -104,7 +104,7 @@ public class Stats {
 	/**
 	 * General stats (Not related to any patch)
 	 */
-	private Map<GeneralStat, Object> generalStats = new HashMap<>();
+	private Map<GeneralStatEnum, Object> generalStats = new HashMap<>();
 
 	public static Stats getCurrentStat() {
 		return currentStat;
@@ -134,7 +134,7 @@ public class Stats {
 		this.statsOfPatches = statsOfPatches;
 	}
 
-	public void increment(GeneralStat type) {
+	public void increment(GeneralStatEnum type) {
 		Object v = this.generalStats.get(type);
 		if (v == null) {
 			Counter c = new Counter();
@@ -145,11 +145,11 @@ public class Stats {
 		}
 	}
 
-	public Map<GeneralStat, Object> getGeneralStats() {
+	public Map<GeneralStatEnum, Object> getGeneralStats() {
 		return generalStats;
 	}
 
-	public void setGeneralStats(Map<GeneralStat, Object> statsValues) {
+	public void setGeneralStats(Map<GeneralStatEnum, Object> statsValues) {
 		this.generalStats = statsValues;
 	}
 
@@ -169,16 +169,16 @@ public class Stats {
 
 			PatchStat patch_i = new PatchStat();
 			patches.add(patch_i);
-			patch_i.addStat(PatchStats.TIME,
+			patch_i.addStat(PatchStatEnum.TIME,
 					TimeUtil.getDateDiff(dateInitEvolution, solutionVariant.getBornDate(), TimeUnit.SECONDS));
-			patch_i.addStat(PatchStats.VARIANT_ID, solutionVariant.getId());
+			patch_i.addStat(PatchStatEnum.VARIANT_ID, solutionVariant.getId());
 
-			patch_i.addStat(PatchStats.VALIDATION, solutionVariant.getValidationResult().toString());
+			patch_i.addStat(PatchStatEnum.VALIDATION, solutionVariant.getValidationResult().toString());
 
-			patch_i.addStat(PatchStats.PATCH_DIFF, solutionVariant.getPatchDiff());
+			patch_i.addStat(PatchStatEnum.PATCH_DIFF, solutionVariant.getPatchDiff());
 
 			List<PatchHunkStats> hunks = new ArrayList<>();
-			patch_i.addStat(PatchStats.HUNKS, hunks);
+			patch_i.addStat(PatchStatEnum.HUNKS, hunks);
 
 			int lastGeneration = -1;
 			for (int i = 1; i <= generation; i++) {
@@ -191,18 +191,18 @@ public class Stats {
 
 					PatchHunkStats hunk = new PatchHunkStats();
 					hunks.add(hunk);
-					hunk.getStats().put(HunkStat.OPERATOR, genOperationInstance.getOperationApplied().toString());
-					hunk.getStats().put(HunkStat.LOCATION,
+					hunk.getStats().put(HunkStatEnum.OPERATOR, genOperationInstance.getOperationApplied().toString());
+					hunk.getStats().put(HunkStatEnum.LOCATION,
 							genOperationInstance.getModificationPoint().getCtClass().getQualifiedName());
 
 					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
 						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
 								.getModificationPoint();
-						hunk.getStats().put(HunkStat.LINE, gs.getSuspicious().getLineNumber());
-						hunk.getStats().put(HunkStat.SUSPICIOUNESS, gs.getSuspicious().getSuspiciousValueString());
+						hunk.getStats().put(HunkStatEnum.LINE, gs.getSuspicious().getLineNumber());
+						hunk.getStats().put(HunkStatEnum.SUSPICIOUNESS, gs.getSuspicious().getSuspiciousValueString());
 					}
-					hunk.getStats().put(HunkStat.ORIGINAL_CODE, genOperationInstance.getOriginal().toString());
-					hunk.getStats().put(HunkStat.BUGGY_CODE_TYPE,
+					hunk.getStats().put(HunkStatEnum.ORIGINAL_CODE, genOperationInstance.getOriginal().toString());
+					hunk.getStats().put(HunkStatEnum.BUGGY_CODE_TYPE,
 							genOperationInstance.getOriginal().getClass().getSimpleName() + "|"
 									+ genOperationInstance.getOriginal().getParent().getClass().getSimpleName());
 
@@ -213,33 +213,33 @@ public class Stats {
 						if (genOperationInstance.getModified().toString() != genOperationInstance.getOriginal()
 								.toString())
 
-							hunk.getStats().put(HunkStat.PATCH_HUNK_CODE,
+							hunk.getStats().put(HunkStatEnum.PATCH_HUNK_CODE,
 									genOperationInstance.getModified().toString());
 						else {
-							hunk.getStats().put(HunkStat.PATCH_HUNK_CODE,
+							hunk.getStats().put(HunkStatEnum.PATCH_HUNK_CODE,
 									genOperationInstance.getOriginal().toString());
 
 						}
 						// Information about types Parents
 
-						hunk.getStats().put(HunkStat.PATCH_HUNK_TYPE,
+						hunk.getStats().put(HunkStatEnum.PATCH_HUNK_TYPE,
 								genOperationInstance.getModified().getClass().getSimpleName() + "|"
 										+ genOperationInstance.getModified().getParent().getClass().getSimpleName());
 
 					}
 
-					hunk.getStats().put(HunkStat.INGREDIENT_SCOPE, ((genOperationInstance.getIngredientScope() != null)
+					hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE, ((genOperationInstance.getIngredientScope() != null)
 							? genOperationInstance.getIngredientScope() : "-"));
 
 					if (genOperationInstance.getIngredient() != null
 							&& genOperationInstance.getIngredient().getDerivedFrom() != null)
-						hunk.getStats().put(HunkStat.INGREDIENT_PARENT,
+						hunk.getStats().put(HunkStatEnum.INGREDIENT_PARENT,
 								genOperationInstance.getIngredient().getDerivedFrom());
 
 				}
 			}
 			if (lastGeneration > 0) {
-				patch_i.addStat(PatchStats.GENERATION, lastGeneration);
+				patch_i.addStat(PatchStatEnum.GENERATION, lastGeneration);
 
 			}
 
@@ -253,7 +253,7 @@ public class Stats {
 		StringBuffer buff = new StringBuffer();
 		buff.append(System.getProperty("line.separator"));
 
-		for (GeneralStat generalStat : GeneralStat.values()) {
+		for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
 			buff.append(generalStat.name());
 			buff.append("=");
 			buff.append(this.getGeneralStats().get(generalStat));
@@ -263,16 +263,16 @@ public class Stats {
 		// Stats of patches
 		for (PatchStat patchStat : statsForPatches) {
 
-			Map<PatchStats, Object> stats = patchStat.getStats();
-			for (PatchStats statKey : PatchStats.values()) {
-				if (statKey.equals(PatchStats.HUNKS)) {
+			Map<PatchStatEnum, Object> stats = patchStat.getStats();
+			for (PatchStatEnum statKey : PatchStatEnum.values()) {
+				if (statKey.equals(PatchStatEnum.HUNKS)) {
 					List<PatchHunkStats> hunks = (List<PatchHunkStats>) stats.get(statKey);
 					// Print the properties of a Patch hunk
 					int i = 0;
 					for (PatchHunkStats patchHunkStats : hunks) {
-						Map<HunkStat, Object> statshunk = patchHunkStats.getStats();
+						Map<HunkStatEnum, Object> statshunk = patchHunkStats.getStats();
 						buff.append("--Patch Hunk #" + (++i));
-						for (HunkStat hs : HunkStat.values()) {
+						for (HunkStatEnum hs : HunkStatEnum.values()) {
 
 							buff.append(System.getProperty("line.separator"));
 							buff.append(hs.name());
@@ -303,7 +303,7 @@ public class Stats {
 		JSONArray patchlistJson = new JSONArray();
 		statsjsonRoot.put("patches", patchlistJson);
 
-		for (GeneralStat generalStat : GeneralStat.values()) {
+		for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
 			statsjsonRoot.put(generalStat.name(), this.getGeneralStats().get(generalStat));
 		}
 
@@ -314,19 +314,19 @@ public class Stats {
 			JSONObject patchjson = new JSONObject();
 			patchlistJson.add(patchjson);
 
-			Map<PatchStats, Object> stats = patchStat.getStats();
-			for (PatchStats statKey : PatchStats.values()) {
-				if (statKey.equals(PatchStats.HUNKS)) {
+			Map<PatchStatEnum, Object> stats = patchStat.getStats();
+			for (PatchStatEnum statKey : PatchStatEnum.values()) {
+				if (statKey.equals(PatchStatEnum.HUNKS)) {
 					List<PatchHunkStats> hunks = (List<PatchHunkStats>) stats.get(statKey);
 					JSONArray hunksListJson = new JSONArray();
 					patchjson.put("patchhunks", hunksListJson);
 
 					for (PatchHunkStats patchHunkStats : hunks) {
-						Map<HunkStat, Object> statshunk = patchHunkStats.getStats();
+						Map<HunkStatEnum, Object> statshunk = patchHunkStats.getStats();
 
 						JSONObject hunkjson = new JSONObject();
 						hunksListJson.add(hunkjson);
-						for (HunkStat hs : HunkStat.values()) {
+						for (HunkStatEnum hs : HunkStatEnum.values()) {
 							if (statshunk.containsKey(hs))
 								hunkjson.put(hs.name(), JSONObject.escape(statshunk.get(hs).toString()));
 						}

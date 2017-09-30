@@ -17,8 +17,8 @@ import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 
 /**
  * Stats related to ingredients
- * 
- * @author Matias Martinez, matias.martinez@inria.fr
+ * TODO: TO BE REFACTOR!!
+ * @author Matias Martinez
  *
  */
 public class IngredientStats {

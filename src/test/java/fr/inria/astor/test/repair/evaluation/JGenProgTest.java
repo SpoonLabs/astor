@@ -31,8 +31,8 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
-import fr.inria.astor.core.stats.PatchStat.HunkStat;
-import fr.inria.astor.core.stats.PatchStat.PatchStats;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
+import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
@@ -217,8 +217,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		JSONArray hunks = (JSONArray) pob.get("patchhunks");
 		assertEquals(1, hunks.size());
 		JSONObject hunkob = (JSONObject) hunks.get(0);
-		assertEquals("return solve(f, min, max)", hunkob.get(HunkStat.PATCH_HUNK_CODE.name()));
-		assertEquals("return solve(min, max)", hunkob.get(HunkStat.ORIGINAL_CODE.name()));
+		assertEquals("return solve(f, min, max)", hunkob.get(HunkStatEnum.PATCH_HUNK_CODE.name()));
+		assertEquals("return solve(min, max)", hunkob.get(HunkStatEnum.ORIGINAL_CODE.name()));
 
 		// Test API
 
@@ -226,7 +226,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		PatchStat patchstats = stats.getStatsOfPatches().get(0);
 
-		List<PatchHunkStats> hunksApi = (List<PatchHunkStats>) patchstats.getStats().get(PatchStats.HUNKS);
+		List<PatchHunkStats> hunksApi = (List<PatchHunkStats>) patchstats.getStats().get(PatchStatEnum.HUNKS);
 
 		assertNotNull(hunksApi);
 
@@ -234,9 +234,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		assertNotNull(hunkStats);
 
-		assertEquals("return solve(f, min, max)", hunkStats.getStats().get(HunkStat.PATCH_HUNK_CODE));
+		assertEquals("return solve(f, min, max)", hunkStats.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
 
-		assertEquals("return solve(min, max)", hunkob.get(HunkStat.ORIGINAL_CODE.name()));
+		assertEquals("return solve(min, max)", hunkob.get(HunkStatEnum.ORIGINAL_CODE.name()));
 
 	}
 

@@ -3,7 +3,7 @@ package fr.inria.astor.core.stats;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.inria.astor.core.stats.PatchStat.HunkStat;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 
 /**
  * 
@@ -12,13 +12,13 @@ import fr.inria.astor.core.stats.PatchStat.HunkStat;
  */
 public class PatchHunkStats {
 
-	private Map<HunkStat, Object> stats = new HashMap<>();
+	private Map<HunkStatEnum, Object> stats = new HashMap<>();
 
-	public Map<HunkStat, Object> getStats() {
+	public Map<HunkStatEnum, Object> getStats() {
 		return stats;
 	}
 
-	public void setStats(Map<HunkStat, Object> stats) {
+	public void setStats(Map<HunkStatEnum, Object> stats) {
 		this.stats = stats;
 	}
 
