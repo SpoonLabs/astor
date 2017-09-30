@@ -29,7 +29,10 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.stats.PatchHunkStats;
+import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.PatchStat.HunkStat;
+import fr.inria.astor.core.stats.PatchStat.PatchStats;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
@@ -161,7 +164,33 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 			assertNotNull(ctcProgVariant);
 			assertEquals(ctspoon, aff);
 		}
-		// Stats
+	}
+
+	/**
+	 * Math 70 bug can be fixed by replacing a method invocation inside a return
+	 * statement. + return solve(f, min, max); - return solve(min, max); One
+	 * solution with local scope, another with package
+	 * This test validates the stats via API and JSON
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70LocalOutputs() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 50;
+		String[] args = commandMath70(dep, out, generations);
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-stopfirst", "false");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
 		Stats stats = Stats.createStat();
 		assertNotNull(stats);
 
@@ -189,6 +218,24 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertEquals(1, hunks.size());
 		JSONObject hunkob = (JSONObject) hunks.get(0);
 		assertEquals("return solve(f, min, max)", hunkob.get(HunkStat.PATCH_HUNK_CODE.name()));
+		assertEquals("return solve(min, max)", hunkob.get(HunkStat.ORIGINAL_CODE.name()));
+
+		// Test API
+
+		assertEquals(1, stats.getStatsOfPatches().size());
+
+		PatchStat patchstats = stats.getStatsOfPatches().get(0);
+
+		List<PatchHunkStats> hunksApi = (List<PatchHunkStats>) patchstats.getStats().get(PatchStats.HUNKS);
+
+		assertNotNull(hunksApi);
+
+		PatchHunkStats hunkStats = hunksApi.get(0);
+
+		assertNotNull(hunkStats);
+
+		assertEquals("return solve(f, min, max)", hunkStats.getStats().get(HunkStat.PATCH_HUNK_CODE));
+
 		assertEquals("return solve(min, max)", hunkob.get(HunkStat.ORIGINAL_CODE.name()));
 
 	}
