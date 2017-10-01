@@ -27,7 +27,11 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionTypeIngredie
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.DynamicIngredient;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.ProbabilisticTransformationStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
+import fr.inria.astor.core.manipulation.sourcecode.VarCombinationForIngredient;
+import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
@@ -40,6 +44,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 
 public class CardumenApproachTest {
 
@@ -771,7 +776,6 @@ public class CardumenApproachTest {
 
 		assertEquals(1, cardumen.getVariants().get(0).getModificationPoints().size());
 
-		//
 
 		main1 = new AstorMain();
 		maxsusp = 100;
@@ -782,8 +786,8 @@ public class CardumenApproachTest {
 		main1.execute(command.flat());
 
 		cardumen = (CardumenApproach) main1.getEngine();
-
-		assertTrue(cardumen.getVariants().get(0).getModificationPoints().size() > 50);
+		
+		assertEquals(12,cardumen.getVariants().get(0).getModificationPoints().size());
 
 	}
 
@@ -806,6 +810,7 @@ public class CardumenApproachTest {
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
+		Stats.currentStat = null;
 		Stats.createStat();
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
@@ -813,7 +818,7 @@ public class CardumenApproachTest {
 		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
-
+		
 		assertEquals(0, Stats.createStat().getIngredientsStats().combinationByIngredientSize.size());
 		assertEquals(0, Stats.createStat().getIngredientsStats().ingredientSpaceSize.size());
 
@@ -1027,29 +1032,62 @@ public class CardumenApproachTest {
 	public void testCardumentM70Exhausitve() throws Exception {
 		CommandSummary command = MathTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;//PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.custom.name());
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
 		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
-		command.command.put("-scope", scope.toString().toLowerCase());
+		//command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters",
-				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
+				"considerzerovaluesusp:true:scope:"+ scope.toString().toLowerCase()
+				+ "scope:limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
 		command.command.put("-loglevel", Level.DEBUG.toString());
 		command.command.put("-maxVarCombination", "100000000");
 
 		AstorMain main1 = new AstorMain();
+	//	main1.execute(command.flat());
+	//	Stats.currentStat = null;
+	///	Stats.createStat();
+	//	CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
+		//assertEquals(100605077, cardumen.totalIngredients);
+		//assertEquals(100605077, cardumen.totalIngredientsCutted);
+	//	assertEquals(38222, cardumen.totalBases);
+	//	assertEquals(0, cardumen.attemptsCutted);
+	
+		//Package
+		command.command.put("-parameters",
+				"considerzerovaluesusp:false:scope:local"
+				+ ":limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
+		
+
+		main1 = new AstorMain();
 		main1.execute(command.flat());
 		Stats.createStat();
 		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
+		
+		assertEquals(73, cardumen.totalBases);
+		
+		//Local
+		command.command.put("-parameters",
+				"considerzerovaluesusp:false:scope:package"
+				+ ":limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
+		
 
-		assertEquals(100605077, cardumen.totalIngredients);
-		assertEquals(100605077, cardumen.totalIngredientsCutted);
-		assertEquals(38222, cardumen.totalBases);
-		assertEquals(0, cardumen.attemptsCutted);
+		main1 = new AstorMain();
+		main1.execute(command.flat());
+		Stats.createStat();
+		cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
+		
+		assertEquals(160, cardumen.totalBases);
+		
+		
+		//local 73
+		
+		
 	}
+	
 
 	@Test
 	public void testCardumentM70ExhausitveMaxLimited() throws Exception {
@@ -1213,4 +1251,116 @@ public class CardumenApproachTest {
 
 	}
 
+	@Test
+	public void testCardumentM70ScopeLocalProbTransformation() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+
+		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
+		command.command.put("-flthreshold", "0.00");
+		command.command.put("-maxtime", "60");
+		command.command.put("-seed", "1");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-parameters", "probabilistictransformation:true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+
+		ProbabilisticTransformationStrategy probTransf = (ProbabilisticTransformationStrategy) cardumen
+				.getIngredientTransformationStrategy();
+
+		probTransf.calculateGramsProbs();
+		
+		ProgramVariant pv = cardumen.getVariants().get(0);
+		// C1:.BisectionSolver l: 66,
+		CtElement clearResult = (CtCodeElement) pv.getModificationPoints().get(2).getCodeElement();
+
+		List<CtVariable> varContextClearResult = VariableResolver.searchVariablesInScope(clearResult);//
+		CtElement returnExpression = pv.getModificationPoints().get(8).getCodeElement();
+		VarMapping vmapping = VariableResolver.mapVariablesFromContext(varContextClearResult, returnExpression);
+
+		ModificationPoint mpointCleanResult = pv.getModificationPoints().get(8);
+
+		
+		assertEquals("clearResult()", clearResult.toString());
+		
+		assertEquals("(a + b) * 0.5", returnExpression.toString());
+
+		
+		List<VarCombinationForIngredient> varsComb4Ingredients = probTransf
+				.findAllVarMappingCombinationUsingProbab(vmapping.getMappedVariables(), mpointCleanResult);
+		assertTrue(varsComb4Ingredients.size() > 0);
+
+		Double probability = varsComb4Ingredients.get(0).getProbality();
+		assertTrue(probability > 0);
+
+		for (VarCombinationForIngredient varCombinationForIngredient : varsComb4Ingredients) {
+			log.debug(varCombinationForIngredient);
+			assertTrue(probability >= varCombinationForIngredient.getProbality());
+			probability = varCombinationForIngredient.getProbality();
+		}
+
+	}
+	
+	
+	@Test
+	public void testCardumentM70ScopeLocalRandomTransformation() throws Exception {
+		CommandSummary command = MathTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+
+		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
+		command.command.put("-flthreshold", "0.00");
+		command.command.put("-maxtime", "60");
+		command.command.put("-seed", "1");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", scope.toString().toLowerCase());
+		//RANDOM 
+		command.command.put("-parameters", "probabilistictransformation:false");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+
+		RandomTransformationStrategy probTransf = (RandomTransformationStrategy) cardumen
+				.getIngredientTransformationStrategy();
+
+		
+		ProgramVariant pv = cardumen.getVariants().get(0);
+		// C1:.BisectionSolver l: 66,
+		CtElement clearResult = (CtCodeElement) pv.getModificationPoints().get(2).getCodeElement();
+
+		List<CtVariable> varContextClearResult = VariableResolver.searchVariablesInScope(clearResult);//
+		CtElement returnExpression = pv.getModificationPoints().get(8).getCodeElement();
+		VarMapping vmapping = VariableResolver.mapVariablesFromContext(varContextClearResult, returnExpression);
+
+		ModificationPoint mpointCleanResult = pv.getModificationPoints().get(8);
+
+		
+		assertEquals("clearResult()", clearResult.toString());
+		
+		assertEquals("(a + b) * 0.5", returnExpression.toString());
+
+		
+		List<VarCombinationForIngredient> varsComb4Ingredients = probTransf
+				.findAllVarMappingCombinationUsingRandom(vmapping.getMappedVariables(), mpointCleanResult);
+		assertTrue(varsComb4Ingredients.size() > 0);
+
+		Double probability = varsComb4Ingredients.get(0).getProbality();
+		assertTrue(probability > 0);
+	
+		for (VarCombinationForIngredient varCombinationForIngredient : varsComb4Ingredients) {
+			log.debug(varCombinationForIngredient);
+			assertEquals(probability, varCombinationForIngredient.getProbality());
+			probability = varCombinationForIngredient.getProbality();
+		}
+
+	}
 }

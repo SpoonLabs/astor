@@ -26,14 +26,9 @@ public class ExpressionIngredientSpaceProcessor extends AbstractFixSpaceProcesso
 	@Override
 	public void process(CtExpression element) {
 
-		if (element instanceof CtAssignment 
-				|| element instanceof CtNewArray 
-				|| element instanceof CtTypeAccess  
-				|| element instanceof CtVariableAccess
-				|| element instanceof CtLiteral
-				)
+		if (element instanceof CtAssignment || element instanceof CtNewArray || element instanceof CtTypeAccess
+				|| element instanceof CtVariableAccess || element instanceof CtLiteral)
 			return;
-
 		if (element.getType() != null)
 			this.add(element);
 

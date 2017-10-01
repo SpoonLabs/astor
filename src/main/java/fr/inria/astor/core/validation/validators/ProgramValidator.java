@@ -13,7 +13,7 @@ import fr.inria.astor.core.stats.Stats;
  */
 public abstract class ProgramValidator implements  AstorExtensionPoint {
 
-	Stats currentStats = Stats.createStat();
+	Stats currentStats = Stats.getCurrentStat();
 
 	public void setStats(Stats stats) {
 		currentStats = stats;

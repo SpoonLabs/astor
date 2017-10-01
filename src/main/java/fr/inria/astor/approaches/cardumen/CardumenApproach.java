@@ -16,6 +16,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionTypeIngredie
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.ProbabilisticTransformationStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.loop.spaces.operators.UniformRandomRepairOperatorSpace;
@@ -32,11 +33,11 @@ import fr.inria.main.evolution.PlugInLoader;
  * @author Matias Martinez
  *
  */
-public class CardumenApproach extends JGenProg{
+public class CardumenApproach extends JGenProg {
 
 	public CardumenApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
-		
+
 	}
 
 	@Override
@@ -46,13 +47,14 @@ public class CardumenApproach extends JGenProg{
 		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
 
 		// Ingredient processor By default: ExpressionIngredientSpaceProcessor
-		//------------
+		// ------------
 		ExtensionPoints epoint = ExtensionPoints.INGREDIENT_PROCESSOR;
 		if (!ConfigurationProperties.hasProperty(epoint.identifier)) {
 			// By default, we use statements as granularity level.
 			ingredientProcessors.add(new ExpressionIngredientSpaceProcessor());
-			//ingredientProcessors.add(new ExpressionBooleanIngredientSpaceProcessor());
-			
+			// ingredientProcessors.add(new
+			// ExpressionBooleanIngredientSpaceProcessor());
+
 		} else {
 			// We load custom processors
 			String ingrProcessors = ConfigurationProperties.getProperty(epoint.identifier);
@@ -63,34 +65,34 @@ public class CardumenApproach extends JGenProg{
 				ingredientProcessors.add(proc_i);
 			}
 		}
-		////-----------------------
-		//Replace operator
+		//// -----------------------
+		// Replace operator
 		OperatorSpace roperatorSpace = new OperatorSpace();
 		roperatorSpace.register(new ExpressionReplaceOperator());
 		this.setOperatorSpace(roperatorSpace);
 
 		///
-		
+
 		// OPeration SelectionStrategy //Note: we have only one operator..
 		String opStrategyClassName = ConfigurationProperties.properties.getProperty("opselectionstrategy");
 		if (opStrategyClassName != null) {
-			OperatorSelectionStrategy strategy = createOperationSelectionStrategy(opStrategyClassName,
-					roperatorSpace);
+			OperatorSelectionStrategy strategy = createOperationSelectionStrategy(opStrategyClassName, roperatorSpace);
 			this.setOperatorSelectionStrategy(strategy);
 		} else {// By default, uniform strategy
 			this.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(roperatorSpace));
 		}
-		
-		///Ingredient SPACE:
-		
-		//command.command.put("-scope", ExpressionIngredientSpace.class.getName());
-		//IngredientSpace ingredientspace = PlugInLoader.loadIngredientSpace(ingredientProcessors);
-		ExpressionTypeIngredientSpace ingredientspace  = 
-				((ConfigurationProperties.getPropertyBool("uniformreplacement"))?
-				new ExpressionClassTypeIngredientSpace(ingredientProcessors):
-				new ExpressionTypeIngredientSpace(ingredientProcessors));
+
+		/// Ingredient SPACE:
+
+		// command.command.put("-scope",
+		// ExpressionIngredientSpace.class.getName());
+		// IngredientSpace ingredientspace =
+		// PlugInLoader.loadIngredientSpace(ingredientProcessors);
+		ExpressionTypeIngredientSpace ingredientspace = ((ConfigurationProperties.getPropertyBool("uniformreplacement"))
+				? new ExpressionClassTypeIngredientSpace(ingredientProcessors)
+				: new ExpressionTypeIngredientSpace(ingredientProcessors));
 		String scope = ConfigurationProperties.getProperty(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE.identifier);
-		if(scope != null){
+		if (scope != null) {
 			ingredientspace.scope = IngredientSpaceScope.valueOf(scope.toUpperCase());
 		}
 		//
@@ -98,17 +100,19 @@ public class CardumenApproach extends JGenProg{
 		String ingredientTransformationStrategyClassName = ConfigurationProperties.properties
 				.getProperty(ep.identifier);
 		if (ingredientTransformationStrategyClassName == null) {
-			this.ingredientTransformationStrategy = new ProbabilisticTransformationStrategy();
-			 ConfigurationProperties.properties
-				.setProperty(ep.identifier,this.ingredientTransformationStrategy.getClass().getCanonicalName());
+			if (ConfigurationProperties.getPropertyBool("probabilistictransformation"))
+				this.ingredientTransformationStrategy = new ProbabilisticTransformationStrategy();
+			else
+				this.ingredientTransformationStrategy = new RandomTransformationStrategy();
+			ConfigurationProperties.properties.setProperty(ep.identifier,
+					this.ingredientTransformationStrategy.getClass().getCanonicalName());
 		} else {
 			this.ingredientTransformationStrategy = (IngredientTransformationStrategy) PlugInLoader
 					.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
 		}
 
-		
-		//Ingredient search Strategy
-		
+		// Ingredient search Strategy
+
 		IngredientSearchStrategy ingStrategy = (IngredientSearchStrategy) PlugInLoader.loadPlugin(
 				ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[] { IngredientSpace.class },
 				new Object[] { ingredientspace });
@@ -120,12 +124,10 @@ public class CardumenApproach extends JGenProg{
 		this.setIngredientStrategy(ingStrategy);
 		this.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 
-		
-		//Transformation strategy:
-		//----
-		ConfigurationProperties.setProperty("cleantemplates","true");
-		
-		
+		// Transformation strategy:
+		// ----
+		ConfigurationProperties.setProperty("cleantemplates", "true");
+
 	}
 
 }

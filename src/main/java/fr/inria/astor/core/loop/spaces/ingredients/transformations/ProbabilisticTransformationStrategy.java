@@ -108,7 +108,6 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 		return result;
 	}
 
-	
 	/**
 	 * Returns a list of var combinations, sorted by probabilities.
 	 * 
@@ -169,7 +168,7 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 		}
 
 		allCom.sort((e1, e2) -> Double.compare(e2.getProbality(), e1.getProbality()));
-		logger.debug("Number combination sorted : " + allCom.size() + " over " + allWithoutOrder.size());
+		logger.debug("Number combination sorted By Probability : " + allCom.size() + " over " + allWithoutOrder.size());
 		if (allCom.size() > 0)
 			logger.debug("---Max prob: " + allCom.get(0).getProbality());
 		return allCom;
