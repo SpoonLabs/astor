@@ -34,7 +34,6 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.core.validation.validators.ProgramValidator;
 import fr.inria.astor.test.repair.evaluation.regression.MathTests;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.ExecutionMode;
