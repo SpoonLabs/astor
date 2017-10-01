@@ -154,10 +154,7 @@ public class Stats {
 	}
 
 	public static Stats createStat() {
-
-		if (currentStat == null) {
-			currentStat = new Stats();
-		}
+		currentStat = new Stats();
 		return currentStat;
 	}
 
@@ -228,8 +225,9 @@ public class Stats {
 
 					}
 
-					hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE, ((genOperationInstance.getIngredientScope() != null)
-							? genOperationInstance.getIngredientScope() : "-"));
+					hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE,
+							((genOperationInstance.getIngredientScope() != null)
+									? genOperationInstance.getIngredientScope() : "-"));
 
 					if (genOperationInstance.getIngredient() != null
 							&& genOperationInstance.getIngredient().getDerivedFrom() != null)
