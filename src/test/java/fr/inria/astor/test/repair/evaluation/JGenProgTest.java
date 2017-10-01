@@ -191,7 +191,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
-		Stats stats = Stats.createStat();
+		
+		Stats stats = Stats.getCurrentStat();
+		
 		assertNotNull(stats);
 
 		assertNotNull(stats.getStatsOfPatches());
