@@ -199,11 +199,12 @@ public class GramBasedRepairTest {
 
 		assertEquals(1, sum, 0.01);
 
-		ModificationPoint mpointCleanResult = main1.getEngine().getVariants().get(0).getModificationPoints().get(2);
+		ModificationPoint mpointCleanResult = getModpoint(engine, "clearResult()");
 		assertEquals("clearResult()", mpointCleanResult.getCodeElement().toString());
 
 		ProbabilisticTransformationStrategy probTransf = new ProbabilisticTransformationStrategy(
 				gramByClassBisectionSolver, null);
+		probTransf.calculateGramsProbs();
 		List<VarCombinationForIngredient> varsComb4Ingredients = probTransf
 				.findAllVarMappingCombinationUsingProbab(vmapping.getMappedVariables(), mpointCleanResult);
 		assertTrue(varsComb4Ingredients.size() > 0);
@@ -242,7 +243,8 @@ public class GramBasedRepairTest {
 
 	}
 
-	@Test // @Ignore
+	@Test  
+	@Ignore
 	public void testProbabilistiComplete() throws Exception {
 
 		CommandSummary command = MathTests.getMath70Command();
@@ -257,7 +259,7 @@ public class GramBasedRepairTest {
 				//
 				+ File.pathSeparator + "cleantemplates:false:disablelog:false");
 		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
-		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
+		command.command.put("-scope", "local");
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
 		command.command.put("-seed", "1");
@@ -272,18 +274,10 @@ public class GramBasedRepairTest {
 	public void testProbabilistByStep() throws Exception {
 
 		CommandSummary command = MathTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
-				+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
-				//
-				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
-				+ ProbabilisticTransformationStrategy.class.getCanonicalName()
-				//
-				+ File.pathSeparator + ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier + File.pathSeparator
-				+ ProbabilisticIngredientStrategy.class.getCanonicalName()
-				//
-				+ File.pathSeparator + "cleantemplates:false:disablelog:false");
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
-		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
+	
+		command.command.put("-mode", "cardumen");
+		command.command.put("-scope",
+				"local"/* ExpressionTypeIngredientSpace.class.getName() */);
 		command.command.put("-flthreshold", "0.00");
 		command.command.put("-maxtime", "60");
 		command.command.put("-seed", "1");
@@ -291,6 +285,7 @@ public class GramBasedRepairTest {
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-package", "org.apache.commons.math.analysis.solvers");
 		command.command.put("-population", "1");
+		command.append("-parameters", "considerzerovaluesusp:true");
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
@@ -307,7 +302,8 @@ public class GramBasedRepairTest {
 			System.out.println(
 					"-mp " + (i++) + " " + modpoint.getCtClass().getQualifiedName() + " " + modpoint.getCodeElement());
 			assertTrue(modpoint.getCodeElement() instanceof CtExpression);
-			assertEquals("boolean", ((CtExpression) modpoint.getCodeElement()).getType().getSimpleName());
+			// assertEquals("boolean", ((CtExpression)
+			// modpoint.getCodeElement()).getType().getSimpleName());
 		}
 
 		ProbabilisticIngredientStrategy ingstr = (ProbabilisticIngredientStrategy) engine.getIngredientSearchStrategy();
@@ -326,7 +322,7 @@ public class GramBasedRepairTest {
 
 		assertTrue(ExpressionReplaceOperator.class.isInstance(aoperator));
 
-		ModificationPoint mpointBinCondition0 = engine.getVariants().get(0).getModificationPoints().get(0);
+		ModificationPoint mpointBinCondition0 = engine.getVariants().get(0).getModificationPoints().get(4);
 
 		assertEquals("i < (maximalIterationCount)", mpointBinCondition0.getCodeElement().toString());
 
@@ -381,93 +377,97 @@ public class GramBasedRepairTest {
 		// System.out.println("n-grams 2 b"+nGramBisection2.ngrams[2]);
 		assertEquals(7, occurencies2);
 
-		// 3 gram from  m = UnivariateRealSolverUtils.midpoint(min, max);
+		// 3 gram from m = UnivariateRealSolverUtils.midpoint(min, max);
 		String query3 = "m max min";
 		MapCounter mapCounterSize3 = nGramBisection.ngrams[3];
-		int ocurrescesQ3 =  (int) mapCounterSize3.get(query3);
-		
+		int ocurrescesQ3 = (int) mapCounterSize3.get(query3);
+
 		assertEquals(2, ocurrescesQ3);
-		
-		
+
 		int occurenciesSingle = (int) nGramBisection2.ngrams[1].get("i");
-		assertEquals(2,occurenciesSingle);
-		
-		
+		assertEquals(2, occurenciesSingle);
+
 		////
-		//-mp 9 org.apache.commons.math.analysis.solvers.BrentSolver sign < 0
-		ModificationPoint mp9 = engine.getVariants().get(0).getModificationPoints().get(9);
+		// -mp 9 org.apache.commons.math.analysis.solvers.BrentSolver sign < 0
+		ModificationPoint mp9 = engine.getVariants().get(0).getModificationPoints().get(21);
 		assertEquals("sign < 0", mp9.getCodeElement().toString());
-		
-		// -mp 10 org.apache.commons.math.analysis.solvers.BrentSolver i < (maximalIterationCount)
-		ModificationPoint mp10 = engine.getVariants().get(0).getModificationPoints().get(10);
+
+		// -mp 10 org.apache.commons.math.analysis.solvers.BrentSolver i <
+		// (maximalIterationCount)
+		ModificationPoint mp10 = engine.getVariants().get(0).getModificationPoints().get(24);
 		assertEquals("i < (maximalIterationCount)", mp10.getCodeElement().toString());
-		
+
 		Ingredient baseIngredient9 = new Ingredient(mp9.getCodeElement());
 		logger.debug(String.format("In %s putting %s", mpointBinCondition0.getCodeElement(), mp9.getCodeElement()));
-		
-		//Try to put an ingredient that match:
-		Ingredient selectedIngredientFrom9 =  ingstr.getNotUsedTransformedElement(mpointBinCondition0, aoperator,
+
+		// Try to put an ingredient that match:
+		Ingredient selectedIngredientFrom9 = ingstr.getNotUsedTransformedElement(mpointBinCondition0, aoperator,
 				baseIngredient9);
 		assertNotNull(selectedIngredientFrom9);
-	//	assertFalse(selectedIngredientFrom9.getDerivedFrom().equals(selectedIngredientFrom9.getCode()));
-		
-		
-		//One variable out of scope (n)
-		
-		ModificationPoint mp116 = engine.getVariants().get(0).getModificationPoints().get(116);
+		// assertFalse(selectedIngredientFrom9.getDerivedFrom().equals(selectedIngredientFrom9.getCode()));
+
+		// One variable out of scope (n)
+
+		ModificationPoint mp116 = getModpoint(engine, "i < n");
 		logger.debug(String.format("In %s putting %s", mpointBinCondition0.getCodeElement(), mp116.getCodeElement()));
-		
+
 		assertEquals("i < n", mp116.getCodeElement().toString());
-		
-		Ingredient selectedIngredientFrom116_1 =  ingstr.getNotUsedTransformedElement(mpointBinCondition0, aoperator,
+
+		Ingredient selectedIngredientFrom116_1 = ingstr.getNotUsedTransformedElement(mpointBinCondition0, aoperator,
 				new Ingredient(mp116.getCodeElement()));
 		assertNotNull(selectedIngredientFrom116_1);
-		
-		
-		//All Vars [protected int maximalIterationCount;, protected int defaultMaximalIterationCount;, protected int iterationCount;, int i = 0]
-		
-		String s1 = "i maximalIterationCount" ;
-		String s2 = "defaultMaximalIterationCount i" ;
-		String s3 = "i iterationCount" ;
-		String s4 = "i i" ;
-		
-		
+
+		// All Vars [protected int maximalIterationCount;, protected int
+		// defaultMaximalIterationCount;, protected int iterationCount;, int i =
+		// 0]
+
+		String s1 = "i maximalIterationCount";
+		String s2 = "defaultMaximalIterationCount i";
+		String s3 = "i iterationCount";
+		String s4 = "i i";
+
 		int occs1 = (int) nGramBisection2.ngrams[2].get(s1);
-		Integer occs2 =  (Integer) nGramBisection2.ngrams[2].get(s2);
+		Integer occs2 = (Integer) nGramBisection2.ngrams[2].get(s2);
 		Integer occs3 = (Integer) nGramBisection2.ngrams[2].get(s3);
 		Integer occs4 = (Integer) nGramBisection2.ngrams[2].get(s4);
-		
-		System.out.println("count "+occs1+" "+occs2+" "+occs3+" "+occs4+" ");
-		List<String> combinations = new ArrayList(Arrays.asList("i < (defaultMaximalIterationCount)","i < (iterationCount)","i < (maximalIterationCount)","i < i" ));
-	
-		
-		assertTrue(combinations.remove(selectedIngredientFrom116_1.getCode().toString()));
-	
 
-		Ingredient selectedIngredientFrom116_2 =  ingstr.getNotUsedTransformedElement(mpointBinCondition0, aoperator,
+		System.out.println("count " + occs1 + " " + occs2 + " " + occs3 + " " + occs4 + " ");
+		List<String> combinations = new ArrayList(Arrays.asList("i < (defaultMaximalIterationCount)",
+				"i < (iterationCount)", "i < (maximalIterationCount)", "i < i"));
+
+		assertTrue(combinations.remove(selectedIngredientFrom116_1.getCode().toString()));
+
+		Ingredient selectedIngredientFrom116_2 = ingstr.getNotUsedTransformedElement(mpointBinCondition0, aoperator,
 				new Ingredient(mp116.getCodeElement()));
 		assertNotNull(selectedIngredientFrom116_2);
-		logger.debug("--"+selectedIngredientFrom116_2);
+		logger.debug("--" + selectedIngredientFrom116_2);
 		assertTrue(combinations.remove(selectedIngredientFrom116_2.getCode().toString()));
-		
-		Ingredient selectedIngredientFrom116_3 =  ingstr.getNotUsedTransformedElement(mpointBinCondition0, aoperator,
+
+		Ingredient selectedIngredientFrom116_3 = ingstr.getNotUsedTransformedElement(mpointBinCondition0, aoperator,
 				new Ingredient(mp116.getCodeElement()));
 		assertNotNull(selectedIngredientFrom116_3);
 
-		logger.debug("--"+selectedIngredientFrom116_3);
+		logger.debug("--" + selectedIngredientFrom116_3);
 		assertTrue(combinations.remove(selectedIngredientFrom116_3.getCode().toString()));
-		
-		Ingredient selectedIngredientFrom116_4 =  ingstr.getNotUsedTransformedElement(mpointBinCondition0, aoperator,
+
+		Ingredient selectedIngredientFrom116_4 = ingstr.getNotUsedTransformedElement(mpointBinCondition0, aoperator,
 				new Ingredient(mp116.getCodeElement()));
 
-		logger.debug("--"+selectedIngredientFrom116_4);
+		logger.debug("--" + selectedIngredientFrom116_4);
 
 		assertTrue(selectedIngredientFrom116_4 == null);
-		
-		
+
 		assertTrue(combinations.contains("i < (maximalIterationCount)"));
 		assertTrue(combinations.size() == 1);
-		
+
+	}
+
+	private ModificationPoint getModpoint(JGenProg engine, String content) {
+		for (ModificationPoint mp : engine.getVariants().get(0).getModificationPoints()) {
+			if (mp.getCodeElement().toString().equals(content))
+				return mp;
+		}
+		return null;
 	}
 
 	private MapCounter[] print(MapCounter[] ngrams) {
