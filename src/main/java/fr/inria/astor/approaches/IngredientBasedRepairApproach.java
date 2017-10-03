@@ -95,17 +95,21 @@ public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
 	public void showResults() {
 		super.showResults();
 		if (ConfigurationProperties.getPropertyBool("logsattemps")) {
-}
-		if (this.ingredientSearchStrategy != null
-				&& this.ingredientSearchStrategy.getIngredientSpace() instanceof ExpressionTypeIngredientSpace) {
-			ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace) this.ingredientSearchStrategy
-					.getIngredientSpace();
-			space.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource());
-			Stats.currentStat.getIngredientsStats().toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(),
-					Stats.currentStat.getIngredientsStats().ingredientSpaceSize, "ingredientSpaceSize");
-			Stats.currentStat.getIngredientsStats().toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource(),
-					Stats.currentStat.getIngredientsStats().combinationByIngredientSize, "combinationsTemplatesingredientSpaceSize");
 
+			if (this.ingredientSearchStrategy != null
+					&& this.ingredientSearchStrategy.getIngredientSpace() instanceof ExpressionTypeIngredientSpace) {
+				ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace) this.ingredientSearchStrategy
+						.getIngredientSpace();
+				log.info("Total mod points: "+this.variants.get(0).getModificationPoints().size());
+				space.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource());
+				Stats.currentStat.getIngredientsStats().toJSON(
+						this.getProjectFacade().getProperties().getWorkingDirRoot(),
+						Stats.currentStat.getIngredientsStats().ingredientSpaceSize, "ingredientSpaceSize");
+				Stats.currentStat.getIngredientsStats().toJSON(
+						this.getProjectFacade().getProperties().getWorkingDirRoot(),
+						Stats.currentStat.getIngredientsStats().combinationByIngredientSize,
+						"combinationsTemplatesingredientSpaceSize");
+			}
 		}
 	}
 

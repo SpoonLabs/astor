@@ -1,5 +1,7 @@
 package fr.inria.astor.approaches.cardumen;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -7,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.json.simple.JSONObject;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -88,7 +92,8 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 				}
 				mp++;
 				totalBases += baseElements.size();
-				Stats.currentStat.getIngredientsStats().addSize(Stats.currentStat.getIngredientsStats().ingredientSpaceSize, baseElements.size());
+				Stats.currentStat.getIngredientsStats()
+						.addSize(Stats.currentStat.getIngredientsStats().ingredientSpaceSize, baseElements.size());
 
 				int base = 0;
 				for (CtCodeElement baseIngredient : baseElements) {
@@ -104,7 +109,8 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 
 					long spacesize = nrIngredients[0];
 					long cuttedspacesize = nrIngredients[1];
-					Stats.currentStat.getIngredientsStats().addSize(Stats.currentStat.getIngredientsStats().combinationByIngredientSize, (cuttedspacesize));
+					Stats.currentStat.getIngredientsStats().addSize(
+							Stats.currentStat.getIngredientsStats().combinationByIngredientSize, (cuttedspacesize));
 					if (nrIngredients[0] == 0) {
 						totalBasesWithZeros++;
 					}
@@ -122,14 +128,14 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 				}
 			}
 		}
-		log.info("totalmp: " + getVariants().get(0).getModificationPoints().size());
-		log.info("totalBases: " + totalBases);
-		log.info("totalAttempts: " + totalAttempts);
-		log.info("totalCutsAttempts: " + attemptsCutted);
-		log.info("totalIngredients: " + totalIngredients);
-		log.info("totalCutIngredients: " + totalIngredientsCutted);
-		log.info("totalBasesWithZeros: " + totalBasesWithZeros);
-
+		/*
+		 * log.info("totalmp: " + this.totalmp); log.info("totalBases: " +
+		 * totalBases); log.info("totalAttempts: " + totalAttempts);
+		 * log.info("totalCutsAttempts: " + attemptsCutted);
+		 * log.info("totalIngredients: " + totalIngredients);
+		 * log.info("totalCutIngredients: " + totalIngredientsCutted);
+		 * log.info("totalBasesWithZeros: " + totalBasesWithZeros);
+		 */
 	}
 
 	public static long[] getNrIngredients(ModificationPoint modificationPoint, CtCodeElement baseIngredient) {
@@ -237,6 +243,61 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 		log.info("\ntotalIngredients: " + totalIngredients);
 		log.info("\ntotalCutsIngredients: " + totalIngredientsCutted);
 		log.info("\ntotalBasesWithZeros: " + totalBasesWithZeros);
+		log.info("\ning:" + Stats.currentStat.getIngredientsStats()
+				.getJsonObject(Stats.currentStat.getIngredientsStats().ingredientSpaceSize));
+		log.info("\ncomb:" + Stats.currentStat.getIngredientsStats()
+				.getJsonObject(Stats.currentStat.getIngredientsStats().combinationByIngredientSize));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public JSONObject getOutputJSON() {
+
+		JSONObject ob = new JSONObject();
+
+		ob.put("totalmp", totalmp);
+		ob.put("totalBases", totalBases);
+		ob.put("totalAttempts", totalAttempts);
+		ob.put("totalCutsAttempts", attemptsCutted);
+		ob.put("totalIngredients", totalIngredients);
+		ob.put("totalCutsIngredients", totalIngredientsCutted);
+		ob.put("totalBasesWithZeros", totalBasesWithZeros);
+		ob.put("ingredients", Stats.currentStat.getIngredientsStats()
+				.getJsonObject(Stats.currentStat.getIngredientsStats().ingredientSpaceSize));
+		ob.put("combinations", Stats.currentStat.getIngredientsStats()
+				.getJsonObject(Stats.currentStat.getIngredientsStats().combinationByIngredientSize));
+
+		return ob;
+	}
+
+	@Override
+	public void atEnd() {
+		super.atEnd();
+		JSONObject jsonob = getOutputJSON();
+		outputToJSon(jsonob);
+
+	}
+
+	private void outputToJSon(JSONObject jsonob) {
+		System.out.println("\njsonoutput=" + jsonob);
+		String output = this.getProjectFacade().getProperties().getWorkingDirRoot();
+		String filename = "exastats";
+		String absoluteFileName = output + "/" + filename + ".json";
+		try (FileWriter file = new FileWriter(absoluteFileName)) {
+
+			file.write(jsonob.toJSONString());
+			file.flush();
+			log.info("Storing ing JSON at " + absoluteFileName);
+			log.info(filename + ":" + jsonob.toJSONString());
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			log.error("Problem storing ing json file" + e.toString());
+		}
+	}
+
+	public void saveJSON() {
+
 	}
 
 }

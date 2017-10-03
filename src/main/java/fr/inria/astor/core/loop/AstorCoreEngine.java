@@ -201,6 +201,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.computePatchDiff(this.solutions);
 		this.sortPatches();
 		this.printFinalStatus();
+	
+		log.info(this.getSolutionData(this.solutions, this.generationsExecuted)+"\n");
 		// Recreate statistiques of patches
 		if (!solutions.isEmpty()) {
 			List<PatchStat> patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted,
