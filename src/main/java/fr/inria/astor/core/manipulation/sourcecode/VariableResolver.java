@@ -937,6 +937,12 @@ public class VariableResolver {
 
 		logger.debug("NrVarCombinationsConsideredAfter: " + allCombinations.size());
 
+		for (Map<String,CtVariable> map : allCombinations) {
+			if(map.keySet().size() !=  varsNamesToCombine.size()){
+				logger.error("Missing vars "+ map.keySet().size() +" "+ varsNamesToCombine);
+			}
+		}
+		
 		return allCombinations;
 	}
 
