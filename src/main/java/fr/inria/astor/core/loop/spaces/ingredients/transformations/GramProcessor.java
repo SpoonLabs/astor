@@ -105,7 +105,7 @@ public class GramProcessor {
 			if (vars.isEmpty())
 				continue;
 
-			if (vars.size() > 8) {
+			if (vars.size() > ConfigurationProperties.getPropertyDouble("maxnumvariablesperingredient")) {
 				logger.debug("Attention, Large Ingredient discarted: \n" + ctCodeElement.getShortRepresentation());
 				continue;
 			}
