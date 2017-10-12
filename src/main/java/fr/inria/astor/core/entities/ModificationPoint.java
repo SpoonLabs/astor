@@ -55,7 +55,7 @@ public class ModificationPoint {
 	}
 
 	public String toString() {
-		return "[" + codeElement.getClass().getSimpleName() + ", in " + ctClass.getSimpleName() + "]";
+		return "[" + codeElement.getClass().getSimpleName() + ", in " + ctClass.getQualifiedName()+ "]";
 	}
 
 	public List<CtVariable> getContextOfModificationPoint() {

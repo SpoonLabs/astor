@@ -33,8 +33,8 @@ public class SuspiciousModificationPoint extends ModificationPoint{
 	}
 	
 	public String toString(){
-		return "ModificPoint="
-				+ ctClass.getSimpleName() +" line: "+suspicious.getLineNumber()+", el: "+codeElement.getClass().getSimpleName()+"";
+		return "MP="
+				+ ctClass.getQualifiedName()+" line: "+suspicious.getLineNumber()+", pointed element: "+codeElement.getClass().getSimpleName()+"";
 	}
 	
 }
