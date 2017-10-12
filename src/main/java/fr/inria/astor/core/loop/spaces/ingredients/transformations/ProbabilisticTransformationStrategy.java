@@ -19,6 +19,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.util.MapCounter;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 
 /**
@@ -77,10 +78,11 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 				result.add(new Ingredient(codeElementToModifyFromBase));
 
 			} else {// We have mappings between variables
-				logger.debug("Ingredient before transformation: " + baseIngredient);
+				logger.debug("Ingredient before transformation: " + baseIngredient.getCode() + " mined from "
+						+ baseIngredient.getCode().getParent(CtType.class).getQualifiedName());
 
 				List<VarCombinationForIngredient> allCombinations = findAllVarMappingCombinationUsingProbab(
-						mapping.getMappedVariables(), modificationPoint);
+						mapping.getMappedVariables(), modificationPoint, baseIngredient);
 
 				if (allCombinations.size() > 0) {
 
@@ -113,18 +115,20 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 	 * 
 	 * @param mappedVars
 	 * @param mpoint
+	 * @param baseIngredient
 	 * @return
 	 */
 	public List<VarCombinationForIngredient> findAllVarMappingCombinationUsingProbab(
-			Map<VarAccessWrapper, List<CtVariable>> mappedVars, ModificationPoint mpoint) {
-
-		NGrams ngrams = this.ngramManager.getNgramsSplitted().get(mpoint.getCtClass().getQualifiedName());
+			Map<VarAccessWrapper, List<CtVariable>> mappedVars, ModificationPoint mpoint, Ingredient baseIngredient) {
+		String mpointClass = mpoint.getCtClass().getQualifiedName();
+		logger.debug("Ngrams from " + mpointClass);
+		NGrams ngrams = this.ngramManager.getNgramsSplitted().get(mpointClass);
 
 		sortPotentialVarsByProb(mappedVars, ngrams);
 
 		List<Map<String, CtVariable>> allWithoutOrder = VariableResolver.findAllVarMappingCombination(mappedVars,
 				this.ngramManager);
-
+		logger.debug("Var mapping " + allWithoutOrder.size());
 		List<VarCombinationForIngredient> allCom = new ArrayList<>();
 		for (Map<String, CtVariable> varMapping : allWithoutOrder) {
 
@@ -134,14 +138,21 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 			MapCounter gramCounterSize = ngrams.ngrams[sizeCombination];
 
 			MapCounter gramCounterSizeGlobal = this.ngramManager.getNgglobal().ngrams[sizeCombination];
-			// gramCounterSizeGlobal.getProbabilies();
+
 			if (gramCounterSize == null) { // Ingredient size bigger than all
 											// statements from the class
-				// logger.debug("Map is null for " + gramCounterSize);
-				// logger.debug("Using global");
+
+				String ingredientClass = baseIngredient.getCode().getParent(CtType.class).getQualifiedName();
+				if (mpointClass.equals(ingredientClass)) {
+					logger.error("Map is null for " + sizeCombination + " for local n-gramm " + mpointClass
+							+ ", ingredient from " + ingredientClass);
+				}
+
 				gramCounterSize = gramCounterSizeGlobal;
 				if (gramCounterSizeGlobal == null) {
 					logger.error("No grams for combination size " + sizeCombination);
+					logger.error("--> mp " + mpointClass);
+					logger.error("\n grams " + ngrams);
 					return allCom;
 				}
 
@@ -158,10 +169,7 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 				logger.debug("--G--" + gramCounterSizeGlobal.sorted());
 				logger.debug("--Gp--" + gramCounterSizeGlobal.getProbabilies());
 			}
-			if (probability == null) {
-				// logger.debug("Error null: " +
-				// varCombinationWrapper.getCombinationString());
-			}
+
 			varCombinationWrapper.setProbality((probability != null) ? probability : 0);
 			allCom.add(varCombinationWrapper);
 

@@ -206,7 +206,7 @@ public class GramBasedRepairTest {
 				gramByClassBisectionSolver, null);
 		probTransf.calculateGramsProbs();
 		List<VarCombinationForIngredient> varsComb4Ingredients = probTransf
-				.findAllVarMappingCombinationUsingProbab(vmapping.getMappedVariables(), mpointCleanResult);
+				.findAllVarMappingCombinationUsingProbab(vmapping.getMappedVariables(), mpointCleanResult, new Ingredient(returnExpression));
 		assertTrue(varsComb4Ingredients.size() > 0);
 
 		Double probability = varsComb4Ingredients.get(0).getProbality();
