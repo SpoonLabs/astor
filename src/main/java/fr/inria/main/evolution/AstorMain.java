@@ -1,6 +1,7 @@
 package fr.inria.main.evolution;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -240,7 +241,7 @@ public class AstorMain extends AbstractMain {
 		return astorCore;
 	}
 
-	public void setupLogging() {
+	public void setupLogging() throws IOException {
 
 		String patternLayout = "";
 		if (ConfigurationProperties.getPropertyBool("disablelog")) {
@@ -264,8 +265,11 @@ public class AstorMain extends AbstractMain {
 			FileAppender fa = new FileAppender();
 			String filePath = ConfigurationProperties.getProperty("logfilepath");
 			File fileLog = new File(filePath);
-			fileLog.mkdirs();
-
+			if(!fileLog.exists()){
+				fileLog.getParentFile().mkdirs();
+				fileLog.createNewFile();
+			}
+			
 			fa.setName("FileLogger");
 			fa.setFile(fileLog.getAbsolutePath());
 			fa.setLayout(new PatternLayout(patternLayout));
