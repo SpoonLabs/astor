@@ -1,0 +1,93 @@
+{
+  "totalNumberSkippingTests": 4,
+  "bugType": "only_fail",
+  "totalNumberErroringTests": 0,
+  "repo": "jhy/jsoup",
+  "metrics": {
+    "StepsDurationsInSeconds": {
+      "CheckoutBuggyBuild": 0,
+      "ComputeClasspath": 3,
+      "ComputeTestDir": 0,
+      "ResolveDependency": 10,
+      "BuildProject": 28,
+      "NPERepair": 0,
+      "ComputeSourceDir": 0,
+      "InitRepoToPush": 1,
+      "CloneRepository": 3,
+      "NopolRepair": 1239,
+      "CheckoutPatchedBuild": 0,
+      "TestProject": 12,
+      "GatherTestInformation": 0,
+      "PushIncriminatedBuild": 4,
+      "AstorRepair": 10,
+      "CommitPatch": 3
+    },
+    "FailureNames": [
+      "java.lang.AssertionError"
+    ],
+    "NbFailingTests": 1,
+    "BugCommitUrl": "http://github.com/jhy/jsoup/commit/ea00e065f6245a94f87becf7d6ea80c46bc21ef1",
+    "ReproductionDate": "Oct 9, 2017 7:06:24 AM",
+    "BuggyBuildId": 285353482,
+    "PatchedBuilId": 0,
+    "BuggyBuildURL": "http://travis-ci.org/jhy/jsoup/builds/285353482",
+    "BuggyBuildDate": "Oct 9, 2017 6:24:00 AM",
+    "BugCommit": "ea00e065f6245a94f87becf7d6ea80c46bc21ef1",
+    "PatchChangedFiles": 1,
+    "PatchAddedLines": 0,
+    "PatchDeletedLines": 0,
+    "NbRunningTests": 574,
+    "NbLibraries": 3,
+    "NbFileApp": 126,
+    "NbFileTests": 64,
+    "NbCPU": 8,
+    "FreeMemory": 303018024,
+    "TotalMemory": 844103680,
+    "AngelicValuesByTest": {
+      "org/jsoup/helper/HttpConnectionTest": 151
+    },
+    "FreeMemoryByStep": {
+      "CheckoutBuggyBuild": 342231888,
+      "ComputeClasspath": 327017080,
+      "ComputeTestDir": 336027552,
+      "ResolveDependency": 324989184,
+      "BuildProject": 314416808,
+      "NPERepair": 328652992,
+      "ComputeSourceDir": 327017048,
+      "InitRepoToPush": 265172504,
+      "CloneRepository": 347115024,
+      "NopolRepair": 329224984,
+      "CheckoutPatchedBuild": 303018024,
+      "TestProject": 309332288,
+      "GatherTestInformation": 301806448,
+      "PushIncriminatedBuild": 328652992,
+      "AstorRepair": 415364608,
+      "CommitPatch": 303018024
+    }
+  },
+  "bugCommit": "https://github.com/jhy/jsoup/compare/a97672ad240f...ea00e065f624",
+  "failingModule": "/root/workspace/jhy/jsoup/285353482",
+  "hostname": "spirals-librepair",
+  "totalNumberFailingTests": 1,
+  "error-types": [
+    "java.lang.AssertionError"
+  ],
+  "totalNumberRunningTests": 574,
+  "failing-test-cases": [
+    {
+      "className": "org.jsoup.helper.HttpConnectionTest",
+      "failingMethods": [
+        "org.jsoup.helper.HttpConnectionTest#caseInsensitiveHeaders"
+      ],
+      "erroringMethods": [],
+      "failures": [
+        {
+          "failureName": "java.lang.AssertionError",
+          "isError": false
+        }
+      ],
+      "nbFailures": 1,
+      "nbErrors": 0
+    }
+  ]
+}
