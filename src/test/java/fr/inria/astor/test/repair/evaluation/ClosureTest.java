@@ -200,7 +200,7 @@ public class ClosureTest {
 
 	}
 
-	private String getDependencies(File projectLocation, File dirLibs) {
+	public static String getDependencies(File projectLocation, File dirLibs) {
 		String dep = "";
 		System.out.println(dirLibs);
 		// Adding dependencies included in the JSON file as "libs"
