@@ -25,6 +25,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
@@ -74,11 +75,13 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 					List<CtCodeElement> ingredientsKey = getIngrediedientsFromKey(keyLocation, ctExpr);
 
 					if (ConfigurationProperties.getPropertyBool("cleantemplates")) {
+						MutationSupporter.getEnvironment().setNoClasspath(true);// ?
 
 						CtCodeElement templateElement = MutationSupporter.clone(ctExpr);
 						formatIngredient(templateElement);
 
 						log.debug("Adding ingredient: " + originalIngredient);
+
 						log.debug("Template ingredient: " + templateElement + " "
 								+ ingredientsKey.contains(templateElement));
 
@@ -111,15 +114,15 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 		for (Object ingList : mkp.values()) {
 			nrIng += ((List) ingList).size();
 		}
-		
 
-		//sort links
+		// sort links
 		this.linkTemplateElements = this.linkTemplateElements.getSorted();
 		log.info(String.format("Ingredient search space info : number keys %d , number values %d ", mkp.keySet().size(),
 				nrIng));
-		
-		this.linkTemplateElements.forEach((e,v) -> log.debug(String.format("k: %s v: %d ", e,v.size())));
-		
+
+		// this.linkTemplateElements.forEach((e,v) ->
+		// log.debug(String.format("k: %s v: %d ", e,v.size())));
+
 	}
 
 	protected List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {
@@ -234,6 +237,7 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void formatIngredient(CtElement ingredientCtElement) {
 
 		// log.debug("\n------" + ingredientCtElement);
@@ -263,6 +267,13 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 			}
 
 			var.getVariable().setSimpleName(abstractName);
+			// workaround: Problems with var Shadowing
+			var.getFactory().getEnvironment().setNoClasspath(true);
+			if (var instanceof CtFieldAccess) {
+				CtFieldAccess fieldAccess = (CtFieldAccess) var;
+				fieldAccess.getVariable().setDeclaringType(null);
+			}
+
 		}
 
 	}
