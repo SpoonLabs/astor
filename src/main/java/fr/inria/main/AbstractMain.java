@@ -1,6 +1,8 @@
 package fr.inria.main;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -616,10 +618,10 @@ public abstract class AbstractMain {
 		String dependenciespath = null, folder = null, failing = null, location = null, packageToInstrument = null;
 		double faultLocalizationThreshold = 0;
 		if (cmd.hasOption("bug280")) {
-			dependenciespath = "examples/math_85/libs/junit-4.4.jar";
+			dependenciespath = new File("./examples/math_85/libs/junit-4.4.jar").getAbsolutePath();
 			folder = "Math-issue-280";
 			failing = "org.apache.commons.math.distribution.NormalDistributionTest";
-			location = "examples/Math-issue-280/";
+			location = new File("./examples/Math-issue-280/").getAbsolutePath();
 			packageToInstrument = "org.apache.commons";
 			faultLocalizationThreshold = 0.2;
 		}
@@ -699,7 +701,7 @@ public abstract class AbstractMain {
 				determineBinFolder(originalProjectRoot, ConfigurationProperties.getProperty("binjavafolder")));
 		properties.setOriginalTestBinDir(
 				determineBinFolder(originalProjectRoot, ConfigurationProperties.getProperty("bintestfolder")));
-		
+
 		properties.setFixid(projectIdentifier);
 
 		properties.setOriginalProjectRootDir(originalProjectRoot);
@@ -731,7 +733,7 @@ public abstract class AbstractMain {
 		return originalProjectRoot + File.separator + paramBinFolder;
 	}
 
-	private List<String> determineSourceFolders(boolean srcWithMain, String originalProjectRoot) {
+	private List<String> determineSourceFolders(boolean srcWithMain, String originalProjectRoot) throws IOException {
 
 		final boolean onlyOneFolder = true;
 
@@ -742,35 +744,50 @@ public abstract class AbstractMain {
 
 		String[] srcs = paramSrc.split(File.pathSeparator);
 		// adding src from parameter
-		addToFolder(sourceFolders, srcs, !onlyOneFolder);
+		addToFolder(sourceFolders, srcs, originalProjectRoot, !onlyOneFolder);
 
 		// Adding src folders by guessing potential folders
 		String[] possibleSrcFolders = new String[] { (originalProjectRoot + File.separator + "src/main/java"),
 				(originalProjectRoot + File.separator + "src/java"), (originalProjectRoot + File.separator + "src"), };
-		addToFolder(sourceFolders, possibleSrcFolders, onlyOneFolder);
+		addToFolder(sourceFolders, possibleSrcFolders, originalProjectRoot, onlyOneFolder);
 
 		// adding test folder from the argument
 		String[] srcTs = paramTestSrc.split(File.pathSeparator);
-		addToFolder(sourceFolders, srcTs, !onlyOneFolder);
+		addToFolder(sourceFolders, srcTs, originalProjectRoot, !onlyOneFolder);
 
 		// Adding src test folders by guessing potential folders
 		String[] possibleTestSrcFolders = new String[] { (originalProjectRoot + File.separator + "src/test/java"),
 				(originalProjectRoot + File.separator + "src/test"), (originalProjectRoot + File.separator + "test"), };
 
-		addToFolder(sourceFolders, possibleTestSrcFolders, onlyOneFolder);
+		addToFolder(sourceFolders, possibleTestSrcFolders, originalProjectRoot, onlyOneFolder);
 
 		return sourceFolders;
 
 	}
 
-	private void addToFolder(List<String> path, String[] possibleTestSrcFolders, boolean onlyOne) {
+	private void addToFolder(List<String> pathResults, String[] possibleTestSrcFolders, String originalProjectRoot,
+			boolean onlyOne) throws IOException {
+		boolean added = false;
 		for (String possibleSrc : possibleTestSrcFolders) {
-			File fSrc = new File(possibleSrc);
-			if (fSrc.exists()) {
-				path.add(possibleSrc);
-				if (onlyOne)
-					break;
+			File fSrc = new File(File.separator + possibleSrc).getAbsoluteFile();
+			if (Files.exists(fSrc.toPath())) {
+				if (!pathResults.contains(fSrc.getAbsolutePath())) {
+					pathResults.add(fSrc.getAbsolutePath());
+					added = true;
+				}
+
+			} else {
+				File fSrcRelative = new File(originalProjectRoot + File.separator + possibleSrc);
+				if (Files.isDirectory(fSrcRelative.toPath())) {
+					if (!pathResults.contains(fSrcRelative.getAbsolutePath())) {
+						pathResults.add(fSrcRelative.getAbsolutePath());
+						added = true;
+					}
+				}
+
 			}
+			if (onlyOne && added)
+				break;
 		}
 	}
 
