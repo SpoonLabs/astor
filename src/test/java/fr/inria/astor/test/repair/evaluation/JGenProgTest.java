@@ -63,8 +63,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	public void testExample280CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String[] args = new String[] { "-bug280" };
-		main1.main(args);
-		validatePatchExistence(out + File.separator + "AstorMain-Math-issue-280/");
+		main1.execute(args);
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
 	}
 
 	// TODO: THE PARENT OF A STATEMENT IS A CASE:
@@ -204,44 +205,41 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		JGenProg jgp = (JGenProg) main1.getEngine();
 		ReplaceOp rop = new ReplaceOp();
 		CtElement elMP1 = variant.getModificationPoints().get(0).getCodeElement();
-		
-		assertEquals(elMP1.toString(),"return solve(min, max)");
+
+		assertEquals(elMP1.toString(), "return solve(min, max)");
 		System.out.println(elMP1);
 
-		List<CtCodeElement > ingredients = jgp.getIngredientStrategy().getIngredientSpace().getIngredients(elMP1, elMP1.getClass().getSimpleName());
+		List<CtCodeElement> ingredients = jgp.getIngredientStrategy().getIngredientSpace().getIngredients(elMP1,
+				elMP1.getClass().getSimpleName());
 		System.out.println(ingredients);
 		CtCodeElement patch = ingredients.get(0);
-		assertEquals(patch.toString(),"return solve(f, min, max)");
-		
+		assertEquals(patch.toString(), "return solve(f, min, max)");
+
 		OperatorInstance operation = new OperatorInstance();
 		operation.setOriginal(elMP1);
 		operation.setOperationApplied(rop);
 		operation.setModificationPoint(variant.getModificationPoints().get(0));
 		operation.defineParentInformation(variant.getModificationPoints().get(0));
 		operation.setModified(patch);
-		
 
 		variant.putModificationInstance(0, operation);
 
 		boolean changed = VariableResolver.changeShadowedVars(elMP1, patch);
 		assertTrue(changed);
-		System.out.println("Pach code before: "+ patch);
-		
-		CtMethod mep = (CtMethod) elMP1.getParent(spoon.reflect.declaration.CtMethod.class); 
-		System.out.println("Parent before:\n"+mep);
-		elMP1.replace(patch);
-		System.out.println("Parent after:\n"+mep);
-		System.out.println("Pach code after: "+ patch);
-		//assertEquals(patch.toString(),"return solve(this.f, min, max)");
-		assertEquals(patch.toString(),"return solve(f, min, max)");
-		
-		
-		patch.setImplicit(false);
-		System.out.println("Pach code after impl: "+ patch);
-		
-		
-	}
+		System.out.println("Pach code before: " + patch);
 
+		CtMethod mep = (CtMethod) elMP1.getParent(spoon.reflect.declaration.CtMethod.class);
+		System.out.println("Parent before:\n" + mep);
+		elMP1.replace(patch);
+		System.out.println("Parent after:\n" + mep);
+		System.out.println("Pach code after: " + patch);
+		// assertEquals(patch.toString(),"return solve(this.f, min, max)");
+		assertEquals(patch.toString(), "return solve(f, min, max)");
+
+		patch.setImplicit(false);
+		System.out.println("Pach code after impl: " + patch);
+
+	}
 
 	@SuppressWarnings("rawtypes")
 	@Test
@@ -266,14 +264,15 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
 
-		//validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
+		// validatePatchExistence(out + File.separator + "AstorMain-math_70/",
+		// solutions.size());
 
 		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
 		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());
-		
+
 		assertEquals("return solve(f, min, max)", mi.getModified().toString());
-		
+
 	}
 
 	/**
