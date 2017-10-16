@@ -20,6 +20,8 @@ import org.json.simple.parser.JSONParser;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.jgenprog.JGenProg;
+import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
@@ -27,16 +29,20 @@ import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.population.PopulationConformation;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
+import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -66,24 +72,28 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	public void testExample288CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String[] args = new String[] { "-bug288" };
-		main1.main(args);
-		validatePatchExistence(out + File.separator + "AstorMain-Math-issue-288/");
+		main1.execute(args);
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
 	}
 
 	// @Test
 	public void testExample340CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String[] args = new String[] { "-bug340" };
-		main1.main(args);
-		validatePatchExistence(out + File.separator + "Math-issue-340/");
+		main1.execute(args);
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
 	}
 
 	// @Test
 	public void testExample309CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String[] args = new String[] { "-bug309" };
-		main1.main(args);
-		validatePatchExistence(out + File.separator + "Math-issue-309/");
+		main1.execute(args);
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+
 	}
 
 	/**
@@ -99,11 +109,14 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "200", "-scope", "package", "-seed", "10" };
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "true",
+				"-maxgen", "400", "-scope", "package", "-seed", "10", "-loglevel", "DEBUG" };
 		System.out.println(Arrays.toString(args));
-		main1.main(args);
-		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+
 	}
 
 	/**
@@ -119,10 +132,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		int generations = 50;
+		int generations = 1000;
 		String[] args = commandMath70(dep, out, generations);
 		CommandSummary cs = new CommandSummary(args);
-		cs.command.put("-stopfirst", "false");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -166,11 +180,107 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70ThisKeyword() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 0;
+		String[] args = commandMath70(dep, out, generations);
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-flthreshold", "1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.append("-parameters", ("testexecutorclass:JUnitExternalExecutor"));
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		assertEquals(1, main1.getEngine().getVariants().size());
+		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+
+		JGenProg jgp = (JGenProg) main1.getEngine();
+		ReplaceOp rop = new ReplaceOp();
+		CtElement elMP1 = variant.getModificationPoints().get(0).getCodeElement();
+		
+		assertEquals(elMP1.toString(),"return solve(min, max)");
+		System.out.println(elMP1);
+
+		List<CtCodeElement > ingredients = jgp.getIngredientStrategy().getIngredientSpace().getIngredients(elMP1, elMP1.getClass().getSimpleName());
+		System.out.println(ingredients);
+		CtCodeElement patch = ingredients.get(0);
+		assertEquals(patch.toString(),"return solve(f, min, max)");
+		
+		OperatorInstance operation = new OperatorInstance();
+		operation.setOriginal(elMP1);
+		operation.setOperationApplied(rop);
+		operation.setModificationPoint(variant.getModificationPoints().get(0));
+		operation.defineParentInformation(variant.getModificationPoints().get(0));
+		operation.setModified(patch);
+		
+
+		variant.putModificationInstance(0, operation);
+
+		boolean changed = VariableResolver.changeShadowedVars(elMP1, patch);
+		assertTrue(changed);
+		System.out.println("Pach code before: "+ patch);
+		
+		CtMethod mep = (CtMethod) elMP1.getParent(spoon.reflect.declaration.CtMethod.class); 
+		System.out.println("Parent before:\n"+mep);
+		elMP1.replace(patch);
+		System.out.println("Parent after:\n"+mep);
+		System.out.println("Pach code after: "+ patch);
+		//assertEquals(patch.toString(),"return solve(this.f, min, max)");
+		assertEquals(patch.toString(),"return solve(f, min, max)");
+		
+		
+		patch.setImplicit(false);
+		System.out.println("Pach code after impl: "+ patch);
+		
+		
+	}
+
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70LocalSimple() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 500;
+		String[] args = commandMath70(dep, out, generations);
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-flthreshold", "1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.append("-parameters", ("testexecutorclass:JUnitExternalExecutor"));
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+		ProgramVariant variant = solutions.get(0);
+
+		//validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
+
+		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
+		assertNotNull(mi);
+		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());
+		
+		assertEquals("return solve(f, min, max)", mi.getModified().toString());
+		
+	}
+
 	/**
 	 * Math 70 bug can be fixed by replacing a method invocation inside a return
 	 * statement. + return solve(f, min, max); - return solve(min, max); One
-	 * solution with local scope, another with package
-	 * This test validates the stats via API and JSON
+	 * solution with local scope, another with package This test validates the
+	 * stats via API and JSON
 	 * 
 	 * @throws Exception
 	 */
@@ -191,9 +301,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
-		
+
 		Stats stats = Stats.getCurrentStat();
-		
+
 		assertNotNull(stats);
 
 		assertNotNull(stats.getStatsOfPatches());
