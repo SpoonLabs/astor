@@ -78,11 +78,6 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 
 				AstorOperator pointOperation = this.getOperatorSpace().getOperators().get(0);
 
-				try {
-					log.info("exa: mod_point " + modifPoint);
-				} catch (Exception e) {
-					log.error(e);
-				}
 				EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) this.getIngredientStrategy();
 
 				List<CtCodeElement> baseElements = estrategy.getNotExhaustedBaseElements(modifPoint, pointOperation);
@@ -94,15 +89,18 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 				totalBases += baseElements.size();
 				Stats.currentStat.getIngredientsStats()
 						.addSize(Stats.currentStat.getIngredientsStats().ingredientSpaceSize, baseElements.size());
-
 				int base = 0;
+				
+				log.info("###\nMP  "+modifPoint +"| code: "+modifPoint.getCodeElement().toString() + "| ("+((CtExpression)modifPoint.getCodeElement()).getType() +") "  + ": "+baseElements.size());
+				
+				
 				for (CtCodeElement baseIngredient : baseElements) {
 					base++;
-					log.debug("\nMP:  (" + (mp) + "/" + total + ")"
+					log.debug("\nMP:  (" + (mp) + "/" + total + ") " +modifPoint + "|| code: "+modifPoint.getCodeElement().toString()+ "|| "
 							+ modifPoint.getCodeElement().getClass().getCanonicalName() + " ("
 							+ ((CtExpression) modifPoint.getCodeElement()).getType().getQualifiedName() + ") \nBase: ("
 							+ base + "/" + baseElements.size() + ") " + baseIngredient.getClass().getCanonicalName()
-							+ " (" + ((CtExpression) baseIngredient).getType().getQualifiedName() + ")"
+							+ " (" + ((CtExpression) baseIngredient).getType().getQualifiedName() + ")" + "*-*-*"+baseIngredient
 
 					);
 					long[] nrIngredients = getNrIngredients(modifPoint, baseIngredient);
@@ -148,6 +146,8 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 		VarMapping mapping = VariableResolver.mapVariablesFromContext(modificationPoint.getContextOfModificationPoint(),
 				codeElementToModifyFromBase);
 
+		log.debug("Mapping results "+ mapping);
+		
 		// if we map all variables
 		if (mapping.getNotMappedVariables().isEmpty()) {
 			if (mapping.getMappedVariables().isEmpty()) {
@@ -166,6 +166,8 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 				return new long[] { (long) maxValues[0], countedLimited };
 			}
 
+		}else{
+		//	log.debug("not mapped vars: "+ mapping.getNotMappedVariables());
 		}
 		return new long[] { 0, 0 };
 	}

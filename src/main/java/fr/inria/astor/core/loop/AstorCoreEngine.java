@@ -38,8 +38,6 @@ import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.PatchStat;
-import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
-import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;

@@ -1,7 +1,6 @@
 package fr.inria.astor.core.manipulation;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
