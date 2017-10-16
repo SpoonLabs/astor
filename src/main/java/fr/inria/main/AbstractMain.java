@@ -1,6 +1,7 @@
 package fr.inria.main;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,7 +12,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.loop.AstorCoreEngine;
@@ -694,16 +694,18 @@ public abstract class AbstractMain {
 		properties.setWorkingDirRoot(workingdir + projectUnderRepairKeyFolder);
 		properties.setWorkingDirForSource(workingDirForSource);
 		properties.setWorkingDirForBytecode(workingDirForBytecode);
+
 		properties.setOriginalAppBinDir(
-				originalProjectRoot + File.separator + ConfigurationProperties.getProperty("binjavafolder"));
+				determineBinFolder(originalProjectRoot, ConfigurationProperties.getProperty("binjavafolder")));
 		properties.setOriginalTestBinDir(
-				originalProjectRoot + File.separator + ConfigurationProperties.getProperty("bintestfolder"));
+				determineBinFolder(originalProjectRoot, ConfigurationProperties.getProperty("bintestfolder")));
+		
 		properties.setFixid(projectIdentifier);
 
 		properties.setOriginalProjectRootDir(originalProjectRoot);
 
-		List<String> src = determineMavenFolders(srcWithMain, originalProjectRoot);
-		properties.setOriginalDirSrc(src);
+		List<String> srcFolder = determineSourceFolders(srcWithMain, originalProjectRoot);
+		properties.setOriginalDirSrc(srcFolder);
 
 		if (dependencies != null) {
 			properties.setDependencies(dependencies);
@@ -720,28 +722,56 @@ public abstract class AbstractMain {
 		return ce;
 	}
 
-	private List<String> determineMavenFolders(boolean srcWithMain, String originalProjectRoot) {
+	private String determineBinFolder(String originalProjectRoot, String paramBinFolder) {
 
-		File srcdefault = new File(
-				originalProjectRoot + File.separator + ConfigurationProperties.getProperty("srcjavafolder"));
+		File fBin = new File(paramBinFolder);
+		if (fBin.exists())
+			return paramBinFolder;
 
-		File testdefault = new File(
-				originalProjectRoot + File.separator + ConfigurationProperties.getProperty("srctestfolder"));
+		return originalProjectRoot + File.separator + paramBinFolder;
+	}
 
-		if (srcdefault.exists() && testdefault.exists())
-			return Arrays.asList(new String[] { ConfigurationProperties.getProperty("srcjavafolder"),
-					ConfigurationProperties.getProperty("srctestfolder") });
+	private List<String> determineSourceFolders(boolean srcWithMain, String originalProjectRoot) {
 
-		File src = new File(originalProjectRoot + File.separator + "src/main/java");
-		if (src.exists())
-			return Arrays.asList(new String[] { "src/main/java", "src/test/java" });
+		final boolean onlyOneFolder = true;
 
-		src = new File(originalProjectRoot + File.separator + "src/java");
-		if (src.exists())
-			return Arrays.asList(new String[] { "src/java", "src/test" });
+		List<String> sourceFolders = new ArrayList<>();
 
-		return Arrays.asList(new String[] { "src", "test" });
+		String paramSrc = ConfigurationProperties.getProperty("srcjavafolder");
+		String paramTestSrc = ConfigurationProperties.getProperty("srctestfolder");
 
+		String[] srcs = paramSrc.split(File.pathSeparator);
+		// adding src from parameter
+		addToFolder(sourceFolders, srcs, !onlyOneFolder);
+
+		// Adding src folders by guessing potential folders
+		String[] possibleSrcFolders = new String[] { (originalProjectRoot + File.separator + "src/main/java"),
+				(originalProjectRoot + File.separator + "src/java"), (originalProjectRoot + File.separator + "src"), };
+		addToFolder(sourceFolders, possibleSrcFolders, onlyOneFolder);
+
+		// adding test folder from the argument
+		String[] srcTs = paramTestSrc.split(File.pathSeparator);
+		addToFolder(sourceFolders, srcTs, !onlyOneFolder);
+
+		// Adding src test folders by guessing potential folders
+		String[] possibleTestSrcFolders = new String[] { (originalProjectRoot + File.separator + "src/test/java"),
+				(originalProjectRoot + File.separator + "src/test"), (originalProjectRoot + File.separator + "test"), };
+
+		addToFolder(sourceFolders, possibleTestSrcFolders, onlyOneFolder);
+
+		return sourceFolders;
+
+	}
+
+	private void addToFolder(List<String> path, String[] possibleTestSrcFolders, boolean onlyOne) {
+		for (String possibleSrc : possibleTestSrcFolders) {
+			File fSrc = new File(possibleSrc);
+			if (fSrc.exists()) {
+				path.add(possibleSrc);
+				if (onlyOne)
+					break;
+			}
+		}
 	}
 
 }

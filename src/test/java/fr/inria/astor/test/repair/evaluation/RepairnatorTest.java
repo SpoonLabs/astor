@@ -3,9 +3,16 @@ package fr.inria.astor.test.repair.evaluation;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.core.entities.OperatorInstance;
+import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 
@@ -68,8 +75,9 @@ public class RepairnatorTest {
 						+ "/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:" + m2path
 						+ "/com/google/code/gson/gson/2.7/gson-2.7.jar",
 				"-mode", "jgenprog", "-location",
-				new File("./examples/librepair-experiments-jhy-jsoup-285353482-20171009-062400_bugonly_with_package_info")
-						.getAbsolutePath(),
+				new File(
+						"./examples/librepair-experiments-jhy-jsoup-285353482-20171009-062400_bugonly_with_package_info")
+								.getAbsolutePath(),
 				"-srcjavafolder", "/src/main/java", // Modified by M.M, original
 													// path was absolute.
 				"-stopfirst", "true", "-population", "1", "-maxgen", "50", // Added
@@ -93,8 +101,49 @@ public class RepairnatorTest {
 
 	}
 
-	
-	
+	@Test
+	public void testMath70AbsolutesPaths() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 500;
+		// Changing the location of source folders
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-location",
+				new File("./examples/math_20").getAbsolutePath(), "-package", "org.apache.commons", 
+				//Abstracts (refering to another folder)
+				"-srcjavafolder",new File("./examples/math_70").getAbsolutePath() + "/src/main/java/", //
+				"-srctestfolder", new File("./examples/math_70").getAbsolutePath() + "/src/test/java/", //
+				"-binjavafolder", new File("./examples/math_70").getAbsolutePath() +"/target/classes", 
+				"-bintestfolder", new File("./examples/math_70").getAbsolutePath() +"/target/test-classes", //
+				"-javacompliancelevel",
+				"7", "-flthreshold", "0.5", "-out", out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen",
+				Integer.toString(generations), "-stopfirst", "true", "-maxtime", "100", "-loglevel", "INFO",
+				"-parameters", "disablelog:false"
+
+		};
+
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-flthreshold", "1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+		ProgramVariant variant = solutions.get(0);
+
+		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
+		assertNotNull(mi);
+		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());
+
+		assertEquals("return solve(f, min, max)", mi.getModified().toString());
+
+	}
+
 	@Test
 	@Ignore
 	public void testAsc() throws Exception {
