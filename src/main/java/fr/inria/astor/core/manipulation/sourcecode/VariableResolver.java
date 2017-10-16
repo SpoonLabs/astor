@@ -22,6 +22,7 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtLocalVariable;
@@ -44,6 +45,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 
 /**
  * Variable manipulations: methods to analyze variables and scope
@@ -482,13 +484,10 @@ public class VariableResolver {
 			return false;
 		}
 
-		CtVariable var = varref.getDeclaration();
-		// if (var == null || var.getModifiers().contains(ModifierKind.STATIC))
-		// {
-		if (var != null && var.getModifiers().contains(ModifierKind.STATIC)) {
-			return true;
-		}
-		return false;
+		CtFieldReference fieldRef = (CtFieldReference) varref;
+
+		return fieldRef.isStatic();
+
 	}
 
 	/**
@@ -587,6 +586,53 @@ public class VariableResolver {
 		}
 
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static boolean changeShadowedVars(CtElement origin, CtElement destination) {
+		boolean changed = false;
+		List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(destination);
+		logger.debug("vars from patch " + varAccessCollected);
+		for (CtVariableAccess ctVariableAccess : varAccessCollected) {
+
+			logger.debug(
+					"--> var from patch: " + ctVariableAccess + " " + ctVariableAccess.getClass().getCanonicalName());
+			if (ctVariableAccess instanceof CtFieldAccess) {
+				CtFieldAccess f = (CtFieldAccess) ctVariableAccess;
+
+				CtField<?> field = f.getVariable().getFieldDeclaration();
+
+				List<CtVariable<?>> vars = origin.map(new PotentialVariableDeclarationFunction(field.getSimpleName()))
+						.list();
+				if (vars.size() > 0) {
+					for (CtVariable<?> ctVariable : vars) {
+
+						if (ctVariable != field) {
+							logger.debug("SameName: " + ctVariable);
+							if (ctVariable instanceof CtParameter) {
+								CtParameterReference pr = MutationSupporter.getFactory()
+										.createParameterReference((CtParameter) ctVariable);
+								CtVariableRead vr = (CtVariableRead) MutationSupporter.getFactory().createVariableRead(
+										pr, ctVariable.getModifiers().contains(ModifierKind.STATIC));
+
+								ctVariableAccess.replace(vr);
+							} else if (ctVariable instanceof CtLocalVariable) {
+								CtLocalVariableReference pr = MutationSupporter.getFactory()
+										.createLocalVariableReference((CtLocalVariable) ctVariable);
+								CtVariableRead vr = (CtVariableRead) MutationSupporter.getFactory().createVariableRead(
+										pr, ctVariable.getModifiers().contains(ModifierKind.STATIC));
+								ctVariableAccess.replace(vr);
+
+							}
+							changed = true;
+
+						}
+					}
+
+				}
+			}
+		}
+		return changed;
 	}
 
 	/**
@@ -937,12 +983,13 @@ public class VariableResolver {
 
 		logger.debug("NrVarCombinationsConsideredAfter: " + allCombinations.size());
 
-		for (Map<String,CtVariable> map : allCombinations) {
-			if(map.keySet().size() !=  varsNamesToCombine.size()){
-				logger.error("Missing vars "+ map.keySet().size() +" "+ varsNamesToCombine);
+		for (Map<String, CtVariable> map : allCombinations) {
+			if (map.keySet().size() != varsNamesToCombine.size()) {
+				// logger.error("Missing vars "+ map.keySet().size() +" "+
+				// varsNamesToCombine);
 			}
 		}
-		
+
 		return allCombinations;
 	}
 
