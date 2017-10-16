@@ -184,7 +184,6 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 		assertEquals(RemoveOp.class.getSimpleName(),
 				main1.getEngine().getOperatorSpace().values()[1].getClass().getSimpleName());
 
-		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 
@@ -204,7 +203,6 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 				};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
-		validatePatchExistence(out + File.separator + "AstorMain-math_85/");
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 
