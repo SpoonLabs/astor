@@ -44,6 +44,8 @@ public class OutputWritter {
 	}
 
 	public void saveSourceCode(CtClass element) {
+		
+		this.getEnvironment().setPreserveLineNumbers(ConfigurationProperties.getPropertyBool("preservelinenumbers"));
 		if (javaPrinter == null) {
 			throw new IllegalArgumentException("Java printer is null");
 		}
