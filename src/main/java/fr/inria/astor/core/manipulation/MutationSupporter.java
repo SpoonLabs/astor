@@ -65,15 +65,18 @@ public class MutationSupporter {
 		this.output = new OutputWritter(factory);
 	}
 
-	public void buildModel(String srcPathToBuild, String[] classpath) {
+	public void buildModel(String srcPathToBuild, String bytecodePathToBuild, String[] classpath) {
 		boolean saveOutput = true;
-		buildModel(srcPathToBuild, classpath, saveOutput);
+		buildModel(srcPathToBuild, bytecodePathToBuild, classpath, saveOutput);
 	}
 
-	public void buildModel(String srcPathToBuild, String[] classpath, boolean saveOutput) {
+	public void buildModel(String srcPathToBuild, String bytecodePathToBuild, String[] classpath, boolean saveOutput) {
 		JDTBasedSpoonCompiler jdtSpoonModelBuilder = null;
 		logger.info("building model: " + srcPathToBuild + ", compliance level: "
 				+ factory.getEnvironment().getComplianceLevel());
+		
+		factory.getEnvironment().setPreserveLineNumbers(true);
+		
 		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
 
 		String[] sources = srcPathToBuild.split(File.pathSeparator);
@@ -81,13 +84,18 @@ public class MutationSupporter {
 			if (!src.trim().isEmpty())
 				jdtSpoonModelBuilder.addInputSource(new File(src));
 		}
-		logger.info("Classpath for building SpoonModel "+ Arrays.toString(classpath));
+		logger.info("Classpath for building SpoonModel " + Arrays.toString(classpath));
 		jdtSpoonModelBuilder.setSourceClasspath(classpath);
+		
 		jdtSpoonModelBuilder.build();
+
+		
 		if (saveOutput) {
-			jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
-			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
+		//	jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
+		//	jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 		}
+	//	jdtSpoonModelBuilder.setBinaryOutputDirectory(new File(bytecodePathToBuild));
+	//	jdtSpoonModelBuilder.compile(InputType.CTTYPES);
 	}
 
 	/**
@@ -263,7 +271,6 @@ public class MutationSupporter {
 		env.useTabulations(true);
 		return env;
 	}
-
 
 	public OutputWritter getOutput() {
 		return output;

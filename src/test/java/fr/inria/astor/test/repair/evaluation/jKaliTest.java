@@ -42,7 +42,8 @@ public class jKaliTest extends BaseEvolutionaryTest{
 				"-out",out.getAbsolutePath()
 				};
 		System.out.println(Arrays.toString(args));
-		main1.main(args);
+		main1.execute(args);
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
 		
 	}
 	@Test

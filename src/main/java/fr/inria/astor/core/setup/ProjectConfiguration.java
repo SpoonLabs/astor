@@ -68,11 +68,11 @@ public class ProjectConfiguration {
 		this.internalProperties.put(ProjectPropertiesEnum.workingDirRoot, outDir);
 	}
 
-	public String getTestDirSrc() {
-		return (String) this.internalProperties.get(ProjectPropertiesEnum.testDirSrc);
+	public List<String> getTestDirSrc() {
+		return (List<String>) this.internalProperties.get(ProjectPropertiesEnum.testDirSrc);
 	}
 
-	public void setTestDirSrc(String testPath) {
+	public void setTestDirSrc(List<String> testPath) {
 		this.internalProperties.put(ProjectPropertiesEnum.testDirSrc, testPath);
 	}
 

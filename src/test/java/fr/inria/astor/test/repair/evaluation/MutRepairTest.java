@@ -22,7 +22,8 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 	@Test
 	//@Ignore
 	public void testMath85issue280() throws Exception {
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath()
+			+	File.pathSeparator+ new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath() ;
 		String[] args = new String[] { 
 				"-dependencies", dep, "-mode", "mutation", "-failing",
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
@@ -32,7 +33,9 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.1", 
 				"-stopfirst", "true",
 				"-maxtime", "15",
-				"-seed","10"};
+				"-seed","10"
+				
+		};
 		System.out.println(Arrays.toString(args));
 		AstorMain m = new AstorMain();
 		m.execute(args);

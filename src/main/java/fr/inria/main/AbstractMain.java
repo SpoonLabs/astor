@@ -16,6 +16,7 @@ import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
@@ -34,6 +35,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.validation.validators.ProgramValidator;
 import fr.inria.astor.util.TimeUtil;
+import spoon.Launcher;
 import spoon.reflect.factory.Factory;
 
 /**
@@ -678,8 +680,35 @@ public abstract class AbstractMain {
 		System.exit(0);
 
 	}
+	
+	/**
+	 * Compile the original code
+	 */
+	protected void compileProject() {
+		final Launcher launcher = new Launcher();
+		for (String s : projectFacade.getProperties().getOriginalDirSrc())
+			launcher.addInputResource(s);
 
-	protected ProjectRepairFacade getProject(String location, String projectIdentifier, String method,
+		for (String s : projectFacade.getProperties().getTestDirSrc())
+			launcher.addInputResource(s);
+
+		launcher.setBinaryOutputDirectory(projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT));
+
+		log.debug("Compiling original code from " + launcher.getModelBuilder().getInputSources() + " saved in "
+				+ launcher.getModelBuilder().getBinaryOutputDirectory());
+
+		launcher.getEnvironment().setPreserveLineNumbers(true);
+		launcher.getEnvironment().setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.buildModel();
+		launcher.getEnvironment()
+				.setSourceClasspath(projectFacade.getProperties().getDependenciesString().split(File.pathSeparator));
+
+		launcher.getModelBuilder().compile();
+
+	}
+
+	protected ProjectRepairFacade getProjectConfiguration(String location, String projectIdentifier, String method,
 			List<String> failingTestCases, String dependencies, boolean srcWithMain) throws Exception {
 
 		if (projectIdentifier == null || projectIdentifier.equals("")) {
@@ -697,22 +726,26 @@ public abstract class AbstractMain {
 		properties.setWorkingDirForSource(workingDirForSource);
 		properties.setWorkingDirForBytecode(workingDirForBytecode);
 
-		properties.setOriginalAppBinDir(
-				determineBinFolder(originalProjectRoot, ConfigurationProperties.getProperty("binjavafolder")));
-		properties.setOriginalTestBinDir(
-				determineBinFolder(originalProjectRoot, ConfigurationProperties.getProperty("bintestfolder")));
-
 		properties.setFixid(projectIdentifier);
 
 		properties.setOriginalProjectRootDir(originalProjectRoot);
 
-		List<String> srcFolder = determineSourceFolders(srcWithMain, originalProjectRoot);
-		properties.setOriginalDirSrc(srcFolder);
+		determineSourceFolders(properties, srcWithMain, originalProjectRoot);
 
 		if (dependencies != null) {
 			properties.setDependencies(dependencies);
 		}
 
+		if (ConfigurationProperties.getPropertyBool("autocompile")){
+			compileProject();
+		}else{
+			String originalBin = determineBinFolder(originalProjectRoot, ConfigurationProperties.getProperty("binjavafolder"));
+			properties.setOriginalAppBinDir(originalBin);	
+			
+			String originalBinTest = determineBinFolder(originalProjectRoot, ConfigurationProperties.getProperty("bintestfolder"));
+			properties.setOriginalTestBinDir(originalBinTest);
+		}
+		
 		properties.setFailingTestCases(failingTestCases);
 
 		properties.setPackageToInstrument(ConfigurationProperties.getProperty("packageToInstrument"));
@@ -723,43 +756,62 @@ public abstract class AbstractMain {
 
 		return ce;
 	}
-
+	
 	private String determineBinFolder(String originalProjectRoot, String paramBinFolder) {
 
-		File fBin = new File(paramBinFolder);
-		if (fBin.exists())
+		File fBin = new File(paramBinFolder).getAbsoluteFile();
+		if (Files.exists(fBin.toPath())) {
 			return paramBinFolder;
+		} else
+			fBin = new File(originalProjectRoot + File.separator + paramBinFolder).getAbsoluteFile();
+		if (Files.exists(fBin.toPath())) {
+			return fBin.getAbsolutePath();
+		}
 
-		return originalProjectRoot + File.separator + paramBinFolder;
+		throw new IllegalArgumentException("The bin folder  " + fBin + " does not exist.");
 	}
 
-	private List<String> determineSourceFolders(boolean srcWithMain, String originalProjectRoot) throws IOException {
+	private List<String> determineSourceFolders(ProjectConfiguration properties, boolean srcWithMain,
+			String originalProjectRoot) throws IOException {
 
 		final boolean onlyOneFolder = true;
 
 		List<String> sourceFolders = new ArrayList<>();
 
 		String paramSrc = ConfigurationProperties.getProperty("srcjavafolder");
-		String paramTestSrc = ConfigurationProperties.getProperty("srctestfolder");
 
 		String[] srcs = paramSrc.split(File.pathSeparator);
 		// adding src from parameter
 		addToFolder(sourceFolders, srcs, originalProjectRoot, !onlyOneFolder);
+		if (sourceFolders.isEmpty()) {
+			// Adding src folders by guessing potential folders
+			String[] possibleSrcFolders = new String[] { (originalProjectRoot + File.separator + "src/main/java"),
+					(originalProjectRoot + File.separator + "src/java"),
+					(originalProjectRoot + File.separator + "src"), };
 
-		// Adding src folders by guessing potential folders
-		String[] possibleSrcFolders = new String[] { (originalProjectRoot + File.separator + "src/main/java"),
-				(originalProjectRoot + File.separator + "src/java"), (originalProjectRoot + File.separator + "src"), };
-		addToFolder(sourceFolders, possibleSrcFolders, originalProjectRoot, onlyOneFolder);
+			addToFolder(sourceFolders, possibleSrcFolders, originalProjectRoot, onlyOneFolder);
+		}
+		log.info("Source folders: " + sourceFolders);
+		properties.setOriginalDirSrc(sourceFolders);
+
+		// Now test folder
+		String paramTestSrc = ConfigurationProperties.getProperty("srctestfolder");
+
+		List<String> sourceTestFolders = new ArrayList<>();
 
 		// adding test folder from the argument
 		String[] srcTs = paramTestSrc.split(File.pathSeparator);
-		addToFolder(sourceFolders, srcTs, originalProjectRoot, !onlyOneFolder);
+		addToFolder(sourceTestFolders, srcTs, originalProjectRoot, !onlyOneFolder);
+		if (sourceTestFolders.isEmpty()) {
+			// Adding src test folders by guessing potential folders
+			String[] possibleTestSrcFolders = new String[] { (originalProjectRoot + File.separator + "src/test/java"),
+					(originalProjectRoot + File.separator + "src/test"),
+					(originalProjectRoot + File.separator + "test"), };
 
-		// Adding src test folders by guessing potential folders
-		String[] possibleTestSrcFolders = new String[] { (originalProjectRoot + File.separator + "src/test/java"),
-				(originalProjectRoot + File.separator + "src/test"), (originalProjectRoot + File.separator + "test"), };
-
-		addToFolder(sourceFolders, possibleTestSrcFolders, originalProjectRoot, onlyOneFolder);
+			addToFolder(sourceTestFolders, possibleTestSrcFolders, originalProjectRoot, onlyOneFolder);
+		}
+		log.info("Source Test folders: " + sourceTestFolders);
+		properties.setTestDirSrc(sourceTestFolders);
 
 		return sourceFolders;
 

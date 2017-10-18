@@ -131,6 +131,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		log.info("\n----Starting Solution Search");
 
+		//Save code of default variant
+		String srcOutput = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		mutatorSupporter.saveSourceCodeOnDiskProgramVariant(this.originalVariant, srcOutput);
+			
 		generationsExecuted = 0;
 		boolean stopSearch = false;
 
@@ -311,9 +315,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public void createInitialPopulation() throws Exception {
-
-		// Creates the spoon model
-		initModel();
 
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
 			// We dont use FL, so at this point the do not have suspicious
@@ -1156,7 +1157,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	}
 
-	private void initModel() throws Exception {
+	public void initModel() throws Exception {
 
 		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
 			Factory fcurrent = MutationSupporter.getFactory();
@@ -1166,11 +1167,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 
 		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		String bytecodeLocation = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
 		String[] cpArray = classpath.split(File.pathSeparator);
 
 		try {
-			mutatorSupporter.buildModel(codeLocation, cpArray);
+			mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray,false);
 			log.debug("Spoon Model built from location: " + codeLocation);
 		} catch (Exception e) {
 			log.error("Problem compiling the model with compliance level "
@@ -1178,7 +1180,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.error(e.getMessage());
 			mutatorSupporter.getFactory().getEnvironment()
 					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
-			mutatorSupporter.buildModel(codeLocation, cpArray);
+			mutatorSupporter.buildModel(codeLocation,bytecodeLocation, cpArray);
 		}
 
 		///// ONCE ASTOR HAS BUILT THE MODEL,

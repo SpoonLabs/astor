@@ -355,7 +355,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
 				"-stopfirst", "true", "-maxtime", "100", "-loglevel", "INFO", "-parameters", "disablelog:false"

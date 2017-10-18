@@ -143,6 +143,61 @@ public class RepairnatorTest {
 		assertEquals("return solve(f, min, max)", mi.getModified().toString());
 
 	}
+	@Test
+	public void testMath70WrongPaths() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 500;
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", 
+				//Abstracts (refering to another folder)
+				"-srcjavafolder",new File("./examples/math_70").getAbsolutePath() + "/src/main/java/", //
+				"-srctestfolder", new File("./examples/math_70").getAbsolutePath() + "/src/test/java/", //
+				"-binjavafolder", new File("./examples/math_70").getAbsolutePath() +"/target/classes", 
+				"-bintestfolder", new File("./examples/math_70").getAbsolutePath() +"/target/test-classes", //
+				"-javacompliancelevel",
+				"7", "-flthreshold", "0.5", "-out", out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen",
+				Integer.toString(generations), "-stopfirst", "true", "-maxtime", "100", "-loglevel", "INFO",
+				"-parameters", "disablelog:false"
+
+		};
+
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-flthreshold", "1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		
+		//
+		cs.command.put("-binjavafolder", "blabla");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		try{
+			
+		main1.execute(cs.flat());
+			fail("expected ex wrong bin folder");
+		}catch (Exception e) {
+			//expected
+		}
+		cs.command.put("-binjavafolder", new File("./examples/math_70").getAbsolutePath() +"/target/classes");
+		//wrong path but astor resolves it
+		cs.command.put("-srcjavafolder", new File("./examples/math_70").getAbsolutePath() +"/blabla1");
+
+		main1.execute(cs.flat());
+		
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+		ProgramVariant variant = solutions.get(0);
+
+		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
+		assertNotNull(mi);
+		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());
+
+		assertEquals("return solve(f, min, max)", mi.getModified().toString());
+
+	}
 
 	@Test
 	@Ignore

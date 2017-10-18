@@ -48,16 +48,16 @@ public class AstorMain extends AbstractMain {
 		List<String> failingList = (failing != null) ? Arrays.asList(failing.split(File.pathSeparator))
 				: new ArrayList<>();
 		String method = this.getClass().getSimpleName();
-		projectFacade = getProject(location, projectName, method, failingList, dependencies, true);
+
+		projectFacade = getProjectConfiguration(location, projectName, method, failingList, dependencies, true);
+
 		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
 
 		projectFacade.setupWorkingDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
-		List<String> tr = FinderTestCases.findTestCasesForRegression(
-				projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
 
-		projectFacade.getProperties().setRegressionCases(tr);
 	}
+	
 
 	/**
 	 * It creates a repair engine according to an execution mode.
@@ -102,6 +102,14 @@ public class AstorMain extends AbstractMain {
 
 		// Loading extension Points
 		astorCore.loadExtensionPoints();
+
+		// Creates the spoon model and compiles it
+		astorCore.initModel();
+
+		// Find test cases to use in validation
+		List<String> tr = FinderTestCases.findTestCasesForRegression(
+				projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
+		projectFacade.getProperties().setRegressionCases(tr);
 
 		// Initialize Population
 		astorCore.createInitialPopulation();
@@ -259,17 +267,16 @@ public class AstorMain extends AbstractMain {
 		String loglevelSelected = ConfigurationProperties.properties.getProperty("loglevel");
 		if (loglevelSelected != null)
 			LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
-		
-		
+
 		if (ConfigurationProperties.hasProperty("logfilepath")) {
 			FileAppender fa = new FileAppender();
 			String filePath = ConfigurationProperties.getProperty("logfilepath");
 			File fileLog = new File(filePath);
-			if(!fileLog.exists()){
+			if (!fileLog.exists()) {
 				fileLog.getParentFile().mkdirs();
 				fileLog.createNewFile();
 			}
-			
+
 			fa.setName("FileLogger");
 			fa.setFile(fileLog.getAbsolutePath());
 			fa.setLayout(new PatternLayout(patternLayout));
