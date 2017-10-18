@@ -36,8 +36,8 @@ public class jKaliTest extends BaseEvolutionaryTest{
 				"-package", "mooctest",
 				"-srcjavafolder", "/src/",
 				"-srctestfolder", "/junit/", 
-				"-binjavafolder", "/bin/", 
-				"-bintestfolder","/bin/",
+				"-binjavafolder", "bin/", 
+				"-bintestfolder","bin/",
 				"-flthreshold","0.1",
 				"-out",out.getAbsolutePath()
 				};

@@ -25,7 +25,6 @@ public class EvoSuiteParticularClassesTest extends BaseEvolutionaryTest {
 					+ ",out,"+new File(ConfigurationProperties.getProperty("workingDirectory"))
 					+ ",-failing,org.apache.commons.math.analysis.solvers.BaseSecantSolver,"
 					+ "-package,org.apache.commons,"
-					//+ "-jvm4testexecution,/home/mmartinez/jdk1.8.0_45/bin/"
 					+ "-javacompliancelevel,7,"
 					+ "-maxgen,1000000,"
 					+ "-seed,6001,"
@@ -46,11 +45,8 @@ public class EvoSuiteParticularClassesTest extends BaseEvolutionaryTest {
 		@Test
 		public void testM70() throws Exception{
 			String command = "-mode,statement,"
-					//+ "-location,"+ (new File(".")).getAbsolutePath()
-					
 						+ "-location,"+ (new File("./examples/math_70")).getAbsolutePath()
 					+ ","+ "-dependencies,"+new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
-					//+ ","
 					+ ",out,"+new File(ConfigurationProperties.getProperty("workingDirectory"))
 					+ ",-failing,org.apache.commons.math.analysis.solvers.BisectionSolverTest,"
 					+ "-package,org.apache.commons,"
@@ -60,9 +56,9 @@ public class EvoSuiteParticularClassesTest extends BaseEvolutionaryTest {
 					+ "-stopfirst,true,"
 					+ "-scope,package,-maxtime,10,"
 					+ "-population,1,"
-					+ "-srcjavafolder,src/java/,"
-					+ "-srctestfolder,src/test/,-binjavafolder,target/classes/,"
-					+ "-bintestfolder,target/test-classes/,"
+					+ "-srcjavafolder,src/java/main/,"
+					+ "-srctestfolder,src/test/java/,-binjavafolder,/target/classes/,"
+					+ "-bintestfolder,/target/test-classes/,"
 					+ "-flthreshold,0.1,"
 					+ " -validation,fr.inria.astor.core.validation.validators.RegressionValidation,"
 					;
