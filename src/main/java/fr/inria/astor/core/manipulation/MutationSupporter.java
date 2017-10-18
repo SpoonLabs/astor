@@ -25,6 +25,7 @@ import fr.inria.astor.core.manipulation.bytecode.OutputWritter;
 import fr.inria.astor.core.manipulation.sourcecode.ROOTTYPE;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.OutputType;
+import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.cu.SourcePosition;
@@ -65,18 +66,18 @@ public class MutationSupporter {
 		this.output = new OutputWritter(factory);
 	}
 
-	public void buildModel(String srcPathToBuild, String bytecodePathToBuild, String[] classpath) {
-		boolean saveOutput = true;
-		buildModel(srcPathToBuild, bytecodePathToBuild, classpath, saveOutput);
+	public void buildModel(String srcPathToBuild, String[] classpath) {
+
+		buildModel(srcPathToBuild, null, classpath);
 	}
 
-	public void buildModel(String srcPathToBuild, String bytecodePathToBuild, String[] classpath, boolean saveOutput) {
+	public void buildModel(String srcPathToBuild, String bytecodePathToBuild, String[] classpath) {
 		JDTBasedSpoonCompiler jdtSpoonModelBuilder = null;
 		logger.info("building model: " + srcPathToBuild + ", compliance level: "
 				+ factory.getEnvironment().getComplianceLevel());
-		
+
 		factory.getEnvironment().setPreserveLineNumbers(true);
-		
+
 		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
 
 		String[] sources = srcPathToBuild.split(File.pathSeparator);
@@ -86,16 +87,16 @@ public class MutationSupporter {
 		}
 		logger.info("Classpath for building SpoonModel " + Arrays.toString(classpath));
 		jdtSpoonModelBuilder.setSourceClasspath(classpath);
-		
+
 		jdtSpoonModelBuilder.build();
 
-		
-		if (saveOutput) {
-		//	jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
-		//	jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
+		if (ConfigurationProperties.getPropertyBool("savespoonmodelondisk")) {
+			jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
+			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
+			jdtSpoonModelBuilder.setBinaryOutputDirectory(new File(bytecodePathToBuild));
+			jdtSpoonModelBuilder.compile(InputType.CTTYPES);
 		}
-	//	jdtSpoonModelBuilder.setBinaryOutputDirectory(new File(bytecodePathToBuild));
-	//	jdtSpoonModelBuilder.compile(InputType.CTTYPES);
+
 	}
 
 	/**

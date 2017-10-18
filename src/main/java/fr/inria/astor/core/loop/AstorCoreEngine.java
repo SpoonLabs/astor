@@ -1172,7 +1172,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		String[] cpArray = classpath.split(File.pathSeparator);
 
 		try {
-			mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray,false);
+			mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
 			log.debug("Spoon Model built from location: " + codeLocation);
 		} catch (Exception e) {
 			log.error("Problem compiling the model with compliance level "
