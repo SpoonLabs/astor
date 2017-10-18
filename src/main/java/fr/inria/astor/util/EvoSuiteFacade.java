@@ -258,15 +258,15 @@ public class EvoSuiteFacade {
 		logger.debug("Es dir content: " + Arrays.toString(new File(evoTestpath).listFiles()));
 		MutationSupporter mutatorSupporter = MutationSupporter.currentSupporter;
 		String codeLocation = evoTestpath;
-		boolean saveOutput = false;
+		
 		try {
-			mutatorSupporter.buildModel(codeLocation, classpath, saveOutput);
+			mutatorSupporter.buildModel(codeLocation, classpath);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			mutatorSupporter.getFactory().getEnvironment()
 					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
-			mutatorSupporter.buildModel(codeLocation, classpath, saveOutput);
+			mutatorSupporter.buildModel(codeLocation, classpath);
 
 		}
 
