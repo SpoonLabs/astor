@@ -91,12 +91,15 @@ public class RandomTransformationStrategy implements IngredientTransformationStr
 		List<Map<String, CtVariable>> allWithoutOrder = VariableResolver.findAllVarMappingCombination(mappedVars, null);
 
 		for (Map<String, CtVariable> varMapping : allWithoutOrder) {
-
-			VarCombinationForIngredient varCombinationWrapper = new VarCombinationForIngredient(varMapping);
-			// In random mode, all same probabilities
-			varCombinationWrapper.setProbality((double) 1 / (double) allWithoutOrder.size());
-			allCom.add(varCombinationWrapper);
-
+			try {
+				VarCombinationForIngredient varCombinationWrapper = new VarCombinationForIngredient(varMapping);
+				// In random mode, all same probabilities
+				varCombinationWrapper.setProbality((double) 1 / (double) allWithoutOrder.size());
+				allCom.add(varCombinationWrapper);
+			} catch (Exception e) {
+				logger.error("Error for obtaining a string representation of combination with " + varMapping.size()
+						+ " variables");
+			}
 		}
 		Collections.shuffle(allCom, RandomManager.getRandom());
 
