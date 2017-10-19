@@ -141,6 +141,12 @@ public class ProgramVariantFactory {
 			progInstance.setModificationPoints(progInstance.getModificationPoints().subList(0, maxModPoints));
 			log.info("Reducing Total ModPoint created to: " + progInstance.getModificationPoints().size());
 		}
+
+		//Indicating id
+		for (int i = 0; i < progInstance.getModificationPoints().size(); i++) {
+			ModificationPoint mp = progInstance.getModificationPoints().get(0);
+			mp.identified = i + 1;
+		}
 		return progInstance;
 	}
 

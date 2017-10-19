@@ -626,8 +626,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		List<ModificationPoint> modificationPointsToProcess = getGenList(variant);
 		// log.debug("modifPointsToProcess " + modificationPointsToProcess);
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
-			// tp refactor
-			modificationPoint.identified = variant.getModificationPoints().indexOf(modificationPoint);
+			
 			log.debug("---analyzing modificationPoint position: " + modificationPoint.identified);
 
 			// A point can be modified several time in the evolution
