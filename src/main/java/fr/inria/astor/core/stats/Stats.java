@@ -192,6 +192,9 @@ public class Stats {
 					hunk.getStats().put(HunkStatEnum.LOCATION,
 							genOperationInstance.getModificationPoint().getCtClass().getQualifiedName());
 
+					hunk.getStats().put(HunkStatEnum.MP_RANKING,
+							genOperationInstance.getModificationPoint().identified);
+
 					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
 						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
 								.getModificationPoint();

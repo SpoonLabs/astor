@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 /**
  * 
  * @author Matias Martinez
@@ -17,11 +18,11 @@ import java.util.Map;
 public class PatchStat {
 
 	public enum HunkStatEnum {
-		OPERATOR, LOCATION, LINE, SUSPICIOUNESS, ORIGINAL_CODE,BUGGY_CODE_TYPE, PATCH_HUNK_CODE, PATCH_HUNK_TYPE, INGREDIENT_SCOPE, INGREDIENT_PARENT,
+		OPERATOR, LOCATION, LINE, SUSPICIOUNESS, MP_RANKING, ORIGINAL_CODE, BUGGY_CODE_TYPE, PATCH_HUNK_CODE, PATCH_HUNK_TYPE, INGREDIENT_SCOPE, INGREDIENT_PARENT,
 	};
 
 	public enum PatchStatEnum {
-		VARIANT_ID, TIME, VALIDATION, GENERATION,HUNKS, PATCH_DIFF
+		VARIANT_ID, TIME, VALIDATION, GENERATION, HUNKS, PATCH_DIFF
 	};
 
 	private Map<PatchStatEnum, Object> stats = new HashMap<>();
