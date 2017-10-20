@@ -3,6 +3,7 @@ package fr.inria.astor.core.manipulation.sourcecode;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -900,76 +901,84 @@ public class VariableResolver {
 
 		long numberTotalComb = (long) maxValues[0];
 		double maxPerVarLimit = (double) maxValues[1];
+		try {
+			for (VarAccessWrapper currentVar : varsNamesToCombine) {
 
-		for (VarAccessWrapper currentVar : varsNamesToCombine) {
+				if (allCombinations.size() > 0
+						&& allCombinations.get(0).containsKey(currentVar.getVar().getVariable().getSimpleName())) {
+					logger.debug("Var already mapped: " + currentVar.getVar().getVariable().getSimpleName());
+					continue;
+				}
 
-			if (allCombinations.size() > 0
-					&& allCombinations.get(0).containsKey(currentVar.getVar().getVariable().getSimpleName())) {
-				logger.debug("Var already mapped: " + currentVar.getVar().getVariable().getSimpleName());
-				continue;
-			}
+				List<Map<String, CtVariable>> generationCombinations = new ArrayList<>();
 
-			List<Map<String, CtVariable>> generationCombinations = new ArrayList<>();
+				List<CtVariable> mapped = mappedVars.get(currentVar);
 
-			List<CtVariable> mapped = mappedVars.get(currentVar);
+				List<CtVariable> sortedVariables = new ArrayList<>(mapped);
 
-			List<CtVariable> sortedVariables = new ArrayList<>(mapped);
+				if (managerngram == null) {
+					logger.debug("Sorting variables Randomly");
+					Collections.shuffle(sortedVariables, RandomManager.getRandom());
+				} else {
+					logger.debug("Sorting variables by 1-gram");
+					Collections.sort(sortedVariables, new Comparator<CtVariable>() {
 
-			if (managerngram == null) {
-				logger.debug("Sorting variables Randomly");
-				Collections.shuffle(sortedVariables, RandomManager.getRandom());
-			} else {
-				logger.debug("Sorting variables by 1-gram");
-				Collections.sort(sortedVariables, new Comparator<CtVariable>() {
+						@Override
+						public int compare(CtVariable v1, CtVariable v2) {
+							String s1 = v1.getSimpleName();
+							String s2 = v2.getSimpleName();
 
-					@Override
-					public int compare(CtVariable v1, CtVariable v2) {
-						String s1 = v1.getSimpleName();
-						String s2 = v2.getSimpleName();
+							Double p1 = (Double) managerngram.getNgglobal().ngrams[1].getProbabilies().get(s1);
+							Double p2 = (Double) managerngram.getNgglobal().ngrams[1].getProbabilies().get(s2);
 
-						Double p1 = (Double) managerngram.getNgglobal().ngrams[1].getProbabilies().get(s1);
-						Double p2 = (Double) managerngram.getNgglobal().ngrams[1].getProbabilies().get(s2);
+							if (p1 == null && p2 == null) {
+								return 0;
+							}
 
-						if (p1 == null && p2 == null) {
-							return 0;
+							if (p1 == null) {
+								logger.error("Var not found in global ngram: " + s1);
+								return 1;
+							}
+							if (p2 == null) {
+								logger.error("Var not found in global ngram: " + s2);
+								return -1;
+							}
+							return Double.compare(p2, p1);
 						}
+					});
+					// logger.debug("vars sorted "+sortedVariables);
+				}
 
-						if (p1 == null) {
-							logger.error("Var not found in global ngram: " + s1);
-							return 1;
-						}
-						if (p2 == null) {
-							logger.error("Var not found in global ngram: " + s2);
-							return -1;
-						}
-						return Double.compare(p2, p1);
+				// Now, let's create the combinations:
+				int varsAnalyzed = 0;
+				// for each mapping candidate
+				for (CtVariable varFromMap : sortedVariables) {
+					// We count the variables that can be mapped for that
+					// combination.
+
+					for (Map<String, CtVariable> previousCombination : allCombinations) {
+
+						// we create the new var combination from the previous
+						// one
+						Map<String, CtVariable> newCombination = new TreeMap<>(previousCombination);
+						// we add the map for the variable to the new
+						// combination
+						newCombination.put(currentVar.getVar().getVariable().getSimpleName(), varFromMap);
+						generationCombinations.add(newCombination);
 					}
-				});
-				// logger.debug("vars sorted "+sortedVariables);
-			}
+					varsAnalyzed++;
+					if (varsAnalyzed >= ((int) (Math.ceil(maxPerVarLimit)))) {
+						break;
+					}
 
-			// Now, let's create the combinations:
-			int varsAnalyzed = 0;
-			// for each mapping candidate
-			for (CtVariable varFromMap : sortedVariables) {
-				// We count the variables that can be mapped for that
-				// combination.
-
-				for (Map<String, CtVariable> previousCombination : allCombinations) {
-
-					// we create the new var combination from the previous one
-					Map<String, CtVariable> newCombination = new TreeMap<>(previousCombination);
-					// we add the map for the variable to the new combination
-					newCombination.put(currentVar.getVar().getVariable().getSimpleName(), varFromMap);
-					generationCombinations.add(newCombination);
 				}
-				varsAnalyzed++;
-				if (varsAnalyzed >= ((int) (Math.ceil(maxPerVarLimit)))) {
-					break;
-				}
-
+				allCombinations = generationCombinations;
 			}
-			allCombinations = generationCombinations;
+		} catch (Throwable e) {
+			logger.error("Problems when calculating combinations, nr vars " + mappedVars.size()
+					+ " teorical combinations: " + Arrays.toString(maxValues));
+			logger.error(e);
+			return new ArrayList<Map<String, CtVariable>>();
 		}
 		// FIlter combinations that are empty
 		allCombinations = allCombinations.stream().filter(e -> !e.isEmpty()).collect(Collectors.toList());
