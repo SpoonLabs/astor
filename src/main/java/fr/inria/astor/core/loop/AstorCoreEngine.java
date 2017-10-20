@@ -973,7 +973,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 						line += "\nline= " + gs.getSuspicious().getLineNumber();
 						line += "\nlineSuspiciousness= " + gs.getSuspicious().getSuspiciousValueString();
 					}
-
+					line += "\nlineSuspiciousness= " + genOperationInstance.getModificationPoint().identified;
 					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
 					line += "\nbuggy kind= " + genOperationInstance.getOriginal().getClass().getSimpleName() + "|"
 							+ genOperationInstance.getOriginal().getParent().getClass().getSimpleName();
