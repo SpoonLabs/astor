@@ -176,7 +176,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					this.outputStatus = AstorOutputStatus.STOP_BY_PATCH_FOUND;
 				}
 
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				log.error("Error at generation " + generationsExecuted + "\n" + e);
 				this.outputStatus = AstorOutputStatus.ERROR;
 				break;
