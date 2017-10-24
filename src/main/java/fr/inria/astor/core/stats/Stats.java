@@ -16,6 +16,7 @@ import org.json.simple.JSONObject;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.DynamicIngredient;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
@@ -226,6 +227,10 @@ public class Stats {
 								genOperationInstance.getModified().getClass().getSimpleName() + "|"
 										+ genOperationInstance.getModified().getParent().getClass().getSimpleName());
 
+						if(genOperationInstance.getIngredient() != null && genOperationInstance.getIngredient() instanceof DynamicIngredient){
+							DynamicIngredient ding =(DynamicIngredient) genOperationInstance.getIngredient();
+							hunk.getStats().put(HunkStatEnum.INGREDIENT,ding.getBaseIngredient().toString());
+						}
 					}
 
 					hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE,

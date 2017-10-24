@@ -80,7 +80,7 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 						CtCodeElement templateElement = MutationSupporter.clone(ctExpr);
 						formatIngredient(templateElement);
 
-						log.debug("Adding ingredient: " + originalIngredient);
+						log.debug("Adding ingredient: " + originalIngredient  + " | type: "+originalIngredient.getClass().getCanonicalName());
 
 						log.debug("Template ingredient: " + templateElement + " "
 								+ ingredientsKey.contains(templateElement));

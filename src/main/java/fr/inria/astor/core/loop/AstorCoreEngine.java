@@ -29,6 +29,7 @@ import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.DynamicIngredient;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
@@ -39,6 +40,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.validation.validators.ProcessValidator;
@@ -178,6 +180,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 			} catch (Throwable e) {
 				log.error("Error at generation " + generationsExecuted + "\n" + e);
+				//log.equals(Arrays.toString(e.getStackTrace()));
+				e.printStackTrace();
 				this.outputStatus = AstorOutputStatus.ERROR;
 				break;
 			}
@@ -988,6 +992,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 							line += genOperationInstance.getModified().toString();
 						else {
 							line += genOperationInstance.getOriginal().toString();
+						}
+						if(genOperationInstance.getIngredient() != null && genOperationInstance.getIngredient() instanceof DynamicIngredient){
+							DynamicIngredient ding =(DynamicIngredient) genOperationInstance.getIngredient();
+							line += "\nIngredient template= " +ding.getBaseIngredient().toString();
 						}
 						// Information about types Parents
 
