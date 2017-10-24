@@ -39,6 +39,7 @@ import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.test.repair.evaluation.ClosureTest;
 import fr.inria.astor.test.repair.evaluation.regression.MathTests;
 import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;
@@ -1348,6 +1349,39 @@ public class CardumenApproachTest {
 
 	}
 
+	@Test
+	public void testCardumentM57() throws Exception {
+		CommandSummary command = MathTests.getMath57Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+
+		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxtime", "60");
+		command.command.put("-seed", "20007");
+		command.command.put("-maxgen", "1000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-loglevel", "INFO");
+		// RANDOM
+	//	command.command.put("-parameters", "probabilistictransformation:false");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+		assertEquals(AstorOutputStatus.ERROR,cardumen.getOutputStatus());
+		
+		
+		ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace)cardumen.getIngredientSearchStrategy().getIngredientSpace();
+		for(CtElement c : space.allElementsFromSpace){
+			System.out.println("-> "+c);
+		}
+	}
+
+	
+	
+	
 	@Test
 	@Ignore
 	public void testCardumenClosure1() throws Exception {

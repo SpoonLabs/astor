@@ -40,6 +40,25 @@ public class MathTests {
 		
 	}
 	
+	public static CommandSummary getMath57Command(){
+		String dep = new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 50;
+		
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.stat.clustering.KMeansPlusPlusClustererTest", "-location",
+				new File("./examples/math_57").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/ ", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations), "-stopfirst", "true",
+				"-maxtime", "100",
+				"-loglevel","DEBUG",
+
+		};
+		return new CommandSummary(args);
+		
+	}
+	
 	
 	public static CommandSummary getMath85Command(){
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
