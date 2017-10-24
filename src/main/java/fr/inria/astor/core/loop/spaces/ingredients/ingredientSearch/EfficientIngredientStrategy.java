@@ -89,7 +89,8 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 		int elementsFromFixSpace = baseElements.size();
 		log.debug("Templates availables" + elementsFromFixSpace);
 
-		Stats.currentStat.getIngredientsStats().addSize(Stats.currentStat.getIngredientsStats().ingredientSpaceSize, baseElements.size());
+		Stats.currentStat.getIngredientsStats().addSize(Stats.currentStat.getIngredientsStats().ingredientSpaceSize,
+				baseElements.size());
 
 		while (attemptsBaseIngredients < elementsFromFixSpace) {
 
@@ -151,23 +152,27 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 		} else {
 			log.debug("Calculating transformations");
-			ingredientsAfterTransformation = ingredientTransformationStrategy.transform(modificationPoint,
-					baseIngredient);
-			if (ingredientsAfterTransformation != null && !ingredientsAfterTransformation.isEmpty()) {
-				appliedIngredientsCache.put(keyBaseIngredient, ingredientsAfterTransformation);
-				Stats.currentStat.getIngredientsStats().addSize(
-						Stats.currentStat.getIngredientsStats().combinationByIngredientSize,
-						ingredientsAfterTransformation.size());
+			try {
+				ingredientsAfterTransformation = ingredientTransformationStrategy.transform(modificationPoint,
+						baseIngredient);
+				if (ingredientsAfterTransformation != null && !ingredientsAfterTransformation.isEmpty()) {
+					appliedIngredientsCache.put(keyBaseIngredient, ingredientsAfterTransformation);
+					Stats.currentStat.getIngredientsStats().addSize(
+							Stats.currentStat.getIngredientsStats().combinationByIngredientSize,
+							ingredientsAfterTransformation.size());
 
-			} else {
-				log.debug(
-						"The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
-								+ StringUtil.trunc(baseIngredient.getCode()));
+				} else {
+					log.debug(
+							"The transformation strategy has not returned any Valid transformed ingredient for ingredient base "
+									+ StringUtil.trunc(baseIngredient.getCode()));
 
-				appliedIngredientsCache.put(keyBaseIngredient, null);
-				Stats.currentStat.getIngredientsStats()
-						.addSize(Stats.currentStat.getIngredientsStats().combinationByIngredientSize, 0);
-				exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
+					appliedIngredientsCache.put(keyBaseIngredient, null);
+					Stats.currentStat.getIngredientsStats()
+							.addSize(Stats.currentStat.getIngredientsStats().combinationByIngredientSize, 0);
+					exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
+				}
+			} catch (Throwable e) {
+				log.equals("errooor mp:"+modificationPoint+ " ingredient "+baseIngredient);
 			}
 		}
 		return ingredientsAfterTransformation;
