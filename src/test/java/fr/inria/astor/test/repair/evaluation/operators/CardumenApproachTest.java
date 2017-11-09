@@ -1104,7 +1104,7 @@ public class CardumenApproachTest {
 
 		assertTrue(cardumen.totalIngredients > 86299730);
 		assertTrue(86299730 > cardumen.totalIngredientsCutted);
-		assertTrue( cardumen.totalIngredientsCutted > 26915);
+		assertTrue(cardumen.totalIngredientsCutted > 26915);
 		assertTrue(cardumen.totalBases >= 160);
 
 	}
@@ -1359,29 +1359,27 @@ public class CardumenApproachTest {
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
 		command.command.put("-seed", "20007");
-		command.command.put("-maxgen", "1000");
+		command.command.put("-maxgen", "10");
 		command.command.put("-population", "1");
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-loglevel", "INFO");
 		// RANDOM
-	//	command.command.put("-parameters", "probabilistictransformation:false");
+		// command.command.put("-parameters",
+		// "probabilistictransformation:false");
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
-		assertEquals(AstorOutputStatus.ERROR,cardumen.getOutputStatus());
-		
-		
-		ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace)cardumen.getIngredientSearchStrategy().getIngredientSpace();
-		for(CtElement c : space.allElementsFromSpace){
-			System.out.println("-> "+c);
+		assertEquals(AstorOutputStatus.MAX_GENERATION, cardumen.getOutputStatus());
+
+		ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
+				.getIngredientSpace();
+		for (CtElement c : space.allElementsFromSpace) {
+			System.out.println("-> " + c);
 		}
 	}
 
-	
-	
-	
 	@Test
 	@Ignore
 	public void testCardumenClosure1() throws Exception {
