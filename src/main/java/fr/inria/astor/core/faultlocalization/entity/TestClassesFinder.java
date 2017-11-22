@@ -91,7 +91,7 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 	}
 
 	public String[] findIn(final URL[] classpath, boolean acceptTestSuite) {
-		return findIn(new URLClassLoader(classpath), acceptTestSuite);
+		return findIn(new URLClassLoader(classpath, Thread.currentThread().getContextClassLoader()), acceptTestSuite);
 	}
 
 	public String[] removeTestSuite(String[] totalTest) {
