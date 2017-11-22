@@ -29,7 +29,7 @@ cache:
   - examples/
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- '[[ $TRAVIS_BRANCH == "master" ]] && [[ TEST == "fr.inria.astor.test.repair.evaluation.IntroClassTest"
+- '[[ $TRAVIS_BRANCH == "master" ]] && [[ $TEST == "fr.inria.astor.test.repair.evaluation.IntroClassTest"
   ]] && { mvn deploy --settings .travis-settings.xml -DskipTests=true -B; };'
 notifications:
   email:
