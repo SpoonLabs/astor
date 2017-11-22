@@ -812,7 +812,7 @@ public class CardumenApproachTest {
 		command.command.put("-population", "1");
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-stopfirst", "false");
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-parameters", "disablelog:true:uniformreplacement:true:frequenttemplate:true");
 
 		AstorMain main1 = new AstorMain();
@@ -1049,7 +1049,7 @@ public class CardumenApproachTest {
 		// command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters", "considerzerovaluesusp:true:scope:" + scope.toString().toLowerCase()
 				+ "scope:limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
-		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-loglevel", Level.INFO.toString());
 		command.command.put("-maxVarCombination", "100000000");
 
 		AstorMain main1 = new AstorMain();
@@ -1075,9 +1075,6 @@ public class CardumenApproachTest {
 		cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
 		assertTrue(cardumen.totalBases >= 160);
-
-		// local 73
-
 	}
 
 	@Test
@@ -1094,7 +1091,7 @@ public class CardumenApproachTest {
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters",
 				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
-		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-loglevel", Level.INFO.toString());
 		command.command.put("-maxVarCombination", "1000");
 
 		AstorMain main1 = new AstorMain();
@@ -1102,9 +1099,9 @@ public class CardumenApproachTest {
 		Stats.createStat();
 		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
-		assertTrue(cardumen.totalIngredients > 86299730);
-		assertTrue(86299730 > cardumen.totalIngredientsCutted);
-		assertTrue(cardumen.totalIngredientsCutted > 26915);
+		assertTrue(cardumen.totalIngredients+ " > 86299730", cardumen.totalIngredients >= 86299730);
+		assertTrue(86299730 >= cardumen.totalIngredientsCutted);
+		assertTrue(cardumen.totalIngredientsCutted >= 26915);
 		assertTrue(cardumen.totalBases >= 160);
 
 	}
@@ -1123,7 +1120,7 @@ public class CardumenApproachTest {
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
 				+ "disablelog:false:uniformreplacement:false:frequenttemplate:false");
-		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-loglevel", Level.INFO.toString());
 		command.command.put("-maxVarCombination", "100");
 		command.command.put("-maxsuspcandidates", "1000");
 
@@ -1163,7 +1160,7 @@ public class CardumenApproachTest {
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters",
 				"maxmodificationpoints:" + maxModPoints + ":skipfitnessinitialpopulation:true:limitbysuspicious:false");
-		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-loglevel", Level.INFO.toString());
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
@@ -1186,7 +1183,7 @@ public class CardumenApproachTest {
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
 				+ "disablelog:false:uniformreplacement:" + Boolean.toString(uniformreplacement));
-		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-loglevel", Level.INFO.toString());
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
@@ -1234,7 +1231,7 @@ public class CardumenApproachTest {
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
 				+ "disablelog:false:uniformreplacement:" + Boolean.toString(uniformreplacement));
-		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-loglevel", Level.INFO.toString());
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
@@ -1289,7 +1286,7 @@ public class CardumenApproachTest {
 		assertTrue(probability > 0);
 
 		for (VarCombinationForIngredient varCombinationForIngredient : varsComb4Ingredients) {
-			log.debug(varCombinationForIngredient);
+			log.info(varCombinationForIngredient);
 			assertTrue(probability >= varCombinationForIngredient.getProbality());
 			probability = varCombinationForIngredient.getProbality();
 		}
@@ -1342,7 +1339,7 @@ public class CardumenApproachTest {
 		assertTrue(probability > 0);
 
 		for (VarCombinationForIngredient varCombinationForIngredient : varsComb4Ingredients) {
-			log.debug(varCombinationForIngredient);
+			log.info(varCombinationForIngredient);
 			assertEquals(probability, varCombinationForIngredient.getProbality());
 			probability = varCombinationForIngredient.getProbality();
 		}
@@ -1420,7 +1417,7 @@ public class CardumenApproachTest {
 				"skipfitnessinitialpopulation:true:limitbysuspicious:false:"
 						+ "disablelog:false:uniformreplacement:false:skipfitnessinitialpopulation:true:logfilepath:"
 						+ fileLog.getAbsolutePath());
-		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-loglevel", Level.INFO.toString());
 
 		main1.execute(command.flat());
 
@@ -1488,7 +1485,7 @@ public class CardumenApproachTest {
 				"skipfitnessinitialpopulation:true:limitbysuspicious:false:"
 						+ "disablelog:false:uniformreplacement:false:skipfitnessinitialpopulation:true:logfilepath:"
 						+ fileLog.getAbsolutePath());
-		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-loglevel", Level.INFO.toString());
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
 
@@ -1534,7 +1531,7 @@ public class CardumenApproachTest {
 				"skipfitnessinitialpopulation:true:limitbysuspicious:false:"
 						+ "disablelog:false:uniformreplacement:false:skipfitnessinitialpopulation:true:logfilepath:"
 						+ fileLog.getAbsolutePath());
-		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-loglevel", Level.INFO.toString());
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
 		IngredientBasedRepairApproach ingapproach = (IngredientBasedRepairApproach) main1.getEngine();
@@ -1563,7 +1560,7 @@ public class CardumenApproachTest {
 		assertEquals("((_long_0 ^ _int_1) >= 0)", ingredient.toString());
 
 		VarMapping vmapping = VariableResolver.mapVariablesFromContext(varContextClearResult, ingredient);
-		log.debug(vmapping);
+		log.info(vmapping);
 		assertEquals(1, vmapping.getMappedVariables().size());
 		assertEquals(1, vmapping.getNotMappedVariables().size());
 

@@ -111,7 +111,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "true",
-				"-maxgen", "400", "-scope", "package", "-seed", "10", "-loglevel", "DEBUG" };
+				"-maxgen", "400", "-scope", "package", "-seed", "10", "-loglevel", "INFO" };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
@@ -137,7 +137,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		String[] args = commandMath70(dep, out, generations);
 		CommandSummary cs = new CommandSummary(args);
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-loglevel", "INFO");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -192,7 +192,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		CommandSummary cs = new CommandSummary(args);
 		cs.command.put("-flthreshold", "1");
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-saveall", "true");
 		cs.append("-parameters", ("testexecutorclass:JUnitExternalExecutor"));
 
@@ -252,7 +252,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		CommandSummary cs = new CommandSummary(args);
 		cs.command.put("-flthreshold", "1");
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-saveall", "true");
 		cs.append("-parameters", ("testexecutorclass:JUnitExternalExecutor"));
 
@@ -746,7 +746,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		cs.command.put("-seed", "0");
 		cs.command.put("-scope", "package");
 
-		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-parameters", "disablelog:false");
 		cs.append("-parameters", "testexecutorclass:JUnitExternalExecutor");
 
@@ -779,6 +779,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-seed", "0");
 		cs.command.put("-scope", "package");
+		cs.command.put("-loglevel", "INFO");
 
 		cs.command.put("-parameters", "disablelog:false");
 		cs.append("-parameters", "testexecutorclass:JUnitExternalExecutor");
