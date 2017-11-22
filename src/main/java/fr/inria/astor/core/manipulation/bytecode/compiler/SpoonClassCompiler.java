@@ -1,5 +1,19 @@
 package fr.inria.astor.core.manipulation.bytecode.compiler;
 
+import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.loop.extension.VariantCompiler;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.bytecode.compiler.tools.JavaXToolsCompiler;
+import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.setup.ConfigurationProperties;
+import org.apache.log4j.Logger;
+import spoon.processing.ProcessingManager;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.support.RuntimeProcessingManager;
+
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -7,21 +21,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.extension.VariantCompiler;
-import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.bytecode.compiler.tools.JavaXToolsCompiler;
-import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
-import fr.inria.astor.core.setup.ConfigurationProperties;
-import spoon.processing.ProcessingManager;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.support.RuntimeProcessingManager;
 
 /**
  * Compiles a Spoon Class. It keeps the compilation result (bytecode) in memory.
@@ -95,11 +94,11 @@ public class SpoonClassCompiler  implements VariantCompiler{
 	}
 
 	protected synchronized String sourceForModelledClass(CtType<?> modelledClass) {
-		prettyPrinter.reset();
+		prettyPrinter = new DefaultJavaPrettyPrinter(this.getFactory().getEnvironment());
 		prettyPrinter.scan(modelledClass);
 		String sourceCode = "package " + modelledClass.getPackage().toString() + ";"
 				+ System.getProperty("line.separator") + prettyPrinter.toString();
-		prettyPrinter.reset();
+		prettyPrinter = new DefaultJavaPrettyPrinter(this.getFactory().getEnvironment());
 		return sourceCode;
 	}
 
