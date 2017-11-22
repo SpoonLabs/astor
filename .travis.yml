@@ -1,8 +1,7 @@
 language: java
-
 install: "./.travis_install.sh"
-
 env:
+  matrix:
   - TEST=fr.inria.astor.test.repair.evaluation.IntroClassTest
   - TEST=fr.inria.astor.test.repair.evaluation.JGenProgTest
   - TEST=fr.inria.astor.test.repair.evaluation.PatchValidationTest
@@ -14,26 +13,25 @@ env:
   - TEST=fr.inria.astor.test.repair.evaluation.IngredientSpaceTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.EvoSuiteParticularClassesTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.LangTest
-  - TEST=fr.inria.astor.test.repair.evaluation.operators.CardumenApproachTest 
+  - TEST=fr.inria.astor.test.repair.evaluation.operators.CardumenApproachTest
+  global:
+    secure: KAXmlzbC3aTis3In/HnYpLHgnWmcct9ou7cHTGZZhv+8Tu7eta7HPHBQBju+qD4WkAA8PqyjEhOBHHd7GoSVtUY0nHqPRhjKjeQAPHDgA+kvWVVPyzSEar/gCbFqyzf6MhTs5Feq0PkljmfqF/0Omlps06B7qDVmYaALSFIvgrg=
 script:
-  - mvn clean
-  - mvn test -DskipTests
-  - mvn surefire:test -Dtest=$TEST
-
+- mvn clean
+- mvn test -DskipTests
+- mvn surefire:test -Dtest=$TEST
 sudo: required
-
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 cache:
   directories:
-  - $HOME/.m2
+  - "$HOME/.m2"
   - examples/
-
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
-
+- bash <(curl -s https://codecov.io/bash)
+- '[[ $TRAVIS_BRANCH == "master" ]] && [[ TEST == "fr.inria.astor.test.repair.evaluation.IntroClassTest"
+  ]] && { mvn deploy --settings .travis-settings.xml -DskipTests=true -B; };'
 notifications:
   email:
-    - martin.monperrus@gnieh.org
-    - matias.sebastian.martinez@gmail.com
+  - martin.monperrus@gnieh.org
+  - matias.sebastian.martinez@gmail.com
