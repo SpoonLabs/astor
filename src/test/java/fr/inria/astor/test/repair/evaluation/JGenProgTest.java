@@ -417,7 +417,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-scope", "package", "-seed", "10", "-maxgen", "500", "-stopfirst", "false", // two
+				"-scope", "package", "-seed", "10", "-maxgen", "400", "-stopfirst", "false", // two
 																								// solutions
 				"-maxtime", "10", "-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString()
 
@@ -458,7 +458,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 3);
 		boolean withMultiple = false;
 		for (ProgramVariant programVariant : solutions) {
-			System.out.println("-->" + programVariant.getOperations().values());
+			log.info("-->" + programVariant.getOperations().values());
 			withMultiple = withMultiple || programVariant.getOperations().values().size() >= 2;
 		}
 		assertTrue(withMultiple);
@@ -705,7 +705,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-scope", "package", "-seed", "10", "-maxgen", "500", "-stopfirst", "false", "-maxtime", "10",
+				"-scope", "package", "-seed", "10", "-maxgen", "500", "-stopfirst", "true", "-maxtime", "10",
 				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString()
 
 		};
@@ -797,7 +797,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertEquals(Level.INFO.toString(), ConfigurationProperties.getProperty("loglevel"));
 		List<String> logInStringList = Files.readAllLines(fileLog.toPath());
 		assertTrue(logInStringList.size() > 0);
-		System.out.println(logInStringList.get(0));
+		log.info(logInStringList.get(0));
 
 		boolean allInfo = true;
 		for (String lineLog : logInStringList) {
