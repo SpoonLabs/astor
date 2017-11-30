@@ -770,6 +770,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMath70LogFile() throws Exception {
+		System.out.println("START Test log file");
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
@@ -782,11 +783,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		cs.command.put("-loglevel", "INFO");
 
 		cs.command.put("-parameters", "disablelog:false");
-		cs.append("-parameters", "testexecutorclass:JUnitExternalExecutor");
 		File fileLog = File.createTempFile("logTest", ".log");
 		cs.append("-parameters", "logfilepath:" + fileLog.getAbsolutePath());
 
-		assertEquals(6, cs.command.get("-parameters").split(File.pathSeparator).length);
+		assertEquals(4, cs.command.get("-parameters").split(File.pathSeparator).length);
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
 
@@ -825,7 +825,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 			}
 		}
 		assertTrue("Any debug line", existDebugLog);
-
+		System.out.println("END Test log file");
 	}
 
 }
