@@ -18,6 +18,8 @@ import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
 import fr.inria.astor.core.validation.validators.RegressionValidation;
+import fr.inria.astor.test.repair.evaluation.regression.MathTests;
+import fr.inria.astor.util.CommandSummary;
 import fr.inria.astor.util.EvoSuiteFacade;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
@@ -29,11 +31,6 @@ import spoon.reflect.declaration.CtClass;
  */
 public class ValidationTest extends BaseEvolutionaryTest {
 
-	@Before
-	public void setup() {
-		LogManager.getRootLogger().setLevel(Level.DEBUG);
-
-	}
 
 	@Test
 	public void testLang63ValidationStepbyStep() throws Exception {
@@ -67,6 +64,36 @@ public class ValidationTest extends BaseEvolutionaryTest {
 	}
 
 	
+	/**
+	 * Math 70 bug can be fixed by replacing a method invocation inside a return
+	 * statement. + return solve(f, min, max); - return solve(min, max); One
+	 * solution with local scope, another with package
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70LocalSolutionJUExLog() throws Exception {
+		AstorMain main1 = new AstorMain();
+	
+		CommandSummary cs = MathTests.getMath70Command();
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-seed", "0");
+		cs.command.put("-scope", "package");
+		cs.command.put("-maxgen", "200");
+		cs.command.put("-loglevel", "INFO");
+		cs.command.put("-parameters", "disablelog:false");
+		cs.append("-parameters", "testexecutorclass:JUnitExternalExecutor");
+
+		assertEquals(4, cs.command.get("-parameters").split(File.pathSeparator).length);
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+
+	}
 
 	//@Test
 	public void testLang63RegresionValidationStepbyStep() throws Exception {
@@ -123,52 +150,6 @@ public class ValidationTest extends BaseEvolutionaryTest {
 	}
 
 	
-	@SuppressWarnings("rawtypes")
-	//@Test
-	public void testMath70RegressionTests() throws Exception {
-		AstorMain main1 = new AstorMain();
-
-		// Running Astor
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
-				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
-				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "0",
-				"-maxgen", "250", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
-				//PARAMETER TO TEST
-				"-validation", RegressionValidation.class.getCanonicalName()
-
-		};
-		System.out.println(Arrays.toString(args));
-
-		main1.execute(args);
-
-		assertEquals(1, main1.getEngine().getSolutions().size());
-		//Patch info
-		//time(sec)= 546
-		//operation: ReplaceOp
-		//location= org.apache.commons.math.analysis.solvers.BisectionSolver
-		//line= 72
-		//original statement= return solve(min, max)
-		//fixed statement= return solve(f, min, max)
-		//generation= 240
-
-		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
-		
-		assertNotNull("Without validation",validationResult);
-		//As we execute jgp in evosuite validation mode, we expect eSvalidationResult
-		assertTrue(validationResult instanceof EvoSuiteValidationResult);
-		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
-		//The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.isSuccessful());
-		//Now, the extended validation must fail
-		//assertFalse(esvalidationresult.getEvoValidation().wasSuccessful());
-		//log.info(esvalidationresult);
-	}
 	
 	@Test
 	@Ignore //It takes long to run evosuite for all susp class
@@ -215,15 +196,7 @@ public class ValidationTest extends BaseEvolutionaryTest {
 		assertNotNull(result);
 		
 		assertTrue(result.isSuccessful());
-		
-		
-		
-		
-	}
-	
-	@After
-	public void teardown() {
-		LogManager.getRootLogger().setLevel(Level.ERROR);
 
+		
 	}
 }
