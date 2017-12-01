@@ -668,7 +668,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-scope", "package", "-seed", "10", "-maxgen", "500", "-stopfirst", "true", "-maxtime", "10",
+				"-scope", "package", "-seed", "10", "-maxgen", "1000", "-stopfirst", "false", "-maxtime", "10",
 				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString()
 
 		};
