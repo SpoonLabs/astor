@@ -1,19 +1,29 @@
 package fr.inria.astor.test.repair.evaluation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileReader;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.stats.PatchHunkStats;
+import fr.inria.astor.core.stats.PatchStat;
+import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
+import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.test.repair.evaluation.regression.MathTests;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
@@ -25,9 +35,6 @@ import fr.inria.main.evolution.AstorMain;
  *
  */
 public class OutputTest {
-
-	
-	
 
 	/**
 	 * Math 70 bug can be fixed by replacing a method invocation inside a return
@@ -41,7 +48,7 @@ public class OutputTest {
 	public void testMath70LogFileInfoLevel() throws Exception {
 		System.out.println("START Test log file Info");
 		AstorMain main1 = new AstorMain();
-		
+
 		CommandSummary cs = MathTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-seed", "0");
@@ -63,7 +70,7 @@ public class OutputTest {
 		assertEquals(Level.INFO.toString(), ConfigurationProperties.getProperty("loglevel"));
 		List<String> logInStringList = Files.readAllLines(fileLog.toPath());
 		assertTrue(logInStringList.size() > 0);
-		
+
 		boolean allInfo = true;
 		for (String lineLog : logInStringList) {
 			if (lineLog.startsWith("[DEBUG]")) {
@@ -74,15 +81,89 @@ public class OutputTest {
 
 		assertTrue("a debug line found", allInfo);
 		System.out.println("START Test log file Info");
-		
+
 	}
+
+	/**
+	 * Math 70 bug can be fixed by replacing a method invocation inside a return
+	 * statement. + return solve(f, min, max); - return solve(min, max); One
+	 * solution with local scope, another with package This test validates the
+	 * stats via API and JSON
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("rawtypes")
 	@Test
-	public void testMath70LogFile() throws Exception{
-		
-		System.out.println("START Test log DEBUG");
-		
+	public void testMath70LocalOutputs() throws Exception {
 		AstorMain main1 = new AstorMain();
-	
+
+		CommandSummary cs = MathTests.getMath70Command();
+		cs.command.put("-stopfirst", "false");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+
+		Stats stats = Stats.getCurrentStat();
+
+		assertNotNull(stats);
+
+		assertNotNull(stats.getStatsOfPatches());
+
+		assertTrue(stats.getStatsOfPatches().size() > 0);
+
+		String jsonpath = main1.getEngine().getProjectFacade().getProperties().getWorkingDirRoot() + File.separator
+				+ ConfigurationProperties.getProperty("jsonoutputname") + ".json";
+		File filejson = new File(jsonpath);
+		assertTrue(filejson.exists());
+
+		JSONParser parser = new JSONParser();
+
+		Object obj = parser.parse(new FileReader(filejson));
+
+		JSONObject jsonroot = (JSONObject) obj;
+
+		// loop array
+		JSONArray msg = (JSONArray) jsonroot.get("patches");
+		assertEquals(1, msg.size());
+		JSONObject pob = (JSONObject) msg.get(0);
+
+		JSONArray hunks = (JSONArray) pob.get("patchhunks");
+		assertEquals(1, hunks.size());
+		JSONObject hunkob = (JSONObject) hunks.get(0);
+		assertEquals("return solve(f, min, max)", hunkob.get(HunkStatEnum.PATCH_HUNK_CODE.name()));
+		assertEquals("return solve(min, max)", hunkob.get(HunkStatEnum.ORIGINAL_CODE.name()));
+
+		// Test API
+
+		assertEquals(1, stats.getStatsOfPatches().size());
+
+		PatchStat patchstats = stats.getStatsOfPatches().get(0);
+
+		List<PatchHunkStats> hunksApi = (List<PatchHunkStats>) patchstats.getStats().get(PatchStatEnum.HUNKS);
+
+		assertNotNull(hunksApi);
+
+		PatchHunkStats hunkStats = hunksApi.get(0);
+
+		assertNotNull(hunkStats);
+
+		assertEquals("return solve(f, min, max)", hunkStats.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
+
+		assertEquals("return solve(min, max)", hunkob.get(HunkStatEnum.ORIGINAL_CODE.name()));
+
+	}
+
+	@Test
+	public void testMath70LogFile() throws Exception {
+
+		System.out.println("START Test log DEBUG");
+
+		AstorMain main1 = new AstorMain();
+
 		CommandSummary cs = MathTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-seed", "0");
@@ -97,8 +178,6 @@ public class OutputTest {
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
 
-		
-		
 		cs.command.put("-loglevel", Level.DEBUG.toString());
 		main1.execute(cs.flat());
 
@@ -114,7 +193,6 @@ public class OutputTest {
 		assertTrue("Any debug line", existDebugLog);
 		System.out.println("END Test log file DEBUG");
 	}
-	
 
 	@Test
 	public void testMath70Outputg() throws Exception {
