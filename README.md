@@ -33,7 +33,8 @@ We recommend to remove all package-info.java files from the project to repair (Y
 
 Execution
 -------
-We provide an implementation of GenProg repair algorithm called jGenProg.The class to run it is:
+
+The main class to run it is:
 
     fr.inria.main.evolution.AstorMain
 
@@ -90,9 +91,7 @@ Minimum arguments:
 
 If you use command line, the -cp argument of java must include the absolute path of Astor jar. Otherwise, it could be the case that an exception is thrown by the fault localization tool (Gzoltar) used by Astor.
 
-**Output**:
-
-Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
+**Output**: Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
 
 Moreover, Astor saves the patched version of the program on disk.
 The Astor's output is located in folder "./output_astor". You can change it through command line argument '-out'. There Astor writes a JSON file which summarizes the information of each patch found (location, code modified, etc.) and some statistics.
@@ -102,7 +101,7 @@ Folder “default” contains the original program, without any modification. It
 
 Each folder "variant-x" is a valid solution to the repair problem (passes all tests). There is an command line argument `saveall` that allows you to save all variants that Astor generates, even they are not solution.
 
-### jKali
+### jKali
 
 For executing Astor in jKali mode, we use the option `-mode statement-remove`. jKali and jGenProg share the same arguments.
 
