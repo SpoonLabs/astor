@@ -3,7 +3,7 @@ ASTOR
 
 [![Build Status](https://travis-ci.org/SpoonLabs/astor.svg?branch=master)](https://travis-ci.org/SpoonLabs/astor)
 
-Astor is an automatic software repair framework in Java for Java. It contains the new state of the art repair approach named DeepRepair, and an implementation of state of the art repair approaches such as GenProg and Kali (named jGenProg and jKali, respectively).
+Astor is an automatic software repair framework in Java for Java. It contains the new state of the art repair approaches named DeepRepair and Cardumen, and the implementation of state of the art repair approaches such as GenProg and Kali (named jGenProg and jKali, respectively).
 
 
 If you use Astor for academic purposes, please cite the appropriate publication:
