@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import fr.inria.astor.core.entities.MutantCtElement;
+import fr.inria.astor.approaches.mutRepair.MutantCtElement;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.declaration.CtElement;

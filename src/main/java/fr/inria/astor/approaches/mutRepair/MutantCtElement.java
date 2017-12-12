@@ -1,9 +1,9 @@
-package fr.inria.astor.core.entities;
+package fr.inria.astor.approaches.mutRepair;
 
 import spoon.reflect.declaration.CtElement;
 
 /**
- * 
+ * Wrapper of element with the associated probability of be mutated
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */

@@ -3,12 +3,12 @@ package fr.inria.astor.approaches.mutRepair.operators;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.astor.approaches.mutRepair.MutantCtElement;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.LogicalBinaryOperatorMutator;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.MutatorComposite;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.NegationUnaryOperatorConditionMutator;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.RelationalBinaryOperatorMutator;
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.entities.MutantCtElement;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;

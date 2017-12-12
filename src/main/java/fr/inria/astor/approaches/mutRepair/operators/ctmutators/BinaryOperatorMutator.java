@@ -2,7 +2,7 @@ package fr.inria.astor.approaches.mutRepair.operators.ctmutators;
 
 import java.util.List;
 
-import fr.inria.astor.core.entities.MutantCtElement;
+import fr.inria.astor.approaches.mutRepair.MutantCtElement;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
