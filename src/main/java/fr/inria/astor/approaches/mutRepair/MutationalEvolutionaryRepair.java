@@ -13,9 +13,9 @@ import fr.inria.astor.approaches.mutRepair.operators.ctmutators.LogicalBinaryOpe
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.MutatorComposite;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.NegationUnaryOperatorConditionMutator;
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.RelationalBinaryOperatorMutator;
-import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.MutantCtElement;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.WeightCtElement;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;

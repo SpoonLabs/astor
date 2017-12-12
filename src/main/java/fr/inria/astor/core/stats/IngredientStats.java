@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import fr.inria.astor.core.stats.IngredientStats.Pair;
 import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 
 /**

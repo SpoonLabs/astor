@@ -1,4 +1,4 @@
-package fr.inria.astor.core.validation.entity;
+package fr.inria.astor.core.validation.results;
 
 import java.util.ArrayList;
 import java.util.List;

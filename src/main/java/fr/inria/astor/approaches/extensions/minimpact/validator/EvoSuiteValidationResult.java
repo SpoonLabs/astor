@@ -1,6 +1,7 @@
-package fr.inria.astor.core.validation.validators;
+package fr.inria.astor.approaches.extensions.minimpact.validator;
 
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.validation.results.CompoundValidationResult;
 /**
  * This class stores two validation result. One using traditional astor validation mechanism such as process for running junit.
  * The second one corresponds to the result from test generated with Evosuite.

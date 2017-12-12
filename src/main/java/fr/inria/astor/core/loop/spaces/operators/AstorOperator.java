@@ -5,13 +5,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
-import spoon.reflect.code.CtStatement;
 
 /**
  * Class that represents a Operator in Astor framework.

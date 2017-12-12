@@ -1,7 +1,6 @@
 package fr.inria.astor.approaches;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -20,7 +19,6 @@ import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.stats.IngredientStats.Pair;
 import fr.inria.astor.core.stats.Stats;
 import spoon.reflect.declaration.CtElement;
 

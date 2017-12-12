@@ -1,4 +1,4 @@
-package fr.inria.astor.core.validation.validators;
+package fr.inria.astor.core.validation.results;
 
 import java.util.HashMap;
 import java.util.Map;

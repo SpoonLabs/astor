@@ -1,6 +1,7 @@
 package fr.inria.astor.test.repair.evaluation.extensionpoints;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URL;
@@ -19,7 +20,7 @@ import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.GZoltarClientMasterFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.validation.validators.TestCasesProgramValidationResult;
+import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.main.evolution.AstorMain;
 /**
  * 

@@ -1,7 +1,5 @@
 package fr.inria.astor.test.repair.evaluation.regression;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-package fr.inria.astor.core.validation.validators;
+package fr.inria.astor.core.validation.processbased;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -15,9 +15,9 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
-import fr.inria.astor.core.validation.entity.TestResult;
-import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
-import fr.inria.astor.core.validation.executors.JUnitIndirectExecutorProcess;
+import fr.inria.astor.core.validation.ProgramVariantValidator;
+import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
+import fr.inria.astor.core.validation.results.TestResult;
 import fr.inria.astor.util.Converters;
 
 /**
@@ -25,7 +25,7 @@ import fr.inria.astor.util.Converters;
  * @author Matias Martinez
  *
  */
-public class ProcessValidator extends ProgramValidator {
+public class ProcessValidator extends ProgramVariantValidator {
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 
@@ -60,7 +60,7 @@ public class ProcessValidator extends ProgramValidator {
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner = new JUnitIndirectExecutorProcess(false);// Dir
+			JUnitExecutorProcess testProcessRunner = new JUnitExecutorProcess();
 
 			log.debug("-Running first validation");
 
@@ -98,7 +98,7 @@ public class ProcessValidator extends ProgramValidator {
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner = new JUnitIndirectExecutorProcess(false);// Dir
+			JUnitExecutorProcess testProcessRunner = new JUnitExecutorProcess();
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
 
 			TestResult trfailing = testProcessRunner.execute(jvmPath, bc,
@@ -133,7 +133,7 @@ public class ProcessValidator extends ProgramValidator {
 	protected TestCaseVariantValidationResult runRegression(ProgramVariant mutatedVariant,
 			ProjectRepairFacade projectFacade, URL[] bc) {
 
-		JUnitExecutorProcess testProcessRunner = new JUnitIndirectExecutorProcess(false);// Dir
+		JUnitExecutorProcess testProcessRunner = new JUnitExecutorProcess();
 
 		if (ConfigurationProperties.getPropertyBool("testbystep"))
 			return executeRegressionTestingOneByOne(mutatedVariant, bc, testProcessRunner, projectFacade);

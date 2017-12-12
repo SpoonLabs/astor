@@ -1,4 +1,4 @@
-package fr.inria.astor.core.validation.executors;
+package fr.inria.astor.core.validation.processbased;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.validation.entity.TestResult;
+import fr.inria.astor.core.validation.results.TestResult;
 import fr.inria.astor.junitexec.JUnitTestExecutor;
 
 /**
@@ -25,18 +25,18 @@ import fr.inria.astor.junitexec.JUnitTestExecutor;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public abstract class JUnitExecutorProcess {
+public class JUnitExecutorProcess {
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 	boolean avoidInterruption = false;
 
 	public JUnitExecutorProcess(boolean avoidInterruption) {
-		this();
+		super();
 		this.avoidInterruption = avoidInterruption;
 	}
 
 	public JUnitExecutorProcess() {
-		super();
+		this(false);
 	}
 
 	public TestResult execute(String jvmPath, URL[] classpath, List<String> classesToExecute, int waitTime) {
@@ -113,7 +113,8 @@ public abstract class JUnitExecutorProcess {
 			//
 			p.waitFor(waitTime, TimeUnit.MILLISECONDS);
 			long t_end = System.currentTimeMillis();
-			//log.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
+			// log.debug("Execution time " + ((t_end - t_start) / 1000) + "
+			// seconds");
 
 			if (!avoidInterruption) {
 				// We force obtaining the exit value.
@@ -135,20 +136,6 @@ public abstract class JUnitExecutorProcess {
 		}
 		return null;
 	}
-
-	public abstract String defineInitialClasspath();
-
-	public abstract String classNameToCall();
-
-	/**
-	 * This method analyze the output of the junit executor (i.e.,
-	 * {@link JUnitTestExecutor}) and return an entity called TestResult with
-	 * the result of the test execution
-	 * 
-	 * @param p
-	 * @return
-	 */
-	protected abstract TestResult getTestResult(BufferedReader br);
 
 	protected String urlArrayToString(URL[] urls) {
 		String s = "";
@@ -186,6 +173,61 @@ public abstract class JUnitExecutorProcess {
 	private String toString(List<String> command) {
 		String commandString = command.toString().replace("[", "").replace("]", "").replace(",", " ");
 		return commandString;
+	}
+
+	public String classNameToCall() {
+		return (ConfigurationProperties.getProperty("testexecutorclass"));
+	}
+
+	public String defineInitialClasspath() {
+		return (new File(ConfigurationProperties.getProperty("executorjar")).getAbsolutePath());
+	}
+
+	/**
+	 * This method analyze the output of the junit executor (i.e.,
+	 * {@link JUnitTestExecutor}) and return an entity called TestResult with
+	 * the result of the test execution
+	 * 
+	 * @param p
+	 * @return
+	 */
+	protected TestResult getTestResult(BufferedReader in) {
+		log.debug("Analyzing output from process");
+		TestResult tr = new TestResult();
+		boolean success = false;
+		String processOut = "";
+		try {
+			String line;
+			while ((line = in.readLine()) != null) {
+				processOut += line + "\n";
+				if (line.startsWith(JUnitTestExecutor.OUTSEP)) {
+					String[] resultPrinted = line.split(JUnitTestExecutor.OUTSEP);
+					int nrtc = Integer.valueOf(resultPrinted[1]);
+					tr.casesExecuted = nrtc;
+					int nrfailing = Integer.valueOf(resultPrinted[2]);
+					tr.failures = nrfailing;
+					if (resultPrinted.length > 3 && !"".equals(resultPrinted[3])) {
+						String[] failingTestList = resultPrinted[3].replace("[", "").replace("]", "").split(",");
+						for (String failingTest : failingTestList) {
+							failingTest = failingTest.trim();
+							if (!failingTest.isEmpty() && !failingTest.equals("-"))
+								tr.failTest.add(failingTest);
+						}
+					}
+					success = true;
+				}
+			}
+			// log.debug("Process output:\n"+ out);
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (success)
+			return tr;
+		else {
+			log.error("Error reading the validation process\n output: \n" + processOut);
+			return null;
+		}
 	}
 
 }

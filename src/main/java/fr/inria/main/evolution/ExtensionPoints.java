@@ -11,7 +11,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTra
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
-import fr.inria.astor.core.validation.validators.ProgramValidator;
+import fr.inria.astor.core.validation.ProgramVariantValidator;
 
 /**
  * Enum with all extension points
@@ -26,7 +26,7 @@ public enum ExtensionPoints {
 	POPULATION_CONTROLLER("populationcontroller",PopulationController.class),//
 	INGREDIENT_STRATEGY_SCOPE("scope",IngredientSpace.class),//
 	SOLUTION_SORT_CRITERION("patchprioritization",SolutionVariantSortCriterion.class), 
-	VALIDATION("validation",ProgramValidator.class), //
+	VALIDATION("validation",ProgramVariantValidator.class), //
 	CUSTOM_OPERATOR("customop",AstorOperator.class),//
 	OPERATORS_SPACE("operatorspace",OperatorSpace.class),//
 	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy",IngredientSearchStrategy.class),//

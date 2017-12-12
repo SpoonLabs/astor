@@ -9,10 +9,10 @@ import java.io.File;
 
 import org.junit.Test;
 
+import fr.inria.astor.approaches.extensions.minimpact.validator.EvoSuiteValidationResult;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
 import fr.inria.main.evolution.AstorMain;
 
 /**

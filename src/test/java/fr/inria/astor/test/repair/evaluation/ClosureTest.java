@@ -56,6 +56,7 @@ public class ClosureTest {
 		main1.execute(args);
 
 	}
+
 	@Test
 	public void testClosure3() throws Exception {
 		// fr.inria.main.evolution.MainjGenProg -mode statement -location . -id
@@ -82,17 +83,24 @@ public class ClosureTest {
 		File dirLibs = new File(projectLocation.getAbsolutePath() + File.separator + "/lib/");
 		String dep = getDependencies(projectLocation, dirLibs);
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String dep2 = 
-				""+projectLocation.getAbsolutePath()+"/build/classes:"+projectLocation.getAbsolutePath()+"/build/test:"+projectLocation.getAbsolutePath()+"/build/lib/rhino.jar:"+projectLocation.getAbsolutePath()+"/lib/ant.jar:"+projectLocation.getAbsolutePath()+"/lib/ant-launcher.jar:"+projectLocation.getAbsolutePath()+"/lib/args4j.jar:"+projectLocation.getAbsolutePath()+"/lib/guava.jar:"+projectLocation.getAbsolutePath()+"/lib/jarjar.jar:"+projectLocation.getAbsolutePath()+"/lib/json.jar:"+projectLocation.getAbsolutePath()+"/lib/jsr305.jar:"+projectLocation.getAbsolutePath()+"/lib/junit.jar:"+projectLocation.getAbsolutePath()+"/lib/caja-r4314.jar:"+projectLocation.getAbsolutePath()+"/lib/protobuf-java.jar:";
-		String testExecutorClassName = "JUnitNologExternalExecutor";	
+		String dep2 = "" + projectLocation.getAbsolutePath() + "/build/classes:" + projectLocation.getAbsolutePath()
+				+ "/build/test:" + projectLocation.getAbsolutePath() + "/build/lib/rhino.jar:"
+				+ projectLocation.getAbsolutePath() + "/lib/ant.jar:" + projectLocation.getAbsolutePath()
+				+ "/lib/ant-launcher.jar:" + projectLocation.getAbsolutePath() + "/lib/args4j.jar:"
+				+ projectLocation.getAbsolutePath() + "/lib/guava.jar:" + projectLocation.getAbsolutePath()
+				+ "/lib/jarjar.jar:" + projectLocation.getAbsolutePath() + "/lib/json.jar:"
+				+ projectLocation.getAbsolutePath() + "/lib/jsr305.jar:" + projectLocation.getAbsolutePath()
+				+ "/lib/junit.jar:" + projectLocation.getAbsolutePath() + "/lib/caja-r4314.jar:"
+				+ projectLocation.getAbsolutePath() + "/lib/protobuf-java.jar:";
+		String testExecutorClassName = "JUnitNologExternalExecutor";
 		String[] args = new String[] { //
 				"-dependencies", dep2, //
 				"-mode", "statement", //
-				"-population","1",//
-				"-failing", "com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:",
+				"-population", "1", //
+				"-failing",
+				"com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:",
 				"-location", projectLocation.getAbsolutePath(), //
-				 "-package", "com.google",
-				"-srcjavafolder", "/src/", //
+				"-package", "com.google", "-srcjavafolder", "/src/", //
 				"-srctestfolder", "/test/", //
 				"-binjavafolder", "/build/classes/", //
 				"-bintestfolder", "/build/test/", //
@@ -103,16 +111,15 @@ public class ClosureTest {
 				"-seed", "3", //
 				"-maxgen", "1000", // No run
 				"-stopfirst", "true", //
-				"-maxtime", "100",//
-				"-parameters"
-				 ,"testexecutorclass"+File.pathSeparator+testExecutorClassName+":tmax2:1960000:ingredientprocessor:fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation"
-				,"-scope",
-				"fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace"
-				,"-customop"
-				,"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator",
-				
+				"-maxtime", "100", //
+				"-parameters",
+				"testexecutorclass" + File.pathSeparator + testExecutorClassName
+						+ ":tmax2:1960000:ingredientprocessor:fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation",
+				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace", "-customop",
+				"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator",
+
 		};
-		
+
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
@@ -242,6 +249,42 @@ public class ClosureTest {
 		assertTrue(types.size() > 0);
 		log.debug(types.get(0).toString());
 
+	}
+
+	@Test
+	public void testClosure90() throws Exception {
+
+//		/home/mmartinez/defects4j-repair/src/python/core/../../../results/2016-june/Closure/seed/470/package/90/Genprog/result
+//		cd /tmp/closure_90_Genprog_local_s1;export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8;TZ="America/New_York"; export TZ;export PATH="/usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/:$PATH";time /home/mmartinez/jdk1.8.0_45/bin//java -Xmx4096m -cp /home/mmartinez/defects4j-repair/src/python/core/../../..//libs/astor.jar fr.inria.main.evolution.MainjGenProg -mode cardumen  -location . -id Closure -dependencies /tmp/closure_90_Genprog_local_s1/build/classes:/tmp/closure_90_Genprog_local_s1/build/test:/tmp/closure_90_Genprog_local_s1/lib/ant.jar:/tmp/closure_90_Genprog_local_s1/lib/ant_deploy.jar:/tmp/closure_90_Genprog_local_s1/lib/ant-launcher.jar:/tmp/closure_90_Genprog_local_s1/lib/args4j.jar:/tmp/closure_90_Genprog_local_s1/lib/args4j_deploy.jar:/tmp/closure_90_Genprog_local_s1/lib/guava.jar:/tmp/closure_90_Genprog_local_s1/lib/guava-r06.jar:/tmp/closure_90_Genprog_local_s1/lib/jarjar.jar:/tmp/closure_90_Genprog_local_s1/lib/json.jar:/tmp/closure_90_Genprog_local_s1/lib/jsr305.jar:/tmp/closure_90_Genprog_local_s1/lib/junit.jar:/tmp/closure_90_Genprog_local_s1/lib/caja-r4314.jar:/tmp/closure_90_Genprog_local_s1/lib/protobuf-java.jar:/tmp/closure_90_Genprog_local_s1/lib/protobuf-java-2.3.0.jar:/tmp/closure_90_Genprog_local_s1/lib/hamcrest-core-1.1.jar:/tmp/closure_90_Genprog_local_s1/lib/libtrunk_rhino_parser_jarjared.jar:/home/mmartinez/defects4j-repair/src/python/core/../../..//libs/astor.jar -failing com.google.javascript.jscomp.TypeCheckTest:com.google.javascript.jscomp.TypeCheckTest: -package com.google -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -jvm4evosuitetestexecution /home/mmartinez/jdk1.8.0_45/bin/ -javacompliancelevel 7 -maxgen 1000000 -seed 470 -scope package -maxtime 180  -stopfirst FALSE  -population 1 -srcjavafolder src/ -srctestfolder test -binjavafolder build/classes/ -bintestfolder build/test/ -flthreshold 0.1  -excludeRegression  -maxgen 100000000  -loglevel INFO  -customengine  fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine  -parameters  limitbysuspicious:false:frequenttemplate:false:tmax2:1960000:disablelog:false:uniformreplacement:false;echo "
+
+		
+		File projectLocation = new File("./examples/closure_90");
+		AstorMain main1 = new AstorMain();
+		File dirLibs = new File(projectLocation.getAbsolutePath() + File.separator + "/lib/");
+		String dep = getDependencies(projectLocation, dirLibs);
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		String[] args = new String[] { //
+				"-dependencies", dep, //
+				"-mode", "cardumen", //
+				"-location", projectLocation.getAbsolutePath(), //
+				"-srcjavafolder", "/src/", //// "/src/:/test/", //
+				"-srctestfolder", "/test/", //
+				"-binjavafolder", "/build/classes/", //
+				"-bintestfolder", "/build/test/", //
+				"-javacompliancelevel", "6", //
+				"-flthreshold", "0.5", //
+				"-out", out.getAbsolutePath(), //
+				"-scope", "package", // //
+				"-seed", "1", //
+				"-maxgen", "100000", // No run
+				"-stopfirst", "true", //
+				"-maxtime", "100", //
+				"-population", "1", //
+				"-flthreshold", "0.1", //
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
 	}
 
 	@Test

@@ -1,7 +1,7 @@
 package fr.inria.astor.approaches.jgenprog.operators;
 
-import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;

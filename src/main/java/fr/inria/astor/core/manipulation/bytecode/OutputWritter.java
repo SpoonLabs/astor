@@ -13,7 +13,6 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
-import spoon.support.StandardEnvironment;
 
 /**
  * 

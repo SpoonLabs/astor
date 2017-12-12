@@ -1,6 +1,9 @@
 package fr.inria.astor.test.repair.evaluation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.Arrays;
@@ -8,16 +11,14 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.extensions.minimpact.validator.EvoSuiteValidationResult;
+import fr.inria.astor.approaches.extensions.minimpact.validator.RegressionValidation;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
-import fr.inria.astor.core.validation.validators.RegressionValidation;
 import fr.inria.astor.test.repair.evaluation.regression.MathTests;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.astor.util.EvoSuiteFacade;

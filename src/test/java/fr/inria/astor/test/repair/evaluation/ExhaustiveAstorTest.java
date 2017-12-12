@@ -16,7 +16,7 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.validation.validators.TestCasesProgramValidationResult;
+import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;

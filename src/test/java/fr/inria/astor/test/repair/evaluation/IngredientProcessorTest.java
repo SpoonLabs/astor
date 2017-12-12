@@ -12,7 +12,6 @@ import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.AstorIngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.MethodInvocationFixSpaceProcessor;
 import fr.inria.astor.test.repair.evaluation.regression.MathTests;

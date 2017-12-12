@@ -1,17 +1,20 @@
 package fr.inria.astor.test.repair.evaluation.regression;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
 
 import org.junit.Test;
 
+import fr.inria.astor.approaches.extensions.minimpact.validator.EvoSuiteValidationResult;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
-import fr.inria.astor.core.validation.validators.TestCasesProgramValidationResult;
+import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.astor.test.repair.evaluation.BaseEvolutionaryTest;
 import fr.inria.main.evolution.AstorMain;
 /**

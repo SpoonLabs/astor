@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
@@ -24,7 +25,6 @@ import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 

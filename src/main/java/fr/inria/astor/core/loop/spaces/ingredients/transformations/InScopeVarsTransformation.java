@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  *
  */
+@Deprecated
 public class InScopeVarsTransformation extends ClusterIngredientTransformation
 		implements IngredientTransformationStrategy {
 

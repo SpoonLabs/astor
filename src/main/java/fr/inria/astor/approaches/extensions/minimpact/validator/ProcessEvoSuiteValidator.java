@@ -1,4 +1,4 @@
-package fr.inria.astor.core.validation.validators;
+package fr.inria.astor.approaches.extensions.minimpact.validator;
 
 import java.io.File;
 import java.net.URL;
@@ -16,9 +16,11 @@ import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
-import fr.inria.astor.core.validation.entity.TestResult;
-import fr.inria.astor.core.validation.executors.JUnitExecutorProcess;
-import fr.inria.astor.core.validation.executors.JUnitIndirectExecutorProcess;
+import fr.inria.astor.core.validation.ProgramVariantValidator;
+import fr.inria.astor.core.validation.processbased.JUnitExecutorProcess;
+import fr.inria.astor.core.validation.processbased.ProcessValidator;
+import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
+import fr.inria.astor.core.validation.results.TestResult;
 import fr.inria.astor.util.Converters;
 import fr.inria.astor.util.EvoSuiteFacade;
 import spoon.reflect.declaration.CtClass;
@@ -32,7 +34,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class ProcessEvoSuiteValidator extends ProgramValidator {
+public class ProcessEvoSuiteValidator extends ProgramVariantValidator {
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 
@@ -215,7 +217,7 @@ public class ProcessEvoSuiteValidator extends ProgramValidator {
 			List<String> testCasesRegression, boolean avoidInterrupt) {
 		log.debug("Executing EvosuiteTest :" + testCasesRegression);
 		
-		JUnitExecutorProcess process = new JUnitIndirectExecutorProcess(avoidInterrupt);
+		JUnitExecutorProcess process = new JUnitExecutorProcess(avoidInterrupt);
 
 		int time = 60000;
 		String jvmPath = ConfigurationProperties.getProperty("jvm4evosuitetestexecution");
