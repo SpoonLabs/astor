@@ -47,7 +47,7 @@ public class LangTest {
 		String[] args = commandLang63(dep, out, stepbystep);
 		CommandSummary command = new CommandSummary(args);
 		System.out.println(Arrays.toString(command.flat()));
-		command.command.put("-parameters" ,"testexecutorclass"+File.pathSeparator+"JUnitExternalExecutor");
+		command.command.put("-parameters" ,"logtestexecution:true");
 		command.command.put("-population", "1");
 		command.command.put("-mode", "jkali");
 		main1.execute(command.flat());
@@ -71,13 +71,13 @@ public class LangTest {
 		String[] args = commandLang63(dep, out, stepbystep);
 		CommandSummary command = new CommandSummary(args);
 		System.out.println(Arrays.toString(command.flat()));
-		String testExecutorClassName = "JUnitNologExternalExecutor";
-		command.command.put( "-parameters" ,"testexecutorclass"+File.pathSeparator+testExecutorClassName);
+		String save="true";
+		command.command.put( "-parameters" ,"logtestexecution:"+save);
 		command.command.put("-population", "1");
 		command.command.put("-mode", "jkali");
 		main1.execute(command.flat());
 
-		assertEquals("Incorrectly saved Property ",testExecutorClassName, ConfigurationProperties.getProperty("testexecutorclass"));
+		assertEquals("Incorrectly saved Property ",save, ConfigurationProperties.getProperty("logtestexecution"));
 		assertFalse("Solution not found",main1.getEngine().getSolutions().isEmpty());
 
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);

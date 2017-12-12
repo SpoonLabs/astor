@@ -92,7 +92,6 @@ public class ClosureTest {
 				+ projectLocation.getAbsolutePath() + "/lib/jsr305.jar:" + projectLocation.getAbsolutePath()
 				+ "/lib/junit.jar:" + projectLocation.getAbsolutePath() + "/lib/caja-r4314.jar:"
 				+ projectLocation.getAbsolutePath() + "/lib/protobuf-java.jar:";
-		String testExecutorClassName = "JUnitNologExternalExecutor";
 		String[] args = new String[] { //
 				"-dependencies", dep2, //
 				"-mode", "statement", //
@@ -113,7 +112,7 @@ public class ClosureTest {
 				"-stopfirst", "true", //
 				"-maxtime", "100", //
 				"-parameters",
-				"testexecutorclass" + File.pathSeparator + testExecutorClassName
+				"logtestexecution:true"
 						+ ":tmax2:1960000:ingredientprocessor:fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation",
 				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace", "-customop",
 				"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator",

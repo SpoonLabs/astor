@@ -60,7 +60,7 @@ public class ProcessValidator extends ProgramVariantValidator {
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner = new JUnitExecutorProcess();
+			LaucherJUnitProcess testProcessRunner = new LaucherJUnitProcess();
 
 			log.debug("-Running first validation");
 
@@ -98,7 +98,7 @@ public class ProcessValidator extends ProgramVariantValidator {
 		try {
 			URL[] bc = createClassPath(mutatedVariant, projectFacade);
 
-			JUnitExecutorProcess testProcessRunner = new JUnitExecutorProcess();
+			LaucherJUnitProcess testProcessRunner = new LaucherJUnitProcess();
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
 
 			TestResult trfailing = testProcessRunner.execute(jvmPath, bc,
@@ -133,7 +133,7 @@ public class ProcessValidator extends ProgramVariantValidator {
 	protected TestCaseVariantValidationResult runRegression(ProgramVariant mutatedVariant,
 			ProjectRepairFacade projectFacade, URL[] bc) {
 
-		JUnitExecutorProcess testProcessRunner = new JUnitExecutorProcess();
+		LaucherJUnitProcess testProcessRunner = new LaucherJUnitProcess();
 
 		if (ConfigurationProperties.getPropertyBool("testbystep"))
 			return executeRegressionTestingOneByOne(mutatedVariant, bc, testProcessRunner, projectFacade);
@@ -173,7 +173,7 @@ public class ProcessValidator extends ProgramVariantValidator {
 	}
 
 	protected TestCaseVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc,
-			JUnitExecutorProcess p, ProjectRepairFacade projectFacade) {
+			LaucherJUnitProcess p, ProjectRepairFacade projectFacade) {
 		log.debug("-Test Failing is passing, Executing regression");
 		
 		List<String> testCasesRegression = projectFacade.getProperties().getRegressionTestCases();
@@ -199,7 +199,7 @@ public class ProcessValidator extends ProgramVariantValidator {
 	}
 
 	protected TestCaseVariantValidationResult executeRegressionTestingOneByOne(ProgramVariant mutatedVariant, URL[] bc,
-			JUnitExecutorProcess p, ProjectRepairFacade projectFacade) {
+			LaucherJUnitProcess p, ProjectRepairFacade projectFacade) {
 
 		log.debug("-Test Failing is passing, Executing regression, One by one");
 		TestResult trregressionall = new TestResult();

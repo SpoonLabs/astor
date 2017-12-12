@@ -17,7 +17,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
-import fr.inria.astor.core.validation.processbased.JUnitExecutorProcess;
+import fr.inria.astor.core.validation.processbased.LaucherJUnitProcess;
 import fr.inria.astor.core.validation.processbased.ProcessValidator;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.astor.core.validation.results.TestResult;
@@ -217,7 +217,7 @@ public class ProcessEvoSuiteValidator extends ProgramVariantValidator {
 			List<String> testCasesRegression, boolean avoidInterrupt) {
 		log.debug("Executing EvosuiteTest :" + testCasesRegression);
 		
-		JUnitExecutorProcess process = new JUnitExecutorProcess(avoidInterrupt);
+		LaucherJUnitProcess process = new LaucherJUnitProcess(avoidInterrupt);
 
 		int time = 60000;
 		String jvmPath = ConfigurationProperties.getProperty("jvm4evosuitetestexecution");

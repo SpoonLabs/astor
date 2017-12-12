@@ -16,26 +16,28 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.validation.junit.JUnitExternalExecutor;
+import fr.inria.astor.core.validation.junit.JUnitNologExternalExecutor;
+import fr.inria.astor.core.validation.junit.filters.TestFilter;
 import fr.inria.astor.core.validation.results.TestResult;
-import fr.inria.astor.junitexec.JUnitTestExecutor;
 
 /**
- * Process-based program variant validation
+ * Lauches a process and parses its output.
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class JUnitExecutorProcess {
+public class LaucherJUnitProcess {
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 	boolean avoidInterruption = false;
 
-	public JUnitExecutorProcess(boolean avoidInterruption) {
+	public LaucherJUnitProcess(boolean avoidInterruption) {
 		super();
 		this.avoidInterruption = avoidInterruption;
 	}
 
-	public JUnitExecutorProcess() {
+	public LaucherJUnitProcess() {
 		this(false);
 	}
 
@@ -48,7 +50,8 @@ public class JUnitExecutorProcess {
 	public TestResult execute(String jvmPath, String classpath, List<String> classesToExecute, int waitTime) {
 		Process p = null;
 		jvmPath += File.separator + "java";
-		String systemcp = defineInitialClasspath();
+		String systemcp = getPath(TestFilter.class) + File.pathSeparator + //
+				getPath(laucherClassName());
 
 		classpath = systemcp + File.pathSeparator + classpath;
 
@@ -65,7 +68,7 @@ public class JUnitExecutorProcess {
 			command.add("-Xmx2048m");
 			command.add("-cp");
 			command.add(classpath);
-			command.add(classNameToCall());
+			command.add(laucherClassName().getCanonicalName());
 			command.addAll(cls);
 
 			printCommandToExecute(command);
@@ -137,6 +140,12 @@ public class JUnitExecutorProcess {
 		return null;
 	}
 
+	private String getPath(Class<?> class1) {
+		return new File(
+				"./" + class1.getPackage().getName().replaceAll("\\.", "/") + "/" + class1.getSimpleName() + ".class")
+						.getAbsolutePath();
+	}
+
 	protected String urlArrayToString(URL[] urls) {
 		String s = "";
 		for (int i = 0; i < urls.length; i++) {
@@ -175,12 +184,12 @@ public class JUnitExecutorProcess {
 		return commandString;
 	}
 
-	public String classNameToCall() {
-		return (ConfigurationProperties.getProperty("testexecutorclass"));
-	}
+	public Class laucherClassName() {
+		if (ConfigurationProperties.getPropertyBool("logtestexecution"))
+			return JUnitExternalExecutor.class;
+		else
+			return JUnitNologExternalExecutor.class;
 
-	public String defineInitialClasspath() {
-		return (new File(ConfigurationProperties.getProperty("executorjar")).getAbsolutePath());
 	}
 
 	/**
@@ -200,8 +209,8 @@ public class JUnitExecutorProcess {
 			String line;
 			while ((line = in.readLine()) != null) {
 				processOut += line + "\n";
-				if (line.startsWith(JUnitTestExecutor.OUTSEP)) {
-					String[] resultPrinted = line.split(JUnitTestExecutor.OUTSEP);
+				if (line.startsWith(JUnitExternalExecutor.OUTSEP)) {
+					String[] resultPrinted = line.split(JUnitExternalExecutor.OUTSEP);
 					int nrtc = Integer.valueOf(resultPrinted[1]);
 					tr.casesExecuted = nrtc;
 					int nrfailing = Integer.valueOf(resultPrinted[2]);
