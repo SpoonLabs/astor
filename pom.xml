@@ -82,12 +82,6 @@
 		</dependency>
 
 		<dependency>
-			<artifactId>jte</artifactId>
-			<groupId>fr.spoonlab</groupId>
-			<version>0.0.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>1.1</version>
