@@ -12,7 +12,7 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
 
-import fr.spoonlab.TestFilter;
+import fr.inria.astor.core.validation.junit.filters.TestFilter;
 
 /**
  * This class runs a JUnit test suite i.e., a set of test cases.
