@@ -18,31 +18,8 @@ Matias Martinez, Martin Monperrus, "[ASTOR: A Program Repair Library for Java](h
      doi = {10.1145/2931037.2948705},
     }
 
-
-Compilation
--------
-
-Please install a JDK 1.8 and configure Maven or your IDE to use it. Fill property jvm4testexecution in `src/main/resources/configuration.properties`.
-
-To compile using maven, first execute:
-
-    mvn clean
-    mvn compile
-
-We recommend to remove all package-info.java files from the project to repair (You can use command: `find . -name "package-info.java" -type f -delete`).
-
 Execution
 -------
-
-The main class to run it is:
-
-    fr.inria.main.evolution.AstorMain
-
-After the execution of a repair attempt, Astor writes in the output folder (property `workingDirectory` in the mentioned file), a folder with all the variants that fulfill the goals i.e., repair the bugs.
-Each variant folder contains the files that Astor has analyzed (and eventually modified). Additionally, it contains a file called 'Patch.xml' that summarized all changes done in the variant.
-The summary of the execution is also printed on the screen at the end of the execution. If there is at least one solution, it prints “Solution found” and then it lists the program variants that are solution i.e., they fixed versions of the program. Then, if you go to the folder to each of those variants, the file patch appears, which summarizes the changes done for repairing the bug. In other words, the file `patch.xml` is only present if the variant is a valid solution (fixes the failing test and no regression).
-If Astor does not find any solution in the execution, it prints at the screen something like “Not solution found”. 
-
 
 ### jGenProg
 
@@ -50,18 +27,45 @@ We present an command line with the required arguments for executing jGenProg.  
 
 Getting started: 
 
-     java -version # it is JDK 7?
+     git clone https://github.com/SpoonLabs/astor.git
+     cd astor
      mvn clean compile # compiling  astor
      cd examples/Math-issue-280
      mvn clean compile test  # compiling and running bug example
      cd ../../
-     mvn  dependency:build-classpath | egrep -v "(^\[INFO\]|^\[WARNING\])" | tee /tmp/astor-classpath.txt
+     mvn dependency:build-classpath | egrep -v "(^\[INFO\]|^\[WARNING\])" | tee /tmp/astor-classpath.txt
      cat /tmp/astor-classpath.txt
      java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.MainjGenProg -bug280
 
 
-Minimum arguments:
+Output: Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
+Astor writes in the output folder (property `workingDirectory` in the mentioned file), a folder with all the variants that fulfill the goals i.e., repair the bugs.
+
+Each variant folder contains the files that Astor has analyzed (and eventually modified). Additionally, it contains a file called 'Patch.xml' that summarized all changes done in the variant.
+The summary of the execution is also printed on the screen at the end of the execution. If there is at least one solution, it prints “Solution found” and then it lists the program variants that are solution i.e., they fixed versions of the program. Then, if you go to the folder to each of those variants, the file patch appears, which summarizes the changes done for repairing the bug. In other words, the file `patch.xml` is only present if the variant is a valid solution (fixes the failing test and no regression).
+If Astor does not find any solution in the execution, it prints at the screen something like “Not solution found”. 
+
+
+
+Moreover, Astor saves the patched version of the program on disk.
+The Astor's output is located in folder "./output_astor". You can change it through command line argument '-out'. There Astor writes a JSON file which summarizes the information of each patch found (location, code modified, etc.) and some statistics.
+Inside the folder "/src/" Astor stores the source code of the solutions that it found.
+
+Folder “default” contains the original program, without any modification. It's a sanity check, it’s the output of spoon without applying any processor over the spoon model of the application under repair.
+
+Each folder "variant-x" is a valid solution to the repair problem (passes all tests). There is an command line argument `saveall` that allows you to save all variants that Astor generates, even they are not solution.
+
+### jKali
+
+For executing Astor in jKali mode, we use the option `-mode statement-remove`. jKali and jGenProg share the same arguments.
+
+    java  -cp astor.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location <>......
+
+Arguments
+----------
+
     java fr.inria.main.evolution.AstorMain 
+    
     -mode statement 
 
     -location "location of the project to repair" 
@@ -87,27 +91,6 @@ Minimum arguments:
     -binjavafolder "class folder"
     
     -bintestfolder "test class folder" 
-
-
-If you use command line, the -cp argument of java must include the absolute path of Astor jar. Otherwise, it could be the case that an exception is thrown by the fault localization tool (Gzoltar) used by Astor.
-
-**Output**: Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
-
-Moreover, Astor saves the patched version of the program on disk.
-The Astor's output is located in folder "./output_astor". You can change it through command line argument '-out'. There Astor writes a JSON file which summarizes the information of each patch found (location, code modified, etc.) and some statistics.
-Inside the folder "/src/" Astor stores the source code of the solutions that it found.
-
-Folder “default” contains the original program, without any modification. It's a sanity check, it’s the output of spoon without applying any processor over the spoon model of the application under repair.
-
-Each folder "variant-x" is a valid solution to the repair problem (passes all tests). There is an command line argument `saveall` that allows you to save all variants that Astor generates, even they are not solution.
-
-### jKali
-
-For executing Astor in jKali mode, we use the option `-mode statement-remove`. jKali and jGenProg share the same arguments.
-
-    java  -cp astor.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location <>......
-
-
 
 
 
