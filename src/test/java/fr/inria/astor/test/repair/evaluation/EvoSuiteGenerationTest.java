@@ -157,7 +157,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				testToExecute.add(evoTest.getQualifiedName());
 		}
 
-		String classpathForRunTest = classpathForCompileSpoon + (File.pathSeparator) + outPutTest;
+		String classpathForRunTest = classpathForCompileSpoon + (File.pathSeparator) + outPutTest + File.pathSeparator
+				+ System.getProperty("java.class.path");
 		log.info("Process classpath " + classpathForRunTest);
 
 		ProcessEvoSuiteValidator evoProcess = new ProcessEvoSuiteValidator();
@@ -186,9 +187,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				out.getAbsolutePath(), "-scope", "package", "-package", "10",
 				// We force to not execute the evolution, so, we run it for zero
 				// generation
-				"-maxgen", "0", "-population", "1", "-stopfirst", "true", "-maxtime", "100"
-
-		};
+				"-maxgen", "0", "-population", "1", "-stopfirst", "true", "-maxtime", "100", "-loglevel", "DEBUG" };
 		System.out.println(Arrays.toString(args));
 
 		main1.execute(args);
@@ -307,7 +306,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		assertTrue(fbyteEvo.list().length > 0);
 
 		/// Running junit for executing evosuite test:
-		String classpathForRunTest = classpathForCompileModel + (File.pathSeparator) + outPutTest;
+		String classpathForRunTest = classpathForCompileModel + (File.pathSeparator) + outPutTest + File.pathSeparator
+				+ System.getProperty("java.class.path");
 		// Asserting Running
 		URL[] classpath4Process = Converters.toURLArray(classpathForRunTest.split(File.pathSeparator));
 
@@ -380,9 +380,9 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 				+ ",-failing,org.apache.commons.math.analysis.solvers.BisectionSolverTest,"
 				+ "-package,org.apache.commons," + "-javacompliancelevel,7," + "-maxgen,1000000," + "-seed,1,"
-				+ "-stopfirst,true," + "-scope,package,-maxtime,10," + "-population,1," + "-srcjavafolder,src/main/java/,"
-				+ "-srctestfolder,src/test/java/,-binjavafolder,/target/classes/," + "-bintestfolder,/target/test-classes/,"
-				+ "-flthreshold,0.1," + "-validation,"
+				+ "-stopfirst,true," + "-scope,package,-maxtime,10," + "-population,1,"
+				+ "-srcjavafolder,src/main/java/," + "-srctestfolder,src/test/java/,-binjavafolder,/target/classes/,"
+				+ "-bintestfolder,/target/test-classes/," + "-flthreshold,0.1," + "-validation,"
 				+ fr.inria.astor.approaches.extensions.minimpact.validator.RegressionValidation.class.getCanonicalName()
 				+ ",-testbystep";
 		String[] args = command.split(",");
@@ -477,18 +477,16 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 	@Test
 	public void testM70() throws Exception {
-		String command = "-mode,statement,"
-				+ "-location," + (new File("./examples/math_70")).getAbsolutePath() + "," + "-dependencies,"
-				+ new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
+		String command = "-mode,statement," + "-location," + (new File("./examples/math_70")).getAbsolutePath() + ","
+				+ "-dependencies," + new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
 				// + ","
-				//+ ",out," + new File(ConfigurationProperties.getProperty("workingDirectory"))
+				// + ",out," + new
+				// File(ConfigurationProperties.getProperty("workingDirectory"))
 				+ ",-failing,org.apache.commons.math.analysis.solvers.BisectionSolverTest,"
-				+ "-package,org.apache.commons,"
-				+ "-javacompliancelevel,7," + "-maxgen,1000000," + "-seed,6001," + "-stopfirst,true,"
-				+ "-scope,package,-maxtime,10," + "-population,1," + "-srcjavafolder,src/java/main/,"
-				+ "-srctestfolder,src/test/java/,-binjavafolder,/target/classes/," + "-bintestfolder,/target/test-classes/,"
-				+ "-flthreshold,0.1,"
-		;
+				+ "-package,org.apache.commons," + "-javacompliancelevel,7," + "-maxgen,1000000," + "-seed,6001,"
+				+ "-stopfirst,true," + "-scope,package,-maxtime,10," + "-population,1,"
+				+ "-srcjavafolder,src/java/main/," + "-srctestfolder,src/test/java/,-binjavafolder,/target/classes/,"
+				+ "-bintestfolder,/target/test-classes/," + "-flthreshold,0.1,";
 		String[] args = command.split(",");
 		AstorMain main1 = new AstorMain();
 		main1.execute(args);
@@ -552,5 +550,4 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		}
 	}
 
-	
 }

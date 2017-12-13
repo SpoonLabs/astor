@@ -50,10 +50,6 @@ public class LaucherJUnitProcess {
 	public TestResult execute(String jvmPath, String classpath, List<String> classesToExecute, int waitTime) {
 		Process p = null;
 		jvmPath += File.separator + "java";
-		String systemcp = getPath(TestFilter.class) + File.pathSeparator + //
-				getPath(laucherClassName());
-
-		classpath = systemcp + File.pathSeparator + classpath;
 
 		List<String> cls = new ArrayList<>(classesToExecute);
 
