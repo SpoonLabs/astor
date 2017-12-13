@@ -1,4 +1,4 @@
-package fr.inria.astor.junitexec;
+package fr.inria.astor.core.validation.junit.filters;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -9,36 +9,40 @@ import org.junit.runner.RunWith;
 
 import junit.framework.TestCase;
 
-
 /**
  * ClassTester implementation to retrieve JUnit4 test classes in the classpath.
  * You can specify if you want to include jar files in the search and you can
  * give a set of regex expression to specify the class names to include.
  * 
  */
-public class TestFilter implements ClassFilter {
+public class TestFilter {
 
 	private final boolean searchInJars;
 
 	private final TestType[] testTypes;
 
+	public enum TestType {
+		TEST_CLASSES, RUN_WITH_CLASSES, JUNIT38_TEST_CLASSES
+	}
+
 	public TestFilter() {
 		this.searchInJars = true;
-		this.testTypes = new TestType[]{TestType.JUNIT38_TEST_CLASSES,TestType.RUN_WITH_CLASSES,TestType.TEST_CLASSES};
+		this.testTypes = new TestType[] { TestType.JUNIT38_TEST_CLASSES, TestType.RUN_WITH_CLASSES,
+				TestType.TEST_CLASSES };
 	}
-	
+
 	public TestFilter(boolean searchInJars) {
 		this.searchInJars = searchInJars;
-		this.testTypes = new TestType[]{TestType.JUNIT38_TEST_CLASSES,TestType.RUN_WITH_CLASSES,TestType.TEST_CLASSES};
+		this.testTypes = new TestType[] { TestType.JUNIT38_TEST_CLASSES, TestType.RUN_WITH_CLASSES,
+				TestType.TEST_CLASSES };
 	}
-	
+
 	public TestFilter(TestType[] suiteTypes) {
 		this.searchInJars = true;
 		this.testTypes = suiteTypes;
 	}
 
-	public TestFilter(boolean searchInJars,
-			TestType[] suiteTypes) {
+	public TestFilter(boolean searchInJars, TestType[] suiteTypes) {
 		this.searchInJars = searchInJars;
 		this.testTypes = suiteTypes;
 	}

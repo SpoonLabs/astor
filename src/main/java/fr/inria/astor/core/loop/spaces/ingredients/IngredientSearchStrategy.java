@@ -3,7 +3,6 @@ package fr.inria.astor.core.loop.spaces.ingredients;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
-import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 
 /**

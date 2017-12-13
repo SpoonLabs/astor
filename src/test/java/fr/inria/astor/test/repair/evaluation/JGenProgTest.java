@@ -2,21 +2,13 @@ package fr.inria.astor.test.repair.evaluation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileReader;
-import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -25,25 +17,15 @@ import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
-import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.population.PopulationConformation;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
-import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.stats.PatchHunkStats;
-import fr.inria.astor.core.stats.PatchStat;
-import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
-import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
-import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
 
 /**
  * Test of Astor in mode jgenprog
@@ -134,7 +116,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-saveall", "true");
-		cs.append("-parameters", ("testexecutorclass:JUnitExternalExecutor"));
+		cs.append("-parameters", ("logtestexecution:true"));
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());

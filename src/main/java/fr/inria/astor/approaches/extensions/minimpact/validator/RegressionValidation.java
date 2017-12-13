@@ -1,9 +1,10 @@
-package fr.inria.astor.core.validation.validators;
+package fr.inria.astor.approaches.extensions.minimpact.validator;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.validation.processbased.ProcessValidator;
 
 /**
  * Executes different regression mechanism such as EvoSuite regression.

@@ -3,7 +3,7 @@ package fr.inria.astor.approaches.mutRepair.operators.ctmutators;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.astor.core.entities.MutantCtElement;
+import fr.inria.astor.approaches.mutRepair.MutantCtElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;

@@ -33,7 +33,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
-import fr.inria.astor.core.validation.validators.ProgramValidator;
+import fr.inria.astor.core.validation.ProgramVariantValidator;
 import fr.inria.astor.util.TimeUtil;
 import spoon.Launcher;
 import spoon.reflect.factory.Factory;
@@ -90,7 +90,7 @@ public abstract class AbstractMain {
 				"(Optional) type of validation: process|evosuite. Default:"
 						+ ConfigurationProperties.properties.getProperty("validation")
 						+ "It accepts custormize validation prodedures, which must extend from "
-						+ ProgramValidator.class.getCanonicalName());
+						+ ProgramVariantValidator.class.getCanonicalName());
 		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default:"
 				+ ConfigurationProperties.properties.getProperty("flthreshold"));
 

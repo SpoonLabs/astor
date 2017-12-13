@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.validation.validators.TestCasesProgramValidationResult;
+import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.astor.test.repair.evaluation.BaseEvolutionaryTest;
 import fr.inria.main.evolution.AstorMain;
 /**

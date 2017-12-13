@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
-import fr.inria.astor.approaches.jkali.JKaliSpace;
+
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;

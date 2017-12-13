@@ -43,7 +43,7 @@ public class IngScopeTest extends BaseEvolutionaryTest {
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-saveall", "true");
-		cs.append("-parameters", ("testexecutorclass:JUnitExternalExecutor"));
+		cs.append("-parameters", ("logtestexecution:true"));
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -79,7 +79,7 @@ public class IngScopeTest extends BaseEvolutionaryTest {
 
 		CommandSummary cs = MathTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-loglevel", "INFO");
+		cs.command.put("-loglevel", "DEBUG");
 		cs.command.put("-out", out.getAbsolutePath());
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());

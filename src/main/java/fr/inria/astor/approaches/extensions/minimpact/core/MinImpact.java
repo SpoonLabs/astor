@@ -1,4 +1,4 @@
-package fr.inria.astor.approaches.extensions;
+package fr.inria.astor.approaches.extensions.minimpact.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.approaches.extensions.minimpact.validator.EvoSuiteValidationResult;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.VariantValidationResult;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
-import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
 
 /**
  * Sorts patches according to the MinImpact Algorithm described in

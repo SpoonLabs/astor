@@ -2,6 +2,7 @@ package fr.inria.astor.core.loop.extension;
 
 import java.net.URL;
 import java.util.Collection;
+
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import spoon.reflect.declaration.CtClass;

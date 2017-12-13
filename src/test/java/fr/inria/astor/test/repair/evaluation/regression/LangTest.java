@@ -1,12 +1,13 @@
 package fr.inria.astor.test.repair.evaluation.regression;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.Arrays;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -14,9 +15,6 @@ import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.validation.validators.EvoSuiteValidationResult;
-import fr.inria.astor.core.validation.validators.RegressionValidation;
-import fr.inria.astor.core.validation.validators.TestCasesProgramValidationResult;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtExecutable;
@@ -49,7 +47,7 @@ public class LangTest {
 		String[] args = commandLang63(dep, out, stepbystep);
 		CommandSummary command = new CommandSummary(args);
 		System.out.println(Arrays.toString(command.flat()));
-		command.command.put("-parameters" ,"testexecutorclass"+File.pathSeparator+"JUnitExternalExecutor");
+		command.command.put("-parameters" ,"logtestexecution:true");
 		command.command.put("-population", "1");
 		command.command.put("-mode", "jkali");
 		main1.execute(command.flat());
@@ -73,13 +71,13 @@ public class LangTest {
 		String[] args = commandLang63(dep, out, stepbystep);
 		CommandSummary command = new CommandSummary(args);
 		System.out.println(Arrays.toString(command.flat()));
-		String testExecutorClassName = "JUnitNologExternalExecutor";
-		command.command.put( "-parameters" ,"testexecutorclass"+File.pathSeparator+testExecutorClassName);
+		String save="true";
+		command.command.put( "-parameters" ,"logtestexecution:"+save);
 		command.command.put("-population", "1");
 		command.command.put("-mode", "jkali");
 		main1.execute(command.flat());
 
-		assertEquals("Incorrectly saved Property ",testExecutorClassName, ConfigurationProperties.getProperty("testexecutorclass"));
+		assertEquals("Incorrectly saved Property ",save, ConfigurationProperties.getProperty("logtestexecution"));
 		assertFalse("Solution not found",main1.getEngine().getSolutions().isEmpty());
 
 		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
@@ -89,105 +87,8 @@ public class LangTest {
 		assertNotNull("Without validation", validationResult);
 		
 	}
-	//@Test
-	@Ignore
-	public void testLang8Clone() throws Exception {
-		AstorMain main1 = new AstorMain();
-		String dep = getLangCommonLibs();//new File("./examples/libs/junit-3.8.1.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		boolean stepbystep = true;
-		CommandSummary cs  = commandLang8(dep, out, stepbystep);
-		String[] args = cs.flat();
-		System.out.println(Arrays.toString(args));
-		main1.execute(args);
-
-		/*assertTrue(main1.getEngine().getSolutions().size() > 0);
-
-		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution
-				.getValidationResult();
-
-		assertNotNull("Without validation", validationResult);
-		*/
-		
-	}
 	
-	//@Test
-	@Ignore
-	public void testLang63RegressionFailing() throws Exception {
-		AstorMain main1 = new AstorMain();
-		String dep = new File("./examples/libs/junit-3.8.1.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		boolean stepbystep = true;
-		String[] args = commandLang63(dep, out, stepbystep);
-		System.out.println(Arrays.toString(args));
-		main1.execute(args);
-
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
-
-		ProgramVariant variantSolution = main1.getEngine().getSolutions().get(0);
-		TestCaseVariantValidationResult validationResult = (TestCaseVariantValidationResult) variantSolution
-				.getValidationResult();
-
-		assertNotNull("Without validation", validationResult);
-		// As we execute jgp in evosuite validation mode, we expect
-		// eSvalidationResult
-		assertTrue(validationResult instanceof EvoSuiteValidationResult);
-		EvoSuiteValidationResult esvalidationresult = (EvoSuiteValidationResult) validationResult;
-		// The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.isSuccessful());
-		// Failing due to the Regression bug
-		assertFalse(esvalidationresult.getManualTestValidation().isSuccessful());
-
-		// assertEquals(,
-		// esvalidationresult.getManualTestValidation().getFailureCount());
-		// Now, the extended validation must fail
-		// assertFalse(esvalidationresult.getEvoValidation().wasSuccessful());
-
-		// now step by step
-		stepbystep = true;
-		args = commandLang63(dep, out, stepbystep);
-		System.out.println("stepbystep\n" + Arrays.toString(args));
-		main1.execute(args);
-
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
-
-		variantSolution = main1.getEngine().getSolutions().get(0);
-		validationResult = (TestCaseVariantValidationResult) variantSolution.getValidationResult();
-
-		assertNotNull("Without validation", validationResult);
-		// As we execute jgp in evosuite validation mode, we expect
-		// eSvalidationResult
-		assertTrue(validationResult instanceof EvoSuiteValidationResult);
-		esvalidationresult = (EvoSuiteValidationResult) validationResult;
-
-		// The main validation must be true (due it is a solution)
-		assertTrue(esvalidationresult.isSuccessful());
-
-		System.out
-				.println("failings " + ((TestCasesProgramValidationResult) esvalidationresult.getManualTestValidation())
-						.getTestResult().failTest);
-		assertTrue(25 > esvalidationresult.getManualTestValidation().getFailureCount());
-
-		// Failing due to the Regression bug
-		assertTrue(esvalidationresult.getManualTestValidation().isSuccessful());
-
-	}
-
-	@Test
-	@Ignore //I have to fix the maven compilation, which fails using our script
-	public void testLang55RegressionFailing() throws Exception {
-		AstorMain main1 = new AstorMain();
-		String dep = new File("./examples/libs/junit-3.8.1.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		boolean stepbystep = false;
-		String[] args = commandLang55(dep, out, stepbystep);
-		System.out.println(Arrays.toString(args));
-		main1.execute(args);
-
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
-	}
-
+	
 	
 	public String[] commandLang63(String dep, File out, boolean step) {
 		String[] args = new String[] { "-dependencies", dep, 
@@ -277,8 +178,7 @@ public class LangTest {
 				//
 				"-out", out.getAbsolutePath(), "-scope", "package", "-seed", "6320", "-maxgen", "50",
 				//
-				"-stopfirst", "true", "-maxtime", "30", (step) ? "-testbystep" : "", "-validation",
-				RegressionValidation.class.getName(),
+				"-stopfirst", "true", "-maxtime", "30", (step) ? "-testbystep" : "", 
 				//
 				"ignoredtestcases", "org.apache.commons.lang.LocaleUtilsTest",
 

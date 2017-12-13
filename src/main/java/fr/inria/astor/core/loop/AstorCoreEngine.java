@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -40,11 +41,9 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.Stats;
-import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
-import fr.inria.astor.core.validation.validators.ProcessEvoSuiteValidator;
-import fr.inria.astor.core.validation.validators.ProcessValidator;
-import fr.inria.astor.core.validation.validators.ProgramValidator;
+import fr.inria.astor.core.validation.ProgramVariantValidator;
+import fr.inria.astor.core.validation.processbased.ProcessValidator;
 import fr.inria.astor.util.PatchDiffCalculator;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.astor.util.TimeUtil;
@@ -78,7 +77,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected ProgramVariantFactory variantFactory;
 
-	protected ProgramValidator programValidator;
+	protected ProgramVariantValidator programValidator;
 
 	// INTERNAL
 	protected List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
@@ -943,11 +942,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.variantFactory = variantFactory;
 	}
 
-	public ProgramValidator getProgramValidator() {
+	public ProgramVariantValidator getProgramValidator() {
 		return programValidator;
 	}
 
-	public void setProgramValidator(ProgramValidator programValidator) {
+	public void setProgramValidator(ProgramVariantValidator programValidator) {
 		this.programValidator = programValidator;
 		this.programValidator.setStats(currentStat);
 	}
@@ -1103,7 +1102,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		} else
 		// if validation is different to default (process)
 		if (!validationArgument.equals("process")) {
-			this.setProgramValidator((ProgramValidator) PlugInLoader.loadPlugin(ExtensionPoints.VALIDATION));
+			this.setProgramValidator((ProgramVariantValidator) PlugInLoader.loadPlugin(ExtensionPoints.VALIDATION));
 		}
 
 	};
