@@ -219,7 +219,7 @@ public class ProgramVariant {
 		return lastGenAnalyzed;
 	}
 
-	public void setLastGenAnalyzed(int lastGenAnalyzed) {
+	public void setLastModificationPointAnalyzed(int lastGenAnalyzed) {
 		this.lastGenAnalyzed = lastGenAnalyzed;
 	}
 

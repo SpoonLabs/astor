@@ -625,8 +625,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		this.currentStat.getIngredientsStats().sizeSpaceOfVariant.clear();
 
-		// For each gen of the program instance
-		List<ModificationPoint> modificationPointsToProcess = getGenList(variant);
+		//We retrieve the list of modification point ready to be navigated sorted a criterion
+		List<ModificationPoint> modificationPointsToProcess = getSortedModificationPointsList(variant);
 		// log.debug("modifPointsToProcess " + modificationPointsToProcess);
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
 			
@@ -718,37 +718,38 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	/**
+	 * Returns the list of modification points ready to be navigated.
 	 * 
 	 * @param variant
 	 * @param modificationPoints
 	 * @return
 	 */
-	protected List<ModificationPoint> getGenList(ProgramVariant variant) {
-		List<ModificationPoint> genList = variant.getModificationPoints();
+	protected List<ModificationPoint> getSortedModificationPointsList(ProgramVariant variant) {
+		List<ModificationPoint> modificationPoints = variant.getModificationPoints();
 		String mode = ConfigurationProperties.getProperty("modificationpointnavigation");
 
 		if ("inorder".equals(mode))
-			return genList;
+			return modificationPoints;
 
 		if ("weight".equals(mode))
-			return getWeightGenList(genList);
+			return getWeightGenList(modificationPoints);
 
 		if ("random".equals(mode)) {
-			List<ModificationPoint> shuffList = new ArrayList<ModificationPoint>(genList);
+			List<ModificationPoint> shuffList = new ArrayList<ModificationPoint>(modificationPoints);
 			Collections.shuffle(shuffList);
 			return shuffList;
 		}
 
 		if ("sequence".equals(mode)) {
 			int i = variant.getLastGenAnalyzed();
-			if (i < genList.size()) {
-				variant.setLastGenAnalyzed(i + 1);
-				return genList.subList(i, i + 1);
+			if (i < modificationPoints.size()) {
+				variant.setLastModificationPointAnalyzed(i + 1);
+				return modificationPoints.subList(i, i + 1);
 			}
 			return Collections.EMPTY_LIST;
 		}
 
-		return genList;
+		return modificationPoints;
 
 	}
 
