@@ -132,10 +132,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		log.info("\n----Starting Solution Search");
 
-		//Save code of default variant
+		// Save code of default variant
 		String srcOutput = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		mutatorSupporter.saveSourceCodeOnDiskProgramVariant(this.originalVariant, srcOutput);
-			
+
 		generationsExecuted = 0;
 		boolean stopSearch = false;
 
@@ -179,7 +179,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 			} catch (Throwable e) {
 				log.error("Error at generation " + generationsExecuted + "\n" + e);
-				//log.equals(Arrays.toString(e.getStackTrace()));
+				// log.equals(Arrays.toString(e.getStackTrace()));
 				e.printStackTrace();
 				this.outputStatus = AstorOutputStatus.ERROR;
 				break;
@@ -206,8 +206,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.computePatchDiff(this.solutions);
 		this.sortPatches();
 		this.printFinalStatus();
-	
-		log.info(this.getSolutionData(this.solutions, this.generationsExecuted)+"\n");
+
+		log.info(this.getSolutionData(this.solutions, this.generationsExecuted) + "\n");
 		// Recreate statistiques of patches
 		if (!solutions.isEmpty()) {
 			List<PatchStat> patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted,
@@ -503,19 +503,16 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.debug("-The child compiles: id " + programVariant.getId());
 			currentStat.increment(GeneralStatEnum.NR_RIGHT_COMPILATIONS);
 
-			boolean validInstance = validateInstance(programVariant);
-			double fitness = this.fitnessFunction.calculateFitnessValue(programVariant);
+			VariantValidationResult validationResult = validateInstance(programVariant);
+			double fitness = this.fitnessFunction.calculateFitnessValue(validationResult);
 			programVariant.setFitness(fitness);
 
-			log.debug("-Valid?: " + validInstance + ", fitness " + programVariant.getFitness());
-			if (validInstance) {
+			log.debug("-Valid?: " + validationResult + ", fitness " + programVariant.getFitness());
+			if (validationResult != null && validationResult.isSuccessful()) {
 				log.info("-Found Solution, child variant #" + programVariant.getId());
 				saveStaticSucessful(programVariant.getId(), generation);
 				if (ConfigurationProperties.getPropertyBool("savesolution")) {
-					// mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant,
-					// srcOutput);
 					saveVariant(programVariant);
-
 				}
 				return true;
 			}
@@ -625,11 +622,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		this.currentStat.getIngredientsStats().sizeSpaceOfVariant.clear();
 
-		//We retrieve the list of modification point ready to be navigated sorted a criterion
+		// We retrieve the list of modification point ready to be navigated
+		// sorted a criterion
 		List<ModificationPoint> modificationPointsToProcess = getSortedModificationPointsList(variant);
 		// log.debug("modifPointsToProcess " + modificationPointsToProcess);
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
-			
+
 			log.debug("---analyzing modificationPoint position: " + modificationPoint.identified);
 
 			// A point can be modified several time in the evolution
@@ -890,17 +888,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		return !(operations.isEmpty());
 	}
 
-	protected boolean validateInstance(ProgramVariant variant) {
+	protected VariantValidationResult validateInstance(ProgramVariant variant) {
 
-		VariantValidationResult validationResult;
-
-		if ((validationResult = programValidator.validate(variant, projectFacade)) != null) {
-			boolean wasSuc = validationResult.isSuccessful();
-			variant.setIsSolution(wasSuc);
+		VariantValidationResult validationResult = programValidator.validate(variant, projectFacade);
+		if (validationResult != null) {
+			variant.setIsSolution(validationResult.isSuccessful());
 			variant.setValidationResult(validationResult);
-			return wasSuc;
 		}
-		return false;
+		return validationResult;
 	}
 
 	public OperatorSelectionStrategy getOperatorSelectionStrategy() {
@@ -993,9 +988,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 						else {
 							line += genOperationInstance.getOriginal().toString();
 						}
-						if(genOperationInstance.getIngredient() != null && genOperationInstance.getIngredient() instanceof DynamicIngredient){
-							DynamicIngredient ding =(DynamicIngredient) genOperationInstance.getIngredient();
-							line += "\nIngredient template= " +ding.getBaseIngredient().toString();
+						if (genOperationInstance.getIngredient() != null
+								&& genOperationInstance.getIngredient() instanceof DynamicIngredient) {
+							DynamicIngredient ding = (DynamicIngredient) genOperationInstance.getIngredient();
+							line += "\nIngredient template= " + ding.getBaseIngredient().toString();
 						}
 						// Information about types Parents
 
@@ -1148,19 +1144,23 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		ConfigurationProperties.setProperty("forceExecuteRegression", Boolean.TRUE.toString());
 
 		// Initial validation and fitness
-		boolean validInstance = validateInstance(originalVariant);
-		if (validInstance) {
+		VariantValidationResult validationResult = validateInstance(originalVariant);
+
+		if (validationResult == null) {
+			throw new IllegalStateException("Initial run of test suite fails");
+		}
+		if (validationResult.isSuccessful()) {
 			throw new IllegalStateException("The application under repair has not failling test cases");
 		}
 
-		double fitness = this.fitnessFunction.calculateFitnessValue(originalVariant);
+		double fitness = this.fitnessFunction.calculateFitnessValue(validationResult);
 		originalVariant.setFitness(fitness);
 
 		log.debug("The original fitness is : " + fitness);
 		for (ProgramVariant initvariant : variants) {
 			initvariant.setFitness(fitness);
 		}
-		ConfigurationProperties.setProperty("forceExecuteRegression", original);// WA.
+		ConfigurationProperties.setProperty("forceExecuteRegression", original);
 
 	}
 
@@ -1187,7 +1187,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.error(e.getMessage());
 			mutatorSupporter.getFactory().getEnvironment()
 					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
-			mutatorSupporter.buildModel(codeLocation,bytecodeLocation, cpArray);
+			mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
 		}
 
 		///// ONCE ASTOR HAS BUILT THE MODEL,
