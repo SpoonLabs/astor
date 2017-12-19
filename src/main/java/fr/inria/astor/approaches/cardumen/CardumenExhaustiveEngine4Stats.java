@@ -26,6 +26,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.Stats;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -236,8 +237,8 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 	}
 
 	@Override
-	public void showResults() {
-		super.showResults();
+	public void showResults(List<PatchStat> patchInfo) {
+		super.showResults(patchInfo);
 		log.info("\ntotalmp: " + getVariants().get(0).getModificationPoints().size());
 		log.info("\ntotalBases: " + totalBases);
 		log.info("\ntotalAttempts: " + totalAttempts);

@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
+import fr.inria.astor.core.output.OutputResults;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
@@ -111,9 +112,11 @@ public class OutputTest {
 
 		assertNotNull(stats);
 
-		assertNotNull(stats.getStatsOfPatches());
+		OutputResults outResults = main1.getEngine().getOutputResults();
+		
+		//assertNotNull(outResults.produceOutput(statsForPatches, output));
 
-		assertTrue(stats.getStatsOfPatches().size() > 0);
+		//assertTrue(stats.getStatsOfPatches().size() > 0);
 
 		String jsonpath = main1.getEngine().getProjectFacade().getProperties().getWorkingDirRoot() + File.separator
 				+ ConfigurationProperties.getProperty("jsonoutputname") + ".json";
@@ -139,9 +142,9 @@ public class OutputTest {
 
 		// Test API
 
-		assertEquals(1, stats.getStatsOfPatches().size());
+		assertEquals(1, main1.getEngine().getPatchInfo().size());
 
-		PatchStat patchstats = stats.getStatsOfPatches().get(0);
+		PatchStat patchstats = main1.getEngine().getPatchInfo().get(0);
 
 		List<PatchHunkStats> hunksApi = (List<PatchHunkStats>) patchstats.getStats().get(PatchStatEnum.HUNKS);
 

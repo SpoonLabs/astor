@@ -19,6 +19,7 @@ import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.Stats;
 import spoon.reflect.declaration.CtElement;
 
@@ -90,8 +91,8 @@ public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
 	}
 
 	@Override
-	public void showResults() {
-		super.showResults();
+	public void showResults(List<PatchStat> patchInfo) {
+		super.showResults(patchInfo);
 		if (ConfigurationProperties.getPropertyBool("logsattemps")) {
 
 			if (this.ingredientSearchStrategy != null

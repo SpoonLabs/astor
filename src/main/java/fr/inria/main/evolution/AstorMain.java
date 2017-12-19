@@ -24,6 +24,8 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.output.OutputResults;
+import fr.inria.astor.core.output.PatchJSONStandarOutput;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -55,9 +57,7 @@ public class AstorMain extends AbstractMain {
 
 		projectFacade.setupWorkingDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
-
 	}
-	
 
 	/**
 	 * It creates a repair engine according to an execution mode.
@@ -208,6 +208,20 @@ public class AstorMain extends AbstractMain {
 				log.error(e);
 			}
 		}
+		String outputproperty = ConfigurationProperties.getProperty("outputresults");
+		if (outputproperty != null && !outputproperty.trim().isEmpty()) {
+			OutputResults outputresult = null;
+			try {
+				outputresult = (OutputResults) PlugInLoader.loadPlugin(ExtensionPoints.OUTPUT_RESULTS);
+				astorCore.setOutputResults(outputresult);
+				return true;
+			} catch (Exception e) {
+				log.error(e);
+			}
+		} else {
+			astorCore.setOutputResults(new PatchJSONStandarOutput());
+		}
+
 		return false;
 	}
 

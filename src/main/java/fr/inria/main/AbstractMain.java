@@ -29,6 +29,7 @@ import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.output.OutputResults;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -234,6 +235,10 @@ public abstract class AbstractMain {
 				"(Optional) Class name of Fitness function for evaluating a variant. It must extend from "
 						+ FitnessFunction.class.getCanonicalName() + " The classes must be included in the classpath.");
 
+		options.addOption("outputresult", true,
+				"(Optional) Class name for manipulating the output. It must extend from "
+						+ OutputResults.class.getCanonicalName() + " The classes must be included in the classpath.");
+
 		options.addOption("populationcontroller", true,
 				"(Optional) class name that controls the population evolution. It must extend from  "
 						+ PopulationController.class.getCanonicalName()
@@ -398,9 +403,7 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("flthreshold")) {
 			try {
-				double thfl = Double.valueOf(cmd.getOptionValue("flthreshold"));
 				ConfigurationProperties.properties.setProperty("flthreshold", cmd.getOptionValue("flthreshold"));
-
 			} catch (Exception e) {
 				System.out.println("Error: threshold not valid");
 				help();
@@ -559,6 +562,10 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("fitnessfunction", cmd.getOptionValue("faultlocalization"));
 		}
 
+		if (cmd.hasOption("outputresult")) {
+			ConfigurationProperties.properties.setProperty("outputresult", cmd.getOptionValue("outputresult"));
+		}
+
 		if (cmd.hasOption("populationcontroller")) {
 			ConfigurationProperties.properties.setProperty("populationcontroller",
 					cmd.getOptionValue("faultlocalization"));
@@ -680,7 +687,7 @@ public abstract class AbstractMain {
 		System.exit(0);
 
 	}
-	
+
 	/**
 	 * Compile the original code
 	 */
@@ -736,16 +743,18 @@ public abstract class AbstractMain {
 			properties.setDependencies(dependencies);
 		}
 
-		if (ConfigurationProperties.getPropertyBool("autocompile")){
+		if (ConfigurationProperties.getPropertyBool("autocompile")) {
 			compileProject();
-		}else{
-			String originalBin = determineBinFolder(originalProjectRoot, ConfigurationProperties.getProperty("binjavafolder"));
-			properties.setOriginalAppBinDir(originalBin);	
-			
-			String originalBinTest = determineBinFolder(originalProjectRoot, ConfigurationProperties.getProperty("bintestfolder"));
+		} else {
+			String originalBin = determineBinFolder(originalProjectRoot,
+					ConfigurationProperties.getProperty("binjavafolder"));
+			properties.setOriginalAppBinDir(originalBin);
+
+			String originalBinTest = determineBinFolder(originalProjectRoot,
+					ConfigurationProperties.getProperty("bintestfolder"));
 			properties.setOriginalTestBinDir(originalBinTest);
 		}
-		
+
 		properties.setFailingTestCases(failingTestCases);
 
 		properties.setPackageToInstrument(ConfigurationProperties.getProperty("packageToInstrument"));
@@ -756,7 +765,7 @@ public abstract class AbstractMain {
 
 		return ce;
 	}
-	
+
 	private String determineBinFolder(String originalProjectRoot, String paramBinFolder) {
 
 		File fBin = new File(paramBinFolder).getAbsoluteFile();

@@ -127,14 +127,6 @@ public class Stats {
 		this.ingredientsStats = ingredientsStats;
 	}
 
-	public List<PatchStat> getStatsOfPatches() {
-		return statsOfPatches;
-	}
-
-	public void setStatsOfPatches(List<PatchStat> statsOfPatches) {
-		this.statsOfPatches = statsOfPatches;
-	}
-
 	public void increment(GeneralStatEnum type) {
 		Object v = this.generalStats.get(type);
 		if (v == null) {
@@ -227,9 +219,10 @@ public class Stats {
 								genOperationInstance.getModified().getClass().getSimpleName() + "|"
 										+ genOperationInstance.getModified().getParent().getClass().getSimpleName());
 
-						if(genOperationInstance.getIngredient() != null && genOperationInstance.getIngredient() instanceof DynamicIngredient){
-							DynamicIngredient ding =(DynamicIngredient) genOperationInstance.getIngredient();
-							hunk.getStats().put(HunkStatEnum.INGREDIENT,ding.getBaseIngredient().toString());
+						if (genOperationInstance.getIngredient() != null
+								&& genOperationInstance.getIngredient() instanceof DynamicIngredient) {
+							DynamicIngredient ding = (DynamicIngredient) genOperationInstance.getIngredient();
+							hunk.getStats().put(HunkStatEnum.INGREDIENT, ding.getBaseIngredient().toString());
 						}
 					}
 
@@ -253,9 +246,9 @@ public class Stats {
 		return patches;
 	}
 
-	public String statsToString() {
+	public String statsToString(List<PatchStat> statsForPatches) {
 
-		List<PatchStat> statsForPatches = this.getStatsOfPatches();
+		//List<PatchStat> statsForPatches = this.getStatsOfPatches();
 		StringBuffer buff = new StringBuffer();
 		buff.append(System.getProperty("line.separator"));
 
@@ -302,63 +295,4 @@ public class Stats {
 		return buff.toString();
 	}
 
-	@SuppressWarnings("unchecked")
-	public void statsToJSON(String output) {
-
-		JSONObject statsjsonRoot = new JSONObject();
-		JSONArray patchlistJson = new JSONArray();
-		statsjsonRoot.put("patches", patchlistJson);
-
-		for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
-			statsjsonRoot.put(generalStat.name(), this.getGeneralStats().get(generalStat));
-		}
-
-		List<PatchStat> statsForPatches = this.getStatsOfPatches();
-
-		for (PatchStat patchStat : statsForPatches) {
-
-			JSONObject patchjson = new JSONObject();
-			patchlistJson.add(patchjson);
-
-			Map<PatchStatEnum, Object> stats = patchStat.getStats();
-			for (PatchStatEnum statKey : PatchStatEnum.values()) {
-				if (statKey.equals(PatchStatEnum.HUNKS)) {
-					List<PatchHunkStats> hunks = (List<PatchHunkStats>) stats.get(statKey);
-					JSONArray hunksListJson = new JSONArray();
-					patchjson.put("patchhunks", hunksListJson);
-
-					for (PatchHunkStats patchHunkStats : hunks) {
-						Map<HunkStatEnum, Object> statshunk = patchHunkStats.getStats();
-
-						JSONObject hunkjson = new JSONObject();
-						hunksListJson.add(hunkjson);
-						for (HunkStatEnum hs : HunkStatEnum.values()) {
-							if (statshunk.containsKey(hs))
-								hunkjson.put(hs.name(), JSONObject.escape(statshunk.get(hs).toString()));
-						}
-					}
-
-				} else {
-					if (stats.containsKey(statKey))
-						patchjson.put(statKey.name(), JSONObject.escape(stats.get(statKey).toString()));
-				}
-
-			}
-
-		}
-		String filename = ConfigurationProperties.getProperty("jsonoutputname");
-		String absoluteFileName = output + "/" + filename + ".json";
-		try (FileWriter file = new FileWriter(absoluteFileName)) {
-
-			file.write(statsjsonRoot.toJSONString());
-			file.flush();
-			log.info("Storing ing JSON at " + absoluteFileName);
-			log.info(filename + ":" + statsjsonRoot.toJSONString());
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			log.error("Problem storing ing json file" + e.toString());
-		}
-
-	}
 }

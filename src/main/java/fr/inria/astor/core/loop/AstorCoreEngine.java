@@ -37,6 +37,7 @@ import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
+import fr.inria.astor.core.output.OutputResults;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.PatchStat;
@@ -113,8 +114,13 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	private int nrGenerationWithoutModificatedVariant = 0;
 
+	//Output
+	protected OutputResults outputResults = null;
+	
 	// Flag, output status
 	protected AstorOutputStatus outputStatus = null;
+	
+	protected List<PatchStat> patchInfo = new ArrayList<>();
 
 	/**
 	 * 
@@ -206,19 +212,24 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.computePatchDiff(this.solutions);
 		this.sortPatches();
 		this.printFinalStatus();
+		
 
 		log.info(this.getSolutionData(this.solutions, this.generationsExecuted) + "\n");
+	
 		// Recreate statistiques of patches
 		if (!solutions.isEmpty()) {
-			List<PatchStat> patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted,
+			patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted,
 					dateInitEvolution);
-			this.currentStat.setStatsOfPatches(patchInfo);
 		}
-
-		this.showResults();
+		this.showResults(patchInfo);
+		log.info(this.currentStat.statsToString(patchInfo));
+		
+		//this.showResults();
 		String output = this.projectFacade.getProperties().getWorkingDirRoot();
+		
 		// Save into JSON
-		this.currentStat.statsToJSON(output);
+		this.getOutputResults().produceOutput(patchInfo, output);
+		//this.currentStat.statsToJSON(output);
 	};
 
 	protected void computePatchDiff(List<ProgramVariant> solutions) {
@@ -260,18 +271,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 		log.debug("\nNumber suspicious:" + this.variants.size());
 
-		if (!solutions.isEmpty()) {
-			List<PatchStat> patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted,
-					dateInitEvolution);
-			this.currentStat.setStatsOfPatches(patchInfo);
-		}
 
 	}
 
-	public void showResults() {
+	public void showResults(List<PatchStat> patchInfo ) {
 
-		log.info(this.currentStat.statsToString());
-
+		log.info(this.currentStat.statsToString(patchInfo));
 	}
 
 	/**
@@ -1286,6 +1291,22 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	public void setOutputStatus(AstorOutputStatus outputStatus) {
 		this.outputStatus = outputStatus;
+	}
+
+	public OutputResults getOutputResults() {
+		return outputResults;
+	}
+
+	public void setOutputResults(OutputResults outputResults) {
+		this.outputResults = outputResults;
+	}
+
+	public List<PatchStat> getPatchInfo() {
+		return patchInfo;
+	}
+
+	public void setPatchInfo(List<PatchStat> patchInfo) {
+		this.patchInfo = patchInfo;
 	}
 
 }
