@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.cli.ParseException;
@@ -20,9 +21,15 @@ import fr.inria.astor.approaches.exhaustive.ExhaustiveAstorEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jkali.JKaliEngine;
 import fr.inria.astor.approaches.mutRepair.MutationalExhaustiveRepair;
+import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
+import fr.inria.astor.core.loop.navigation.InOrderSuspiciousNavigation;
+import fr.inria.astor.core.loop.navigation.SequenceSuspiciousNavigationStrategy;
+import fr.inria.astor.core.loop.navigation.SuspiciousNavigationStrategy;
+import fr.inria.astor.core.loop.navigation.UniformRandomSuspiciousNavigation;
+import fr.inria.astor.core.loop.navigation.WeightRandomSuspiciousNavitation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.output.OutputResults;
 import fr.inria.astor.core.output.PatchJSONStandarOutput;
@@ -195,7 +202,10 @@ public class AstorMain extends AbstractMain {
 	 * @throws Exception
 	 */
 	private boolean loadCommonExtensionPoints(AstorCoreEngine astorCore) {
+		
 
+		
+		//Patch priorization
 		String patchpriority = ConfigurationProperties.getProperty("patchprioritization");
 		if (patchpriority != null && !patchpriority.trim().isEmpty()) {
 			SolutionVariantSortCriterion priorizStrategy = null;
@@ -208,6 +218,8 @@ public class AstorMain extends AbstractMain {
 				log.error(e);
 			}
 		}
+		
+		///Output 
 		String outputproperty = ConfigurationProperties.getProperty("outputresults");
 		if (outputproperty != null && !outputproperty.trim().isEmpty()) {
 			OutputResults outputresult = null;

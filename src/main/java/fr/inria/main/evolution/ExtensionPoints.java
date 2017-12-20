@@ -3,6 +3,7 @@ package fr.inria.main.evolution;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
+import fr.inria.astor.core.loop.navigation.SuspiciousNavigationStrategy;
 import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
@@ -34,7 +35,8 @@ public enum ExtensionPoints {
 	INGREDIENT_TRANSFORM_STRATEGY("ingredienttransformstrategy", IngredientTransformationStrategy.class),//
 	INGREDIENT_PROCESSOR("ingredientprocessor",AbstractFixSpaceProcessor.class),
 	CLONE_GRANULARITY("clonegranularity",Class.class),
-	OUTPUT_RESULTS("outputresult",OutputResults.class);
+	OUTPUT_RESULTS("outputresult",OutputResults.class),
+	SUSPICIOUS_NAVIGATION("modificationpointnavigation", SuspiciousNavigationStrategy.class);
 	
 	public String identifier;
 	public Class<?> _class;

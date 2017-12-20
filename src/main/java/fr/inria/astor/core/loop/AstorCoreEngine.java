@@ -27,6 +27,12 @@ import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
+import fr.inria.astor.core.loop.navigation.InOrderSuspiciousNavigation;
+import fr.inria.astor.core.loop.navigation.SequenceSuspiciousNavigationStrategy;
+import fr.inria.astor.core.loop.navigation.SuspiciousNavigationStrategy;
+import fr.inria.astor.core.loop.navigation.SuspiciousNavigationValues;
+import fr.inria.astor.core.loop.navigation.UniformRandomSuspiciousNavigation;
+import fr.inria.astor.core.loop.navigation.WeightRandomSuspiciousNavitation;
 import fr.inria.astor.core.loop.population.FitnessFunction;
 import fr.inria.astor.core.loop.population.PopulationController;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
@@ -88,6 +94,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	// SPACES
 
+	protected SuspiciousNavigationStrategy suspiciousNavigationStrategy = null;
+
 	protected OperatorSelectionStrategy operatorSelectionStrategy = null;
 
 	protected OperatorSpace operatorSpace = null;
@@ -114,12 +122,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	private int nrGenerationWithoutModificatedVariant = 0;
 
-	//Output
+	// Output
 	protected OutputResults outputResults = null;
-	
+
 	// Flag, output status
 	protected AstorOutputStatus outputStatus = null;
-	
+
 	protected List<PatchStat> patchInfo = new ArrayList<>();
 
 	/**
@@ -212,24 +220,22 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.computePatchDiff(this.solutions);
 		this.sortPatches();
 		this.printFinalStatus();
-		
 
 		log.info(this.getSolutionData(this.solutions, this.generationsExecuted) + "\n");
-	
+
 		// Recreate statistiques of patches
 		if (!solutions.isEmpty()) {
-			patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted,
-					dateInitEvolution);
+			patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted, dateInitEvolution);
 		}
 		this.showResults(patchInfo);
 		log.info(this.currentStat.statsToString(patchInfo));
-		
-		//this.showResults();
+
+		// this.showResults();
 		String output = this.projectFacade.getProperties().getWorkingDirRoot();
-		
+
 		// Save into JSON
 		this.getOutputResults().produceOutput(patchInfo, output);
-		//this.currentStat.statsToJSON(output);
+		// this.currentStat.statsToJSON(output);
 	};
 
 	protected void computePatchDiff(List<ProgramVariant> solutions) {
@@ -271,10 +277,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 		log.debug("\nNumber suspicious:" + this.variants.size());
 
-
 	}
 
-	public void showResults(List<PatchStat> patchInfo ) {
+	public void showResults(List<PatchStat> patchInfo) {
 
 		log.info(this.currentStat.statsToString(patchInfo));
 	}
@@ -629,7 +634,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		// We retrieve the list of modification point ready to be navigated
 		// sorted a criterion
-		List<ModificationPoint> modificationPointsToProcess = getSortedModificationPointsList(variant);
+		List<ModificationPoint> modificationPointsToProcess = this.suspiciousNavigationStrategy
+				.getSortedModificationPointsList(variant);
+
 		// log.debug("modifPointsToProcess " + modificationPointsToProcess);
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
 
@@ -718,78 +725,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Returns the list of modification points ready to be navigated.
-	 * 
-	 * @param variant
-	 * @param modificationPoints
-	 * @return
-	 */
-	protected List<ModificationPoint> getSortedModificationPointsList(ProgramVariant variant) {
-		List<ModificationPoint> modificationPoints = variant.getModificationPoints();
-		String mode = ConfigurationProperties.getProperty("modificationpointnavigation");
-
-		if ("inorder".equals(mode))
-			return modificationPoints;
-
-		if ("weight".equals(mode))
-			return getWeightGenList(modificationPoints);
-
-		if ("random".equals(mode)) {
-			List<ModificationPoint> shuffList = new ArrayList<ModificationPoint>(modificationPoints);
-			Collections.shuffle(shuffList);
-			return shuffList;
-		}
-
-		if ("sequence".equals(mode)) {
-			int i = variant.getLastGenAnalyzed();
-			if (i < modificationPoints.size()) {
-				variant.setLastModificationPointAnalyzed(i + 1);
-				return modificationPoints.subList(i, i + 1);
-			}
-			return Collections.EMPTY_LIST;
-		}
-
-		return modificationPoints;
-
-	}
-
-	protected List<ModificationPoint> getWeightGenList(List<ModificationPoint> genList) {
-		List<ModificationPoint> remaining = new ArrayList<ModificationPoint>(genList);
-		List<ModificationPoint> solution = new ArrayList<ModificationPoint>();
-
-		for (int i = 0; i < genList.size(); i++) {
-			List<WeightCtElement> we = new ArrayList<WeightCtElement>();
-			double sum = 0;
-			for (ModificationPoint gen : remaining) {
-				double susp = ((SuspiciousModificationPoint) gen).getSuspicious().getSuspiciousValue();
-				sum += susp;
-				WeightCtElement w = new WeightCtElement(gen, 0);
-				w.weight = susp;
-				we.add(w);
-			}
-
-			if (sum != 0) {
-
-				for (WeightCtElement weightCtElement : we) {
-					weightCtElement.weight = weightCtElement.weight / sum;
-				}
-
-				WeightCtElement.feedAccumulative(we);
-				WeightCtElement selected = WeightCtElement.selectElementWeightBalanced(we);
-
-				ModificationPoint selectedg = (ModificationPoint) selected.element;
-				remaining.remove(selectedg);
-				solution.add(selectedg);
-			} else {
-				solution.addAll(remaining);
-				break;
-			}
-		}
-		return solution;
-
 	}
 
 	/**
@@ -1075,6 +1010,24 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 */
 	public void loadExtensionPoints() throws Exception {
 
+		// Navigation suspicious
+		String mode = ConfigurationProperties.getProperty("modificationpointnavigation").toUpperCase();
+
+		SuspiciousNavigationStrategy suspiciousNavigationStrategy = null;
+		if (SuspiciousNavigationValues.INORDER.toString().equals(mode)) {
+			suspiciousNavigationStrategy = new InOrderSuspiciousNavigation();
+		} else if (SuspiciousNavigationValues.WEIGHT.toString().equals(mode))
+			suspiciousNavigationStrategy = new WeightRandomSuspiciousNavitation();
+		else if (SuspiciousNavigationValues.RANDOM.toString().equals(mode)) {
+			suspiciousNavigationStrategy = new UniformRandomSuspiciousNavigation();
+		} else if (SuspiciousNavigationValues.SEQUENCE.toString().equals(mode)) {
+			suspiciousNavigationStrategy = new SequenceSuspiciousNavigationStrategy();
+		} else {
+			suspiciousNavigationStrategy = (SuspiciousNavigationStrategy) PlugInLoader
+					.loadPlugin(ExtensionPoints.SUSPICIOUS_NAVIGATION);
+		}
+		this.setSuspiciousNavigationStrategy(suspiciousNavigationStrategy);
+
 		// Fault localization
 
 		this.setFaultLocalization(
@@ -1307,6 +1260,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	public void setPatchInfo(List<PatchStat> patchInfo) {
 		this.patchInfo = patchInfo;
+	}
+
+	public SuspiciousNavigationStrategy getSuspiciousNavigationStrategy() {
+		return suspiciousNavigationStrategy;
+	}
+
+	public void setSuspiciousNavigationStrategy(SuspiciousNavigationStrategy suspiciousNavigationStrategy) {
+		this.suspiciousNavigationStrategy = suspiciousNavigationStrategy;
 	}
 
 }
