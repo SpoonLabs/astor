@@ -110,14 +110,16 @@ public class AstorMain extends AbstractMain {
 		// Loading extension Points
 		astorCore.loadExtensionPoints();
 
-		// Creates the spoon model and compiles it
-		astorCore.initModel();
-
+	
 		// Find test cases to use in validation
 		List<String> tr = FinderTestCases.findTestCasesForRegression(
 				projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
 		projectFacade.getProperties().setRegressionCases(tr);
 
+		// Creates the spoon model and compiles it
+		astorCore.initModel();
+
+		
 		// Initialize Population
 		astorCore.createInitialPopulation();
 
