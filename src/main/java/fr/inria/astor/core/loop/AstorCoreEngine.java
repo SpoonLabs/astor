@@ -150,10 +150,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		log.info("\n----Starting Solution Search");
 
-		// Save code of default variant
-		String srcOutput = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		mutatorSupporter.saveSourceCodeOnDiskProgramVariant(this.originalVariant, srcOutput);
-
 		generationsExecuted = 0;
 		boolean stopSearch = false;
 
@@ -243,6 +239,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	};
 
 	protected void computePatchDiff(List<ProgramVariant> solutions) {
+
+		// Save code of default variant
+		String srcOutput = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		try {
+			mutatorSupporter.saveSourceCodeOnDiskProgramVariant(this.originalVariant, srcOutput);
+		} catch (Exception e) {
+			log.error(e);
+		}
 
 		PatchDiffCalculator cdiff = new PatchDiffCalculator();
 		for (ProgramVariant solutionVariant : solutions) {
