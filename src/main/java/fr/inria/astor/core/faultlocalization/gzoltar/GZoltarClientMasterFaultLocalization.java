@@ -1,4 +1,4 @@
-package fr.inria.astor.core.faultlocalization;
+package fr.inria.astor.core.faultlocalization.gzoltar;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;

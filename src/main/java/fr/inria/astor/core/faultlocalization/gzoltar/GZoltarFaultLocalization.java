@@ -1,4 +1,4 @@
-package fr.inria.astor.core.faultlocalization;
+package fr.inria.astor.core.faultlocalization.gzoltar;
 
 import java.io.File;
 import java.net.URL;
@@ -19,6 +19,8 @@ import com.gzoltar.core.components.Statement;
 import com.gzoltar.core.instr.testing.TestResult;
 
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
+import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
