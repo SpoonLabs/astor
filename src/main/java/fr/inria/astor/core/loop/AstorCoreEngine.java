@@ -21,7 +21,9 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.VariantValidationResult;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
+import fr.inria.astor.core.faultlocalization.cocospoon.CocoFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
@@ -1020,9 +1022,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.setSuspiciousNavigationStrategy(suspiciousNavigationStrategy);
 
 		// Fault localization
-
-		this.setFaultLocalization(
-				(FaultLocalizationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.FAULT_LOCALIZATION));
+		String flvalue = ConfigurationProperties.getProperty("faultlocalization").toLowerCase();
+		if (flvalue.equals("gzoltar")) {
+			this.setFaultLocalization(new GZoltarFaultLocalization());
+		} else if (flvalue.equals("cocospoon")) {
+			this.setFaultLocalization(new CocoFaultLocalization());
+		} else
+			this.setFaultLocalization(
+					(FaultLocalizationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.FAULT_LOCALIZATION));
 
 		// Fault localization
 		this.setFitnessFunction((FitnessFunction) PlugInLoader.loadPlugin(ExtensionPoints.FITNESS_FUNCTION));
