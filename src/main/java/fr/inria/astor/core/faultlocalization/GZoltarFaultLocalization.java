@@ -1,10 +1,13 @@
 package fr.inria.astor.core.faultlocalization;
 
 import java.io.File;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,8 +18,10 @@ import com.gzoltar.core.GZoltar;
 import com.gzoltar.core.components.Statement;
 import com.gzoltar.core.instr.testing.TestResult;
 
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
  * Facade of Fault Localization techniques like GZoltar or own implementations
@@ -29,7 +34,110 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 	Logger logger = Logger.getLogger(GZoltarFaultLocalization.class.getName());
 
-	public FaultLocalizationResult searchSuspicious(String location, List<String> testsToExecute,
+	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade project) throws Exception {
+
+		String regressionTC = ConfigurationProperties.getProperty("regressiontestcases4fl");
+		List<String> regressionTestForFaultLocalization = null;
+		if (regressionTC != null && !regressionTC.trim().isEmpty()) {
+			regressionTestForFaultLocalization = Arrays.asList(regressionTC.split(File.pathSeparator));
+		} else
+			regressionTestForFaultLocalization = project.getProperties().getRegressionTestCases();
+
+		return this.calculateSuspicious(
+				ConfigurationProperties.getProperty("location") + File.separator
+						+ ConfigurationProperties.getProperty("srcjavafolder"),
+				project.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT),
+				ConfigurationProperties.getProperty("packageToInstrument"), ProgramVariant.DEFAULT_ORIGINAL_VARIANT,
+				project.getProperties().getFailingTestCases(), regressionTestForFaultLocalization,
+				ConfigurationProperties.getPropertyBool("regressionforfaultlocalization"), project);
+
+	}
+
+	private FaultLocalizationResult calculateSuspicious(String locationSrc, String locationBytecode,
+			String packageToInst, String mutatorIdentifier, List<String> failingTest, List<String> allTest,
+			boolean mustRunAllTest, ProjectRepairFacade project) throws Exception {
+
+		List<String> testcasesToExecute = null;
+
+		if (mustRunAllTest) {
+			testcasesToExecute = allTest;
+		} else {
+			testcasesToExecute = failingTest;
+		}
+
+		if (testcasesToExecute == null || testcasesToExecute.isEmpty()) {
+			new IllegalArgumentException("Astor needs at least one test case for running");
+		}
+
+		logger.info("-Executing Gzoltar classpath: " + locationBytecode + " from " + +testcasesToExecute.size()
+				+ " classes with test cases");
+
+		List<String> listTOInst = new ArrayList<String>();
+		listTOInst.add(packageToInst);
+
+		Set<String> classPath = new HashSet<String>();
+		classPath.add(locationBytecode);
+		for (URL dep : project.getProperties().getDependencies()) {
+			classPath.add(dep.getPath());
+		}
+
+		FaultLocalizationResult flResult = this.searchSuspicious(locationBytecode, testcasesToExecute, listTOInst,
+				classPath, locationSrc);
+
+		List<SuspiciousCode> suspiciousStatemens = flResult.getCandidates();
+
+		if (suspiciousStatemens == null || suspiciousStatemens.isEmpty())
+			throw new IllegalArgumentException("No suspicious gen for analyze");
+
+		List<String> failingTestCases = flResult.getFailingTestCases();
+		if (ConfigurationProperties.getPropertyBool("ignoreflakyinfl")) {
+			addFlakyFailingTestToIgnoredList(failingTestCases, project);
+		}
+
+		if (project.getProperties().getFailingTestCases().isEmpty()) {
+			logger.debug("Failing test cases was not pass as argument: we use failings from FL "
+					+ flResult.getFailingTestCases());
+			project.getProperties().setFailingTestCases(failingTestCases);
+		}
+
+		if (ConfigurationProperties.getPropertyBool("filterfaultlocalization")) {
+			List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
+
+			for (SuspiciousCode suspiciousCode : suspiciousStatemens) {
+				if (!suspiciousCode.getClassName().endsWith("Exception")) {
+					filtercandidates.add(suspiciousCode);
+				}
+			}
+			flResult.setCandidates(filtercandidates);
+
+		}
+		return flResult;
+
+	}
+
+	/**
+	 * It adds to the ignore list all failing TC that were not passed as
+	 * argument. \ They are probably flaky test.
+	 * 
+	 * @param failingTestCases
+	 */
+	private void addFlakyFailingTestToIgnoredList(List<String> failingTestCases, ProjectRepairFacade project) {
+		//
+		if (project.getProperties().getFailingTestCases() == null)
+			return;
+		List<String> originalFailing = project.getProperties().getFailingTestCases();
+		List<String> onlyFailingInFL = new ArrayList<>(failingTestCases);
+		// we remove those that we already know that fail
+		onlyFailingInFL.removeAll(originalFailing);
+		logger.debug("failing before " + onlyFailingInFL + ", added to the ignored list");
+		String ignoredTestCases = ConfigurationProperties.getProperty("ignoredTestCases");
+		for (String failingFL : onlyFailingInFL) {
+			ignoredTestCases += File.pathSeparator + failingFL;
+		}
+		ConfigurationProperties.properties.setProperty("ignoredTestCases", ignoredTestCases);
+	}
+
+	protected FaultLocalizationResult searchSuspicious(String location, List<String> testsToExecute,
 			List<String> toInstrument, Set<String> cp, String srcFolder) throws Exception {
 
 		List<String> failingTestCases = new ArrayList<String>();
@@ -80,16 +188,16 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		}
 
 		int gzPositives = gz.getSuspiciousStatements().stream().filter(x -> x.getSuspiciousness() > 0)
-				 .collect(Collectors.toList()).size(); 
-		
+				.collect(Collectors.toList()).size();
+
 		logger.info("Gzoltar Test Result Total:" + sum[0] + ", fails: " + sum[1] + ", GZoltar suspicious "
-				+ gz.getSuspiciousStatements().size() + ", with positive susp "+gzPositives);
+				+ gz.getSuspiciousStatements().size() + ", with positive susp " + gzPositives);
 
 		DecimalFormat df = new DecimalFormat("#.###");
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
 
 		List<Statement> gzCandidates = new ArrayList();
-		
+
 		for (Statement gzoltarStatement : gz.getSuspiciousStatements()) {
 			String compName = gzoltarStatement.getMethod().getParent().getLabel();
 			if (isSource(compName, srcFolder) && (!ConfigurationProperties.getPropertyBool("limitbysuspicious")
@@ -135,7 +243,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		return new FaultLocalizationResult(candidates, failingTestCases);
 	}
 
-	protected boolean isSource(String compName, String srcFolder) {
+	private boolean isSource(String compName, String srcFolder) {
 		String clRoot = compName.split("\\$")[0];
 		String[] segmentationName = clRoot.split("\\.");
 		String simpleClassName = segmentationName[segmentationName.length - 1];

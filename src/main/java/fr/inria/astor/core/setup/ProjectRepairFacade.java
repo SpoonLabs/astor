@@ -5,18 +5,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-
-import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
-import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
-import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 
 /**
  * 

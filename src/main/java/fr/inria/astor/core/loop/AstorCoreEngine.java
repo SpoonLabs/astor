@@ -4,8 +4,6 @@ import java.io.File;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +20,6 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.VariantValidationResult;
-import fr.inria.astor.core.entities.WeightCtElement;
-import fr.inria.astor.core.faultlocalization.FaultLocalizationFacade;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
@@ -131,8 +127,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	protected AstorOutputStatus outputStatus = null;
 
 	protected List<PatchStat> patchInfo = new ArrayList<>();
-
-	protected FaultLocalizationFacade faultLocalizationFacade = new FaultLocalizationFacade();
 
 	/**
 	 * 
@@ -1269,7 +1263,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public List<SuspiciousCode> calculateSuspicious() throws Exception {
-		return this.faultLocalizationFacade.calculateSuspicious(getFaultLocalization(), getProjectFacade());
+		return this.getFaultLocalization().searchSuspicious(getProjectFacade()).getCandidates();
 	}
 
 }

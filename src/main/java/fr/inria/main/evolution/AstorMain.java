@@ -111,29 +111,21 @@ public class AstorMain extends AbstractMain {
 		// Loading extension Points
 		astorCore.loadExtensionPoints();
 
-	
 		// Find test cases to use in validation
 		List<String> tr = FinderTestCases.findTestCasesForRegression(
 				projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
 		projectFacade.getProperties().setRegressionCases(tr);
 
-		
-		
-		// Creates the spoon model and compiles it
-	
-
-		
 		// Initialize Population
-	
+
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
 			// We dont use FL, so at this point the do not have suspicious
 			astorCore.initPopulation(new ArrayList<SuspiciousCode>());
 		} else {
 			List<SuspiciousCode> suspicious = astorCore.calculateSuspicious();
-			
+
 			astorCore.initPopulation(suspicious);
 		}
-		
 
 		return astorCore;
 
@@ -216,10 +208,8 @@ public class AstorMain extends AbstractMain {
 	 * @throws Exception
 	 */
 	private boolean loadCommonExtensionPoints(AstorCoreEngine astorCore) {
-		
 
-		
-		//Patch priorization
+		// Patch priorization
 		String patchpriority = ConfigurationProperties.getProperty("patchprioritization");
 		if (patchpriority != null && !patchpriority.trim().isEmpty()) {
 			SolutionVariantSortCriterion priorizStrategy = null;
@@ -232,8 +222,8 @@ public class AstorMain extends AbstractMain {
 				log.error(e);
 			}
 		}
-		
-		///Output 
+
+		/// Output
 		String outputproperty = ConfigurationProperties.getProperty("outputresults");
 		if (outputproperty != null && !outputproperty.trim().isEmpty()) {
 			OutputResults outputresult = null;
