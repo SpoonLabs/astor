@@ -7,12 +7,13 @@ import java.util.Map;
 
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.faultlocalization.CoCoAstorFaultLocalization;
-import fr.inria.astor.core.faultlocalization.cocospoon.CocoSpoonBasedSpectrumBasedFaultLocalizer4Astor;
-import fr.inria.astor.core.faultlocalization.cocospoon.SourceLocation;
-import fr.inria.astor.core.faultlocalization.cocospoon.StatementSourceLocation;
-import fr.inria.astor.core.faultlocalization.cocospoon.TestResult;
-import fr.inria.astor.core.faultlocalization.metric.Ochiai;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.faultlocalization.cocospoon.CocoFaultLocalization;
+import fr.inria.astor.core.faultlocalization.cocospoon.CocoSpoonEngineFaultLocalizer;
+import fr.inria.astor.core.faultlocalization.cocospoon.code.SourceLocation;
+import fr.inria.astor.core.faultlocalization.cocospoon.code.StatementSourceLocation;
+import fr.inria.astor.core.faultlocalization.cocospoon.metrics.Ochiai;
+import fr.inria.astor.core.faultlocalization.cocospoon.testrunner.TestResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.classloader.BytecodeClassLoader;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
@@ -35,7 +36,7 @@ import org.junit.Test;
 public class CocoAstorFaulLocalizationTest {
 
 	@Test
-	public void testCocoAstorTest() throws Exception {
+	public void testStepByStepCocoAstorTest() throws Exception {
 		CommandSummary csDefault = MathTests.getMath70Command();
 		csDefault.command.put("-maxgen", "0");
 		csDefault.command.put("-loglevel", "DEBUG");
@@ -56,17 +57,16 @@ public class CocoAstorFaulLocalizationTest {
 
 		MutationSupporter.cleanFactory();
 
-		CoCoAstorFaultLocalization cocofl = new CoCoAstorFaultLocalization();
+		CocoFaultLocalization cocofl = new CocoFaultLocalization();
 		cocofl.initModel(project);
 
 		////
-		cocofl.parse();
+		cocofl.parseModel();
 		CtType typeBisectionSolver2 = MutationSupporter.getFactory().Type().getAll().stream()
 				.filter(e -> e.getSimpleName().equals("BisectionSolver")).findFirst().get();
 		Assert.assertNotNull(typeBisectionSolver2);
 		String s2 = typeBisectionSolver2.toString();
 
-		
 		// System.out.println("--> line "+ cs.getBody().getStatements().get(0));
 		Assert.assertNotEquals(s1, s2);
 		System.out.println(s2);
@@ -74,17 +74,16 @@ public class CocoAstorFaulLocalizationTest {
 		////
 		CompilationResult cresults = cocofl.compile(project);
 		Assert.assertNotNull(cresults.getByteCodes());
-				System.out.println(cresults.getErrorList());
-				Assert.assertTrue(cresults.compiles());
+		System.out.println(cresults.getErrorList());
+		Assert.assertTrue(cresults.compiles());
 
-				//
-		
+		//
+
 		BytecodeClassLoader customClassLoader = cocofl.createClassLoader(cresults, project);
 		Assert.assertNotNull(customClassLoader);
 		//
 		//
-		CocoSpoonBasedSpectrumBasedFaultLocalizer4Astor coco4Astor = new CocoSpoonBasedSpectrumBasedFaultLocalizer4Astor(
-				new Ochiai());
+		CocoSpoonEngineFaultLocalizer coco4Astor = new CocoSpoonEngineFaultLocalizer(new Ochiai());
 		List<String> testregression = project.getProperties().getRegressionTestCases();
 		testregression.toArray(new String[0]);
 		coco4Astor.runTests(testregression.toArray(new String[0]), customClassLoader, project);
@@ -92,9 +91,6 @@ public class CocoAstorFaulLocalizationTest {
 		Assert.assertNotNull(stc);
 		List<? extends StatementSourceLocation> suspstatement = coco4Astor.getStatements();
 		Assert.assertNotNull(suspstatement);
-
-		
-		
 
 		// System.out.println("\n susp \n" + suspstatement);
 		for (int i = 0; i < 8; i++) {
@@ -104,9 +100,34 @@ public class CocoAstorFaulLocalizationTest {
 
 			ModificationPoint mpi = main1.getEngine().getVariants().get(0).getModificationPoints().get(i);
 			System.out.println(mpi);
-			System.out.println("-----");
 		}
 		//
 		/// System.out.println("\n----"+ stc.keySet().size());
+	}
+
+	@Test
+	public void cocoTest() throws Exception {
+		CommandSummary csDefault = MathTests.getMath70Command();
+		csDefault.command.put("-maxgen", "0");
+		csDefault.command.put("-loglevel", "DEBUG");
+		csDefault.command.put("-faultlocalization", "cocospoon");
+		csDefault.command.put("-flthreshold", "0");
+		AstorMain main1 = new AstorMain();
+
+		System.out.println(Arrays.toString(csDefault.flat()));
+		main1.execute(csDefault.flat());
+
+		ProgramVariant pv1 = main1.getEngine().getVariants().get(0);
+
+		for (ModificationPoint mp : pv1.getModificationPoints()) {
+			System.out.println(
+					"mp " + mp + " " + ((SuspiciousModificationPoint) mp).getSuspicious().getSuspiciousValue());
+
+		}
+		SuspiciousModificationPoint smp0 = (SuspiciousModificationPoint) pv1.getModificationPoints().get(0);
+		Assert.assertEquals(72, smp0.getSuspicious().getLineNumber());
+		Assert.assertTrue(smp0.getSuspicious().getSuspiciousValue() < 1);
+		Assert.assertEquals(23, pv1.getModificationPoints().size());
+
 	}
 }
