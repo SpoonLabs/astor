@@ -1,9 +1,11 @@
 package fr.inria.astor.test.repair.evaluation.extensionpoints;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -21,12 +23,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.test.repair.evaluation.regression.MathTests;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * 
