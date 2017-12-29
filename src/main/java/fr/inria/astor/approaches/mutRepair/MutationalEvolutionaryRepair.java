@@ -15,7 +15,7 @@ import fr.inria.astor.approaches.mutRepair.operators.ctmutators.NegationUnaryOpe
 import fr.inria.astor.approaches.mutRepair.operators.ctmutators.RelationalBinaryOperatorMutator;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.WeightCtElement;
+import fr.inria.astor.core.entities.WeightElement;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -25,31 +25,30 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
 
 /**
- * Mutational evolution: Evolutionary engine that applies changes in If conditions
+ * Mutational evolution: Evolutionary engine that applies changes in If
+ * conditions
+ * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
 public class MutationalEvolutionaryRepair extends JGenProg {
 
 	public static boolean uniformRandom = true;
-	
+
 	MutatorComposite mutatorBinary = null;
-	
+
 	Map<String, List<MutantCtElement>> mutantsCache = new HashMap<String, List<MutantCtElement>>();
-	
-	
-	
+
 	@SuppressWarnings("unchecked")
 	public MutationalEvolutionaryRepair(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
-		this.mutatorBinary =  new MutatorComposite(mutatorExecutor.getFactory());
+		this.mutatorBinary = new MutatorComposite(mutatorExecutor.getFactory());
 		this.mutatorBinary.getMutators().add(new RelationalBinaryOperatorMutator(mutatorExecutor.getFactory()));
 		this.mutatorBinary.getMutators().add(new LogicalBinaryOperatorMutator(mutatorExecutor.getFactory()));
 		this.mutatorBinary.getMutators().add(new NegationUnaryOperatorConditionMutator(mutatorExecutor.getFactory()));
 	}
 
-	
 	/**
 	 * Create a Gen Mutation for a given CtElement
 	 * 
@@ -60,12 +59,12 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	 * @return
 	 * @throws IllegalAccessException
 	 */
-	 @Override
+	@Override
 	public OperatorInstance createOperatorInstanceForPoint(ModificationPoint gen) throws IllegalAccessException {
-		ModificationPoint genSusp =  gen;
-							
+		ModificationPoint genSusp = gen;
+
 		AstorOperator operationType = new ReplaceOp();
-		
+
 		if (!(genSusp.getCodeElement() instanceof CtIf)) {
 			// logger.error(".....The pointed Element is Not a statement");
 			return null;
@@ -73,35 +72,35 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 		CtIf targetIF = (CtIf) genSusp.getCodeElement();
 
 		CtElement cpar = targetIF.getParent();
-		
 
-		//TODO: the parent not always is a block.. and we should manage them...
-		if ((cpar == null /*|| !(cpar instanceof CtBlock)*/)) {
+		// TODO: the parent not always is a block.. and we should manage them...
+		if ((cpar == null /* || !(cpar instanceof CtBlock) */)) {
 			return null;
 		}
-		
+
 		OperatorInstance operation = new OperatorInstance();
 		operation.setOriginal(targetIF.getCondition());
 		operation.setOperationApplied(operationType);
 		operation.setModificationPoint(genSusp);
-		
+
 		List<MutantCtElement> mutations = getMutants(targetIF);
-		
-		//currentStat.sizeSpace.add(new StatSpaceSize(mutations.size(),0));
-		
-		log.debug("mutations: ("+mutations.size()+") "+mutations);
-		if(mutations == null || mutations.size() == 0){
+
+		// currentStat.sizeSpace.add(new StatSpaceSize(mutations.size(),0));
+
+		log.debug("mutations: (" + mutations.size() + ") " + mutations);
+		if (mutations == null || mutations.size() == 0) {
 			return null;
 		}
 		CtElement fix = null;
 		int max = 0;
 		boolean continueSearching = true;
-		while(continueSearching && max < mutations.size()){
+		while (continueSearching && max < mutations.size()) {
 			fix = getFixMutation(mutations);
-			continueSearching = fix != null;//alreadyApplied(gen,fix, operationType);
+			continueSearching = fix != null;// alreadyApplied(gen,fix,
+											// operationType);
 			max++;
-		} 
-		if(continueSearching ){
+		}
+		if (continueSearching) {
 			log.debug("All mutations were applied: no mutation left to apply");
 			return null;
 		}
@@ -112,8 +111,8 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 
 	protected CtElement getFixMutation(List<MutantCtElement> mutations) {
 		CtElement fix = null;
-	
-		if(uniformRandom)
+
+		if (uniformRandom)
 			fix = uniformRandom(mutations);
 		else
 			fix = weightRandom(mutations);
@@ -123,63 +122,64 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	protected CtElement uniformRandom(List<MutantCtElement> mutations) {
 		return mutations.get(RandomManager.nextInt(mutations.size())).getElement();
 	}
+
 	/**
 	 * 
 	 * @param mutations
 	 * @return
 	 */
-	 private CtElement weightRandom(List<MutantCtElement> mutations) {
-		 List<WeightCtElement> we = new ArrayList<WeightCtElement>();
-			
-		 double sum = 0; 
-		 for (MutantCtElement mutantCtElement : mutations) {
-			sum+=mutantCtElement.getProbabilistic();
-			WeightCtElement w = new WeightCtElement(mutantCtElement, 0);
+	private CtElement weightRandom(List<MutantCtElement> mutations) {
+		List<WeightElement<?>> we = new ArrayList<WeightElement<?>>();
+
+		double sum = 0;
+		for (MutantCtElement mutantCtElement : mutations) {
+			sum += mutantCtElement.getProbabilistic();
+			WeightElement<CtElement> w = new WeightElement<CtElement>(mutantCtElement.getElement(),
+					mutantCtElement.getProbabilistic());
 			w.weight = mutantCtElement.getProbabilistic();
 			we.add(w);
 		}
-		if(sum == 0)
+		if (sum == 0)
 			return uniformRandom(mutations);
-		
-		for (WeightCtElement weightCtElement : we) {
+
+		for (WeightElement<?> weightCtElement : we) {
 			weightCtElement.weight = weightCtElement.weight / sum;
 		}
-	
-		WeightCtElement.feedAccumulative(we);
-		WeightCtElement selected =  WeightCtElement.selectElementWeightBalanced(we);
+
+		WeightElement.feedAccumulative(we);
+		WeightElement<?> selected = WeightElement.selectElementWeightBalanced(we);
 		MutantCtElement mutatnSelected = (MutantCtElement) selected.element;
-		return	mutatnSelected.getElement();		 
+		return mutatnSelected.getElement();
 	}
 
 	/**
-	  * Retrieve the mutants for a CtIf.
-	  * If the condition were mutated before, we retrive them from a cache of mutants. 
-	  * @param targetIF
-	  * @return
-	  */
+	 * Retrieve the mutants for a CtIf. If the condition were mutated before, we
+	 * retrive them from a cache of mutants.
+	 * 
+	 * @param targetIF
+	 * @return
+	 */
 	public List<MutantCtElement> getMutants(CtIf targetIF) {
 		List<MutantCtElement> mutations = null;
-		if(this.mutantsCache.containsKey(targetIF.getCondition().toString())){
-			 mutations = clone(this.mutantsCache.get(targetIF.getCondition().toString()));
-		}
-		else{
+		if (this.mutantsCache.containsKey(targetIF.getCondition().toString())) {
+			mutations = clone(this.mutantsCache.get(targetIF.getCondition().toString()));
+		} else {
 			mutations = this.mutatorBinary.execute(targetIF.getCondition());
 			mutantsCache.put(targetIF.getCondition().toString(), mutations);
 		}
 		return mutations;
 	}
-		
 
 	private CtExpression getExpressionFromElement(CtElement element) {
-		
-		if(element instanceof CtExpression)
+
+		if (element instanceof CtExpression)
 			return (CtExpression) element;
-		
-		if(element instanceof CtIf){
-			return ((CtIf)element).getCondition();
+
+		if (element instanceof CtIf) {
+			return ((CtIf) element).getCondition();
 		}
-		//TODO: to continue			
-		
+		// TODO: to continue
+
 		return null;
 	}
 
@@ -189,26 +189,26 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 			CtExpression cloned = (CtExpression) mutatorBinary.getFactory().Core().clone(mutation.getElement());
 			clonedExpression.add(new MutantCtElement(cloned, mutation.getProbabilistic()));
 		}
-		
+
 		return clonedExpression;
 	}
+
 	@SuppressWarnings("rawtypes")
 	public void undoOperationToSpoonElement(OperatorInstance operation) {
 		CtExpression ctst = (CtExpression) operation.getOriginal();
 		CtExpression fix = (CtExpression) operation.getModified();
-		try{
-		fix.replace(ctst);
-		}
-		catch(Throwable tr){
+		try {
+			fix.replace(ctst);
+		} catch (Throwable tr) {
 			operation.setExceptionAtApplied((Exception) tr);
 		}
 	}
-	
+
 	/**
 	 * Apply a given Mutation to the node referenced by the operation
 	 * 
 	 * @param operation
-	 * @throws IllegalAccessException 
+	 * @throws IllegalAccessException
 	 */
 	@Override
 	protected void applyNewMutationOperationToSpoonElement(OperatorInstance operation) throws IllegalAccessException {
@@ -226,11 +226,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 			operation.setExceptionAtApplied(ex);
 			operation.setSuccessfulyApplied(false);
 		}
-			
-	}
-	
-	
 
-	
+	}
 
 }

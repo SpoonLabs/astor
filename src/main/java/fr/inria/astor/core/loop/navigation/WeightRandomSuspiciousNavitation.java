@@ -6,9 +6,10 @@ import java.util.List;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.entities.WeightCtElement;
+import fr.inria.astor.core.entities.WeightElement;
 
 /**
+ * Strategy of navigation based on weight random.
  * 
  * @author Matias Martinez
  *
@@ -23,24 +24,24 @@ public class WeightRandomSuspiciousNavitation implements SuspiciousNavigationStr
 		List<ModificationPoint> solution = new ArrayList<ModificationPoint>();
 
 		for (int i = 0; i < modificationPoints.size(); i++) {
-			List<WeightCtElement> we = new ArrayList<WeightCtElement>();
+			List<WeightElement<?>> we = new ArrayList<WeightElement<?>>();
 			double sum = 0;
 			for (ModificationPoint gen : remaining) {
 				double susp = ((SuspiciousModificationPoint) gen).getSuspicious().getSuspiciousValue();
 				sum += susp;
-				WeightCtElement w = new WeightCtElement(gen, 0);
+				WeightElement<?> w = new WeightElement<>(gen, 0);
 				w.weight = susp;
 				we.add(w);
 			}
 
 			if (sum != 0) {
 
-				for (WeightCtElement weightCtElement : we) {
+				for (WeightElement<?> weightCtElement : we) {
 					weightCtElement.weight = weightCtElement.weight / sum;
 				}
 
-				WeightCtElement.feedAccumulative(we);
-				WeightCtElement selected = WeightCtElement.selectElementWeightBalanced(we);
+				WeightElement.feedAccumulative(we);
+				WeightElement<?> selected = WeightElement.selectElementWeightBalanced(we);
 
 				ModificationPoint selectedg = (ModificationPoint) selected.element;
 				remaining.remove(selectedg);
