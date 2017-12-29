@@ -78,7 +78,7 @@ public class ProgramVariant {
 	 * When we want to analyze one gen per generation, we need to track the last
 	 * gen analyzed
 	 */
-	protected int lastGenAnalyzed = 0;
+	protected int lastModificationPointAnalyzed = 0;
 
 	/**
 	 * Date the variant were born
@@ -215,12 +215,12 @@ public class ProgramVariant {
 		this.operations.clear();
 	}
 
-	public int getLastGenAnalyzed() {
-		return lastGenAnalyzed;
+	public int getLastModificationPointAnalyzed() {
+		return lastModificationPointAnalyzed;
 	}
 
 	public void setLastModificationPointAnalyzed(int lastGenAnalyzed) {
-		this.lastGenAnalyzed = lastGenAnalyzed;
+		this.lastModificationPointAnalyzed = lastGenAnalyzed;
 	}
 
 	public Date getBornDate() {

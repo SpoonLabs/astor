@@ -16,7 +16,7 @@ public class SequenceSuspiciousNavigationStrategy implements SuspiciousNavigatio
 	@Override
 	public List<ModificationPoint> getSortedModificationPointsList(ProgramVariant variant) {
 		List<ModificationPoint> modificationPoints = variant.getModificationPoints();
-		int i = variant.getLastGenAnalyzed();
+		int i = variant.getLastModificationPointAnalyzed();
 		if (i < modificationPoints.size()) {
 			variant.setLastModificationPointAnalyzed(i + 1);
 			return modificationPoints.subList(i, i + 1);

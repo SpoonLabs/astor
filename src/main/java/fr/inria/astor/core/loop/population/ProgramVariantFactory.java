@@ -348,7 +348,7 @@ public class ProgramVariantFactory {
 
 		if (!ConfigurationProperties.getPropertyBool("resetoperations"))
 			childVariant.getOperations().putAll(parentVariant.getOperations());
-		childVariant.setLastModificationPointAnalyzed(parentVariant.getLastGenAnalyzed());
+		childVariant.setLastModificationPointAnalyzed(parentVariant.getLastModificationPointAnalyzed());
 		childVariant.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
 		childVariant.setFitness(parentVariant.getFitness());
 		return childVariant;
