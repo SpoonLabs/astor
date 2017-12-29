@@ -1,4 +1,4 @@
-package fr.inria.astor.core.faultlocalization;
+package fr.inria.astor.core.faultlocalization.gzoltar;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,11 +19,18 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 
-public class GZoltarClientMasterFaultLocalization implements FaultLocalizationStrategy {
+/**
+ * GZoltar using Client Master Architecture
+ * 
+ * @author Matias Martinez
+ *
+ */
+public class GZoltarClientMasterFaultLocalization extends GZoltarFaultLocalization {
 
 	static Logger logger = Logger.getLogger(GZoltarClientMasterFaultLocalization.class.getName());
 
@@ -36,19 +43,19 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 		logger.info("Gzoltar fault localization: min susp value parameter: " + thr);
 
 		Set<String> tcset = new HashSet<String>(testsToExecute);
-		
+
 		String ncp = cp.stream().collect(Collectors.joining(File.pathSeparator)) + File.pathSeparator + locationBin;
 
 		String targetClasses = ConfigurationProperties.getProperty("classestoinstrument");
-		
-		if(targetClasses == null || targetClasses.trim().isEmpty())
-			targetClasses = MutationSupporter.currentSupporter.getFactory().Type().getAll().stream().map(t -> t.getQualifiedName())
-				.collect(Collectors.joining(File.pathSeparator));
-		
+
+		if (targetClasses == null || targetClasses.trim().isEmpty())
+			targetClasses = MutationSupporter.currentSupporter.getFactory().Type().getAll().stream()
+					.map(t -> t.getQualifiedName()).collect(Collectors.joining(File.pathSeparator));
+
 		String testNames = testsToExecute.stream().collect(Collectors.joining(File.pathSeparator));
 		logger.debug("#test before: " + testsToExecute.size() + " #after " + tcset.size());
-		logger.debug("#Target classes: "+MutationSupporter.currentSupporter.getFactory().Type().getAll().size());
-		
+		logger.debug("#Target classes: " + MutationSupporter.currentSupporter.getFactory().Type().getAll().size());
+
 		String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
 
 		Process p = null;
@@ -62,18 +69,20 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 			command.add(jvmPath);
 			// command.add("-Xmx2048m");
 			command.add("-jar");
-			command.add(new File("./lib/com.gzoltar-1.6.1-java7-jar-with-dependencies.jar").getAbsolutePath());	
-			
+			command.add(new File("./lib/com.gzoltar-1.6.1-java7-jar-with-dependencies.jar").getAbsolutePath());
+
 			command.add("-Dproject_cp=" + ncp);
-			command.add("-Dtargetclasses="+targetClasses);
+			command.add("-Dtargetclasses=" + targetClasses);
 			command.add("-Dtestclasses=" + testNames);
 			command.add("-diagnose");
-			command.add("-Dtimelimit="+ (long)(ConfigurationProperties.getPropertyDouble("tmax2")/1000) );//milliseconds to seconds
-			//command.add("-Dloglevel=None");
+			command.add("-Dtimelimit=" + (long) (ConfigurationProperties.getPropertyDouble("tmax2") / 1000));// milliseconds
+																												// to
+																												// seconds
+			// command.add("-Dloglevel=None");
 
-			Path foutput =Files.createTempDirectory("tempgz");
-			command.add("-Dgzoltar_data_dir="+foutput.toAbsolutePath());
-		
+			Path foutput = Files.createTempDirectory("tempgz");
+			command.add("-Dgzoltar_data_dir=" + foutput.toAbsolutePath());
+
 			printCommandToExecute(command);
 
 			ProcessBuilder pb = new ProcessBuilder("/bin/bash");
@@ -113,7 +122,7 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 			}
 
 			//
-			p.waitFor((long) (ConfigurationProperties.getPropertyDouble("tmax2") *2) , TimeUnit.MINUTES);
+			p.waitFor((long) (ConfigurationProperties.getPropertyDouble("tmax2") * 2), TimeUnit.MINUTES);
 			long t_end = System.currentTimeMillis();
 			logger.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
 
@@ -124,7 +133,7 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 
 			logger.debug("GZ CM time " + (end - init) / 1000 + " seconds");
 			//
-			
+
 			//
 			FaultLocalizationResult fl = parseOutputFile(foutput.toFile(), thr);
 			//
@@ -171,7 +180,7 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 
 	public SuspiciousCode parseLine(String line) {
 		try {
-			if(line.equals("Component,OCHIAI"))
+			if (line.equals("Component,OCHIAI"))
 				return null;
 			SuspiciousCode sc = new SuspiciousCode();
 			//
@@ -187,33 +196,32 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 			String className = classLine[0];
 			sc.setClassName(className);
 			String method = "";
-			if(classLine.length>1)
+			if (classLine.length > 1)
 				method = classLine[1];//
 			sc.setMethodName(method);
 
 			return sc;
 		} catch (Exception e) {
-			logger.error("-->"+ line);
+			logger.error("-->" + line);
 			logger.error(e);
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
-	public FaultLocalizationResult parseOutputFile(File path, Double thr){
-		File spectrapath = new File(path.getAbsolutePath()+ File.separator+ "spectra");
-		File testpath = new File(path.getAbsolutePath()+ File.separator+ "tests");
-		
-		List<SuspiciousCode> codes = new ArrayList<>(); 
+
+	public FaultLocalizationResult parseOutputFile(File path, Double thr) {
+		File spectrapath = new File(path.getAbsolutePath() + File.separator + "spectra");
+		File testpath = new File(path.getAbsolutePath() + File.separator + "tests");
+
+		List<SuspiciousCode> codes = new ArrayList<>();
 		List<String> failingTestCases = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(spectrapath))) {
 
 			String line;
 			while ((line = br.readLine()) != null) {
-				//System.out.println(line);
+				// System.out.println(line);
 				SuspiciousCode sc = parseLine(line);
-				if(sc != null && sc.getSuspiciousValue() > 0 
-						&& sc.getSuspiciousValue() >= thr )
+				if (sc != null && sc.getSuspiciousValue() > 0 && sc.getSuspiciousValue() >= thr)
 					codes.add(sc);
 			}
 
@@ -221,33 +229,33 @@ public class GZoltarClientMasterFaultLocalization implements FaultLocalizationSt
 			e.printStackTrace();
 		}
 
-		//org.apache.commons.lang3.AnnotationUtilsTest#testAnnotationsOfDifferingTypes,PASS,92358174
+		// org.apache.commons.lang3.AnnotationUtilsTest#testAnnotationsOfDifferingTypes,PASS,92358174
 		try (BufferedReader br = new BufferedReader(new FileReader(testpath))) {
 
 			String line;
 			while ((line = br.readLine()) != null) {
 				System.out.println(line);
 				String[] lineS = line.split(",");
-				if(lineS[1].equals("FAIL") ){
+				if (lineS[1].equals("FAIL")) {
 					String name = lineS[0].split("#")[0];
-					if(!failingTestCases.contains(name))
+					if (!failingTestCases.contains(name))
 						failingTestCases.add(name);
 				}
-				
+
 			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		///
-		
-		codes.forEach(e->logger.debug(e));
-		failingTestCases.forEach(e->logger.debug(e));
-		FaultLocalizationResult result = new FaultLocalizationResult(codes,failingTestCases);
-		
+
+		codes.forEach(e -> logger.debug(e));
+		failingTestCases.forEach(e -> logger.debug(e));
+		FaultLocalizationResult result = new FaultLocalizationResult(codes, failingTestCases);
+
 		return result;
-		
+
 	}
 
 }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +20,10 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.VariantValidationResult;
-import fr.inria.astor.core.entities.WeightCtElement;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
+import fr.inria.astor.core.faultlocalization.cocospoon.CocoFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
@@ -146,10 +146,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		log.info("\n----Starting Solution Search");
 
-		// Save code of default variant
-		String srcOutput = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		mutatorSupporter.saveSourceCodeOnDiskProgramVariant(this.originalVariant, srcOutput);
-
 		generationsExecuted = 0;
 		boolean stopSearch = false;
 
@@ -240,6 +236,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected void computePatchDiff(List<ProgramVariant> solutions) {
 
+		// Save code of default variant
+		String srcOutput = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		try {
+			mutatorSupporter.saveSourceCodeOnDiskProgramVariant(this.originalVariant, srcOutput);
+		} catch (Exception e) {
+			log.error(e);
+		}
+
 		PatchDiffCalculator cdiff = new PatchDiffCalculator();
 		for (ProgramVariant solutionVariant : solutions) {
 			String diffPatch = cdiff.getDiff(getProjectFacade(), solutionVariant);
@@ -324,17 +328,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		} catch (ParseException e) {
 			log.error("Parsing time", e);
 			return false;
-		}
-	}
-
-	public void createInitialPopulation() throws Exception {
-
-		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
-			// We dont use FL, so at this point the do not have suspicious
-			this.initPopulation(new ArrayList<SuspiciousCode>());
-		} else {
-			List<SuspiciousCode> suspicious = projectFacade.calculateSuspicious(getFaultLocalization());
-			this.initPopulation(suspicious);
 		}
 	}
 
@@ -1029,9 +1022,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.setSuspiciousNavigationStrategy(suspiciousNavigationStrategy);
 
 		// Fault localization
-
-		this.setFaultLocalization(
-				(FaultLocalizationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.FAULT_LOCALIZATION));
+		String flvalue = ConfigurationProperties.getProperty("faultlocalization").toLowerCase();
+		if (flvalue.equals("gzoltar")) {
+			this.setFaultLocalization(new GZoltarFaultLocalization());
+		} else if (flvalue.equals("cocospoon")) {
+			this.setFaultLocalization(new CocoFaultLocalization());
+		} else
+			this.setFaultLocalization(
+					(FaultLocalizationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.FAULT_LOCALIZATION));
 
 		// Fault localization
 		this.setFitnessFunction((FitnessFunction) PlugInLoader.loadPlugin(ExtensionPoints.FITNESS_FUNCTION));
@@ -1059,10 +1057,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		if (!validationArgument.equals("process")) {
 			this.setProgramValidator((ProgramVariantValidator) PlugInLoader.loadPlugin(ExtensionPoints.VALIDATION));
 		}
-
 	};
-
-	/////
 
 	/**
 	 * By default, it initializes the spoon model. It should not be created
@@ -1072,6 +1067,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * @throws Exception
 	 */
 	public void initPopulation(List<SuspiciousCode> suspicious) throws Exception {
+
+		log.info("\n---- Creating spoon model");
+
+		this.initModel();
 
 		log.info("\n---- Initial suspicious size: " + suspicious.size());
 		initializePopulation(suspicious);
@@ -1268,6 +1267,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	public void setSuspiciousNavigationStrategy(SuspiciousNavigationStrategy suspiciousNavigationStrategy) {
 		this.suspiciousNavigationStrategy = suspiciousNavigationStrategy;
+	}
+
+	public List<SuspiciousCode> calculateSuspicious() throws Exception {
+		return this.getFaultLocalization().searchSuspicious(getProjectFacade()).getCandidates();
 	}
 
 }

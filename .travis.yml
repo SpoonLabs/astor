@@ -23,6 +23,9 @@ script:
 - mvn test -DskipTests
 - mvn surefire:test -Dtest=$TEST
 sudo: required
+before_script:
+ - "echo Java_OPTS $JAVA_OPTS"
+ - "export JAVA_OPTS=-Xmx4096m"
 jdk:
 - oraclejdk8
 cache:

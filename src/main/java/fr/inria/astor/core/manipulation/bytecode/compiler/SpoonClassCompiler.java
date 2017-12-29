@@ -60,13 +60,13 @@ public class SpoonClassCompiler  implements VariantCompiler{
 	}
 
 	@Override
-	public CompilationResult compile(Collection<CtClass> ctClassList, URL[] cp) {
+	public CompilationResult compile(Collection<? extends CtType> ctClassList, URL[] cp) {
 
 		Map<String, String> toCompile = new HashMap<String, String>();
 		prettyPrinter = new DefaultJavaPrettyPrinter(this.getFactory().getEnvironment());
 		dcc = new JavaXToolsCompiler();
 		
-		for (CtClass ctClass : ctClassList) {
+		for (CtType ctClass : ctClassList) {
 			try {
 				this.getProcessingManager().process(ctClass);
 				toCompile.put(ctClass.getQualifiedName(), sourceForModelledClass(ctClass));

@@ -82,12 +82,6 @@ public class CardumenApproach extends JGenProg {
 			this.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(roperatorSpace));
 		}
 
-		/// Ingredient SPACE:
-
-		// command.command.put("-scope",
-		// ExpressionIngredientSpace.class.getName());
-		// IngredientSpace ingredientspace =
-		// PlugInLoader.loadIngredientSpace(ingredientProcessors);
 		ExpressionTypeIngredientSpace ingredientspace = ((ConfigurationProperties.getPropertyBool("uniformreplacement"))
 				? new ExpressionClassTypeIngredientSpace(ingredientProcessors)
 				: new ExpressionTypeIngredientSpace(ingredientProcessors));
