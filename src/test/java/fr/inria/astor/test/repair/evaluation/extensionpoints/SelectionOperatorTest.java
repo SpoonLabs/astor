@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.IngredientBasedRepairApproach;
-import fr.inria.astor.core.loop.navigation.SuspiciousNavigationValues;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.WeightedRandomOperatorSelection;
 import fr.inria.astor.test.repair.evaluation.regression.MathTests;
@@ -54,7 +53,7 @@ public class SelectionOperatorTest {
 
 		}
 
-		//Not double
+		// Not double
 		try {
 			CommandSummary csDefault = MathTests.getMath70Command();
 			csDefault.command.put("-maxgen", "0");
@@ -67,8 +66,7 @@ public class SelectionOperatorTest {
 
 		}
 	}
-	
-	
+
 	@Test
 	public void testWeightedRandom1Operator() throws Exception {
 		CommandSummary csDefault = MathTests.getMath70Command();
@@ -83,14 +81,13 @@ public class SelectionOperatorTest {
 
 		assertTrue(WeightedRandomOperatorSelection.class.isInstance(ap.getOperatorSelectionStrategy()));
 		WeightedRandomOperatorSelection ws = (WeightedRandomOperatorSelection) ap.getOperatorSelectionStrategy();
-		AstorOperator aoperator= ws.getNextOperator();
-		AstorOperator  ab0 =ap.getOperatorSpace().getOperators().get(0);
+		AstorOperator aoperator = ws.getNextOperator();
+		AstorOperator ab0 = ap.getOperatorSpace().getOperators().get(0);
 		assertEquals(ab0, aoperator);
-		
-		
-		AstorOperator aoperator1= ws.getNextOperator();
+
+		AstorOperator aoperator1 = ws.getNextOperator();
 		assertEquals(ab0, aoperator1);
-		
+
 	}
 
 }
