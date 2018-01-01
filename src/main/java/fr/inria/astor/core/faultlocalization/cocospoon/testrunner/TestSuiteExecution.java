@@ -2,6 +2,8 @@ package fr.inria.astor.core.faultlocalization.cocospoon.testrunner;
 
 
 import fr.inria.astor.core.faultlocalization.entity.CustomClassLoaderThreadFactory;
+import fr.inria.astor.core.setup.ConfigurationProperties;
+
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -39,7 +41,8 @@ public class TestSuiteExecution {
         Future<Result> future = executor.submit(callable);
         try {
             executor.shutdown();
-            result = future.get(5, TimeUnit.MINUTES);
+            int maxregressiontimeseconds = ConfigurationProperties.getPropertyInt("tmax2");
+            result = future.get(maxregressiontimeseconds, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
