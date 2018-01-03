@@ -12,7 +12,7 @@ import spoon.reflect.code.CtIf;
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public class IFExpressionFixSpaceProcessor extends AbstractFixSpaceProcessor<CtIf>  {
+public class IFExpressionFixSpaceProcessor extends TargetElementProcessor<CtIf>  {
 
 	private Logger logger = Logger.getLogger(IFExpressionFixSpaceProcessor.class.getName());
 

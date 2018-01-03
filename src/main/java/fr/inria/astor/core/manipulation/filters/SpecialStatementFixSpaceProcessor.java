@@ -22,7 +22,7 @@ import spoon.reflect.code.CtWhile;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class SpecialStatementFixSpaceProcessor extends AbstractFixSpaceProcessor<CtStatement> {
+public class SpecialStatementFixSpaceProcessor extends TargetElementProcessor<CtStatement> {
 
 	/**
 	 * The default statement transformator is CTStamemeny

@@ -9,7 +9,7 @@ import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -39,7 +39,7 @@ public class JKaliEngine extends ExhaustiveSearchEngine {
 			operatorSpaceCustom = new JKaliSpace();
 		this.setOperatorSpace(operatorSpaceCustom);
 		
-		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
+		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 		this.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 		

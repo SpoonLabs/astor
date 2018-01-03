@@ -11,7 +11,7 @@ import spoon.reflect.code.CtStatement;
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public class MethodInvocationFixSpaceProcessor extends AbstractFixSpaceProcessor<CtInvocation> {
+public class MethodInvocationFixSpaceProcessor extends TargetElementProcessor<CtInvocation> {
 
 	private Logger logger = Logger.getLogger(MethodInvocationFixSpaceProcessor.class.getName());
 	@Override

@@ -5,7 +5,7 @@ import java.util.List;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.CtLocationIngredientSpace;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import spoon.reflect.declaration.CtClass;
 
 /**
@@ -24,11 +24,11 @@ public class CtClassIngredientSpace extends CtLocationIngredientSpace {
 		super();
 	}
 
-	public CtClassIngredientSpace(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
+	public CtClassIngredientSpace(TargetElementProcessor<?> processor) throws JSAPException {
 		super(processor);
 	}
 
-	public CtClassIngredientSpace(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
+	public CtClassIngredientSpace(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super(processors);
 	}
 

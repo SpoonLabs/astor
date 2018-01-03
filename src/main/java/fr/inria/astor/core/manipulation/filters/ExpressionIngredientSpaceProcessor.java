@@ -14,7 +14,7 @@ import spoon.reflect.code.CtVariableAccess;
  * @author Matias Martinez
  *
  */
-public class ExpressionIngredientSpaceProcessor extends AbstractFixSpaceProcessor<CtExpression> {
+public class ExpressionIngredientSpaceProcessor extends TargetElementProcessor<CtExpression> {
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 

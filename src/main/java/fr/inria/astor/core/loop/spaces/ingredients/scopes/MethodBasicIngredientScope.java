@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 /**
@@ -14,11 +14,11 @@ import spoon.reflect.declaration.CtExecutable;
  */
 public class MethodBasicIngredientScope extends LocalIngredientSpace {
 
-	public MethodBasicIngredientScope(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
+	public MethodBasicIngredientScope(TargetElementProcessor<?> processor) throws JSAPException {
 		super(processor);
 	}
 
-	public MethodBasicIngredientScope(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
+	public MethodBasicIngredientScope(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super(processors);
 	}
 

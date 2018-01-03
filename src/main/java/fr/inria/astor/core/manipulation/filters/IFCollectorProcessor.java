@@ -11,7 +11,7 @@ import spoon.reflect.declaration.CtType;
  *
  */
 
-public class IFCollectorProcessor  extends AbstractFixSpaceProcessor<CtIf>  {
+public class IFCollectorProcessor  extends TargetElementProcessor<CtIf>  {
 
 	private Logger logger = Logger.getLogger(IFExpressionFixSpaceProcessor.class.getName());
 

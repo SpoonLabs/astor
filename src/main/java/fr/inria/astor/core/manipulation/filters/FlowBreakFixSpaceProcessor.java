@@ -6,7 +6,7 @@ import spoon.reflect.code.CtCFlowBreak;
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public class FlowBreakFixSpaceProcessor extends AbstractFixSpaceProcessor<CtCFlowBreak>  {
+public class FlowBreakFixSpaceProcessor extends TargetElementProcessor<CtCFlowBreak>  {
 
 
 	@Override

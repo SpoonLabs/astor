@@ -15,7 +15,7 @@ import spoon.reflect.declaration.CtMethod;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class SingleStatementFixSpaceProcessor extends AbstractFixSpaceProcessor<CtStatement> {
+public class SingleStatementFixSpaceProcessor extends TargetElementProcessor<CtStatement> {
 
 	/**
 	 * The default statement transformator is CTStamemeny

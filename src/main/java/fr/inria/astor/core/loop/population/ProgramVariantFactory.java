@@ -16,7 +16,7 @@ import fr.inria.astor.core.faultlocalization.bridgeFLSpoon.SpoonLocationPointerL
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientProcessor;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -42,7 +42,7 @@ public class ProgramVariantFactory {
 
 	protected MutationSupporter mutatorSupporter = null;
 
-	protected List<AbstractFixSpaceProcessor<?>> processors = null;
+	protected List<TargetElementProcessor<?>> processors = null;
 
 	protected boolean resetOperations;
 
@@ -52,7 +52,7 @@ public class ProgramVariantFactory {
 		super();
 	}
 
-	public ProgramVariantFactory(List<AbstractFixSpaceProcessor<?>> processors) {
+	public ProgramVariantFactory(List<TargetElementProcessor<?>> processors) {
 		this();
 		this.processors = processors;
 	}
@@ -273,7 +273,7 @@ public class ProgramVariantFactory {
 	 */
 	@SuppressWarnings(value = { "unchecked", "rawtypes" })
 	private List<CtElement> extractChildElements(List<CtElement> ctSuspects,
-			List<AbstractFixSpaceProcessor<?>> processors) {
+			List<TargetElementProcessor<?>> processors) {
 
 		if (processors == null || processors.isEmpty()) {
 			return ctSuspects;
@@ -427,11 +427,11 @@ public class ProgramVariantFactory {
 		return list;
 	}
 
-	public List<AbstractFixSpaceProcessor<?>> getProcessors() {
+	public List<TargetElementProcessor<?>> getProcessors() {
 		return processors;
 	}
 
-	public void setProcessors(List<AbstractFixSpaceProcessor<?>> processors) {
+	public void setProcessors(List<TargetElementProcessor<?>> processors) {
 		this.processors = processors;
 	}
 }

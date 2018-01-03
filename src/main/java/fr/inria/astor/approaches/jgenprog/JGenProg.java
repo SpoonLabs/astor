@@ -19,7 +19,7 @@ import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.loop.spaces.operators.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -43,7 +43,7 @@ public class JGenProg extends IngredientBasedRepairApproach {
 	public void loadExtensionPoints() throws Exception {
 		super.loadExtensionPoints();
 
-		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
+		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
 
 		// Fix Space
 		ExtensionPoints epoint = ExtensionPoints.INGREDIENT_PROCESSOR;
@@ -55,7 +55,7 @@ public class JGenProg extends IngredientBasedRepairApproach {
 			String ingrProcessors = ConfigurationProperties.getProperty(epoint.identifier);
 			String[] in = ingrProcessors.split(File.pathSeparator);
 			for (String processor : in) {
-				AbstractFixSpaceProcessor proc_i = (AbstractFixSpaceProcessor) PlugInLoader.loadPlugin(processor,
+				TargetElementProcessor proc_i = (TargetElementProcessor) PlugInLoader.loadPlugin(processor,
 						epoint._class);
 				ingredientProcessors.add(proc_i);
 			}

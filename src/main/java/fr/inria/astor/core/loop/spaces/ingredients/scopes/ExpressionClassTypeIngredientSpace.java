@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
@@ -16,7 +16,7 @@ import spoon.reflect.declaration.CtElement;
  */
 public class ExpressionClassTypeIngredientSpace extends ExpressionTypeIngredientSpace {
 
-	public ExpressionClassTypeIngredientSpace(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
+	public ExpressionClassTypeIngredientSpace(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super(processors);
 	}
 

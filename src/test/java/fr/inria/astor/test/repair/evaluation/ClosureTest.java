@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.evolution.AstorMain;
+import fr.inria.main.evolution.ExtensionPoints;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.SpoonModelBuilder;
@@ -113,7 +114,8 @@ public class ClosureTest {
 				"-maxtime", "100", //
 				"-parameters",
 				"logtestexecution:true"
-						+ ":tmax2:1960000:ingredientprocessor:fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation",
+						+ ":tmax2:1960000:"
+						+ ExtensionPoints.INGREDIENT_PROCESSOR.identifier+":fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation",
 				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace", "-customop",
 				"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator",
 

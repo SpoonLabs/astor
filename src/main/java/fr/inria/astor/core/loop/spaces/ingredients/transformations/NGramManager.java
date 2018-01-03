@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.filters.SpecialStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.reflect.declaration.CtType;
@@ -37,7 +37,7 @@ public class NGramManager {
 		this.ngramsSplitted = new HashMap<>();
 		logger.debug("Calculating N-grams");
 
-		AbstractFixSpaceProcessor<?> elementProcessor = new SpecialStatementFixSpaceProcessor();
+		TargetElementProcessor<?> elementProcessor = new SpecialStatementFixSpaceProcessor();
 		Boolean mustCloneOriginalValue = ConfigurationProperties.getPropertyBool("duplicateingredientsinspace");
 		// Forcing to duplicate
 		ConfigurationProperties.setProperty("duplicateingredientsinspace", "true");

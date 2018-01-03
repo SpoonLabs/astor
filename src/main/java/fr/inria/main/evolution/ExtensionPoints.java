@@ -11,7 +11,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.output.OutputResults;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
 
@@ -33,7 +33,7 @@ public enum ExtensionPoints {
 	OPERATORS_SPACE("operatorspace",OperatorSpace.class),//
 	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy",IngredientSearchStrategy.class),//
 	INGREDIENT_TRANSFORM_STRATEGY("ingredienttransformstrategy", IngredientTransformationStrategy.class),//
-	INGREDIENT_PROCESSOR("ingredientprocessor",AbstractFixSpaceProcessor.class),
+	INGREDIENT_PROCESSOR("targetelementprocessor",TargetElementProcessor.class),
 	CLONE_GRANULARITY("clonegranularity",Class.class),
 	OUTPUT_RESULTS("outputresult",OutputResults.class),
 	SUSPICIOUS_NAVIGATION("modificationpointnavigation", SuspiciousNavigationStrategy.class);

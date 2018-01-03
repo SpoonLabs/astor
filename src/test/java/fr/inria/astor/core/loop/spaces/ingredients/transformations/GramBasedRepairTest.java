@@ -26,7 +26,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.SpecialStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VarCombinationForIngredient;
@@ -72,7 +72,7 @@ public class GramBasedRepairTest {
 		main1.execute(command.flat());
 
 		// AbstractFixSpaceProcessor<CtExpression> e =
-		AbstractFixSpaceProcessor<?> ingredientProcessor = new SpecialStatementFixSpaceProcessor();// ExpressionBooleanIngredientSpace();
+		TargetElementProcessor<?> ingredientProcessor = new SpecialStatementFixSpaceProcessor();// ExpressionBooleanIngredientSpace();
 
 		GramProcessor pt = new GramProcessor(ingredientProcessor);
 		List<CtType<?>> all = MutationSupporter.getFactory().Type().getAll();
@@ -121,7 +121,7 @@ public class GramBasedRepairTest {
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
 
-		AbstractFixSpaceProcessor<?> elementProcessor = new SpecialStatementFixSpaceProcessor();
+		TargetElementProcessor<?> elementProcessor = new SpecialStatementFixSpaceProcessor();
 
 		Boolean mustCloneOriginalValue = ConfigurationProperties.getPropertyBool("duplicateingredientsinspace");
 		// Forcing to duplicate
@@ -360,7 +360,7 @@ public class GramBasedRepairTest {
 		assertEquals(7, occurencies);
 
 		// Calculate separately:
-		AbstractFixSpaceProcessor<?> elementProcessor = new SpecialStatementFixSpaceProcessor();
+		TargetElementProcessor<?> elementProcessor = new SpecialStatementFixSpaceProcessor();
 
 		GramProcessor gramProc = new GramProcessor(elementProcessor);
 

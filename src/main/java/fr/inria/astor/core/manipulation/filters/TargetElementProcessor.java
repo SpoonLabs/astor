@@ -17,14 +17,14 @@ import spoon.reflect.code.CtCodeElement;
  * 
  * @param <T>
  */
-public abstract class AbstractFixSpaceProcessor<T extends CtCodeElement> extends AbstractProcessor<T> implements AstorExtensionPoint {
+public abstract class TargetElementProcessor<T extends CtCodeElement> extends AbstractProcessor<T> implements AstorExtensionPoint {
 
 	
 	public static boolean mustClone = true;
 	public boolean allowsDuplicateIngredients = false;
 	
 	
-	public AbstractFixSpaceProcessor(){
+	public TargetElementProcessor(){
 		allowsDuplicateIngredients = ConfigurationProperties.getPropertyBool("duplicateingredientsinspace");
 	}
 	/**

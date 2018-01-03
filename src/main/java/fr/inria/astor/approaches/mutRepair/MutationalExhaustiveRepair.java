@@ -8,7 +8,7 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.filters.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -33,7 +33,7 @@ public class MutationalExhaustiveRepair extends ExhaustiveSearchEngine{
 			super.loadExtensionPoints();
 			
 			setOperatorSpace(new MutRepairSpace());
-			List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
+			List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
 			ingredientProcessors.add(new IFConditionFixSpaceProcessor());
 			setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
 

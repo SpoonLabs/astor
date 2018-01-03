@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import spoon.Launcher;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.code.CtCodeElement;
@@ -39,7 +39,7 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	 * @param processor processor such as  @link{InvocationFixSpaceProcessor}
 	 * @throws JSAPException
 	 */
-	public IngredientProcessor(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
+	public IngredientProcessor(TargetElementProcessor<?> processor) throws JSAPException {
 		this();
 		processing.addProcessor(processor.getClass().getName());
 
@@ -49,9 +49,9 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	 * @param processors
 	 * @throws JSAPException
 	 */
-	public IngredientProcessor(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
+	public IngredientProcessor(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		this();
-		for (AbstractFixSpaceProcessor<?> abstractFixSpaceProcessor : processors) {
+		for (TargetElementProcessor<?> abstractFixSpaceProcessor : processors) {
 			processing.addProcessor(abstractFixSpaceProcessor.getClass().getName() );
 		}
 	}
@@ -74,11 +74,11 @@ public class IngredientProcessor<K, T extends CtCodeElement>
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<T> createFixSpace(CtElement ctelement, boolean mustClone ) {
-		AbstractFixSpaceProcessor.mustClone = mustClone;
-		AbstractFixSpaceProcessor.spaceElements.clear();
+		TargetElementProcessor.mustClone = mustClone;
+		TargetElementProcessor.spaceElements.clear();
 		this.process(ctelement);
-		List<T> returnList =  new ArrayList(AbstractFixSpaceProcessor.spaceElements);
-		AbstractFixSpaceProcessor.spaceElements.clear();
+		List<T> returnList =  new ArrayList(TargetElementProcessor.spaceElements);
+		TargetElementProcessor.spaceElements.clear();
 		
 		return returnList;
 	}

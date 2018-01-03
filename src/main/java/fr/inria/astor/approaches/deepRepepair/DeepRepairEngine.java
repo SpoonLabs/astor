@@ -21,7 +21,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTra
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.loop.spaces.operators.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -53,7 +53,7 @@ public class DeepRepairEngine extends IngredientBasedRepairApproach {
 
 		ConfigurationProperties.setProperty("transformingredient", Boolean.TRUE.toString());
 
-		List<AbstractFixSpaceProcessor<?>> ingredientProcessors = new ArrayList<AbstractFixSpaceProcessor<?>>();
+		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
 
 		// Fix Space
 		ExtensionPoints epoint = ExtensionPoints.INGREDIENT_PROCESSOR;
@@ -65,7 +65,7 @@ public class DeepRepairEngine extends IngredientBasedRepairApproach {
 			String ingrProcessors = ConfigurationProperties.getProperty(epoint.identifier);
 			String[] in = ingrProcessors.split(File.pathSeparator);
 			for (String processor : in) {
-				AbstractFixSpaceProcessor proc_i = (AbstractFixSpaceProcessor) PlugInLoader.loadPlugin(processor,
+				TargetElementProcessor proc_i = (TargetElementProcessor) PlugInLoader.loadPlugin(processor,
 						epoint._class);
 				ingredientProcessors.add(proc_i);
 			}
@@ -105,7 +105,7 @@ public class DeepRepairEngine extends IngredientBasedRepairApproach {
 
 	}
 
-	public static CtLocationIngredientSpace loadIngredientSpace(List<AbstractFixSpaceProcessor<?>> ingredientProcessors)
+	public static CtLocationIngredientSpace loadIngredientSpace(List<TargetElementProcessor<?>> ingredientProcessors)
 			throws JSAPException, Exception {
 		// The ingredients for build the patches
 		String scope = ConfigurationProperties.properties.getProperty("scope");

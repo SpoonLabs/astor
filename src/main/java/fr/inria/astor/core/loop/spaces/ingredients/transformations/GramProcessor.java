@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientProcessor;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.reflect.code.CtCodeElement;
@@ -31,9 +31,9 @@ public class GramProcessor {
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	public AbstractFixSpaceProcessor<?> ingredientProcessor;
+	public TargetElementProcessor<?> ingredientProcessor;
 
-	public GramProcessor(AbstractFixSpaceProcessor<?> ip) {
+	public GramProcessor(TargetElementProcessor<?> ip) {
 		super();
 		this.ingredientProcessor = ip;
 	}

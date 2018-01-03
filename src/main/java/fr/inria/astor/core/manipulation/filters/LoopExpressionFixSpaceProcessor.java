@@ -15,7 +15,7 @@ import spoon.reflect.code.CtWhile;
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public class LoopExpressionFixSpaceProcessor extends AbstractFixSpaceProcessor<CtLoop> {
+public class LoopExpressionFixSpaceProcessor extends TargetElementProcessor<CtLoop> {
 
 	private Logger logger = Logger.getLogger(LoopExpressionFixSpaceProcessor.class.getName());
 	

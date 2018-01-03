@@ -19,7 +19,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.MapList;
@@ -48,7 +48,7 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
-	public ExpressionTypeIngredientSpace(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
+	public ExpressionTypeIngredientSpace(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super(processors);
 	}
 
@@ -60,7 +60,7 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 		for (CtType<?> classToProcess : affected) {
 
 			List<CtCodeElement> ingredients = this.ingredientProcessor.createFixSpace(classToProcess);
-			AbstractFixSpaceProcessor.mustClone = true;
+			TargetElementProcessor.mustClone = true;
 
 			for (CtCodeElement originalIngredient : ingredients) {
 				String keyLocation = mapKey(originalIngredient);

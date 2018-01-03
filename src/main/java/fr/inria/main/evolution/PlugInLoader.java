@@ -14,7 +14,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.LocalIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.PackageBasicFixSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 
 /**
@@ -108,7 +108,7 @@ public class PlugInLoader {
 		return operatorSpace;
 	}
 
-	public static IngredientSpace loadIngredientSpace(List<AbstractFixSpaceProcessor<?>> ingredientProcessors)
+	public static IngredientSpace loadIngredientSpace(List<TargetElementProcessor<?>> ingredientProcessors)
 			throws JSAPException, Exception {
 		// The ingredients for build the patches
 		String scope = ConfigurationProperties.properties.getProperty("scope");

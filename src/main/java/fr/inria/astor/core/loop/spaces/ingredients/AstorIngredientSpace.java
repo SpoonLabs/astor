@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.manipulation.filters.AbstractFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtType;
 
@@ -43,7 +43,7 @@ public abstract class AstorIngredientSpace<Q extends Object, K extends Object, I
 	 *            processor such as @link{InvocationFixSpaceProcessor}
 	 * @throws JSAPException
 	 */
-	public AstorIngredientSpace(AbstractFixSpaceProcessor<?> processor) throws JSAPException {
+	public AstorIngredientSpace(TargetElementProcessor<?> processor) throws JSAPException {
 		super();
 		ingredientProcessor = new IngredientProcessor<Q, I>(processor);
 	}
@@ -53,7 +53,7 @@ public abstract class AstorIngredientSpace<Q extends Object, K extends Object, I
 	 * @param processors
 	 * @throws JSAPException
 	 */
-	public AstorIngredientSpace(List<AbstractFixSpaceProcessor<?>> processors) throws JSAPException {
+	public AstorIngredientSpace(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super();
 		ingredientProcessor = new IngredientProcessor<Q, I>(processors);
 	}
@@ -70,7 +70,7 @@ public abstract class AstorIngredientSpace<Q extends Object, K extends Object, I
 	public void createFixSpaceFromAClass2(Q element, CtType root) {
 		K key = mapKey(element);
 		List<I> ingredientsToProcess = this.ingredientProcessor.createFixSpace(root);
-		AbstractFixSpaceProcessor.mustClone = true;
+		TargetElementProcessor.mustClone = true;
 		if (getFixSpace().containsKey(key)) {
 			getFixSpace().get(key).addAll(ingredientsToProcess);
 		} else {

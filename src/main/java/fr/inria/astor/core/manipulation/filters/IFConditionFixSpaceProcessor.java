@@ -8,7 +8,7 @@ import spoon.reflect.code.CtIf;
  * @author Matias Martinez,  matias.martinez@inria.fr
  *
  */
-public class IFConditionFixSpaceProcessor extends AbstractFixSpaceProcessor<CtIf>  {
+public class IFConditionFixSpaceProcessor extends TargetElementProcessor<CtIf>  {
 
 	private Logger logger = Logger.getLogger(IFConditionFixSpaceProcessor.class.getName());
 

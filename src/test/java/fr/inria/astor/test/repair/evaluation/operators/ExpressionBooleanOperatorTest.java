@@ -433,7 +433,8 @@ public class ExpressionBooleanOperatorTest {
 				"target/classes/", "-bintestfolder", "target/test-classes/", "-flthreshold", "0.1", "-loglevel",
 				"DEBUG", "-scope", ExpressionTypeIngredientSpace.class.getCanonicalName(), "-customop",
 				"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator", "-parameters",
-				"ingredientprocessor:fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:"
+				ExtensionPoints.INGREDIENT_PROCESSOR.identifier
+						+ ":fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:"
 						+ "ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation:"
 						+ "cleantemplates:true", };
 		AstorMain main1 = new AstorMain();
