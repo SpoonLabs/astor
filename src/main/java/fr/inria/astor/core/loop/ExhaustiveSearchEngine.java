@@ -70,14 +70,16 @@ public class ExhaustiveSearchEngine extends AstorCoreEngine {
 
 					boolean solution = processCreatedVariant(solutionVariant, generationsExecuted);
 
+					// We undo the operator (for try the next one)
+					undoOperationToSpoonElement(pointOperation);
+					
 					if (solution) {
 						this.solutions.add(solutionVariant);
 						if (ConfigurationProperties.getPropertyBool("stopfirst"))
 							return;
 					}
 
-					// We undo the operator (for try the next one)
-					undoOperationToSpoonElement(pointOperation);
+					
 
 					if (!belowMaxTime(dateInitEvolution, maxMinutes)) {
 						log.debug("Max time reached");
