@@ -56,14 +56,14 @@ public class PatchDiffCalculator {
 					return null;
 				}
 
-				String diff = getDiff(foriginal, ffixed);
+				String diff = getDiff(foriginal, ffixed, fileName);
 				diffResults += diff + '\n';
 			}
 		}
 		return diffResults;
 	}
 
-	public String getDiff(File original, File newvariant) {
+	public String getDiff(File original, File newvariant, String fileName) {
 
 		try {
 			String line = "";
@@ -76,7 +76,10 @@ public class PatchDiffCalculator {
 
 			try {
 				// Set up the timezone
-				p_stdin.write("diff -w -b -u " + original.getAbsolutePath() + " " + newvariant.getAbsolutePath());
+				String command = "diff -w -b -u " + " --label=" + fileName + " --label=" + fileName + " "
+						+ original.getAbsolutePath() + " " + newvariant.getAbsolutePath();
+				log.debug("diff command : "+command);
+				p_stdin.write(command);
 				p_stdin.newLine();
 				p_stdin.flush();
 
@@ -94,22 +97,35 @@ public class PatchDiffCalculator {
 			InputStream stderr = process.getErrorStream();
 			InputStream stdout = process.getInputStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
-			String dd = "";
-			while ((line = reader.readLine()) != null) {
 
-				if (line.startsWith("---") || line.startsWith("+++"))
-					dd += line.split("2017-")[0] + "\n";
-				else
-					dd += line + "\n";
-
-			}
+			BufferedReader readerE = new BufferedReader(new InputStreamReader(stderr));
+			
+			String out = readBuffer(reader);
+			String outerror = readBuffer(readerE);
+			if(!outerror.trim().isEmpty())
+				log.error("Error reading diff: "+outerror);
+				
 			process.destroyForcibly();
-			return dd;
+			return out;
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error(e);
 		}
 		return null;
+	}
+
+	private String readBuffer(BufferedReader reader) throws IOException {
+		String line;
+		String dd = "";
+		while ((line = reader.readLine()) != null) {
+
+			if (line.startsWith("---") || line.startsWith("+++"))
+				dd += line.split("2017-")[0] + "\n";
+			else
+				dd += line + "\n";
+
+		}
+		return dd;
 	}
 
 }
