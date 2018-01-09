@@ -18,6 +18,8 @@ Matias Martinez, Martin Monperrus, "[ASTOR: A Program Repair Library for Java](h
      doi = {10.1145/2931037.2948705},
     }
 
+In addition, you can cite [ASTOR: Evolutionary Automatic Software Repair for Java (Arxiv 1410.6651)](https://arxiv.org/abs/1410.6651)
+
 Execution
 -------
 
