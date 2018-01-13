@@ -9,13 +9,14 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
+import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
+
 /**
  * 
  * @author Matias Martinez
@@ -25,19 +26,19 @@ public class PatchJSONStandarOutput implements OutputResults {
 
 	private static Logger log = Logger.getLogger(Stats.class.getName());
 
-	
 	@SuppressWarnings("unchecked")
-	public Object produceOutput(List<PatchStat> statsForPatches,String output) {
+	public Object produceOutput(List<PatchStat> statsForPatches, Map<GeneralStatEnum, Object> generalStats,
+			String output) {
 
 		JSONObject statsjsonRoot = new JSONObject();
 		JSONArray patchlistJson = new JSONArray();
 		statsjsonRoot.put("patches", patchlistJson);
 
-	//TODO	
-	//	for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
-	//		statsjsonRoot.put(generalStat.name(), this.getGeneralStats().get(generalStat));
-	//	}
-
+		// TODO
+		// for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
+		// statsjsonRoot.put(generalStat.name(),
+		// this.getGeneralStats().get(generalStat));
+		// }
 
 		for (PatchStat patchStat : statsForPatches) {
 
@@ -86,5 +87,5 @@ public class PatchJSONStandarOutput implements OutputResults {
 
 		return null;
 	}
-	
+
 }

@@ -91,15 +91,15 @@ public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
 	}
 
 	@Override
-	public void showResults(List<PatchStat> patchInfo) {
-		super.showResults(patchInfo);
+	public void printFinalStatus() {
+		super.printFinalStatus();
 		if (ConfigurationProperties.getPropertyBool("logsattemps")) {
 
 			if (this.ingredientSearchStrategy != null
 					&& this.ingredientSearchStrategy.getIngredientSpace() instanceof ExpressionTypeIngredientSpace) {
 				ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace) this.ingredientSearchStrategy
 						.getIngredientSpace();
-				log.info("Total mod points: "+this.variants.get(0).getModificationPoints().size());
+				log.info("Total mod points: " + this.variants.get(0).getModificationPoints().size());
 				space.toJSON(this.getProjectFacade().getProperties().getWorkingDirForSource());
 				Stats.currentStat.getIngredientsStats().toJSON(
 						this.getProjectFacade().getProperties().getWorkingDirRoot(),

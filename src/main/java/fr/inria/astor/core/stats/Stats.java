@@ -246,53 +246,5 @@ public class Stats {
 		return patches;
 	}
 
-	public String statsToString(List<PatchStat> statsForPatches) {
-
-		//List<PatchStat> statsForPatches = this.getStatsOfPatches();
-		StringBuffer buff = new StringBuffer();
-		buff.append(System.getProperty("line.separator"));
-
-		for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
-			buff.append(generalStat.name());
-			buff.append("=");
-			buff.append(this.getGeneralStats().get(generalStat));
-			buff.append(System.getProperty("line.separator"));
-		}
-
-		// Stats of patches
-		for (PatchStat patchStat : statsForPatches) {
-
-			Map<PatchStatEnum, Object> stats = patchStat.getStats();
-			for (PatchStatEnum statKey : PatchStatEnum.values()) {
-				if (statKey.equals(PatchStatEnum.HUNKS)) {
-					List<PatchHunkStats> hunks = (List<PatchHunkStats>) stats.get(statKey);
-					// Print the properties of a Patch hunk
-					int i = 0;
-					for (PatchHunkStats patchHunkStats : hunks) {
-						Map<HunkStatEnum, Object> statshunk = patchHunkStats.getStats();
-						buff.append("--Patch Hunk #" + (++i));
-						for (HunkStatEnum hs : HunkStatEnum.values()) {
-
-							buff.append(System.getProperty("line.separator"));
-							buff.append(hs.name());
-							buff.append("=");
-							buff.append(statshunk.get(hs));
-							buff.append(System.getProperty("line.separator"));
-						}
-					}
-
-					buff.append(System.getProperty("line.separator"));
-				} else {
-					buff.append(statKey.name());
-					buff.append("=");
-					buff.append(stats.get(statKey));
-					buff.append(System.getProperty("line.separator"));
-				}
-
-			}
-
-		}
-		return buff.toString();
-	}
 
 }

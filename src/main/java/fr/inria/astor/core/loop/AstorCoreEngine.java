@@ -123,7 +123,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	private int nrGenerationWithoutModificatedVariant = 0;
 
 	// Output
-	protected OutputResults outputResults = null;
+	protected List<OutputResults> outputResults = null;
 
 	// Flag, output status
 	protected AstorOutputStatus outputStatus = null;
@@ -223,16 +223,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		if (!solutions.isEmpty()) {
 			patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted, dateInitEvolution);
 		}
-		this.showResults(patchInfo);
-		log.info(this.currentStat.statsToString(patchInfo));
 
-		// this.showResults();
 		String output = this.projectFacade.getProperties().getWorkingDirRoot();
 
-		// Save into JSON
-		this.getOutputResults().produceOutput(patchInfo, output);
-		// this.currentStat.statsToJSON(output);
-	};
+		// Reporting results
+		for (OutputResults out : this.getOutputResults()) {
+			out.produceOutput(patchInfo, this.currentStat.getGeneralStats(), output);
+		}
+	}
 
 	protected void computePatchDiff(List<ProgramVariant> solutions) {
 
@@ -253,12 +251,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	/**
-	 * Sorts patches
+	 * Sorts patches according to a criterion passed via Extension point.
 	 */
 	public void sortPatches() {
 		if (!getSolutions().isEmpty() && this.getPatchSortCriterion() != null) {
 			this.solutions = this.getPatchSortCriterion().priorize(getSolutions());
-
 		}
 	}
 
@@ -281,11 +278,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 		log.debug("\nNumber suspicious:" + this.variants.size());
 
-	}
-
-	public void showResults(List<PatchStat> patchInfo) {
-
-		log.info(this.currentStat.statsToString(patchInfo));
 	}
 
 	/**
@@ -1245,11 +1237,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.outputStatus = outputStatus;
 	}
 
-	public OutputResults getOutputResults() {
+	public List<OutputResults> getOutputResults() {
 		return outputResults;
 	}
 
-	public void setOutputResults(OutputResults outputResults) {
+	public void setOutputResults(List<OutputResults> outputResults) {
 		this.outputResults = outputResults;
 	}
 

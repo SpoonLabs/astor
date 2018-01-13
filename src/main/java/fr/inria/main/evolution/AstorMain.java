@@ -34,6 +34,7 @@ import fr.inria.astor.core.loop.navigation.WeightRandomSuspiciousNavitation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.output.OutputResults;
 import fr.inria.astor.core.output.PatchJSONStandarOutput;
+import fr.inria.astor.core.output.StandardOutputReport;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -224,18 +225,27 @@ public class AstorMain extends AbstractMain {
 		}
 
 		/// Output
+		List<OutputResults> outputs = new ArrayList<>();
+		astorCore.setOutputResults(outputs);
+		
 		String outputproperty = ConfigurationProperties.getProperty("outputresults");
 		if (outputproperty != null && !outputproperty.trim().isEmpty()) {
-			OutputResults outputresult = null;
+			String[] outprocess = outputproperty.split("|");
 			try {
-				outputresult = (OutputResults) PlugInLoader.loadPlugin(ExtensionPoints.OUTPUT_RESULTS);
-				astorCore.setOutputResults(outputresult);
+
+				for (String outp : outprocess) {
+					OutputResults outputresult = (OutputResults) PlugInLoader.loadPlugin(outp,
+							ExtensionPoints.OUTPUT_RESULTS._class);
+					outputs.add(outputresult);
+				}
 				return true;
 			} catch (Exception e) {
 				log.error(e);
 			}
+
 		} else {
-			astorCore.setOutputResults(new PatchJSONStandarOutput());
+			outputs.add(new StandardOutputReport());
+			outputs.add(new PatchJSONStandarOutput());
 		}
 
 		return false;

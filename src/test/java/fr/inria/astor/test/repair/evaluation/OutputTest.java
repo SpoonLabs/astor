@@ -19,6 +19,8 @@ import org.junit.Test;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.output.OutputResults;
+import fr.inria.astor.core.output.PatchJSONStandarOutput;
+import fr.inria.astor.core.output.StandardOutputReport;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
@@ -112,11 +114,11 @@ public class OutputTest {
 
 		assertNotNull(stats);
 
-		OutputResults outResults = main1.getEngine().getOutputResults();
-		
-		//assertNotNull(outResults.produceOutput(statsForPatches, output));
+		// OutputResults outResults = main1.getEngine().getOutputResults();
 
-		//assertTrue(stats.getStatsOfPatches().size() > 0);
+		// assertNotNull(outResults.produceOutput(statsForPatches, output));
+
+		// assertTrue(stats.getStatsOfPatches().size() > 0);
 
 		String jsonpath = main1.getEngine().getProjectFacade().getProperties().getWorkingDirRoot() + File.separator
 				+ ConfigurationProperties.getProperty("jsonoutputname") + ".json";
@@ -157,6 +159,26 @@ public class OutputTest {
 		assertEquals("return solve(f, min, max)", hunkStats.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
 
 		assertEquals("return solve(min, max)", hunkob.get(HunkStatEnum.ORIGINAL_CODE.name()));
+
+	}
+
+	@Test
+	public void testExtPoint2Outputs() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = MathTests.getMath70Command();
+		cs.command.put("-stopfirst", "false");
+		cs.command.put("-outputresult",
+				PatchJSONStandarOutput.class.getCanonicalName() + "|" + StandardOutputReport.class.getCanonicalName());
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+
+		assertEquals(2, main1.getEngine().getOutputResults().size());
 
 	}
 
