@@ -29,7 +29,7 @@ import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.output.OutputResults;
+import fr.inria.astor.core.output.ReportResults;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -237,7 +237,7 @@ public abstract class AbstractMain {
 
 		options.addOption("outputresult", true,
 				"(Optional) Class name for manipulating the output. It must extend from "
-						+ OutputResults.class.getCanonicalName() + " The classes must be included in the classpath.");
+						+ ReportResults.class.getCanonicalName() + " The classes must be included in the classpath.");
 
 		options.addOption("populationcontroller", true,
 				"(Optional) class name that controls the population evolution. It must extend from  "

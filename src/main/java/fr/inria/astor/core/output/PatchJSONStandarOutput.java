@@ -22,7 +22,7 @@ import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
  * @author Matias Martinez
  *
  */
-public class PatchJSONStandarOutput implements OutputResults {
+public class PatchJSONStandarOutput implements ReportResults {
 
 	private static Logger log = Logger.getLogger(Stats.class.getName());
 

@@ -43,7 +43,7 @@ import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
-import fr.inria.astor.core.output.OutputResults;
+import fr.inria.astor.core.output.ReportResults;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.PatchStat;
@@ -123,7 +123,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	private int nrGenerationWithoutModificatedVariant = 0;
 
 	// Output
-	protected List<OutputResults> outputResults = null;
+	protected List<ReportResults> outputResults = null;
 
 	// Flag, output status
 	protected AstorOutputStatus outputStatus = null;
@@ -227,7 +227,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		String output = this.projectFacade.getProperties().getWorkingDirRoot();
 
 		// Reporting results
-		for (OutputResults out : this.getOutputResults()) {
+		for (ReportResults out : this.getOutputResults()) {
 			out.produceOutput(patchInfo, this.currentStat.getGeneralStats(), output);
 		}
 	}
@@ -1237,11 +1237,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.outputStatus = outputStatus;
 	}
 
-	public List<OutputResults> getOutputResults() {
+	public List<ReportResults> getOutputResults() {
 		return outputResults;
 	}
 
-	public void setOutputResults(List<OutputResults> outputResults) {
+	public void setOutputResults(List<ReportResults> outputResults) {
 		this.outputResults = outputResults;
 	}
 

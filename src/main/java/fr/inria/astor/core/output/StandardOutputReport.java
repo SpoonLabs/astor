@@ -14,7 +14,7 @@ import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
  * @author Matias Martinez
  *
  */
-public class StandardOutputReport implements OutputResults {
+public class StandardOutputReport implements ReportResults {
 
 	@Override
 	public Object produceOutput(List<PatchStat> statsForPatches, Map<GeneralStatEnum, Object> generalStats,

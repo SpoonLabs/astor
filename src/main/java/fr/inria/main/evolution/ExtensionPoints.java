@@ -12,7 +12,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTra
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import fr.inria.astor.core.output.OutputResults;
+import fr.inria.astor.core.output.ReportResults;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
 
 /**
@@ -35,7 +35,7 @@ public enum ExtensionPoints {
 	INGREDIENT_TRANSFORM_STRATEGY("ingredienttransformstrategy", IngredientTransformationStrategy.class),//
 	INGREDIENT_PROCESSOR("targetelementprocessor",TargetElementProcessor.class),
 	CLONE_GRANULARITY("clonegranularity",Class.class),
-	OUTPUT_RESULTS("outputresult",OutputResults.class),
+	OUTPUT_RESULTS("outputresult",ReportResults.class),
 	SUSPICIOUS_NAVIGATION("modificationpointnavigation", SuspiciousNavigationStrategy.class);
 	
 	public String identifier;

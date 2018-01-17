@@ -32,7 +32,7 @@ import fr.inria.astor.core.loop.navigation.SuspiciousNavigationStrategy;
 import fr.inria.astor.core.loop.navigation.UniformRandomSuspiciousNavigation;
 import fr.inria.astor.core.loop.navigation.WeightRandomSuspiciousNavitation;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.output.OutputResults;
+import fr.inria.astor.core.output.ReportResults;
 import fr.inria.astor.core.output.PatchJSONStandarOutput;
 import fr.inria.astor.core.output.StandardOutputReport;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -225,7 +225,7 @@ public class AstorMain extends AbstractMain {
 		}
 
 		/// Output
-		List<OutputResults> outputs = new ArrayList<>();
+		List<ReportResults> outputs = new ArrayList<>();
 		astorCore.setOutputResults(outputs);
 		
 		String outputproperty = ConfigurationProperties.getProperty("outputresults");
@@ -234,7 +234,7 @@ public class AstorMain extends AbstractMain {
 			try {
 
 				for (String outp : outprocess) {
-					OutputResults outputresult = (OutputResults) PlugInLoader.loadPlugin(outp,
+					ReportResults outputresult = (ReportResults) PlugInLoader.loadPlugin(outp,
 							ExtensionPoints.OUTPUT_RESULTS._class);
 					outputs.add(outputresult);
 				}

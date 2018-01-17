@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.AstorCoreEngine;
-import fr.inria.astor.core.output.OutputResults;
+import fr.inria.astor.core.output.ReportResults;
 import fr.inria.astor.core.output.PatchJSONStandarOutput;
 import fr.inria.astor.core.output.StandardOutputReport;
 import fr.inria.astor.core.setup.ConfigurationProperties;
