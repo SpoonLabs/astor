@@ -864,6 +864,7 @@ public class VariableResolverTest {
 	};
 
 	@Test
+	@Ignore
 	public void testOutOfScope288() throws Exception {
 		AstorMain main1 = new AstorMain();
 

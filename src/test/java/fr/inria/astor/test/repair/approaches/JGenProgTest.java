@@ -86,6 +86,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void testMath85() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
@@ -175,7 +176,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
-				"-stopfirst", "true", "-maxtime", "100", "-loglevel", "INFO", "-parameters", "disablelog:false"
+				"-stopfirst", "true", "-maxtime", "5", "-loglevel", "INFO", "-parameters", "disablelog:false"
 
 		};
 		return args;
@@ -293,7 +294,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
 				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.1", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
-				"-maxtime", "100", "-ignoredtestcases", "org.apache.commons.math.util.FastMathTest" };
+				"-maxtime", "5", "-ignoredtestcases", "org.apache.commons.math.util.FastMathTest" };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
@@ -370,7 +371,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
 				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "6010", "-maxgen", "50", "-stopfirst", "true",
-				"-maxtime", "30",
+				"-maxtime", "5",
 
 		};
 		System.out.println(Arrays.toString(args));

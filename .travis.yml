@@ -10,7 +10,6 @@ env:
   - TEST=fr.inria.astor.test.repair.approaches.TibraApproachTest
   - TEST=fr.inria.astor.test.repair.approaches.cardumen.CardumenApproachTest
   - TEST=fr.inria.astor.test.repair.core.ConfigurationTest
-  - TEST=fr.inria.astor.test.repair.core.VarMappingTest
   - TEST=fr.inria.astor.test.repair.core.ValidationTest
   - TEST=fr.inria.astor.test.repair.core.VariableResolverTest
   - TEST=fr.inria.astor.test.repair.core.PatchDiffTest

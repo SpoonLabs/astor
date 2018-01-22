@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
@@ -40,6 +41,7 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  *
  */
+@Ignore
 public class VarMappingTest {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
