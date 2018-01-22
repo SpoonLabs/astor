@@ -31,10 +31,10 @@ public class CocoSpoonEngineFaultLocalizer {
 	protected Map<SourceLocation, List<TestResult>> countPerSourceLocation;
 
 	private final Metric metric;
-	private int nbSucceedTest;
-	private int nbFailingTest;
-	private Map<String, Boolean> resultsPerNameOfTest ;
-	private List<StatementSourceLocation> statements;
+	protected int nbSucceedTest;
+	protected int nbFailingTest;
+	protected Map<String, Boolean> resultsPerNameOfTest ;
+	protected List<StatementSourceLocation> statements;
 
 	public CocoSpoonEngineFaultLocalizer(Metric metric) {
 		this.metric = metric;
