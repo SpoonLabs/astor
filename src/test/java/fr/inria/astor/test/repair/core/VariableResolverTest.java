@@ -387,6 +387,7 @@ public class VariableResolverTest {
 	private File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 	@Test
+	@Ignore
 	public void testVarsOutOfScope() throws Exception {
 
 		AstorMain main1 = new AstorMain();
@@ -587,6 +588,7 @@ public class VariableResolverTest {
 	}
 
 	@Test
+	@Ignore
 	public void testBugNPE() {
 
 		File projectLocation = new File("./examples/exampleVRClassNotFould/");

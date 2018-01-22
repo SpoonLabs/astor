@@ -19,7 +19,6 @@ env:
   - TEST=fr.inria.astor.test.repair.core.OutputTest
   - TEST=fr.inria.astor.test.repair.core.ValidationTest
   - TEST=fr.inria.astor.test.repair.regression.RepairnatorTest
-  - TEST=fr.inria.astor.test.repair.evaluation.regression.EvoSuiteParticularClassesTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.LangTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngScopeTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientProcessorTest
@@ -35,8 +34,8 @@ env:
     secure: KAXmlzbC3aTis3In/HnYpLHgnWmcct9ou7cHTGZZhv+8Tu7eta7HPHBQBju+qD4WkAA8PqyjEhOBHHd7GoSVtUY0nHqPRhjKjeQAPHDgA+kvWVVPyzSEar/gCbFqyzf6MhTs5Feq0PkljmfqF/0Omlps06B7qDVmYaALSFIvgrg=
 script:
 - mvn clean
-- mvn test -DskipTests
-- mvn surefire:test -Dtest=$TEST
+- mvn test -DskipTests -DfailIfNoTests=false
+- mvn surefire:test -DfailIfNoTests=false -Dtest=$TEST 
 sudo: required
 before_script:
  - "echo Java_OPTS $JAVA_OPTS"
