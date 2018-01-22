@@ -2,20 +2,34 @@ language: java
 install: "./.travis_install.sh"
 env:
   matrix:
-  - TEST=fr.inria.astor.test.repair.evaluation.IntroClassTest
-  - TEST=fr.inria.astor.test.repair.evaluation.JGenProgTest
-  - TEST=fr.inria.astor.test.repair.evaluation.PatchValidationTest
-  - TEST=fr.inria.astor.test.repair.evaluation.jKaliTest
-  - TEST=fr.inria.astor.test.repair.evaluation.MutRepairTest
-  - TEST=fr.inria.astor.test.repair.evaluation.EvoSuiteGenerationTest
-  - TEST=fr.inria.astor.test.repair.evaluation.RepairOperatorTest
-  - TEST=fr.inria.astor.test.repair.evaluation.ValidationTest
-  - TEST=fr.inria.astor.test.repair.evaluation.IngredientSpaceTest
+  - TEST=fr.inria.astor.test.repair.approaches.jKaliTest
+  - TEST=fr.inria.astor.test.repair.approaches.MutRepairTest
+  - TEST=fr.inria.astor.test.repair.approaches.JGenProgTest
+  - TEST=fr.inria.astor.test.repair.approaches.IntroClassTest
+  - TEST=fr.inria.astor.test.repair.approaches.EvoSuiteGenerationTest
+  - TEST=fr.inria.astor.test.repair.approaches.TibraApproachTest
+  - TEST=fr.inria.astor.test.repair.approaches.cardumen.CardumenApproachTest
+  - TEST=fr.inria.astor.test.repair.core.ConfigurationTest
+  - TEST=fr.inria.astor.test.repair.core.VarMappingTest
+  - TEST=fr.inria.astor.test.repair.core.ValidationTest
+  - TEST=fr.inria.astor.test.repair.core.VariableResolverTest
+  - TEST=fr.inria.astor.test.repair.core.PatchDiffTest
+  - TEST=fr.inria.astor.test.repair.core.PlugInLoaderTest
+  - TEST=fr.inria.astor.test.repair.core.PatchValidationTest
+  - TEST=fr.inria.astor.test.repair.core.OutputTest
+  - TEST=fr.inria.astor.test.repair.core.ValidationTest
+  - TEST=fr.inria.astor.test.repair.regression.RepairnatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.EvoSuiteParticularClassesTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.LangTest
-  - TEST=fr.inria.astor.test.repair.evaluation.operators.CardumenApproachTest
-  - TEST=fr.inria.astor.test.repair.evaluation.OutputTest
-  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.SelectionOperatorTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngScopeTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientProcessorTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.patchsorting.PatchPriorizationTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientSpaceTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.SelectionOperatorTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.RepairOperatorTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.suspiciousnavigation.SuspiciousNavigationStrategyTest
+  - TEST=fr.inria.astor.util.CommandSummaryTest
+  
   
   global:
     secure: KAXmlzbC3aTis3In/HnYpLHgnWmcct9ou7cHTGZZhv+8Tu7eta7HPHBQBju+qD4WkAA8PqyjEhOBHHd7GoSVtUY0nHqPRhjKjeQAPHDgA+kvWVVPyzSEar/gCbFqyzf6MhTs5Feq0PkljmfqF/0Omlps06B7qDVmYaALSFIvgrg=
