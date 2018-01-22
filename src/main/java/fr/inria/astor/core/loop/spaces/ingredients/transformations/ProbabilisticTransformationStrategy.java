@@ -218,4 +218,12 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 
 	}
 
+	public NGramManager getNgramManager() {
+		return ngramManager;
+	}
+
+	public void setNgramManager(NGramManager ngramManager) {
+		this.ngramManager = ngramManager;
+	}
+
 }

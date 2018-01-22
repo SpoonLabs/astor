@@ -1,4 +1,4 @@
-package fr.inria.astor.test.repair.evaluation.extensionpoints;
+package fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -23,7 +24,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtClassIngred
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
-import fr.inria.astor.test.repair.evaluation.dpl.DeepRepairTest;
+import fr.inria.astor.test.repair.evaluation.extensionpoints.deep.DeepRepairTest;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
@@ -36,7 +37,8 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class IngredientSpaceTest {
+@Ignore
+public class IngredientSpaceWithCTElementsTest {
 
 	JGenProg engine = null;
 	protected Logger log = Logger.getLogger(this.getClass().getName());
