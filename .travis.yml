@@ -9,6 +9,7 @@ env:
   - TEST=fr.inria.astor.test.repair.approaches.EvoSuiteGenerationTest
   - TEST=fr.inria.astor.test.repair.approaches.TibraApproachTest
   - TEST=fr.inria.astor.test.repair.approaches.cardumen.CardumenApproachTest
+  - TEST=fr.inria.astor.test.repair.approaches.JGenProgEvolutionaryTest
   - TEST=fr.inria.astor.test.repair.core.ConfigurationTest
   - TEST=fr.inria.astor.test.repair.core.ValidationTest
   - TEST=fr.inria.astor.test.repair.core.VariableResolverTest
