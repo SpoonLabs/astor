@@ -218,7 +218,6 @@ public class AstorMain extends AbstractMain {
 				priorizStrategy = (SolutionVariantSortCriterion) PlugInLoader
 						.loadPlugin(ExtensionPoints.SOLUTION_SORT_CRITERION);
 				astorCore.setPatchSortCriterion(priorizStrategy);
-				return true;
 			} catch (Exception e) {
 				log.error(e);
 			}
@@ -238,7 +237,6 @@ public class AstorMain extends AbstractMain {
 							ExtensionPoints.OUTPUT_RESULTS._class);
 					outputs.add(outputresult);
 				}
-				return true;
 			} catch (Exception e) {
 				log.error(e);
 			}
@@ -248,7 +246,7 @@ public class AstorMain extends AbstractMain {
 			outputs.add(new PatchJSONStandarOutput());
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
