@@ -690,16 +690,21 @@ public abstract class AbstractMain {
 
 	/**
 	 * Compile the original code
+	 * 
+	 * @param properties
 	 */
-	protected void compileProject() {
+	protected void compileProject(ProjectConfiguration properties) {
 		final Launcher launcher = new Launcher();
-		for (String s : projectFacade.getProperties().getOriginalDirSrc())
+		for (String s : properties.getOriginalDirSrc())
 			launcher.addInputResource(s);
 
-		for (String s : projectFacade.getProperties().getTestDirSrc())
+		for (String s : properties.getTestDirSrc())
 			launcher.addInputResource(s);
 
-		launcher.setBinaryOutputDirectory(projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT));
+		String binoutput = properties.getWorkingDirForBytecode() + File.separator + (ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		launcher.setBinaryOutputDirectory(
+				binoutput);
+		
 
 		log.debug("Compiling original code from " + launcher.getModelBuilder().getInputSources() + " saved in "
 				+ launcher.getModelBuilder().getBinaryOutputDirectory());
@@ -707,10 +712,9 @@ public abstract class AbstractMain {
 		launcher.getEnvironment().setPreserveLineNumbers(true);
 		launcher.getEnvironment().setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 		launcher.getEnvironment().setShouldCompile(true);
+		launcher.getEnvironment().setSourceClasspath(properties.getDependenciesString().split(File.pathSeparator));
 		launcher.buildModel();
-		launcher.getEnvironment()
-				.setSourceClasspath(projectFacade.getProperties().getDependenciesString().split(File.pathSeparator));
-
+		
 		launcher.getModelBuilder().compile();
 
 	}
@@ -744,7 +748,7 @@ public abstract class AbstractMain {
 		}
 
 		if (ConfigurationProperties.getPropertyBool("autocompile")) {
-			compileProject();
+			compileProject(properties);
 		} else {
 			String originalBin = determineBinFolder(originalProjectRoot,
 					ConfigurationProperties.getProperty("binjavafolder"));
