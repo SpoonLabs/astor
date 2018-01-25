@@ -106,6 +106,11 @@ public class ProjectRepairFacade {
 	}
 
 	public boolean copyOriginalBin(String inDirs, String mutatorIdentifier) throws IOException {
+		if(inDirs == null){
+			logger.debug("Original Bin folder does not exist");
+			return false;
+		}
+		
 		boolean copied = false;
 		for (String inDir : inDirs.split(File.pathSeparator)) {
 			if (inDir != null) {
