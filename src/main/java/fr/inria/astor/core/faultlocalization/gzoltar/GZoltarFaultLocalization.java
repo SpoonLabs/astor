@@ -139,7 +139,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		ConfigurationProperties.properties.setProperty("ignoredTestCases", ignoredTestCases);
 	}
 
-	protected FaultLocalizationResult searchSuspicious(String location, List<String> testsToExecute,
+	protected FaultLocalizationResult searchSuspicious(String locationBytecode, List<String> testsToExecute,
 			List<String> toInstrument, Set<String> cp, String srcFolder) throws Exception {
 
 		List<String> failingTestCases = new ArrayList<String>();
@@ -152,11 +152,11 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		// Example: GZoltar gz = new
 		// GZoltar("C:\\Personal\\develop\\workspaceEvolution\\testProject\\target\\classes");
 
-		File projLocationFile = new File(ConfigurationProperties.getProperty("location"));
-		String projLocation = projLocationFile.getAbsolutePath();
-		logger.debug("Gzoltar run over: " + projLocation + " , does it exist? " + projLocationFile.exists());
+		File projLocationFile = new File(locationBytecode + File.separator);
+		String projLocationPath = projLocationFile.getAbsolutePath();
+		logger.debug("Gzoltar run over: " + projLocationPath + " , does it exist? " + projLocationFile.exists());
 
-		GZoltar gz = new GZoltar(projLocation);
+		GZoltar gz = new GZoltar(projLocationPath + File.separator);
 
 		// 2. Add Package/Class names to instrument
 		// 3. Add Package/Test Case/Test Suite names to execute
@@ -172,8 +172,26 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			gz.addTestToExecute(test);
 			gz.addClassNotToInstrument(test);
 		}
-		gz.addTestPackageNotToExecute("junit.framework");
-		gz.addPackageNotToInstrument("junit.framework");
+
+		String testToAvoid = ConfigurationProperties.getProperty("gzoltartestpackagetoexclude");
+		if (testToAvoid != null) {
+			String[] testtoavoidarray = testToAvoid.split("_");
+			for (String test : testtoavoidarray) {
+				gz.addTestPackageNotToExecute(test);
+			}
+		}
+
+		String packagetonotinstrument = ConfigurationProperties.getProperty("gzoltarpackagetonotinstrument");
+
+		if (packagetonotinstrument != null) {
+			String[] packages = packagetonotinstrument.split("_");
+			for (String p : packages) {
+				gz.addPackageNotToInstrument(p);
+
+			}
+
+		}
+
 		gz.run();
 		int[] sum = new int[2];
 		for (TestResult tr : gz.getTestResults()) {
@@ -185,6 +203,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			sum[1] += tr.wasSuccessful() ? 0 : 1;
 			if (!tr.wasSuccessful()) {
 				logger.info("Test failt: " + tr.getName());
+
 				failingTestCases.add(testName.split("\\#")[0]);
 			}
 		}

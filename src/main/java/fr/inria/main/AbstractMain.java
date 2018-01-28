@@ -37,6 +37,8 @@ import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
 import fr.inria.astor.util.TimeUtil;
 import spoon.Launcher;
+import spoon.OutputType;
+import spoon.SpoonModelBuilder.InputType;
 import spoon.reflect.factory.Factory;
 
 /**
@@ -714,8 +716,9 @@ public abstract class AbstractMain {
 		launcher.getEnvironment().setShouldCompile(true);
 		launcher.getEnvironment().setSourceClasspath(properties.getDependenciesString().split(File.pathSeparator));
 		launcher.buildModel();
-		
-		launcher.getModelBuilder().compile();
+		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
+		launcher.getModelBuilder().compile(InputType.CTTYPES);
+		//launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 
 	}
 
@@ -747,9 +750,9 @@ public abstract class AbstractMain {
 			properties.setDependencies(dependencies);
 		}
 
-		if (ConfigurationProperties.getPropertyBool("autocompile")) {
-			compileProject(properties);
-		} else {
+		if (!ConfigurationProperties.getPropertyBool("autocompile")) {
+	//		compileProject(properties);
+	//	} else {
 			String originalBin = determineBinFolder(originalProjectRoot,
 					ConfigurationProperties.getProperty("binjavafolder"));
 			properties.setOriginalAppBinDir(originalBin);

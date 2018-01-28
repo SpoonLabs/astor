@@ -63,9 +63,14 @@ public class AstorMain extends AbstractMain {
 		projectFacade = getProjectConfiguration(location, projectName, method, failingList, dependencies, true);
 
 		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
-
+	
 		projectFacade.setupWorkingDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
+		if (ConfigurationProperties.getPropertyBool("autocompile")) {
+			compileProject(projectFacade.getProperties());
+		}
+		
+		
 	}
 
 	/**
