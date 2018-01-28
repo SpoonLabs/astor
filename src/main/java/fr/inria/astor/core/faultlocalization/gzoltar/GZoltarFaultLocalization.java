@@ -204,7 +204,10 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			if (!tr.wasSuccessful()) {
 				logger.info("Test failt: " + tr.getName());
 
-				failingTestCases.add(testName.split("\\#")[0]);
+				String testCaseName = testName.split("\\#")[0];
+				if (!failingTestCases.contains(testCaseName)) {
+					failingTestCases.add(testCaseName);
+				}
 			}
 		}
 
