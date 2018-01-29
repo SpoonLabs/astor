@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.extensions.minimpact.validator.EvoSuiteValidationResult;
@@ -20,6 +21,7 @@ import fr.inria.main.evolution.AstorMain;
  * @author Matias Martinez
  *
  */
+@Ignore
 public class EvoSuiteDSETest {
 
 	

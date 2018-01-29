@@ -65,13 +65,14 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 				modifPointsAnalyzed++;
 
-				log.debug("location to modify: " + modifPoint);
+				log.info("\n MP ("+modifPointsAnalyzed+"/"+parentVariant.getModificationPoints().size()
+						+ ") location to modify: " + modifPoint);
 
 				// We create all operators to apply in the modifpoint
 				List<OperatorInstance> operatorInstances = createInstancesOfOperators(
 						(SuspiciousModificationPoint) modifPoint);
 
-				System.out.println("List of operators (" + operatorInstances.size() + ") : " + operatorInstances);
+				log.info("--- List of operators (" + operatorInstances.size() + ") : " + operatorInstances);
 
 				if (operatorInstances == null || operatorInstances.isEmpty())
 					continue;
@@ -115,7 +116,7 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 				}
 			}
 		}
-		System.out.println(
+		System.out.println("\nEND exhaustive search Summary:\n"+
 				"modpoint:" + modifPointsAnalyzed + ":all:" + totalmodfpoints + ":operators:" + operatorExecuted);
 
 	}

@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -22,6 +23,7 @@ import fr.inria.main.evolution.AstorMain;
  * @author Matias Martinez
  *
  */
+@Ignore
 public class MockitoTest {
 
 	

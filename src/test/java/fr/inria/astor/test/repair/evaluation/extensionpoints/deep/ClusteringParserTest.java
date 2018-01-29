@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.manipulation.sourcecode.ClusteringParser;
@@ -18,6 +19,7 @@ import fr.inria.astor.core.manipulation.sourcecode.ClusteringParser;
  * @author Matias Martinez
  *
  */
+@Ignore
 public class ClusteringParserTest {
 
 	@Test

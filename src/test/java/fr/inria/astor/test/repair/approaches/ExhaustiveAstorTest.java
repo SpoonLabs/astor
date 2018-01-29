@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.exhaustive.ExhausitiveCloneEngine;
@@ -91,6 +92,7 @@ public class ExhaustiveAstorTest  extends BaseEvolutionaryTest{
 	 */
 	@SuppressWarnings("rawtypes")
 	@Test
+	@Ignore
 	public void testExhaustiveCloneMath70LocalSolution() throws Exception {
 		
 		ClassLoader classLoader = getClass().getClassLoader();

@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -19,6 +20,7 @@ import fr.inria.main.evolution.AstorMain;
  * @author Matias Martinez
  *
  */
+@Ignore
 public class RegressionTest extends BaseEvolutionaryTest{
 
 	@Test

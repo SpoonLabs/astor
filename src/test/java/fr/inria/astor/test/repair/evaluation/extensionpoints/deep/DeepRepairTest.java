@@ -16,6 +16,7 @@ import java.util.Queue;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.deepRepepair.DeepRepairEngine;
@@ -46,6 +47,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
+@Ignore
 public class DeepRepairTest {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
