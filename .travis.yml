@@ -2,6 +2,7 @@ language: java
 install: "./.travis_install.sh"
 env:
   matrix:
+  - TEST=fr.inria.astor.test.repair.approaches.ExhaustiveAstorTest
   - TEST=fr.inria.astor.test.repair.approaches.jKaliTest
   - TEST=fr.inria.astor.test.repair.approaches.MutRepairTest
   - TEST=fr.inria.astor.test.repair.approaches.JGenProgTest
@@ -12,18 +13,19 @@ env:
   - TEST=fr.inria.astor.test.repair.approaches.JGenProgEvolutionaryTest
   - TEST=fr.inria.astor.test.repair.core.ConfigurationTest
   - TEST=fr.inria.astor.test.repair.core.ValidationTest
+  - TEST=fr.inria.astor.test.repair.core.StatsTest
   - TEST=fr.inria.astor.test.repair.core.VariableResolverTest
   - TEST=fr.inria.astor.test.repair.core.PatchDiffTest
   - TEST=fr.inria.astor.test.repair.core.PlugInLoaderTest
   - TEST=fr.inria.astor.test.repair.core.PatchValidationTest
   - TEST=fr.inria.astor.test.repair.core.OutputTest
   - TEST=fr.inria.astor.test.repair.core.ValidationTest
-  - TEST=fr.inria.astor.test.repair.regression.RepairnatorTest
+  - TEST=fr.inria.astor.test.repair.evaluation.regression.RepairnatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.LangTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngScopeTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientProcessorTest
-  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.patchsorting.PatchPriorizationTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientSpaceTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.patchsorting.PatchPriorizationTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.SelectionOperatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.RepairOperatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.suspiciousnavigation.SuspiciousNavigationStrategyTest
