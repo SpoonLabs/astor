@@ -53,6 +53,13 @@ public class LaucherJUnitProcess {
 
 		List<String> cls = new ArrayList<>(classesToExecute);
 
+		String newClasspath = classpath;
+		if(ConfigurationProperties.getPropertyBool("runexternalvalidator")){
+			newClasspath = (new File(ConfigurationProperties.getProperty("executorjar")).getAbsolutePath()) 
+					+ File.pathSeparator 
+					+ classpath;
+		}
+		
 		try {
 			File ftemp = null;
 			if (outputInFile)
@@ -63,7 +70,7 @@ public class LaucherJUnitProcess {
 			command.add(jvmPath);
 			command.add("-Xmx2048m");
 			command.add("-cp");
-			command.add(classpath);
+			command.add(newClasspath);
 			command.add(laucherClassName().getCanonicalName());
 			command.addAll(cls);
 
