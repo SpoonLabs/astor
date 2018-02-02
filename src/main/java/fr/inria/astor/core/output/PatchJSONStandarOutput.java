@@ -39,7 +39,7 @@ public class PatchJSONStandarOutput implements ReportResults {
 		statsjsonRoot.put("general", generalStatsjson);
 		JSONParser parser = new JSONParser();
 		for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
-			Object vStat = generalStats.get(generalStat);
+			Object vStat = generalStats.get(generalStat.toString());
 			if (vStat == null)
 				generalStatsjson.put(generalStat.name(), null);
 			else {
