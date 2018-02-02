@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.navigation.SuspiciousNavigationValues;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.CommandSummary;
@@ -72,9 +73,16 @@ public class SuspiciousNavigationStrategyTest {
 
 		ProgramVariant pv3 = main3.getEngine().getVariants().get(0);
 
-		List<ModificationPoint> mps3 = main3.getEngine().getSuspiciousNavigationStrategy()
+		List<ModificationPoint> mpsInOrder = main3.getEngine().getSuspiciousNavigationStrategy()
 				.getSortedModificationPointsList(pv3);
-		assertEquals(pv3.getModificationPoints(), mps3);
+		assertEquals(pv3.getModificationPoints(), mpsInOrder);
+
+		Double dmax = Double.MAX_VALUE;
+		for (ModificationPoint modificationPoint : mpsInOrder) {
+			SuspiciousModificationPoint smp = (SuspiciousModificationPoint) modificationPoint;
+			assertTrue(dmax >= smp.getSuspicious().getSuspiciousValue());
+			dmax = smp.getSuspicious().getSuspiciousValue();
+		}
 
 	}
 

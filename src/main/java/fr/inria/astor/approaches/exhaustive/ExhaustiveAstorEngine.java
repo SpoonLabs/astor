@@ -14,6 +14,7 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
+import fr.inria.astor.core.loop.navigation.InOrderSuspiciousNavigation;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
@@ -59,10 +60,8 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 		int totalmodfpoints = variants.get(0).getModificationPoints().size();
 		for (ProgramVariant parentVariant : variants) {
 
-			// We analyze each modifpoint of the variant i.e. suspicious
-			// statement
-			// TODO: let's be sure that is order by suspicousness
-			for (ModificationPoint modifPoint : parentVariant.getModificationPoints()) {
+			
+			for (ModificationPoint modifPoint : this.getSuspiciousNavigationStrategy().getSortedModificationPointsList(parentVariant)) {
 
 				modifPointsAnalyzed++;
 
@@ -206,6 +205,8 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 	public void loadExtensionPoints() throws Exception {
 		super.loadExtensionPoints();
 
+		this.setSuspiciousNavigationStrategy(new InOrderSuspiciousNavigation());
+		
 		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 
