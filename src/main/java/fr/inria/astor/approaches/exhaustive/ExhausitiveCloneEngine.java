@@ -45,8 +45,10 @@ public class ExhausitiveCloneEngine extends ExhaustiveAstorEngine {
 	}
 
 	@Override
-	public void createInstance(SuspiciousModificationPoint modificationPoint, List<OperatorInstance> ops,
+	public List<OperatorInstance> createInstance(SuspiciousModificationPoint modificationPoint,
 			AstorOperator astorOperator) {
+		
+		List<OperatorInstance> ops = new ArrayList<>();
 		log.debug("\n---------\n STEP 1:-----Find Ingredients------");
 		log.debug("\n->ModPoint: \n"+modificationPoint.getCodeElement());
 		
@@ -72,7 +74,7 @@ public class ExhausitiveCloneEngine extends ExhaustiveAstorEngine {
 		
 		if(ingredients == null || ingredients.isEmpty()){
 			log.debug("Any ingredient for mp "+ modificationPoint + " and op "+astorOperator);
-			return;
+			return ops;
 		}
 		
 		log.debug("\n************\n STEP 2:  Apply ingredients. Number of ingredients " + ingredients.size());
@@ -99,5 +101,6 @@ public class ExhausitiveCloneEngine extends ExhaustiveAstorEngine {
 				}
 			}
 		}
+		return ops;
 	}
 }

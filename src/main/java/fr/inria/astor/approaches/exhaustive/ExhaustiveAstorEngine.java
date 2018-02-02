@@ -60,8 +60,8 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 		int totalmodfpoints = variants.get(0).getModificationPoints().size();
 		for (ProgramVariant parentVariant : variants) {
 
-			
-			for (ModificationPoint modifPoint : this.getSuspiciousNavigationStrategy().getSortedModificationPointsList(parentVariant)) {
+			for (ModificationPoint modifPoint : this.getSuspiciousNavigationStrategy()
+					.getSortedModificationPointsList(parentVariant)) {
 
 				modifPointsAnalyzed++;
 
@@ -144,13 +144,17 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
 				log.debug("Applying operator " + astorOperator + " from " + Arrays.toString(operators));
+				List<OperatorInstance> operatorInstances = null;
 				if (astorOperator.needIngredient()) {
-					createInstance(modificationPoint, ops, astorOperator);
+					operatorInstances = createInstance(modificationPoint, astorOperator);
+
 				} else {// if does not need ingredients
-					List<OperatorInstance> operatorInstances = astorOperator.createOperatorInstance(modificationPoint);
-					ops.addAll(operatorInstances);
+					operatorInstances = astorOperator.createOperatorInstance(modificationPoint);
 
 				}
+				if (operatorInstances != null)
+					ops.addAll(operatorInstances);
+
 			}
 		}
 
@@ -159,8 +163,10 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 	}
 
-	public void createInstance(SuspiciousModificationPoint modificationPoint, List<OperatorInstance> ops,
+	public List<OperatorInstance> createInstance(SuspiciousModificationPoint modificationPoint,
 			AstorOperator astorOperator) {
+
+		List<OperatorInstance> ops = new ArrayList<>();
 		List<CtCodeElement> ingredients = null;
 		if (astorOperator instanceof ReplaceOp) {
 			String type = modificationPoint.getCodeElement().getClass().getSimpleName();
@@ -184,13 +190,12 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 				for (OperatorInstance operatorInstance : instances) {
 
 					operatorInstance.setModified(ingredient);
-					// operatorInstance.setIngredientScope(ingredient.getScope());
 
-					// System.out.println("-->"+operatorInstance);
 					ops.add(operatorInstance);
 				}
 			}
 		}
+		return ops;
 	}
 
 	public IngredientSpace getIngredientSpace() {
@@ -206,7 +211,7 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 		super.loadExtensionPoints();
 
 		this.setSuspiciousNavigationStrategy(new InOrderSuspiciousNavigation());
-		
+
 		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 
