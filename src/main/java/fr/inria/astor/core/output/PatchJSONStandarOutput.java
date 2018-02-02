@@ -33,12 +33,12 @@ public class PatchJSONStandarOutput implements ReportResults {
 		JSONObject statsjsonRoot = new JSONObject();
 		JSONArray patchlistJson = new JSONArray();
 		statsjsonRoot.put("patches", patchlistJson);
-
-		// TODO
-		// for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
-		// statsjsonRoot.put(generalStat.name(),
-		// this.getGeneralStats().get(generalStat));
-		// }
+		JSONObject generalStatsjson = new JSONObject();
+		statsjsonRoot.put("general", generalStatsjson);
+		
+		 for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
+			 generalStatsjson.put(generalStat.name(), generalStats.get(generalStat));
+		 }
 
 		for (PatchStat patchStat : statsForPatches) {
 
