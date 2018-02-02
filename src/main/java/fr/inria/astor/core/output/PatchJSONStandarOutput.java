@@ -8,6 +8,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.PatchHunkStats;
@@ -35,10 +37,21 @@ public class PatchJSONStandarOutput implements ReportResults {
 		statsjsonRoot.put("patches", patchlistJson);
 		JSONObject generalStatsjson = new JSONObject();
 		statsjsonRoot.put("general", generalStatsjson);
-		
-		 for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
-			 generalStatsjson.put(generalStat.name(), generalStats.get(generalStat));
-		 }
+		JSONParser parser = new JSONParser();
+		for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
+			Object vStat = generalStats.get(generalStat);
+			if (vStat == null)
+				generalStatsjson.put(generalStat.name(), null);
+			else {
+				try {
+					Object value = parser.parse(vStat.toString());
+					generalStatsjson.put(generalStat.name(), value);
+				} catch (ParseException e) {
+					log.error(e);
+				}
+			}
+
+		}
 
 		for (PatchStat patchStat : statsForPatches) {
 

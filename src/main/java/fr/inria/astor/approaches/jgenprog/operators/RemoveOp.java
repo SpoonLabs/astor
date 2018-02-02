@@ -4,6 +4,7 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 /**
  * 
@@ -63,8 +64,14 @@ public class RemoveOp extends StatementLevelOperator {
 
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
+		if (!(point.getCodeElement() instanceof CtStatement))
+			return false;
 		
-		return (point.getCodeElement() instanceof CtStatement);
+		if(point.getCodeElement() instanceof CtLocalVariable){
+			return false;
+		}
+
+		return true;
 	}
 	
 	@Override
