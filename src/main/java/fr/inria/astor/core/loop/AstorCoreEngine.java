@@ -215,6 +215,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		currentStat.getGeneralStats().put(GeneralStatEnum.TOTAL_TIME, ((endT - startT)));
 		log.info("generationsexecuted: " + this.generationsExecuted);
 		
+		currentStat.getGeneralStats().put(GeneralStatEnum.OUTPUT_STATUS, this.getOutputStatus());
 		
 		this.computePatchDiff(this.solutions);
 		this.sortPatches();
