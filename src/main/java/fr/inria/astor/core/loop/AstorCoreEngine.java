@@ -1,6 +1,7 @@
 package fr.inria.astor.core.loop;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 
+import com.google.common.io.Files;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator;
@@ -449,9 +451,29 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			if (original != null) {
 				boolean idem = original.equals(st.toString());
 				if (!idem) {
-					log.error("Error: the model was not the same from the original after this generation");
-					log.error("Undo Error: original: \n" + original);
-					log.error("Undo Error: modified: \n" + st.toString());
+					log.error("Error variant :" + variant.getId()
+							+ "the model was not the same from the original after this generation");
+					// log.error("Undo Error: original: \n" + original);
+					// log.error("Undo Error: modified: \n" + st.toString());
+					try {
+						File forig = File.createTempFile("torig", "java");
+						FileWriter fr = new FileWriter(forig);
+						fr.write(original);
+						fr.close();
+
+						File fmod = File.createTempFile("torig", "java");
+						FileWriter fm = new FileWriter(fmod);
+						fm.write(st.toString());
+						fm.close();
+
+						PatchDiffCalculator pdc = new PatchDiffCalculator();
+						String diff = pdc.getDiff(forig, fmod, st.getQualifiedName());
+
+						log.error("Undo Error: diff: \n" + diff);
+					} catch (Exception e) {
+						log.error(e);
+					}
+
 					return false;
 				}
 			}
