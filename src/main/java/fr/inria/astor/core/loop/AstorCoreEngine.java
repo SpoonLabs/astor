@@ -205,16 +205,17 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			}
 		}
 
-		//
-		// At the end
+	}
+
+	public void atEnd() {
+		
 		long startT = dateInitEvolution.getTime();
 		long endT = System.currentTimeMillis();
 		log.info("Time Repair Loop (s): " + (endT - startT) / 1000d);
 		currentStat.getGeneralStats().put(GeneralStatEnum.TOTAL_TIME, ((endT - startT)));
 		log.info("generationsexecuted: " + this.generationsExecuted);
-	}
-
-	public void atEnd() {
+		
+		
 		this.computePatchDiff(this.solutions);
 		this.sortPatches();
 		this.printFinalStatus();
