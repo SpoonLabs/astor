@@ -22,6 +22,8 @@ public class StandardOutputReport implements ReportResults {
 
 		StringBuffer buff = new StringBuffer();
 		buff.append(System.getProperty("line.separator"));
+		buff.append("General stats:");
+		buff.append(System.getProperty("line.separator"));
 
 		for (GeneralStatEnum generalStat : GeneralStatEnum.values()) {
 			buff.append(generalStat.name());
@@ -30,9 +32,16 @@ public class StandardOutputReport implements ReportResults {
 			buff.append(System.getProperty("line.separator"));
 		}
 
+		buff.append(System.getProperty("line.separator"));
+		buff.append("Patch stats:");
+		buff.append(System.getProperty("line.separator"));
+		int ips = 0;
 		// Stats of patches
 		for (PatchStat patchStat : statsForPatches) {
-
+			
+			buff.append(System.getProperty("line.separator"));
+			buff.append("Patch "+ (++ips));
+			buff.append(System.getProperty("line.separator"));
 			Map<PatchStatEnum, Object> stats = patchStat.getStats();
 			for (PatchStatEnum statKey : PatchStatEnum.values()) {
 				if (statKey.equals(PatchStatEnum.HUNKS)) {
