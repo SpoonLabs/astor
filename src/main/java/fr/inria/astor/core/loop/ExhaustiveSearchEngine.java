@@ -15,6 +15,7 @@ import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.main.AstorOutputStatus;
 
 /**
  * Exhaustive Search Engine
@@ -72,23 +73,26 @@ public class ExhaustiveSearchEngine extends AstorCoreEngine {
 
 					// We undo the operator (for try the next one)
 					undoOperationToSpoonElement(pointOperation);
-					
+
 					if (solution) {
 						this.solutions.add(solutionVariant);
 						if (ConfigurationProperties.getPropertyBool("stopfirst"))
-							return;
+							this.setOutputStatus(AstorOutputStatus.STOP_BY_PATCH_FOUND);
+						return;
 					}
 
-					
-
 					if (!belowMaxTime(dateInitEvolution, maxMinutes)) {
+
+						this.setOutputStatus(AstorOutputStatus.TIME_OUT);
 						log.debug("Max time reached");
 						return;
 					}
 				}
 			}
 		}
+		log.debug("End exhaustive navigation");
 
+		this.setOutputStatus(AstorOutputStatus.EXHAUSTIVE_NAVIGATED);
 	}
 
 	/**
@@ -110,7 +114,5 @@ public class ExhaustiveSearchEngine extends AstorCoreEngine {
 		return ops;
 
 	}
-
-
 
 }

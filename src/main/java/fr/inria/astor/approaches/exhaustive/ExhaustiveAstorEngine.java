@@ -24,6 +24,7 @@ import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.code.CtCodeElement;
 
@@ -65,7 +66,7 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 				modifPointsAnalyzed++;
 
-				log.info("\n MP ("+modifPointsAnalyzed+"/"+parentVariant.getModificationPoints().size()
+				log.info("\n MP (" + modifPointsAnalyzed + "/" + parentVariant.getModificationPoints().size()
 						+ ") location to modify: " + modifPoint);
 
 				// We create all operators to apply in the modifpoint
@@ -94,6 +95,7 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 					if (solution) {
 						this.solutions.add(solutionVariant);
 						if (ConfigurationProperties.getPropertyBool("stopfirst")) {
+							this.setOutputStatus(AstorOutputStatus.STOP_BY_PATCH_FOUND);
 							log.debug(" modpoint analyzed " + modifPointsAnalyzed + ", operators " + operatorExecuted);
 							return;
 						}
@@ -103,11 +105,14 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 					undoOperationToSpoonElement(pointOperation);
 
 					if (!belowMaxTime(dateInitEvolution, maxMinutes)) {
+						this.setOutputStatus(AstorOutputStatus.TIME_OUT);
 						log.debug("Max time reached");
 						return;
 					}
 
 					if (maxGenerations <= operatorExecuted) {
+
+						this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
 						log.debug("Max operator Applied " + operatorExecuted);
 						log.debug("modpoint:" + modifPointsAnalyzed + ":all:" + totalmodfpoints + ":operators:"
 								+ operatorExecuted);
@@ -116,8 +121,10 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 				}
 			}
 		}
-		System.out.println("\nEND exhaustive search Summary:\n"+
-				"modpoint:" + modifPointsAnalyzed + ":all:" + totalmodfpoints + ":operators:" + operatorExecuted);
+
+		this.setOutputStatus(AstorOutputStatus.EXHAUSTIVE_NAVIGATED);
+		System.out.println("\nEND exhaustive search Summary:\n" + "modpoint:" + modifPointsAnalyzed + ":all:"
+				+ totalmodfpoints + ":operators:" + operatorExecuted);
 
 	}
 
