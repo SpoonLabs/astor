@@ -297,8 +297,7 @@ public class CardumenApproachTest {
 
 				List<Ingredient> ingredientsTransformed = cardumen.getIngredientTransformationStrategy().transform(mp,
 						ingredientToModify);
-				log.info(
-						"--mp " + (mpi) + " [" + mp.getCodeElement().getClass().getCanonicalName() + "] " + mp);
+				log.info("--mp " + (mpi) + " [" + mp.getCodeElement().getClass().getCanonicalName() + "] " + mp);
 
 				log.info("--Template-" + (t++) + " ->" + ctCodeElement);
 
@@ -1043,7 +1042,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70Exhausitve() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;// PACKAGE;
+		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.custom.name());
 		command.command.put("-flthreshold", "0.1");
@@ -1057,8 +1056,8 @@ public class CardumenApproachTest {
 		command.command.put("-maxVarCombination", "100000000");
 
 		AstorMain main1 = new AstorMain();
-
-		// Package
+		log.info("LOCAL SCOPE");
+		// Local
 		command.command.put("-parameters", "considerzerovaluesusp:false:scope:local" + ":limitbysuspicious:false:"
 				+ "disablelog:true:uniformreplacement:false:frequenttemplate:true");
 
@@ -1069,7 +1068,8 @@ public class CardumenApproachTest {
 
 		assertEquals(73, cardumen.totalBases);
 
-		// Local
+		log.info("PACKAGE SCOPE");
+		// PACKAGE
 		command.command.put("-parameters", "considerzerovaluesusp:false:scope:package" + ":limitbysuspicious:false:"
 				+ "disablelog:true:uniformreplacement:false:frequenttemplate:true");
 
@@ -1103,7 +1103,7 @@ public class CardumenApproachTest {
 		Stats.createStat();
 		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
-		assertTrue(cardumen.totalIngredients+ " > 86299730", cardumen.totalIngredients >= 86299730);
+		assertTrue(cardumen.totalIngredients + " > 86299730", cardumen.totalIngredients >= 86299730);
 		assertTrue(86299730 >= cardumen.totalIngredientsCutted);
 		assertTrue(cardumen.totalIngredientsCutted >= 26915);
 		assertTrue(cardumen.totalBases >= 160);
@@ -1196,7 +1196,7 @@ public class CardumenApproachTest {
 
 		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
-		assertTrue(cardumen.totalmp +" >= 12", cardumen.totalmp >=12);
+		assertTrue(cardumen.totalmp + " >= 12", cardumen.totalmp >= 12);
 		long tingNotUnif = cardumen.totalIngredientsCutted;
 		long tingNotUnifall = cardumen.totalIngredients;
 
