@@ -1,8 +1,6 @@
 package fr.inria.astor.test.repair.approaches;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Arrays;
@@ -19,6 +17,9 @@ import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtPackageIngr
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
+import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.AstorOutputStatus;
+import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -43,7 +44,7 @@ public class ExhaustiveAstorTest  extends BaseEvolutionaryTest{
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { "-dependencies", dep, 
-				"-mode", "exhaustive", 
+				"-mode", ExecutionMode.EXASTOR.toString().toLowerCase(),
 				"-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
@@ -52,7 +53,7 @@ public class ExhaustiveAstorTest  extends BaseEvolutionaryTest{
 				out.getAbsolutePath(), 
 				//
 				"-scope", "package", 
-				"-seed", "10", "-maxgen", "100",
+				"-seed", "10", "-maxgen", "10000",
 				"-stopfirst", "false",//
 				"-maxtime", "100",
 				//For excluding regression
@@ -63,6 +64,11 @@ public class ExhaustiveAstorTest  extends BaseEvolutionaryTest{
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		
+		AstorOutputStatus status = main1.getEngine().getOutputStatus();
+		
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, status);
+		
 		assertTrue(solutions.size() > 0);
 		//assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
@@ -80,6 +86,46 @@ public class ExhaustiveAstorTest  extends BaseEvolutionaryTest{
 		Collection<CtType<?>> affected = variant.getAffectedClasses();
 		List<CtClass> progVariant = variant.getModifiedClasses();
 		assertFalse(progVariant.isEmpty());
+
+	}
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testExhaustiveMath70Status() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, 
+				"-mode", ExecutionMode.EXASTOR.toString().toLowerCase(),
+				"-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "1", "-out",
+				out.getAbsolutePath(), 
+				//
+				"-scope", "package", 
+				"-seed", "10", "-maxgen", "100000",
+				"-stopfirst", "false",//
+				"-maxtime", "100",
+				//For excluding regression
+				"-excludeRegression"
+
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		
+		AstorOutputStatus status = main1.getEngine().getOutputStatus();
+		
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, status);
+		
+		assertTrue(solutions.size() > 0);
+	
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-maxgen","10");
+		main1.execute(cs.flat());
+		assertEquals(AstorOutputStatus.MAX_GENERATION, main1.getEngine().getOutputStatus());
 
 	}
 
