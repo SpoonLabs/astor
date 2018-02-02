@@ -16,5 +16,7 @@ public enum AstorOutputStatus {
 	// An exception was thrown
 	ERROR,
 	// stops due to a convergence on the search
-	CONVERGED;
+	CONVERGED,
+	//stops due the navigation is finished, i.e., space exhaustively navigated
+	EXHAUSTIVE_NAVIGATED;
 }
