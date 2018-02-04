@@ -127,6 +127,8 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 	}
 
+	
+	
 	/**
 	 * @param modificationPoint
 	 * @return
@@ -176,7 +178,10 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 			ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
 
 		}
-
+		if(ingredients == null){
+			log.error("Zero ingredients mp: "+modificationPoint + ", op "+astorOperator );
+			return ops;
+		}
 		log.debug("Number of ingredients " + ingredients.size());
 		for (CtCodeElement ingredient : ingredients) {
 

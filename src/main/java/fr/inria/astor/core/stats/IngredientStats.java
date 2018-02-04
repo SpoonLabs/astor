@@ -15,8 +15,8 @@ import org.json.simple.JSONObject;
 import fr.inria.astor.core.stats.StatSpaceSize.INGREDIENT_STATUS;
 
 /**
- * Stats related to ingredients
- * TODO: TO BE REFACTOR!!
+ * Stats related to ingredients TODO: TO BE REFACTOR!!
+ * 
  * @author Matias Martinez
  *
  */
@@ -38,7 +38,8 @@ public class IngredientStats {
 	// key are value, values are abundancy
 	public Map<Long, Long> ingredientSpaceSize = new HashedMap();
 	public Map<Long, Long> combinationByIngredientSize = new HashedMap();
-
+	public Map<Long, Long> combinationByIngredientCompiledSize = new HashedMap();
+	public Map<Double, Long> proportionCompiledSize = new HashedMap();
 	public void setAlreadyApplied(int i) {
 		setState(i, INGREDIENT_STATUS.alreadyanalyzed);
 	}
@@ -211,7 +212,6 @@ public class IngredientStats {
 		}
 		counter++;
 		attempts.put(size, counter);
-		;
 
 	}
 
@@ -224,7 +224,18 @@ public class IngredientStats {
 		}
 		counter++;
 		attempts.put(size, counter);
-		;
+
+	}
+
+	public void addProportion(Map<Double, Long> attempts, double sizep) {
+
+		Double size = new Double(sizep);
+		Long counter = 0l;
+		if (attempts.containsKey(size)) {
+			counter = attempts.get(size);
+		}
+		counter++;
+		attempts.put(size, counter);
 
 	}
 
@@ -244,16 +255,14 @@ public class IngredientStats {
 		}
 
 	}
-	
-	
 
-	public JSONObject getJsonObject(Map<Long, Long> attempts) {
+	public JSONObject getJsonObject(Map<?, Long> attempts) {
 		JSONObject space = new JSONObject();
 
 		JSONArray list = new JSONArray();
 		space.put("space", list);
 		int total = 0;
-		for (Long key : attempts.keySet()) {
+		for (Object key : attempts.keySet()) {
 			JSONObject keyjson = new JSONObject();
 			keyjson.put("a", key);
 			long num = attempts.get(key);
