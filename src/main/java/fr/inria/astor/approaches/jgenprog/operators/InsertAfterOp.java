@@ -1,9 +1,12 @@
 package fr.inria.astor.approaches.jgenprog.operators;
 
+import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+
 /**
  * 
  * @author Matias Martinez
@@ -40,5 +43,21 @@ public class InsertAfterOp extends InsertOp {
 		boolean sucessful = remove(parentBlock, fix, position);
 		parentBlock.setImplicit(operation.isParentBlockImplicit());
 		return sucessful;
+	}
+
+	@Override
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
+
+		boolean apply = super.canBeAppliedToPoint(point);
+		if (!apply)
+			return apply;
+
+		// do not insert after a return
+		if (point.getCodeElement() instanceof CtReturn) {
+			return false;
+		}
+
+		// Otherwise, accept the element
+		return true;
 	}
 }

@@ -1,8 +1,10 @@
 package fr.inria.astor.approaches.jgenprog.operators;
 
+import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtStatement;
 /**
  * 
@@ -42,6 +44,22 @@ public class InsertBeforeOp extends InsertOp {
 		parentBlock.setImplicit(operation.isParentBlockImplicit());
 		return sucess;
 
+	}
+	
+	@Override
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
+
+		boolean apply = super.canBeAppliedToPoint(point);
+		if (!apply)
+			return apply;
+
+		// do not insert after a return
+		if (point.getCodeElement() instanceof CtConstructorCall) {
+			return false;
+		}
+
+		// Otherwise, accept the element
+		return true;
 	}
 
 }

@@ -1,11 +1,19 @@
 package fr.inria.astor.approaches.jgenprog.operators;
 
+import java.util.List;
+
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.reference.CtFieldReference;
+
 /**
  * 
  * @author Matias Martinez
@@ -66,16 +74,33 @@ public class RemoveOp extends StatementLevelOperator {
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
 		if (!(point.getCodeElement() instanceof CtStatement))
 			return false;
-		
-		if(point.getCodeElement() instanceof CtLocalVariable){
+		//Do not remove local declaration 
+		if (point.getCodeElement() instanceof CtLocalVariable) {
+			CtLocalVariable lv = (CtLocalVariable) point.getCodeElement();
+			boolean shadow = false;
+			CtClass parentC = point.getCodeElement().getParent(CtClass.class);
+			List<CtField> ff = parentC.getFields();
+			for (CtField<?> f : ff) {
+				if (f.getSimpleName().equals(lv.getSimpleName()))
+					shadow = true;
+			}
+			if (!shadow)
+				return false;
+		}
+		//do not remove the last statement
+		CtMethod parentMethd = point.getCodeElement().getParent(CtMethod.class);
+		if(point.getCodeElement() instanceof CtReturn  
+				&& parentMethd.getBody().getLastStatement().equals(point.getCodeElement())){
 			return false;
 		}
-
+		
+		
+		//Otherwise, accept the element
 		return true;
 	}
-	
+
 	@Override
-	public boolean needIngredient(){
+	public boolean needIngredient() {
 		return false;
 	}
 }
