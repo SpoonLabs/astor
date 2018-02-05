@@ -278,7 +278,7 @@ public class VariableResolver {
 		return true;
 
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -563,8 +563,7 @@ public class VariableResolver {
 			boolean insideIngredient = checkParent(var, ingredientRootElement);
 			if (insideIngredient)
 				induction.add(ctVariableAccess);
-			// logger.debug("var decl " + var + " indution " +
-			// insideIngredient);
+
 		}
 		return induction;
 	}
@@ -580,8 +579,8 @@ public class VariableResolver {
 		if (rootElement == null)
 			logger.error("Error! root element null");
 		CtElement parent = var;
-		while (parent != null && !CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(parent.toString())) {
-			if (parent.toString().equals(rootElement.toString()))
+		while (parent != null  && !(parent instanceof CtPackage)/*&& !CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(parent.toString())*/) {
+			if (parent.equals(rootElement))
 				return true;
 			parent = parent.getParent();
 		}
