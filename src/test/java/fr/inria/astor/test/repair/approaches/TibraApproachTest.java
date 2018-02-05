@@ -32,7 +32,7 @@ public class TibraApproachTest {
 		cs.command.put("-seed", "10");
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-maxgen", "500");
-		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-flthreshold", "1");
 		cs.command.put("-mode", "custom");
 		cs.command.put("-customengine", TibraApproach.class.getCanonicalName());

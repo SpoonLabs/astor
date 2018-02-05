@@ -235,6 +235,36 @@ public class VariableResolver {
 	 */
 	public static boolean fitInContext(List<CtVariable> varContext, CtElement ingredientCtElement, boolean matchName) {
 
+		Map<CtVariableAccess, List<CtVariable>> matched = getMapping(varContext, ingredientCtElement, matchName);
+		if (matched == null)
+			return false;
+
+		return checkMapping(matched).isEmpty();
+
+	}
+
+	public static List<CtVariableAccess> checkMapping(Map<CtVariableAccess, List<CtVariable>> matched) {
+		List<CtVariableAccess> notMapped = new ArrayList<>();
+
+		if (matched == null)
+			return notMapped;
+
+		// Now, we analyze if all access were matched
+		for (CtVariableAccess ctVariableAccess : matched.keySet()) {
+			List<CtVariable> mapped = matched.get(ctVariableAccess);
+			if (mapped.isEmpty()) {
+				// One var access was not mapped
+				// return false;
+				notMapped.add(ctVariableAccess);
+			}
+		}
+		// All VarAccess were mapped
+		// return true;
+		return notMapped;
+	}
+
+	public static Map<CtVariableAccess, List<CtVariable>> getMapping(List<CtVariable> varContext,
+			CtElement ingredientCtElement, boolean matchName) throws IllegalAccessError {
 		// We collect all var access from the ingredient
 		List<CtVariableAccess> varAccessCollected = collectVariableAccess(ingredientCtElement);
 
@@ -252,7 +282,7 @@ public class VariableResolver {
 		boolean nameConflict = nameConflict(varContext, varInductionCollected);
 		if (nameConflict) {
 			logger.debug("Name Conflict " + varAccessCollected);
-			return false;
+			return null;
 		}
 
 		// Now, we search for access to public variable
@@ -266,19 +296,9 @@ public class VariableResolver {
 
 		// Now, we match the remain var access.
 		Map<CtVariableAccess, List<CtVariable>> matched = matchVars(varContext, varAccessCollected, matchName);
-		// Now, we analyze if all access were matched
-		for (CtVariableAccess ctVariableAccess : matched.keySet()) {
-			List<CtVariable> mapped = matched.get(ctVariableAccess);
-			if (mapped.isEmpty()) {
-				// One var access was not mapped
-				return false;
-			}
-		}
-		// All VarAccess were mapped
-		return true;
-
+		return matched;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -336,13 +356,19 @@ public class VariableResolver {
 
 	public static VarMapping mapVariablesFromContext(List<CtVariable> varContext, CtElement ingredientCtElement) {
 
+		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContext,
+				ingredientCtElement);
+		
+		return mapVariablesFromContext(varContext, ingredientCtElement, variablesOutOfScope);
+	}
+
+	public static VarMapping mapVariablesFromContext(List<CtVariable> varContext, CtElement ingredientCtElement,
+			List<CtVariableAccess> variablesOutOfScope) {
+
 		// var out-of scope, list of variables compatibles
 		Map<VarAccessWrapper, List<CtVariable>> varsMaps = new HashMap<>();
 
 		List<CtVariableAccess> varsNotMapped = new ArrayList<>();
-
-		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContext,
-				ingredientCtElement);
 		logger.debug("#vars out of context: " + variablesOutOfScope.size());
 		// For each var out of scopt
 		for (CtVariableAccess variableOutScope : variablesOutOfScope) {
@@ -579,7 +605,12 @@ public class VariableResolver {
 		if (rootElement == null)
 			logger.error("Error! root element null");
 		CtElement parent = var;
-		while (parent != null  && !(parent instanceof CtPackage)/*&& !CtPackage.TOP_LEVEL_PACKAGE_NAME.equals(parent.toString())*/) {
+		while (parent != null
+				&& !(parent instanceof CtPackage)/*
+													 * && !CtPackage.
+													 * TOP_LEVEL_PACKAGE_NAME.
+													 * equals(parent.toString())
+													 */) {
 			if (parent.equals(rootElement))
 				return true;
 			parent = parent.getParent();
