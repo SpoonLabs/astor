@@ -7,6 +7,9 @@ import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.cardumen.CardumenOperatorSpace;
+import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
+import fr.inria.astor.approaches.mutRepair.MutRepairSpace;
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.GlobalBasicIngredientSpace;
@@ -94,6 +97,7 @@ public class PlugInLoader {
 	}
 
 	public static OperatorSpace loadOperatorSpace() throws Exception {
+
 		// We check if the user defines the operators to include in the operator
 		// space
 		OperatorSpace operatorSpace = null;
@@ -102,6 +106,16 @@ public class PlugInLoader {
 			operatorSpace = createCustomOperatorSpace(customOp);
 		} else {
 			customOp = ConfigurationProperties.getProperty("operatorspace");
+			if ("irr-statements".equals(customOp)) {
+				operatorSpace = new jGenProgSpace();
+			} else if ("relational-Logical-op".equals(customOp)) {
+				operatorSpace = new MutRepairSpace();
+			} else if ("suppression".equals(customOp)) {
+				operatorSpace = new jGenProgSpace();
+			} else if ("r-expression ".equals(customOp)) {
+				operatorSpace = new CardumenOperatorSpace();
+			} else
+			// Custom
 			if (customOp != null && !customOp.isEmpty())
 				operatorSpace = (OperatorSpace) PlugInLoader.loadPlugin(ExtensionPoints.OPERATORS_SPACE);
 		}
