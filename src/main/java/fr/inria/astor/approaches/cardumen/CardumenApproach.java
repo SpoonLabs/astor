@@ -67,8 +67,7 @@ public class CardumenApproach extends JGenProg {
 		}
 		//// -----------------------
 		// Replace operator
-		OperatorSpace roperatorSpace = new OperatorSpace();
-		roperatorSpace.register(new ExpressionReplaceOperator());
+		OperatorSpace roperatorSpace = new CardumenOperatorSpace();
 		this.setOperatorSpace(roperatorSpace);
 
 		///
