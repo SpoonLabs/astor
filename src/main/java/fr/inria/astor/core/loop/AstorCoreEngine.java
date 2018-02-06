@@ -1065,12 +1065,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		// mechanism
 		// Select the kind of validation of a variant.
 		String validationArgument = ConfigurationProperties.properties.getProperty("validation");
-		if (validationArgument.equals("evosuite")) {
+		if (validationArgument.equals("evosuite") || validationArgument.equals("augmented-test-suite")) {
 			ProcessEvoSuiteValidator validator = new ProcessEvoSuiteValidator();
 			this.setProgramValidator(validator);
 		} else
 		// if validation is different to default (process)
-		if (!validationArgument.equals("process")) {
+		if (!validationArgument.equals("process") || validationArgument.equals("test-suite")) {
 			this.setProgramValidator((ProgramVariantValidator) PlugInLoader.loadPlugin(ExtensionPoints.VALIDATION));
 		}
 	};
