@@ -91,7 +91,7 @@ public class PatchJSONStandarOutput implements ReportResults {
 			file.write(statsjsonRoot.toJSONString());
 			file.flush();
 			log.info("Storing ing JSON at " + absoluteFileName);
-			log.info(filename + ":" + statsjsonRoot.toJSONString());
+			log.info(filename + ":\n" + statsjsonRoot.toJSONString());
 
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -19,9 +19,9 @@ import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.astor.approaches.IngredientBasedRepairApproach;
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
 import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine4Stats;
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproach;
 import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;

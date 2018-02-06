@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.approaches.IngredientBasedRepairApproach;
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproach;
 import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
@@ -37,61 +37,22 @@ import spoon.reflect.declaration.CtType;
  */
 public class DeepRepairEngine extends IngredientBasedRepairApproach {
 
-	public DeepRepairEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
+	public DeepRepairEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws Exception {
 		super(mutatorExecutor, projFacade);
-	}
-
-	@Override
-	public void loadExtensionPoints() throws Exception {
-		super.loadExtensionPoints();
-
+		this.pluginLoaded = new DeepLearningPlugInLoader();
+		
+		ConfigurationProperties.setProperty("transformingredient", Boolean.TRUE.toString());
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier, "name-cluster-based");
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier, "code-similarity-based");
+		
+		
 		String learningdir = ConfigurationProperties.getProperty("learningdir");
 		if (learningdir == null || learningdir.isEmpty()) {
 			log.error("Error, missing argument: -learningdir ");
 			throw new IllegalArgumentException("Missing argument -learningdir");
 		}
-
-		ConfigurationProperties.setProperty("transformingredient", Boolean.TRUE.toString());
-
-		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
-
-		// Fix Space
-		ExtensionPoints epoint = ExtensionPoints.INGREDIENT_PROCESSOR;
-		if (!ConfigurationProperties.hasProperty(epoint.identifier)) {
-			// By default, we use statements as granularity level.
-			ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
-		} else {
-			// We load custom processors
-			String ingrProcessors = ConfigurationProperties.getProperty(epoint.identifier);
-			String[] in = ingrProcessors.split(File.pathSeparator);
-			for (String processor : in) {
-				TargetElementProcessor proc_i = (TargetElementProcessor) PlugInLoader.loadPlugin(processor,
-						epoint._class);
-				ingredientProcessors.add(proc_i);
-			}
-		}
-		this.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
-
-		OperatorSpace jpgoperatorSpace = PlugInLoader.loadOperatorSpace();
-		if (jpgoperatorSpace == null)
-			jpgoperatorSpace = new jGenProgSpace();
-
-		this.setOperatorSpace(jpgoperatorSpace);
-		this.setOperatorSpace(new DeepRepairOperatorSpace());
-		this.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(jpgoperatorSpace));
-
-		IngredientSpace ingredientspace = loadIngredientSpace(ingredientProcessors);
-
-		ExtensionPoints ep = ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY;
-		String ingredientTransformationStrategyClassName = ConfigurationProperties.properties
-				.getProperty(ep.identifier);
-		if (ingredientTransformationStrategyClassName == null) {
-			this.ingredientTransformationStrategy = new ClusterIngredientTransformation();
-		} else {
-			this.ingredientTransformationStrategy = (IngredientTransformationStrategy) PlugInLoader
-					.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
-		}
-
+		
 		ExtensionPoints cloneGranularityEP = ExtensionPoints.CLONE_GRANULARITY;
 		Class cloneGranularity = PlugInLoader.loadClassFromProperty(cloneGranularityEP);
 		if (cloneGranularity == null) {
@@ -99,29 +60,8 @@ public class DeepRepairEngine extends IngredientBasedRepairApproach {
 		}
 		ConfigurationProperties.setProperty("clonegranularity", cloneGranularity.getName());
 
-		IngredientSearchStrategy ingStrategy = new CloneIngredientSearchStrategy(ingredientspace, cloneGranularity,
-				ingredientTransformationStrategy);
-		this.setIngredientStrategy(ingStrategy);
-
 	}
 
-	public static CtLocationIngredientSpace loadIngredientSpace(List<TargetElementProcessor<?>> ingredientProcessors)
-			throws JSAPException, Exception {
-		// The ingredients for build the patches
-		String scope = ConfigurationProperties.properties.getProperty("scope");
-		CtLocationIngredientSpace ingredientspace = null;
-		if ("global".equals(scope)) {
-			ingredientspace = (new CtGlobalIngredientScope(ingredientProcessors));
-		} else if ("package".equals(scope)) {
-			ingredientspace = (new CtPackageIngredientScope(ingredientProcessors));
-		} else if ("local".equals(scope)) {
-			ingredientspace = (new CtClassIngredientSpace(ingredientProcessors));
-		} else {
-			ingredientspace = (CtLocationIngredientSpace) PlugInLoader.loadPlugin(
-					ExtensionPoints.INGREDIENT_STRATEGY_SCOPE, new Class[] { List.class },
-					new Object[] { ingredientProcessors });
 
-		}
-		return ingredientspace;
-	}
+	
 }

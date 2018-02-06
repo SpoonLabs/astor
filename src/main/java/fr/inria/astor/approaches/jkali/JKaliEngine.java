@@ -1,19 +1,12 @@
 package fr.inria.astor.approaches.jkali;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
-import fr.inria.astor.core.loop.population.ProgramVariantFactory;
-import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.main.evolution.PlugInLoader;
+import fr.inria.main.evolution.ExtensionPoints;
 
 /**
  * 
@@ -26,23 +19,9 @@ public class JKaliEngine extends ExhaustiveSearchEngine {
 		super(mutatorExecutor, projFacade);
 		ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 		ConfigurationProperties.properties.setProperty("population", "1");
-
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "suppression");
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
 	}
 
-	@Override
-	public void loadExtensionPoints() throws Exception {
-
-		super.loadExtensionPoints();
-		
-		OperatorSpace operatorSpaceCustom = PlugInLoader.loadOperatorSpace();
-		if(operatorSpaceCustom == null)
-			operatorSpaceCustom = new JKaliSpace();
-		this.setOperatorSpace(operatorSpaceCustom);
-		
-		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
-		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
-		this.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
-		
-	}
 
 }

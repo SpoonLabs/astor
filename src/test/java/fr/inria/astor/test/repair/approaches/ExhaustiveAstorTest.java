@@ -11,6 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.exhaustive.ExhausitiveCloneEngine;
+import fr.inria.astor.approaches.exhaustive.ExhaustiveAstorEngine4Stats;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
@@ -201,4 +202,52 @@ public class ExhaustiveAstorTest  extends BaseEvolutionaryTest{
 	
 	}
 
+	/**
+	 * Math 70 bug can be fixed by replacing a method invocation inside a return
+	 * statement. + return solve(f, min, max); - return solve(min, max); One
+	 * solution with local scope, another with package
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testExhaustiveMath70LocalStat() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, 
+				"-mode", "custom",  //ExecutionMode.EXASTOR.toString().toLowerCase(),//
+				"-customengine",
+				ExhaustiveAstorEngine4Stats.class.getCanonicalName(),
+				"-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.1", "-out",
+				out.getAbsolutePath(), 
+				//
+				"-scope", "package", 
+				"-seed", "10", "-maxgen", "10000",
+				"-stopfirst", "false",//
+				"-maxtime", "100",
+				//For excluding regression
+				"-excludeRegression",
+				"-loglevel","INFO",
+				"-parameters",
+				"skipfitnessinitialpopulation:true"
+
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		
+		AstorOutputStatus status = main1.getEngine().getOutputStatus();
+		
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, status);
+		
+
+
+	}
+	
 }

@@ -17,13 +17,10 @@ public class TibraApproach extends JGenProg {
 
 	public TibraApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
+
+		ConfigurationProperties.setProperty("ingredienttransformstrategy",
+				RandomTransformationStrategy.class.getCanonicalName());
+
 	}
 
-	@Override
-	public void loadExtensionPoints() throws Exception {
-		ConfigurationProperties.setProperty("ingredienttransformstrategy",RandomTransformationStrategy.class.getCanonicalName());
-		super.loadExtensionPoints();
-	}
-
-	
 }

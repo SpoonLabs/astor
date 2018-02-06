@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.approaches.IngredientBasedRepairApproach;
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproach;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
@@ -37,68 +37,9 @@ public class JGenProg extends IngredientBasedRepairApproach {
 
 	public JGenProg(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
-	}
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "irr-statements");
 
-	@Override
-	public void loadExtensionPoints() throws Exception {
-		super.loadExtensionPoints();
-
-		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
-
-		// Fix Space
-		ExtensionPoints epoint = ExtensionPoints.INGREDIENT_PROCESSOR;
-		if (!ConfigurationProperties.hasProperty(epoint.identifier)) {
-			// By default, we use statements as granularity level.
-			ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
-		} else {
-			// We load custom processors
-			String ingrProcessors = ConfigurationProperties.getProperty(epoint.identifier);
-			String[] in = ingrProcessors.split(File.pathSeparator);
-			for (String processor : in) {
-				TargetElementProcessor proc_i = (TargetElementProcessor) PlugInLoader.loadPlugin(processor,
-						epoint._class);
-				ingredientProcessors.add(proc_i);
-			}
-		}
-
-		OperatorSpace jpgoperatorSpace = PlugInLoader.loadOperatorSpace();
-		if (jpgoperatorSpace == null)
-			jpgoperatorSpace = new jGenProgSpace();
-
-		this.setOperatorSpace(jpgoperatorSpace);
-
-		// We retrieve strategy for navigating operator space
-		String opStrategyClassName = ConfigurationProperties.properties.getProperty("opselectionstrategy");
-		if (opStrategyClassName != null) {
-			OperatorSelectionStrategy strategy = createOperationSelectionStrategy(opStrategyClassName,
-					jpgoperatorSpace);
-			this.setOperatorSelectionStrategy(strategy);
-		} else {// By default, uniform strategy
-			this.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(jpgoperatorSpace));
-		}
-		IngredientSpace ingredientspace = PlugInLoader.loadIngredientSpace(ingredientProcessors);
-
-		IngredientSearchStrategy ingStrategy = (IngredientSearchStrategy) PlugInLoader.loadPlugin(
-				ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[] { IngredientSpace.class },
-				new Object[] { ingredientspace });
-
-		if (ingStrategy == null) {
-			ingStrategy = new EfficientIngredientStrategy(ingredientspace);
-		}
-
-		this.setIngredientStrategy(ingStrategy);
-		this.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
-
-		ExtensionPoints ep = ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY;
-		String ingredientTransformationStrategyClassName = ConfigurationProperties.properties
-				.getProperty(ep.identifier);
-		if (ingredientTransformationStrategyClassName == null) {
-			this.ingredientTransformationStrategy = new DefaultIngredientTransformation();
-		} else {
-			this.ingredientTransformationStrategy = (IngredientTransformationStrategy) PlugInLoader
-					.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
-		}
-
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
 	}
 
 	@Override

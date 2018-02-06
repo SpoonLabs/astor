@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.astor.approaches.IngredientBasedRepairApproach;
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproach;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.WeightedRandomOperatorSelection;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;

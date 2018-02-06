@@ -40,6 +40,10 @@ public class IngredientStats {
 	public Map<Long, Long> combinationByIngredientSize = new HashedMap();
 	public Map<Long, Long> combinationByIngredientCompiledSize = new HashedMap();
 	public Map<Double, Long> proportionCompiledSize = new HashedMap();
+	public Map<Long, Long> ingMapped = new HashedMap();
+	public Map<Long, Long> ingMappedAll = new HashedMap();
+	public Map<Long, Long> ingNotMapped = new HashedMap();
+	
 	public void setAlreadyApplied(int i) {
 		setState(i, INGREDIENT_STATUS.alreadyanalyzed);
 	}

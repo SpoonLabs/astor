@@ -17,6 +17,7 @@ import com.google.common.io.Files;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator;
+import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -42,8 +43,10 @@ import fr.inria.astor.core.loop.spaces.ingredients.transformations.DynamicIngred
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
+import fr.inria.astor.core.loop.spaces.operators.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
 import fr.inria.astor.core.output.ReportResults;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -59,6 +62,7 @@ import fr.inria.astor.util.TimeUtil;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
+import fr.inria.main.evolution.PlugInVisitor;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -132,6 +136,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected List<PatchStat> patchInfo = new ArrayList<>();
 
+	protected List<TargetElementProcessor<?>> targetElementProcessors = null;
+
+	protected PlugInVisitor pluginLoaded = null;
+
 	/**
 	 * 
 	 * @param mutatorExecutor
@@ -142,6 +150,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.projectFacade = projFacade;
 
 		this.currentStat = Stats.createStat();
+
+		pluginLoaded = new PlugInVisitor();
 	}
 
 	public void startEvolution() throws Exception {
@@ -208,15 +218,15 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public void atEnd() {
-		
+
 		long startT = dateInitEvolution.getTime();
 		long endT = System.currentTimeMillis();
 		log.info("Time Repair Loop (s): " + (endT - startT) / 1000d);
-		currentStat.getGeneralStats().put(GeneralStatEnum.TOTAL_TIME, ((endT - startT))/ 1000d);
+		currentStat.getGeneralStats().put(GeneralStatEnum.TOTAL_TIME, ((endT - startT)) / 1000d);
 		log.info("generationsexecuted: " + this.generationsExecuted);
-		
+
 		currentStat.getGeneralStats().put(GeneralStatEnum.OUTPUT_STATUS, this.getOutputStatus());
-		
+
 		this.computePatchDiff(this.solutions);
 		this.sortPatches();
 		this.printFinalStatus();
@@ -1017,62 +1027,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * 
 	 * @throws Exception
 	 */
-	public void loadExtensionPoints() throws Exception {
-
-		// Navigation suspicious
-		String mode = ConfigurationProperties.getProperty("modificationpointnavigation").toUpperCase();
-
-		SuspiciousNavigationStrategy suspiciousNavigationStrategy = null;
-		if (SuspiciousNavigationValues.INORDER.toString().equals(mode)) {
-			suspiciousNavigationStrategy = new InOrderSuspiciousNavigation();
-		} else if (SuspiciousNavigationValues.WEIGHT.toString().equals(mode))
-			suspiciousNavigationStrategy = new WeightRandomSuspiciousNavitation();
-		else if (SuspiciousNavigationValues.RANDOM.toString().equals(mode)) {
-			suspiciousNavigationStrategy = new UniformRandomSuspiciousNavigation();
-		} else if (SuspiciousNavigationValues.SEQUENCE.toString().equals(mode)) {
-			suspiciousNavigationStrategy = new SequenceSuspiciousNavigationStrategy();
-		} else {
-			suspiciousNavigationStrategy = (SuspiciousNavigationStrategy) PlugInLoader
-					.loadPlugin(ExtensionPoints.SUSPICIOUS_NAVIGATION);
-		}
-		this.setSuspiciousNavigationStrategy(suspiciousNavigationStrategy);
-
-		// Fault localization
-		String flvalue = ConfigurationProperties.getProperty("faultlocalization").toLowerCase();
-		if (flvalue.equals("gzoltar")) {
-			this.setFaultLocalization(new GZoltarFaultLocalization());
-		} else if (flvalue.equals("cocospoon")) {
-			this.setFaultLocalization(new CocoFaultLocalization());
-		} else
-			this.setFaultLocalization(
-					(FaultLocalizationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.FAULT_LOCALIZATION));
-
-		// Fault localization
-		this.setFitnessFunction((FitnessFunction) PlugInLoader.loadPlugin(ExtensionPoints.FITNESS_FUNCTION));
-
-		this.setCompiler((VariantCompiler) PlugInLoader.loadPlugin(ExtensionPoints.COMPILER));
-
-		// Population controller
-		this.setPopulationControler(
-				(PopulationController) PlugInLoader.loadPlugin(ExtensionPoints.POPULATION_CONTROLLER));
-		//
-
-		// We do the first validation using the standard validation (test suite
-		// process)
-		this.setProgramValidator(new ProcessValidator());
-
-		// After initializing population, we set up specific validation
-		// mechanism
-		// Select the kind of validation of a variant.
-		String validationArgument = ConfigurationProperties.properties.getProperty("validation");
-		if (validationArgument.equals("evosuite") || validationArgument.equals("augmented-test-suite")) {
-			ProcessEvoSuiteValidator validator = new ProcessEvoSuiteValidator();
-			this.setProgramValidator(validator);
-		} else
-		// if validation is different to default (process)
-		if (!validationArgument.equals("process") || validationArgument.equals("test-suite")) {
-			this.setProgramValidator((ProgramVariantValidator) PlugInLoader.loadPlugin(ExtensionPoints.VALIDATION));
-		}
+	public final void loadExtensionPoints() throws Exception {
+		this.pluginLoaded.load(this);
 	};
 
 	/**
@@ -1236,23 +1192,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	}
 
-	protected OperatorSelectionStrategy createOperationSelectionStrategy(String opSelectionStrategyClassName,
-			OperatorSpace space) throws Exception {
-		Object object = null;
-		try {
-			Class classDefinition = Class.forName(opSelectionStrategyClassName);
-			object = classDefinition.getConstructor(OperatorSpace.class).newInstance(space);
-		} catch (Exception e) {
-			log.error("Loading strategy " + opSelectionStrategyClassName + " --" + e);
-			throw new Exception("Loading strategy: " + e);
-		}
-		if (object instanceof OperatorSelectionStrategy)
-			return (OperatorSelectionStrategy) object;
-		else
-			throw new Exception("The strategy " + opSelectionStrategyClassName + " does not extend from "
-					+ OperatorSelectionStrategy.class.getName());
-	}
-
 	public AstorOutputStatus getOutputStatus() {
 		return outputStatus;
 	}
@@ -1287,6 +1226,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	public List<SuspiciousCode> calculateSuspicious() throws Exception {
 		return this.getFaultLocalization().searchSuspicious(getProjectFacade()).getCandidates();
+	}
+
+	public List<TargetElementProcessor<?>> getTargetElementProcessors() {
+		return targetElementProcessors;
+	}
+
+	public void setTargetElementProcessors(List<TargetElementProcessor<?>> targetElementProcessors) {
+		this.targetElementProcessors = targetElementProcessors;
 	}
 
 }
