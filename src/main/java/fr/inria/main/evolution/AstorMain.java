@@ -195,8 +195,6 @@ public class AstorMain extends AbstractMain {
 			return;
 		}
 
-		loadCommonExtensionPoints(astorCore);
-
 		ConfigurationProperties.print();
 
 		astorCore.startEvolution();
@@ -207,53 +205,7 @@ public class AstorMain extends AbstractMain {
 		log.info("Time Total(s): " + (endT - startT) / 1000d);
 	}
 
-	/**
-	 * Load extensions point that are used for all approaches. For the moment it
-	 * loads only the "patch priorization point""
-	 * 
-	 * @throws Exception
-	 */
-	private boolean loadCommonExtensionPoints(AstorCoreEngine astorCore) {
-
-		// Patch priorization
-		String patchpriority = ConfigurationProperties.getProperty("patchprioritization");
-		if (patchpriority != null && !patchpriority.trim().isEmpty()) {
-			SolutionVariantSortCriterion priorizStrategy = null;
-			try {
-				priorizStrategy = (SolutionVariantSortCriterion) PlugInLoader
-						.loadPlugin(ExtensionPoints.SOLUTION_SORT_CRITERION);
-				astorCore.setPatchSortCriterion(priorizStrategy);
-			} catch (Exception e) {
-				log.error(e);
-			}
-		}
-
-		/// Output
-		List<ReportResults> outputs = new ArrayList<>();
-		astorCore.setOutputResults(outputs);
-		
-		String outputproperty = ConfigurationProperties.getProperty("outputresults");
-		if (outputproperty != null && !outputproperty.trim().isEmpty()) {
-			String[] outprocess = outputproperty.split("|");
-			try {
-
-				for (String outp : outprocess) {
-					ReportResults outputresult = (ReportResults) PlugInLoader.loadPlugin(outp,
-							ExtensionPoints.OUTPUT_RESULTS._class);
-					outputs.add(outputresult);
-				}
-			} catch (Exception e) {
-				log.error(e);
-			}
-
-		} else {
-			outputs.add(new StandardOutputReport());
-			outputs.add(new PatchJSONStandarOutput());
-		}
-
-		return true;
-	}
-
+	
 	/**
 	 * @param args
 	 * @throws Exception

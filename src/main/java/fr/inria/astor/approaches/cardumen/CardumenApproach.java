@@ -17,13 +17,21 @@ public class CardumenApproach extends JGenProg {
 
 	public CardumenApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
-
+		this.pluginLoaded = new CardumenPlugInloader();
+		// Default configuration of Cardumen:
 		ConfigurationProperties.setProperty("cleantemplates", "true");
-		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "expression");
 
+		if (ConfigurationProperties.hasProperty("probabilistictransformation")) {
+			if (ConfigurationProperties.getPropertyBool("probabilistictransformation")) {
+				ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier,
+						"name-probability-based");
+			} else
+				ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier,
+						"random-variable-replacement");
+		}
+		ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "expression");
 		setPropertyIfNotDefined(ExtensionPoints.OPERATORS_SPACE.identifier, "r-expression");
-		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier,
-				"name-probability-based");
+		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier, "name-probability-based");
 
 	}
 

@@ -13,6 +13,7 @@ import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.faultlocalization.cocospoon.CocoFaultLocalization;
 import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
 import fr.inria.astor.core.loop.AstorCoreEngine;
+import fr.inria.astor.core.loop.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.loop.navigation.InOrderSuspiciousNavigation;
 import fr.inria.astor.core.loop.navigation.SequenceSuspiciousNavigationStrategy;
@@ -33,6 +34,9 @@ import fr.inria.astor.core.manipulation.filters.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.IFExpressionFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
+import fr.inria.astor.core.output.PatchJSONStandarOutput;
+import fr.inria.astor.core.output.ReportResults;
+import fr.inria.astor.core.output.StandardOutputReport;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
 import fr.inria.astor.core.validation.processbased.ProcessValidator;
@@ -222,6 +226,42 @@ public class PlugInVisitor {
 		approach.setVariantFactory(new ProgramVariantFactory(approach.getTargetElementProcessors()));
 	}
 
+
+	protected void loadSolutionPrioritization(AstorCoreEngine approach) throws Exception {
+
+		String patchpriority = ConfigurationProperties.getProperty("patchprioritization");
+		if (patchpriority != null && !patchpriority.trim().isEmpty()) {
+			SolutionVariantSortCriterion priorizStrategy = null;
+
+			priorizStrategy = (SolutionVariantSortCriterion) PlugInLoader
+					.loadPlugin(ExtensionPoints.SOLUTION_SORT_CRITERION);
+			approach.setPatchSortCriterion(priorizStrategy);
+
+		}
+	}
+
+	protected void loadOutputResults(AstorCoreEngine approach) throws Exception {
+
+		List<ReportResults> outputs = new ArrayList<>();
+		approach.setOutputResults(outputs);
+
+		String outputproperty = ConfigurationProperties.getProperty("outputresults");
+		if (outputproperty != null && !outputproperty.trim().isEmpty()) {
+			String[] outprocess = outputproperty.split("|");
+
+			for (String outp : outprocess) {
+				ReportResults outputresult = (ReportResults) PlugInLoader.loadPlugin(outp,
+						ExtensionPoints.OUTPUT_RESULTS._class);
+				outputs.add(outputresult);
+			}
+
+		} else {
+			outputs.add(new StandardOutputReport());
+			outputs.add(new PatchJSONStandarOutput());
+		}
+
+	}
+
 	public void load(AstorCoreEngine approach) throws Exception {
 		this.loadFaultLocalization(approach);
 		this.loadTargetElements(approach);
@@ -232,6 +272,8 @@ public class PlugInVisitor {
 		this.loadFitnessFunction(approach);
 		this.loadOperatorSpaceDefinition(approach);
 		this.loadOperatorSelectorStrategy(approach);
+		this.loadSolutionPrioritization(approach);
+		this.loadOutputResults(approach);
 
 	}
 

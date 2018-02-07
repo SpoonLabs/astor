@@ -41,13 +41,13 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 		IngredientBasedRepairApproach ibra = (IngredientBasedRepairApproach) approach;
 		List<TargetElementProcessor<?>> ingredientProcessors = approach.getTargetElementProcessors();
 		// The ingredients for build the patches
-		IngredientSpace ingredientspace = getIngredientPull(ingredientProcessors);
+		IngredientSpace ingredientspace = getIngredientPool(ingredientProcessors);
 
 		ibra.setIngredientPool(ingredientspace);
 
 	}
 
-	public static IngredientSpace getIngredientPull(List<TargetElementProcessor<?>> ingredientProcessors)
+	public static IngredientSpace getIngredientPool(List<TargetElementProcessor<?>> ingredientProcessors)
 			throws JSAPException, Exception {
 		String scope = ConfigurationProperties.properties.getProperty("scope");
 		IngredientSpace ingredientspace = null;

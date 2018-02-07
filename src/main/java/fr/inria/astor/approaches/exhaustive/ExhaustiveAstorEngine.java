@@ -56,7 +56,7 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 	public void startEvolution() throws Exception {
 
 		if(this.ingredientSpace == null){
-			this.ingredientSpace = IngredientBasedPlugInLoader.getIngredientPull(getTargetElementProcessors());
+			this.ingredientSpace = IngredientBasedPlugInLoader.getIngredientPool(getTargetElementProcessors());
 		}
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
