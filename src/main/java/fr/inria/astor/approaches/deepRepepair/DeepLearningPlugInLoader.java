@@ -47,4 +47,10 @@ public class DeepLearningPlugInLoader extends IngredientBasedPlugInLoader {
 		}
 		ibra.setIngredientPool(ingredientspace);
 	}
+	
+	@Override
+	protected void loadOperatorSpaceDefinition(AstorCoreEngine approach) throws Exception {
+
+		approach.setOperatorSpace(new DeepRepairOperatorSpace());
+	}
 }

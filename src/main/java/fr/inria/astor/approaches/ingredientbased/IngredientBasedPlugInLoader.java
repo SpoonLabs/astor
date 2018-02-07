@@ -123,11 +123,7 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 
 	}
 
-	@Override
-	protected void loadOperatorSpaceDefinition(AstorCoreEngine approach) throws Exception {
 
-		approach.setOperatorSpace(new DeepRepairOperatorSpace());
-	}
 
 	@Override
 	public void load(AstorCoreEngine approach) throws Exception {
