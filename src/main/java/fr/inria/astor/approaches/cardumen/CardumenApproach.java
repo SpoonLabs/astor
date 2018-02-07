@@ -19,10 +19,10 @@ public class CardumenApproach extends JGenProg {
 		super(mutatorExecutor, projFacade);
 
 		ConfigurationProperties.setProperty("cleantemplates", "true");
-		ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "expression");
+		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "expression");
 
-		ConfigurationProperties.properties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "r-expression");
-		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier,
+		setPropertyIfNotDefined(ExtensionPoints.OPERATORS_SPACE.identifier, "r-expression");
+		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier,
 				"name-probability-based");
 
 	}

@@ -1236,4 +1236,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.targetElementProcessors = targetElementProcessors;
 	}
 
+	protected void setPropertyIfNotDefined(String name, String value) {
+		String existingvalue = ConfigurationProperties.properties.getProperty(name);
+		if (existingvalue == null || existingvalue.trim().isEmpty()) {
+			ConfigurationProperties.properties.setProperty(name, value);
+		}
+
+	}
+
 }

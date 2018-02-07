@@ -1,7 +1,5 @@
 package fr.inria.astor.approaches.jgenprog;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -9,23 +7,11 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproach;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.population.ProgramVariantFactory;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
-import fr.inria.astor.core.loop.spaces.ingredients.transformations.DefaultIngredientTransformation;
-import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
-import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
-import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
-import fr.inria.astor.core.loop.spaces.operators.UniformRandomRepairOperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.main.evolution.ExtensionPoints;
-import fr.inria.main.evolution.PlugInLoader;
 
 /**
  * Core repair approach based on reuse of ingredients.
@@ -37,9 +23,9 @@ public class JGenProg extends IngredientBasedRepairApproach {
 
 	public JGenProg(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
-		ConfigurationProperties.properties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "irr-statements");
+		setPropertyIfNotDefined(ExtensionPoints.OPERATORS_SPACE.identifier, "irr-statements");
 
-		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
+		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
 	}
 
 	@Override

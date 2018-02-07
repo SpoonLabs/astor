@@ -19,8 +19,8 @@ public class JKaliEngine extends ExhaustiveSearchEngine {
 		super(mutatorExecutor, projFacade);
 		ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 		ConfigurationProperties.properties.setProperty("population", "1");
-		ConfigurationProperties.properties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "suppression");
-		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
+		setPropertyIfNotDefined(ExtensionPoints.OPERATORS_SPACE.identifier, "suppression");
+		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
 	}
 
 
