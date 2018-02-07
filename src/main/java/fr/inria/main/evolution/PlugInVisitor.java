@@ -132,7 +132,7 @@ public class PlugInVisitor {
 			if ("uniform-random".equals(opStrategyClassName)) {
 				approach.setOperatorSelectionStrategy(
 						new UniformRandomRepairOperatorSpace(approach.getOperatorSpace()));
-			} else if ("weighted--random".equals(opStrategyClassName)) {
+			} else if ("weighted-random".equals(opStrategyClassName)) {
 				approach.setOperatorSelectionStrategy(new WeightedRandomOperatorSelection(approach.getOperatorSpace()));
 			} else {
 				OperatorSelectionStrategy strategy = createOperationSelectionStrategy(opStrategyClassName,
