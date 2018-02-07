@@ -98,7 +98,7 @@ public class PlugInVisitor {
 				operatorSpace = new MutRepairSpace();
 			} else if ("suppression".equals(customOp) || "jkalispace".equals(customOp)) {
 				operatorSpace = new JKaliSpace();
-			} else if ("r-expression ".equals(customOp) || "cardumenspace".equals(customOp)) {
+			} else if ("r-expression".equals(customOp) || "cardumenspace".equals(customOp)) {
 				operatorSpace = new CardumenOperatorSpace();
 			} else
 			// Custom

@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.approaches.deepRepepair.DeepRepairOperatorSpace;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
@@ -99,31 +98,35 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 	}
 
 	protected void loadIngredientTransformationStrategy(AstorCoreEngine approach) throws Exception {
+		
+		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = getIngredientTransformationStrategy();
 		IngredientBasedRepairApproach ibra = (IngredientBasedRepairApproach) approach;
+		ibra.setIngredientTransformationStrategy(ingredientTransformationStrategyLoaded);
+	}
 
+	public static IngredientTransformationStrategy getIngredientTransformationStrategy() throws Exception {
+		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = null;
 		String ingredientTransformationStrategy = ConfigurationProperties.properties
 				.getProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier);
 
 		if (ingredientTransformationStrategy == null) {
-			ibra.setIngredientTransformationStrategy(new DefaultIngredientTransformation());
+			ingredientTransformationStrategyLoaded = (new DefaultIngredientTransformation());
 		} else {// there is a value
 			if (ingredientTransformationStrategy.equals("no-transformation")) {
-				ibra.setIngredientTransformationStrategy(new DefaultIngredientTransformation());
+				ingredientTransformationStrategyLoaded = (new DefaultIngredientTransformation());
 			} else if (ingredientTransformationStrategy.equals("random-variable-replacement")) {
-				ibra.setIngredientTransformationStrategy(new RandomTransformationStrategy());
+				ingredientTransformationStrategyLoaded = (new RandomTransformationStrategy());
 			} else if (ingredientTransformationStrategy.equals("name-cluster-based")) {
-				ibra.setIngredientTransformationStrategy(new ClusterIngredientTransformation());
+				ingredientTransformationStrategyLoaded = (new ClusterIngredientTransformation());
 			} else if (ingredientTransformationStrategy.equals("name-probability-based")) {
-				ibra.setIngredientTransformationStrategy(new ProbabilisticTransformationStrategy());
+				ingredientTransformationStrategyLoaded = (new ProbabilisticTransformationStrategy());
 			} else {
-				ibra.setIngredientTransformationStrategy((IngredientTransformationStrategy) PlugInLoader
+				ingredientTransformationStrategyLoaded = ((IngredientTransformationStrategy) PlugInLoader
 						.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY));
 			}
 		}
-
+		return ingredientTransformationStrategyLoaded;
 	}
-
-
 
 	@Override
 	public void load(AstorCoreEngine approach) throws Exception {

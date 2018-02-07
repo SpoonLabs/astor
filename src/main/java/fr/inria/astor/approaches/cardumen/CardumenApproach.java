@@ -30,7 +30,7 @@ public class CardumenApproach extends JGenProg {
 						"random-variable-replacement");
 		}
 		ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "expression");
-		setPropertyIfNotDefined(ExtensionPoints.OPERATORS_SPACE.identifier, "r-expression");
+		ConfigurationProperties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "r-expression");
 		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier, "name-probability-based");
 
 	}
