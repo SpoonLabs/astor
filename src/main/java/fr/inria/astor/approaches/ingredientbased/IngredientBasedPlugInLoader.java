@@ -24,6 +24,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
 import fr.inria.main.evolution.PlugInVisitor;
+
 /**
  * 
  * @author Matias Martinez
@@ -34,19 +35,17 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 	public IngredientBasedPlugInLoader() {
 		super();
 	}
-	
-	
+
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientPool(AstorCoreEngine approach) throws JSAPException, Exception {
 		IngredientBasedRepairApproach ibra = (IngredientBasedRepairApproach) approach;
 		List<TargetElementProcessor<?>> ingredientProcessors = approach.getTargetElementProcessors();
 		// The ingredients for build the patches
 		IngredientSpace ingredientspace = getIngredientPull(ingredientProcessors);
-	
-		ibra.setIngredientPool(ingredientspace);
-	
-	}
 
+		ibra.setIngredientPool(ingredientspace);
+
+	}
 
 	public static IngredientSpace getIngredientPull(List<TargetElementProcessor<?>> ingredientProcessors)
 			throws JSAPException, Exception {
@@ -61,31 +60,30 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 		} else {
 			ingredientspace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
 					new Class[] { List.class }, new Object[] { ingredientProcessors });
-	
+
 		}
 		return ingredientspace;
 	}
 
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientSearchStrategy(AstorCoreEngine approach) throws Exception {
-	
+
 		IngredientBasedRepairApproach ibra = (IngredientBasedRepairApproach) approach;
-	
+
 		IngredientSpace ingredientspace = ibra.getIngredientPool();
-	
+
 		IngredientSearchStrategy ingStrategy = null;
-	
+
 		String ingStrategySt = ConfigurationProperties.properties
 				.getProperty(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier);
-	
+
 		if (ingStrategySt != null) {
-	
+
 			if (ingStrategySt.equals("uniform-random")) {
 				ingStrategy = new EfficientIngredientStrategy(ingredientspace);
 			} else if (ingStrategySt.equals("name-probability-based")) {
 				ingStrategy = new ProbabilisticIngredientStrategy(ingredientspace);
-			}
-			if (ingStrategySt.equals("code-similarity-based")) {
+			} else if (ingStrategySt.equals("code-similarity-based")) {
 				ingStrategy = new CloneIngredientSearchStrategy(ingredientspace);
 			} else {
 				ingStrategy = (IngredientSearchStrategy) PlugInLoader.loadPlugin(
@@ -95,17 +93,17 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 		} else {
 			ingStrategy = new EfficientIngredientStrategy(ingredientspace);
 		}
-	
+
 		ibra.setIngredientStrategy(ingStrategy);
-	
+
 	}
 
 	protected void loadIngredientTransformationStrategy(AstorCoreEngine approach) throws Exception {
 		IngredientBasedRepairApproach ibra = (IngredientBasedRepairApproach) approach;
-	
+
 		String ingredientTransformationStrategy = ConfigurationProperties.properties
 				.getProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier);
-	
+
 		if (ingredientTransformationStrategy == null) {
 			ibra.setIngredientTransformationStrategy(new DefaultIngredientTransformation());
 		} else {// there is a value
@@ -122,10 +120,8 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 						.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY));
 			}
 		}
-	
+
 	}
-
-
 
 	@Override
 	protected void loadOperatorSpaceDefinition(AstorCoreEngine approach) throws Exception {
