@@ -1,17 +1,12 @@
 package fr.inria.astor.approaches.mutRepair;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
-import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import fr.inria.astor.core.manipulation.filters.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.main.evolution.ExtensionPoints;
 
 /**
  * 
@@ -25,19 +20,10 @@ public class MutationalExhaustiveRepair extends ExhaustiveSearchEngine{
 		super(mutatorExecutor, projFacade);
 		ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 		ConfigurationProperties.properties.setProperty("population", "1");
-	
+		setPropertyIfNotDefined(ExtensionPoints.OPERATORS_SPACE.identifier, "mutationspace");	
+		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "if-conditions");	
 	}
 
-	@Override
-	public void loadExtensionPoints() throws Exception {
-			super.loadExtensionPoints();
-			
-			setOperatorSpace(new MutRepairSpace());
-			List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
-			ingredientProcessors.add(new IFConditionFixSpaceProcessor());
-			setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
-
-	}
 	
 	
 

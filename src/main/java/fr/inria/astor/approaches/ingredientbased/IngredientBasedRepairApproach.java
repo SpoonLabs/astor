@@ -1,4 +1,4 @@
-package fr.inria.astor.approaches;
+package fr.inria.astor.approaches.ingredientbased;
 
 import java.util.List;
 
@@ -11,6 +11,7 @@ import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
@@ -19,7 +20,6 @@ import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.Stats;
 import spoon.reflect.declaration.CtElement;
 
@@ -33,10 +33,12 @@ public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
 
 	protected IngredientSearchStrategy ingredientSearchStrategy;
 	protected IngredientTransformationStrategy ingredientTransformationStrategy;
+	protected IngredientSpace ingredientPool; 
 
 	public IngredientBasedRepairApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
+		pluginLoaded = new IngredientBasedPlugInLoader();
 	}
 
 	/**
@@ -151,6 +153,15 @@ public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
 
 	public void setIngredientStrategy(IngredientSearchStrategy ingredientStrategy) {
 		this.ingredientSearchStrategy = ingredientStrategy;
+	}
+
+
+	public IngredientSpace getIngredientPool() {
+		return ingredientPool;
+	}
+
+	public void setIngredientPool(IngredientSpace ingredientPool) {
+		this.ingredientPool = ingredientPool;
 	}
 
 }

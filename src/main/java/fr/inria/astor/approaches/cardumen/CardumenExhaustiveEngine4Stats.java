@@ -26,7 +26,6 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.Stats;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -141,13 +140,17 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 
 	public static long[] getNrIngredients(ModificationPoint modificationPoint, CtCodeElement baseIngredient) {
 		CtCodeElement codeElementToModifyFromBase = (CtCodeElement) baseIngredient;
+		VarMapping mapping = VariableResolver.mapVariablesFromContext(modificationPoint.getContextOfModificationPoint(),
+				codeElementToModifyFromBase);
+		return getNrIngredients(modificationPoint,  mapping);
+	}
+
+	public static long[] getNrIngredients(ModificationPoint modificationPoint,
+			VarMapping mapping) {
 
 		if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
 			return new long[] { 0, 0 };
 		}
-
-		VarMapping mapping = VariableResolver.mapVariablesFromContext(modificationPoint.getContextOfModificationPoint(),
-				codeElementToModifyFromBase);
 
 		log.debug("Mapping results " + mapping);
 

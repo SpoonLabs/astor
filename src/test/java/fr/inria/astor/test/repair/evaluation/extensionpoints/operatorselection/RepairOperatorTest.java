@@ -199,7 +199,7 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
 				"-maxgen", "100", "-scope", "package", "-seed", "10",
-				"-loglevel","DEBUG",
+				"-loglevel","INFO",
 				"-ingredientstrategy",
 				EfficientIngredientStrategy.class.getCanonicalName()
 				};

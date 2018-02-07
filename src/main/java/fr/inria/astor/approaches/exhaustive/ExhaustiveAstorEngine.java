@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedPlugInLoader;
 import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -15,6 +16,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.loop.navigation.InOrderSuspiciousNavigation;
+import fr.inria.astor.core.loop.navigation.SuspiciousNavigationValues;
 import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
@@ -26,6 +28,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.main.AstorOutputStatus;
+import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.code.CtCodeElement;
 
@@ -37,16 +40,24 @@ import spoon.reflect.code.CtCodeElement;
  */
 public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
-	protected IngredientSpace ingredientSpace = null;
+   protected IngredientSpace ingredientSpace = null;
 
 	public ExhaustiveAstorEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
+		//this.pluginLoaded = new IngredientBasedPlugInLoader();
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "irr-statements");
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.SUSPICIOUS_NAVIGATION.identifier,
+				SuspiciousNavigationValues.INORDER.toString());
 	}
 
 	@Override
 	public void startEvolution() throws Exception {
 
+		if(this.ingredientSpace == null){
+			this.ingredientSpace = IngredientBasedPlugInLoader.getIngredientPool(getTargetElementProcessors());
+		}
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
 		generationsExecuted = 1;
@@ -127,8 +138,6 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 	}
 
-	
-	
 	/**
 	 * @param modificationPoint
 	 * @return
@@ -178,8 +187,8 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 			ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
 
 		}
-		if(ingredients == null){
-			log.error("Zero ingredients mp: "+modificationPoint + ", op "+astorOperator );
+		if (ingredients == null) {
+			log.error("Zero ingredients mp: " + modificationPoint + ", op " + astorOperator);
 			return ops;
 		}
 		log.debug("Number of ingredients " + ingredients.size());
@@ -209,28 +218,6 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 	public void setIngredientSpace(IngredientSpace ingredientSpace) {
 		this.ingredientSpace = ingredientSpace;
-	}
-
-	@Override
-	public void loadExtensionPoints() throws Exception {
-		super.loadExtensionPoints();
-
-		this.setSuspiciousNavigationStrategy(new InOrderSuspiciousNavigation());
-
-		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
-		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
-
-		OperatorSpace jpgoperatorSpace = PlugInLoader.loadOperatorSpace();
-		if (jpgoperatorSpace == null)
-			jpgoperatorSpace = new jGenProgSpace();
-		this.setOperatorSpace(jpgoperatorSpace);
-
-		IngredientSpace ingredientspace = PlugInLoader.loadIngredientSpace(ingredientProcessors);
-
-		this.setIngredientSpace(ingredientspace);
-		this.setVariantFactory(new ProgramVariantFactory(ingredientProcessors));
-		this.setOperatorSpace(operatorSpace);
-
 	}
 
 }

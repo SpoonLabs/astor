@@ -7,21 +7,18 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedPlugInLoader;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.transformations.DefaultIngredientTransformation;
 import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
-import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.util.MapList;
 import fr.inria.astor.util.StringUtil;
-import fr.inria.main.evolution.ExtensionPoints;
-import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -40,20 +37,13 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 	public EfficientIngredientStrategy(IngredientSpace space) {
 		super(space);
-		ExtensionPoints ep = ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY;
-		String ingredientTransformationStrategyClassName = ConfigurationProperties.properties
-				.getProperty(ep.identifier);
 
-		if (ingredientTransformationStrategyClassName == null) {
-			this.ingredientTransformationStrategy = new DefaultIngredientTransformation();
-		} else {
-			try {
-				this.ingredientTransformationStrategy = (IngredientTransformationStrategy) PlugInLoader
-						.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
-			} catch (Exception e) {
-				log.error(e);
-			}
+		try {
+			this.ingredientTransformationStrategy = IngredientBasedPlugInLoader.getIngredientTransformationStrategy();
+		} catch (Exception e) {
+			log.error(e);
 		}
+
 	}
 
 	/**
@@ -173,7 +163,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 					exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
 				}
 			} catch (Throwable e) {
-				log.equals("errooor mp:"+modificationPoint+ " ingredient "+baseIngredient);
+				log.equals("errooor mp:" + modificationPoint + " ingredient " + baseIngredient);
 			}
 		}
 		return ingredientsAfterTransformation;
