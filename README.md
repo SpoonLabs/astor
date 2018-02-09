@@ -40,7 +40,7 @@ Getting started:
      
 Then the main command (note that the "location" argument is mandatory):
 
-     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.MainjGenProg -srcjavafolder examples/Math-issue-280/src/java/ -srctestfolder examples/Math-issue-280/src/test/  -binjavafolder examples/Math-issue-280/target/classes/ -bintestfolder  examples/Math-issue-280/target/test-classes/ -location examples/Math-issue-280/
+     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.Astor -mode jGenProg -srcjavafolder examples/Math-issue-280/src/java/ -srctestfolder examples/Math-issue-280/src/test/  -binjavafolder examples/Math-issue-280/target/classes/ -bintestfolder  examples/Math-issue-280/target/test-classes/ -location examples/Math-issue-280/ -dependencies examples/Math-issue-280/lib
 
 
 Output: Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
@@ -84,7 +84,7 @@ Each folder "variant-x" is a valid solution to the repair problem (passes all te
 
 For executing Astor in jKali mode, we use the option `-mode statement-remove`. jKali and jGenProg share the same arguments.
 
-    java  -cp astor.jar fr.inria.main.evolution.MainjGenProg -mode statement-remove -location <>......
+    java  -cp astor.jar fr.inria.main.evolution.AstorMain -mode statement-remove -location <>......
 
 Arguments
 ----------
