@@ -37,7 +37,10 @@ Getting started:
      cd ../../
      mvn dependency:build-classpath | egrep -v "(^\[INFO\]|^\[WARNING\])" | tee /tmp/astor-classpath.txt
      cat /tmp/astor-classpath.txt
-     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.MainjGenProg -bug280
+     
+Then the main command (note that the "location" argument is mandatory):
+
+     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.MainjGenProg -srcjavafolder examples/Math-issue-280/src/java/ -srctestfolder examples/Math-issue-280/src/test/  -binjavafolder examples/Math-issue-280/target/classes/ -bintestfolder  examples/Math-issue-280/target/test-classes/ -location examples/Math-issue-280/
 
 
 Output: Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
@@ -90,7 +93,7 @@ Arguments
     
     -mode statement 
 
-    -location "location of the project to repair" 
+    -location "location of the project to repair" (**MANDATORY**)
 
     -dependencies "folder with the dependencies of the application to repair" 
 
