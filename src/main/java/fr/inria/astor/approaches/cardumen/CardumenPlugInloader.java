@@ -4,8 +4,9 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.approaches.ingredientbased.IngredientBasedPlugInLoader;
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproach;
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionClassTypeIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
@@ -22,7 +23,7 @@ public class CardumenPlugInloader extends IngredientBasedPlugInLoader {
 
 	@Override
 	protected void loadIngredientPool(AstorCoreEngine approach) throws JSAPException, Exception {
-		IngredientBasedRepairApproach ibra = (IngredientBasedRepairApproach) approach;
+		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 		
 		List<TargetElementProcessor<?>> ingredientProcessors= approach.getTargetElementProcessors();
 		ExpressionTypeIngredientSpace ingredientspace = ((ConfigurationProperties.getPropertyBool("uniformreplacement"))

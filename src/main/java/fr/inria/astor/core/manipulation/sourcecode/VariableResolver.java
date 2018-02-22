@@ -358,7 +358,7 @@ public class VariableResolver {
 
 		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContext,
 				ingredientCtElement);
-		
+
 		return mapVariablesFromContext(varContext, ingredientCtElement, variablesOutOfScope);
 	}
 
@@ -1067,11 +1067,11 @@ public class VariableResolver {
 		logger.debug("Teoricalcombinations: " + numberTotalComb);
 		double maxPerVarLimit = 0;
 
-		if (numberTotalComb < maxNumberCombinations) {
+		if (numberTotalComb < maxNumberCombinations
+				|| !ConfigurationProperties.getPropertyBool("maxCombinationVariableLimit")) {
 			// We dont need to cut vars
 			maxPerVarLimit = max;
 		} else {
-
 			maxPerVarLimit = Math.pow(maxNumberCombinations, 1.0 / nrVarsWithMorethan1Possibilities);
 		}
 

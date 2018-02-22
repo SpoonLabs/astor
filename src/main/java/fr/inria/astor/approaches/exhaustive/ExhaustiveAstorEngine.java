@@ -7,29 +7,25 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.approaches.ingredientbased.IngredientBasedPlugInLoader;
-import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
-import fr.inria.astor.core.loop.navigation.InOrderSuspiciousNavigation;
 import fr.inria.astor.core.loop.navigation.SuspiciousNavigationValues;
-import fr.inria.astor.core.loop.population.ProgramVariantFactory;
+import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
-import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.ExtensionPoints;
-import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.code.CtCodeElement;
 
 /**
@@ -38,14 +34,14 @@ import spoon.reflect.code.CtCodeElement;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
+public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine implements IngredientBasedApproach {
 
-   protected IngredientSpace ingredientSpace = null;
+	protected IngredientSpace ingredientSpace = null;
 
 	public ExhaustiveAstorEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
-		//this.pluginLoaded = new IngredientBasedPlugInLoader();
+		// this.pluginLoaded = new IngredientBasedPlugInLoader();
 		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
 		ConfigurationProperties.properties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "irr-statements");
 		ConfigurationProperties.properties.setProperty(ExtensionPoints.SUSPICIOUS_NAVIGATION.identifier,
@@ -55,7 +51,7 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 	@Override
 	public void startEvolution() throws Exception {
 
-		if(this.ingredientSpace == null){
+		if (this.ingredientSpace == null) {
 			this.ingredientSpace = IngredientBasedPlugInLoader.getIngredientPool(getTargetElementProcessors());
 		}
 		dateInitEvolution = new Date();
@@ -218,6 +214,37 @@ public class ExhaustiveAstorEngine extends ExhaustiveSearchEngine {
 
 	public void setIngredientSpace(IngredientSpace ingredientSpace) {
 		this.ingredientSpace = ingredientSpace;
+	}
+
+	@Override
+	public IngredientSpace getIngredientPool() {
+		return this.ingredientSpace;
+	}
+
+	@Override
+	public void setIngredientPool(IngredientSpace ingredientPool) {
+		this.ingredientSpace = ingredientPool;
+
+	}
+	
+	@Override
+	public IngredientTransformationStrategy getIngredientTransformationStrategy() {
+		return null;
+	}
+
+	@Override
+	public void setIngredientTransformationStrategy(IngredientTransformationStrategy ingredientTransformationStrategy) {
+		
+	}
+
+	@Override
+	public IngredientSearchStrategy getIngredientSearchStrategy() {
+		return null;
+	}
+
+	@Override
+	public void setIngredientSearchStrategy(IngredientSearchStrategy ingredientStrategy) {
+		
 	}
 
 }

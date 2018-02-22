@@ -88,7 +88,7 @@ public class ExpressionIngredientSpaceTest {
 		assertEquals("i < (maximalIterationCount)", modificationPoint.getCodeElement().toString());
 
 		// Let's inspect the ingredient space:
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) engine.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) engine.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 		assertTrue(ExpressionTypeIngredientSpace.class.isInstance(ingredientSpace));
@@ -200,7 +200,7 @@ public class ExpressionIngredientSpaceTest {
 		assertEquals("i < (maximalIterationCount)", modificationPoint.getCodeElement().toString());
 
 		// Let's inspect the ingredient space:
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) engine.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) engine.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 		assertTrue(ExpressionTypeIngredientSpace.class.isInstance(ingredientSpace));
@@ -281,7 +281,7 @@ public class ExpressionIngredientSpaceTest {
 		log.debug("Op instance Ingredient:  " + opInstance.getModified());
 
 		// Let's inspect the ingredient space:
-		AstorCtIngredientSpace ingredientSpace = (AstorCtIngredientSpace) engine.getIngredientStrategy()
+		AstorCtIngredientSpace ingredientSpace = (AstorCtIngredientSpace) engine.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -317,7 +317,7 @@ public class ExpressionIngredientSpaceTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientStrategy().getIngredientSpace();
+		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		int i = 0;
 		for (ModificationPoint modpoint : variantss.get(0).getModificationPoints()) {
@@ -389,7 +389,7 @@ public class ExpressionIngredientSpaceTest {
 		ModificationPoint modificationPoint = variantss.get(0).getModificationPoints().get(14);
 		
 		
-		IngredientSpace space = engine.getIngredientStrategy().getIngredientSpace();
+		IngredientSpace space = engine.getIngredientSearchStrategy().getIngredientSpace();
 		ExpressionTypeIngredientSpace expressionSpace = (ExpressionTypeIngredientSpace) space;
 		assertNotNull(expressionSpace);
 		

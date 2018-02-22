@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproach;
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.WeightedRandomOperatorSelection;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
@@ -34,7 +34,7 @@ public class SelectionOperatorTest {
 		AstorMain main1 = new AstorMain();
 		main1.execute(csDefault.flat());
 
-		IngredientBasedRepairApproach ap = (IngredientBasedRepairApproach) main1.getEngine();
+		IngredientBasedRepairApproachImpl ap = (IngredientBasedRepairApproachImpl) main1.getEngine();
 
 		assertTrue(WeightedRandomOperatorSelection.class.isInstance(ap.getOperatorSelectionStrategy()));
 	}
@@ -77,7 +77,7 @@ public class SelectionOperatorTest {
 		AstorMain main1 = new AstorMain();
 		main1.execute(csDefault.flat());
 
-		IngredientBasedRepairApproach ap = (IngredientBasedRepairApproach) main1.getEngine();
+		IngredientBasedRepairApproachImpl ap = (IngredientBasedRepairApproachImpl) main1.getEngine();
 
 		assertTrue(WeightedRandomOperatorSelection.class.isInstance(ap.getOperatorSelectionStrategy()));
 		WeightedRandomOperatorSelection ws = (WeightedRandomOperatorSelection) ap.getOperatorSelectionStrategy();

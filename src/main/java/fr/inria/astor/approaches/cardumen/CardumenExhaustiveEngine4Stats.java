@@ -78,7 +78,7 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 
 				AstorOperator pointOperation = this.getOperatorSpace().getOperators().get(0);
 
-				EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) this.getIngredientStrategy();
+				EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) this.getIngredientSearchStrategy();
 
 				List<CtCodeElement> baseElements = estrategy.getNotExhaustedBaseElements(modifPoint, pointOperation);
 

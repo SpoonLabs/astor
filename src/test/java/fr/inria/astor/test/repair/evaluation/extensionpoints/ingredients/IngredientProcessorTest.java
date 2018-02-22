@@ -46,7 +46,7 @@ public class IngredientProcessorTest {
 		ProgramVariant pv = solutions.get(0);
 	
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientStrategy().getIngredientSpace();
+		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		List ingredients = ingSpace.getAllIngredients();
 		assertTrue(ingredients.size() > 0);
@@ -71,7 +71,7 @@ public class IngredientProcessorTest {
 		ProgramVariant pv = variantss.get(0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientStrategy().getIngredientSpace();
+		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		checkIngredientTypes(variantss, ingSpace, CtInvocation.class);
 	}
@@ -91,7 +91,7 @@ public class IngredientProcessorTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientStrategy().getIngredientSpace();
+		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		checkIngredientTypes(variantss, ingSpace, CtExpression.class);
 

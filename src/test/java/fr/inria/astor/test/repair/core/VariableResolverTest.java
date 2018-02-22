@@ -296,7 +296,7 @@ public class VariableResolverTest {
 
 		System.out.println("Mpoint Context \n" + mp.getContextOfModificationPoint());
 
-		IngredientSpace ispace = jgp.getIngredientStrategy().getIngredientSpace();
+		IngredientSpace ispace = jgp.getIngredientSearchStrategy().getIngredientSpace();
 		List<CtElement> ingredients = ispace.getIngredients(mp.getCodeElement());
 
 		// For with a induction variable

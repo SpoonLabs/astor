@@ -37,7 +37,7 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientPool(AstorCoreEngine approach) throws JSAPException, Exception {
-		IngredientBasedRepairApproach ibra = (IngredientBasedRepairApproach) approach;
+		IngredientBasedRepairApproachImpl ibra = (IngredientBasedRepairApproachImpl) approach;
 		List<TargetElementProcessor<?>> ingredientProcessors = approach.getTargetElementProcessors();
 		// The ingredients for build the patches
 		IngredientSpace ingredientspace = getIngredientPool(ingredientProcessors);
@@ -67,7 +67,7 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientSearchStrategy(AstorCoreEngine approach) throws Exception {
 
-		IngredientBasedRepairApproach ibra = (IngredientBasedRepairApproach) approach;
+		IngredientBasedRepairApproachImpl ibra = (IngredientBasedRepairApproachImpl) approach;
 
 		IngredientSpace ingredientspace = ibra.getIngredientPool();
 
@@ -93,14 +93,14 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 			ingStrategy = new EfficientIngredientStrategy(ingredientspace);
 		}
 
-		ibra.setIngredientStrategy(ingStrategy);
+		ibra.setIngredientSearchStrategy(ingStrategy);
 
 	}
 
 	protected void loadIngredientTransformationStrategy(AstorCoreEngine approach) throws Exception {
 		
 		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = getIngredientTransformationStrategy();
-		IngredientBasedRepairApproach ibra = (IngredientBasedRepairApproach) approach;
+		IngredientBasedRepairApproachImpl ibra = (IngredientBasedRepairApproachImpl) approach;
 		ibra.setIngredientTransformationStrategy(ingredientTransformationStrategyLoaded);
 	}
 

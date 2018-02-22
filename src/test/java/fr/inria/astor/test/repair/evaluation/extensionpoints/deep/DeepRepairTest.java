@@ -236,10 +236,10 @@ public class DeepRepairTest {
 		assertEquals(72, buggyStatementModPoint.getCodeElement().getPosition().getEndLine());
 
 		// We check that the strategy is that one from the DeepRepair
-		assertTrue(engine.getIngredientStrategy() instanceof CloneIngredientSearchStrategy);
+		assertTrue(engine.getIngredientSearchStrategy() instanceof CloneIngredientSearchStrategy);
 
 		CloneIngredientSearchStrategy<CtExecutable> excloneStrategy = (CloneIngredientSearchStrategy<CtExecutable>) engine
-				.getIngredientStrategy();
+				.getIngredientSearchStrategy();
 
 		AstorOperator op = new ReplaceOp();
 
@@ -283,7 +283,7 @@ public class DeepRepairTest {
 		main1.execute(args);
 		JGenProg engine = (JGenProg) main1.getEngine();
 
-		assertTrue(engine.getIngredientStrategy() instanceof CloneIngredientSearchStrategy);
+		assertTrue(engine.getIngredientSearchStrategy() instanceof CloneIngredientSearchStrategy);
 
 		log.debug("size solutions: " + engine.getSolutions().size());
 
@@ -321,13 +321,13 @@ public class DeepRepairTest {
 		main1.execute(args);
 		JGenProg engine = (JGenProg) main1.getEngine();
 
-		IngredientSpace ingredientSpace = engine.getIngredientStrategy().getIngredientSpace();
+		IngredientSpace ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
 
 		assertTrue(ingredientSpace.getLocations().size() > 0);
 
 		assertEquals(1, ingredientSpace.getLocations().size());
 
-		IngredientSearchStrategy ingStrategy = engine.getIngredientStrategy();
+		IngredientSearchStrategy ingStrategy = engine.getIngredientSearchStrategy();
 
 		assertNotNull(ingStrategy);
 
@@ -415,11 +415,11 @@ public class DeepRepairTest {
 		main1.execute(args);
 		JGenProg engine = (JGenProg) main1.getEngine();
 
-		IngredientSpace ingredientSpace = engine.getIngredientStrategy().getIngredientSpace();
+		IngredientSpace ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
 
 		assertTrue(ingredientSpace.getLocations().size() > 0);
 
-		IngredientSearchStrategy ingStrategy = engine.getIngredientStrategy();
+		IngredientSearchStrategy ingStrategy = engine.getIngredientSearchStrategy();
 
 		assertNotNull(ingStrategy);
 
@@ -501,13 +501,13 @@ public class DeepRepairTest {
 		main1.execute(args.flat());
 		DeepRepairEngine engine = (DeepRepairEngine) main1.getEngine();
 
-		assertEquals(CtClassIngredientSpace.class, engine.getIngredientStrategy().getIngredientSpace().getClass());
+		assertEquals(CtClassIngredientSpace.class, engine.getIngredientSearchStrategy().getIngredientSpace().getClass());
 
 		args.command.put("-scope", "package");
 		main1.execute(args.flat());
 		engine = (DeepRepairEngine) main1.getEngine();
 
-		assertEquals(CtPackageIngredientScope.class, engine.getIngredientStrategy().getIngredientSpace().getClass());
+		assertEquals(CtPackageIngredientScope.class, engine.getIngredientSearchStrategy().getIngredientSpace().getClass());
 
 		args = createDeepRepairModeCommandM70(learningDir, 0, false, scope, 0.5);
 
@@ -515,7 +515,7 @@ public class DeepRepairTest {
 		main1.execute(args.flat());
 		engine = (DeepRepairEngine) main1.getEngine();
 
-		assertEquals(CtGlobalIngredientScope.class, engine.getIngredientStrategy().getIngredientSpace().getClass());
+		assertEquals(CtGlobalIngredientScope.class, engine.getIngredientSearchStrategy().getIngredientSpace().getClass());
 	}
 
 	@Test
@@ -531,23 +531,23 @@ public class DeepRepairTest {
 		main1.execute(args.flat());
 		DeepRepairEngine engine = (DeepRepairEngine) main1.getEngine();
 
-		assertTrue(CloneIngredientSearchStrategy.class.isInstance(engine.getIngredientStrategy()));
-		assertEquals(CtType.class, ((CloneIngredientSearchStrategy) engine.getIngredientStrategy()).getCls());
+		assertTrue(CloneIngredientSearchStrategy.class.isInstance(engine.getIngredientSearchStrategy()));
+		assertEquals(CtType.class, ((CloneIngredientSearchStrategy) engine.getIngredientSearchStrategy()).getCls());
 
 		// As argument type
 		args.command.put("-clonegranularity", CtType.class.getName());
 		main1.execute(args.flat());
 		engine = (DeepRepairEngine) main1.getEngine();
 
-		assertTrue(CloneIngredientSearchStrategy.class.isInstance(engine.getIngredientStrategy()));
-		assertEquals(CtType.class, ((CloneIngredientSearchStrategy) engine.getIngredientStrategy()).getCls());
+		assertTrue(CloneIngredientSearchStrategy.class.isInstance(engine.getIngredientSearchStrategy()));
+		assertEquals(CtType.class, ((CloneIngredientSearchStrategy) engine.getIngredientSearchStrategy()).getCls());
 
 		args.command.put("-clonegranularity", CtExecutable.class.getName());
 		main1.execute(args.flat());
 		engine = (DeepRepairEngine) main1.getEngine();
 
-		assertTrue(CloneIngredientSearchStrategy.class.isInstance(engine.getIngredientStrategy()));
-		assertEquals(CtExecutable.class, ((CloneIngredientSearchStrategy) engine.getIngredientStrategy()).getCls());
+		assertTrue(CloneIngredientSearchStrategy.class.isInstance(engine.getIngredientSearchStrategy()));
+		assertEquals(CtExecutable.class, ((CloneIngredientSearchStrategy) engine.getIngredientSearchStrategy()).getCls());
 
 	}
 
@@ -565,8 +565,8 @@ public class DeepRepairTest {
 		main1.execute(args.flat());
 		DeepRepairEngine engine = (DeepRepairEngine) main1.getEngine();
 
-		assertTrue(CloneIngredientSearchStrategy.class.isInstance(engine.getIngredientStrategy()));
-		assertEquals(CtExecutable.class, ((CloneIngredientSearchStrategy) engine.getIngredientStrategy()).getCls());
+		assertTrue(CloneIngredientSearchStrategy.class.isInstance(engine.getIngredientSearchStrategy()));
+		assertEquals(CtExecutable.class, ((CloneIngredientSearchStrategy) engine.getIngredientSearchStrategy()).getCls());
 
 	}
 
@@ -587,13 +587,13 @@ public class DeepRepairTest {
 		main1.execute(args);
 		DeepRepairEngine engine = (DeepRepairEngine) main1.getEngine();
 
-		IngredientSpace ingredientSpace = engine.getIngredientStrategy().getIngredientSpace();
+		IngredientSpace ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
 
 		assertTrue(ingredientSpace.getLocations().size() > 0);
 
 		assertEquals(1, ingredientSpace.getLocations().size());
 
-		IngredientSearchStrategy ingStrategy = engine.getIngredientStrategy();
+		IngredientSearchStrategy ingStrategy = engine.getIngredientSearchStrategy();
 
 		assertNotNull(ingStrategy);
 

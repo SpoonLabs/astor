@@ -29,13 +29,13 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
+public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine implements IngredientBasedApproach {
 
 	protected IngredientSearchStrategy ingredientSearchStrategy;
 	protected IngredientTransformationStrategy ingredientTransformationStrategy;
-	protected IngredientSpace ingredientPool; 
+	protected IngredientSpace ingredientPool;
 
-	public IngredientBasedRepairApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+	public IngredientBasedRepairApproachImpl(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		pluginLoaded = new IngredientBasedPlugInLoader();
@@ -131,14 +131,6 @@ public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
 					+ OperatorSelectionStrategy.class.getName());
 	}
 
-	public IngredientSearchStrategy getIngredientSearchStrategy() {
-		return ingredientSearchStrategy;
-	}
-
-	public void setIngredientSearchStrategy(IngredientSearchStrategy ingredientSearchStrategy) {
-		this.ingredientSearchStrategy = ingredientSearchStrategy;
-	}
-
 	public IngredientTransformationStrategy getIngredientTransformationStrategy() {
 		return ingredientTransformationStrategy;
 	}
@@ -147,14 +139,13 @@ public abstract class IngredientBasedRepairApproach extends AstorCoreEngine {
 		this.ingredientTransformationStrategy = ingredientTransformationStrategy;
 	}
 
-	public IngredientSearchStrategy getIngredientStrategy() {
+	public IngredientSearchStrategy getIngredientSearchStrategy() {
 		return ingredientSearchStrategy;
 	}
 
-	public void setIngredientStrategy(IngredientSearchStrategy ingredientStrategy) {
+	public void setIngredientSearchStrategy(IngredientSearchStrategy ingredientStrategy) {
 		this.ingredientSearchStrategy = ingredientStrategy;
 	}
-
 
 	public IngredientSpace getIngredientPool() {
 		return ingredientPool;

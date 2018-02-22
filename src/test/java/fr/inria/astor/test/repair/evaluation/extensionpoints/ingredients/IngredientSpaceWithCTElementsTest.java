@@ -268,7 +268,7 @@ public class IngredientSpaceWithCTElementsTest {
 
 		assertTrue(engine.getSolutions().size() > 0);
 		
-		IngredientSearchStrategy strategy = engine.getIngredientStrategy();
+		IngredientSearchStrategy strategy = engine.getIngredientSearchStrategy();
 		CtClassIngredientSpace space = 	(CtClassIngredientSpace) strategy.getIngredientSpace();
 		List<CtElement> locations = space.getLocations();
 		assertEquals(2, locations.size());
@@ -303,7 +303,7 @@ public class IngredientSpaceWithCTElementsTest {
 
 		assertTrue(engine.getSolutions().size() > 0);
 		
-		IngredientSearchStrategy strategy = engine.getIngredientStrategy();
+		IngredientSearchStrategy strategy = engine.getIngredientSearchStrategy();
 		CtPackageIngredientScope space = 	(CtPackageIngredientScope) strategy.getIngredientSpace();
 		List<CtElement> locations = space.getLocations();
 		assertEquals(1, locations.size());
@@ -336,7 +336,7 @@ public class IngredientSpaceWithCTElementsTest {
 
 		assertTrue(engine.getSolutions().size() > 0);
 		
-		IngredientSearchStrategy strategy = engine.getIngredientStrategy();
+		IngredientSearchStrategy strategy = engine.getIngredientSearchStrategy();
 		CtGlobalIngredientScope space = 	(CtGlobalIngredientScope) strategy.getIngredientSpace();
 		List<CtElement> locations = space.getLocations();
 		locations.forEach(e -> log.debug(e.getShortRepresentation()));

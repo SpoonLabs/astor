@@ -1,6 +1,6 @@
 package fr.inria.astor.approaches.deepRepepair;
 
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproach;
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -14,7 +14,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class DeepRepairEngine extends IngredientBasedRepairApproach {
+public class DeepRepairEngine extends IngredientBasedRepairApproachImpl {
 
 	public DeepRepairEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws Exception {
 		super(mutatorExecutor, projFacade);

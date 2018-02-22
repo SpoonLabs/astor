@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
 import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine4Stats;
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproach;
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -77,7 +77,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -117,7 +117,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -193,7 +193,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -275,7 +275,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -342,7 +342,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -407,7 +407,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -472,7 +472,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -525,7 +525,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -601,7 +601,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -653,7 +653,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -682,7 +682,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -708,7 +708,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -742,7 +742,7 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -824,8 +824,8 @@ public class CardumenApproachTest {
 		Stats.createStat();
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) cardumen.getIngredientStrategy();
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientStrategy()
+		EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) cardumen.getIngredientSearchStrategy();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -1538,7 +1538,7 @@ public class CardumenApproachTest {
 		command.command.put("-loglevel", Level.INFO.toString());
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
-		IngredientBasedRepairApproach ingapproach = (IngredientBasedRepairApproach) main1.getEngine();
+		IngredientBasedRepairApproachImpl ingapproach = (IngredientBasedRepairApproachImpl) main1.getEngine();
 
 		// MP: (156/834) MP=org.joda.time.DateTimeZone line: 263, pointed
 		// element: CtBinaryOperatorImpl|| code: hoursInMinutes < 0||
@@ -1555,7 +1555,7 @@ public class CardumenApproachTest {
 		List<CtVariable> varContextClearResult = VariableResolver.searchVariablesInScope(mp156.getCodeElement());//
 		CtElement returnExpression = pv.getModificationPoints().get(8).getCodeElement();
 
-		EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) ingapproach.getIngredientStrategy();
+		EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) ingapproach.getIngredientSearchStrategy();
 
 		List<CtCodeElement> baseElements = estrategy.getNotExhaustedBaseElements(mp156,
 				ingapproach.getOperatorSpace().getOperators().get(0));

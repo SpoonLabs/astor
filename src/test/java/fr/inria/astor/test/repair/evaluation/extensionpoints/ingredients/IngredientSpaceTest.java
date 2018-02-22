@@ -70,7 +70,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 		
 		main1.execute(args);
 		JGenProg astor = (JGenProg) main1.getEngine();
-		IngredientSearchStrategy ingStrategy = astor.getIngredientStrategy();
+		IngredientSearchStrategy ingStrategy = astor.getIngredientSearchStrategy();
 		//Let's take a modification point from the first variant. I take the element at 12, it's an assignement.
 		ModificationPoint mpoint = astor.getVariants().get(0).getModificationPoints().get(12);
 		Ingredient ingLast = ingStrategy.getFixIngredient(mpoint, null);
@@ -107,7 +107,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 	
 		main1.execute(args);
 		JGenProg astor = (JGenProg) main1.getEngine();
-		IngredientSearchStrategy ingStrategy = astor.getIngredientStrategy();
+		IngredientSearchStrategy ingStrategy = astor.getIngredientSearchStrategy();
 	
 		
 		//
@@ -213,7 +213,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 	
 		main1.execute(args);
 		JGenProg astor = (JGenProg) main1.getEngine();
-		IngredientSearchStrategy ingStrategy = astor.getIngredientStrategy();
+		IngredientSearchStrategy ingStrategy = astor.getIngredientSearchStrategy();
 	
 		
 		//
@@ -255,7 +255,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 	
 		main1.execute(args);
 		JGenProg astor = (JGenProg) main1.getEngine();
-		IngredientSearchStrategy ingStrategy = astor.getIngredientStrategy();
+		IngredientSearchStrategy ingStrategy = astor.getIngredientSearchStrategy();
 	
 		
 		//
@@ -305,7 +305,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 	
 		main1.execute(args);
 		JGenProg astor = (JGenProg) main1.getEngine();
-		IngredientSearchStrategy ingStrategy = astor.getIngredientStrategy();
+		IngredientSearchStrategy ingStrategy = astor.getIngredientSearchStrategy();
 	
 		
 		//
@@ -363,7 +363,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 
 		//We retrieve the engine
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		IngredientSpace ispace = jgp.getIngredientStrategy().getIngredientSpace();
+		IngredientSpace ispace = jgp.getIngredientSearchStrategy().getIngredientSpace();
 		//List of locations considered by the space
 		List<CtElement> ctLocations = ispace.getLocations();
 		//Only one class has suspicious: org.apache.commons.math.analysis.solvers.BisectionSolver
@@ -398,7 +398,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 
 		//We retrieve the engine
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		IngredientSpace ispace = jgp.getIngredientStrategy().getIngredientSpace();
+		IngredientSpace ispace = jgp.getIngredientSearchStrategy().getIngredientSpace();
 		//List of locations considered by the space
 		List<CtElement> ctLocations = ispace.getLocations();
 		//Only one class has suspicious: org.apache.commons.math.analysis.solvers.BisectionSolver
@@ -411,7 +411,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 		assertEquals("return solve(f, min, max)",mp.getCodeElement().toString());
 		assertEquals(72,((SuspiciousModificationPoint)mp).getSuspicious().getLineNumber());
 		
-		List ingredientsWithoutDuplicates = jgp.getIngredientStrategy().getIngredientSpace().getIngredients(mp.getCodeElement(), mp.getCodeElement().getClass().getSimpleName());
+		List ingredientsWithoutDuplicates = jgp.getIngredientSearchStrategy().getIngredientSpace().getIngredients(mp.getCodeElement(), mp.getCodeElement().getClass().getSimpleName());
 		assertEquals(3, ingredientsWithoutDuplicates.size());
 		
 		
@@ -426,7 +426,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 		assertEquals("return solve(f, min, max)",mp.getCodeElement().toString());
 		assertEquals(72,((SuspiciousModificationPoint)mp).getSuspicious().getLineNumber());
 		
-		List ingredientsWithDuplicates = jgp.getIngredientStrategy().getIngredientSpace().getIngredients(mp.getCodeElement(), mp.getCodeElement().getClass().getSimpleName());
+		List ingredientsWithDuplicates = jgp.getIngredientSearchStrategy().getIngredientSpace().getIngredients(mp.getCodeElement(), mp.getCodeElement().getClass().getSimpleName());
 		assertEquals(4, ingredientsWithDuplicates.size());
 		
 		

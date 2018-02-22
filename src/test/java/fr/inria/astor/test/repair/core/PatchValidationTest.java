@@ -115,7 +115,7 @@ public class PatchValidationTest {
 
 		assertEquals("Problems with number of  process", processBeforeAll, afterPatchValidation);
 
-		String printed = jgp.getIngredientStrategy().toString();
+		String printed = jgp.getIngredientSearchStrategy().toString();
 		Assert.assertNotNull(printed);
 	}
 

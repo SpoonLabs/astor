@@ -77,7 +77,7 @@ public class ExpressionBooleanOperatorTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientStrategy().getIngredientSpace();
+		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		// Let's check the ingredient space
 		List allingredients = ingSpace.getAllIngredients();
@@ -178,7 +178,7 @@ public class ExpressionBooleanOperatorTest {
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 		int i = 0;
@@ -220,7 +220,7 @@ public class ExpressionBooleanOperatorTest {
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -275,7 +275,7 @@ public class ExpressionBooleanOperatorTest {
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -317,7 +317,7 @@ public class ExpressionBooleanOperatorTest {
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -382,7 +382,7 @@ public class ExpressionBooleanOperatorTest {
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientStrategy()
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 

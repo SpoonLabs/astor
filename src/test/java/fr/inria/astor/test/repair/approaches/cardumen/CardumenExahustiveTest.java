@@ -6,6 +6,7 @@ import org.apache.log4j.Level;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.cardumen.CardumenExhaApproach;
 import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine4Stats;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -95,7 +96,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 
 			AstorOperator pointOperation = engine.getOperatorSpace().getOperators().get(0);
 
-			EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) engine.getIngredientStrategy();
+			EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) engine.getIngredientSearchStrategy();
 
 			List<CtCodeElement> baseElements = estrategy.getNotExhaustedBaseElements(modifPoint, pointOperation);
 
@@ -155,5 +156,31 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 	//	Stats.createStat();
 	//	CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 	//	runExa(cardumen.getVariants().get(0), cardumen);
+	}
+	
+	@Test
+	public void testCardumentM70ExhausitveComplete() throws Exception {
+		CommandSummary command = MathCommandsTests.getMath70Command();
+
+		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		// Configuration for paper experiment
+		command.command.put("-mode", ExecutionMode.custom.name());
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxtime", "60");
+		command.command.put("-population", "1");
+		command.command.put("-customengine", CardumenExhaApproach.class.getCanonicalName());
+		command.command.put("-scope", scope.toString().toLowerCase());
+		command.command.put("-parameters",
+				"limitbysuspicious:false:" + "disablelog:false:uniformreplacement:false:frequenttemplate:false");
+		command.command.put("-loglevel", Level.DEBUG.toString());
+		command.command.put("-maxVarCombination", "1000");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		Stats.createStat();
+		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
+
+	
+
 	}
 }

@@ -102,8 +102,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 0);
 
 	}
+	
 
 
+	 
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMath70ThisKeyword() throws Exception {
@@ -132,7 +134,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertEquals(elMP1.toString(), "return solve(min, max)");
 		System.out.println(elMP1);
 
-		List<CtCodeElement> ingredients = jgp.getIngredientStrategy().getIngredientSpace().getIngredients(elMP1,
+		List<CtCodeElement> ingredients = jgp.getIngredientSearchStrategy().getIngredientSpace().getIngredients(elMP1,
 				elMP1.getClass().getSimpleName());
 		System.out.println(ingredients);
 		CtCodeElement patch = ingredients.get(0);
