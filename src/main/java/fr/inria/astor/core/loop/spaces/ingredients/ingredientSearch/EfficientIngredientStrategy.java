@@ -33,6 +33,7 @@ import spoon.reflect.declaration.CtType;
 public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 	IngredientTransformationStrategy ingredientTransformationStrategy;
+	
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	public EfficientIngredientStrategy(IngredientSpace space) {

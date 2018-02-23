@@ -16,7 +16,7 @@ import org.apache.log4j.PatternLayout;
 
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
 import fr.inria.astor.approaches.deepRepepair.DeepRepairEngine;
-import fr.inria.astor.approaches.exhaustive.ExhaustiveAstorEngine;
+import fr.inria.astor.approaches.exhaustive.ExhaustiveIngredientBasedEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jkali.JKaliEngine;
 import fr.inria.astor.approaches.mutRepair.MutationalExhaustiveRepair;
@@ -91,7 +91,7 @@ public class AstorMain extends AbstractMain {
 			astorCore = new MutationalExhaustiveRepair(mutSupporter, projectFacade);
 
 		} else if (ExecutionMode.EXASTOR.equals(mode)) {
-			astorCore = new ExhaustiveAstorEngine(mutSupporter, projectFacade);
+			astorCore = new ExhaustiveIngredientBasedEngine(mutSupporter, projectFacade);
 
 		} else {
 			// If the execution mode is any of the predefined, Astor

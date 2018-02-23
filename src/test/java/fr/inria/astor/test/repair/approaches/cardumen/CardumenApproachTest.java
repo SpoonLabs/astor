@@ -21,12 +21,14 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
 import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine4Stats;
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
@@ -1538,7 +1540,9 @@ public class CardumenApproachTest {
 		command.command.put("-loglevel", Level.INFO.toString());
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
-		IngredientBasedRepairApproachImpl ingapproach = (IngredientBasedRepairApproachImpl) main1.getEngine();
+		
+		AstorCoreEngine  approach = main1.getEngine();
+		IngredientBasedApproach ingapproach = (IngredientBasedApproach) main1.getEngine();
 
 		// MP: (156/834) MP=org.joda.time.DateTimeZone line: 263, pointed
 		// element: CtBinaryOperatorImpl|| code: hoursInMinutes < 0||
@@ -1558,7 +1562,7 @@ public class CardumenApproachTest {
 		EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) ingapproach.getIngredientSearchStrategy();
 
 		List<CtCodeElement> baseElements = estrategy.getNotExhaustedBaseElements(mp156,
-				ingapproach.getOperatorSpace().getOperators().get(0));
+				approach.getOperatorSpace().getOperators().get(0));
 
 		CtCodeElement ingredient = baseElements.get(43);
 		assertEquals("((_long_0 ^ _int_1) >= 0)", ingredient.toString());

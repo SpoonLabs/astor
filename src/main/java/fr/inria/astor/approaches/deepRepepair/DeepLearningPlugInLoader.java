@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.approaches.ingredientbased.IngredientBasedPlugInLoader;
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.CtLocationIngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
@@ -26,7 +26,7 @@ public class DeepLearningPlugInLoader extends IngredientBasedPlugInLoader {
 	@Override
 	public void loadIngredientPool(AstorCoreEngine approach) throws JSAPException, Exception {
 
-		IngredientBasedRepairApproachImpl ibra = (IngredientBasedRepairApproachImpl) approach;
+		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 
 		List<TargetElementProcessor<?>> ingredientProcessors = approach.getTargetElementProcessors();
 

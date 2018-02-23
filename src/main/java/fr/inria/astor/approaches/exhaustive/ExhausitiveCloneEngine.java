@@ -25,7 +25,7 @@ import spoon.reflect.code.CtCodeElement;
  * @author Matias Martinez
  *
  */
-public class ExhausitiveCloneEngine extends ExhaustiveAstorEngine {
+public class ExhausitiveCloneEngine extends ExhaustiveIngredientBasedEngine {
 
 	public ExhausitiveCloneEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {

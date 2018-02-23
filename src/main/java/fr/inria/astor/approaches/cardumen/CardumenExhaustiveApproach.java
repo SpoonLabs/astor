@@ -2,9 +2,8 @@ package fr.inria.astor.approaches.cardumen;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.approaches.exhaustive.ExhaustiveAstorEngine;
+import fr.inria.astor.approaches.exhaustive.ExhaustiveIngredientBasedEngine;
 import fr.inria.astor.approaches.ingredientbased.IngredientBasedApproach;
-import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -15,7 +14,7 @@ import fr.inria.main.evolution.ExtensionPoints;
  * @author Matias Martinez
  *
  */
-public class CardumenExhaustiveApproach extends ExhaustiveAstorEngine implements IngredientBasedApproach {
+public class CardumenExhaustiveApproach extends ExhaustiveIngredientBasedEngine implements IngredientBasedApproach {
 
 	public CardumenExhaustiveApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
@@ -37,4 +36,6 @@ public class CardumenExhaustiveApproach extends ExhaustiveAstorEngine implements
 		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier, "name-probability-based");
 
 	}
+	
+
 }
