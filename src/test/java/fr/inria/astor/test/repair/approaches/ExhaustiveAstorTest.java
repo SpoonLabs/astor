@@ -106,7 +106,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 				//
 				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", //
 				"-maxtime", "100",
-				"-loglevel","DEBUG",
+				"-loglevel","INFO",
 				// For excluding regression
 				"-excludeRegression", "-parameters",
 				"maxCombinationVariableLimit:true"
@@ -133,7 +133,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 		Assert.assertEquals(2, patches.size());
 		
 		PatchHunkStats hunkSolution = getHunkSolution(patches, "this.f = f",
-				"CtReturnImpl|CtBlockImpl");
+				"CtAssignmentImpl|CtBlockImpl");
 		Assert.assertNotNull(hunkSolution);
 	
 		PatchHunkStats hunkSolution2 = getHunkSolution(patches, "return solve(f, initial, max)",
