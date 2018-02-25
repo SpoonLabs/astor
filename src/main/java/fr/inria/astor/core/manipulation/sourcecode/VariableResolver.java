@@ -947,7 +947,7 @@ public class VariableResolver {
 				List<CtVariable> sortedVariables = new ArrayList<>(mapped);
 
 				if (managerngram == null) {
-					logger.debug("Sorting variables Randomly");
+					logger.debug("Sorting variables Randomly: " + sortedVariables.size());
 					Collections.shuffle(sortedVariables, RandomManager.getRandom());
 				} else {
 					logger.debug("Sorting variables by 1-gram");
@@ -1061,7 +1061,15 @@ public class VariableResolver {
 
 			logger.debug(String.format("Number compatible vars of %s : %d",
 					currentVar.getVar().getVariable().getSimpleName(), numberCompVar));
-			numberTotalComb *= numberCompVar;
+
+			if (numberTotalComb < Integer.MAX_VALUE) {
+				long mult = (long) numberTotalComb * numberCompVar;
+				if (mult > Integer.MAX_VALUE || mult < Integer.MIN_VALUE) {
+					logger.debug("Max Combination: Overflow 32-bit. Considering nrCombinations: " + Integer.MAX_VALUE);
+					numberTotalComb = Integer.MAX_VALUE;
+				} else
+					numberTotalComb *= numberCompVar;
+			}
 		}
 
 		logger.debug("Teoricalcombinations: " + numberTotalComb);
