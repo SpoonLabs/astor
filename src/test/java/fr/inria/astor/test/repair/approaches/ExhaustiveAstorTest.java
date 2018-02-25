@@ -1,12 +1,16 @@
 package fr.inria.astor.test.repair.approaches;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -14,7 +18,10 @@ import fr.inria.astor.approaches.exhaustive.ExhausitiveCloneEngine;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
+import fr.inria.astor.core.loop.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.stats.PatchHunkStats;
+import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.astor.util.CommandSummary;
@@ -48,7 +55,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.9", "-out",
 				out.getAbsolutePath(),
 				//
 				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", //
@@ -67,8 +74,72 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, status);
 
 		assertTrue(solutions.size() > 0);
+
+		List<PatchStat> patches = main1.getEngine().getPatchInfo();
+
+		Assert.assertTrue(patches.size() > 0);
+
+		Assert.assertEquals(2, patches.size());
+
+		// Patch only found by jgp
+		PatchHunkStats hunkSolution = getHunkSolution(patches, "return solve(f, min, max)", "CtReturnImpl|CtBlockImpl");
+		Assert.assertNotNull(hunkSolution);
+
+		PatchHunkStats hunkSolution2 = getHunkSolution(patches, "return solve(f, initial, max)",
+				"CtReturnImpl|CtBlockImpl");
+		Assert.assertNotNull(hunkSolution2);
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testExhaustiveTibraMath70LocalSolutionAssertPatch() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", ExecutionMode.EXASTOR.toString().toLowerCase(),
+				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.9", "-out",
+				out.getAbsolutePath(),
+				//
+				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", //
+				"-maxtime", "100",
+				"-loglevel","DEBUG",
+				// For excluding regression
+				"-excludeRegression", "-parameters",
+				"maxCombinationVariableLimit:true"
+				//reduced search space
+				+ ":maxVarCombination:1"
+				+ ":ingredienttransformstrategy:" + RandomTransformationStrategy.class.getCanonicalName()
+
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+
+		AstorOutputStatus status = main1.getEngine().getOutputStatus();
+
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, status);
+
+		assertTrue(solutions.size() > 0);
+
+		List<PatchStat> patches = main1.getEngine().getPatchInfo();
+
+		Assert.assertTrue(patches.size() > 0);
+
+		Assert.assertEquals(2, patches.size());
 		
-		
+		PatchHunkStats hunkSolution = getHunkSolution(patches, "this.f = f",
+				"CtReturnImpl|CtBlockImpl");
+		Assert.assertNotNull(hunkSolution);
+	
+		PatchHunkStats hunkSolution2 = getHunkSolution(patches, "return solve(f, initial, max)",
+				"CtReturnImpl|CtBlockImpl");
+		Assert.assertNotNull(hunkSolution2);
+	
 	}
 
 	/**
