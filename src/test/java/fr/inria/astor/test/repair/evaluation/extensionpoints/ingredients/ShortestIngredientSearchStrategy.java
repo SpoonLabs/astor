@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
@@ -23,7 +24,6 @@ import spoon.reflect.declaration.CtElement;
  */
 public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 
-
 	private List<CtElement> locationsAnalyzed = new ArrayList<>();
 
 	public ShortestIngredientSearchStrategy(IngredientSpace space) {
@@ -37,21 +37,27 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 
 		// We get ingredients that we can use to modify the point.
 		List<CtCodeElement> ingredientsLocation = null;
-		if (operationType == null)
-			//if we do not specify the kind of operator to apply to the point, any kind of ingredient can be returned
-			ingredientsLocation = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement());
-		else {
-			//we specify the kind of operator, so, ingredients are returned according to it.
+		if (operationType instanceof ReplaceOp)
+			// we specify the kind of operator, so, ingredients are returned
+			// according to it.
 			ingredientsLocation = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement(),
 					modificationPoint.getCodeElement().getClass().getSimpleName());
+		else {
+			// if we do not specify the kind of operator to apply to the point,
+			// any kind of ingredient can be returned
+			ingredientsLocation = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement());
 
+		}
+		if (ingredientsLocation == null || ingredientsLocation.isEmpty()) {
+			return null;
 		}
 		// We store the location to avoid sorting the ingredient twice.
 		if (!locationsAnalyzed.contains(modificationPoint.getCodeElement())) {
 			locationsAnalyzed.add(modificationPoint.getCodeElement());
-			//We create the list to reorder the ingredients without modifying the original.
+			// We create the list to reorder the ingredients without modifying
+			// the original.
 			List<CtCodeElement> ingredientsLocationSort = new ArrayList(ingredientsLocation);
-			
+
 			// We have never analyze this location, let's sort the ingredients.
 			Collections.sort(ingredientsLocationSort, new Comparator<CtCodeElement>() {
 
@@ -71,7 +77,7 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 			// we remove it from space
 			ingredientsLocation.remove(0);
 			return new Ingredient(element, this.ingredientSpace.spaceScope());
-		}//any ingredient
+		} // any ingredient
 		return null;
 	}
 
