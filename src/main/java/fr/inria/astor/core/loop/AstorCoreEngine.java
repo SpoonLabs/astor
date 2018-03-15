@@ -1228,4 +1228,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	}
 
+	public Stats getCurrentStat() {
+		return currentStat;
+	}
+
+	public void setCurrentStat(Stats currentStat) {
+		this.currentStat = currentStat;
+	}
+
 }
