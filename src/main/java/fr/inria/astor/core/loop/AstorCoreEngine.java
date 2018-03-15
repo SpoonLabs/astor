@@ -1100,9 +1100,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.error("Problem compiling the model with compliance level "
 					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 			log.error(e.getMessage());
-			mutatorSupporter.getFactory().getEnvironment()
-					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
-			mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
+			throw e;
 		}
 
 		///// ONCE ASTOR HAS BUILT THE MODEL,
