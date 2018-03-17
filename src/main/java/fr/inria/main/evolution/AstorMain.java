@@ -23,6 +23,7 @@ import fr.inria.astor.approaches.mutRepair.MutationalExhaustiveRepair;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.loop.AstorCoreEngine;
+import fr.inria.astor.core.loop.population.ProgramVariantFactory;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
@@ -106,6 +107,7 @@ public class AstorMain extends AbstractMain {
 		// Loading extension Points
 		astorCore.loadExtensionPoints();
 
+		astorCore.setVariantFactory(new ProgramVariantFactory(astorCore.getTargetElementProcessors()));
 		// Find test cases to use in validation
 		List<String> tr = FinderTestCases.findTestCasesForRegression(
 				projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
