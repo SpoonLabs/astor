@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.astor.approaches.cardumen.CardumenOperatorSpace;
 import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator;
 import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
@@ -47,6 +49,8 @@ import fr.inria.astor.core.validation.processbased.ProcessValidator;
  *
  */
 public class PlugInVisitor {
+
+	protected static Logger log = Logger.getLogger(PlugInLoader.class);
 
 	protected void loadFaultLocalization(AstorCoreEngine approach) throws Exception {
 
@@ -225,7 +229,6 @@ public class PlugInVisitor {
 		}
 		approach.setVariantFactory(new ProgramVariantFactory(approach.getTargetElementProcessors()));
 	}
-
 
 	protected void loadSolutionPrioritization(AstorCoreEngine approach) throws Exception {
 
