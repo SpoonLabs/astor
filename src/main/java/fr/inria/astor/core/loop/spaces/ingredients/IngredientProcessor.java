@@ -11,7 +11,6 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import spoon.Launcher;
 import spoon.processing.ProcessingManager;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.RuntimeProcessingManager;
 
@@ -21,7 +20,7 @@ import spoon.support.RuntimeProcessingManager;
  * @param <T>
  *
  */
-public class IngredientProcessor<K, T extends CtCodeElement> 
+public class IngredientProcessor<K, T> 
 	extends Launcher {
 	
 	

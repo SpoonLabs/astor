@@ -8,7 +8,6 @@ import java.util.Map;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -18,8 +17,7 @@ import spoon.reflect.declaration.CtType;
  * 
  * @author Matias Martinez
  */
-public abstract class AstorIngredientSpace<Q extends Object, K extends Object, I extends CtCodeElement, T extends Object>
-		implements IngredientSpace<Q,K, I, T> {
+public abstract class AstorIngredientSpace<Q, K, I, T> implements IngredientSpace<Q, K, I, T> {
 	/**
 	 * Maps that represent the ingredient space. We define different structures
 	 * to optimize the search.
@@ -79,30 +77,27 @@ public abstract class AstorIngredientSpace<Q extends Object, K extends Object, I
 		splitByType(key, ingredientsToProcess);
 
 	}
-	
-	
-	
+
 	/**
 	 * The space maps an element to the location
-	 *  @param element
+	 * 
+	 * @param element
 	 * @return
 	 */
 	protected K mapKey(Q element) {
-		
+
 		K key = calculateLocation(element);
-		
+
 		if (key == null)
 			return null;
-		
+
 		K keyByLoc = this.keysLocation.get(element);
 		if (keyByLoc == null) {
 			this.keysLocation.put(element, keyByLoc);
 		}
-		
+
 		return key;
 	}
-
-	
 
 	protected void recreateTypesStructures() {
 
@@ -173,17 +168,17 @@ public abstract class AstorIngredientSpace<Q extends Object, K extends Object, I
 		return elements;
 	}
 
-	
 	@Override
 	public List<K> getLocations() {
 		return new ArrayList<K>(this.fixSpaceByLocation.keySet());
 	}
-	
-	public List<I> getAllIngredients(){
+
+	public List<I> getAllIngredients() {
 		List<I> ingredients = new ArrayList<>();
-		for( List<I> listIng : this.fixSpaceByLocation.values()){
+		for (List<I> listIng : this.fixSpaceByLocation.values()) {
 			ingredients.addAll(listIng);
-		};
+		}
+		;
 		return ingredients;
 	}
 
