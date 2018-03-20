@@ -23,7 +23,6 @@ import spoon.reflect.declaration.CtVariable;
 public class DynamicIngredient extends Ingredient {
 
 	private VarCombinationForIngredient combination;
-	private CtCodeElement baseIngredient = null;
 	private VarMapping mapping = null;
 
 	public DynamicIngredient(VarCombinationForIngredient combination, VarMapping mapping,
@@ -31,7 +30,7 @@ public class DynamicIngredient extends Ingredient {
 		super(null);
 		this.combination = combination;
 		this.mapping = mapping;
-		this.baseIngredient = baseIngredient;
+		this.derivedFrom = baseIngredient;
 	}
 
 	@Override
@@ -43,20 +42,13 @@ public class DynamicIngredient extends Ingredient {
 			Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver.convertIngredient(mapping,
 					selectedTransformation);
 			// Cloned transformed element
-			this.code = MutationSupporter.clone((CtCodeElement) this.baseIngredient);
+			this.code = MutationSupporter.clone((CtCodeElement) this.getDerivedFrom());
 
 			VariableResolver.resetIngredient(originalMap);
 		}
 		return this.code;
 	}
 
-	public CtCodeElement getBaseIngredient() {
-		return baseIngredient;
-	}
-
-	public void setBaseIngredient(CtCodeElement baseIngredient) {
-		this.baseIngredient = baseIngredient;
-	}
 
 	public VarCombinationForIngredient getCombination() {
 		return combination;

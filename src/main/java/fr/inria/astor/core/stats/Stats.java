@@ -218,12 +218,6 @@ public class Stats {
 						hunk.getStats().put(HunkStatEnum.PATCH_HUNK_TYPE,
 								genOperationInstance.getModified().getClass().getSimpleName() + "|"
 										+ genOperationInstance.getModified().getParent().getClass().getSimpleName());
-
-						if (genOperationInstance.getIngredient() != null
-								&& genOperationInstance.getIngredient() instanceof DynamicIngredient) {
-							DynamicIngredient ding = (DynamicIngredient) genOperationInstance.getIngredient();
-							hunk.getStats().put(HunkStatEnum.INGREDIENT, ding.getBaseIngredient().toString());
-						}
 					}
 
 					hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE,

@@ -933,11 +933,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 						else {
 							line += genOperationInstance.getOriginal().toString();
 						}
-						if (genOperationInstance.getIngredient() != null
-								&& genOperationInstance.getIngredient() instanceof DynamicIngredient) {
-							DynamicIngredient ding = (DynamicIngredient) genOperationInstance.getIngredient();
-							line += "\nIngredient template= " + ding.getBaseIngredient().toString();
-						}
 						// Information about types Parents
 
 						line += "\nPatch kind= " + genOperationInstance.getModified().getClass().getSimpleName() + "|"
