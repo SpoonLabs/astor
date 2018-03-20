@@ -1,8 +1,8 @@
 package fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -39,7 +39,7 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 	}
 
 	private CtCodeElement getTemplateByWeighted(List<CtCodeElement> elements, List<String> elements2String,
-			LinkedHashMap<String, Double> probs) {
+			Map<String, Double> probs) {
 		// Random value
 		Double randomElement = RandomManager.nextDouble();
 
@@ -57,7 +57,7 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 	}
 
 	List<String> elements2String = null;
-	LinkedHashMap<String, Double> probs = null;
+	Map<String, Double> probs = null;
 
 	@Override
 	public List<CtCodeElement> getNotExhaustedBaseElements(ModificationPoint modificationPoint,
@@ -84,7 +84,7 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 			mp.keySet().removeIf(e -> !elements2String.contains(e));
 
 			// Obtaining accumulate frequency of elements
-			probs = mp.getProb();
+			probs = mp.getProb().getProbAccumulative();
 
 		}
 		return elements;
