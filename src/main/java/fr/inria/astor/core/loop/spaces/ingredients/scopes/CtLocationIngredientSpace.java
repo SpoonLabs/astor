@@ -12,20 +12,23 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+
 /**
  * Ingredient Space that uses CtElements as locations
+ * 
  * @author Matias Martinez
  *
  */
-public class CtLocationIngredientSpace extends AstorIngredientSpace<CtElement,CtElement, CtCodeElement,String> {
+public class CtLocationIngredientSpace
+		extends AstorIngredientSpace<CtElement, CtElement, CtCodeElement, String, CtCodeElement> {
 
 	/**
-	 * This class indicate the scope of a ingredient search.
-	 * If the class is a CtClass means we group ingredients by class, 
-	 * if it is a CtBlock, we group ingredients according to blocks, etc.
+	 * This class indicate the scope of a ingredient search. If the class is a
+	 * CtClass means we group ingredients by class, if it is a CtBlock, we group
+	 * ingredients according to blocks, etc.
 	 */
 	Class ctElementForSplitSpace = CtClass.class;
-	
+
 	public CtLocationIngredientSpace() throws JSAPException {
 		super();
 	}
@@ -36,16 +39,16 @@ public class CtLocationIngredientSpace extends AstorIngredientSpace<CtElement,Ct
 
 	public CtLocationIngredientSpace(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super(processors);
-	
+
 	}
 
 	@Override
 	public void defineSpace(ProgramVariant variant) {
 		List<CtType<?>> affected = variant.getAffectedClasses();
-			for (CtType<?> CtType : affected) {
-					this.createFixSpaceFromAClass(CtType);
-			}
-				
+		for (CtType<?> CtType : affected) {
+			this.createFixSpaceFromAClass(CtType);
+		}
+
 	}
 
 	/**
@@ -58,16 +61,16 @@ public class CtLocationIngredientSpace extends AstorIngredientSpace<CtElement,Ct
 		TargetElementProcessor.mustClone = true;
 		determineScopeOfIngredient(ingredients);
 	}
-	
+
 	/**
 	 * Creation of fix space from a CtClass
 	 * 
 	 * @param root
 	 */
 	public void determineScopeOfIngredient(List<CtCodeElement> ingredients) {
-		
+
 		for (CtCodeElement ctCodeElement : ingredients) {
-			
+
 			CtElement key = mapKey(ctCodeElement);
 			if (getFixSpace().containsKey(key)) {
 				getFixSpace().get(key).add(ctCodeElement);
@@ -76,11 +79,12 @@ public class CtLocationIngredientSpace extends AstorIngredientSpace<CtElement,Ct
 				ingr.add(ctCodeElement);
 				getFixSpace().put(key, ingr);
 			}
-			
+
 		}
 		recreateTypesStructures();
-		
+
 	}
+
 	@Override
 	public IngredientSpaceScope spaceScope() {
 		return IngredientSpaceScope.CUSTOM;
@@ -90,10 +94,10 @@ public class CtLocationIngredientSpace extends AstorIngredientSpace<CtElement,Ct
 	public CtElement calculateLocation(CtElement elementToModify) {
 		return elementToModify.getParent(getCtElementForSplitSpace());
 	}
-	
+
 	@Override
 	protected String getType(CtCodeElement element) {
-		
+
 		return element.getClass().getSimpleName();
 	}
 

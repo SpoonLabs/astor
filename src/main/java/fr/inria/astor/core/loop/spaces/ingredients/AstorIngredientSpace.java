@@ -8,7 +8,6 @@ import java.util.Map;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import spoon.reflect.declaration.CtType;
 
 /**
  * 
@@ -17,7 +16,7 @@ import spoon.reflect.declaration.CtType;
  * 
  * @author Matias Martinez
  */
-public abstract class AstorIngredientSpace<Q, K, I, T> implements IngredientSpace<Q, K, I, T> {
+public abstract class AstorIngredientSpace<Q, K, I, T, P> implements IngredientSpace<Q, K, I, T> {
 	/**
 	 * Maps that represent the ingredient space. We define different structures
 	 * to optimize the search.
@@ -27,11 +26,11 @@ public abstract class AstorIngredientSpace<Q, K, I, T> implements IngredientSpac
 	protected Map<T, List<I>> fixSpaceByType = new HashMap<T, List<I>>();
 	protected Map<Q, K> keysLocation = new HashMap<Q, K>();
 
-	protected IngredientProcessor<Q, I> ingredientProcessor;
+	protected IngredientProcessor<Q, P> ingredientProcessor;
 
 	public AstorIngredientSpace() throws JSAPException {
 		super();
-		ingredientProcessor = new IngredientProcessor<Q, I>();
+		ingredientProcessor = new IngredientProcessor<Q, P>();
 
 	}
 
@@ -43,7 +42,7 @@ public abstract class AstorIngredientSpace<Q, K, I, T> implements IngredientSpac
 	 */
 	public AstorIngredientSpace(TargetElementProcessor<?> processor) throws JSAPException {
 		super();
-		ingredientProcessor = new IngredientProcessor<Q, I>(processor);
+		ingredientProcessor = new IngredientProcessor<Q, P>(processor);
 	}
 
 	/**
@@ -53,29 +52,11 @@ public abstract class AstorIngredientSpace<Q, K, I, T> implements IngredientSpac
 	 */
 	public AstorIngredientSpace(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super();
-		ingredientProcessor = new IngredientProcessor<Q, I>(processors);
+		ingredientProcessor = new IngredientProcessor<Q, P>(processors);
 	}
 
 	protected Map<K, List<I>> getFixSpace() {
 		return fixSpaceByLocation;
-	}
-
-	/**
-	 * Creation of fix space from a CtClass
-	 * 
-	 * @param root
-	 */
-	public void createFixSpaceFromAClass2(Q element, CtType root) {
-		K key = mapKey(element);
-		List<I> ingredientsToProcess = this.ingredientProcessor.createFixSpace(root);
-		TargetElementProcessor.mustClone = true;
-		if (getFixSpace().containsKey(key)) {
-			getFixSpace().get(key).addAll(ingredientsToProcess);
-		} else {
-			getFixSpace().put(key, ingredientsToProcess);
-		}
-		splitByType(key, ingredientsToProcess);
-
 	}
 
 	/**
@@ -211,12 +192,11 @@ public abstract class AstorIngredientSpace<Q, K, I, T> implements IngredientSpac
 		return s;
 	}
 
-	public IngredientProcessor<Q, I> getIngredientProcessor() {
+	public IngredientProcessor<Q, P> getIngredientProcessor() {
 		return ingredientProcessor;
 	}
 
-	public void setIngredientProcessor(IngredientProcessor<Q, I> ingredientProcessor) {
+	public void setIngredientProcessor(IngredientProcessor<Q, P> ingredientProcessor) {
 		this.ingredientProcessor = ingredientProcessor;
 	}
-
 }

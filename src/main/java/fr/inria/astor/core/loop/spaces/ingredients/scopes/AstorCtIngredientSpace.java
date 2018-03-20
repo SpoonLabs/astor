@@ -14,7 +14,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElement,String, CtCodeElement,String> {
+public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElement,String, CtCodeElement,String,CtCodeElement> {
 
 	boolean discartDuplicates = true;
 	
@@ -51,18 +51,22 @@ public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElem
 		
 		for (CtCodeElement ctCodeElement : ingredients) {
 			
-			String key = mapKey(ctCodeElement);
-			List<CtCodeElement> ingredientsKey = getFixSpace().get(key);
-			if (!getFixSpace().containsKey(key)) {
-				ingredientsKey = new CacheList<CtCodeElement>();
-				getFixSpace().put(key, ingredientsKey);
-			}
-			if(!discartDuplicates || !ingredientsKey.contains(ctCodeElement)){
-				ingredientsKey.add(ctCodeElement);
-			}
+			storeInSpace(ctCodeElement);
 		}
 		recreateTypesStructures();
 		
+	}
+
+	public void storeInSpace(CtCodeElement ctCodeElement) {
+		String key = mapKey(ctCodeElement);
+		List<CtCodeElement> ingredientsKey = getFixSpace().get(key);
+		if (!getFixSpace().containsKey(key)) {
+			ingredientsKey = new CacheList<CtCodeElement>();
+			getFixSpace().put(key, ingredientsKey);
+		}
+		if(!discartDuplicates || !ingredientsKey.contains(ctCodeElement)){
+			ingredientsKey.add(ctCodeElement);
+		}
 	}
 	
 }
