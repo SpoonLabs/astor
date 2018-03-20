@@ -32,21 +32,20 @@ public class MapList<K, V> extends LinkedHashMap<K, List<V>> {
 						MapList::new));
 
 	}
-	
-	public LinkedHashMap<K, Double> getProb() {
-		
+
+	public Probability<K> getProb() {
+
+		Probability<K> probO = new Probability<>();
 		int sum = this.values().stream().mapToInt(e -> e.size()).sum();
-		
-		LinkedHashMap<K, Double> d = new LinkedHashMap<>();
-		 
-		double r = 0;
-		for(K k: this.keySet()){
+		double accumul = 0;
+		for (K k : this.keySet()) {
 			int v = this.get(k).size();
-			double prob = (double) v/(double)sum;
-			r = (r + prob);
-			d.put(k, r);
-			
+			double probability_k = (double) v / (double) sum;
+			accumul = (accumul + probability_k);
+			probO.getProbAccumulative().put(k, accumul);
+			probO.getProbDist().put(k, probability_k);
+
 		}
-		return d;
+		return probO;
 	}
 }
