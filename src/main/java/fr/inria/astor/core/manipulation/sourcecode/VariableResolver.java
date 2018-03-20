@@ -362,7 +362,7 @@ public class VariableResolver {
 		return mapVariablesFromContext(varContext, ingredientCtElement, variablesOutOfScope);
 	}
 
-	public static VarMapping mapVariablesFromContext(List<CtVariable> varContext, CtElement ingredientCtElement,
+	public static VarMapping mapVariablesFromContext(List<CtVariable> varContext, CtElement ingredientCtElement1,
 			List<CtVariableAccess> variablesOutOfScope) {
 
 		// var out-of scope, list of variables compatibles
@@ -480,10 +480,19 @@ public class VariableResolver {
 	 */
 	public static List<CtVariableAccess> retriveVariablesOutOfContext(List<CtVariable> varContext,
 			CtElement ingredientCtElement) {
-		List<CtVariableAccess> variablesOutOfScope = new ArrayList<>();
 		boolean duplicated = true;
-		List<CtVariableAccess> allVariables = collectVariableAccess(ingredientCtElement, duplicated);
-		for (CtVariableAccess variableAccessFromElement : allVariables) {
+		List<CtVariableAccess> allVariablesFromElement = collectVariableAccess(ingredientCtElement, duplicated);
+		return retriveVariablesOutOfContext(varContext, allVariablesFromElement);
+	}
+
+	/**
+	 * Retrieves the variables out of scope from the element given a context.
+	 */
+	public static List<CtVariableAccess> retriveVariablesOutOfContext(List<CtVariable> varContext,
+			List<CtVariableAccess> variablesToChech) {
+		List<CtVariableAccess> variablesOutOfScope = new ArrayList<>();
+
+		for (CtVariableAccess variableAccessFromElement : variablesToChech) {
 			if (!fitInPlace(varContext, variableAccessFromElement)) {
 				variablesOutOfScope.add(variableAccessFromElement);
 			}
