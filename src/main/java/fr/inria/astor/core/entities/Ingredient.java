@@ -9,11 +9,13 @@ import spoon.reflect.declaration.CtElement;
  *
  */
 public class Ingredient {
-	
+
 	protected CtElement code;
 	protected IngredientSpaceScope scope;
 	protected CtElement derivedFrom;
-	
+	// Store the value of code var
+	protected String cacheString = null;
+
 	public Ingredient(CtElement code, IngredientSpaceScope scope, CtElement derivedFrom) {
 		super();
 		this.code = code;
@@ -25,7 +27,7 @@ public class Ingredient {
 		super();
 		this.code = element;
 	}
-	
+
 	public Ingredient(CtElement element, IngredientSpaceScope scope) {
 		super();
 		this.code = element;
@@ -47,7 +49,7 @@ public class Ingredient {
 	public void setScope(IngredientSpaceScope scope) {
 		this.scope = scope;
 	}
-	
+
 	public CtElement getDerivedFrom() {
 		return derivedFrom;
 	}
@@ -61,5 +63,16 @@ public class Ingredient {
 		return "Ingredient [code=" + getCode() + "]";
 	}
 
-	
+	/**
+	 * Stores the value of code value. The first invocation it calculate it.
+	 * 
+	 * @return
+	 */
+	public String getChacheCodeString() {
+		if (cacheString == null && this.code != null) {
+			cacheString = this.code.toString();
+		}
+		return cacheString;
+	}
+
 }
