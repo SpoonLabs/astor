@@ -61,34 +61,63 @@ public class InvocationResolver {
 
 	}
 
+	public enum InvocationMatching {
+
+		TARGET_IS_VARIABLE(true), TARGET_SAME_TYPE(true), SAME_SIGNATURE_DIFF_TYPE(true), TARGET_INCOMPATIBLE(
+				false), SAME_SIGNATURE_CONTRUCTOR(true), NO_MATCH(false), OTHER(true);
+
+		boolean correctness;
+
+		public boolean isCorrect() {
+			return correctness;
+		}
+
+		InvocationMatching(boolean correctness) {
+			this.correctness = correctness;
+		}
+
+	}
+
 	public static boolean fitImplicitInvocation(CtClass ctClassMP, CtAbstractInvocation inv0) {
+
+		InvocationMatching matching = mapImplicitInvocation(ctClassMP, inv0);
+		return matching.isCorrect();
+	}
+
+	public static InvocationMatching mapImplicitInvocation(CtClass ctClassMP, CtAbstractInvocation inv0) {
 		if (inv0 instanceof CtInvocation) {
 			CtInvocation invocation0 = (CtInvocation) inv0;
+
 			CtExpression tpr = invocation0.getTarget();
 			if (tpr instanceof CtThisAccess) {
 				CtThisAccess<?> targetthis = (CtThisAccess) tpr;
 				CtTypeReference tpref = targetthis.getType();
-				if (ctClassMP.isSubtypeOf(tpref)
-						|| chechSignatures(ctClassMP.getAllExecutables(), invocation0.getExecutable())) {
-					return true;
+				if (ctClassMP.isSubtypeOf(tpref))
+					return InvocationMatching.TARGET_SAME_TYPE;
+				else if (chechSignatures(ctClassMP.getAllExecutables(), invocation0.getExecutable())) {
+					return InvocationMatching.SAME_SIGNATURE_DIFF_TYPE;
 				} else {
 					log.debug("Signature " + invocation0.getExecutable().getSignature());
 					log.debug(
 							"Not compatible: " + ctClassMP.getQualifiedName() + " with " + (tpref.getQualifiedName()));
-					return false;
+					return InvocationMatching.TARGET_INCOMPATIBLE;
 				}
 			} else {
 				log.debug("Explicit target " + tpr);
-				return true;
+				return InvocationMatching.TARGET_IS_VARIABLE;
 			}
 		} else {
 
 			if (inv0 instanceof CtConstructorCall) {
-				return chechSignatures(ctClassMP.getConstructors(), inv0.getExecutable());
+				if (chechSignatures(ctClassMP.getConstructors(), inv0.getExecutable())) {
+					return InvocationMatching.SAME_SIGNATURE_CONTRUCTOR;
+				} else {
+					return InvocationMatching.NO_MATCH;
+				}
 
 			}
 
-			return true;
+			return InvocationMatching.OTHER;
 		}
 
 	}
