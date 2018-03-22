@@ -76,7 +76,6 @@ public class TOSBRTest {
 		TOSDynamicIngredient ing = (TOSDynamicIngredient) opI0.getIngredient();
 		assertNotNull(ing);
 
-		System.out.println("Derived from  " + ing.getDerivedFrom());
 		CtElement fix = opI0.getModified();
 		assertEquals("return solve(f, min, max)", fix.toString());
 
@@ -94,7 +93,7 @@ public class TOSBRTest {
 		command.command.put("-maxgen", "100");
 		command.command.put("-loglevel", LOG_LEVEL);
 		command.command.put("-scope", "package");
-		command.command.put("-stopfirst", "true");
+		command.command.put("-stopfirst", "false");
 
 		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
 				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
@@ -113,19 +112,59 @@ public class TOSBRTest {
 
 		// First patch
 		ProgramVariant solution0 = approach.getSolutions().get(0);
+		String patch0 = "return solve(f, absoluteAccuracy, max)";
+		String baseIng0 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solution0, patch0, baseIng0);
 
-		OperatorInstance opI0 = solution0.getOperations().values().stream().filter(e -> e.size() > 0).findFirst().get()
+		ProgramVariant solution1 = approach.getSolutions().get(1);
+		String patch1 = "return solve(f, initial, max)";
+		String baseIng1 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solution1, patch1, baseIng1);
+
+		ProgramVariant solution2 = approach.getSolutions().get(2);
+		String patch2 = "return solve(f, defaultRelativeAccuracy, max)";
+		String baseIng2 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solution2, patch2, baseIng2);
+
+		ProgramVariant solution3 = approach.getSolutions().get(3);
+		String patch3 = "return solve(f, min, max)";
+		String baseIng3 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solution3, patch3, baseIng3);
+
+		ProgramVariant solution4 = approach.getSolutions().get(4);
+		String patch4 = "return solve(f, functionValueAccuracy, max)";
+		String baseIng4 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solution4, patch4, baseIng4);
+
+		ProgramVariant solution5 = approach.getSolutions().get(6);
+		String patch5 = "return solve(f, relativeAccuracy, max)";
+		String baseIng5 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solution5, patch5, baseIng5);
+	}
+
+	/**
+	 * Assert the presence of a patch
+	 * 
+	 * @param solution
+	 *            solution to validate
+	 * @param patch
+	 *            the patch we find
+	 * @param baseIng
+	 *            the parent of the patch
+	 */
+	private void assertPatch(ProgramVariant solution, String patch, String baseIng) {
+		OperatorInstance opI0 = solution.getOperations().values().stream().filter(e -> e.size() > 0).findFirst().get()
 				.get(0);
 		assertNotNull(opI0);
 		TOSDynamicIngredient ing = (TOSDynamicIngredient) opI0.getIngredient();
 		assertNotNull(ing);
 
-		System.out.println("Derived from  " + ing.getDerivedFrom());
 		CtElement fix = opI0.getModified();
-		assertEquals("return solve(f, min, max)", fix.toString());
+		assertEquals(patch, fix.toString());
 
-		assertEquals("return solve(_UnivariateRealFunction_0, _double_1, max)", ing.getDerivedFrom().toString());
-
+		if (baseIng != null) {
+			assertEquals(baseIng, ing.getDerivedFrom().toString());
+		}
 	}
 
 	/**
@@ -241,7 +280,7 @@ public class TOSBRTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testTOSBR1() throws Exception {
+	public void testTOSOcurrencesSize1() throws Exception {
 		int nrPlaceholders = 1;
 		TOSBRApproach approach = runTestForPlaceholder(nrPlaceholders);
 
@@ -251,7 +290,6 @@ public class TOSBRTest {
 		TOSCounter tosCounter = tosIngredientPool.getTosCounter();
 		assertNotNull(tosCounter);
 		MapCounter<String> ocurrenceTOS = tosCounter.getTosOcurrenceCounter();
-		System.out.println(ocurrenceTOS);
 		assertEquals(2, (int) ocurrenceTOS.get("_double_0 = m"));
 		assertEquals(1, (int) ocurrenceTOS.get("min = _double_0"));
 		assertEquals(1, (int) ocurrenceTOS.get("max = _double_0"));
@@ -268,7 +306,7 @@ public class TOSBRTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testTOSBR2() throws Exception {
+	public void testTOSOcurrencesSize2() throws Exception {
 		int nrPlaceholders = 2;
 		TOSBRApproach approach = runTestForPlaceholder(nrPlaceholders);
 
@@ -354,7 +392,7 @@ public class TOSBRTest {
 		// "org.apache.commons.math.analysis.solvers"
 		for (int i = 0; i < ingredientsPackage.size(); i++) {
 			Ingredient ingi = ingredientsPackage.get(i);
-			System.out.println("**\ningredient nr " + i + ":\n " + StringUtil.trunc(ingi.getCode()));
+			System.out.println("**\nTOS nr " + i + ":\n " + (ingi.getCode().toString()));
 		}
 
 		return approach;

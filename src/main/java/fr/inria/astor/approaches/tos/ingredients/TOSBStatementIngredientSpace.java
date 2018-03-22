@@ -82,10 +82,10 @@ public class TOSBStatementIngredientSpace
 					List<Ingredient> ingredientPoolForLocation = this.retrieveIngredients(keyLocation);
 					for (TOSEntity templateElement : xTemplates) {
 						if (!ingredientPoolForLocation.contains(templateElement)) {
-							log.debug("Adding tos " + templateElement + " to " + ingredientPoolForLocation);
+						//	log.debug("Adding tos " + templateElement + " to " + ingredientPoolForLocation);
 							ingredientPoolForLocation.add(templateElement);
 						} else {
-							log.debug("Existing template");
+						//	log.debug("Existing template");
 						}
 						tosCounter.saveStatisticsOfTos(templateElement, originalIngredientStatement);
 					}
@@ -172,7 +172,7 @@ public class TOSBStatementIngredientSpace
 			TOSVariablePlaceholder tosCreated = createParticularTOS(ingredientStatement, targetPlaceholders);
 
 			if (tosCreated != null) {
-				log.debug("Adding  generated TOS: " + tosCreated);
+				//log.debug("Adding  generated TOS: " + tosCreated);
 				createdTemplates.add(tosCreated);
 			}
 
