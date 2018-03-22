@@ -64,7 +64,7 @@ public class InvocationResolver {
 	public enum InvocationMatching {
 
 		TARGET_IS_VARIABLE(true), TARGET_SAME_TYPE(true), SAME_SIGNATURE_DIFF_TYPE(true), TARGET_INCOMPATIBLE(
-				false), SAME_SIGNATURE_CONTRUCTOR(true), NO_MATCH(false), OTHER(true);
+				false), CONTRUCTOR(true), NO_MATCH(false), OTHER(true);
 
 		boolean correctness;
 
@@ -94,7 +94,7 @@ public class InvocationResolver {
 				CtTypeReference tpref = targetthis.getType();
 				if (ctClassMP.isSubtypeOf(tpref))
 					return InvocationMatching.TARGET_SAME_TYPE;
-				else if (chechSignatures(ctClassMP.getAllExecutables(), invocation0.getExecutable())) {
+				else if (chechSignatures(ctClassMP.getAllExecutables(), invocation0.getExecutable(), false)) {
 					return InvocationMatching.SAME_SIGNATURE_DIFF_TYPE;
 				} else {
 					log.debug("Signature " + invocation0.getExecutable().getSignature());
@@ -109,11 +109,7 @@ public class InvocationResolver {
 		} else {
 
 			if (inv0 instanceof CtConstructorCall) {
-				if (chechSignatures(ctClassMP.getConstructors(), inv0.getExecutable())) {
-					return InvocationMatching.SAME_SIGNATURE_CONTRUCTOR;
-				} else {
-					return InvocationMatching.NO_MATCH;
-				}
+				return InvocationMatching.CONTRUCTOR;
 
 			}
 
@@ -123,11 +119,15 @@ public class InvocationResolver {
 	}
 
 	public static boolean chechSignatures(Collection<CtExecutableReference<?>> allExecutables,
-			CtExecutableReference executable) {
+			CtExecutableReference executable, boolean constructor) {
 
 		String signatureTarget = executable.getSignature();
 
 		for (CtExecutableReference<?> ctExecutableReferenceOfMethod : allExecutables) {
+
+			if (constructor && !ctExecutableReferenceOfMethod.isConstructor())
+				continue;
+
 			if (ctExecutableReferenceOfMethod.getSignature().equals(signatureTarget))
 				return true;
 		}

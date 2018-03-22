@@ -72,7 +72,7 @@ public class InvocationResolverTest {
 		for (Object object : ingredients) {
 			System.out.println(Integer.valueOf(i++) + " " + object.toString());
 		}
-		
+
 		// 358 fb = function.value(b)
 		CtElement i358 = (CtElement) ingredients.get(358);
 		assertEquals("fb = function.value(b)", i358.toString());
@@ -129,6 +129,44 @@ public class InvocationResolverTest {
 		assertTrue(ingredients108.size() > 0);
 		CtAbstractInvocation ingrediet108 = ingredients108.get(0);
 		assertTrue(InvocationResolver.fitImplicitInvocation(ctClassMP, ingrediet108));
+
+		// 336 throw
+		// org.apache.commons.math.MathRuntimeException.createIllegalArgumentException(("function
+		// values at endpoints do not have different signs. " + "Endpoints:
+		// [{0}, {1}], Values: [{2}, {3}]"), lower, upper,
+		// function.value(lower), function.value(upper))
+		String patch = "throw org.apache.commons.math.MathRuntimeException.createIllegalArgumentException((\"function values at endpoints do not have different signs.  \" + \"Endpoints: [{0}, {1}], Values: [{2}, {3}]\"), lower, upper, function.value(lower), function.value(upper))";
+		CtElement i336 = (CtElement) ingredients.get(336);
+
+		assertEquals(patch, i336.toString());
+		List<CtAbstractInvocation> ingredients336 = fr.collectInvocation(i336, true);
+		// It comes from another class:
+		// org.apache.commons.math.analysis.solvers.LaguerreSolver
+		assertTrue(ingredients336.size() > 0);
+		CtAbstractInvocation ingrediet336 = ingredients336.get(0);
+		assertEquals("function.value(lower)", ingrediet336.toString());
+		assertTrue(InvocationResolver.fitImplicitInvocation(ctClassMP, ingrediet336));
+
+		CtAbstractInvocation ingrediet336_2 = ingredients336.get(2);
+		String patch_2 = "org.apache.commons.math.MathRuntimeException.createIllegalArgumentException((\"function values at endpoints do not have different signs.  \" + \"Endpoints: [{0}, {1}], Values: [{2}, {3}]\"), lower, upper, function.value(lower), function.value(upper))";
+
+		assertEquals(patch_2, ingrediet336_2.toString());
+		assertTrue(InvocationResolver.fitImplicitInvocation(ctClassMP, ingrediet336_2));
+
+		// 165 org.apache.commons.math.complex.Complex oldz = new
+		// org.apache.commons.math.complex.Complex(java.lang.Double.POSITIVE_INFINITY,
+		// java.lang.Double.POSITIVE_INFINITY)
+
+		patch = "org.apache.commons.math.complex.Complex oldz = new org.apache.commons.math.complex.Complex(java.lang.Double.POSITIVE_INFINITY, java.lang.Double.POSITIVE_INFINITY)";
+		CtElement i165 = (CtElement) ingredients.get(165);
+		assertEquals(patch, i165.toString());
+		List<CtAbstractInvocation> ingredients165 = fr.collectInvocation(i165, true);
+		// It comes from another class:
+		// org.apache.commons.math.analysis.solvers.LaguerreSolver
+		assertTrue(ingredients165.size() > 0);
+		CtAbstractInvocation ingrediet165 = ingredients165.get(0);
+		assertEquals("new org.apache.commons.math.complex.Complex(java.lang.Double.POSITIVE_INFINITY, java.lang.Double.POSITIVE_INFINITY)", ingrediet165.toString());
+		assertTrue(InvocationResolver.fitImplicitInvocation(ctClassMP, ingrediet165));
 
 	}
 
