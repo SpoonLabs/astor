@@ -9,8 +9,9 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.tos.entity.TOSCounter;
 import fr.inria.astor.approaches.tos.entity.TOSEntity;
-import fr.inria.astor.approaches.tos.ingredients.processors.TOSGenerator;
-import fr.inria.astor.approaches.tos.ingredients.processors.TOSPlaceholderGenerator;
+import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
+import fr.inria.astor.approaches.tos.ingredients.processors.PlaceholderGenerator;
+import fr.inria.astor.approaches.tos.ingredients.processors.VariablePlaceholderGenerator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.AstorIngredientSpace;
@@ -44,11 +45,11 @@ public class TOSBStatementIngredientSpace
 	/**
 	 * Generators used for creating the TOS
 	 */
-	protected List<TOSGenerator> tosGenerators = new ArrayList<>();
+	protected List<PlaceholderGenerator> tosGenerators = new ArrayList<>();
 
 	public TOSBStatementIngredientSpace(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super(processors);
-		tosGenerators.add(new TOSPlaceholderGenerator());
+		tosGenerators.add(new VariablePlaceholderGenerator());
 	}
 
 	@Override
@@ -76,13 +77,14 @@ public class TOSBStatementIngredientSpace
 
 					List<Ingredient> ingredientPoolForLocation = this.retrieveIngredients(keyLocation);
 					for (TOSEntity templateElement : xTemplates) {
+						templateElement.generateCodeofTOS();
 						if (!ingredientPoolForLocation.contains(templateElement)) {
-							// log.debug("Adding tos " + templateElement + " to
-							// " + ingredientPoolForLocation);
+							log.debug("Adding tos " + templateElement.getCode() + " to" + ingredientPoolForLocation);
 							ingredientPoolForLocation.add(templateElement);
 						} else {
-							// log.debug("Existing template");
+							log.debug("Existing template");
 						}
+						// TODO: remove comment
 						tosCounter.saveStatisticsOfTos(templateElement, originalIngredientStatement);
 					}
 				} else {
@@ -98,9 +100,18 @@ public class TOSBStatementIngredientSpace
 	private List<TOSEntity> createAllTOS(CtStatement ingredientStatement) {
 		List<TOSEntity> xGeneratedTos = new ArrayList<>();
 
-		for (TOSGenerator tosGenerator : tosGenerators) {
-			List<? extends TOSEntity> xNames = tosGenerator.createTOS(ingredientStatement);
-			xGeneratedTos.addAll(xNames);
+		for (PlaceholderGenerator tosGenerator : tosGenerators) {
+			List<? extends Placeholder> xpalceholders = tosGenerator.createTOS(ingredientStatement);
+			for (Placeholder placeholder : xpalceholders) {
+				TOSEntity tos = new TOSEntity();
+				tos.setDerivedFrom(ingredientStatement);
+				tos.getResolvers().add(placeholder);
+
+				// single or combined
+				// TODO:
+				xGeneratedTos.add(tos);
+			}
+
 		}
 
 		return xGeneratedTos;
@@ -151,8 +162,8 @@ public class TOSBStatementIngredientSpace
 
 	@Override
 	protected String getType(Ingredient ingredient) {
-
-		return ingredient.getCode().getClass().getSimpleName();
+		// before was new code
+		return ingredient.getDerivedFrom().getClass().getSimpleName();
 	}
 
 	public TOSCounter getTosCounter() {

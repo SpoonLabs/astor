@@ -359,10 +359,10 @@ public class VariableResolver {
 		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContext,
 				ingredientCtElement);
 
-		return mapVariablesFromContext(varContext, ingredientCtElement, variablesOutOfScope);
+		return mapVariablesFromContext(varContext, variablesOutOfScope);
 	}
 
-	public static VarMapping mapVariablesFromContext(List<CtVariable> varContext, CtElement ingredientCtElement1,
+	public static VarMapping mapVariablesFromContext(List<CtVariable> varContext,
 			List<CtVariableAccess> variablesOutOfScope) {
 
 		// var out-of scope, list of variables compatibles
@@ -379,13 +379,13 @@ public class VariableResolver {
 			for (CtVariable varInScope : varContext) {
 
 				boolean sameNames = variableOutScope.getVariable().getSimpleName().equals(varInScope.getSimpleName());
-				if (!sameNames) {
+				//if (!sameNames) {
 					boolean compatibleVariables = areVarsCompatible(variableOutScope, varInScope);
 					if (compatibleVariables) {
 						addVarMappingAsResult(varsMaps, varOutWrapper, varInScope);
 						mapped = true;
 					}
-				}
+			//	}
 			}
 			// if the var was not matched, we put in list of variables out of
 			// scope not mapped.

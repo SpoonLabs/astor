@@ -2,7 +2,7 @@ package fr.inria.astor.approaches.tos.ingredients.processors;
 
 import java.util.List;
 
-import fr.inria.astor.approaches.tos.entity.TOSEntity;
+import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
 import spoon.reflect.code.CtStatement;
 
 /**
@@ -10,8 +10,8 @@ import spoon.reflect.code.CtStatement;
  * @author Matias Martinez
  *
  */
-public interface TOSGenerator {
+public interface PlaceholderGenerator {
 
-	public List<? extends TOSEntity> createTOS(CtStatement ingredientStatement);
+	public List<? extends Placeholder> createTOS(CtStatement ingredientStatement);
 
 }

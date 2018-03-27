@@ -1,19 +1,26 @@
 package fr.inria.astor.test.repair.approaches;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.tos.core.TOSBRApproach;
 import fr.inria.astor.approaches.tos.entity.TOSCounter;
-import fr.inria.astor.approaches.tos.entity.TOSDynamicIngredient;
-import fr.inria.astor.approaches.tos.entity.TOSVariablePlaceholder;
+import fr.inria.astor.approaches.tos.entity.TOSEntity;
+import fr.inria.astor.approaches.tos.entity.TOSIngredient;
+import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.approaches.tos.ingredients.TOSBStatementIngredientSpace;
-import fr.inria.astor.approaches.tos.ingredients.TOSRandomTransformationStrategy;
+import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSearchStrategy;
+import fr.inria.astor.approaches.tos.ingredients.processors.TOSFunctionGenerator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
@@ -28,6 +35,7 @@ import fr.inria.astor.util.Probability;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
 
@@ -39,133 +47,6 @@ import spoon.reflect.declaration.CtElement;
 public class TOSBRTest {
 
 	protected static final String LOG_LEVEL = "INFO";
-
-	@Test
-	public void testFindRepairFromTOS1() throws Exception {
-		int nrPlaceholders = 1;
-
-		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-mode", "custom");
-		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
-		command.command.put("-maxgen", "100");
-		command.command.put("-loglevel", LOG_LEVEL);
-		command.command.put("-scope", "package");
-		command.command.put("-stopfirst", "true");
-
-		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
-				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
-
-		AstorMain main = new AstorMain();
-		main.execute(command.flat());
-
-		assertTrue(main.getEngine() instanceof TOSBRApproach);
-		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
-
-		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
-
-		assertTrue(approach.getSolutions().size() > 0);
-
-		// First patch
-		ProgramVariant solution0 = approach.getSolutions().get(0);
-
-		OperatorInstance opI0 = solution0.getOperations().values().stream().filter(e -> e.size() > 0).findFirst().get()
-				.get(0);
-		assertNotNull(opI0);
-		TOSDynamicIngredient ing = (TOSDynamicIngredient) opI0.getIngredient();
-		assertNotNull(ing);
-
-		CtElement fix = opI0.getModified();
-		assertEquals("return solve(f, min, max)", fix.toString());
-
-		assertEquals("return solve(_UnivariateRealFunction_0, min, max)", ing.getDerivedFrom().toString());
-
-	}
-
-	@Test
-	public void testFindRepairFromTOS2() throws Exception {
-		int nrPlaceholders = 2;
-
-		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-mode", "custom");
-		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
-		command.command.put("-maxgen", "100");
-		command.command.put("-loglevel", LOG_LEVEL);
-		command.command.put("-scope", "package");
-		command.command.put("-stopfirst", "false");
-
-		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
-				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
-
-		AstorMain main = new AstorMain();
-		main.execute(command.flat());
-
-		assertTrue(main.getEngine() instanceof TOSBRApproach);
-		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
-
-		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
-
-		assertTrue(approach.getSolutions().size() > 0);
-
-		// First patch
-		ProgramVariant solution0 = approach.getSolutions().get(0);
-		String patch0 = "return solve(f, absoluteAccuracy, max)";
-		String baseIng0 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
-		assertPatch(solution0, patch0, baseIng0);
-
-		ProgramVariant solution1 = approach.getSolutions().get(1);
-		String patch1 = "return solve(f, initial, max)";
-		String baseIng1 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
-		assertPatch(solution1, patch1, baseIng1);
-
-		ProgramVariant solution2 = approach.getSolutions().get(2);
-		String patch2 = "return solve(f, defaultRelativeAccuracy, max)";
-		String baseIng2 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
-		assertPatch(solution2, patch2, baseIng2);
-
-		ProgramVariant solution3 = approach.getSolutions().get(3);
-		String patch3 = "return solve(f, min, max)";
-		String baseIng3 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
-		assertPatch(solution3, patch3, baseIng3);
-
-		ProgramVariant solution4 = approach.getSolutions().get(4);
-		String patch4 = "return solve(f, functionValueAccuracy, max)";
-		String baseIng4 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
-		assertPatch(solution4, patch4, baseIng4);
-
-		ProgramVariant solution5 = approach.getSolutions().get(6);
-		String patch5 = "return solve(f, relativeAccuracy, max)";
-		String baseIng5 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
-		assertPatch(solution5, patch5, baseIng5);
-	}
-
-	/**
-	 * Assert the presence of a patch
-	 * 
-	 * @param solution
-	 *            solution to validate
-	 * @param patch
-	 *            the patch we find
-	 * @param baseIng
-	 *            the parent of the patch
-	 */
-	private void assertPatch(ProgramVariant solution, String patch, String baseIng) {
-		OperatorInstance opI0 = solution.getOperations().values().stream().filter(e -> e.size() > 0).findFirst().get()
-				.get(0);
-		assertNotNull(opI0);
-		TOSDynamicIngredient ing = (TOSDynamicIngredient) opI0.getIngredient();
-		assertNotNull(ing);
-
-		CtElement fix = opI0.getModified();
-		assertEquals(patch, fix.toString());
-
-		if (baseIng != null) {
-			assertEquals(baseIng, ing.getDerivedFrom().toString());
-		}
-	}
 
 	/**
 	 * This test focuses on the instantiation of TOS: in particular, 3 cases.
@@ -194,6 +75,8 @@ public class TOSBRTest {
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
 		IngredientSpace ingredientPool = approach.getIngredientPool();
 		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+
+		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
 
 		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
@@ -224,15 +107,13 @@ public class TOSBRTest {
 
 		Ingredient i11 = ingredientsPackage.get(11);
 		assertEquals("fmin = f.value(_double_0)", i11.getCode().toString());
-
-		TOSRandomTransformationStrategy ts = new TOSRandomTransformationStrategy();
-
-		List<Ingredient> i11Trans = ts.transform(mpL72, i11);
+		strategy.getCacheInstances().clear();
+		List<TOSIngredient> i11Trans = strategy.getInstances(mpL72, i11);
 		assertTrue(i11Trans.isEmpty());
 
 		// ******* case all mapped
-
-		List<Ingredient> i5Trans = ts.transform(mpL72, i5);
+		strategy.getCacheInstances().clear();
+		List<TOSIngredient> i5Trans = strategy.getInstances(mpL72, i5);
 		assertFalse(i5Trans.isEmpty());
 
 		// i 1 return solve(f, _double_0, max)
@@ -246,11 +127,11 @@ public class TOSBRTest {
 
 		// We start with a ingredient with a placeholder and a mapped var.
 		// i 25 setResult(m, _int_0)
-		Ingredient i26 = ingredientsPackage.get(26);
+		Ingredient i26 = ingredientsPackage.get(25);
 		assertEquals("setResult(m, _int_0)", i26.getCode().toString());
 
 		// At line 89, var *m* and placeholder *_int_0* should be mapped.
-		List<Ingredient> i25Trans = ts.transform(mpL89, i26);
+		List<TOSIngredient> i25Trans = strategy.getInstances(mpL89, i26);
 		assertFalse(i25Trans.isEmpty());
 
 		// Now, another experiment.
@@ -260,18 +141,218 @@ public class TOSBRTest {
 		boolean removedInt = mpL89.getContextOfModificationPoint()
 				.removeIf(e -> e.getType().getSimpleName().equals("int"));
 		assertTrue(removedInt);
+		strategy.getCacheInstances().clear();
 		// Now, let's check that the ingredient has not transformation
-		i25Trans = ts.transform(mpL89, i26);
-		assertTrue(i25Trans.isEmpty());
+		i25Trans = strategy.getInstances(mpL89, i26);
+		assertTrue(i25Trans.toString(), i25Trans.isEmpty());
 
 		// One case nothing mapped
 
 		boolean removedAll = mpL89.getContextOfModificationPoint().removeIf(e -> true);
 		assertTrue(removedAll);
+		strategy.getCacheInstances().clear();
 		// No vars in context of L89
-		i25Trans = ts.transform(mpL89, i26);
+		i25Trans = strategy.getInstances(mpL89, i26);
 		assertTrue(i25Trans.isEmpty());
 
+	}
+
+	@Test
+	public void testFindRepairFromTOS1() throws Exception {
+		int nrPlaceholders = 1;
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "100");
+		command.command.put("-loglevel", LOG_LEVEL);
+		command.command.put("-scope", "package");
+		command.command.put("-stopfirst", "false");
+
+		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
+				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof TOSBRApproach);
+		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
+		IngredientSpace ingredientPool = approach.getIngredientPool();
+		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+
+		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
+
+		assertTrue(approach.getSolutions().size() > 0);
+
+		// First patch
+		ProgramVariant solution0 = approach.getSolutions().get(0);
+
+		OperatorInstance opI0 = solution0.getOperations().values().stream().filter(e -> e.size() > 0).findFirst().get()
+				.get(0);
+		assertNotNull(opI0);
+		TOSIngredient ing = (TOSIngredient) opI0.getIngredient();
+		assertNotNull(ing);
+
+		CtElement fix = opI0.getModified();
+		String patchCode = "return solve(f, min, max)";
+		assertEquals(patchCode, fix.toString());
+
+		assertEquals("return solve(_UnivariateRealFunction_0, min, max)", ing.getTosDerived().getCode().toString());
+
+	}
+
+	@Test
+	public void testCheckSpace1() throws Exception {
+		int nrPlaceholders = 1;
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", LOG_LEVEL);
+		command.command.put("-scope", "package");
+		command.command.put("-stopfirst", "false");
+
+		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
+				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof TOSBRApproach);
+		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
+		IngredientSpace ingredientPool = approach.getIngredientPool();
+		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+
+		TOSIngredientSearchStrategy iss = new TOSIngredientSearchStrategy(tosIngredientPool);
+
+		// assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
+
+		// assertTrue(approach.getSolutions().size() > 0);
+
+		List<Ingredient> allin = tosIngredientPool.getAllIngredients();
+
+		// First patch
+		ProgramVariant solution0 = approach.getVariants().get(0);
+
+		for (ModificationPoint mp : solution0.getModificationPoints()) {
+
+			System.out.println(":MP " + mp);
+			for (Ingredient ingredient : allin) {
+				System.out.println("-->Pattern: " + ingredient.getCode());
+				List<TOSIngredient> ingx = iss.getInstances(mp, ingredient);
+				String last = null;
+				for (TOSIngredient tosIngredient : ingx) {
+					tosIngredient.generatePatch();
+					System.out.println("--> " + tosIngredient.getCode());
+					assertNotEquals(last, tosIngredient.getChacheCodeString());
+					last = tosIngredient.getChacheCodeString();
+				}
+			}
+		}
+
+	}
+
+	@Test
+	public void testFindRepairFromTOS2() throws Exception {
+		int nrPlaceholders = 2;
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "200");
+		command.command.put("-loglevel", LOG_LEVEL);
+		command.command.put("-scope", "package");
+		command.command.put("-stopfirst", "false");
+
+		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
+				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof TOSBRApproach);
+		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
+		IngredientSpace ingredientPool = approach.getIngredientPool();
+		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+
+		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
+
+		List<ProgramVariant> solutions = approach.getSolutions();
+		assertTrue(solutions.size() > 0);
+
+		String patch0 = "return solve(f, absoluteAccuracy, max)";
+		String baseIng0 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solutions, patch0, baseIng0);
+
+		String patch1 = "return solve(f, initial, max)";
+		String baseIng1 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solutions, patch1, baseIng1);
+
+		String patch2 = "return solve(f, defaultRelativeAccuracy, max)";
+		String baseIng2 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solutions, patch2, baseIng2);
+
+		String patch3 = "return solve(f, min, max)";
+		String baseIng3 = "return solve(_UnivariateRealFunction_0, min, _double_1)";
+		assertPatch(solutions, patch3, baseIng3);
+
+		String patch4 = "return solve(f, functionValueAccuracy, max)";
+		String baseIng4 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solutions, patch4, baseIng4);
+
+		String patch5 = "return solve(f, relativeAccuracy, max)";
+		String baseIng5 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		assertPatch(solutions, patch5, baseIng5);
+	}
+
+	/**
+	 * Assert the presence of a patch
+	 * 
+	 * @param solution
+	 *            solution to validate
+	 * @param patch
+	 *            the patch we find
+	 * @param baseIng
+	 *            the parent of the patch
+	 */
+	private void assertPatch(ProgramVariant solution, String patch, String baseIng) {
+		OperatorInstance opI0 = solution.getOperations().values().stream().filter(e -> e.size() > 0).findFirst().get()
+				.get(0);
+		assertNotNull(opI0);
+		TOSIngredient ing = (TOSIngredient) opI0.getIngredient();
+		assertNotNull(ing);
+
+		CtElement fix = opI0.getModified();
+		assertEquals(patch, fix.toString());
+
+		if (baseIng != null) {
+			assertEquals(baseIng, ing.getDerivedFrom().toString());
+		}
+	}
+
+	private void assertPatch(List<ProgramVariant> solutions, String patch, String baseIng) {
+
+		for (ProgramVariant programVariant : solutions) {
+
+			OperatorInstance opI0 = programVariant.getOperations().values().stream().filter(e -> e.size() > 0)
+					.findFirst().get().get(0);
+
+			assertNotNull(opI0);
+			CtElement fix = opI0.getModified();
+			if (patch.equals(fix.toString())) {
+				TOSIngredient ing = (TOSIngredient) opI0.getIngredient();
+				assertNotNull(ing);
+
+				assertEquals(patch, fix.toString());
+
+				if (baseIng != null) {
+					assertEquals(baseIng, ing.getDerivedFrom().toString());
+				}
+				return;
+			}
+		}
+		Assert.fail("No program variant with that patch");
 	}
 
 	/**
@@ -351,14 +432,19 @@ public class TOSBRTest {
 		// For each ingredient
 		for (Object ingredient : tosIngredientPool.getAllIngredients()) {
 
-			TOSVariablePlaceholder TOSingredient = (TOSVariablePlaceholder) ingredient;
+			TOSEntity TOSingredient = (TOSEntity) ingredient;
+			// Forcing generation
+			System.out.println("--> " + TOSingredient.generateCodeofTOS());
+
+			VariablePlaceholder vp = (VariablePlaceholder) TOSingredient.getResolvers().get(0);
+
 			// Nr of placeholders in the ingrfdient idem to the configuration
-			assertEquals(nrPlaceholders, TOSingredient.getPlaceholderVarNamesMappings().keySet().size());
-			assertEquals(nrPlaceholders, TOSingredient.getPalceholders().keySet().size());
+			assertEquals(nrPlaceholders, vp.getPlaceholderVarNamesMappings().keySet().size());
+			assertEquals(nrPlaceholders, vp.getPalceholders().keySet().size());
 			// The ingredient is different to the element from it was mined
 			assertNotEquals(TOSingredient.getDerivedFrom(), TOSingredient.getCode());
 			// Each placeholder must exist on the ingredient
-			for (String placeholder : TOSingredient.getPalceholders().keySet()) {
+			for (String placeholder : vp.getPalceholders().keySet()) {
 				assertTrue(TOSingredient.getCode().toString().contains(placeholder));
 			}
 			// Retrieve all variables from the ingredient
@@ -367,16 +453,16 @@ public class TOSBRTest {
 
 			// Each variable not transformed must appears in the list of
 			// collected variables
-			for (CtVariableAccess notModified : TOSingredient.getVariablesNotModified()) {
+			for (CtVariableAccess notModified : vp.getVariablesNotModified()) {
 				assertTrue(varAccessCollected.contains(notModified));
 			}
 
 			// Each placeholder variable not transformed must appears in the
 			// list of collected variables
-			for (String placeholder : TOSingredient.getPalceholders().keySet()) {
+			for (String placeholder : vp.getPalceholders().keySet()) {
 
-				for (CtVariableAccess varModified : TOSingredient.getPalceholders().get(placeholder)) {
-					assertTrue(varAccessCollected.contains(varModified));
+				for (CtVariableAccess varModified : vp.getPalceholders().get(placeholder)) {
+					// assertTrue(varAccessCollected.contains(varModified));
 				}
 			}
 
@@ -455,4 +541,46 @@ public class TOSBRTest {
 		assertEquals(1d, (double) prob_key, 0.0001d);
 
 	}
+
+	// @Test
+	public void testFunctionG1() throws Exception {
+		int nrPlaceholders = 1;
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", LOG_LEVEL);
+		command.command.put("-scope", "package");
+		command.command.put("-stopfirst", "false");
+
+		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
+				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof TOSBRApproach);
+
+		List<ModificationPoint> mps = main.getEngine().getVariants().get(0).getModificationPoints();
+
+		ModificationPoint mp0 = mps.get(0);
+
+		TOSFunctionGenerator fg = new TOSFunctionGenerator();
+
+		assertTrue(mp0.getCodeElement() instanceof CtStatement);
+
+		/*
+		 * List<TOSFunction> tfs = fg.createTOS((CtStatement)
+		 * mp0.getCodeElement());
+		 * 
+		 * assertTrue(tfs.size() > 0);
+		 * 
+		 * TOSFunctionSimpleTransformationStrategy trs = new
+		 * TOSFunctionSimpleTransformationStrategy(); List<Ingredient>
+		 * ingredientsTransformed = trs.transform(mp0, tfs.get(0));
+		 * System.out.println("-> " + ingredientsTransformed);
+		 */
+	}
+
 }
