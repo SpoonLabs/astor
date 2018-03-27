@@ -1,7 +1,5 @@
 package fr.inria.astor.core.stats;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,14 +8,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.loop.spaces.ingredients.transformations.DynamicIngredient;
-import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.util.TimeUtil;

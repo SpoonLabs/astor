@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.filters.SpecialStatementFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import spoon.reflect.declaration.CtType;
 

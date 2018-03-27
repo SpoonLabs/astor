@@ -5,7 +5,6 @@ import java.util.List;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
-import spoon.reflect.declaration.CtElement;
 
 /**
  * Representation of Fix Location Space.

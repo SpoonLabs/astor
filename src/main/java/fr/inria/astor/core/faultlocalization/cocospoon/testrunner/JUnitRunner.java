@@ -1,17 +1,17 @@
 package fr.inria.astor.core.faultlocalization.cocospoon.testrunner;
 
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.RunListener;
-
-import fr.inria.astor.core.faultlocalization.cocospoon.code.ClassLibrary;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.TimeZone;
 import java.util.concurrent.Callable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.RunListener;
+
+import fr.inria.astor.core.faultlocalization.cocospoon.code.ClassLibrary;
 
 public final class JUnitRunner implements Callable<Result> {
 

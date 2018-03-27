@@ -1,11 +1,11 @@
 package fr.inria.astor.core.faultlocalization.cocospoon.testrunner;
 
+import java.util.concurrent.Callable;
+
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
-
-import java.util.concurrent.Callable;
 
 public class JUnitSingleTestResultRunner implements Callable<Result> {
 

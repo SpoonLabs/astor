@@ -1,11 +1,12 @@
 package fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.core.loop.AstorCoreEngine;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.loop.spaces.operators.WeightedRandomOperatorSelection;

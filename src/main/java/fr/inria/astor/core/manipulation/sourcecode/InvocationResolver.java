@@ -3,7 +3,9 @@ package fr.inria.astor.core.manipulation.sourcecode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.log4j.Logger;
+
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;

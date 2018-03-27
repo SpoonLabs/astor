@@ -1,12 +1,12 @@
 package fr.inria.astor.core.faultlocalization.cocospoon.code;
 
+import static java.lang.String.format;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static java.lang.String.format;
 
 public class ClassLibrary {
 

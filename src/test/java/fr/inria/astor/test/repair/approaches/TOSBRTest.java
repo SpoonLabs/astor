@@ -20,7 +20,6 @@ import fr.inria.astor.approaches.tos.entity.TOSIngredient;
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.approaches.tos.ingredients.TOSBStatementIngredientSpace;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSearchStrategy;
-import fr.inria.astor.approaches.tos.ingredients.processors.TOSFunctionGenerator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
@@ -565,8 +564,6 @@ public class TOSBRTest {
 		List<ModificationPoint> mps = main.getEngine().getVariants().get(0).getModificationPoints();
 
 		ModificationPoint mp0 = mps.get(0);
-
-		TOSFunctionGenerator fg = new TOSFunctionGenerator();
 
 		assertTrue(mp0.getCodeElement() instanceof CtStatement);
 

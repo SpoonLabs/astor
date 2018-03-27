@@ -1,15 +1,15 @@
 package fr.inria.astor.core.faultlocalization.cocospoon.testrunner;
 
-import org.junit.runner.Description;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
-import org.junit.runner.notification.RunListener;
+import static java.lang.String.format;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static java.lang.String.format;
+import org.junit.runner.Description;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
 
 
 public class TestCasesListener extends RunListener {

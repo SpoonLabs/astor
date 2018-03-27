@@ -3,7 +3,6 @@ package fr.inria.astor.approaches.tos.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.manipulation.MutationSupporter;

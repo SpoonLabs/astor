@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.junit.JUnitExternalExecutor;
 import fr.inria.astor.core.validation.junit.JUnitNologExternalExecutor;
-import fr.inria.astor.core.validation.junit.filters.TestFilter;
 import fr.inria.astor.core.validation.results.TestResult;
 
 /**

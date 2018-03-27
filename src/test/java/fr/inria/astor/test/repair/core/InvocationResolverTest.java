@@ -168,6 +168,7 @@ public class InvocationResolverTest {
 		assertEquals("new org.apache.commons.math.complex.Complex(java.lang.Double.POSITIVE_INFINITY, java.lang.Double.POSITIVE_INFINITY)", ingrediet165.toString());
 		assertTrue(InvocationResolver.fitImplicitInvocation(ctClassMP, ingrediet165));
 
+		
 	}
 
 }

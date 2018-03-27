@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
-
 import spoon.reflect.declaration.CtType;
 
 /**
