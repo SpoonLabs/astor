@@ -36,17 +36,17 @@ public class DynamicIngredient extends Ingredient {
 	@Override
 	public CtElement getCode() {
 
-		if (this.code == null) {
+		if (this.ingredientCode == null) {
 			Map<String, CtVariable> selectedTransformation = this.combination.getCombination();
 
 			Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver.convertIngredient(mapping,
 					selectedTransformation);
 			// Cloned transformed element
-			this.code = MutationSupporter.clone((CtCodeElement) this.getDerivedFrom());
+			this.ingredientCode = MutationSupporter.clone((CtCodeElement) this.getDerivedFrom());
 
 			VariableResolver.resetIngredient(originalMap);
 		}
-		return this.code;
+		return this.ingredientCode;
 	}
 
 
