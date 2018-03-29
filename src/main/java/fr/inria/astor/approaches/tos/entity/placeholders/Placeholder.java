@@ -2,7 +2,7 @@ package fr.inria.astor.approaches.tos.entity.placeholders;
 
 import java.util.List;
 
-import fr.inria.astor.approaches.tos.core.ChangeGenerator;
+import fr.inria.astor.approaches.tos.core.PatchGenerator;
 import fr.inria.astor.approaches.tos.entity.TOSEntity;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -31,5 +31,5 @@ public abstract class Placeholder {
 
 	public abstract List<CtCodeElement> getAffectedElements();
 
-	public abstract List<Transformation> visit(ModificationPoint modificationPoint, ChangeGenerator visitor);
+	public abstract List<Transformation> visit(ModificationPoint modificationPoint, PatchGenerator visitor);
 }

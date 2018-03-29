@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.inria.astor.approaches.tos.core.ChangeGenerator;
+import fr.inria.astor.approaches.tos.core.PatchGenerator;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.util.MapList;
@@ -42,36 +42,13 @@ public class VariablePlaceholder extends Placeholder {
 		this.variablesNotModified = variablesNotModified;
 	}
 
-	public MapList<String, CtVariableAccess> getPalceholders() {
-		return palceholdersToVariables;
-	}
-
-	public void setPalceholders(MapList<String, CtVariableAccess> palceholders) {
-		this.palceholdersToVariables = palceholders;
-	}
-
-	public List<CtVariableAccess> getVariablesNotModified() {
-		return variablesNotModified;
-	}
-
-	public void setVariablesNotModified(List<CtVariableAccess> variablesNotModified) {
-		this.variablesNotModified = variablesNotModified;
-	}
-
-	public Map<String, String> getPlaceholderVarNamesMappings() {
-		return placeholderVarNamesMappings;
-	}
-
-	public void setPlaceholderVarNamesMappings(Map<String, String> placeholderVarNamesMappings) {
-		this.placeholderVarNamesMappings = placeholderVarNamesMappings;
-	}
-
 	@Override
 	public String toString() {
 		return "TOSVarName [placeholderVarNamesMappings=" + placeholderVarNamesMappings + ", palceholdersToVariables="
 				+ palceholdersToVariables + ", variablesNotModified=" + variablesNotModified + "]";
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void apply(CtCodeElement cloned) {
 		olderNameOfVariable.clear();
@@ -106,19 +83,43 @@ public class VariablePlaceholder extends Placeholder {
 
 	@Override
 	public List<CtCodeElement> getAffectedElements() {
-		List<CtCodeElement> ces = new ArrayList<>(); 
-		
-		for(List vars:  this.palceholdersToVariables.values()){
+		List<CtCodeElement> ces = new ArrayList<>();
+
+		for (List vars : this.palceholdersToVariables.values()) {
 			ces.addAll(vars);
 		}
 		return null;
 	}
 
 	@Override
-	public List<Transformation>  visit(ModificationPoint modificationPoint, ChangeGenerator visitor) {
-		
+	public List<Transformation> visit(ModificationPoint modificationPoint, PatchGenerator visitor) {
+
 		return visitor.process(modificationPoint, this);
-		
+
 	};
+
+	public MapList<String, CtVariableAccess> getPalceholders() {
+		return palceholdersToVariables;
+	}
+
+	public void setPalceholders(MapList<String, CtVariableAccess> palceholders) {
+		this.palceholdersToVariables = palceholders;
+	}
+
+	public List<CtVariableAccess> getVariablesNotModified() {
+		return variablesNotModified;
+	}
+
+	public void setVariablesNotModified(List<CtVariableAccess> variablesNotModified) {
+		this.variablesNotModified = variablesNotModified;
+	}
+
+	public Map<String, String> getPlaceholderVarNamesMappings() {
+		return placeholderVarNamesMappings;
+	}
+
+	public void setPlaceholderVarNamesMappings(Map<String, String> placeholderVarNamesMappings) {
+		this.placeholderVarNamesMappings = placeholderVarNamesMappings;
+	}
 
 }

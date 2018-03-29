@@ -18,7 +18,7 @@ import spoon.reflect.declaration.CtElement;
  */
 public class TOSEntity extends Ingredient {
 
-	List<Placeholder> resolvers = new ArrayList<>();
+	List<Placeholder> placeholders = new ArrayList<>();
 
 	public TOSEntity(CtElement code, IngredientSpaceScope scope, CtElement derivedFrom) {
 		super(code, scope, derivedFrom);
@@ -36,21 +36,21 @@ public class TOSEntity extends Ingredient {
 		super(null);
 	}
 
-	public List<Placeholder> getResolvers() {
-		return resolvers;
+	public List<Placeholder> getPlaceholders() {
+		return placeholders;
 	}
 
-	public void setResolvers(List<Placeholder> resolvers) {
-		this.resolvers = resolvers;
+	public void setPlaceholders(List<Placeholder> resolvers) {
+		this.placeholders = resolvers;
 	}
 
 	public int getNrPlaceholder() {
-		return resolvers.size();
+		return placeholders.size();
 	}
 
 	public CtElement generateCodeofTOS() {
 
-		for (Placeholder placeholder : resolvers) {
+		for (Placeholder placeholder : placeholders) {
 
 			placeholder.apply((CtCodeElement) this.derivedFrom);
 
@@ -59,7 +59,7 @@ public class TOSEntity extends Ingredient {
 
 		this.ingredientCode = cloned;
 
-		for (Placeholder placeholder : resolvers) {
+		for (Placeholder placeholder : placeholders) {
 
 			placeholder.revert();
 
@@ -73,7 +73,7 @@ public class TOSEntity extends Ingredient {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((resolvers == null) ? 0 : resolvers.hashCode());
+		result = prime * result + ((placeholders == null) ? 0 : placeholders.hashCode());
 		return result;
 	}
 

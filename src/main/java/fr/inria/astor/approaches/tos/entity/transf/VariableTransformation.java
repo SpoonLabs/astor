@@ -17,6 +17,7 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  *
  */
+@SuppressWarnings("rawtypes")
 public class VariableTransformation implements Transformation {
 
 	private VarCombinationForIngredient combination;
@@ -27,20 +28,6 @@ public class VariableTransformation implements Transformation {
 	public VariableTransformation(VarCombinationForIngredient varCombinationForIngredient, VarMapping mapping) {
 		this.combination = varCombinationForIngredient;
 		this.mapping = mapping;
-	}
-
-	@Deprecated
-	public CtElement getNewCode1(CtElement code) {
-
-		Map<String, CtVariable> selectedTransformation = this.combination.getCombination();
-
-		Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver.convertIngredient(mapping,
-				selectedTransformation);
-		// Cloned transformed element
-		CtCodeElement newCode = MutationSupporter.clone((CtCodeElement) code);
-
-		VariableResolver.resetIngredient(originalMap);
-		return newCode;
 	}
 
 	@Override

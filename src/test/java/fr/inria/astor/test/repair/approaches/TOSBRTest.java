@@ -435,7 +435,7 @@ public class TOSBRTest {
 			// Forcing generation
 			System.out.println("--> " + TOSingredient.generateCodeofTOS());
 
-			VariablePlaceholder vp = (VariablePlaceholder) TOSingredient.getResolvers().get(0);
+			VariablePlaceholder vp = (VariablePlaceholder) TOSingredient.getPlaceholders().get(0);
 
 			// Nr of placeholders in the ingrfdient idem to the configuration
 			assertEquals(nrPlaceholders, vp.getPlaceholderVarNamesMappings().keySet().size());

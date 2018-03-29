@@ -31,6 +31,7 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public List<? extends Placeholder> createTOS(CtStatement ingredientStatement) {
 
@@ -61,10 +62,8 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 		return createdTemplates;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private VariablePlaceholder createParticularTOS(CtStatement ingredientStatement, Set<String> targetPlaceholders) {
-
-		//CtElement ingredientElement = MutationSupporter.clone(ingredientStatement);// ingredientStatement.clone();
 
 		// We collect all variables
 		List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(ingredientStatement, true);
@@ -73,7 +72,7 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private VariablePlaceholder createParticularTOS(CtStatement ingredientStatement, Set<String> targetPlaceholders,
 			List<CtVariableAccess> varAccessCollected) {
 
@@ -81,16 +80,6 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 		Map<String, String> placeholderVarNamesMappings = new HashMap<>();
 		MapList<String, CtVariableAccess> placeholdersToVariables = new MapList<>();
 		List<CtVariableAccess> variablesNotModified = new ArrayList<>();
-		//
-
-		// CtElement original = ingredientStatement;
-		// CtElement ingredientElement =
-		// MutationSupporter.clone(ingredientStatement);//
-		// ingredientStatement.clone();
-
-		// We collect all variables
-		// List<CtVariableAccess> varAccessCollected =
-		// VariableResolver.collectVariableAccess(ingredientElement, true);
 
 		int nrvar = 0;
 		for (int i = 0; i < varAccessCollected.size(); i++) {
@@ -126,16 +115,6 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 				abstractName = placeholderVarNamesMappings.get(variableUnderAnalysis.getVariable().getSimpleName());
 			}
 			placeholdersToVariables.add(abstractName, variableUnderAnalysis);
-
-			/*
-			 * variableUnderAnalysis.getVariable().setSimpleName(abstractName);
-			 * // workaround: Problems with var Shadowing
-			 * variableUnderAnalysis.getFactory().getEnvironment().
-			 * setNoClasspath(true); if (variableUnderAnalysis instanceof
-			 * CtFieldAccess) { CtFieldAccess fieldAccess = (CtFieldAccess)
-			 * variableUnderAnalysis;
-			 * fieldAccess.getVariable().setDeclaringType(null); }
-			 */
 
 		}
 

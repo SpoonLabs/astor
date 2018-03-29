@@ -105,7 +105,7 @@ public class TOSBStatementIngredientSpace
 			for (Placeholder placeholder : xpalceholders) {
 				TOSEntity tos = new TOSEntity();
 				tos.setDerivedFrom(ingredientStatement);
-				tos.getResolvers().add(placeholder);
+				tos.getPlaceholders().add(placeholder);
 
 				// single or combined
 				// TODO:

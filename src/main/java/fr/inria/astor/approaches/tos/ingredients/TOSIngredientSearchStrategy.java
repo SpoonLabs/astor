@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.approaches.tos.core.ChangeGenerator;
+import fr.inria.astor.approaches.tos.core.PatchGenerator;
 import fr.inria.astor.approaches.tos.entity.TOSEntity;
 import fr.inria.astor.approaches.tos.entity.TOSIngredient;
 import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
@@ -86,11 +86,11 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 			log.debug("Not in cache, generating for " + modificationPoint + " and "
 					+ ingredientBaseSelected.getChacheCodeString());
 
-			ChangeGenerator v = new ChangeGenerator();
+			PatchGenerator v = new PatchGenerator();
 
 			TOSEntity tos = (TOSEntity) ingredientBaseSelected;
 			ingredientTransformed = new ArrayList<>();
-			for (Placeholder placeholder : tos.getResolvers()) {
+			for (Placeholder placeholder : tos.getPlaceholders()) {
 				List<Transformation> transpl = placeholder.visit(modificationPoint, v);
 
 				if (ingredientTransformed.isEmpty()) {

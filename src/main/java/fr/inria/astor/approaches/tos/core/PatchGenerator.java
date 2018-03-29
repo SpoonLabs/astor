@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.approaches.tos.entity.placeholders.InvocationPlaceholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.approaches.tos.entity.transf.VariableTransformation;
@@ -19,17 +20,23 @@ import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtVariable;
+
 /**
  * 
  * @author Matias Martinez
  *
  */
-public class ChangeGenerator {
+public class PatchGenerator {
 
-	protected Logger logger = Logger.getLogger(ChangeGenerator.class.getName());
+	protected Logger logger = Logger.getLogger(PatchGenerator.class.getName());
 
+	public List<Transformation> process(ModificationPoint modificationPoint, InvocationPlaceholder varplaceholder) {
+		List<Transformation> transformation = new ArrayList<>();
+		return transformation;
+	}
+
+	@SuppressWarnings("rawtypes")
 	public List<Transformation> process(ModificationPoint modificationPoint, VariablePlaceholder varplaceholder) {
-
 
 		// Vars in scope at the modification point
 		List<CtVariable> variablesInScope = modificationPoint.getContextOfModificationPoint();
@@ -97,6 +104,7 @@ public class ChangeGenerator {
 		return transformation;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public List<VarCombinationForIngredient> findAllVarMappingCombinationUsingRandom(
 			Map<VarAccessWrapper, List<CtVariable>> mappedVars) {
 
