@@ -20,18 +20,6 @@ public class TOSEntity extends Ingredient {
 
 	List<Placeholder> placeholders = new ArrayList<>();
 
-	public TOSEntity(CtElement code, IngredientSpaceScope scope, CtElement derivedFrom) {
-		super(code, scope, derivedFrom);
-	}
-
-	public TOSEntity(CtElement element, IngredientSpaceScope scope) {
-		super(element, scope);
-	}
-
-	public TOSEntity(CtElement element) {
-		super(element);
-	}
-
 	public TOSEntity() {
 		super(null);
 	}
