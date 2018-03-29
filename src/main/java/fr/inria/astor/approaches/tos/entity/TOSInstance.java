@@ -15,13 +15,13 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez
  *
  */
-public class TOSIngredient extends Ingredient {
+public class TOSInstance extends Ingredient {
 
 	protected TOSEntity tosDerived = null;
 
 	protected List<Transformation> transformations = new ArrayList<>();
 
-	public TOSIngredient(CtElement derivedFrom, TOSEntity tosDerived) {
+	public TOSInstance(CtElement derivedFrom, TOSEntity tosDerived) {
 		super(null, null, derivedFrom);
 		this.tosDerived = tosDerived;
 	}

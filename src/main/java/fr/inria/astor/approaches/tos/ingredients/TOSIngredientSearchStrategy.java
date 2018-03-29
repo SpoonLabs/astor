@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.approaches.tos.core.PatchGenerator;
 import fr.inria.astor.approaches.tos.entity.TOSEntity;
-import fr.inria.astor.approaches.tos.entity.TOSIngredient;
+import fr.inria.astor.approaches.tos.entity.TOSInstance;
 import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.core.entities.Ingredient;
@@ -56,7 +56,7 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 		// We have randomly selected one Ingredient base
 		Ingredient ingredientBaseSelected = baseIngedients.get(randomIndex);
 
-		List<TOSIngredient> ingredientTransformed = getInstances(modificationPoint, ingredientBaseSelected);
+		List<TOSInstance> ingredientTransformed = getInstances(modificationPoint, ingredientBaseSelected);
 
 		if (ingredientTransformed == null || ingredientTransformed.isEmpty()) {
 			log.debug("No instance of ingredients for mp " + modificationPoint + " and "
@@ -65,18 +65,18 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 		}
 
 		randomIndex = RandomManager.nextInt(ingredientTransformed.size());
-		TOSIngredient ding = ingredientTransformed.remove(randomIndex);
+		TOSInstance ding = ingredientTransformed.remove(randomIndex);
 		ding.generatePatch();
 		return ding;
 
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TOSIngredient> getInstances(ModificationPoint modificationPoint, Ingredient ingredientBaseSelected) {
+	public List<TOSInstance> getInstances(ModificationPoint modificationPoint, Ingredient ingredientBaseSelected) {
 		// Now, let's get the ingredients.
-		List<TOSIngredient> ingredientTransformed = null;
+		List<TOSInstance> ingredientTransformed = null;
 		if (this.cacheInstances.containsKey(modificationPoint, ingredientBaseSelected.getChacheCodeString())) {
-			ingredientTransformed = (List<TOSIngredient>) this.cacheInstances.get(modificationPoint,
+			ingredientTransformed = (List<TOSInstance>) this.cacheInstances.get(modificationPoint,
 					ingredientBaseSelected.getChacheCodeString());
 			log.debug("Ingredients "+StringUtil.trunc(ingredientBaseSelected.getChacheCodeString())
 					+ " cache of size " + ingredientTransformed.size());
@@ -95,14 +95,14 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 
 				if (ingredientTransformed.isEmpty()) {
 					for (Transformation transformation : transpl) {
-						TOSIngredient tosIn = new TOSIngredient(tos.getCode(), tos);
+						TOSInstance tosIn = new TOSInstance(tos.getCode(), tos);
 						tosIn.getTransformations().add(transformation);
 						ingredientTransformed.add(tosIn);
 					}
 
 				} else {
 					for (Transformation transformation : transpl) {
-						for (TOSIngredient tosIngredient : ingredientTransformed) {
+						for (TOSInstance tosIngredient : ingredientTransformed) {
 							tosIngredient.getTransformations().add(transformation);
 						}
 					}
