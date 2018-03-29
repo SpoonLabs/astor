@@ -82,4 +82,12 @@ public class TOSEntity extends Ingredient {
 		return true;
 	}
 
+	@Override
+	public CtElement getCode() {
+		if (this.ingredientCode == null) {
+			return this.generateCodeofTOS();
+		}
+		return super.getCode();
+	}
+
 }
