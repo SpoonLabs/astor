@@ -1,14 +1,19 @@
 package fr.inria.astor.approaches.tos.entity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
 import fr.inria.astor.core.entities.Ingredient;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtVariable;
 
 /**
  * Abstract class of a TOS, which, in turns, is an ingredient.
@@ -90,4 +95,27 @@ public class TOSEntity extends Ingredient {
 		return super.getCode();
 	}
 
+	public boolean canBeApplied(ModificationPoint modificationPoint) {
+
+		Set<CtCodeElement> affected = new HashSet<>();
+		List<CtVariable> variablesInScope = modificationPoint.getContextOfModificationPoint();
+
+		for (Placeholder placeholder : this.getPlaceholders()) {
+
+			List<CtCodeElement> affected_i = placeholder.getAffectedElements();
+			affected.addAll(affected);
+
+		}
+
+		// Check Those vars not transformed must exist in context
+		List<CtVariableAccess> outOfContext = VariableResolver.retriveVariablesOutOfContext(variablesInScope,
+				this.derivedFrom);
+
+		// remove the affected
+		boolean removed = outOfContext.removeAll(affected);
+		System.out.println("Removed " + removed);
+
+		return outOfContext.isEmpty();
+
+	}
 }

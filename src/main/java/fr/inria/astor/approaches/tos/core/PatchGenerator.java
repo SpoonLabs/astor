@@ -1,6 +1,7 @@
 package fr.inria.astor.approaches.tos.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -9,17 +10,22 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.approaches.tos.entity.placeholders.InvocationPlaceholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
+import fr.inria.astor.approaches.tos.entity.transf.InvocationTransformation;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.approaches.tos.entity.transf.VariableTransformation;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
+import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver.InvocationMatching;
 import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarCombinationForIngredient;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.util.MapList;
+import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtExecutableReference;
 
 /**
  * 
@@ -30,9 +36,45 @@ public class PatchGenerator {
 
 	protected Logger logger = Logger.getLogger(PatchGenerator.class.getName());
 
+	@SuppressWarnings("rawtypes")
 	public List<Transformation> process(ModificationPoint modificationPoint, InvocationPlaceholder varplaceholder) {
-		List<Transformation> transformation = new ArrayList<>();
-		return transformation;
+
+		List<Transformation> transformed = new ArrayList<>();
+		InvocationMatching matchingVar = InvocationResolver.mapImplicitInvocation(modificationPoint.getCtClass(),
+				varplaceholder.getInvocation());
+		System.out.println("Invocation matching: " + matchingVar);
+		if (!matchingVar.isCorrect()) {
+			System.out.println("Incorrect: we cannot put that ingredient there.");
+			return transformed;
+		} else {
+			//
+			if (matchingVar.TARGET_IS_VARIABLE.equals(matchingVar)) {
+				Collection<CtExecutableReference<?>> allExecutables = varplaceholder.getTarget().getAllExecutables();
+				for (CtExecutableReference executableTarget : allExecutables) {
+
+					createTransformations(varplaceholder, transformed, executableTarget);
+				}
+			} else if (InvocationMatching.TARGET_SAME_TYPE.equals(matchingVar)
+					|| InvocationMatching.SAME_SIGNATURE_FROM_DIFF_TYPE.equals(matchingVar)) {
+				CtAbstractInvocation inv = varplaceholder.getInvocation();
+				CtExecutableReference executableTarget = inv.getExecutable();
+				createTransformations(varplaceholder, transformed, executableTarget);
+			}
+		}
+
+		return transformed;
+
+	}
+
+	private void createTransformations(InvocationPlaceholder varplaceholder, List<Transformation> transformed,
+			CtExecutableReference executableTarget) {
+		if (executableTarget.getType().equals(varplaceholder.getType()) && varplaceholder.getInvocation()
+				.getExecutable().getParameters().equals(executableTarget.getParameters())) {
+
+			InvocationTransformation it = new InvocationTransformation(executableTarget, varplaceholder);
+
+			transformed.add(it);
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -130,5 +172,7 @@ public class PatchGenerator {
 		return allCom;
 
 	}
+
+	
 
 }

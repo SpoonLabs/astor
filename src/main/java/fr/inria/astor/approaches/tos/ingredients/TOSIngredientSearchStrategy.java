@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.Lists;
+
 import fr.inria.astor.approaches.tos.core.PatchGenerator;
 import fr.inria.astor.approaches.tos.entity.TOSEntity;
 import fr.inria.astor.approaches.tos.entity.TOSInstance;
@@ -89,6 +91,11 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 			PatchGenerator v = new PatchGenerator();
 
 			TOSEntity tos = (TOSEntity) ingredientBaseSelected;
+			if(!tos.canBeApplied(modificationPoint)){
+				System.out.println("We cannot generate a patch from tos"+
+						tos.getCode()+ " in location"+modificationPoint);
+				return Lists.newArrayList();
+			}
 			ingredientTransformed = new ArrayList<>();
 			for (Placeholder placeholder : tos.getPlaceholders()) {
 				List<Transformation> transpl = placeholder.visit(modificationPoint, v);

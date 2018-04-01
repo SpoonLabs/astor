@@ -16,16 +16,20 @@ import org.junit.Test;
 import fr.inria.astor.approaches.tos.core.TOSBRApproach;
 import fr.inria.astor.approaches.tos.entity.TOSCounter;
 import fr.inria.astor.approaches.tos.entity.TOSEntity;
-import fr.inria.astor.approaches.tos.entity.TOSIngredient;
+import fr.inria.astor.approaches.tos.entity.TOSInstance;
+import fr.inria.astor.approaches.tos.entity.placeholders.InvocationPlaceholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.approaches.tos.ingredients.TOSBStatementIngredientSpace;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSearchStrategy;
+import fr.inria.astor.approaches.tos.ingredients.processors.TOSInvocationGenerator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
+import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver.InvocationMatching;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.CommandSummary;
@@ -34,6 +38,7 @@ import fr.inria.astor.util.Probability;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
@@ -64,8 +69,10 @@ public class TOSBRTest {
 		command.command.put("-scope", "package");
 		command.command.put("-stopfirst", "true");
 
-		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
-				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -107,12 +114,12 @@ public class TOSBRTest {
 		Ingredient i11 = ingredientsPackage.get(11);
 		assertEquals("fmin = f.value(_double_0)", i11.getCode().toString());
 		strategy.getCacheInstances().clear();
-		List<TOSIngredient> i11Trans = strategy.getInstances(mpL72, i11);
+		List<TOSInstance> i11Trans = strategy.getInstances(mpL72, i11);
 		assertTrue(i11Trans.isEmpty());
 
 		// ******* case all mapped
 		strategy.getCacheInstances().clear();
-		List<TOSIngredient> i5Trans = strategy.getInstances(mpL72, i5);
+		List<TOSInstance> i5Trans = strategy.getInstances(mpL72, i5);
 		assertFalse(i5Trans.isEmpty());
 
 		// i 1 return solve(f, _double_0, max)
@@ -130,7 +137,7 @@ public class TOSBRTest {
 		assertEquals("setResult(m, _int_0)", i26.getCode().toString());
 
 		// At line 89, var *m* and placeholder *_int_0* should be mapped.
-		List<TOSIngredient> i25Trans = strategy.getInstances(mpL89, i26);
+		List<TOSInstance> i25Trans = strategy.getInstances(mpL89, i26);
 		assertFalse(i25Trans.isEmpty());
 
 		// Now, another experiment.
@@ -168,8 +175,10 @@ public class TOSBRTest {
 		command.command.put("-scope", "package");
 		command.command.put("-stopfirst", "false");
 
-		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
-				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -189,7 +198,7 @@ public class TOSBRTest {
 		OperatorInstance opI0 = solution0.getOperations().values().stream().filter(e -> e.size() > 0).findFirst().get()
 				.get(0);
 		assertNotNull(opI0);
-		TOSIngredient ing = (TOSIngredient) opI0.getIngredient();
+		TOSInstance ing = (TOSInstance) opI0.getIngredient();
 		assertNotNull(ing);
 
 		CtElement fix = opI0.getModified();
@@ -212,8 +221,10 @@ public class TOSBRTest {
 		command.command.put("-scope", "package");
 		command.command.put("-stopfirst", "false");
 
-		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
-				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -239,9 +250,9 @@ public class TOSBRTest {
 			System.out.println(":MP " + mp);
 			for (Ingredient ingredient : allin) {
 				System.out.println("-->Pattern: " + ingredient.getCode());
-				List<TOSIngredient> ingx = iss.getInstances(mp, ingredient);
+				List<TOSInstance> ingx = iss.getInstances(mp, ingredient);
 				String last = null;
-				for (TOSIngredient tosIngredient : ingx) {
+				for (TOSInstance tosIngredient : ingx) {
 					tosIngredient.generatePatch();
 					System.out.println("--> " + tosIngredient.getCode());
 					assertNotEquals(last, tosIngredient.getChacheCodeString());
@@ -264,8 +275,10 @@ public class TOSBRTest {
 		command.command.put("-scope", "package");
 		command.command.put("-stopfirst", "false");
 
-		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
-				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -319,7 +332,7 @@ public class TOSBRTest {
 		OperatorInstance opI0 = solution.getOperations().values().stream().filter(e -> e.size() > 0).findFirst().get()
 				.get(0);
 		assertNotNull(opI0);
-		TOSIngredient ing = (TOSIngredient) opI0.getIngredient();
+		TOSInstance ing = (TOSInstance) opI0.getIngredient();
 		assertNotNull(ing);
 
 		CtElement fix = opI0.getModified();
@@ -340,7 +353,7 @@ public class TOSBRTest {
 			assertNotNull(opI0);
 			CtElement fix = opI0.getModified();
 			if (patch.equals(fix.toString())) {
-				TOSIngredient ing = (TOSIngredient) opI0.getIngredient();
+				TOSInstance ing = (TOSInstance) opI0.getIngredient();
 				assertNotNull(ing);
 
 				assertEquals(patch, fix.toString());
@@ -410,8 +423,10 @@ public class TOSBRTest {
 		command.command.put("-loglevel", LOG_LEVEL);
 		command.command.put("-scope", "package");
 
-		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
-				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -500,8 +515,10 @@ public class TOSBRTest {
 		command.command.put("-scope", "package");
 		command.command.put("-stopfirst", "true");
 
-		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
-				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -541,20 +558,24 @@ public class TOSBRTest {
 
 	}
 
-	// @Test
-	public void testFunctionG1() throws Exception {
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testInvocationsG1() throws Exception {
 		int nrPlaceholders = 1;
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-mode", "custom");
 		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
-		command.command.put("-loglevel", LOG_LEVEL);
+		command.command.put("-loglevel", "DEBUG" /* LOG_LEVEL */);
 		command.command.put("-scope", "package");
 		command.command.put("-stopfirst", "false");
 
-		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders + File.pathSeparator
-				+ "duplicateingredientsinspace" + File.pathSeparator + "true");
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
+						+ File.pathSeparator + "false" + File.pathSeparator + "excludevariableplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -567,17 +588,86 @@ public class TOSBRTest {
 
 		assertTrue(mp0.getCodeElement() instanceof CtStatement);
 
-		/*
-		 * List<TOSFunction> tfs = fg.createTOS((CtStatement)
-		 * mp0.getCodeElement());
-		 * 
-		 * assertTrue(tfs.size() > 0);
-		 * 
-		 * TOSFunctionSimpleTransformationStrategy trs = new
-		 * TOSFunctionSimpleTransformationStrategy(); List<Ingredient>
-		 * ingredientsTransformed = trs.transform(mp0, tfs.get(0));
-		 * System.out.println("-> " + ingredientsTransformed);
-		 */
+		TOSInvocationGenerator invgenerator = new TOSInvocationGenerator();
+
+		List<InvocationPlaceholder> invphd = (List<InvocationPlaceholder>) invgenerator
+				.createTOS((CtStatement) mp0.getCodeElement());
+
+		assertTrue(invphd.size() > 0);
+		InvocationPlaceholder iv0 = invphd.get(0);
+		System.out.println(iv0);
+
+		TOSEntity tos = new TOSEntity();
+		tos.setDerivedFrom(mp0.getCodeElement());
+		tos.getPlaceholders().add(iv0);
+		tos.generateCodeofTOS();
+		System.out.println(tos.getCode());
+
+		assertEquals("return _org.apache.commons.math.analysis.solvers.BisectionSolver_double_0_(min, max)",
+				tos.getCode().toString());
+
+		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
+		IngredientSpace ingredientPool = approach.getIngredientPool();
+		// one location i.e., the package
+		assertEquals(1, ingredientPool.getLocations().size());
+		assertEquals("org.apache.commons.math.analysis.solvers", ingredientPool.getLocations().get(0).toString());
+
+		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+
+		List<Ingredient> allIngredients = tosIngredientPool.getAllIngredients();
+		int i = 0;
+		for (Ingredient ingredient : allIngredients) {
+			TOSEntity tosIngredient = (TOSEntity) ingredient;
+			CtElement codeTOS = tosIngredient.generateCodeofTOS();
+			System.out.println("-ic->" + (i++) + " " + codeTOS);
+		}
+
+		TOSEntity ing0 = (TOSEntity) allIngredients.get(0);
+		assertEquals("return _org.apache.commons.math.analysis.solvers.BisectionSolver_double_0_(f, min, max)",
+				ing0.getCode().toString());
+		assertEquals("return solve(f, min, max)", ing0.getDerivedFrom().toString());
+		assertEquals(1, ing0.getPlaceholders().size());
+		assertTrue((ing0.getPlaceholders().get(0)) instanceof InvocationPlaceholder);
+		CtAbstractInvocation invocation0 = ((InvocationPlaceholder) (ing0.getPlaceholders().get(0))).getInvocation();
+
+		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+
+		InvocationMatching matchingVar0 = InvocationResolver.mapImplicitInvocation(mp0.getCtClass(), invocation0);
+		assertEquals(InvocationMatching.TARGET_SAME_TYPE.toString(), matchingVar0.toString());
+
+		List<TOSInstance> instances0 = strategy.getInstances(mp0, ing0);
+		assertEquals(1, instances0.size());
+		CtElement code0 = instances0.get(0).generatePatch();
+		assertEquals("return solve(f, min, max)", code0.toString());
+
+		///
+		TOSEntity ing5 = (TOSEntity) allIngredients.get(5);
+		assertEquals("fmin = f._org.apache.commons.math.analysis.UnivariateRealFunction_double_0_(min)",
+				ing5.getCode().toString());
+
+		CtAbstractInvocation invocation5 = ((InvocationPlaceholder) (ing5.getPlaceholders().get(0))).getInvocation();
+
+		InvocationMatching matchingVar5 = InvocationResolver.mapImplicitInvocation(mp0.getCtClass(), invocation5);
+		assertEquals(InvocationMatching.TARGET_IS_VARIABLE.toString(), matchingVar5.toString());
+
+		ModificationPoint mp6 = mps.get(6);
+
+		List<TOSInstance> instances5 = strategy.getInstances(mp6, ing5);
+		assertEquals(1, instances5.size());
+		CtElement code5 = instances5.get(0).generatePatch();
+		assertEquals("fmin = f.value(min)", code5.toString());
+	
+		
+		ModificationPoint mp7 = mps.get(7);
+		List<TOSInstance> instances7 = strategy.getInstances(mp7, ing5);
+		assertEquals(1, instances7.size());
+		CtElement code7 = instances5.get(0).generatePatch();
+		assertEquals("fmin = f.value(min)", code7.toString());
+	
+		
+		List<TOSInstance> instances0mp = strategy.getInstances(mp0, ing5);
+		assertEquals(0, instances0mp.size());
+		
 	}
 
 }

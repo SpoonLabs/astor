@@ -65,7 +65,7 @@ public class InvocationResolver {
 
 	public enum InvocationMatching {
 
-		TARGET_IS_VARIABLE(true), TARGET_SAME_TYPE(true), SAME_SIGNATURE_DIFF_TYPE(true), TARGET_INCOMPATIBLE(
+		TARGET_IS_VARIABLE(true), TARGET_SAME_TYPE(true), SAME_SIGNATURE_FROM_DIFF_TYPE(true), TARGET_INCOMPATIBLE(
 				false), CONTRUCTOR(true), NO_MATCH(false), OTHER(true);
 
 		boolean correctness;
@@ -86,6 +86,7 @@ public class InvocationResolver {
 		return matching.isCorrect();
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static InvocationMatching mapImplicitInvocation(CtClass ctClassMP, CtAbstractInvocation inv0) {
 		if (inv0 instanceof CtInvocation) {
 			CtInvocation invocation0 = (CtInvocation) inv0;
@@ -97,7 +98,7 @@ public class InvocationResolver {
 				if (ctClassMP.isSubtypeOf(tpref))
 					return InvocationMatching.TARGET_SAME_TYPE;
 				else if (chechSignatures(ctClassMP.getAllExecutables(), invocation0.getExecutable(), false)) {
-					return InvocationMatching.SAME_SIGNATURE_DIFF_TYPE;
+					return InvocationMatching.SAME_SIGNATURE_FROM_DIFF_TYPE;
 				} else {
 					log.debug("Signature " + invocation0.getExecutable().getSignature());
 					log.debug(

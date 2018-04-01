@@ -1,5 +1,6 @@
 package fr.inria.astor.approaches.tos.entity.placeholders;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.approaches.tos.core.PatchGenerator;
@@ -84,7 +85,10 @@ public class InvocationPlaceholder extends Placeholder {
 
 	@Override
 	public List<CtCodeElement> getAffectedElements() {
-		return null;
+		List<CtCodeElement> affected = new ArrayList<>();
+		//TODO: cast...
+		affected.add((CtCodeElement) invocation);
+		return affected;
 	}
 
 	@Override
