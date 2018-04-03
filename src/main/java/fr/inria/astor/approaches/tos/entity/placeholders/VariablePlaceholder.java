@@ -88,7 +88,7 @@ public class VariablePlaceholder extends Placeholder {
 		for (List vars : this.palceholdersToVariables.values()) {
 			ces.addAll(vars);
 		}
-		return null;
+		return ces;
 	}
 
 	@Override
