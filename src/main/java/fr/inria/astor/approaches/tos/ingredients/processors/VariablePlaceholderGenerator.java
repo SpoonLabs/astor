@@ -42,14 +42,19 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 		List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(ingredientStatement, true);
 		List<String> varsNames = varAccessCollected.stream().map(e -> e.getVariable().getSimpleName()).distinct()
 				.collect(Collectors.toList());
+		//log.debug("Names (" + varsNames.size() + "): " + varsNames);
+		// TODO: Workarround
+		if (varsNames.size() > 20) {
+			varsNames = varsNames.subList(0, 20);
+		}
 		List<Set<String>> variableNamesCombinations = Sets.powerSet(new HashSet<>(varsNames)).stream()
 				.filter(e -> e.size() == nrPlaceholders && !e.isEmpty()).collect(Collectors.toList());
-		log.debug("Names " + varsNames);
-		log.debug("combinations " + variableNamesCombinations);
+
+		//log.debug("combinations " + variableNamesCombinations);
 
 		for (Set<String> targetPlaceholders : variableNamesCombinations) {
 
-			log.debug("analyzing target Placeholders: " + targetPlaceholders);
+			//log.debug("analyzing target Placeholders: " + targetPlaceholders);
 
 			VariablePlaceholder placeholderCreated = createParticularTOS(ingredientStatement, targetPlaceholders);
 
