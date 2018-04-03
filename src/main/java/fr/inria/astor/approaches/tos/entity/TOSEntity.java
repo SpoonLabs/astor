@@ -103,7 +103,7 @@ public class TOSEntity extends Ingredient {
 		for (Placeholder placeholder : this.getPlaceholders()) {
 
 			List<CtCodeElement> affected_i = placeholder.getAffectedElements();
-			affected.addAll(affected);
+			affected.addAll(affected_i);
 
 		}
 
