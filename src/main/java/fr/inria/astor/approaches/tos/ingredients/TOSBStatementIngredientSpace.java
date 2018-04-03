@@ -73,7 +73,7 @@ public class TOSBStatementIngredientSpace
 
 			for (Object originalIngredient : ingredients) {
 
-				log.debug(String.format("Ingredient to process: %s", originalIngredient.toString()));
+				//log.debug(String.format("Ingredient to process: %s", originalIngredient.toString()));
 
 				if (originalIngredient instanceof CtStatement) {
 					CtStatement originalIngredientStatement = (CtStatement) originalIngredient;
@@ -86,10 +86,10 @@ public class TOSBStatementIngredientSpace
 					for (TOSEntity templateElement : xTemplates) {
 						templateElement.generateCodeofTOS();
 						if (!ingredientPoolForLocation.contains(templateElement)) {
-							log.debug("Adding tos " + templateElement.getCode() + " to" + ingredientPoolForLocation);
+							//log.debug("Adding tos " + templateElement.getCode() + " to" + ingredientPoolForLocation);
 							ingredientPoolForLocation.add(templateElement);
 						} else {
-							log.debug("Existing template");
+							//log.debug("Existing template");
 						}
 						// TODO: remove comment
 						tosCounter.saveStatisticsOfTos(templateElement, originalIngredientStatement);

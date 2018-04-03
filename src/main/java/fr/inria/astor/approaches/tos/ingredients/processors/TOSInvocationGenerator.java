@@ -28,9 +28,8 @@ public class TOSInvocationGenerator implements PlaceholderGenerator {
 
 		List<InvocationPlaceholder> tosGenerated = new ArrayList<>();
 		List<CtAbstractInvocation> invocations = InvocationResolver.collectInvocation(ingredientStatement, true);
-		// TODO Combinations:
 		for (CtAbstractInvocation ctAbstractInvocation : invocations) {
-			this.log.debug("--> analyzing " + ingredientStatement);
+			//this.log.debug("--> analyzing " + ingredientStatement);
 			tosGenerated.addAll(generate(ctAbstractInvocation, ingredientStatement));
 		}
 
@@ -54,7 +53,7 @@ public class TOSInvocationGenerator implements PlaceholderGenerator {
 
 					CtInvocation cinvocationToModify = (CtInvocation) invocation_i;
 					if (cinvocationToModify.getTarget() == null) {
-						log.debug("\nTarget null " + ctAbstractInvocation);
+						//log.debug("\nTarget null " + ctAbstractInvocation);
 						continue;
 					}
 					String newName = String.format(PATTERN,
