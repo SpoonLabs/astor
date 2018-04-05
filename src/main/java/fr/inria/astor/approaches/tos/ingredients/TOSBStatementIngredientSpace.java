@@ -65,15 +65,16 @@ public class TOSBStatementIngredientSpace
 		tosCounter = new TOSCounter();
 
 		List<CtType<?>> affected = obtainClassesFromScope(variant);
-		log.debug("Creating Expression Ingredient space: affected ");
+		log.debug("Creating Expression Ingredient space: affected " + affected.size());
 		for (CtType<?> classToProcess : affected) {
-
+			log.debug("Processing class " + classToProcess.getQualifiedName());
 			List<CtCodeElement> ingredients = this.ingredientProcessor.createFixSpace(classToProcess);
 			TargetElementProcessor.mustClone = true;
 
 			for (Object originalIngredient : ingredients) {
 
-				//log.debug(String.format("Ingredient to process: %s", originalIngredient.toString()));
+				// log.debug(String.format("Ingredient to process: %s",
+				// originalIngredient.toString()));
 
 				if (originalIngredient instanceof CtStatement) {
 					CtStatement originalIngredientStatement = (CtStatement) originalIngredient;
@@ -86,10 +87,12 @@ public class TOSBStatementIngredientSpace
 					for (TOSEntity templateElement : xTemplates) {
 						templateElement.generateCodeofTOS();
 						if (!ingredientPoolForLocation.contains(templateElement)) {
-							//log.debug("Adding tos " + templateElement.getCode() + " to" + ingredientPoolForLocation);
+							// log.debug("Adding tos " +
+							// templateElement.getCode() + " to" +
+							// ingredientPoolForLocation);
 							ingredientPoolForLocation.add(templateElement);
 						} else {
-							//log.debug("Existing template");
+							// log.debug("Existing template");
 						}
 						// TODO: remove comment
 						tosCounter.saveStatisticsOfTos(templateElement, originalIngredientStatement);
@@ -137,7 +140,20 @@ public class TOSBStatementIngredientSpace
 	protected List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {
 
 		if (IngredientSpaceScope.PACKAGE.equals(scope)) {
-			return variant.getAffectedClasses();
+			List<CtType<?>> affected = variant.getAffectedClasses();
+			List<CtType<?>> types = new ArrayList<>();
+			List<CtPackage> packageAnalyzed = new ArrayList<>();
+			for (CtType<?> ing : affected) {
+
+				CtPackage p = ing.getParent(CtPackage.class);
+				if (!packageAnalyzed.contains(p)) {
+					packageAnalyzed.add(p);
+					for (CtType<?> type : p.getTypes()) {
+						types.add(type);
+					}
+				}
+			}
+			return types;
 		}
 		if (IngredientSpaceScope.LOCAL.equals(scope)) {
 			return variant.getAffectedClasses();
