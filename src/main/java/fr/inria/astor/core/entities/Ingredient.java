@@ -69,8 +69,8 @@ public class Ingredient {
 	 * @return
 	 */
 	public String getChacheCodeString() {
-		if (cacheString == null && this.ingredientCode != null) {
-			cacheString = this.ingredientCode.toString();
+		if (cacheString == null && this.getCode() != null) {
+			cacheString = this.getCode().toString();
 		}
 		return cacheString;
 	}
