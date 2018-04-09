@@ -36,13 +36,14 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 	public List<? extends Placeholder> createTOS(CtStatement ingredientStatement) {
 
 		int nrPlaceholders = ConfigurationProperties.getPropertyInt("nrPlaceholders");
+		boolean lessplaceholderontos = ConfigurationProperties.getPropertyBool("lessplaceholderontos");
 
 		List<VariablePlaceholder> createdTemplates = new ArrayList<>();
 
 		List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(ingredientStatement, true);
 		List<String> varsNames = varAccessCollected.stream().map(e -> e.getVariable().getSimpleName()).distinct()
 				.collect(Collectors.toList());
-		//log.debug("Names (" + varsNames.size() + "): " + varsNames);
+		// log.debug("Names (" + varsNames.size() + "): " + varsNames);
 		// TODO: Workarround
 		if (varsNames.size() > 20) {
 			varsNames = varsNames.subList(0, 20);
@@ -50,17 +51,24 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 		List<Set<String>> variableNamesCombinations = Sets.powerSet(new HashSet<>(varsNames)).stream()
 				.filter(e -> e.size() == nrPlaceholders && !e.isEmpty()).collect(Collectors.toList());
 
-		//log.debug("combinations " + variableNamesCombinations);
+		// log.debug("combinations " + variableNamesCombinations);
 
 		for (Set<String> targetPlaceholders : variableNamesCombinations) {
 
-			//log.debug("analyzing target Placeholders: " + targetPlaceholders);
+			// log.debug("analyzing target Placeholders: " +
+			// targetPlaceholders);
 
 			VariablePlaceholder placeholderCreated = createParticularTOS(ingredientStatement, targetPlaceholders);
 
 			if (placeholderCreated != null) {
-				// log.debug("Adding generated TOS: " + tosCreated);
-				createdTemplates.add(placeholderCreated);
+
+				if (lessplaceholderontos || placeholderCreated.getPlaceholderVarNamesMappings().keySet().size() == nrPlaceholders) {
+					// log.debug("Adding generated TOS: " + tosCreated);
+					createdTemplates.add(placeholderCreated);
+				} else {
+					log.debug("Discarding tos with less placeholder than " + nrPlaceholders + " " + placeholderCreated);
+				}
+
 			}
 
 		}
@@ -122,11 +130,13 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 			placeholdersToVariables.add(abstractName, variableUnderAnalysis);
 
 		}
+		if (!placeholdersToVariables.isEmpty()) {
+			VariablePlaceholder ingredient = new VariablePlaceholder(placeholdersToVariables,
+					placeholderVarNamesMappings, variablesNotModified);
 
-		VariablePlaceholder ingredient = new VariablePlaceholder(placeholdersToVariables, placeholderVarNamesMappings,
-				variablesNotModified);
-
-		return ingredient;
+			return ingredient;
+		} else
+			return null;
 	}
 
 }
