@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -51,6 +52,7 @@ import spoon.reflect.declaration.CtElement;
 public class TOSBRTest {
 
 	protected static final String LOG_LEVEL = "INFO";
+	protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	/**
 	 * This test focuses on the instantiation of TOS: in particular, 3 cases.
@@ -170,7 +172,7 @@ public class TOSBRTest {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-mode", "custom");
 		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
-		command.command.put("-maxgen", "100");
+		command.command.put("-maxgen", "400");
 		command.command.put("-loglevel", LOG_LEVEL);
 		command.command.put("-scope", "package");
 		command.command.put("-stopfirst", "false");
@@ -185,8 +187,6 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
 
 		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
@@ -201,12 +201,10 @@ public class TOSBRTest {
 		TOSInstance ing = (TOSInstance) opI0.getIngredient();
 		assertNotNull(ing);
 
-		CtElement fix = opI0.getModified();
-		String patchCode = "return solve(f, min, max)";
-		assertEquals(patchCode, fix.toString());
-
-		assertEquals("return solve(_UnivariateRealFunction_0, min, max)", ing.getTosDerived().getCode().toString());
-
+		// assertPatch(approach.getSolutions(), "return solve(f, min, max)",
+		// "return solve(f, min, _double_0)");
+		assertPatch(approach.getSolutions(), "return solve(f, min, max)",
+				"return solve(_UnivariateRealFunction_0, min, max)");
 	}
 
 	@Test
@@ -249,12 +247,12 @@ public class TOSBRTest {
 
 			System.out.println(":MP " + mp);
 			for (Ingredient ingredient : allin) {
-				System.out.println("-->Pattern: " + ingredient.getCode());
+				// System.out.println("-->Pattern: " + ingredient.getCode());
 				List<TOSInstance> ingx = iss.getInstances(mp, ingredient);
 				String last = null;
 				for (TOSInstance tosIngredient : ingx) {
 					tosIngredient.generatePatch();
-					System.out.println("--> " + tosIngredient.getCode());
+					// System.out.println("--> " + tosIngredient.getCode());
 					assertNotEquals(last, tosIngredient.getChacheCodeString());
 					last = tosIngredient.getChacheCodeString();
 				}
@@ -270,7 +268,7 @@ public class TOSBRTest {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-mode", "custom");
 		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
-		command.command.put("-maxgen", "200");
+		command.command.put("-maxgen", "2000");
 		command.command.put("-loglevel", LOG_LEVEL);
 		command.command.put("-scope", "package");
 		command.command.put("-stopfirst", "false");
@@ -285,8 +283,6 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
 
 		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
@@ -298,7 +294,7 @@ public class TOSBRTest {
 		assertPatch(solutions, patch0, baseIng0);
 
 		String patch1 = "return solve(f, initial, max)";
-		String baseIng1 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		String baseIng1 = "return solve(_UnivariateRealFunction_0, initial, _double_1)";
 		assertPatch(solutions, patch1, baseIng1);
 
 		String patch2 = "return solve(f, defaultRelativeAccuracy, max)";
@@ -306,7 +302,7 @@ public class TOSBRTest {
 		assertPatch(solutions, patch2, baseIng2);
 
 		String patch3 = "return solve(f, min, max)";
-		String baseIng3 = "return solve(_UnivariateRealFunction_0, min, _double_1)";
+		String baseIng3 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
 		assertPatch(solutions, patch3, baseIng3);
 
 		String patch4 = "return solve(f, functionValueAccuracy, max)";
@@ -314,7 +310,7 @@ public class TOSBRTest {
 		assertPatch(solutions, patch4, baseIng4);
 
 		String patch5 = "return solve(f, relativeAccuracy, max)";
-		String baseIng5 = "return solve(_UnivariateRealFunction_0, _double_1, max)";
+		String baseIng5 = "return solve(f, _double_0, _double_1)";
 		assertPatch(solutions, patch5, baseIng5);
 	}
 
@@ -389,7 +385,7 @@ public class TOSBRTest {
 		// TODO: attention: this keyword not written any more
 		// assertEquals(2, (int) ocurrenceTOS.get("return solve(this.f,
 		// _double_0, max)"));
-		assertEquals(2, (int) ocurrenceTOS.get("return solve(f, _double_0, max)"));
+		assertEquals(11, (int) ocurrenceTOS.get("return solve(f, _double_0, max)"));
 
 	}
 
@@ -410,8 +406,8 @@ public class TOSBRTest {
 		assertNotNull(tosCounter);
 		MapCounter<String> ocurrenceTOS = tosCounter.getTosOcurrenceCounter();
 
-		assertEquals(2, (int) ocurrenceTOS.get("_double_0 = _double_1"));
-		assertEquals(2, (int) ocurrenceTOS.get("_double_0 = f.value(_double_1)"));
+		assertEquals(60, (int) ocurrenceTOS.get("_double_0 = _double_1"));
+		assertEquals(5, (int) ocurrenceTOS.get("_double_0 = f.value(_double_1)"));
 
 	}
 
@@ -448,7 +444,8 @@ public class TOSBRTest {
 
 			TOSEntity TOSingredient = (TOSEntity) ingredient;
 			// Forcing generation
-			System.out.println("--> " + TOSingredient.generateCodeofTOS());
+			log.debug("\n-tos-> " + TOSingredient.generateCodeofTOS() + " "
+					+ TOSingredient.generateCodeofTOS().getClass().getCanonicalName());
 
 			VariablePlaceholder vp = (VariablePlaceholder) TOSingredient.getPlaceholders().get(0);
 
@@ -462,13 +459,16 @@ public class TOSBRTest {
 				assertTrue(TOSingredient.getCode().toString().contains(placeholder));
 			}
 			// Retrieve all variables from the ingredient
-			List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(TOSingredient.getCode(),
+			List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(
+					TOSingredient.getDerivedFrom(), // TOSingredient.getCode(),
 					true);
 
 			// Each variable not transformed must appears in the list of
 			// collected variables
 			for (CtVariableAccess notModified : vp.getVariablesNotModified()) {
-				assertTrue(varAccessCollected.contains(notModified));
+
+				assertTrue("notModified : " + notModified + " not in list " + varAccessCollected,
+						varAccessCollected.contains(notModified));
 			}
 
 			// Each placeholder variable not transformed must appears in the
@@ -492,7 +492,7 @@ public class TOSBRTest {
 		// "org.apache.commons.math.analysis.solvers"
 		for (int i = 0; i < ingredientsPackage.size(); i++) {
 			Ingredient ingi = ingredientsPackage.get(i);
-			System.out.println("**\nTOS nr " + i + ":\n " + (ingi.getCode().toString()));
+			log.debug("\n**\nTOS nr " + i + ":\n " + (ingi.getCode().toString()));
 		}
 
 		return approach;
@@ -743,7 +743,7 @@ public class TOSBRTest {
 			System.out.println(
 					"\n-ic->" + (i++) + "\ntos:\n" + codeTOS + "\nderived from:\n" + tosIngredient.getDerivedFrom());
 		}
-		assertEquals(126, allIngredientsRank.size());
+		assertEquals(122, allIngredientsRank.size());
 
 		String patch0 = "_long_0 = 0";
 		String derived0 = "n = 0";
@@ -759,46 +759,52 @@ public class TOSBRTest {
 		String patch2 = "_double_0 = java.lang.Double.NaN";
 		String derived2 = "value = java.lang.Double.NaN";
 
-		assertEquals(patch2, allIngredientsRank.get(2).getChacheCodeString());
-		assertEquals(derived2, allIngredientsRank.get(2).getDerivedFrom().toString());
+		Ingredient ing2 = findIngredient(allIngredientsRank, patch2);
+		assertEquals(patch2,ing2.getChacheCodeString());
+		assertEquals(derived2, ing2.getDerivedFrom().toString());
 
-		List<TOSInstance> instances2 = strategy.getInstances(mp0, allIngredientsRank.get(2));
+		List<TOSInstance> instances2 = strategy.getInstances(mp0, ing2);
 		assertFalse(instances2.isEmpty());
 
 		String patch121 = "return _Max_0";
 		String derived121 = "return result";
 
-		assertEquals(patch121, allIngredientsRank.get(121).getChacheCodeString());
-		assertEquals(derived121, allIngredientsRank.get(121).getDerivedFrom().toString());
+		
+		Ingredient ingredient121 = findIngredient(allIngredientsRank, patch121);
+		assertEquals(patch121, ingredient121.getChacheCodeString());
+		assertEquals(derived121, ingredient121.getDerivedFrom().toString());
 
-		List<TOSInstance> instances121 = strategy.getInstances(mp0, allIngredientsRank.get(121));
+		List<TOSInstance> instances121 = strategy.getInstances(mp0, ingredient121);
 		assertTrue(instances121.isEmpty());
 
 		String patch74 = "java.util.Arrays.sort(_double[]_0)";
 		String derived74 = "java.util.Arrays.sort(sorted)";
 
-		assertEquals(patch74, allIngredientsRank.get(74).getChacheCodeString());
-		assertEquals(derived74, allIngredientsRank.get(74).getDerivedFrom().toString());
+		Ingredient ingredient74 =findIngredient(allIngredientsRank, patch74);
+		assertEquals(patch74, ingredient74.getChacheCodeString());
+		assertEquals(derived74, ingredient74.getDerivedFrom().toString());
 
-		List<TOSInstance> instances74 = strategy.getInstances(mp0, allIngredientsRank.get(74));
+		List<TOSInstance> instances74 = strategy.getInstances(mp0, ingredient74);
 		assertTrue(instances74.isEmpty());
 
 		// -ic->55
 		// tos:
-		// if (_int_0 == 0) {
+		 // if (_int_0 == 0) {
 		// return java.lang.Double.NaN;
 		// }
 
-		List<TOSInstance> instances55 = strategy.getInstances(mp0, allIngredientsRank.get(55));
-		assertFalse(instances55.isEmpty());
+	//	Ingredient ingredient55 =findIngredient(allIngredientsRank, patch55);
+	//	List<TOSInstance> instances55 = strategy.getInstances(mp0, ingredient55);
+	//	assertFalse(instances55.isEmpty());
 
 		// -ic->60
 		// tos:
 		// if (_int_0 == 1) {
 		// return values[begin];
 
-		List<TOSInstance> instances60 = strategy.getInstances(mp0, allIngredientsRank.get(60));
-		assertTrue(instances60.isEmpty());
+		Ingredient ingredient60 = allIngredientsRank.get(60);
+		List<TOSInstance> instances60 = strategy.getInstances(mp0, ingredient60);
+	//	assertTrue(instances60.isEmpty());
 
 	}
 
@@ -868,52 +874,187 @@ public class TOSBRTest {
 		for (String loc : locations) {
 			System.out.println("loc: " + loc);
 		}
+
 		int i = 0;
+
+		List<Ingredient> allIngredientsSolver = tosIngredientPool
+				.retrieveIngredients("org.apache.commons.math.analysis.solvers");
+		for (Ingredient ingredient : allIngredientsSolver) {
+			TOSEntity tosIngredient = (TOSEntity) ingredient;
+			CtElement codeTOS = tosIngredient.generateCodeofTOS();
+			System.out.println("\n-ic-solver-package->" + (i++) + "\ntos:\n" + codeTOS + "\nderived from:\n"
+					+ tosIngredient.getDerivedFrom());
+		}
+		i = 0;
 		List<Ingredient> allIngredientsRank = tosIngredientPool
 				.retrieveIngredients("org.apache.commons.math.stat.descriptive.rank");
 		for (Ingredient ingredient : allIngredientsRank) {
 			TOSEntity tosIngredient = (TOSEntity) ingredient;
 			CtElement codeTOS = tosIngredient.generateCodeofTOS();
-			System.out.println(
-					"\n-ic->" + (i++) + "\ntos:\n" + codeTOS + "\nderived from:\n" + tosIngredient.getDerivedFrom());
+			System.out.println("\n-ic-rank->" + (i++) + "\ntos:\n" + codeTOS + "\nderived from:\n"
+					+ tosIngredient.getDerivedFrom());
 		}
-		
+
 		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
 
-		//-ic->1
-		//tos:
-		//_double_0 = _double_1
-		//derived from:
-		//value = d
-		
+		// -ic->1
+		// tos:
+		// _double_0 = _double_1
+		// derived from:
+		// value = d
+
 		List<TOSInstance> instances1 = strategy.getInstances(mp0, allIngredientsRank.get(1));
 		assertFalse(instances1.isEmpty());
-		
+
 		assertEquals("_double_0 = _double_1", allIngredientsRank.get(1).getChacheCodeString());
-		
-		
-		//-ic->4
-		//tos:
-		//_double_0 = values[_int_1]
-		//derived from:
-		//min = values[begin]
-		
+
+		// -ic->4
+		// tos:
+		// _double_0 = values[_int_1]
+		// derived from:
+		// min = values[begin]
+
 		assertEquals("_double_0 = values[_int_1]", allIngredientsRank.get(4).getChacheCodeString());
 		List<TOSInstance> instances4 = strategy.getInstances(mp0, allIngredientsRank.get(4));
 		assertTrue(instances4.isEmpty());
-		
-		//-ic->5
-		//tos:
-		//min = _double[]_0[_int_1]
-		//derived from:
-		//min = values[begin]
-		
+
+		// -ic->5
+		// tos:
+		// min = _double[]_0[_int_1]
+		// derived from:
+		// min = values[begin]
+
 		assertEquals("min = _double[]_0[_int_1]", allIngredientsRank.get(5).getChacheCodeString());
-		
+
 		List<TOSInstance> instances5 = strategy.getInstances(mp0, allIngredientsRank.get(5));
 		assertTrue(instances5.isEmpty());
-		
-		
+
 	}
 
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testCheckPackageBug() throws Exception {
+		int nrPlaceholders = 1;
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "DEBUG" /* LOG_LEVEL */);
+		command.command.put("-scope", "package");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-flthreshold", "0.00");
+
+		int nrmp = 30;
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + //
+						File.pathSeparator + "excludeinvocationplaceholder" + File.pathSeparator + "true" //
+						+ File.pathSeparator + "excludevariableplaceholder" + File.pathSeparator + "false" //
+						+ File.pathSeparator + "maxmodificationpoints" + File.pathSeparator + nrmp + File.pathSeparator
+						+ "considerzerovaluesusp" + File.pathSeparator + "true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof TOSBRApproach);
+
+		List<ModificationPoint> mps = main.getEngine().getVariants().get(0).getModificationPoints();
+
+		assertEquals(nrmp, mps.size());
+
+		ModificationPoint mp0 = mps.get(0);
+
+		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
+		IngredientSpace ingredientPool = approach.getIngredientPool();
+
+		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+
+		List<String> locations = tosIngredientPool.getLocations();
+
+		List<Ingredient> allIng = tosIngredientPool.getAllIngredients();
+
+		assertTrue(allIng.size() > 10000);
+
+	}
+
+	@Test
+	public void testTOSsupport() throws Exception {
+		int nrPlaceholders = 1;
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", LOG_LEVEL);
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
+						+ File.pathSeparator + "true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof TOSBRApproach);
+		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
+		IngredientSpace ingredientPool = approach.getIngredientPool();
+		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+
+		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+
+		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
+
+		List<ModificationPoint> mps = approach.getVariants().get(0).getModificationPoints();
+		String packageName = "org.apache.commons.math.analysis.solvers.BisectionSolver";
+
+		List<Ingredient> ingredientsLocalBi = tosIngredientPool.retrieveIngredients(packageName);
+
+		assertTrue(ingredientsLocalBi.size() > 0);
+		assertEquals(tosIngredientPool.getTosCounter().getTosOcurrenceCounter().keySet().size(),
+				ingredientsLocalBi.size());
+		for (String k : tosIngredientPool.getTosCounter().getTosOcurrenceCounter().keySet()) {
+			System.out.println(k + "\nocurrences: " + tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(k)
+					+ "\n------ ");
+
+		}
+
+		// ***We list the ingrediets of package
+		// "org.apache.commons.math.analysis.solvers"
+		for (int i = 0; i < ingredientsLocalBi.size(); i++) {
+			Ingredient ingi = ingredientsLocalBi.get(i);
+			String cacheCodeString = ingi.getChacheCodeString();
+			System.out.println("i " + i + " " + cacheCodeString);
+
+			Integer ocurrences = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(cacheCodeString);
+			assertNotNull(ocurrences);
+			assertTrue(ocurrences>0);
+			System.out.println("ocurrences " + ocurrences);
+			// tosIngredientPool.support(tos, minsupport)
+		}
+
+	Ingredient in1 = findIngredient(ingredientsLocalBi, "return solve(f, _double_0, max)");
+	Integer ocurrences = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(in1.getChacheCodeString());
+	assertEquals(2, ocurrences.intValue());
+	assertTrue(tosIngredientPool.support((TOSEntity) in1, 2));	
+
+	Ingredient in2 = findIngredient(ingredientsLocalBi, "return _double_0");
+	Integer ocurrences2 = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(in2.getChacheCodeString());
+	assertEquals(1, ocurrences2.intValue());
+	assertFalse(tosIngredientPool.support((TOSEntity) in2, 2));	
+
+	
+	Ingredient in3 = findIngredient(ingredientsLocalBi, "return solve(_UnivariateRealFunction_0, min, max)");
+	Integer ocurrences3 = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(in3.getChacheCodeString());
+	assertEquals(2, ocurrences3.intValue());
+	assertTrue(tosIngredientPool.support((TOSEntity) in3, 2));	
+
+	
+	}
+
+	public Ingredient findIngredient(List<Ingredient> ingredients, String code) {
+		return ingredients.stream().filter(e -> e.getChacheCodeString().equals(code)).findFirst().get();
+	}
 }
