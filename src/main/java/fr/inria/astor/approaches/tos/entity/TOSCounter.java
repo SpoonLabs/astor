@@ -45,7 +45,7 @@ public class TOSCounter {
 	}
 
 	public void saveStatisticsOfTos(TOSEntity templateElement, CtCodeElement originalIngredient) {
-		String templateString = templateElement.getCode().toString();
+		String templateString = templateElement.getChacheCodeString();
 		this.tosOcurrenceCounter.add(templateString);
 		this.tosToCtElement.add(templateString, originalIngredient);
 
