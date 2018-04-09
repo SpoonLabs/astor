@@ -92,10 +92,11 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 
 			TOSEntity tos = (TOSEntity) ingredientBaseSelected;
 			if(!tos.canBeApplied(modificationPoint)){
-				System.out.println("We cannot generate a patch from tos"+
-						tos.getCode()+ " in location"+modificationPoint);
+				log.debug("\nWe cannot generate a patch from tos"+
+						StringUtil.trunc(tos.getCode())+ " in location"+modificationPoint);
 				return Lists.newArrayList();
 			}
+			log.debug("Tos fits "+StringUtil.trunc(tos.getCode())+ " in location"+modificationPoint);
 			ingredientTransformed = new ArrayList<>();
 			for (Placeholder placeholder : tos.getPlaceholders()) {
 				List<Transformation> transpl = placeholder.visit(modificationPoint, v);

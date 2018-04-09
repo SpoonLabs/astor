@@ -113,8 +113,7 @@ public class TOSEntity extends Ingredient {
 
 		// remove the affected
 		boolean removed = outOfContext.removeAll(affected);
-		System.out.println("Removed " + removed);
-
+		
 		return outOfContext.isEmpty();
 
 	}
