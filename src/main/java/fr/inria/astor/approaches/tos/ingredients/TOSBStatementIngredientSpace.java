@@ -44,6 +44,8 @@ public class TOSBStatementIngredientSpace
 	protected TOSCounter tosCounter = null;
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
+	
+	
 	/**
 	 * Generators used for creating the TOS
 	 */
@@ -117,9 +119,10 @@ public class TOSBStatementIngredientSpace
 				tos.setDerivedFrom(ingredientStatement);
 				tos.getPlaceholders().add(placeholder);
 
-				// single or combined
-				// TODO:
-				xGeneratedTos.add(tos);
+				// TODO: single or combined?
+				if (!tos.getPlaceholders().isEmpty()) {
+					xGeneratedTos.add(tos);
+				}
 			}
 
 		}
@@ -193,4 +196,16 @@ public class TOSBStatementIngredientSpace
 		return tosCounter;
 	}
 
+	public boolean support(TOSEntity tos) {
+		int minsupport = ConfigurationProperties.getPropertyInt("minsupport");
+		return support(tos, minsupport);
+	}
+
+	public boolean support(TOSEntity tos, int minsupport) {
+		String tosString = tos.getChacheCodeString();
+		int occurrences = this.tosCounter.getTosOcurrenceCounter().get(tosString);
+
+		return (occurrences >= minsupport);
+
+	}
 }
