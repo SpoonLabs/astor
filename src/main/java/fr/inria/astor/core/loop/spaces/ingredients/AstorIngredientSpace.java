@@ -7,6 +7,8 @@ import java.util.Map;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.entities.Ingredient;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.CacheList;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 
 /**
@@ -198,5 +200,14 @@ public abstract class AstorIngredientSpace<Q, K, I, T, P> implements IngredientS
 
 	public void setIngredientProcessor(IngredientProcessor<Q, P> ingredientProcessor) {
 		this.ingredientProcessor = ingredientProcessor;
+	}
+	public List<I> retrieveIngredients(K key) {
+
+		List<I> ingredientsKey = getFixSpace().get(key);
+		if (!getFixSpace().containsKey(key)) {
+			ingredientsKey = new CacheList<>();
+			getFixSpace().put(key, ingredientsKey);
+		}
+		return ingredientsKey;
 	}
 }
