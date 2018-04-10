@@ -45,7 +45,7 @@ public class TOSEntity extends Ingredient {
 
 		for (Placeholder placeholder : placeholders) {
 
-			placeholder.apply((CtCodeElement) this.derivedFrom);
+			placeholder.apply();
 
 		}
 		CtCodeElement cloned = MutationSupporter.clone((CtCodeElement) this.derivedFrom);

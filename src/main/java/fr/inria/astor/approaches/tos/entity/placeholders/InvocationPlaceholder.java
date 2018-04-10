@@ -69,7 +69,7 @@ public class InvocationPlaceholder extends Placeholder {
 	}
 
 	@Override
-	public void apply(CtCodeElement cloned) {
+	public void apply() {
 		CtExecutableReference execr = this.getInvocation().getExecutable();
 		this.oldName = execr.getSimpleName();
 		execr.setSimpleName(newName);

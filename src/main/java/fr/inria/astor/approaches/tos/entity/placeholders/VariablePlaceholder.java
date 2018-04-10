@@ -50,7 +50,7 @@ public class VariablePlaceholder extends Placeholder {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void apply(CtCodeElement cloned) {
+	public void apply() {
 		olderNameOfVariable.clear();
 		for (String placeholder : palceholdersToVariables.keySet()) {
 

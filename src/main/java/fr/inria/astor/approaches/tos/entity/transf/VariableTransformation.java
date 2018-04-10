@@ -2,14 +2,11 @@ package fr.inria.astor.approaches.tos.entity.transf;
 
 import java.util.Map;
 
-import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarCombinationForIngredient;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 
 /**

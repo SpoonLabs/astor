@@ -25,7 +25,7 @@ public abstract class Placeholder {
 		this.tos = tos;
 	}
 
-	public abstract void apply(CtCodeElement cloned);
+	public abstract void apply();
 
 	public abstract void revert();
 
