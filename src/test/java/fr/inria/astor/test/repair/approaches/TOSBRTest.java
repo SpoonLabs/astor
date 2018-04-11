@@ -84,8 +84,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeliteralplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -191,8 +191,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeliteralplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -234,8 +234,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeliteralplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -289,8 +289,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeliteralplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -436,8 +436,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeliteralplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -533,8 +533,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeliteralplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -591,8 +591,8 @@ public class TOSBRTest {
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
 						+ File.pathSeparator + "false" + File.pathSeparator + "excludevariableplaceholder"
-						+ File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeliteralplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -706,8 +706,8 @@ public class TOSBRTest {
 						File.pathSeparator + "excludeinvocationplaceholder" + File.pathSeparator + "true" //
 						+ File.pathSeparator + "excludevariableplaceholder" + File.pathSeparator + "false" //
 						+ File.pathSeparator + "maxmodificationpoints" + File.pathSeparator + nrmp + File.pathSeparator
-						+ "considerzerovaluesusp" + File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ "considerzerovaluesusp" + File.pathSeparator + "true" + File.pathSeparator
+						+ "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -835,7 +835,7 @@ public class TOSBRTest {
 		command.command.put("-mode", "custom");
 		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
-		command.command.put("-loglevel", "DEBUG" /* LOG_LEVEL */);
+		command.command.put("-loglevel", "INFO" /* LOG_LEVEL */);
 		command.command.put("-scope", "package");
 		command.command.put("-stopfirst", "false");
 		command.command.put("-flthreshold", "0.00");
@@ -847,8 +847,8 @@ public class TOSBRTest {
 						File.pathSeparator + "excludeinvocationplaceholder" + File.pathSeparator + "true" //
 						+ File.pathSeparator + "excludevariableplaceholder" + File.pathSeparator + "false" //
 						+ File.pathSeparator + "maxmodificationpoints" + File.pathSeparator + nrmp + File.pathSeparator
-						+ "considerzerovaluesusp" + File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ "considerzerovaluesusp" + File.pathSeparator + "true" + File.pathSeparator
+						+ "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -971,8 +971,8 @@ public class TOSBRTest {
 						File.pathSeparator + "excludeinvocationplaceholder" + File.pathSeparator + "true" //
 						+ File.pathSeparator + "excludevariableplaceholder" + File.pathSeparator + "false" //
 						+ File.pathSeparator + "maxmodificationpoints" + File.pathSeparator + nrmp + File.pathSeparator
-						+ "considerzerovaluesusp" + File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ "considerzerovaluesusp" + File.pathSeparator + "true" + File.pathSeparator
+						+ "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -1013,8 +1013,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true"
-						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeliteralplaceholder"
+						+ File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -1158,6 +1158,9 @@ public class TOSBRTest {
 
 		List<ModificationPoint> mps = approach.getVariants().get(0).getModificationPoints();
 
+		ModificationPoint mp0 = mps.get(0);
+		assertEquals("return solve(min, max)", mp0.getCodeElement().toString());
+
 		ModificationPoint mp4 = mps.get(4);
 		assertEquals("int i = 0", mp4.getCodeElement().toString());
 
@@ -1193,10 +1196,10 @@ public class TOSBRTest {
 
 		List<Transformation> transformations = pv.process(mp4,
 				(LiteralPlaceholder) ingredientSuper.getPlaceholders().get(0));
-		
-		//two ints
+
+		// two ints
 		assertEquals(2, transformations.size());
-		
+
 		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
 
 		List<TOSInstance> instances4super = strategy.getInstances(mp4, ingredientSuper);
@@ -1208,5 +1211,13 @@ public class TOSBRTest {
 
 		assertEquals("super(f, 100, 1.0E-6)", instances4super.get(0).getChacheCodeString());
 		assertEquals("super(f, 0, 1.0E-6)", instances4super.get(1).getChacheCodeString());
+
+		List<TOSInstance> instances0 = strategy.getInstances(mp0, ingredientSuper);
+		assertTrue(instances0.size() > 0);
+		
+		Ingredient ingredientWhile = ingredientsLocalBi.get(6);
+		assertTrue(ingredientWhile.getChacheCodeString().startsWith("while (i <"));
+		List<TOSInstance> instances5 = strategy.getInstances(mp0, ingredientWhile);
+		assertTrue(instances5.isEmpty());
 	}
 }
