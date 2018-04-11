@@ -14,14 +14,21 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.tos.core.LiteralsProcessor;
+import fr.inria.astor.approaches.tos.core.PatchGenerator;
 import fr.inria.astor.approaches.tos.core.TOSBRApproach;
 import fr.inria.astor.approaches.tos.entity.TOSCounter;
 import fr.inria.astor.approaches.tos.entity.TOSEntity;
 import fr.inria.astor.approaches.tos.entity.TOSInstance;
 import fr.inria.astor.approaches.tos.entity.placeholders.InvocationPlaceholder;
+import fr.inria.astor.approaches.tos.entity.placeholders.LiteralPlaceholder;
+import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
+import fr.inria.astor.approaches.tos.entity.transf.Transformation;
+import fr.inria.astor.approaches.tos.ingredients.LiteralsSpace;
 import fr.inria.astor.approaches.tos.ingredients.TOSBStatementIngredientSpace;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSearchStrategy;
+import fr.inria.astor.approaches.tos.ingredients.processors.LiteralPlaceholderGenerator;
 import fr.inria.astor.approaches.tos.ingredients.processors.TOSInvocationGenerator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -29,6 +36,7 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver.InvocationMatching;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
@@ -40,6 +48,8 @@ import fr.inria.astor.util.StringUtil;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtAbstractInvocation;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
@@ -74,7 +84,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true");
+						+ File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -180,7 +191,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true");
+						+ File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -222,7 +234,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true");
+						+ File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -276,7 +289,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true");
+						+ File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -422,7 +436,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true");
+						+ File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -518,7 +533,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true");
+						+ File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -575,7 +591,8 @@ public class TOSBRTest {
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
 						+ File.pathSeparator + "false" + File.pathSeparator + "excludevariableplaceholder"
-						+ File.pathSeparator + "true");
+						+ File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -689,7 +706,8 @@ public class TOSBRTest {
 						File.pathSeparator + "excludeinvocationplaceholder" + File.pathSeparator + "true" //
 						+ File.pathSeparator + "excludevariableplaceholder" + File.pathSeparator + "false" //
 						+ File.pathSeparator + "maxmodificationpoints" + File.pathSeparator + nrmp + File.pathSeparator
-						+ "considerzerovaluesusp" + File.pathSeparator + "true");
+						+ "considerzerovaluesusp" + File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -760,7 +778,7 @@ public class TOSBRTest {
 		String derived2 = "value = java.lang.Double.NaN";
 
 		Ingredient ing2 = findIngredient(allIngredientsRank, patch2);
-		assertEquals(patch2,ing2.getChacheCodeString());
+		assertEquals(patch2, ing2.getChacheCodeString());
 		assertEquals(derived2, ing2.getDerivedFrom().toString());
 
 		List<TOSInstance> instances2 = strategy.getInstances(mp0, ing2);
@@ -769,7 +787,6 @@ public class TOSBRTest {
 		String patch121 = "return _Max_0";
 		String derived121 = "return result";
 
-		
 		Ingredient ingredient121 = findIngredient(allIngredientsRank, patch121);
 		assertEquals(patch121, ingredient121.getChacheCodeString());
 		assertEquals(derived121, ingredient121.getDerivedFrom().toString());
@@ -780,7 +797,7 @@ public class TOSBRTest {
 		String patch74 = "java.util.Arrays.sort(_double[]_0)";
 		String derived74 = "java.util.Arrays.sort(sorted)";
 
-		Ingredient ingredient74 =findIngredient(allIngredientsRank, patch74);
+		Ingredient ingredient74 = findIngredient(allIngredientsRank, patch74);
 		assertEquals(patch74, ingredient74.getChacheCodeString());
 		assertEquals(derived74, ingredient74.getDerivedFrom().toString());
 
@@ -789,13 +806,14 @@ public class TOSBRTest {
 
 		// -ic->55
 		// tos:
-		 // if (_int_0 == 0) {
+		// if (_int_0 == 0) {
 		// return java.lang.Double.NaN;
 		// }
 
-	//	Ingredient ingredient55 =findIngredient(allIngredientsRank, patch55);
-	//	List<TOSInstance> instances55 = strategy.getInstances(mp0, ingredient55);
-	//	assertFalse(instances55.isEmpty());
+		// Ingredient ingredient55 =findIngredient(allIngredientsRank, patch55);
+		// List<TOSInstance> instances55 = strategy.getInstances(mp0,
+		// ingredient55);
+		// assertFalse(instances55.isEmpty());
 
 		// -ic->60
 		// tos:
@@ -804,7 +822,7 @@ public class TOSBRTest {
 
 		Ingredient ingredient60 = allIngredientsRank.get(60);
 		List<TOSInstance> instances60 = strategy.getInstances(mp0, ingredient60);
-	//	assertTrue(instances60.isEmpty());
+		// assertTrue(instances60.isEmpty());
 
 	}
 
@@ -829,7 +847,8 @@ public class TOSBRTest {
 						File.pathSeparator + "excludeinvocationplaceholder" + File.pathSeparator + "true" //
 						+ File.pathSeparator + "excludevariableplaceholder" + File.pathSeparator + "false" //
 						+ File.pathSeparator + "maxmodificationpoints" + File.pathSeparator + nrmp + File.pathSeparator
-						+ "considerzerovaluesusp" + File.pathSeparator + "true");
+						+ "considerzerovaluesusp" + File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -952,7 +971,8 @@ public class TOSBRTest {
 						File.pathSeparator + "excludeinvocationplaceholder" + File.pathSeparator + "true" //
 						+ File.pathSeparator + "excludevariableplaceholder" + File.pathSeparator + "false" //
 						+ File.pathSeparator + "maxmodificationpoints" + File.pathSeparator + nrmp + File.pathSeparator
-						+ "considerzerovaluesusp" + File.pathSeparator + "true");
+						+ "considerzerovaluesusp" + File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -993,7 +1013,8 @@ public class TOSBRTest {
 		command.command.put("-parameters",
 				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
 						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
-						+ File.pathSeparator + "true");
+						+ File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -1030,31 +1051,162 @@ public class TOSBRTest {
 
 			Integer ocurrences = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(cacheCodeString);
 			assertNotNull(ocurrences);
-			assertTrue(ocurrences>0);
+			assertTrue(ocurrences > 0);
 			System.out.println("ocurrences " + ocurrences);
 			// tosIngredientPool.support(tos, minsupport)
 		}
 
-	Ingredient in1 = findIngredient(ingredientsLocalBi, "return solve(f, _double_0, max)");
-	Integer ocurrences = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(in1.getChacheCodeString());
-	assertEquals(2, ocurrences.intValue());
-	assertTrue(tosIngredientPool.support((TOSEntity) in1, 2));	
+		Ingredient in1 = findIngredient(ingredientsLocalBi, "return solve(f, _double_0, max)");
+		Integer ocurrences = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(in1.getChacheCodeString());
+		assertEquals(2, ocurrences.intValue());
+		assertTrue(tosIngredientPool.support((TOSEntity) in1, 2));
 
-	Ingredient in2 = findIngredient(ingredientsLocalBi, "return _double_0");
-	Integer ocurrences2 = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(in2.getChacheCodeString());
-	assertEquals(1, ocurrences2.intValue());
-	assertFalse(tosIngredientPool.support((TOSEntity) in2, 2));	
+		Ingredient in2 = findIngredient(ingredientsLocalBi, "return _double_0");
+		Integer ocurrences2 = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(in2.getChacheCodeString());
+		assertEquals(1, ocurrences2.intValue());
+		assertFalse(tosIngredientPool.support((TOSEntity) in2, 2));
 
-	
-	Ingredient in3 = findIngredient(ingredientsLocalBi, "return solve(_UnivariateRealFunction_0, min, max)");
-	Integer ocurrences3 = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(in3.getChacheCodeString());
-	assertEquals(2, ocurrences3.intValue());
-	assertTrue(tosIngredientPool.support((TOSEntity) in3, 2));	
+		Ingredient in3 = findIngredient(ingredientsLocalBi, "return solve(_UnivariateRealFunction_0, min, max)");
+		Integer ocurrences3 = tosIngredientPool.getTosCounter().getTosOcurrenceCounter().get(in3.getChacheCodeString());
+		assertEquals(2, ocurrences3.intValue());
+		assertTrue(tosIngredientPool.support((TOSEntity) in3, 2));
 
-	
 	}
 
 	public Ingredient findIngredient(List<Ingredient> ingredients, String code) {
 		return ingredients.stream().filter(e -> e.getChacheCodeString().equals(code)).findFirst().get();
+	}
+
+	@Test
+	public void testLiterals1() throws Exception {
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", LOG_LEVEL);
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+
+		command.command.put("-parameters",
+				"nrPlaceholders:" + 1 + File.pathSeparator + "duplicateingredientsinspace" + File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeinvocationplaceholder" + File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof TOSBRApproach);
+		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
+		IngredientSpace ingredientPool = approach.getIngredientPool();
+		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		// Local
+		LiteralsSpace lspace = new LiteralsSpace(IngredientSpaceScope.LOCAL);
+		lspace.defineSpace(main.getEngine().getVariants().get(0));
+		List<String> locations = lspace.getLocations();
+		System.out.println("locations " + locations);
+		assertEquals(1, locations.size());
+		String loc1 = "org.apache.commons.math.analysis.solvers.BisectionSolver";
+		List<CtCodeElement> ingredients = lspace.retrieveIngredients(loc1);
+		System.out.println("ingredient " + ingredients);
+		assertTrue(ingredients.size() > 0);
+		assertEquals(4, ingredients.size());
+
+		//
+		LiteralsSpace lspaceP = new LiteralsSpace(IngredientSpaceScope.PACKAGE);
+		lspaceP.defineSpace(main.getEngine().getVariants().get(0));
+		List<String> locationsP = lspaceP.getLocations();
+		System.out.println("locationsP " + locationsP);
+		assertEquals(1, locationsP.size());
+		String locP1 = "org.apache.commons.math.analysis.solvers";
+		List<CtCodeElement> ingredientsPackage = lspaceP.retrieveIngredients(locP1);
+		System.out.println("ingredientP " + ingredientsPackage);
+		assertTrue(ingredientsPackage.size() > 0);
+		assertEquals(34, ingredientsPackage.size());
+		for (CtCodeElement literalPackage : ingredientsPackage) {
+			System.out.println("--> " + literalPackage + " " + ((CtLiteral) literalPackage).getType());
+		}
+
+	}
+
+	@Test
+	public void testTOStransformationLiteral() throws Exception {
+		int nrPlaceholders = 1;
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "debug"/* LOG_LEVEL */);
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludevariableplaceholder"
+						+ File.pathSeparator + "true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof TOSBRApproach);
+		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
+		IngredientSpace ingredientPool = approach.getIngredientPool();
+		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+
+		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
+
+		List<ModificationPoint> mps = approach.getVariants().get(0).getModificationPoints();
+
+		ModificationPoint mp4 = mps.get(4);
+		assertEquals("int i = 0", mp4.getCodeElement().toString());
+
+		LiteralPlaceholderGenerator lg = new LiteralPlaceholderGenerator();
+		List<LiteralPlaceholder> literals = lg.createTOS((CtStatement) mp4.getCodeElement());
+		assertNotNull(literals);
+		assertEquals(1, literals.size());
+		for (LiteralPlaceholder literalPlaceholder : literals) {
+			System.out.println("-lit->" + literalPlaceholder.getAffected());
+			// System.out.println("-lit->"+literalPlaceholder.getAffected());
+		}
+
+		String className = "org.apache.commons.math.analysis.solvers.BisectionSolver";
+
+		List<Ingredient> ingredientsLocalBi = tosIngredientPool.retrieveIngredients(className);
+
+		assertTrue(ingredientsLocalBi.size() > 0);
+		for (Ingredient ingredient : ingredientsLocalBi) {
+			TOSEntity te = (TOSEntity) ingredient;
+			assertTrue(te.getPlaceholders().size() > 0);
+			LiteralPlaceholder placeholder = (LiteralPlaceholder) te.getPlaceholders().stream()
+					.filter(e -> e instanceof LiteralPlaceholder).findFirst().get();
+			assertNotNull(placeholder);
+			CtElement e = te.generateCodeofTOS();
+			System.out.println(placeholder.getAffected());
+			System.out.println("-->ing: " + te.getCode());
+		}
+		TOSEntity ingredientSuper = (TOSEntity) ingredientsLocalBi.get(0);
+		assertEquals("super(f, \"_l_int_0\", 1.0E-6)", ingredientSuper.getChacheCodeString());
+		assertEquals("int i = \"_l_int_0\"", ingredientsLocalBi.get(4).getChacheCodeString());
+
+		PatchGenerator pv = new PatchGenerator();
+
+		List<Transformation> transformations = pv.process(mp4,
+				(LiteralPlaceholder) ingredientSuper.getPlaceholders().get(0));
+		
+		//two ints
+		assertEquals(2, transformations.size());
+		
+		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+
+		List<TOSInstance> instances4super = strategy.getInstances(mp4, ingredientSuper);
+		assertFalse(instances4super.isEmpty());
+		for (TOSInstance tosInstance : instances4super) {
+			tosInstance.generatePatch();
+			System.out.println(tosInstance.getChacheCodeString());
+		}
+
+		assertEquals("super(f, 100, 1.0E-6)", instances4super.get(0).getChacheCodeString());
+		assertEquals("super(f, 0, 1.0E-6)", instances4super.get(1).getChacheCodeString());
 	}
 }

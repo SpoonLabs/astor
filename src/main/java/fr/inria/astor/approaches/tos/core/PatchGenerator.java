@@ -8,12 +8,18 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.martiansoftware.jsap.JSAPException;
+
 import fr.inria.astor.approaches.tos.entity.placeholders.InvocationPlaceholder;
+import fr.inria.astor.approaches.tos.entity.placeholders.LiteralPlaceholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.approaches.tos.entity.transf.InvocationTransformation;
+import fr.inria.astor.approaches.tos.entity.transf.LiteralTransformation;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.approaches.tos.entity.transf.VariableTransformation;
+import fr.inria.astor.approaches.tos.ingredients.LiteralsSpace;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver.InvocationMatching;
 import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
@@ -23,6 +29,8 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtAbstractInvocation;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtExecutableReference;
@@ -80,8 +88,22 @@ public class PatchGenerator {
 	@SuppressWarnings("rawtypes")
 	public List<Transformation> process(ModificationPoint modificationPoint, VariablePlaceholder varplaceholder) {
 
+		List<Transformation> transformation = new ArrayList<>();
+
 		// Vars in scope at the modification point
+		List<Transformation> transformationVariables = replaceByVars(varplaceholder, modificationPoint);
+		transformation.addAll(transformationVariables);
+
+		return transformation;
+	}
+
+	static LiteralsSpace lspace = null;
+
+	@SuppressWarnings("rawtypes")
+	private List<Transformation> replaceByVars(VariablePlaceholder varplaceholder,
+			ModificationPoint modificationPoint) {
 		List<CtVariable> variablesInScope = modificationPoint.getContextOfModificationPoint();
+
 		List<Transformation> transformation = new ArrayList<>();
 		// Check Those vars not transformed must exist in context
 		List<CtVariableAccess> concreteVars = varplaceholder.getVariablesNotModified();
@@ -142,7 +164,6 @@ public class PatchGenerator {
 						+ ingredient.getVariable().getType().getQualifiedName());
 			}
 		}
-
 		return transformation;
 	}
 
@@ -173,6 +194,39 @@ public class PatchGenerator {
 
 	}
 
-	
+	public List<Transformation> process(ModificationPoint modificationPoint, LiteralPlaceholder literalPlaceholder) {
+
+		List<Transformation> transformation = new ArrayList<>();
+		// Initialize space
+		if (lspace == null) {
+			try {
+				logger.debug("Initializing literal space");
+				lspace = new LiteralsSpace(IngredientSpaceScope.LOCAL);
+				lspace.defineSpace(modificationPoint.getProgramVariant());
+				//
+
+			} catch (JSAPException e) {
+				e.printStackTrace();
+				logger.error(e);
+			}
+		}
+
+		///
+		List<CtCodeElement> ingredients = lspace.getIngredients(modificationPoint.getCodeElement());
+		logger.debug("Ingredients lit (" + ingredients.size() + ") " + ingredients);
+		// logger.debug("Placeholder vars "+
+		// varplaceholder.getPalceholders().keySet().size());
+
+		for (CtCodeElement ctCodeElement : ingredients) {
+			CtLiteral literal4Space = (CtLiteral) ctCodeElement;
+			if (literal4Space.getType().isSubtypeOf(literalPlaceholder.getAffected().getType())) {
+				Transformation t = new LiteralTransformation(literalPlaceholder.getAffected(),
+						literal4Space.getValue());
+				transformation.add(t);
+			}
+		}
+
+		return transformation;
+	}
 
 }
