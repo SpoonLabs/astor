@@ -20,6 +20,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.util.StringUtil;
+import spoon.reflect.code.CtVariableAccess;
 
 /**
  * 
@@ -73,7 +74,7 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<TOSInstance> getInstances(ModificationPoint modificationPoint, Ingredient ingredientBaseSelected) {
 		// Now, let's get the ingredients.
 		List<TOSInstance> ingredientTransformed = null;
@@ -91,9 +92,10 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 			PatchGenerator v = new PatchGenerator();
 
 			TOSEntity tos = (TOSEntity) ingredientBaseSelected;
-			if(!tos.canBeApplied(modificationPoint)){
+			List<CtVariableAccess>  outofscope  = tos.getVarsOutOfContext(modificationPoint);
+			if(!outofscope.isEmpty()){
 				log.debug("\nWe cannot generate a patch from tos"+
-						StringUtil.trunc(tos.getCode())+ " in location"+modificationPoint);
+						StringUtil.trunc(tos.getCode())+ " in location"+modificationPoint + "\nvars out of context: "+outofscope);
 				return Lists.newArrayList();
 			}
 			log.debug("Tos fits "+StringUtil.trunc(tos.getCode())+ " in location"+modificationPoint);

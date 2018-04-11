@@ -96,6 +96,10 @@ public class TOSEntity extends Ingredient {
 	}
 
 	public boolean canBeApplied(ModificationPoint modificationPoint) {
+		return getVarsOutOfContext(modificationPoint).isEmpty();
+	}
+
+	public List<CtVariableAccess> getVarsOutOfContext(ModificationPoint modificationPoint) {
 
 		Set<CtCodeElement> affected = new HashSet<>();
 		List<CtVariable> variablesInScope = modificationPoint.getContextOfModificationPoint();
@@ -113,8 +117,8 @@ public class TOSEntity extends Ingredient {
 
 		// remove the affected
 		boolean removed = outOfContext.removeAll(affected);
-		
-		return outOfContext.isEmpty();
+
+		return outOfContext;
 
 	}
 }
