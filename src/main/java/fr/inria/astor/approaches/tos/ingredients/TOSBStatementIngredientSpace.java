@@ -13,6 +13,7 @@ import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
 import fr.inria.astor.approaches.tos.ingredients.processors.LiteralPlaceholderGenerator;
 import fr.inria.astor.approaches.tos.ingredients.processors.PlaceholderGenerator;
 import fr.inria.astor.approaches.tos.ingredients.processors.TOSInvocationGenerator;
+import fr.inria.astor.approaches.tos.ingredients.processors.VarLiPlaceholderGenerator;
 import fr.inria.astor.approaches.tos.ingredients.processors.VariablePlaceholderGenerator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -61,6 +62,8 @@ public class TOSBStatementIngredientSpace
 			tosGenerators.add(new TOSInvocationGenerator());
 		if (!ConfigurationProperties.getPropertyBool("excludeliteralplaceholder"))
 			tosGenerators.add(new LiteralPlaceholderGenerator());
+		if (!ConfigurationProperties.getPropertyBool("excludevarliteralplaceholder"))
+			tosGenerators.add(new VarLiPlaceholderGenerator());
 
 	}
 

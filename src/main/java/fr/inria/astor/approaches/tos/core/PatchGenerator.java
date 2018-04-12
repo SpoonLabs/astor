@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -12,13 +13,16 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.tos.entity.placeholders.InvocationPlaceholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.LiteralPlaceholder;
+import fr.inria.astor.approaches.tos.entity.placeholders.VarLiPlaceholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.approaches.tos.entity.transf.InvocationTransformation;
 import fr.inria.astor.approaches.tos.entity.transf.LiteralTransformation;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
+import fr.inria.astor.approaches.tos.entity.transf.VarLiTransformation;
 import fr.inria.astor.approaches.tos.entity.transf.VariableTransformation;
 import fr.inria.astor.approaches.tos.ingredients.LiteralsSpace;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver.InvocationMatching;
@@ -42,7 +46,9 @@ import spoon.reflect.reference.CtExecutableReference;
  */
 public class PatchGenerator {
 
-	protected Logger logger = Logger.getLogger(PatchGenerator.class.getName());
+	protected static Logger logger = Logger.getLogger(PatchGenerator.class.getName());
+
+	static LiteralsSpace literalspace = null;
 
 	@SuppressWarnings("rawtypes")
 	public List<Transformation> process(ModificationPoint modificationPoint, InvocationPlaceholder varplaceholder) {
@@ -96,8 +102,6 @@ public class PatchGenerator {
 
 		return transformation;
 	}
-
-	static LiteralsSpace lspace = null;
 
 	@SuppressWarnings("rawtypes")
 	private List<Transformation> replaceByVars(VariablePlaceholder varplaceholder,
@@ -194,25 +198,30 @@ public class PatchGenerator {
 
 	}
 
-	public List<Transformation> process(ModificationPoint modificationPoint, LiteralPlaceholder literalPlaceholder) {
+	public static LiteralsSpace getSpace(ProgramVariant pv) {
 
-		List<Transformation> transformation = new ArrayList<>();
-		// Initialize space
-		if (lspace == null) {
+		if (literalspace == null) {
 			try {
 				logger.debug("Initializing literal space");
-				lspace = new LiteralsSpace(IngredientSpaceScope.LOCAL);
-				lspace.defineSpace(modificationPoint.getProgramVariant());
-				//
+				literalspace = new LiteralsSpace(IngredientSpaceScope.LOCAL);
+				literalspace.defineSpace(pv);
+
 
 			} catch (JSAPException e) {
 				e.printStackTrace();
 				logger.error(e);
 			}
 		}
+		return literalspace;
+	}
+
+	public List<Transformation> process(ModificationPoint modificationPoint, LiteralPlaceholder literalPlaceholder) {
+
+		List<Transformation> transformation = new ArrayList<>();
+	
 
 		///
-		List<CtCodeElement> ingredients = lspace.getIngredients(modificationPoint.getCodeElement());
+		List<CtCodeElement> ingredients = getSpace(modificationPoint.getProgramVariant()).getIngredients(modificationPoint.getCodeElement());
 		logger.debug("Ingredients lit (" + ingredients.size() + ") " + ingredients);
 		// logger.debug("Placeholder vars "+
 		// varplaceholder.getPalceholders().keySet().size());
@@ -222,6 +231,26 @@ public class PatchGenerator {
 			if (literal4Space.getType().isSubtypeOf(literalPlaceholder.getAffected().getType())) {
 				Transformation t = new LiteralTransformation(literalPlaceholder.getAffected(),
 						literal4Space.getValue());
+				transformation.add(t);
+			}
+		}
+
+		return transformation;
+	}
+
+	public List<Transformation> process(ModificationPoint modificationPoint, VarLiPlaceholder varLiPlaceholder) {
+
+		List<Transformation> transformation = new ArrayList<>();
+		
+
+		List<CtCodeElement> ingredients = getSpace(modificationPoint.getProgramVariant()).getIngredients(modificationPoint.getCodeElement());
+		logger.debug("Ingredients lit (" + ingredients.size() + ") " + ingredients);
+	
+		for (CtCodeElement ctCodeElement : ingredients) {
+			CtLiteral literal4Space = (CtLiteral) ctCodeElement;
+			if (literal4Space.getType().isSubtypeOf(varLiPlaceholder.getAffectedVariable().getType())) {
+				Transformation t = new VarLiTransformation(varLiPlaceholder.getAffectedVariable(),
+						literal4Space.clone());
 				transformation.add(t);
 			}
 		}

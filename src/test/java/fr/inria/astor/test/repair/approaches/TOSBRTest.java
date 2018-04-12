@@ -1,20 +1,17 @@
 package fr.inria.astor.test.repair.approaches;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.astor.approaches.tos.core.LiteralsProcessor;
 import fr.inria.astor.approaches.tos.core.PatchGenerator;
 import fr.inria.astor.approaches.tos.core.TOSBRApproach;
 import fr.inria.astor.approaches.tos.entity.TOSCounter;
@@ -22,7 +19,7 @@ import fr.inria.astor.approaches.tos.entity.TOSEntity;
 import fr.inria.astor.approaches.tos.entity.TOSInstance;
 import fr.inria.astor.approaches.tos.entity.placeholders.InvocationPlaceholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.LiteralPlaceholder;
-import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
+import fr.inria.astor.approaches.tos.entity.placeholders.VarLiPlaceholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.approaches.tos.ingredients.LiteralsSpace;
@@ -39,6 +36,7 @@ import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver.InvocationMatching;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.CommandSummary;
@@ -63,6 +61,11 @@ public class TOSBRTest {
 
 	protected static final String LOG_LEVEL = "INFO";
 	protected Logger log = Logger.getLogger(this.getClass().getName());
+
+	@Before
+	public void setup() {
+		ConfigurationProperties.setProperty("excludeliteralplaceholder", "false");
+	}
 
 	/**
 	 * This test focuses on the instantiation of TOS: in particular, 3 cases.
@@ -1074,7 +1077,11 @@ public class TOSBRTest {
 	}
 
 	public Ingredient findIngredient(List<Ingredient> ingredients, String code) {
-		return ingredients.stream().filter(e -> e.getChacheCodeString().equals(code)).findFirst().get();
+		Optional<Ingredient> findFirst = ingredients.stream().filter(e -> e.getChacheCodeString().equals(code))
+				.findFirst();
+		if (!findFirst.isPresent())
+			return null;
+		return findFirst.get();
 	}
 
 	@Test
@@ -1214,10 +1221,90 @@ public class TOSBRTest {
 
 		List<TOSInstance> instances0 = strategy.getInstances(mp0, ingredientSuper);
 		assertTrue(instances0.size() > 0);
-		
+
 		Ingredient ingredientWhile = ingredientsLocalBi.get(6);
 		assertTrue(ingredientWhile.getChacheCodeString().startsWith("while (i <"));
 		List<TOSInstance> instances5 = strategy.getInstances(mp0, ingredientWhile);
 		assertTrue(instances5.isEmpty());
 	}
+
+	@Test
+	public void testTOStransformationVarLit() throws Exception {
+		int nrPlaceholders = 1;
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "debug"/* LOG_LEVEL */);
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+
+		command.command.put("-parameters",
+				"nrPlaceholders:" + nrPlaceholders + File.pathSeparator + "duplicateingredientsinspace"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeinvocationplaceholder"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludevariableplaceholder"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludeliteralplaceholder"
+						+ File.pathSeparator + "true" + File.pathSeparator + "excludevarliteralplaceholder"
+						+ File.pathSeparator + "false");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof TOSBRApproach);
+		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
+		IngredientSpace ingredientPool = approach.getIngredientPool();
+		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+
+		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
+
+		List<ModificationPoint> mps = approach.getVariants().get(0).getModificationPoints();
+
+		ModificationPoint mp0 = mps.get(0);
+		assertEquals("return solve(min, max)", mp0.getCodeElement().toString());
+
+		ModificationPoint mp4 = mps.get(4);
+		assertEquals("int i = 0", mp4.getCodeElement().toString());
+
+		LiteralPlaceholderGenerator lg = new LiteralPlaceholderGenerator();
+
+		String className = "org.apache.commons.math.analysis.solvers.BisectionSolver";
+
+		List<Ingredient> ingredientsLocalBi = tosIngredientPool.retrieveIngredients(className);
+
+		assertTrue(ingredientsLocalBi.size() > 0);
+		for (Ingredient ingredient : ingredientsLocalBi) {
+			TOSEntity te = (TOSEntity) ingredient;
+			assertTrue(te.getPlaceholders().size() > 0);
+			VarLiPlaceholder placeholder = (VarLiPlaceholder) te.getPlaceholders().stream()
+					.filter(e -> e instanceof VarLiPlaceholder).findFirst().get();
+			assertNotNull(placeholder);
+			CtElement e = te.generateCodeofTOS();
+			System.out.println(placeholder.getAffectedVariable());
+			System.out.println("-->ing: " + te.getCode());
+		}
+
+		PatchGenerator pv = new PatchGenerator();
+		assertNotNull(findIngredient(ingredientsLocalBi, "super(_lit_UnivariateRealFunction_0, 100, 1.0E-6)"));
+		assertNotNull(findIngredient(ingredientsLocalBi, "return solve(_lit_double_0, max)"));
+		assertNotNull(findIngredient(ingredientsLocalBi, "return solve(min, _lit_double_0)"));
+		Ingredient ingrAssing = findIngredient(ingredientsLocalBi, "min = _lit_double_0");
+		assertNotNull(ingrAssing);
+		assertNull(findIngredient(ingredientsLocalBi, "_lit_double_0 = m"));
+		assertNull(findIngredient(ingredientsLocalBi, "int _lit_int_0 = 0"));
+		
+		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+
+		List<TOSInstance> instances4super = strategy.getInstances(mp4, ingrAssing);
+		assertFalse(instances4super.isEmpty());
+		for (TOSInstance tosInstance : instances4super) {
+			tosInstance.generatePatch();
+			System.out.println(tosInstance.getChacheCodeString());
+		}
+
+		assertEquals("min = 1.0E-6", instances4super.get(0).getChacheCodeString());
+		assertEquals("min = 0.0", instances4super.get(1).getChacheCodeString());
+		
+	}
+
 }
