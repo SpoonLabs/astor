@@ -9,6 +9,7 @@ import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.reference.CtFieldReference;
 
 /**
  * 
@@ -19,13 +20,21 @@ public class VarLiPlaceholderGenerator implements PlaceholderGenerator {
 
 	@Override
 	public List<VarLiPlaceholder> createTOS(CtStatement ingredientStatement) {
-		List<VarLiPlaceholder> results = new ArrayList<>(); 
+		List<VarLiPlaceholder> results = new ArrayList<>();
 		List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(ingredientStatement, true);
 		for (CtVariableAccess ctVariableAccess : varAccessCollected) {
+
 			int i = 0;
-			if(ctVariableAccess instanceof CtFieldRead || ctVariableAccess instanceof CtVariableRead){
-				VarLiPlaceholder pc = new VarLiPlaceholder(ctVariableAccess, "_lit_"+ctVariableAccess.getType().getSimpleName()+ "_"+i);
-				results.add(pc);
+
+			if (ctVariableAccess instanceof CtVariableRead) {
+
+				if (!(ctVariableAccess instanceof CtFieldRead)
+						|| !((CtFieldReference) ctVariableAccess.getVariable()).isStatic()) {
+
+					VarLiPlaceholder pc = new VarLiPlaceholder(ctVariableAccess,
+							"_lit_" + ctVariableAccess.getType().getSimpleName() + "_" + i);
+					results.add(pc);
+				}
 			}
 		}
 		return results;

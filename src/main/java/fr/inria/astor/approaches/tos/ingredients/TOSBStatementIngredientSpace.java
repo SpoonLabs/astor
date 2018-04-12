@@ -46,8 +46,7 @@ public class TOSBStatementIngredientSpace
 	protected TOSCounter tosCounter = null;
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
-	
-	
+
 	/**
 	 * Generators used for creating the TOS
 	 */
@@ -93,7 +92,11 @@ public class TOSBStatementIngredientSpace
 
 					List<Ingredient> ingredientPoolForLocation = this.retrieveIngredients(keyLocation);
 					for (TOSEntity templateElement : xTemplates) {
-						templateElement.generateCodeofTOS();
+						log.debug("\nGenerating element " + templateElement.getDerivedFrom() + " vars "
+								+ templateElement.getPlaceholders());
+
+						CtElement generatedTos = templateElement.generateCodeofTOS();
+
 						if (!ingredientPoolForLocation.contains(templateElement)) {
 							// log.debug("Adding tos " +
 							// templateElement.getCode() + " to" +
