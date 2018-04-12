@@ -31,15 +31,11 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 
 	MultiKeyMap cacheInstances = new MultiKeyMap();
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
+	PatchGenerator patchGenerator = null;
 
 	public TOSIngredientSearchStrategy(IngredientSpace space) {
 		super(space);
-
-		try {
-
-		} catch (Exception e) {
-
-		}
+		patchGenerator = new PatchGenerator();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -81,7 +77,7 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 		if (this.cacheInstances.containsKey(modificationPoint, ingredientBaseSelected.getChacheCodeString())) {
 			ingredientTransformed = (List<TOSInstance>) this.cacheInstances.get(modificationPoint,
 					ingredientBaseSelected.getChacheCodeString());
-			log.debug("Ingredients "+StringUtil.trunc(ingredientBaseSelected.getChacheCodeString())
+			log.debug("Ingredients " + StringUtil.trunc(ingredientBaseSelected.getChacheCodeString())
 					+ " cache of size " + ingredientTransformed.size());
 
 		} else {
@@ -89,19 +85,17 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 			log.debug("Not in cache, generating for " + modificationPoint + " and "
 					+ ingredientBaseSelected.getChacheCodeString());
 
-			PatchGenerator v = new PatchGenerator();
-
 			TOSEntity tos = (TOSEntity) ingredientBaseSelected;
-			List<CtVariableAccess>  outofscope  = tos.getVarsOutOfContext(modificationPoint);
-			if(!outofscope.isEmpty()){
-				log.debug("\nWe cannot generate a patch from tos"+
-						StringUtil.trunc(tos.getCode())+ " in location"+modificationPoint + "\nvars out of context: "+outofscope);
+			List<CtVariableAccess> outofscope = tos.getVarsOutOfContext(modificationPoint);
+			if (!outofscope.isEmpty()) {
+				log.debug("\nWe cannot generate a patch from tos" + StringUtil.trunc(tos.getCode()) + " in location"
+						+ modificationPoint + "\nvars out of context: " + outofscope);
 				return Lists.newArrayList();
 			}
-			log.debug("Tos fits "+StringUtil.trunc(tos.getCode())+ " in location"+modificationPoint);
+			log.debug("Tos fits " + StringUtil.trunc(tos.getCode()) + " in location" + modificationPoint);
 			ingredientTransformed = new ArrayList<>();
 			for (Placeholder placeholder : tos.getPlaceholders()) {
-				List<Transformation> transpl = placeholder.visit(modificationPoint, v);
+				List<Transformation> transpl = placeholder.visit(modificationPoint, patchGenerator);
 
 				if (ingredientTransformed.isEmpty()) {
 					for (Transformation transformation : transpl) {

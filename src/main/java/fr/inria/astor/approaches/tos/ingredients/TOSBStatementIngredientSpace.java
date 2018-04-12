@@ -64,6 +64,7 @@ public class TOSBStatementIngredientSpace
 		if (!ConfigurationProperties.getPropertyBool("excludevarliteralplaceholder"))
 			tosGenerators.add(new VarLiPlaceholderGenerator());
 
+		log.info("Generators loaded "+tosGenerators);
 	}
 
 	@Override
