@@ -32,4 +32,8 @@ public abstract class Placeholder {
 	public abstract List<CtCodeElement> getAffectedElements();
 
 	public abstract List<Transformation> visit(ModificationPoint modificationPoint, PatchGenerator visitor);
+
+	public String toString(){
+		return this.getClass().getSimpleName()+ "_"+getAffectedElements();
+	}
 }
