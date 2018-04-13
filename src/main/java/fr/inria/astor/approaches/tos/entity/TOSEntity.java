@@ -101,15 +101,9 @@ public class TOSEntity extends Ingredient {
 
 	public List<CtVariableAccess> getVarsOutOfContext(ModificationPoint modificationPoint) {
 
-		Set<CtCodeElement> affected = new HashSet<>();
 		List<CtVariable> variablesInScope = modificationPoint.getContextOfModificationPoint();
 
-		for (Placeholder placeholder : this.getPlaceholders()) {
-
-			List<CtCodeElement> affected_i = placeholder.getAffectedElements();
-			affected.addAll(affected_i);
-
-		}
+		Set<CtCodeElement> affected = getAffectedElements();
 
 		// Check Those vars not transformed must exist in context
 		List<CtVariableAccess> outOfContext = VariableResolver.retriveVariablesOutOfContext(variablesInScope,
@@ -120,5 +114,17 @@ public class TOSEntity extends Ingredient {
 
 		return outOfContext;
 
+	}
+
+	public Set<CtCodeElement> getAffectedElements() {
+		Set<CtCodeElement> affected = new HashSet<>();
+
+		for (Placeholder placeholder : this.getPlaceholders()) {
+
+			List<CtCodeElement> affected_i = placeholder.getAffectedElements();
+			affected.addAll(affected_i);
+
+		}
+		return affected;
 	}
 }
