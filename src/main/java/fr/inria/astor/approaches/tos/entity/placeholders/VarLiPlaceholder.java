@@ -65,5 +65,8 @@ public class VarLiPlaceholder extends Placeholder {
 	public CtVariableAccess getAffectedVariable() {
 		return affectedVariable;
 	}
-
+	
+	public String toString(){
+		return this.getClass().getSimpleName()+ ": "+name + "-->"+affectedVariable;
+	}
 }

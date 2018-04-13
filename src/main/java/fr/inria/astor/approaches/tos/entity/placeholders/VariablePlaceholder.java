@@ -44,8 +44,8 @@ public class VariablePlaceholder extends Placeholder {
 
 	@Override
 	public String toString() {
-		return "TOSVarName [placeholderVarNamesMappings=" + placeholderVarNamesMappings + ", palceholdersToVariables="
-				+ palceholdersToVariables + ", variablesNotModified=" + variablesNotModified + "]";
+		return "Variable Placeholder [" + "palceholdersToVariables="
+				+ palceholdersToVariables +"]";
 	}
 
 	@SuppressWarnings("unchecked")

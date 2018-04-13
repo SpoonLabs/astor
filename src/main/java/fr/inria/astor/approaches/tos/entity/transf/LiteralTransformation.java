@@ -31,5 +31,7 @@ public class LiteralTransformation implements Transformation {
 		target.setValue(previousValue);
 		previousValue = null;
 	}
-
+	public String toString(){
+		return this.getClass().getSimpleName() + " "+newValue+ " --> "+previousValue; 
+	}
 }

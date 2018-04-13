@@ -40,5 +40,7 @@ public class VariableTransformation implements Transformation {
 		VariableResolver.resetIngredient(originalMap);
 
 	}
-
+	public String toString(){
+		return this.getClass().getSimpleName() + " "+mapping; 
+	}
 }

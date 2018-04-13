@@ -86,7 +86,7 @@ public class InvocationPlaceholder extends Placeholder {
 	@Override
 	public List<CtCodeElement> getAffectedElements() {
 		List<CtCodeElement> affected = new ArrayList<>();
-		//TODO: cast...
+		// TODO: cast...
 		affected.add((CtCodeElement) invocation);
 		return affected;
 	}
@@ -97,4 +97,8 @@ public class InvocationPlaceholder extends Placeholder {
 		return visitor.process(modificationPoint, this);
 	}
 
+	public String toString() {
+		return this.getClass().getSimpleName() + ": " + this.newName + "-->"
+				+ invocation.getExecutable().getSimpleName();
+	}
 }

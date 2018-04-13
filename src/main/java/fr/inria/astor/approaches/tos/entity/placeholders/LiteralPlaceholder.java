@@ -59,5 +59,7 @@ public class LiteralPlaceholder extends Placeholder {
 	public CtLiteral getAffected() {
 		return affected;
 	}
-
+	public String toString(){
+		return this.getClass().getSimpleName()+ ": "+newValue + "-->"+affected.getValue();
+	}
 }

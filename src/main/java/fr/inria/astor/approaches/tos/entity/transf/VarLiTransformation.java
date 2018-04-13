@@ -32,4 +32,8 @@ public class VarLiTransformation implements Transformation {
 
 	}
 
+	public String toString() {
+		return this.getClass().getSimpleName() + " " + newLiteral + " --> "
+				+ previousVariable;
+	}
 }

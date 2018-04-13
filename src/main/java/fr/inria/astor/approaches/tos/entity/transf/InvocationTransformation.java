@@ -30,5 +30,8 @@ public class InvocationTransformation implements Transformation {
 		this.varplaceholder.getInvocation().getExecutable().setSimpleName(placeholderName);
 
 	}
-
+	
+	public String toString(){
+		return this.getClass().getSimpleName() + " "+selectedExecutableTarget.getSimpleName()+ " --> "+placeholderName; 
+	}
 }
