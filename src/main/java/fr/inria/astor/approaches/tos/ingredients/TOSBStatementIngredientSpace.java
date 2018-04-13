@@ -2,6 +2,7 @@ package fr.inria.astor.approaches.tos.ingredients;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -64,7 +65,7 @@ public class TOSBStatementIngredientSpace
 		if (!ConfigurationProperties.getPropertyBool("excludevarliteralplaceholder"))
 			tosGenerators.add(new VarLiPlaceholderGenerator());
 
-		log.info("Generators loaded "+tosGenerators);
+		log.info("Generators loaded " + tosGenerators);
 	}
 
 	@Override
@@ -93,8 +94,8 @@ public class TOSBStatementIngredientSpace
 
 					List<Ingredient> ingredientPoolForLocation = this.retrieveIngredients(keyLocation);
 					for (TOSEntity templateElement : xTemplates) {
-						log.debug("\nGenerating element " + templateElement.getDerivedFrom() + " vars "
-								+ templateElement.getPlaceholders());
+						//log.debug("\nGenerating element " + templateElement.getDerivedFrom() + " vars "
+						//		+ templateElement.getPlaceholders());
 
 						CtElement generatedTos = templateElement.generateCodeofTOS();
 
@@ -119,22 +120,84 @@ public class TOSBStatementIngredientSpace
 		this.recreateTypesStructures();
 	}
 
-	private List<TOSEntity> createAllTOS(CtStatement ingredientStatement) {
-		List<TOSEntity> xGeneratedTos = new ArrayList<>();
+	public List<TOSEntity> createAllTOS(CtStatement ingredientStatement) {
+		boolean combinated = ConfigurationProperties.getPropertyBool("toscombinated");
+		if (combinated) {
+			return createAllTOSCombined(ingredientStatement);
+		} else
+			return createAllTOSNotCombined(ingredientStatement);
+	}
 
+	public List<TOSEntity> createAllTOSNotCombined(CtStatement ingredientStatement) {
+		List<TOSEntity> xGeneratedTos = new ArrayList<>();
 		for (PlaceholderGenerator tosGenerator : tosGenerators) {
 			List<? extends Placeholder> xpalceholders = tosGenerator.createTOS(ingredientStatement);
 			for (Placeholder placeholder : xpalceholders) {
-				TOSEntity tos = new TOSEntity();
-				tos.setDerivedFrom(ingredientStatement);
-				tos.getPlaceholders().add(placeholder);
 
-				// TODO: single or combined?
-				if (!tos.getPlaceholders().isEmpty()) {
-					xGeneratedTos.add(tos);
+				TOSEntity tosToAdd = new TOSEntity();
+				tosToAdd.setDerivedFrom(ingredientStatement);
+				tosToAdd.getPlaceholders().add(placeholder);
+
+				if (!tosToAdd.getPlaceholders().isEmpty()) {
+					xGeneratedTos.add(tosToAdd);
 				}
 			}
 
+		}
+
+		return xGeneratedTos;
+
+	}
+
+	public List<TOSEntity> createAllTOSCombined(CtStatement ingredientStatement) {
+		// all generated
+		List<TOSEntity> xGeneratedTos = new ArrayList<>();
+		// for each generator
+		for (PlaceholderGenerator tosGenerator : tosGenerators) {
+
+			List<TOSEntity> generatedTosFromGenerator = new ArrayList<>();
+			log.debug("-->"+tosGenerator.getClass().getName());
+			List<? extends Placeholder> xpalceholders = tosGenerator.createTOS(ingredientStatement);
+			for (Placeholder placeholder : xpalceholders) {
+
+				// we add a tos for the recently created placeholder
+				TOSEntity tosToAdd = new TOSEntity();
+				tosToAdd.setDerivedFrom(ingredientStatement);
+				tosToAdd.getPlaceholders().add(placeholder);
+				// Avoid adding empty placeholders
+				if (!tosToAdd.getPlaceholders().isEmpty()) {
+					generatedTosFromGenerator.add(tosToAdd);
+				}
+				// for each of the previously created tos (by other generators)
+				for (TOSEntity tosEntity : xGeneratedTos) {
+
+					List<?> intersection = tosEntity.getAffectedElements().stream()
+							.filter(f -> placeholder.getAffectedElements().contains(f)).collect(Collectors.toList());
+
+					log.debug("\n\nAnalyzing:---------\n" + tosEntity.getCode() + "\nConflicts? " + !intersection.isEmpty() + " "
+							+ intersection + "\n----existing: " + tosEntity.getPlaceholders() + "\n----newph: "
+							+ placeholder);
+					// If not conflict with the placeholders
+					if (intersection.isEmpty()) {
+						TOSEntity nEnt = new TOSEntity();
+						nEnt.setDerivedFrom(ingredientStatement);
+						nEnt.getPlaceholders().addAll(tosEntity.getPlaceholders());
+						nEnt.getPlaceholders().add(placeholder);
+						generatedTosFromGenerator.add(nEnt);
+					//	System.out.println("-!-!-->Adding new tos "+nEnt.getChacheCodeString() + " "+nEnt);
+					}
+				}
+
+			}
+			if (generatedTosFromGenerator.size() > 0) {
+				xGeneratedTos.addAll(generatedTosFromGenerator);
+				int i = 0;
+			//	log.debug("\n------\nIntermediate tos set " + xGeneratedTos);
+				for (TOSEntity tosEntity : xGeneratedTos) {
+				//	System.out.println("--> "+(i++)+ " "+tosEntity);
+				}
+				log.debug("\n--**********----\n");
+			}
 		}
 
 		return xGeneratedTos;
