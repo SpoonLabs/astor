@@ -60,9 +60,9 @@ public class PatchGenerator {
 		List<Transformation> transformed = new ArrayList<>();
 		InvocationMatching matchingVar = InvocationResolver.mapImplicitInvocation(modificationPoint.getCtClass(),
 				varplaceholder.getInvocation());
-		System.out.println("Invocation matching: " + matchingVar);
+		
 		if (!matchingVar.isCorrect()) {
-			System.out.println("Incorrect: we cannot put that ingredient there.");
+			logger.debug("Incorrect: we cannot put that ingredient there.");
 			return transformed;
 		} else {
 			//

@@ -6,7 +6,6 @@ import java.util.List;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.tos.core.LiteralsProcessor;
-import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.loop.spaces.ingredients.IngredientProcessor;
 import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;

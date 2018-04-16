@@ -41,6 +41,6 @@ public class VariableTransformation implements Transformation {
 
 	}
 	public String toString(){
-		return this.getClass().getSimpleName() + " "+mapping; 
+		return this.getClass().getSimpleName() + " "+mapping.getMappedVariables(); 
 	}
 }
