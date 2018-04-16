@@ -30,7 +30,6 @@ env:
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.RepairOperatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.suspiciousnavigation.SuspiciousNavigationStrategyTest
   - TEST=fr.inria.astor.util.CommandSummaryTest
-  - TEST=fr.inria.astor.test.repair.approaches.TOSBRTest
   
   
   global:
