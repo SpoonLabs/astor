@@ -205,7 +205,7 @@ public class TOSBRTest {
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
 
-		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
+		// assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
 		assertTrue(approach.getSolutions().size() > 0);
 
@@ -372,7 +372,7 @@ public class TOSBRTest {
 				assertEquals(patch, fix.toString());
 
 				if (baseIng != null) {
-			//		assertEquals(baseIng, ing.getDerivedFrom().toString());
+					// assertEquals(baseIng, ing.getDerivedFrom().toString());
 				}
 				return;
 			}
@@ -1066,9 +1066,9 @@ public class TOSBRTest {
 
 	}
 
-	public Ingredient findIngredient(List<Ingredient> ingredients, String code) {
-		Optional<Ingredient> findFirst = ingredients.stream().filter(e -> e.getChacheCodeString().equals(code))
-				.findFirst();
+	public Ingredient findIngredient(List<? extends Ingredient> ingredients, String code) {
+		Optional<? extends Ingredient> findFirst = ingredients.stream()
+				.filter(e -> e.getChacheCodeString().equals(code)).findFirst();
 		if (!findFirst.isPresent())
 			return null;
 		return findFirst.get();
@@ -1365,7 +1365,8 @@ public class TOSBRTest {
 
 		assertNotNull(findInstance(instancesSolve3args, "return solve(f, min, max, 0.0)"));
 		assertNotNull(findInstance(instancesSolve3args, "return solve(f, min, max, 1.0E-15)"));
-		//assertNotNull(findInstance(instancesSolve3args, "return solve(f, min, max, 0.95)"));//bug of spaces
+		// assertNotNull(findInstance(instancesSolve3args, "return solve(f, min,
+		// max, 0.95)"));//bug of spaces
 
 		//
 		List<TOSInstance> instancesSolve5args = strategy.getInstances(mp0, ingSolve5args);
@@ -1380,11 +1381,12 @@ public class TOSBRTest {
 		}
 
 		assertNotNull(findInstance(instancesDecl1, "double yMin = f.value(1.0E-6)"));
-	//	assertNotNull(findInstance(instancesDecl1, "double yMin = f.value(2.0)"));//bug of spaces
+		// assertNotNull(findInstance(instancesDecl1, "double yMin =
+		// f.value(2.0)"));//bug of spaces
 	}
 
 	@Test
-	public void testCm() throws Exception{
+	public void testNotCm() throws Exception {
 		int nrPlaceholders = 1;
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-mode", "custom");
@@ -1394,10 +1396,11 @@ public class TOSBRTest {
 		command.command.put("-scope", "local");
 		command.command.put("-stopfirst", "true");
 
-		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders 
-				//+ File.pathSeparator + desactivateall()
-				//+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "false"
-				);
+		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders
+		// + File.pathSeparator + desactivateall()
+		// + File.pathSeparator + "excludeliteralplaceholder" +
+		// File.pathSeparator + "false"
+				+ File.pathSeparator + "toscombinated" + File.pathSeparator + "false");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -1407,9 +1410,228 @@ public class TOSBRTest {
 		IngredientSpace ingredientPool = approach.getIngredientPool();
 		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
 
-		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
+		// assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
 		List<ModificationPoint> mps = approach.getVariants().get(0).getModificationPoints();
+
+		ModificationPoint mp0 = mps.get(0);
+		assertEquals("return solve(min, max)", mp0.getCodeElement().toString());
+
+		ModificationPoint mp4 = mps.get(4);
+		assertEquals("int i = 0", mp4.getCodeElement().toString());
+
+		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+
+		String packageName = "org.apache.commons.math.analysis.solvers.BisectionSolver";
+
+		List<Ingredient> ingredientsLocalBi = tosIngredientPool.retrieveIngredients(packageName);
+
+		assertTrue(ingredientsLocalBi.size() > 0);
+		int i = 0;
+		for (Ingredient ingredient : ingredientsLocalBi) {
+			TOSEntity te = (TOSEntity) ingredient;
+			assertTrue(te.getPlaceholders().size() > 0);
+			assertEquals(1, te.getNrPlaceholder());
+			CtElement e = te.generateCodeofTOS();
+			// System.out.println(placeholder.getAffectedVariable());
+			System.out.println("-->ing " + (i++) + ": " + StringUtil.trunc(te.getCode()) + te.getPlaceholders());
+		}
+		assertNotNull(findIngredient(ingredientsLocalBi, "verifyInterval(min, _lit_double_0)"));
+		assertNotNull(findIngredient(ingredientsLocalBi, "verifyInterval(min, _double_0)"));
+		assertNotNull(findIngredient(ingredientsLocalBi, "verifyInterval(_double_0, max)"));
+		assertNotNull(findIngredient(ingredientsLocalBi, "verifyInterval(_lit_double_0, max)"));
+
+		assertNotNull(findIngredient(ingredientsLocalBi, "return solve(_double_0, max)"));
+		assertNotNull(findIngredient(ingredientsLocalBi, "return solve(min, _double_0)"));
+		assertNotNull(findIngredient(ingredientsLocalBi,
+				"return _org.apache.commons.math.analysis.solvers.BisectionSolver_double_0_(min, max)"));
+		assertNotNull(findIngredient(ingredientsLocalBi, "return solve(_lit_double_0, max)"));
+		assertNotNull(findIngredient(ingredientsLocalBi, "return solve(min, _lit_double_0)"));
+		assertNotNull(findIngredient(ingredientsLocalBi, "super(f, \"_l_int_0\", 1.0E-6)"));
+		assertNotNull(findIngredient(ingredientsLocalBi, "return solve(min, _lit_double_0)"));
+
 	}
-	
+
+	@Test
+	public void testCm() throws Exception {
+		int nrPlaceholders = 1;
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", TOSBRApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "info"/* LOG_LEVEL */);
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.001");
+		command.command.put("-parameters", "nrPlaceholders:" + nrPlaceholders
+
+				+ File.pathSeparator + "toscombinated" + File.pathSeparator + "true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof TOSBRApproach);
+		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
+		IngredientSpace ingredientPool = approach.getIngredientPool();
+		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+
+		List<ModificationPoint> mps = approach.getVariants().get(0).getModificationPoints();
+
+		ModificationPoint mp0 = mps.get(0);
+		assertEquals("return solve(min, max)", mp0.getCodeElement().toString());
+
+		ModificationPoint mp4 = mps.get(4);
+		assertEquals("int i = 0", mp4.getCodeElement().toString());
+
+		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+
+		String packageName = "org.apache.commons.math.analysis.solvers.BisectionSolver";
+
+		List<Ingredient> ingredientsLocalBi = tosIngredientPool.retrieveIngredients(packageName);
+		assertTrue(ingredientsLocalBi.size() > 0);
+
+		int i = 0;
+		for (Ingredient ingredient : ingredientsLocalBi) {
+			TOSEntity te = (TOSEntity) ingredient;
+			assertTrue(te.getPlaceholders().size() > 0);
+			CtElement e = te.generateCodeofTOS();
+		}
+
+		i = 0;
+		List<TOSEntity> elsolve = tosIngredientPool.createAllTOSCombined((CtStatement) mp0.getCodeElement());
+
+		assertNotNull(findIngredient(elsolve, "return solve(_double_0, max)"));
+		assertNotNull(findIngredient(elsolve, "return solve(min, _double_0)"));
+		assertNotNull(findIngredient(elsolve,
+				"return _org.apache.commons.math.analysis.solvers.BisectionSolver_double_0_(min, max)"));
+		assertNotNull(findIngredient(elsolve,
+				"return _org.apache.commons.math.analysis.solvers.BisectionSolver_double_0_(_double_0, max)"));
+		Ingredient inginvparam = findIngredient(elsolve,
+				"return _org.apache.commons.math.analysis.solvers.BisectionSolver_double_0_(min, _double_0)");
+		assertNotNull(inginvparam);
+		assertNotNull(findIngredient(elsolve, "return solve(_lit_double_0, max)"));
+		assertNotNull(findIngredient(elsolve, "return solve(_lit_double_0, _double_0)"));
+		assertNotNull(findIngredient(elsolve,
+				"return _org.apache.commons.math.analysis.solvers.BisectionSolver_double_0_(_lit_double_0, max)"));
+		assertNotNull(findIngredient(elsolve,
+				"return _org.apache.commons.math.analysis.solvers.BisectionSolver_double_0_(_lit_double_0, _double_0)"));
+		assertNotNull(findIngredient(elsolve, "return solve(min, _lit_double_0)"));
+		assertNotNull(findIngredient(elsolve, "return solve(_double_0, _lit_double_0)"));
+		Ingredient ing2phvar = findIngredient(elsolve,
+				"return _org.apache.commons.math.analysis.solvers.BisectionSolver_double_0_(min, _lit_double_0)");
+		assertNotNull(ing2phvar);
+		Ingredient allph1 = findIngredient(elsolve,
+				"return _org.apache.commons.math.analysis.solvers.BisectionSolver_double_0_(_double_0, _lit_double_0)");
+		assertNotNull(allph1);
+		////
+
+		System.out.println("all ing2phvar");
+		List<TOSInstance> instancesph2 = strategy.getInstances(mp4, ing2phvar);
+		assertEquals(2, instancesph2.size());
+
+		for (TOSInstance tosInstance : instancesph2) {
+			tosInstance.generatePatch();
+		//	System.out.println("-ph2-> " + tosInstance.getChacheCodeString());
+		}
+		assertNotNull(findInstance(instancesph2, "return solve(min, 1.0E-6)"));
+		assertNotNull(findInstance(instancesph2, "return solve(min, 0.0)"));
+		
+		
+		
+		////////
+		i = 0;
+		List<TOSEntity> elassing = tosIngredientPool.createAllTOSCombined((CtStatement) mp4.getCodeElement());
+
+		assertEquals(1, elassing.size());
+		assertNotNull(findIngredient(elassing, "int i = \"_l_int_0\""));
+
+		/// Let's focus on modif point return
+
+		ModificationPoint mp8 = mps.get(8);
+		assertEquals("return (a + b) * 0.5", mp8.getCodeElement().toString());
+		i = 0;
+		List<TOSEntity> elret = tosIngredientPool.createAllTOSCombined((CtStatement) mp8.getCodeElement());
+		for (TOSEntity tosEntity : elret) {
+			System.out.println("--> tosret " + i++ + ": " + StringUtil.trunc(tosEntity.getCode()) + "   | "
+					+ tosEntity.getPlaceholders());
+		}
+
+		// We assert the presence of tos in the pool.
+		Ingredient ingRetvar = findIngredient(elret, "return (_double_0 + b) * 0.5");
+		assertNotNull(ingRetvar);
+		assertNotNull(findIngredient(elret, "return (a + _double_0) * 0.5"));
+		Ingredient ingLit1 = findIngredient(elret, "return (a + b) * \"_l_double_0\"");
+		assertNotNull(ingLit1);
+		assertNotNull(findIngredient(elret, "return (_double_0 + b) * \"_l_double_0\""));
+		assertNotNull(findIngredient(elret, "return (a + _double_0) * \"_l_double_0\""));
+		assertNotNull(findIngredient(elret, "return (_lit_double_0 + b) * 0.5"));
+		assertNotNull(findIngredient(elret, "return (_lit_double_0 + _double_0) * 0.5"));
+		assertNotNull(findIngredient(elret, "return (_lit_double_0 + b) * \"_l_double_0\""));
+		assertNotNull(findIngredient(elret, "return (_lit_double_0 + _double_0) * \"_l_double_0\""));
+		Ingredient ingLitVar1 = findIngredient(elret, "return (a + _lit_double_0) * 0.5");
+		assertNotNull(ingLitVar1);
+		assertNotNull(findIngredient(elret, "return (_double_0 + _lit_double_0) * 0.5"));
+		Ingredient inglitvar2 = findIngredient(elret, "return (a + _lit_double_0) * \"_l_double_0\"");
+		assertNotNull(inglitvar2);
+		assertNotNull(findIngredient(elret, "return (_double_0 + _lit_double_0) * \"_l_double_0\""));
+
+		///// Assertion of different cases.
+		assertVarChange1(strategy, mp8, ingRetvar);
+
+		assertChangeLit2(strategy, mp8, ingLit1);
+
+		assertVarToLi1(strategy, mp8, ingLitVar1);
+
+		assertVarToLi2(strategy, mp8, inglitvar2);
+	}
+
+	private void assertVarChange1(TOSIngredientSearchStrategy strategy, ModificationPoint mp8, Ingredient ingRetvar) {
+		List<TOSInstance> instancesReturn1 = strategy.getInstances(mp8, ingRetvar);
+		for (TOSInstance tosInstancer : instancesReturn1) {
+			tosInstancer.generatePatch();
+		}
+		assertTrue(instancesReturn1.size() > 0);
+		assertNotNull(findInstance(instancesReturn1, "return (b + b) * 0.5"));
+		assertNotNull(findInstance(instancesReturn1, "return (a + b) * 0.5"));
+	}
+
+	private void assertChangeLit2(TOSIngredientSearchStrategy strategy, ModificationPoint mp8, Ingredient ingLit1) {
+		List<TOSInstance> instancesLit1 = strategy.getInstances(mp8, ingLit1);
+		for (TOSInstance tosInstancel : instancesLit1) {
+			System.out.println(tosInstancel.generatePatch());
+		}
+		assertNotNull(findInstance(instancesLit1, "return (a + b) * 0.0"));
+		assertNotNull(findInstance(instancesLit1, "return (a + b) * 1.0"));
+		assertNotNull(findInstance(instancesLit1, "return (a + b) * 0.5"));
+		assertNull(findInstance(instancesLit1, "return (a + b) * 1E-6"));
+
+		assertTrue(instancesLit1.size() > 0);
+	}
+
+	private void assertVarToLi1(TOSIngredientSearchStrategy strategy, ModificationPoint mp8, Ingredient ingLitVar1) {
+		List<TOSInstance> instancesVarLit1 = strategy.getInstances(mp8, ingLitVar1);
+		for (TOSInstance tosInstancev : instancesVarLit1) {
+			System.out.println(tosInstancev.generatePatch());
+		}
+		assertNotNull(findInstance(instancesVarLit1, "return (a + 0.0) * 0.5"));
+		assertNotNull(findInstance(instancesVarLit1, "return (a + 1.0) * 0.5"));
+		assertNotNull(findInstance(instancesVarLit1, "return (a + 0.5) * 0.5"));
+	}
+
+	private void assertVarToLi2(TOSIngredientSearchStrategy strategy, ModificationPoint mp8, Ingredient inglitvar2) {
+		List<TOSInstance> instancesVarLit2 = strategy.getInstances(mp8, inglitvar2);
+		for (TOSInstance tosInstance2 : instancesVarLit2) {
+			System.out.println(tosInstance2.generatePatch());
+		}
+		assertNotNull(findInstance(instancesVarLit2, "return (a + 0.0) * 0.0"));
+		assertNotNull(findInstance(instancesVarLit2, "return (a + 0.0) * 1.0"));
+		assertNotNull(findInstance(instancesVarLit2, "return (a + 0.0) * 0.5"));
+		assertNotNull(findInstance(instancesVarLit2, "return (a + 1.0) * 0.0"));
+		assertNotNull(findInstance(instancesVarLit2, "return (a + 1.0) * 1.0"));
+		assertNotNull(findInstance(instancesVarLit2, "return (a + 1.0) * 0.5"));
+		assertNotNull(findInstance(instancesVarLit2, "return (a + 0.5) * 0.0"));
+		assertNotNull(findInstance(instancesVarLit2, "return (a + 0.5) * 1.0"));
+		assertNotNull(findInstance(instancesVarLit2, "return (a + 0.5) * 0.5"));
+	}
+
 }
