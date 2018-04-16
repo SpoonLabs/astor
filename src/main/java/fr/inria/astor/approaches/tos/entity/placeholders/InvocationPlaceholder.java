@@ -98,7 +98,7 @@ public class InvocationPlaceholder extends Placeholder {
 	}
 
 	public String toString() {
-		return this.getClass().getSimpleName() + ": " + this.newName + "-->"
+		return this.getClass().getSimpleName() + ": " + this.newName + " --> "
 				+ invocation.getExecutable().getSimpleName();
 	}
 }

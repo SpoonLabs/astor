@@ -19,20 +19,20 @@ public class VarLiPlaceholder extends Placeholder {
 
 	@SuppressWarnings("rawtypes")
 	CtVariableAccess affectedVariable = null;
-	String name = null;
+	String placeholder_name = null;
 	String previousname = null;
 
 	public VarLiPlaceholder(CtVariableAccess previousVariable, String name) {
 		super();
 		this.affectedVariable = previousVariable;
-		this.name = name;
+		this.placeholder_name = name;
 	}
 
 	@Override
 	public void apply() {
 		// previousVariable.replace(newLiteral);
 		previousname = affectedVariable.getVariable().getSimpleName();
-		affectedVariable.getVariable().setSimpleName(name);
+		affectedVariable.getVariable().setSimpleName(placeholder_name);
 	
 		//Workarround 
 		affectedVariable.getFactory().getEnvironment().setNoClasspath(true);
@@ -67,6 +67,14 @@ public class VarLiPlaceholder extends Placeholder {
 	}
 	
 	public String toString(){
-		return this.getClass().getSimpleName()+ ": "+name + "-->"+affectedVariable;
+		return this.getClass().getSimpleName()+ ": "+placeholder_name + " --> "+affectedVariable;
+	}
+
+	public String getPlaceholder_name() {
+		return placeholder_name;
+	}
+
+	public void setPlaceholder_name(String placeholder_name) {
+		this.placeholder_name = placeholder_name;
 	}
 }

@@ -1,5 +1,6 @@
 package fr.inria.astor.approaches.tos.entity.transf;
 
+import fr.inria.astor.approaches.tos.entity.placeholders.VarLiPlaceholder;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtVariableAccess;
 
@@ -13,9 +14,12 @@ public class VarLiTransformation implements Transformation {
 	@SuppressWarnings("rawtypes")
 	CtVariableAccess previousVariable = null;
 	CtLiteral newLiteral = null;
+	VarLiPlaceholder varLiPlaceholder = null;
 
-	public VarLiTransformation(CtVariableAccess previousVariable, CtLiteral newLiteral) {
+	public VarLiTransformation(VarLiPlaceholder varLiPlaceholder, CtVariableAccess previousVariable,
+			CtLiteral newLiteral) {
 		super();
+		this.varLiPlaceholder = varLiPlaceholder;
 		this.previousVariable = previousVariable;
 		this.newLiteral = newLiteral;
 	}
@@ -33,7 +37,7 @@ public class VarLiTransformation implements Transformation {
 	}
 
 	public String toString() {
-		return this.getClass().getSimpleName() + " " + newLiteral + " --> "
-				+ previousVariable;
+		return this.getClass().getSimpleName() + " (" + newLiteral + " --> "
+				+ this.varLiPlaceholder.getPlaceholder_name() + ") ";
 	}
 }

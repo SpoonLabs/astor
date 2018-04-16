@@ -89,7 +89,7 @@ public class PatchGenerator {
 		if (executableTarget.getType().equals(varplaceholder.getType()) && varplaceholder.getInvocation()
 				.getExecutable().getParameters().equals(executableTarget.getParameters())) {
 
-			InvocationTransformation it = new InvocationTransformation(executableTarget, varplaceholder);
+			InvocationTransformation it = new InvocationTransformation(varplaceholder,executableTarget);
 
 			transformed.add(it);
 		}
@@ -152,7 +152,7 @@ public class PatchGenerator {
 				if (allCombinations.size() > 0) {
 
 					for (VarCombinationForIngredient varCombinationForIngredient : allCombinations) {
-						transformation.add(new VariableTransformation(varCombinationForIngredient, mapping));
+						transformation.add(new VariableTransformation(varplaceholder,placeholders,varCombinationForIngredient, mapping));
 					}
 				}
 			}
@@ -234,7 +234,7 @@ public class PatchGenerator {
 		for (CtCodeElement ctCodeElement : ingredients) {
 			CtLiteral literal4Space = (CtLiteral) ctCodeElement;
 			if (literal4Space.getType().isSubtypeOf(literalPlaceholder.getAffected().getType())) {
-				Transformation t = new LiteralTransformation(literalPlaceholder.getAffected(),
+				Transformation t = new LiteralTransformation(literalPlaceholder, literalPlaceholder.getAffected(),
 						literal4Space.getValue());
 				transformation.add(t);
 			}
@@ -254,7 +254,7 @@ public class PatchGenerator {
 		for (CtCodeElement ctCodeElement : ingredients) {
 			CtLiteral literal4Space = (CtLiteral) ctCodeElement;
 			if (literal4Space.getType().isSubtypeOf(varLiPlaceholder.getAffectedVariable().getType())) {
-				Transformation t = new VarLiTransformation(varLiPlaceholder.getAffectedVariable(),
+				Transformation t = new VarLiTransformation(varLiPlaceholder,varLiPlaceholder.getAffectedVariable(),
 						literal4Space.clone());
 				transformation.add(t);
 			}

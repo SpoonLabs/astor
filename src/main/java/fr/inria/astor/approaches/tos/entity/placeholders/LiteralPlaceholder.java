@@ -17,13 +17,13 @@ import spoon.reflect.code.CtLiteral;
 public class LiteralPlaceholder extends Placeholder {
 
 	Object previousValue = null;
-	Object newValue = null;
+	Object placeholder_name = null;
 
 	CtLiteral affected = null;
 
 	public LiteralPlaceholder(Object newValue, CtLiteral affected) {
 		super();
-		this.newValue = newValue;
+		this.placeholder_name = newValue;
 		this.affected = affected;
 	}
 
@@ -31,7 +31,7 @@ public class LiteralPlaceholder extends Placeholder {
 	public void apply() {
 
 		previousValue = affected.getValue();
-		affected.setValue(newValue);
+		affected.setValue(placeholder_name);
 
 	}
 
@@ -60,6 +60,14 @@ public class LiteralPlaceholder extends Placeholder {
 		return affected;
 	}
 	public String toString(){
-		return this.getClass().getSimpleName()+ ": "+newValue + "-->"+affected.getValue();
+		return this.getClass().getSimpleName()+ ": "+placeholder_name + " --> "+affected.getValue();
+	}
+
+	public Object getPlaceholder_name() {
+		return placeholder_name;
+	}
+
+	public void setPlaceholder_name(Object placeholder_name) {
+		this.placeholder_name = placeholder_name;
 	}
 }

@@ -44,8 +44,13 @@ public class VariablePlaceholder extends Placeholder {
 
 	@Override
 	public String toString() {
-		return "Variable Placeholder [" + "palceholdersToVariables="
-				+ palceholdersToVariables +"]";
+		String r = "";
+		for (String ph : this.palceholdersToVariables.keySet()) {
+			r += ph + " --> " + this.palceholdersToVariables.get(ph).get(0).getVariable().getSimpleName();
+			r += ", ";
+		}
+
+		return this.getClass().getSimpleName() + ":  (" + r + ")";
 	}
 
 	@SuppressWarnings("unchecked")
