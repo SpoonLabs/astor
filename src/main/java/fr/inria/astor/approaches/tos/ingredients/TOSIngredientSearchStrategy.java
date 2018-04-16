@@ -93,29 +93,41 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 				return Lists.newArrayList();
 			}
 			log.debug("Tos fits " + StringUtil.trunc(tos.getCode()) + " in location" + modificationPoint);
-			ingredientTransformed = new ArrayList<>();
-			for (Placeholder placeholder : tos.getPlaceholders()) {
-				List<Transformation> transpl = placeholder.visit(modificationPoint, patchGenerator);
-
-				if (ingredientTransformed.isEmpty()) {
-					for (Transformation transformation : transpl) {
-						TOSInstance tosIn = new TOSInstance(tos.getCode(), tos);
-						tosIn.getTransformations().add(transformation);
-						ingredientTransformed.add(tosIn);
-					}
-
-				} else {
-					for (Transformation transformation : transpl) {
-						for (TOSInstance tosIngredient : ingredientTransformed) {
-							tosIngredient.getTransformations().add(transformation);
-						}
-					}
-				}
-			}
+			ingredientTransformed = calculateAllTransformations(modificationPoint, tos);
 
 			this.cacheInstances.put(modificationPoint, ingredientBaseSelected.getChacheCodeString(),
 					ingredientTransformed);
 
+		}
+		return ingredientTransformed;
+	}
+
+	private List<TOSInstance> calculateAllTransformations(ModificationPoint modificationPoint, TOSEntity tos) {
+		List<TOSInstance> ingredientTransformed = new ArrayList<>();
+		for (Placeholder placeholder : tos.getPlaceholders()) {
+			List<Transformation> transpl = placeholder.visit(modificationPoint, patchGenerator);
+
+			if (ingredientTransformed.isEmpty()) {
+				for (Transformation transformation : transpl) {
+					TOSInstance tosIn = new TOSInstance(tos.getCode(), tos);
+					tosIn.getTransformations().add(transformation);
+					ingredientTransformed.add(tosIn);
+				}
+
+			} else {
+				List<TOSInstance> newingredientTransformed = new ArrayList<>();
+				for (Transformation transformation : transpl) {
+					//
+					for (TOSInstance tosIngredient : ingredientTransformed) {
+
+						TOSInstance tosIn = new TOSInstance(tos.getCode(), tos);
+						tosIn.getTransformations().addAll(tosIngredient.getTransformations());
+						tosIn.getTransformations().add(transformation);
+						newingredientTransformed.add(tosIn);
+					}
+				}
+				ingredientTransformed = newingredientTransformed;
+			}
 		}
 		return ingredientTransformed;
 	}
