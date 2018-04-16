@@ -12,26 +12,33 @@ import spoon.reflect.reference.CtExecutableReference;
 public class InvocationTransformation implements Transformation {
 
 	CtExecutableReference selectedExecutableTarget;
-	InvocationPlaceholder varplaceholder;	
-	protected String placeholderName;
-	public InvocationTransformation(CtExecutableReference selectedExecutableTarget, InvocationPlaceholder varplaceholder) {
+	InvocationPlaceholder varplaceholder;
+	
+	private String previousElementName;
+
+	public InvocationTransformation(CtExecutableReference selectedExecutableTarget,
+			InvocationPlaceholder varplaceholder) {
 		this.selectedExecutableTarget = selectedExecutableTarget;
 		this.varplaceholder = varplaceholder;
 	}
 
 	@Override
 	public void apply() {
-		this.placeholderName = varplaceholder.getName();
-		this.varplaceholder.getInvocation().getExecutable().setSimpleName(this.selectedExecutableTarget.getSimpleName());
-	}
+		System.out.println("apply From " + this.varplaceholder.getInvocation().getExecutable().getSimpleName() + "--> "
+				+ this.selectedExecutableTarget.getSimpleName());
+		this.previousElementName = this.varplaceholder.getInvocation().getExecutable().getSimpleName()/*varplaceholder.getName()*/;
+		this.varplaceholder.getInvocation().getExecutable()
+				.setSimpleName(this.selectedExecutableTarget.getSimpleName());
+		}
 
 	@Override
 	public void revert() {
-		this.varplaceholder.getInvocation().getExecutable().setSimpleName(placeholderName);
-
-	}
+		this.varplaceholder.getInvocation().getExecutable().setSimpleName(previousElementName);
 	
-	public String toString(){
-		return this.getClass().getSimpleName() + " "+selectedExecutableTarget.getSimpleName()+ " --> "+placeholderName; 
+	}
+
+	public String toString() {
+		return this.getClass().getSimpleName() + " " + selectedExecutableTarget.getSimpleName() + " --> "
+				+ previousElementName;
 	}
 }
