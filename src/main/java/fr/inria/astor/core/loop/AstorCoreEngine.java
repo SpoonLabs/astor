@@ -383,7 +383,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * 
 	 * @param variant
 	 */
-	private void storeModifiedModel(ProgramVariant variant) {
+	protected void storeModifiedModel(ProgramVariant variant) {
 		variant.getModifiedClasses().clear();
 		for (CtClass modifiedClass : variant.getBuiltClasses().values()) {
 			CtClass cloneModifClass = (CtClass) MutationSupporter.clone(modifiedClass);
