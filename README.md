@@ -27,7 +27,7 @@ We do welcome bug fixes, features and new repair approaches as pull request. Wel
 
 [Contributors](https://github.com/SpoonLabs/astor/graphs/contributors):
 
-* Matias Martinez (University of Valenciennes) (Main contact point: matias.sebastian.martinez@gmail.com)
+* Matias Martinez (University of Valenciennes) (project leader: matias.sebastian.martinez@gmail.com)
 * Martin Monperrus (KTH Royal Institute of Technology) (martin.monperrus@csc.kth.se)
 * Thomas Durieux (Inria)
 * Martin G. White (William and Mary)
@@ -75,7 +75,7 @@ DeepRepair
 
 DeepRepair is an extension of jGenProg leveraging code similarity. The experiments about DeepRepair are described in
 
-* [Sorting and Transforming Program Repair Ingredients via Deep Learning Code Similarities](https://arxiv.org/pdf/1707.04742.pdf) (Martin White, Michele Tufano, Matias Martinez, Martin Monperrus and Denys Poshyvanyk), Arxiv 1707.04742, Arxiv, 2017.
+* [Sorting and Transforming Program Repair Ingredients via Deep Learning Code Similarities](https://arxiv.org/pdf/1707.04742.pdf) (Martin White, Michele Tufano, Matias Martinez, Martin Monperrus and Denys Poshyvanyk), Arxiv 1707.04742, 2017.
 
 Astor in the literature
 -----------------------
