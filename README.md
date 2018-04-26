@@ -19,6 +19,19 @@ Matias Martinez, Martin Monperrus, "[ASTOR: A Program Repair Library for Java](h
 
 In addition, you can cite [ASTOR: Evolutionary Automatic Software Repair for Java (Arxiv 1410.6651)](https://arxiv.org/abs/1410.6651).
 
+Contributing
+------------
+
+We do welcome bug fixes, features and new repair approaches as pull request. Welcome to Astor!
+
+[Contributors](https://github.com/SpoonLabs/astor/graphs/contributors):
+
+* Matias Martinez (University of Valenciennes) (Main contact point: matias.sebastian.martinez@gmail.com)
+* Martin Monperrus (KTH Royal Institute of Technology) (martin.monperrus@csc.kth.se)
+* Thomas Durieux (Inria)
+* Martin G. White (William and Mary)
+* Claire Le Goues (CMU)
+
 jGenProg
 -------
 
@@ -80,7 +93,3 @@ Usage
 * [Getting Started](https://github.com/SpoonLabs/astor/blob/master/docs/getting-starting.md)
 * [How to extend Astor?](https://github.com/SpoonLabs/astor/blob/master/docs/extending-astor.md)
 
-Contacts
---------
-matias.sebastian.martinez@gmail.com
-martin.monperrus@csc.kth.se
