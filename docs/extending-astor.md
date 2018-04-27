@@ -1,6 +1,8 @@
 How to extend the Astor repair framework?
 =========================================
 
+We detail the list of all extension points in the document [Extension Points](https://github.com/SpoonLabs/astor/blob/master/docs/extension_points.md).
+
 
 Walkthrough through the main methods
 ----------
@@ -16,23 +18,11 @@ Walkthrough through the main methods
 **method createInitialPopulation**: If we do not use fault localization, then createInitialPopulation initializes a population with a new ArrayList<SuspiciousCode>(). Otherwise, it initializes the population using the project façade, which will run spectrum-based fault localization to get a list of suspicious statements. After building and processing the Spoon model, the population is initialized using the list of suspicious statements, which creates the program variants from the suspicious code. Specifically, for each suspicious line, a list of genotypes will be created from that suspicious line (when it’s possible) by querying suspicious Spoon elements. The first suspicious element is used to query all the variables in scope, which serves as the context. (This process of establishing the context is made easy by the fact that only statements are mutated.) A genotype is created for each filtered element. Finally, the program variants are compiled, and the fitness value is computed.
 
 
-Extension points
+Other Documents: 
 ---------------
 
-Astor can be extended with out modifying the source code.
-For instance, one could add to Astor new repair operators or to add a customize strategy for navigating the search space.
 
-***Custom Repair Operator***
-
-Astor provides a way to add customized repair operators to each of the mentioned approaches (jGenProg, jMutRepair, jKali).
-For example, one can include to jMutRepair a new operator that mutates right-side expressions from assignments.
-
-A customize operator class extends from abstract class fr.inria.astor.core.loop.spaces.operators.AstorOperator.
-
-Then, the canonical name of this operator's class is passed to Astor via the argument '-customop'.
-
-
-***Custom Ingredient Selection Strategy***
+***Extension point for Ingredient Selection Strategy***
 
 Astor allows to integrate a custom strategy for selecting ingredients from the ingredient search space.
 By default, Astor randomly takes one ingredient from a given ingredient scope (Application, Package or File).
