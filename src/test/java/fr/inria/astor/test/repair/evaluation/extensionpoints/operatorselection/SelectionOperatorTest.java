@@ -7,9 +7,9 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.astor.core.loop.AstorCoreEngine;
-import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
-import fr.inria.astor.core.loop.spaces.operators.WeightedRandomOperatorSelection;
+import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
+import fr.inria.astor.core.solutionsearch.spaces.operators.WeightedRandomOperatorSelection;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;

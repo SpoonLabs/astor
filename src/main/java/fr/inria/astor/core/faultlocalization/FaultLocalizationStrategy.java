@@ -1,7 +1,7 @@
 package fr.inria.astor.core.faultlocalization;
 
-import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.solutionsearch.extension.AstorExtensionPoint;
 
 /**
  * API for fault localization

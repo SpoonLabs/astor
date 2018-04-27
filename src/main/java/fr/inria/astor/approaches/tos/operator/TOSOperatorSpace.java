@@ -1,7 +1,7 @@
 package fr.inria.astor.approaches.tos.operator;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
-import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
+import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 
 /**
  * Operator space of TOS

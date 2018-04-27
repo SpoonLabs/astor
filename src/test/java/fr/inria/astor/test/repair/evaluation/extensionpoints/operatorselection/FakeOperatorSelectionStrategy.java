@@ -1,9 +1,9 @@
 package fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection;
 
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
-import fr.inria.astor.core.loop.spaces.operators.OperatorSelectionStrategy;
-import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;;
+import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
+import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSelectionStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;;
 
 /**
  * Fake operator selector strategy. It returns an operator according to the line

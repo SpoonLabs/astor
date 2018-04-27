@@ -8,9 +8,9 @@ import java.util.Set;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.loop.ExhaustiveSearchEngine;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.solutionsearch.ExhaustiveSearchEngine;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;

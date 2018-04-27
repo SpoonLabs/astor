@@ -2,8 +2,8 @@ package fr.inria.astor.approaches.tos.core;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedApproach;
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedRepairApproachImpl;
+import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
+import fr.inria.astor.core.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;

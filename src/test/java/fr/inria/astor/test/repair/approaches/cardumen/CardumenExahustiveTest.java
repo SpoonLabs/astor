@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.cardumen.CardumenExhaustiveApproach;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.AstorCoreEngine;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;

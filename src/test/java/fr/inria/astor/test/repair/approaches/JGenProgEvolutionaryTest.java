@@ -10,8 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.population.PopulationConformation;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.population.PopulationConformation;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.main.evolution.AstorMain;
 

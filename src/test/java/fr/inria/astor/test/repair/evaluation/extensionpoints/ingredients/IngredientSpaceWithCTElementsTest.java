@@ -18,12 +18,12 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.CtLocationIngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.CtLocationIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.astor.test.repair.evaluation.extensionpoints.deep.DeepRepairTest;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;

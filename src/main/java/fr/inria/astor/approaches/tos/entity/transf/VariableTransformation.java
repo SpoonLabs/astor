@@ -2,7 +2,6 @@ package fr.inria.astor.approaches.tos.entity.transf;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;

@@ -15,19 +15,19 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
-import fr.inria.astor.approaches.deepRepepair.DeepRepairEngine;
-import fr.inria.astor.approaches.exhaustive.ExhaustiveIngredientBasedEngine;
+import fr.inria.astor.approaches.deeprepair.DeepRepairEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jkali.JKaliEngine;
-import fr.inria.astor.approaches.mutRepair.MutationalExhaustiveRepair;
+import fr.inria.astor.approaches.jmutrepair.MutationalExhaustiveRepair;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
-import fr.inria.astor.core.loop.AstorCoreEngine;
-import fr.inria.astor.core.loop.population.ProgramVariantFactory;
+import fr.inria.astor.core.ingredientbased.ExhaustiveIngredientBasedEngine;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.population.ProgramVariantFactory;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
 

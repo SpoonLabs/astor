@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
 

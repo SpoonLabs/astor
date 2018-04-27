@@ -13,7 +13,7 @@ import org.junit.Test;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.loop.navigation.SuspiciousNavigationValues;
+import fr.inria.astor.core.solutionsearch.navigation.SuspiciousNavigationValues;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;

@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import fr.inria.astor.approaches.extensions.TibraApproach;
+import fr.inria.astor.approaches.jgenprog.extension.TibraApproach;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.CommandSummary;

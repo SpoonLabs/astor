@@ -2,8 +2,8 @@ package fr.inria.main.evolution;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.extension.AstorExtensionPoint;
 
 /**
  * 

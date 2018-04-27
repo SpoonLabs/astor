@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
-import fr.inria.astor.core.loop.spaces.ingredients.AstorIngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.main.evolution.PlugInLoader;
 /**
  * 

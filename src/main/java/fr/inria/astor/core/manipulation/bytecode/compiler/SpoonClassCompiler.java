@@ -11,11 +11,11 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.compiler.tools.JavaXToolsCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.extension.VariantCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;

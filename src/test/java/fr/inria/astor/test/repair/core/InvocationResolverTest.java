@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.CommandSummary;

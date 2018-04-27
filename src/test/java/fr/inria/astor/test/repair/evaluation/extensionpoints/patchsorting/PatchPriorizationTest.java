@@ -10,8 +10,8 @@ import java.util.List;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.extension.IdentifierPriorityCriterion;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.extension.IdentifierPriorityCriterion;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.main.evolution.AstorMain;
 

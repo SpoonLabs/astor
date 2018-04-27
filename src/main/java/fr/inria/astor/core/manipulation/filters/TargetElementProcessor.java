@@ -3,9 +3,9 @@ package fr.inria.astor.core.manipulation.filters;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.astor.core.loop.extension.AstorExtensionPoint;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.extension.AstorExtensionPoint;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeElement;
 

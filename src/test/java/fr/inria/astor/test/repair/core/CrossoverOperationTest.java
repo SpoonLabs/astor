@@ -18,7 +18,7 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.loop.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.util.ProcessUtil;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;

@@ -7,7 +7,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.tos.core.LiteralsProcessor;
 import fr.inria.astor.approaches.tos.entity.placeholders.LiteralPlaceholder;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientProcessor;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 

@@ -15,10 +15,10 @@ import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
 import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.util.StringUtil;
 import spoon.reflect.code.CtVariableAccess;
 

@@ -2,8 +2,8 @@ package fr.inria.astor.core.entities;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
-import fr.inria.astor.core.loop.spaces.operators.AstorOperator;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.util.StringUtil;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;

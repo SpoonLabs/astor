@@ -7,10 +7,10 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.tos.core.LiteralsProcessor;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.spaces.ingredients.IngredientProcessor;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.AstorCtIngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.AstorCtIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;

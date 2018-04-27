@@ -8,8 +8,8 @@ import java.util.Arrays;
 import org.apache.log4j.Level;
 import org.junit.Test;
 
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.main.evolution.AstorMain;
 
 /**

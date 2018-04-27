@@ -18,12 +18,12 @@ import fr.inria.astor.approaches.tos.ingredients.processors.VarLiPlaceholderGene
 import fr.inria.astor.approaches.tos.ingredients.processors.VariablePlaceholderGenerator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.spaces.ingredients.AstorIngredientSpace;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.CacheList;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.CacheList;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;

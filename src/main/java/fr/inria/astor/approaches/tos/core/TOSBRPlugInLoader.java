@@ -5,16 +5,16 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedApproach;
-import fr.inria.astor.approaches.ingredientbased.IngredientBasedPlugInLoader;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.approaches.tos.ingredients.TOSBStatementIngredientSpace;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSearchStrategy;
-import fr.inria.astor.core.loop.AstorCoreEngine;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.IngredientSpaceScope;
-import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
+import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
+import fr.inria.astor.core.ingredientbased.IngredientBasedPlugInLoader;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.main.evolution.ExtensionPoints;
 
 /**

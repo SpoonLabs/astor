@@ -24,11 +24,11 @@ import fr.inria.astor.approaches.extensions.minimpact.validator.EvoSuiteValidati
 import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
-import fr.inria.astor.core.loop.extension.VariantCompiler;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.extension.VariantCompiler;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.astor.util.Converters;
 import fr.inria.astor.util.EvoSuiteFacade;

@@ -14,12 +14,12 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.astor.approaches.exhaustive.ExhausitiveCloneEngine;
+import fr.inria.astor.approaches.deeprepair.DeepRepairExhausitiveCloneEngine;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
-import fr.inria.astor.core.loop.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
@@ -253,7 +253,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { "-dependencies", dep, "-mode", "custom", "-customengine",
-				ExhausitiveCloneEngine.class.getCanonicalName(), "-customop",
+				DeepRepairExhausitiveCloneEngine.class.getCanonicalName(), "-customop",
 				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
 
 				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",

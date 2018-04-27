@@ -17,9 +17,9 @@ import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
-import fr.inria.astor.core.loop.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.main.evolution.AstorMain;
 
