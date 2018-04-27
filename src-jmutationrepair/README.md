@@ -55,7 +55,7 @@ jGenProg is an implementation of Kali. The experiments about jKali are described
 jMutRepair
 ----------
 
-jMutRepair is an implementation of mutation-based repair. The experiments about jMutRepair are described in
+jGenProg is an implementation of mutation-based repair. The experiments about jMutRepair are described in
 
 * [ASTOR: A Program Repair Library for Java](https://hal.archives-ouvertes.fr/hal-01321615/document) (Matias Martinez, Martin Monperrus), in Proceedings of ISSTA, Demonstration Track, 2016.
 https://github.com/SpoonLabs/astor-experiments
