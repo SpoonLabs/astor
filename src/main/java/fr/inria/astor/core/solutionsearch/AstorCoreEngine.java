@@ -77,12 +77,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected ProgramVariantValidator programValidator;
 
-	// INTERNAL
-	protected List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
-	protected List<ProgramVariant> solutions = new ArrayList<ProgramVariant>();
-
-	protected ProgramVariant originalVariant = null;
-
 	// SPACES
 
 	protected SuspiciousNavigationStrategy suspiciousNavigationStrategy = null;
@@ -98,12 +92,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected ProjectRepairFacade projectFacade = null;
 
-	protected Date dateInitEvolution = new Date();
-
 	//
 	protected FaultLocalizationStrategy faultLocalization = null;
-
-	protected int generationsExecuted = 0;
 
 	protected SolutionVariantSortCriterion patchSortCriterion = null;
 
@@ -111,19 +101,29 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected VariantCompiler compiler = null;
 
-	private int nrGenerationWithoutModificatedVariant = 0;
+	protected List<TargetElementProcessor<?>> targetElementProcessors = null;
+
+	protected PlugInVisitor pluginLoaded = null;
 
 	// Output
 	protected List<ReportResults> outputResults = null;
 
-	// Flag, output status
+	/// // Flag, output status, results
+	protected List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
+
+	protected List<ProgramVariant> solutions = new ArrayList<ProgramVariant>();
+
+	protected ProgramVariant originalVariant = null;
+
+	protected Date dateInitEvolution = new Date();
+
+	protected int generationsExecuted = 0;
+
+	private int nrGenerationWithoutModificatedVariant = 0;
+
 	protected AstorOutputStatus outputStatus = null;
 
 	protected List<PatchStat> patchInfo = new ArrayList<>();
-
-	protected List<TargetElementProcessor<?>> targetElementProcessors = null;
-
-	protected PlugInVisitor pluginLoaded = null;
 
 	/**
 	 * 
@@ -144,6 +144,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		log.info("\n----Starting Solution Search");
 
 		generationsExecuted = 0;
+		nrGenerationWithoutModificatedVariant = 0;
 		boolean stopSearch = false;
 
 		dateInitEvolution = new Date();
@@ -211,6 +212,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		log.info("generationsexecuted: " + this.generationsExecuted);
 
 		currentStat.getGeneralStats().put(GeneralStatEnum.OUTPUT_STATUS, this.getOutputStatus());
+		
 
 		this.computePatchDiff(this.solutions);
 		this.sortPatches();
@@ -1228,6 +1230,30 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	public void setCurrentStat(Stats currentStat) {
 		this.currentStat = currentStat;
+	}
+
+	public void reset(ProgramVariant programVariant) {
+
+		// We remove previous variants
+		this.solutions.clear();
+		this.variants.clear();
+		// We add the new one //TODO: we could do a for
+		this.variants.add(programVariant);
+		// The parameter becomes the original
+		this.originalVariant = programVariant;
+		// Removing patch info
+		this.patchInfo.clear();
+
+		this.outputStatus = null;
+
+		this.originalVariant.setId(firstgenerationIndex);
+
+		// Saving bytecode
+		String bytecodeOutput = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		File variantOutputFile = new File(bytecodeOutput);
+		MutationSupporter.currentSupporter.getOutput().saveByteCode(programVariant.getCompilation(), variantOutputFile);
+		
+		this.currentStat = Stats.createStat();
 	}
 
 }

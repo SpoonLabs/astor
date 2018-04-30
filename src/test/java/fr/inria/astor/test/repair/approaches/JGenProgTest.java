@@ -21,6 +21,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.population.PopulationConformation;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
+import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
@@ -379,11 +380,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	@Test
 	public void testMath70DiffOfSolution() throws Exception {
 		AstorMain main1 = new AstorMain();
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		int generations = 50;
-		String[] args = commandMath70(dep, out, generations);
-		CommandSummary cs = new CommandSummary(args);
+		
+		CommandSummary cs  = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
 
 		System.out.println(Arrays.toString(cs.flat()));
