@@ -53,14 +53,13 @@ public class AstorMain extends AbstractMain {
 		projectFacade = getProjectConfiguration(location, projectName, method, failingList, dependencies, true);
 
 		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
-	
+
 		projectFacade.setupWorkingDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
 		if (ConfigurationProperties.getPropertyBool("autocompile")) {
 			compileProject(projectFacade.getProperties());
 		}
-		
-		
+
 	}
 
 	/**
@@ -165,6 +164,7 @@ public class AstorMain extends AbstractMain {
 		initProject(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
 		String mode = ConfigurationProperties.getProperty("mode").toLowerCase();
+		String customEngine = ConfigurationProperties.getProperty("customengine").toLowerCase();
 
 		if ("deeprepair".equals(mode))
 			astorCore = createEngine(ExecutionMode.DeepRepair);
@@ -176,10 +176,10 @@ public class AstorMain extends AbstractMain {
 			astorCore = createEngine(ExecutionMode.jKali);
 		else if ("mutation".equals(mode) || "jmutrepair".equals(mode))
 			astorCore = createEngine(ExecutionMode.MutRepair);
-		else if ("custom".equals(mode))
-			astorCore = createEngine(ExecutionMode.custom);
 		else if ("exhaustive".equals(mode) || "exastor".equals(mode))
 			astorCore = createEngine(ExecutionMode.EXASTOR);
+		else if (customEngine != null && !customEngine.isEmpty())
+			astorCore = createEngine(ExecutionMode.custom);
 		else {
 			System.err.println("Unknown mode of execution: '" + mode + "',  modes are: "
 					+ Arrays.toString(ExecutionMode.values()));
@@ -196,7 +196,6 @@ public class AstorMain extends AbstractMain {
 		log.info("Time Total(s): " + (endT - startT) / 1000d);
 	}
 
-	
 	/**
 	 * @param args
 	 * @throws Exception
