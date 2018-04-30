@@ -165,9 +165,10 @@ public class AstorMain extends AbstractMain {
 
 		String mode = ConfigurationProperties.getProperty("mode").toLowerCase();
 		String customEngine = ConfigurationProperties.getProperty("customengine");
-		
 
-		if ("deeprepair".equals(mode))
+		if (customEngine != null && !customEngine.isEmpty())
+			astorCore = createEngine(ExecutionMode.custom);
+		else if ("deeprepair".equals(mode))
 			astorCore = createEngine(ExecutionMode.DeepRepair);
 		else if ("cardumen".equals(mode))
 			astorCore = createEngine(ExecutionMode.CARDUMEN);
@@ -179,8 +180,7 @@ public class AstorMain extends AbstractMain {
 			astorCore = createEngine(ExecutionMode.MutRepair);
 		else if ("exhaustive".equals(mode) || "exastor".equals(mode))
 			astorCore = createEngine(ExecutionMode.EXASTOR);
-		else if (customEngine != null && !customEngine.isEmpty())
-			astorCore = createEngine(ExecutionMode.custom);
+
 		else {
 			System.err.println("Unknown mode of execution: '" + mode + "',  modes are: "
 					+ Arrays.toString(ExecutionMode.values()));
