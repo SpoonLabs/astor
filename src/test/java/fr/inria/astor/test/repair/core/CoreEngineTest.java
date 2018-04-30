@@ -46,6 +46,7 @@ public class CoreEngineTest {
 				engine.getCurrentStat().getGeneralStats().get(GeneralStatEnum.OUTPUT_STATUS));
 
 		engine.reset(vfin1);
+		//We do not evolve
 		ConfigurationProperties.setProperty("maxGeneration", "0");
 
 		engine.startEvolution();
@@ -56,6 +57,40 @@ public class CoreEngineTest {
 		assertTrue(vfin1 == vfin2);
 
 		assertEquals(AstorOutputStatus.MAX_GENERATION,
+				engine.getCurrentStat().getGeneralStats().get(GeneralStatEnum.OUTPUT_STATUS));
+
+	}
+	
+	@Test
+	public void testResetUntilSol() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		cs.command.put("-maxgen", "10");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-population", "1");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+		ProgramVariant vfin1 = variants.get(0);
+		assertTrue(vfin1.getId() > 1);
+		AstorCoreEngine engine = main1.getEngine();
+		System.out.println(engine.getCurrentStat().getGeneralStats().get(GeneralStatEnum.NR_GENERATIONS));
+		assertEquals(AstorOutputStatus.MAX_GENERATION,
+				engine.getCurrentStat().getGeneralStats().get(GeneralStatEnum.OUTPUT_STATUS));
+
+		engine.reset(vfin1);
+		//We do not evolve
+		ConfigurationProperties.setProperty("maxGeneration", "20");
+
+		engine.startEvolution();
+		engine.atEnd();
+
+		
+
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND,
 				engine.getCurrentStat().getGeneralStats().get(GeneralStatEnum.OUTPUT_STATUS));
 
 	}
