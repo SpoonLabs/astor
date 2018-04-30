@@ -164,7 +164,8 @@ public class AstorMain extends AbstractMain {
 		initProject(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
 		String mode = ConfigurationProperties.getProperty("mode").toLowerCase();
-		String customEngine = ConfigurationProperties.getProperty("customengine").toLowerCase();
+		String customEngine = ConfigurationProperties.getProperty("customengine");
+		
 
 		if ("deeprepair".equals(mode))
 			astorCore = createEngine(ExecutionMode.DeepRepair);
