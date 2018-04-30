@@ -30,9 +30,8 @@ import spoon.support.RuntimeProcessingManager;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class SpoonClassCompiler  implements VariantCompiler{
+public class SpoonClassCompiler implements VariantCompiler {
 
-	
 	private Factory factory;
 
 	private ProcessingManager processing;
@@ -46,7 +45,7 @@ public class SpoonClassCompiler  implements VariantCompiler{
 	public SpoonClassCompiler() {
 		this.factory = MutationSupporter.getFactory();
 	}
-	
+
 	public SpoonClassCompiler(Factory factory) {
 		this.factory = factory;
 	}
@@ -64,17 +63,20 @@ public class SpoonClassCompiler  implements VariantCompiler{
 
 		Map<String, String> toCompile = new HashMap<String, String>();
 		prettyPrinter = new DefaultJavaPrettyPrinter(this.getFactory().getEnvironment());
-		dcc = new JavaXToolsCompiler();
-		
+
 		for (CtType ctClass : ctClassList) {
 			try {
 				this.getProcessingManager().process(ctClass);
 				toCompile.put(ctClass.getQualifiedName(), sourceForModelledClass(ctClass));
 			} catch (Exception e) {
-				logger.error("Error printing class "+ctClass.getQualifiedName(),e);
+				logger.error("Error printing class " + ctClass.getQualifiedName(), e);
 			}
 		}
 
+		return compile(cp, toCompile);
+	}
+
+	public CompilationResult compile(URL[] cp, Map<String, String> toCompile) {
 		List<String> cps = new ArrayList<>();
 		cps.add("-cp");
 		String path = "";
@@ -82,14 +84,14 @@ public class SpoonClassCompiler  implements VariantCompiler{
 			path += ((url.getPath()) + File.pathSeparator);
 		}
 		cps.add(path);
-		
+
 		String compliance = ConfigurationProperties.getProperty("javacompliancelevel");
 		cps.add("-source");
-		cps.add("1."+ compliance);
-	
+		cps.add("1." + compliance);
+
 		cps.add("-target");
-		cps.add("1."+ compliance);
-		
+		cps.add("1." + compliance);
+		dcc = new JavaXToolsCompiler();
 		CompilationResult rbc = dcc.javaBytecodeFor(toCompile, new HashMap<String, byte[]>(), cps);
 		return rbc;
 	}
@@ -104,10 +106,9 @@ public class SpoonClassCompiler  implements VariantCompiler{
 	}
 
 	/**
-	 * Gets the associated (standard) environment.
-	 * When we create it, we set the compliance level taken as parameter (if any)
+	 * Gets the associated (standard) environment. When we create it, we set the
+	 * compliance level taken as parameter (if any)
 	 */
-
 
 	/**
 	 * Gets the associated factory.
@@ -126,6 +127,5 @@ public class SpoonClassCompiler  implements VariantCompiler{
 		}
 		return this.processing;
 	}
-
 
 }

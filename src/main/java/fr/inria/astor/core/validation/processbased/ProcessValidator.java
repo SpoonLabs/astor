@@ -144,12 +144,10 @@ public class ProcessValidator extends ProgramVariantValidator {
 
 	protected URL[] createClassPath(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade)
 			throws MalformedURLException {
-		String bytecodeOutput = projectFacade.getOutDirWithPrefix(mutatedVariant.currentMutatorIdentifier());
-		File variantOutputFile = new File(bytecodeOutput);
 
 		URL[] defaultSUTClasspath = projectFacade
 				.getClassPathURLforProgramVariant(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		List<URL> originalURL = new ArrayList(Arrays.asList(defaultSUTClasspath));
+		List<URL> originalURL = new ArrayList<>(Arrays.asList(defaultSUTClasspath));
 
 		String classpath = System.getProperty("java.class.path");
 
@@ -162,8 +160,8 @@ public class ProcessValidator extends ProgramVariantValidator {
 
 		URL[] bc = null;
 		if (mutatedVariant.getCompilation() != null) {
-			MutationSupporter.currentSupporter.getOutput().saveByteCode(mutatedVariant.getCompilation(),
-					variantOutputFile);
+
+			File variantOutputFile = defineLocationOfCompiledCode(mutatedVariant, projectFacade);
 
 			bc = Converters.redefineURL(variantOutputFile, originalURL.toArray(new URL[0]));
 		} else {
@@ -172,10 +170,18 @@ public class ProcessValidator extends ProgramVariantValidator {
 		return bc;
 	}
 
+	protected File defineLocationOfCompiledCode(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
+		String bytecodeOutput = projectFacade.getOutDirWithPrefix(mutatedVariant.currentMutatorIdentifier());
+		File variantOutputFile = new File(bytecodeOutput);
+
+		MutationSupporter.currentSupporter.getOutput().saveByteCode(mutatedVariant.getCompilation(), variantOutputFile);
+		return variantOutputFile;
+	}
+
 	protected TestCaseVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc,
 			LaucherJUnitProcess p, ProjectRepairFacade projectFacade) {
 		log.debug("-Test Failing is passing, Executing regression");
-		
+
 		List<String> testCasesRegression = projectFacade.getProperties().getRegressionTestCases();
 
 		String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
@@ -187,7 +193,7 @@ public class ProcessValidator extends ProgramVariantValidator {
 			log.error("Any test case for regression testing");
 			return null;
 		}
-		
+
 		if (trregression == null) {
 			currentStats.increment(GeneralStatEnum.NR_FAILING_VALIDATION_PROCESS);
 			return null;

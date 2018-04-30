@@ -832,7 +832,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		return !(operations.isEmpty());
 	}
 
-	protected VariantValidationResult validateInstance(ProgramVariant variant) {
+	public VariantValidationResult validateInstance(ProgramVariant variant) {
 
 		VariantValidationResult validationResult = programValidator.validate(variant, projectFacade);
 		if (validationResult != null) {
