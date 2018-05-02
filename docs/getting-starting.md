@@ -17,7 +17,7 @@ Getting started:
      
 Then the main command (note that the "location" argument is mandatory, and must be an absolute path):
 
-     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.AstorMain -mode jGenProg -srcjavafolder examples/Math-issue-280/src/java/ -srctestfolder examples/Math-issue-280/src/test/  -binjavafolder examples/Math-issue-280/target/classes/ -bintestfolder  examples/Math-issue-280/target/test-classes/ -location /home/user/astor/examples/Math-issue-280/ -dependencies examples/Math-issue-280/lib
+     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.AstorMain -mode jGenProg -srcjavafolder /src/java/ -srctestfolder /src/test/  -binjavafolder /target/classes/ -bintestfolder  /target/test-classes/ -location /home/user/astor/examples/Math-issue-280/ -dependencies examples/Math-issue-280/lib
 
 
 Output: Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
@@ -95,4 +95,34 @@ For executing Astor in jMutRepair mode:
     -binjavafolder "class folder"
     
     -bintestfolder "test class folder" 
+    
+    
+### Command line arguments example Math-70 from Defects4J: 
+	
+	-location <PATH_TO_ASTOR_FOLDER>/examples/math_70 
+  	
+    -mode statement
+	
+	-package  org.apache.commons 
+	
+	-failing org.apache.commons.math.analysis.solvers.BisectionSolverTest
+	
+	-srcjavafolder /src/java/
+	
+	-srctestfolder /src/test/
+	
+	-binjavafolder /target/classes
+	
+	-bintestfolder /target/test-classes 
+	
+	-flthreshold 0.5 
+	 
+	-stopfirst true 
+	
+	-dependencies <PATH_TO_ASTOR_FOLDER>examples/libs/junit-4.4.jar, 
+
+Note that -location argument has a absolute path to the project to repair, and -dependency has the absolute path to the libraries or to the folder that contains them.
+However, note that the folders that specify the structure of the project under repair (-srcjavafolder, -srctestfolder, -binjavafolder and -bintestfolder) are relative.
+ 
+
 
