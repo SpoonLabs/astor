@@ -51,7 +51,28 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 	}
-
+	
+	@Test
+	public void testExample280Arguments() throws Exception {
+		AstorMain main1 = new AstorMain();
+	
+		CommandSummary cs = new CommandSummary();
+		cs.command.put("-mode", "jGenProg");
+		cs.command.put("-srcjavafolder", "/src/java/");
+		cs.command.put("-srctestfolder",  "/src/test/");
+		cs.command.put("-binjavafolder", "/target/classes");
+		cs.command.put("-bintestfolder",  "/target/test-classes/");
+		cs.command.put("-location",  new File("./examples/Math-issue-280/").getAbsolutePath());
+		cs.command.put("-dependencies",  new File("./examples/Math-issue-280/lib").getAbsolutePath());
+		cs.command.put("-maxgen", "0");
+	
+		main1.execute(cs.flat());
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+		assertTrue(variants.size() > 0);
+	}
+	
+	
+	
 	// @Test
 	public void testExample288CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
