@@ -12,9 +12,12 @@ import org.junit.Test;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
+import fr.inria.astor.core.validation.results.TestResult;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
+
 /**
  * 
  * @author Matias Martinez
@@ -47,7 +50,40 @@ public class TestRunnerTest {
 		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());
 
 		assertEquals("return solve(f, min, max)", mi.getModified().toString());
-		
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70LocalFailingTest() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		cs.command.put("-maxgen", "0");
+		cs.command.put("-flthreshold", "1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "INFO");
+		cs.command.put("-saveall", "true");
+		cs.append("-parameters", ("logtestexecution:true:runexternalvalidator:true"));
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+		assertTrue(variants.size() > 0);
+		assertEquals(1, variants.size());
+		ProgramVariant variant = variants.get(0);
+
+		assertTrue(variant.getValidationResult() instanceof TestCasesProgramValidationResult);
+
+		TestCasesProgramValidationResult tcresultvalidation = (TestCasesProgramValidationResult) variant
+				.getValidationResult();
+		TestResult tresults = tcresultvalidation.getTestResult();
+
+		assertEquals(1, tresults.failures);
+		assertEquals(1, tresults.failTest.size());
+		assertTrue(tresults.failTest.get(0)
+				.startsWith("testMath369(org.apache.commons.math.analysis.solvers.BisectionSolverTest"));
 
 	}
 
