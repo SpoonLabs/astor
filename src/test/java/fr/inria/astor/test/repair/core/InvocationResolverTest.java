@@ -12,7 +12,7 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtExpression;

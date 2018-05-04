@@ -14,8 +14,8 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 
 /**

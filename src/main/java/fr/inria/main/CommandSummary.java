@@ -1,4 +1,4 @@
-package fr.inria.astor.util;
+package fr.inria.main;
 
 import java.io.File;
 import java.util.ArrayList;

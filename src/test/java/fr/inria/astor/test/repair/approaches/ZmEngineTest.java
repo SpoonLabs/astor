@@ -13,7 +13,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.VariantValidationResult;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 
 /**

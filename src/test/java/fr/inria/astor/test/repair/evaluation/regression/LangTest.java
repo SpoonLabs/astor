@@ -15,7 +15,7 @@ import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtExecutable;
 

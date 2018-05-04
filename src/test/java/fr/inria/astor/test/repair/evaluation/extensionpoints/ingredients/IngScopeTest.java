@@ -22,7 +22,7 @@ import fr.inria.astor.core.solutionsearch.population.PopulationConformation;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;

@@ -32,7 +32,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTy
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.InScopeVarsTransformation;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.code.BinaryOperatorKind;

@@ -15,7 +15,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSp
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.astor.core.validation.results.TestResult;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 
 /**

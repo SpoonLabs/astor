@@ -27,8 +27,8 @@ import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 
 /**

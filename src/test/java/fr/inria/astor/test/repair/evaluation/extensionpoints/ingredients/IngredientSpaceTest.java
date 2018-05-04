@@ -26,7 +26,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.MethodBasicI
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
