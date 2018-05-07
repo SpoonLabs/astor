@@ -7,15 +7,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import spoon.reflect.declaration.CtType;
 
 /**
  * Diff creator
@@ -33,33 +33,42 @@ public class PatchDiffCalculator {
 	 * @param projectFacade
 	 * @param programVariant
 	 * @return
+	 * @throws Exception
 	 */
-	public String getDiff(ProjectRepairFacade projectFacade, ProgramVariant programVariant) {
+	public String getDiff(ProjectRepairFacade projectFacade, ProgramVariant originalVariant,
+			ProgramVariant programVariant, boolean format, MutationSupporter mutsupporter) throws Exception {
+
 		String diffResults = "";
 
-		for (List<OperatorInstance> oppsGeneration : programVariant.getOperations().values()) {
+		final String suffix = format ? "_f" : "";
 
-			for (OperatorInstance opi : oppsGeneration) {
+		// Default:
+		String srcOutputfDefaultOriginal = projectFacade
+				.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT + suffix);
+		ConfigurationProperties.setProperty("preservelinenumbers", Boolean.toString(!format));
+		mutsupporter.saveSourceCodeOnDiskProgramVariant(originalVariant, srcOutputfDefaultOriginal);
 
-				ModificationPoint mp = opi.getModificationPoint();
+		// Particular variant
+		String srcOutputSolutionVariant = projectFacade
+				.getInDirWithPrefix(programVariant.currentMutatorIdentifier() + suffix);
 
-				String fileName = mp.getCtClass().getQualifiedName().replace(".", File.separator) + ".java";
-				File foriginal = new File(projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT)
-						+ File.separator + fileName);
-				File ffixed = new File(projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier())
-						+ File.separator + fileName);
+		for (CtType<?> t : programVariant.computeAffectedClassesByOperators()) {
 
-				log.debug(foriginal.getAbsolutePath());
-				log.debug(ffixed.getAbsolutePath());
-				if (!foriginal.exists() || !ffixed.exists()) {
-					log.error("A file with a solution does not exist");
-					return null;
-				}
+			String fileName = t.getQualifiedName().replace(".", File.separator) + ".java";
+			File foriginal = new File(srcOutputfDefaultOriginal + File.separator + fileName);
+			File ffixed = new File(srcOutputSolutionVariant + File.separator + fileName);
 
-				String diff = getDiff(foriginal, ffixed, fileName);
-				diffResults += diff + '\n';
+			log.debug(foriginal.getAbsolutePath());
+			log.debug(ffixed.getAbsolutePath());
+			if (!foriginal.exists() || !ffixed.exists()) {
+				log.error("A file with a solution does not exist");
+				return null;
 			}
+
+			String diff = getDiff(foriginal, ffixed, fileName);
+			diffResults += diff + '\n';
 		}
+
 		return diffResults;
 	}
 
@@ -78,7 +87,7 @@ public class PatchDiffCalculator {
 				// Set up the timezone
 				String command = "diff -w -b -u " + " --label=" + fileName + " --label=" + fileName + " "
 						+ original.getAbsolutePath() + " " + newvariant.getAbsolutePath();
-				log.debug("diff command : "+command);
+				log.debug("diff command : " + command);
 				p_stdin.write(command);
 				p_stdin.newLine();
 				p_stdin.flush();
@@ -99,12 +108,12 @@ public class PatchDiffCalculator {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
 
 			BufferedReader readerE = new BufferedReader(new InputStreamReader(stderr));
-			
+
 			String out = readBuffer(reader);
 			String outerror = readBuffer(readerE);
-			if(!outerror.trim().isEmpty())
-				log.error("Error reading diff: "+outerror);
-				
+			if (!outerror.trim().isEmpty())
+				log.error("Error reading diff: " + outerror);
+
 			process.destroyForcibly();
 			return out;
 		} catch (Exception e) {

@@ -711,7 +711,7 @@ public abstract class AbstractMain {
 		log.debug("Compiling original code from " + launcher.getModelBuilder().getInputSources() + " saved in "
 				+ launcher.getModelBuilder().getBinaryOutputDirectory());
 
-		launcher.getEnvironment().setPreserveLineNumbers(true);
+		launcher.getEnvironment().setPreserveLineNumbers(ConfigurationProperties.getPropertyBool("preservelinenumbers"));
 		launcher.getEnvironment().setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 		launcher.getEnvironment().setShouldCompile(true);
 		launcher.getEnvironment().setSourceClasspath(properties.getDependenciesString().split(File.pathSeparator));

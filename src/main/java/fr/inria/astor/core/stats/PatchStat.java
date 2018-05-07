@@ -22,7 +22,7 @@ public class PatchStat {
 	};
 
 	public enum PatchStatEnum {
-		VARIANT_ID, TIME, VALIDATION, GENERATION, HUNKS, PATCH_DIFF
+		VARIANT_ID, TIME, VALIDATION, GENERATION, HUNKS, PATCH_DIFF_ORIG, PATCH_DIFF_FORMATTED
 	};
 
 	private Map<PatchStatEnum, Object> stats = new HashMap<>();

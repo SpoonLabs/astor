@@ -412,13 +412,15 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		assertFalse(variant.getPatchDiff().isEmpty());
+		assertFalse(variant.getPatchDiff().getFormattedDiff().isEmpty());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
 
-		String diff = variant.getPatchDiff();
+		String diff = variant.getPatchDiff().getFormattedDiff();
 		log.debug("Patch: " + diff);
 
 	}
+	
+	
 
 	@Test
 	public void testMath70StopAtXVariantsSolution() throws Exception {

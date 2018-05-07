@@ -17,6 +17,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
+import fr.inria.astor.core.entities.PatchDiff;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.VariantValidationResult;
@@ -212,9 +213,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		log.info("generationsexecuted: " + this.generationsExecuted);
 
 		currentStat.getGeneralStats().put(GeneralStatEnum.OUTPUT_STATUS, this.getOutputStatus());
-		
 
-		this.computePatchDiff(this.solutions);
+		try {
+			this.computePatchDiff(this.solutions);
+		} catch (Exception e) {
+			log.error("Problem at computing diff" + e);
+		}
 		this.sortPatches();
 		this.printFinalStatus();
 
@@ -233,22 +237,33 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		}
 	}
 
-	protected void computePatchDiff(List<ProgramVariant> solutions) {
-
-		// Save code of default variant
-		String srcOutput = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		try {
-			mutatorSupporter.saveSourceCodeOnDiskProgramVariant(this.originalVariant, srcOutput);
-		} catch (Exception e) {
-			log.error(e);
-		}
+	protected void computePatchDiff(List<ProgramVariant> solutions) throws Exception {
 
 		PatchDiffCalculator cdiff = new PatchDiffCalculator();
 		for (ProgramVariant solutionVariant : solutions) {
-			String diffPatch = cdiff.getDiff(getProjectFacade(), solutionVariant);
-			solutionVariant.setPatchDiff(diffPatch);
+			PatchDiff pdiff = new PatchDiff();
+			boolean format = true;
+
+			String diffPatchFormated = cdiff.getDiff(getProjectFacade(), this.originalVariant, solutionVariant, format,
+					this.mutatorSupporter);
+
+			pdiff.setFormattedDiff(diffPatchFormated);
+
+			format = false;
+
+			String diffPatchOriginalAlign = cdiff.getDiff(getProjectFacade(), this.originalVariant, solutionVariant,
+					format, this.mutatorSupporter);
+
+			pdiff.setOriginalStatementAlignmentDiff(diffPatchOriginalAlign);
+
+			solutionVariant.setPatchDiff(pdiff);
 		}
 
+	}
+
+	private String getDiff(List<ProgramVariant> solutions, boolean format) {
+
+		return null;
 	}
 
 	/**
@@ -481,13 +496,23 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public void saveVariant(ProgramVariant programVariant) throws Exception {
+		final boolean codeFormated = true;
+		save(programVariant, !codeFormated);
+		save(programVariant, codeFormated);
 
-		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier());
+	}
+
+	private void save(ProgramVariant programVariant, boolean format) throws Exception {
+
+		boolean originalValue = ConfigurationProperties.getPropertyBool("preservelinenumbers");
+
+		final String suffix = format ? "_f" : "";
+		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier()) + suffix;
 		log.debug("\n-Saving child on disk variant #" + programVariant.getId() + " at " + srcOutput);
-		// This method should be refactored, and replace by the
-		// output from memory compilation
+		ConfigurationProperties.setProperty("preservelinenumbers", Boolean.toString(!format));
 		mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
 
+		ConfigurationProperties.setProperty("preservelinenumbers", Boolean.toString(originalValue));
 	}
 
 	/**
@@ -527,9 +552,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			if (validationResult != null && validationResult.isSuccessful()) {
 				log.info("-Found Solution, child variant #" + programVariant.getId());
 				saveStaticSucessful(programVariant.getId(), generation);
-				if (ConfigurationProperties.getPropertyBool("savesolution")) {
-					saveVariant(programVariant);
-				}
+				saveVariant(programVariant);
+
 				return true;
 			}
 		} else {
@@ -950,8 +974,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				}
 			}
 			line += "\nvalidation=" + solutionVariant.getValidationResult().toString();
-			String diffPatch = solutionVariant.getPatchDiff();
+			String diffPatch = solutionVariant.getPatchDiff().getFormattedDiff();
 			line += "\ndiffpatch=" + diffPatch;
+			String diffPatchoriginal = solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff();
+			line += "\ndiffpatchoriginal=" + diffPatchoriginal;
 		}
 		return line;
 	}
@@ -1252,7 +1278,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		String bytecodeOutput = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		File variantOutputFile = new File(bytecodeOutput);
 		MutationSupporter.currentSupporter.getOutput().saveByteCode(programVariant.getCompilation(), variantOutputFile);
-		
+
 		this.currentStat = Stats.createStat();
 	}
 

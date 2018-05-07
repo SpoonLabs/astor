@@ -76,7 +76,7 @@ public class MutationSupporter {
 		logger.info("building model: " + srcPathToBuild + ", compliance level: "
 				+ factory.getEnvironment().getComplianceLevel());
 
-		factory.getEnvironment().setPreserveLineNumbers(true);
+		factory.getEnvironment().setPreserveLineNumbers(ConfigurationProperties.getPropertyBool("preservelinenumbers"));
 
 		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
 
@@ -134,7 +134,6 @@ public class MutationSupporter {
 		if (output == null || output.getJavaPrinter() == null) {
 			throw new IllegalArgumentException("Spoon compiler must be initialized");
 		}
-		// spoonClassCompiler.saveSourceCode((CtClass) type);
 		output.saveSourceCode((CtClass) type);
 		// --
 		// End Workarround

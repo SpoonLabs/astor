@@ -95,7 +95,7 @@ public class ProgramVariant {
 
 	VariantValidationResult validationResult = null;
 
-	String patchDiff = null;
+	PatchDiff patchDiff = null;
 
 	public ProgramVariant() {
 		modificationPoints = new ArrayList<ModificationPoint>();
@@ -273,11 +273,11 @@ public class ProgramVariant {
 		return typesToProcess;
 	}
 
-	public String getPatchDiff() {
+	public PatchDiff getPatchDiff() {
 		return patchDiff;
 	}
 
-	public void setPatchDiff(String patchDiff) {
+	public void setPatchDiff(PatchDiff patchDiff) {
 		this.patchDiff = patchDiff;
 	}
 }

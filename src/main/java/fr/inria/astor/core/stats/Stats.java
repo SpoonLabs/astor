@@ -159,7 +159,9 @@ public class Stats {
 
 			patch_i.addStat(PatchStatEnum.VALIDATION, solutionVariant.getValidationResult().toString());
 
-			patch_i.addStat(PatchStatEnum.PATCH_DIFF, solutionVariant.getPatchDiff());
+			patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG, solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
+			
+			patch_i.addStat(PatchStatEnum.PATCH_DIFF_FORMATTED, solutionVariant.getPatchDiff().getFormattedDiff());
 
 			List<PatchHunkStats> hunks = new ArrayList<>();
 			patch_i.addStat(PatchStatEnum.HUNKS, hunks);
