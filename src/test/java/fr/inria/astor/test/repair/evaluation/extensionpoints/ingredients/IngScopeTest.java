@@ -94,8 +94,6 @@ public class IngScopeTest extends BaseEvolutionaryTest {
 
 		assertTrue(validationResult.isRegressionExecuted());
 
-		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
-
 		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
 		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());

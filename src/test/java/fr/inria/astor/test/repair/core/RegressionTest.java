@@ -15,17 +15,19 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.main.evolution.AstorMain;
+
 /**
- * Tests for assert the execution/ exclussion of regression 
+ * Tests for assert the execution/ exclussion of regression
+ * 
  * @author Matias Martinez
  *
  */
 @Ignore
-public class RegressionTest extends BaseEvolutionaryTest{
+public class RegressionTest extends BaseEvolutionaryTest {
 
 	@Test
 	public void testExecuteRegression() throws Exception {
-		
+
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
@@ -35,8 +37,7 @@ public class RegressionTest extends BaseEvolutionaryTest{
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
-				"-maxtime", "100",
-		};
+				"-maxtime", "100", };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
@@ -44,18 +45,17 @@ public class RegressionTest extends BaseEvolutionaryTest{
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		TestCasesProgramValidationResult validationResult = (TestCasesProgramValidationResult) variant.getValidationResult();
-		
+		TestCasesProgramValidationResult validationResult = (TestCasesProgramValidationResult) variant
+				.getValidationResult();
+
 		assertTrue(validationResult.isRegressionExecuted());
 		assertEquals(2071, validationResult.getCasesExecuted());
-		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
 
-		
 	}
-	
+
 	@Test
 	public void testExecuteRegressionFalse() throws Exception {
-		
+
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
@@ -65,8 +65,7 @@ public class RegressionTest extends BaseEvolutionaryTest{
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
-				"-maxtime", "100",
-				"-excludeRegression"
+				"-maxtime", "100", "-excludeRegression"
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -76,17 +75,16 @@ public class RegressionTest extends BaseEvolutionaryTest{
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		TestCasesProgramValidationResult validationResult = (TestCasesProgramValidationResult) variant.getValidationResult();
+		TestCasesProgramValidationResult validationResult = (TestCasesProgramValidationResult) variant
+				.getValidationResult();
 		assertFalse(validationResult.isRegressionExecuted());
 		assertEquals(12, validationResult.getCasesExecuted());
-		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
 
-		
 	}
-	
+
 	@Test
 	public void testExecuteRegressionNoSolution() throws Exception {
-		
+
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
@@ -95,27 +93,25 @@ public class RegressionTest extends BaseEvolutionaryTest{
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "local", "-seed", "10", 
-				//I write 1 generation, to only evaluate once
-				"-maxgen", "1", "-stopfirst", "true",
-				"-maxtime", "100",
-				"-excludeRegression"
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10",
+				// I write 1 generation, to only evaluate once
+				"-maxgen", "1", "-stopfirst", "true", "-maxtime", "100", "-excludeRegression"
 
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
 		assertTrue(main1.getEngine().getSolutions().isEmpty());
-		
+
 		ProgramVariant variant = main1.getEngine().getVariants().get(0);
-		TestCasesProgramValidationResult validationResult = (TestCasesProgramValidationResult) variant.getValidationResult();
-		
+		TestCasesProgramValidationResult validationResult = (TestCasesProgramValidationResult) variant
+				.getValidationResult();
+
 		assertFalse(validationResult.isRegressionExecuted());
-		//The failing
+		// The failing
 		assertEquals(12, validationResult.getCasesExecuted());
 		assertEquals(1, validationResult.getFailureCount());
-		assertEquals(11,validationResult.getPassingTestCases());
+		assertEquals(11, validationResult.getPassingTestCases());
 
-		
 	}
 }

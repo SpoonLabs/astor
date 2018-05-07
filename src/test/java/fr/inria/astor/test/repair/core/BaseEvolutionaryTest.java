@@ -91,18 +91,7 @@ public abstract class BaseEvolutionaryTest {
 		assertTrue(cantSol > 0);
 	}
 
-	/**
-	 * This method asserts the number of variants that where store in the disk.
-	 * The option "saveall" must be false (with true value it saves solution and
-	 * not solution variants)
-	 * 
-	 * @param dir
-	 * @param numberSolution
-	 */
-	public static void validatePatchExistence(String dir, int numberSolution) {
-		int cantSol = numberSolutions(dir);
-		Assert.assertEquals(numberSolution, cantSol);
-	}
+	
 
 	protected static int numberSolutions(String dir) {
 		File out = new File(dir + File.separator + "src");

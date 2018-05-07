@@ -105,14 +105,13 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 				out.getAbsolutePath(),
 				//
 				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", //
-				"-maxtime", "100",
-				"-loglevel","INFO",
+				"-maxtime", "100", "-loglevel", "INFO",
 				// For excluding regression
 				"-excludeRegression", "-parameters",
 				"maxCombinationVariableLimit:true"
-				//reduced search space
-				+ ":maxVarCombination:1"
-				+ ":ingredienttransformstrategy:" + RandomTransformationStrategy.class.getCanonicalName()
+						// reduced search space
+						+ ":maxVarCombination:1" + ":ingredienttransformstrategy:"
+						+ RandomTransformationStrategy.class.getCanonicalName()
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -131,15 +130,14 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 		Assert.assertTrue(patches.size() > 0);
 
 		Assert.assertEquals(2, patches.size());
-		
-		PatchHunkStats hunkSolution = getHunkSolution(patches, "this.f = f",
-				"CtAssignmentImpl|CtBlockImpl");
+
+		PatchHunkStats hunkSolution = getHunkSolution(patches, "this.f = f", "CtAssignmentImpl|CtBlockImpl");
 		Assert.assertNotNull(hunkSolution);
-	
+
 		PatchHunkStats hunkSolution2 = getHunkSolution(patches, "return solve(f, initial, max)",
 				"CtReturnImpl|CtBlockImpl");
 		Assert.assertNotNull(hunkSolution2);
-	
+
 	}
 
 	/**
@@ -184,7 +182,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 				.getValidationResult();
 		assertTrue(validationResult.isRegressionExecuted());
 
-		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
+		assertFalse(solutions.isEmpty());
 
 		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
@@ -284,7 +282,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 				.getValidationResult();
 		assertTrue(validationResult.isRegressionExecuted());
 
-		validatePatchExistence(out + File.separator + "AstorMain-math_70/", solutions.size());
+		assertFalse(solutions.isEmpty());
 
 		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
