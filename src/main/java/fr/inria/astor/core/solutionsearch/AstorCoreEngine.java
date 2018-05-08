@@ -506,7 +506,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		boolean originalValue = ConfigurationProperties.getPropertyBool("preservelinenumbers");
 
-		final String suffix = format ? "_f" : "";
+		final String suffix = format ? PatchDiffCalculator.DIFF_SUFFIX : "";
 		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier()) + suffix;
 		log.debug("\n-Saving child on disk variant #" + programVariant.getId() + " at " + srcOutput);
 		ConfigurationProperties.setProperty("preservelinenumbers", Boolean.toString(!format));

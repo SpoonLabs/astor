@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtType;
 public class PatchDiffCalculator {
 
 	protected Logger log = Logger.getLogger(PatchDiffCalculator.class.getName());
+	public final static String DIFF_SUFFIX = "_f";
 
 	/**
 	 * Calculates the diff between a solution and the original program variant.
@@ -40,7 +41,7 @@ public class PatchDiffCalculator {
 
 		String diffResults = "";
 
-		final String suffix = format ? "_f" : "";
+		final String suffix = format ? DIFF_SUFFIX : "";
 
 		// Default:
 		String srcOutputfDefaultOriginal = projectFacade
