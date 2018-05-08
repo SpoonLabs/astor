@@ -3,6 +3,7 @@ package fr.inria.astor.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,7 +27,9 @@ import spoon.reflect.declaration.CtType;
 public class PatchDiffCalculator {
 
 	protected Logger log = Logger.getLogger(PatchDiffCalculator.class.getName());
+
 	public final static String DIFF_SUFFIX = "_f";
+	public static final String PATCH_DIFF_FILE_NAME = "patch.diff";
 
 	/**
 	 * Calculates the diff between a solution and the original program variant.
@@ -43,13 +46,15 @@ public class PatchDiffCalculator {
 
 		final String suffix = format ? DIFF_SUFFIX : "";
 
-		// Default:
+		// Get the path where the Default variant is located:
 		String srcOutputfDefaultOriginal = projectFacade
 				.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT + suffix);
+
 		ConfigurationProperties.setProperty("preservelinenumbers", Boolean.toString(!format));
+		// save the default variant according to the format
 		mutsupporter.saveSourceCodeOnDiskProgramVariant(originalVariant, srcOutputfDefaultOriginal);
 
-		// Particular variant
+		// get tge path of a Particular variant
 		String srcOutputSolutionVariant = projectFacade
 				.getInDirWithPrefix(programVariant.currentMutatorIdentifier() + suffix);
 
@@ -69,6 +74,11 @@ public class PatchDiffCalculator {
 			String diff = getDiff(foriginal, ffixed, fileName);
 			diffResults += diff + '\n';
 		}
+
+		FileWriter patchWriter = new FileWriter(srcOutputSolutionVariant + File.separator + PATCH_DIFF_FILE_NAME);
+		patchWriter.write(diffResults);
+		patchWriter.flush();
+		patchWriter.close();
 
 		return diffResults;
 	}
