@@ -78,8 +78,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		ProbabilisticIngredientStrategy ingredientStrategy = (ProbabilisticIngredientStrategy) cardumen
@@ -118,8 +118,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertEquals(scope, ingredientSpace.scope);
@@ -194,8 +194,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertEquals(scope, ingredientSpace.scope);
@@ -276,8 +276,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertEquals(scope, ingredientSpace.scope);
@@ -343,8 +343,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertEquals(scope, ingredientSpace.scope);
@@ -408,8 +408,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertEquals(scope, ingredientSpace.scope);
@@ -473,8 +473,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertEquals(scope, ingredientSpace.scope);
@@ -526,8 +526,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertEquals(scope, ingredientSpace.scope);
@@ -602,8 +602,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertEquals(scope, ingredientSpace.scope);
@@ -654,8 +654,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertTrue(cardumen.getSolutions().size() > 0);
@@ -683,8 +683,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 	}
@@ -709,8 +709,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		for (Object keys : ingredientSpace.mkp.keySet()) {
@@ -743,8 +743,8 @@ public class CardumenApproachTest {
 
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertTrue(cardumen.getSolutions().size() > 0);
@@ -826,8 +826,8 @@ public class CardumenApproachTest {
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
 		EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) cardumen.getIngredientSearchStrategy();
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		assertEquals(0, Stats.createStat().getIngredientsStats().combinationByIngredientSize.size());
@@ -1050,7 +1050,6 @@ public class CardumenApproachTest {
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
 		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
-		// command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters", "considerzerovaluesusp:true:scope:" + scope.toString().toLowerCase()
 				+ "scope:limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
 		command.command.put("-loglevel", Level.INFO.toString());
@@ -1078,8 +1077,8 @@ public class CardumenApproachTest {
 		main1.execute(command.flat());
 		Stats.createStat();
 		cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
-
-		assertTrue(cardumen.totalBases >= 160);
+		int limit = 100;
+		assertTrue(cardumen.totalBases +" >= "+limit, cardumen.totalBases >= limit);
 	}
 
 	@Test
@@ -1103,8 +1102,8 @@ public class CardumenApproachTest {
 		main1.execute(command.flat());
 		Stats.createStat();
 		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
-
-		assertTrue(cardumen.totalIngredients + " > 86299730", cardumen.totalIngredients >= 86299730);
+		int limit = 86299730;
+		assertTrue(cardumen.totalIngredients + " > " + Integer.toString(limit), cardumen.totalIngredients >= limit);
 		assertTrue(86299730 >= cardumen.totalIngredientsCutted);
 		assertTrue(cardumen.totalIngredientsCutted >= 26915);
 		assertTrue(cardumen.totalBases >= 160);
@@ -1539,8 +1538,8 @@ public class CardumenApproachTest {
 		command.command.put("-loglevel", Level.INFO.toString());
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
-		
-		AstorCoreEngine  approach = main1.getEngine();
+
+		AstorCoreEngine approach = main1.getEngine();
 		IngredientBasedApproach ingapproach = (IngredientBasedApproach) main1.getEngine();
 
 		// MP: (156/834) MP=org.joda.time.DateTimeZone line: 263, pointed
