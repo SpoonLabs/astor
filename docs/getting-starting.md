@@ -125,6 +125,27 @@ For executing Astor in jMutRepair mode:
 
 Note that `-location` argument has a absolute path to the project to repair, and -dependency has the absolute path to the libraries or to the folder that contains them.
 However, note that the folders that specify the structure of the project under repair (`-srcjavafolder`, `-srctestfolder`, `-binjavafolder` and `-bintestfolder`) are relative.
+
+
+# Notes about running Astor over [Defects4J](https://github.com/rjust/defects4j) bugs.
+
+Astor needs to be executed over a JVM 8+. By default, Astor uses the JVM specified on the `JAVA_HOME` variable to run the test cases for validating candidate patches. However, Defects4J subjects needs to be executed using a JMV 7 (according to the official documentation).
+For example, running bug Math-70 from Defects4J on a JVM 8 could produce two failing/errored test cases:
+
+  	testMath280(org.apache.commons.math.distribution.NormalDistributionTest)
+	testMinpackMeyer(org.apache.commons.math.estimation.MinpackTest)
+
+The first one (`testMath280`) is the test that expose the bug Math-70. It's correct that it fails. However, the second one (`testMinpackMeyer`) fails due to the JVM and it must not fail. It's a platform-related error.
+As conclusion, using a java VM 8+ could produce that Astor does not find patches for bugs that must be repaired by the tool.
+
+As solution, Astor provides an argument (`-jvm4testexecution`) to specify the location of the virtual machine that will be used to run the test cases (in the case of trying to repair Defects4J bugsit must be a JVM 7).
+
+
+
+
+
+
+
  
 
 
