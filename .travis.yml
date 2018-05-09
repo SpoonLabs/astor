@@ -30,14 +30,14 @@ env:
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.RepairOperatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.suspiciousnavigation.SuspiciousNavigationStrategyTest
   - TEST=fr.inria.astor.util.CommandSummaryTest
-  
-  
+
+
   global:
     secure: KAXmlzbC3aTis3In/HnYpLHgnWmcct9ou7cHTGZZhv+8Tu7eta7HPHBQBju+qD4WkAA8PqyjEhOBHHd7GoSVtUY0nHqPRhjKjeQAPHDgA+kvWVVPyzSEar/gCbFqyzf6MhTs5Feq0PkljmfqF/0Omlps06B7qDVmYaALSFIvgrg=
 script:
 - mvn clean
 - mvn test -DskipTests -DfailIfNoTests=false
-- mvn surefire:test -DfailIfNoTests=false -Dtest=$TEST 
+- mvn surefire:test -DfailIfNoTests=false -Dtest=$TEST
 sudo: required
 before_script:
  - "echo Java_OPTS $JAVA_OPTS"
@@ -50,7 +50,7 @@ cache:
   - examples/
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- '[[ $TRAVIS_BRANCH == "master" ]] && [[ $TEST == "fr.inria.astor.test.repair.evaluation.IntroClassTest"
+- '[[ $TRAVIS_BRANCH == "master" ]] && [[ $TEST == "fr.inria.astor.test.repair.approaches.IntroClassTest"
   ]] && { mvn deploy --settings .travis-settings.xml -DskipTests=true -B; };'
 notifications:
   email:
