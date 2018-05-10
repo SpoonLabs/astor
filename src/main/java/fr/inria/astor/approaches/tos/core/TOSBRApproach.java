@@ -39,7 +39,6 @@ public class TOSBRApproach extends IngredientBasedRepairApproachImpl implements 
 	@Override
 	protected void loadIngredientPool() throws JSAPException, Exception {
 		TOSBRPlugInLoader.loadIngredientPool(this);
-
 	}
 
 	@Override

@@ -6,9 +6,9 @@ import java.util.List;
 import fr.inria.astor.approaches.tos.entity.placeholders.VarLiPlaceholder;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtFieldReference;
 
 /**
@@ -16,10 +16,10 @@ import spoon.reflect.reference.CtFieldReference;
  * @author Matias Martinez
  *
  */
-public class VarLiPlaceholderGenerator implements PlaceholderGenerator {
+public class VarLiPlaceholderGenerator<T extends CtElement> implements PlaceholderGenerator<T> {
 
 	@Override
-	public List<VarLiPlaceholder> createTOS(CtStatement ingredientStatement) {
+	public List<VarLiPlaceholder> createTOS(T ingredientStatement) {
 		List<VarLiPlaceholder> results = new ArrayList<>();
 		List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(ingredientStatement, true);
 		for (CtVariableAccess ctVariableAccess : varAccessCollected) {

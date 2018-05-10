@@ -19,13 +19,14 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * 
  * @author Matias Martinez
  *
  */
-public class VariablePlaceholderGenerator implements PlaceholderGenerator {
+public class VariablePlaceholderGenerator<T extends CtElement> implements PlaceholderGenerator<T> {
 
 	public static String PLACEHOLDER_VAR = "_%s_%d";
 
@@ -33,14 +34,14 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public List<? extends Placeholder> createTOS(CtStatement ingredientStatement) {
+	public List<? extends Placeholder> createTOS(T ingredientSource) {
 
 		int nrPlaceholders = ConfigurationProperties.getPropertyInt("nrPlaceholders");
 		boolean lessplaceholderontos = ConfigurationProperties.getPropertyBool("lessplaceholderontos");
 
 		List<VariablePlaceholder> createdTemplates = new ArrayList<>();
 
-		List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(ingredientStatement, true);
+		List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(ingredientSource, true);
 		List<String> varsNames = varAccessCollected.stream().map(e -> e.getVariable().getSimpleName()).distinct()
 				.collect(Collectors.toList());
 		// log.debug("Names (" + varsNames.size() + "): " + varsNames);
@@ -58,7 +59,7 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 			// log.debug("analyzing target Placeholders: " +
 			// targetPlaceholders);
 
-			VariablePlaceholder placeholderCreated = createParticularTOS(ingredientStatement, targetPlaceholders);
+			VariablePlaceholder placeholderCreated = createParticularTOS(ingredientSource, targetPlaceholders);
 
 			if (placeholderCreated != null) {
 
@@ -76,7 +77,7 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private VariablePlaceholder createParticularTOS(CtStatement ingredientStatement, Set<String> targetPlaceholders) {
+	private VariablePlaceholder createParticularTOS(T ingredientStatement, Set<String> targetPlaceholders) {
 
 		// We collect all variables
 		List<CtVariableAccess> varAccessCollected = VariableResolver.collectVariableAccess(ingredientStatement, true);
@@ -86,7 +87,7 @@ public class VariablePlaceholderGenerator implements PlaceholderGenerator {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private VariablePlaceholder createParticularTOS(CtStatement ingredientStatement, Set<String> targetPlaceholders,
+	private VariablePlaceholder createParticularTOS(T ingredientStatement, Set<String> targetPlaceholders,
 			List<CtVariableAccess> varAccessCollected) {
 
 		// Vars name mapped to placeholders
