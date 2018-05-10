@@ -306,9 +306,7 @@ public class CardumenApproachTest {
 				int c = 0;
 				for (Ingredient ingredientInstantiated : ingredientsTransformed) {
 					c++;
-					if (c < 100)
-						log.info("------Instance-->" + ingredientInstantiated.getCode());
-
+					
 					// TODO: Should not be duplicates
 					// assertFalse(ing.contains(ingredientInstantiated.getCode().toString()));
 					ing.add(ingredientInstantiated.getCode().toString());
@@ -375,7 +373,7 @@ public class CardumenApproachTest {
 
 		for (Ingredient ingredientInstantiated : ingredientsTransformed) {
 
-			log.info("------Instance-->" + ingredientInstantiated.getCode());
+			//log.info("------Instance-->" + ingredientInstantiated.getCode());
 
 			// TODO: Should not be duplicates
 			// assertFalse(ing.contains(ingredientInstantiated.getCode().toString()));
@@ -443,7 +441,7 @@ public class CardumenApproachTest {
 
 		int i = 0;
 		for (Ingredient ingredient : ingredientsTransformed) {
-			log.info("--Ing-->" + (i++) + " " + ingredient);
+			//log.info("--Ing-->" + (i++) + " " + ingredient);
 			String transformation = ingredient.getCode().toString();
 			assertFalse(ing.contains(transformation));
 			ing.add(transformation);
@@ -500,8 +498,8 @@ public class CardumenApproachTest {
 		int c = 0;
 		for (Ingredient ingredientInstantiated : ingredientsTransformed) {
 			c++;
-			if (c < 100)
-				log.info("------Instance-->" + ingredientInstantiated.getCode());
+			//if (c < 100)
+			//	log.info("------Instance-->" + ingredientInstantiated.getCode());
 
 		}
 
