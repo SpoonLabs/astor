@@ -1102,10 +1102,10 @@ public class CardumenApproachTest {
 		main1.execute(command.flat());
 		Stats.createStat();
 		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
-		int limit = 86299730;
+		int limit = 86000000;
 		assertTrue(cardumen.totalIngredients + " > " + Integer.toString(limit), cardumen.totalIngredients >= limit);
-		assertTrue(86299730 >= cardumen.totalIngredientsCutted);
-		assertTrue(cardumen.totalIngredientsCutted >= 26915);
+		//assertTrue(86299730 >= cardumen.totalIngredientsCutted);
+		assertTrue(cardumen.totalIngredientsCutted >= 26000);
 		assertTrue(cardumen.totalBases >= 160);
 
 	}
