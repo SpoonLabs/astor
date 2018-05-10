@@ -14,7 +14,6 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
-import fr.inria.main.evolution.PlugInVisitor;
 
 /**
  * Engine for Zimin approach which validates variants stored on Files.
@@ -27,15 +26,13 @@ public class ZmEngine extends AstorCoreEngine {
 	public ZmEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		ConfigurationProperties.setProperty("skipfitnessinitialpopulation", "true");
-		this.pluginLoaded = new PlugInVisitor() {
 
-			@Override
-			protected void loadValidator(AstorCoreEngine approach) throws Exception {
-				FileProcessValidator fileValidator = new FileProcessValidator();
-				approach.setProgramValidator(fileValidator);
-			}
+	}
 
-		};
+	@Override
+	protected void loadValidator() throws Exception {
+		FileProcessValidator fileValidator = new FileProcessValidator();
+		this.setProgramValidator(fileValidator);
 	}
 
 	public List<SuspiciousModificationPoint> getSuspicious() {

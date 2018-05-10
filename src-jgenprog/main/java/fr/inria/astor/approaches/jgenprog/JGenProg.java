@@ -38,6 +38,18 @@ public class JGenProg extends IngredientBasedRepairApproachImpl {
 		}
 	}
 
+	@Override
+	public void loadOperatorSpaceDefinition() throws Exception {
+
+		super.loadOperatorSpaceDefinition();
+
+		if (this.getOperatorSpace() == null) {
+
+			this.setOperatorSpace(new jGenProgSpace());
+		}
+
+	}
+
 	private void applyCrossover(int generation) {
 		int numberVariants = this.variants.size();
 		if (numberVariants <= 1) {

@@ -20,8 +20,6 @@ public class TOSBRApproach extends IngredientBasedRepairApproachImpl implements 
 	public TOSBRApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
 
-		this.pluginLoaded = new TOSBRPlugInLoader();
-
 		if (ConfigurationProperties.hasProperty("probabilistictransformation")) {
 			if (ConfigurationProperties.getPropertyBool("probabilistictransformation")) {
 				ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier,
@@ -30,6 +28,30 @@ public class TOSBRApproach extends IngredientBasedRepairApproachImpl implements 
 				ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier,
 						"random-variable-replacement");
 		}
+
+	}
+
+	@Override
+	protected void loadTargetElements() throws Exception {
+		TOSBRPlugInLoader.loadTargetElements(this);
+	}
+
+	@Override
+	protected void loadIngredientPool() throws JSAPException, Exception {
+		TOSBRPlugInLoader.loadIngredientPool(this);
+
+	}
+
+	@Override
+	protected void loadIngredientSearchStrategy() throws Exception {
+
+		TOSBRPlugInLoader.loadIngredientSearchStrategy(this);
+	}
+
+	@Override
+	protected void loadOperatorSpaceDefinition() throws Exception {
+
+		TOSBRPlugInLoader.loadOperatorSpaceDefinition(this);
 
 	}
 

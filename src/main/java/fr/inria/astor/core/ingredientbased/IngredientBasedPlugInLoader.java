@@ -2,6 +2,8 @@ package fr.inria.astor.core.ingredientbased;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
@@ -22,19 +24,22 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.Pro
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
-import fr.inria.main.evolution.PlugInVisitor;
 
 /**
  * 
  * @author Matias Martinez
  *
  */
-public class IngredientBasedPlugInLoader extends PlugInVisitor {
+public class IngredientBasedPlugInLoader  {
 
 	public IngredientBasedPlugInLoader() {
 		super();
 	}
 
+	
+
+	protected static Logger log = Logger.getLogger(PlugInLoader.class);
+	
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientPool(AstorCoreEngine approach) throws JSAPException, Exception {
 		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
@@ -65,7 +70,7 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected void loadIngredientSearchStrategy(AstorCoreEngine approach) throws Exception {
+	protected static IngredientSearchStrategy loadIngredientSearchStrategy(AstorCoreEngine approach) throws Exception {
 
 		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 
@@ -93,18 +98,19 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 			ingStrategy = new EfficientIngredientStrategy(ingredientspace);
 		}
 
-		ibra.setIngredientSearchStrategy(ingStrategy);
+		return (ingStrategy);
 
 	}
 
+	@Deprecated
 	protected void loadIngredientTransformationStrategy(AstorCoreEngine approach) throws Exception {
 		
-		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = getIngredientTransformationStrategy();
+		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = retrieveIngredientTransformationStrategy();
 		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 		ibra.setIngredientTransformationStrategy(ingredientTransformationStrategyLoaded);
 	}
 
-	public static IngredientTransformationStrategy getIngredientTransformationStrategy() throws Exception {
+	public static IngredientTransformationStrategy retrieveIngredientTransformationStrategy() throws Exception {
 		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = null;
 		String ingredientTransformationStrategy = ConfigurationProperties.properties
 				.getProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier);
@@ -128,11 +134,4 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 		return ingredientTransformationStrategyLoaded;
 	}
 
-	@Override
-	public void load(AstorCoreEngine approach) throws Exception {
-		super.load(approach);
-		this.loadIngredientPool(approach);
-		this.loadIngredientSearchStrategy(approach);
-		this.loadIngredientTransformationStrategy(approach);
-	}
 }

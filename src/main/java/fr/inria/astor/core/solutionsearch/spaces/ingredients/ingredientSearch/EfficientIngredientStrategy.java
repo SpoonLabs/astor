@@ -33,14 +33,15 @@ import spoon.reflect.declaration.CtType;
 public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 	IngredientTransformationStrategy ingredientTransformationStrategy;
-	
+
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	public EfficientIngredientStrategy(IngredientSpace space) {
 		super(space);
 
 		try {
-			this.ingredientTransformationStrategy = IngredientBasedPlugInLoader.getIngredientTransformationStrategy();
+			this.ingredientTransformationStrategy = IngredientBasedPlugInLoader
+					.retrieveIngredientTransformationStrategy();
 		} catch (Exception e) {
 			log.error(e);
 		}

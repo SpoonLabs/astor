@@ -1,11 +1,17 @@
 package fr.inria.astor.approaches.cardumen;
 
+import java.util.List;
+
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionClassTypeIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.main.evolution.ExtensionPoints;
 
 /**
@@ -17,7 +23,6 @@ public class CardumenApproach extends JGenProg {
 
 	public CardumenApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
-		this.pluginLoaded = new CardumenPlugInloader();
 		// Default configuration of Cardumen:
 		ConfigurationProperties.setProperty("cleantemplates", "true");
 
@@ -33,6 +38,19 @@ public class CardumenApproach extends JGenProg {
 		ConfigurationProperties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "r-expression");
 		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier, "name-probability-based");
 
+	}
+
+	@Override
+	protected void loadIngredientPool() throws JSAPException, Exception {
+		List<TargetElementProcessor<?>> ingredientProcessors = this.getTargetElementProcessors();
+		ExpressionTypeIngredientSpace ingredientspace = ((ConfigurationProperties.getPropertyBool("uniformreplacement"))
+				? new ExpressionClassTypeIngredientSpace(ingredientProcessors)
+				: new ExpressionTypeIngredientSpace(ingredientProcessors));
+		String scope = ConfigurationProperties.getProperty(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE.identifier);
+		if (scope != null) {
+			ingredientspace.scope = IngredientSpaceScope.valueOf(scope.toUpperCase());
+		}
+		this.setIngredientPool(ingredientspace);
 	}
 
 }

@@ -17,7 +17,7 @@ public interface IngredientBasedApproach {
 	public void setIngredientPool(IngredientSpace ingredientPool);
 
 	// Ingredients transformations
-	public IngredientTransformationStrategy getIngredientTransformationStrategy();
+	public IngredientTransformationStrategy getIngredientTransformationStrategy() throws Exception;
 
 	public void setIngredientTransformationStrategy(IngredientTransformationStrategy ingredientTransformationStrategy);
 
