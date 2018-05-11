@@ -27,13 +27,13 @@ import spoon.reflect.code.CtVariableAccess;
  * @author Matias Martinez
  *
  */
-public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
+public class TOSIngredientRandomSearchStrategy extends IngredientSearchStrategy {
 
 	MultiKeyMap cacheInstances = new MultiKeyMap();
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 	PatchGenerator patchGenerator = null;
 
-	public TOSIngredientSearchStrategy(IngredientSpace space) {
+	public TOSIngredientRandomSearchStrategy(IngredientSpace space) {
 		super(space);
 		patchGenerator = new PatchGenerator();
 	}

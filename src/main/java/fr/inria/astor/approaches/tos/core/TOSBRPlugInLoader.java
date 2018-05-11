@@ -7,7 +7,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSpace;
-import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSearchStrategy;
+import fr.inria.astor.approaches.tos.ingredients.TOSIngredientRandomSearchStrategy;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -51,7 +51,7 @@ public class TOSBRPlugInLoader {
 
 		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 
-		ibra.setIngredientSearchStrategy(new TOSIngredientSearchStrategy(ibra.getIngredientPool()));
+		ibra.setIngredientSearchStrategy(new TOSIngredientRandomSearchStrategy(ibra.getIngredientPool()));
 	}
 
 	public static void loadOperatorSpaceDefinition(AstorCoreEngine approach) throws Exception {
