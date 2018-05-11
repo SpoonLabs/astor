@@ -207,8 +207,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 
 				List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
 
-				List<Ingredient> ingredientsAfterTransformation = IngredientBasedPlugInLoader
-						.retrieveIngredientTransformationStrategy()
+				List<Ingredient> ingredientsAfterTransformation = this.ingredientTransformationStrategy
 						.transform(modificationPoint, new Ingredient(ingredient));
 
 				if (instances != null && instances.size() > 0) {
