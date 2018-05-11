@@ -36,10 +36,11 @@ public class OutputWritter {
 	}
 
 	public void updateOutput(String output) {
-		JavaOutputProcessor fileOutput = new JavaOutputProcessor(new File(output),
-				new DefaultJavaPrettyPrinter(getEnvironment()));
-		this.javaPrinter = fileOutput;
+		getEnvironment().setSourceOutputDirectory(new File(output));
+		JavaOutputProcessor fileOutput = new JavaOutputProcessor(new DefaultJavaPrettyPrinter(getEnvironment()));
 		fileOutput.setFactory(getFactory());
+
+		this.javaPrinter = fileOutput;
 	}
 
 	public void saveSourceCode(CtClass element) {
