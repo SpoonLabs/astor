@@ -8,11 +8,8 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.Lists;
 
-import fr.inria.astor.approaches.tos.core.PatchGenerator;
 import fr.inria.astor.approaches.tos.entity.TOSEntity;
 import fr.inria.astor.approaches.tos.entity.TOSInstance;
-import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
-import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.setup.RandomManager;
@@ -29,13 +26,14 @@ import spoon.reflect.code.CtVariableAccess;
  */
 public class TOSIngredientRandomSearchStrategy extends IngredientSearchStrategy {
 
-	MultiKeyMap cacheInstances = new MultiKeyMap();
+	protected MultiKeyMap cacheInstances = new MultiKeyMap();
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
-	PatchGenerator patchGenerator = null;
+
+	protected TOSIngredientTransformationStrategy transformationStrategy = null;
 
 	public TOSIngredientRandomSearchStrategy(IngredientSpace space) {
 		super(space);
-		patchGenerator = new PatchGenerator();
+		transformationStrategy = new TOSIngredientTransformationStrategy();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -93,41 +91,16 @@ public class TOSIngredientRandomSearchStrategy extends IngredientSearchStrategy 
 				return Lists.newArrayList();
 			}
 			log.debug("Tos fits " + StringUtil.trunc(tos.getCode()) + " in location" + modificationPoint);
-			ingredientTransformed = calculateAllTransformations(modificationPoint, tos);
-
+			ingredientTransformed = new ArrayList<>();
+			List<Ingredient> ing = transformationStrategy.transform(modificationPoint, tos);
+			for (Ingredient ingredient : ing) {
+				ingredientTransformed.add((TOSInstance) ingredient);
+			}
+			
+			
 			this.cacheInstances.put(modificationPoint, ingredientBaseSelected.getChacheCodeString(),
 					ingredientTransformed);
 
-		}
-		return ingredientTransformed;
-	}
-
-	private List<TOSInstance> calculateAllTransformations(ModificationPoint modificationPoint, TOSEntity tos) {
-		List<TOSInstance> ingredientTransformed = new ArrayList<>();
-		for (Placeholder placeholder : tos.getPlaceholders()) {
-			List<Transformation> transpl = placeholder.visit(modificationPoint, patchGenerator);
-
-			if (ingredientTransformed.isEmpty()) {
-				for (Transformation transformation : transpl) {
-					TOSInstance tosIn = new TOSInstance(tos.getCode(), tos);
-					tosIn.getTransformations().add(transformation);
-					ingredientTransformed.add(tosIn);
-				}
-
-			} else {
-				List<TOSInstance> newingredientTransformed = new ArrayList<>();
-				for (Transformation transformation : transpl) {
-					//
-					for (TOSInstance tosIngredient : ingredientTransformed) {
-
-						TOSInstance tosIn = new TOSInstance(tos.getCode(), tos);
-						tosIn.getTransformations().addAll(tosIngredient.getTransformations());
-						tosIn.getTransformations().add(transformation);
-						newingredientTransformed.add(tosIn);
-					}
-				}
-				ingredientTransformed = newingredientTransformed;
-			}
 		}
 		return ingredientTransformed;
 	}
