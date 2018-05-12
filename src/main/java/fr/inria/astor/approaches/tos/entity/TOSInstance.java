@@ -43,7 +43,7 @@ public class TOSInstance extends Ingredient {
 	}
 
 	public CtElement generatePatch() {
-		//System.out.println("Synthesizing patch: ");
+		// System.out.println("Synthesizing patch: ");
 
 		for (Transformation transformation : this.transformations) {
 
@@ -62,4 +62,11 @@ public class TOSInstance extends Ingredient {
 		return cloned;
 	}
 
+	@Override
+	public CtElement getCode() {
+		if (this.ingredientCode == null) {
+			this.ingredientCode = this.generatePatch();
+		}
+		return this.ingredientCode;
+	}
 }
