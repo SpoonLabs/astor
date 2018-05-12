@@ -6,15 +6,16 @@ import java.util.List;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.tos.core.LiteralsProcessor;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.AstorCtIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+
 /**
  * 
  * @author Matias Martinez
@@ -84,9 +85,9 @@ public class LiteralsSpace extends AstorCtIngredientSpace {
 	}
 
 	@Override
-	protected String getType(CtCodeElement ingredient) {
+	protected String getType(Ingredient ingredient) {
 		// before was new code
-		return ingredient.getClass().getSimpleName();
+		return ingredient.getCode().getClass().getSimpleName();
 	}
 
 }

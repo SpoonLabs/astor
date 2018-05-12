@@ -60,7 +60,7 @@ public class Ingredient {
 
 	@Override
 	public String toString() {
-		return "Ingredient [code=" + getCode() + "]";
+		return this.getCode().toString();
 	}
 
 	/**
@@ -73,6 +73,31 @@ public class Ingredient {
 			cacheString = this.getCode().toString();
 		}
 		return cacheString;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ingredientCode == null) ? 0 : ingredientCode.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Ingredient other = (Ingredient) obj;
+		if (ingredientCode == null) {
+			if (other.ingredientCode != null)
+				return false;
+		} else if (!ingredientCode.equals(other.ingredientCode))
+			return false;
+		return true;
 	}
 
 }

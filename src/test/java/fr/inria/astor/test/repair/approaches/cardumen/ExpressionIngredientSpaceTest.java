@@ -37,7 +37,6 @@ import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -97,12 +96,12 @@ public class ExpressionIngredientSpaceTest {
 
 		// Let's test the creation of a operator instance.
 		OperatorInstance opInstance = engine.createOperatorInstanceForPoint(modificationPoint);
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(opInstance.getOriginal(),
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(opInstance.getOriginal(),
 				ExpressionReplaceOperator.class.getName());
 
 		log.debug("\nAll ingredients " + ingredients);
 
-		CtCodeElement ingredientTargeted = ingredients.get(4);
+		CtElement ingredientTargeted = ingredients.get(4).getCode();
 
 		assertEquals("maximumIterations <= 0", ingredientTargeted.toString());
 
@@ -229,14 +228,14 @@ public class ExpressionIngredientSpaceTest {
 
 		assertEquals(((CtBinaryOperator) opInstance.getOriginal()).getType(), binOpIngredient.getType());
 
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(opInstance.getOriginal(),
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(opInstance.getOriginal(),
 				ExpressionReplaceOperator.class.getName());
 
 		// let's check all ingredients
-		for (CtCodeElement ingredient : ingredients) {
+		for (Ingredient ingredient : ingredients) {
 			assertTrue(CtBinaryOperator.class.isInstance(ingredient));
 			assertEquals(((CtBinaryOperator) opInstance.getOriginal()).getType(),
-					((CtBinaryOperator) ingredient).getType());
+					((CtBinaryOperator) ingredient.getCode()).getType());
 		}
 
 	}

@@ -129,19 +129,19 @@ public class CardumenApproachTest {
 		CtElement codeElement0 = pvar.getModificationPoints().stream()
 				.filter(e -> e.getCodeElement().toString().equals("solve(min, max)")).findFirst().get()
 				.getCodeElement();
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(codeElement0);
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(codeElement0);
 
 		List<String> locations = ingredientSpace.getLocations();
 
 		log.debug("Locations " + locations);
 
-		for (CtCodeElement ingredientElement : ingredients) {
+		for (Ingredient ingredientElement : ingredients) {
 			assertEquals(codeElement0.getParent(CtType.class).getQualifiedName(),
-					ingredientElement.getParent(CtType.class).getQualifiedName());
+					ingredientElement.getCode().getParent(CtType.class).getQualifiedName());
 			assertEquals(((CtExpression) codeElement0).getType().getQualifiedName(),
 					((CtExpression) ingredientElement).getType().getQualifiedName());
 			assertEquals("org.apache.commons.math.analysis.solvers.BisectionSolver",
-					ingredientElement.getParent(CtType.class).getQualifiedName());
+					ingredientElement.getCode().getParent(CtType.class).getQualifiedName());
 		}
 
 		///
@@ -150,7 +150,7 @@ public class CardumenApproachTest {
 				.filter(e -> e.getCtClass().getQualifiedName().equals(p1)).findFirst().get();
 		CtElement codeElement40 = mp40.getCodeElement();
 		assertEquals(p1, mp40.getCtClass().getQualifiedName());
-		List<CtCodeElement> ingredients40 = ingredientSpace.getIngredients(codeElement40);
+		List<Ingredient> ingredients40 = ingredientSpace.getIngredients(codeElement40);
 
 		List<?> locations40 = ingredientSpace.getLocations();
 
@@ -164,13 +164,13 @@ public class CardumenApproachTest {
 
 		log.debug("Locations " + locations40);
 
-		for (CtCodeElement ingredientElement : ingredients40) {
+		for (Ingredient ingredientElement : ingredients40) {
 			assertEquals(codeElement40.getParent(CtType.class).getQualifiedName(),
-					ingredientElement.getParent(CtType.class).getQualifiedName());
+					ingredientElement.getCode().getParent(CtType.class).getQualifiedName());
 			assertEquals(((CtExpression) codeElement40).getType().getQualifiedName(),
 					((CtExpression) ingredientElement).getType().getQualifiedName());
 			assertEquals("org.apache.commons.math.analysis.solvers.UnivariateRealSolverImpl",
-					ingredientElement.getParent(CtType.class).getQualifiedName());
+					ingredientElement.getCode().getParent(CtType.class).getQualifiedName());
 		}
 
 	}
@@ -206,19 +206,19 @@ public class CardumenApproachTest {
 				.filter(e -> e.getCodeElement().toString().equals("solve(min, max)")).findFirst().get()
 				.getCodeElement();
 
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(codeElement0);
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(codeElement0);
 
 		List<String> locations = ingredientSpace.getLocations();
 
 		log.debug("Locations " + locations);
 
-		for (CtCodeElement ingredientElement : ingredients) {
+		for (Ingredient ingredientElement : ingredients) {
 			assertEquals(codeElement0.getParent(CtPackage.class).getQualifiedName(),
-					ingredientElement.getParent(CtPackage.class).getQualifiedName());
+					ingredientElement.getCode().getParent(CtPackage.class).getQualifiedName());
 			assertEquals(((CtExpression) codeElement0).getType().getQualifiedName(),
 					((CtExpression) ingredientElement).getType().getQualifiedName());
 			assertEquals("org.apache.commons.math.analysis.solvers",
-					ingredientElement.getParent(CtPackage.class).getQualifiedName());
+					ingredientElement.getCode().getParent(CtPackage.class).getQualifiedName());
 		}
 
 		///
@@ -230,7 +230,7 @@ public class CardumenApproachTest {
 				mp40.getCtClass().getQualifiedName());
 		CtElement codeElement40 = mp40.getCodeElement();
 
-		List<CtCodeElement> ingredients40 = ingredientSpace.getIngredients(codeElement40);
+		List<Ingredient> ingredients40 = ingredientSpace.getIngredients(codeElement40);
 
 		List<?> locations40 = ingredientSpace.getLocations();
 
@@ -243,13 +243,13 @@ public class CardumenApproachTest {
 
 		log.debug("Locations " + locations40);
 
-		for (CtCodeElement ingredientElement : ingredients40) {
+		for (Ingredient ingredientElement : ingredients40) {
 			assertEquals(codeElement40.getParent(CtPackage.class).getQualifiedName(),
-					ingredientElement.getParent(CtPackage.class).getQualifiedName());
+					ingredientElement.getCode().getParent(CtPackage.class).getQualifiedName());
 			assertEquals(((CtExpression) codeElement40).getType().getQualifiedName(),
 					((CtExpression) ingredientElement).getType().getQualifiedName());
 			assertEquals("org.apache.commons.math.analysis.solvers",
-					ingredientElement.getParent(CtPackage.class).getQualifiedName());
+					ingredientElement.getCode().getParent(CtPackage.class).getQualifiedName());
 		}
 
 	}
@@ -288,25 +288,18 @@ public class CardumenApproachTest {
 
 			log.debug("--mp " + (mpi) + " [" + mp.getCodeElement().getClass().getCanonicalName() + "] " + mp);
 			CtElement codeElement0 = mp.getCodeElement();
-			List<CtCodeElement> ingredients = ingredientSpace.getIngredients(codeElement0);
+			List<Ingredient> ingredients = ingredientSpace.getIngredients(codeElement0);
 			int t = 0;
-			for (CtCodeElement ctCodeElement : ingredients) {
-
-				log.debug("--Template-->" + ctCodeElement);
-
-				Ingredient ingredientToModify = new Ingredient(ctCodeElement);
+			for (Ingredient ingredientToModify : ingredients) {
 
 				List<Ingredient> ingredientsTransformed = cardumen.getIngredientTransformationStrategy().transform(mp,
 						ingredientToModify);
-				log.debug("--mp " + (mpi) + " [" + mp.getCodeElement().getClass().getCanonicalName() + "] " + mp);
-
-				log.debug("--Template-" + (t++) + " ->" + ctCodeElement);
 
 				Set<String> ing = new HashSet<>();
 				int c = 0;
 				for (Ingredient ingredientInstantiated : ingredientsTransformed) {
 					c++;
-					
+
 					// TODO: Should not be duplicates
 					// assertFalse(ing.contains(ingredientInstantiated.getCode().toString()));
 					ing.add(ingredientInstantiated.getCode().toString());
@@ -353,27 +346,22 @@ public class CardumenApproachTest {
 
 		log.debug("--mp " + (mpi) + " [" + mp.getCodeElement().getClass().getCanonicalName() + "] " + mp);
 		CtElement codeElement0 = mp.getCodeElement();
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(codeElement0);
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(codeElement0);
 		int t = 0;
-		CtCodeElement ctCodeElement = ingredients.stream()
-				.filter(e -> e.toString().equals("solve(_UnivariateRealFunction_0, _double_1, _double_2)")).findFirst()
-				.get();
-
-		log.debug("--Template-->" + ctCodeElement);
-
-		Ingredient ingredientToModify = new Ingredient(ctCodeElement);
+		Ingredient ingredientToModify = ingredients.stream()
+				.filter(e -> e.getCode().toString().equals("solve(_UnivariateRealFunction_0, _double_1, _double_2)"))
+				.findFirst().get();
 
 		List<Ingredient> ingredientsTransformed = cardumen.getIngredientTransformationStrategy().transform(mp,
 				ingredientToModify);
 		log.debug("--mp " + (mpi) + " [" + mp.getCodeElement().getClass().getCanonicalName() + "] " + mp);
 
-		log.debug("--Template-" + (t++) + " ->" + ctCodeElement);
-
 		Set<String> ing = new HashSet<>();
 
 		for (Ingredient ingredientInstantiated : ingredientsTransformed) {
 
-			//log.debug("------Instance-->" + ingredientInstantiated.getCode());
+			// log.debug("------Instance-->" +
+			// ingredientInstantiated.getCode());
 
 			// TODO: Should not be duplicates
 			// assertFalse(ing.contains(ingredientInstantiated.getCode().toString()));
@@ -417,17 +405,12 @@ public class CardumenApproachTest {
 		ModificationPoint mp = pvar.getModificationPoints().stream()
 				.filter(e -> e.getCodeElement().toString().equals("i < (maximalIterationCount)")).findFirst().get();
 		CtElement codeElement0 = mp.getCodeElement();
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(codeElement0);
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(codeElement0);
 
 		String template = "((_double_0 < _double_1) || (_double_0 > _double_2))";
 
-		CtCodeElement ctCodeElement = ingredients.stream().filter(e -> e.toString().equals(template)).findFirst().get();
-
-		log.debug("MP code: " + codeElement0);
-
-		log.debug("--Template-->" + ctCodeElement);
-
-		Ingredient ingredientToModify = new Ingredient(ctCodeElement);
+		Ingredient ingredientToModify = ingredients.stream().filter(e -> e.toString().equals(template)).findFirst()
+				.get();
 
 		List<Ingredient> ingredientsTransformed = cardumen.getIngredientTransformationStrategy().transform(mp,
 				ingredientToModify);
@@ -441,7 +424,7 @@ public class CardumenApproachTest {
 
 		int i = 0;
 		for (Ingredient ingredient : ingredientsTransformed) {
-			//log.debug("--Ing-->" + (i++) + " " + ingredient);
+			// log.debug("--Ing-->" + (i++) + " " + ingredient);
 			String transformation = ingredient.getCode().toString();
 			assertFalse(ing.contains(transformation));
 			ing.add(transformation);
@@ -483,25 +466,13 @@ public class CardumenApproachTest {
 
 		log.debug("--mp " + (mpi) + " [" + mp.getCodeElement().getClass().getCanonicalName() + "] " + mp);
 		CtElement codeElement0 = mp.getCodeElement();
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(codeElement0);
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(codeElement0);
 
-		CtCodeElement ctCodeElement = ingredients.get(23);
-
-		log.debug("--Template-->" + ctCodeElement);
-
-		Ingredient ingredientToModify = new Ingredient(ctCodeElement);
+		Ingredient ingredientToModify = ingredients.get(23);
 
 		List<Ingredient> ingredientsTransformed = cardumen.getIngredientTransformationStrategy().transform(mp,
 				ingredientToModify);
 		log.debug("--mp " + (mpi) + " [" + mp.getCodeElement().getClass().getCanonicalName() + "] " + mp);
-
-		int c = 0;
-		for (Ingredient ingredientInstantiated : ingredientsTransformed) {
-			c++;
-			//if (c < 100)
-			//	log.debug("------Instance-->" + ingredientInstantiated.getCode());
-
-		}
 
 	}
 
@@ -537,14 +508,14 @@ public class CardumenApproachTest {
 
 		assertNotNull(mp15);
 		log.debug("-->" + mp15.getCodeElement());
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(mp15.getCodeElement());
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(mp15.getCodeElement());
 
 		String code = "solve(_UnivariateRealFunction_0, _double_1, _double_2)";
 
-		CtCodeElement template = ingredients.stream().filter(e -> e.toString().equals(code)).findFirst().get();
-		Ingredient ingredientToModify = new Ingredient(template);
+		Ingredient ingredientToModify = ingredients.stream().filter(e -> e.toString().equals(code)).findFirst().get();
+
 		assertNotNull(ingredientToModify);
-		assertEquals(code, template.toString());
+		assertEquals(code, ingredientToModify.getCode().toString());
 
 		List<Ingredient> ingredientsTransformed = cardumen.getIngredientTransformationStrategy().transform(mp15,
 				ingredientToModify);
@@ -558,11 +529,11 @@ public class CardumenApproachTest {
 				.filter(e -> e.getCodeElement().toString().equals("solve(min, max)")).findFirst().get();
 		assertEquals("solve(min, max)", mp0.getCodeElement().toString());
 
-		List<CtCodeElement> ingredients0 = ingredientSpace.getIngredients(mp0.getCodeElement());
+		List<Ingredient> ingredients0 = ingredientSpace.getIngredients(mp0.getCodeElement());
 
-		CtCodeElement element = ingredients0.stream().filter(e -> code.equals(e.toString())).findFirst().get();
-		Ingredient ingredientToModify0 = new Ingredient(element);
-		assertEquals(code, element.toString());
+		Ingredient ingredientToModify0 = ingredients0.stream().filter(e -> code.equals(e.getCode().toString()))
+				.findFirst().get();
+		assertEquals(code, ingredientToModify0.toString());
 
 		List<Ingredient> ingredientsTransformed0 = cardumen.getIngredientTransformationStrategy().transform(mp0,
 				ingredientToModify0);
@@ -571,7 +542,7 @@ public class CardumenApproachTest {
 		boolean found = false;
 		assertTrue(!ingredientsTransformed0.isEmpty());
 		for (Ingredient ingredient : ingredientsTransformed0) {
-			//log.debug(ingredient.getCode());
+			// log.debug(ingredient.getCode());
 			if (ingredient.getCode().toString().equals("solve(f, min, max)")) {
 				found = true;
 			}
@@ -613,18 +584,18 @@ public class CardumenApproachTest {
 
 		assertEquals("lower >= upper", mp15.getCodeElement().toString());
 
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(mp15.getCodeElement());
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(mp15.getCodeElement());
 		log.debug(ingredients);
 		assertEquals("_double_0", ingredients.get(1).toString());
 
-		Ingredient ingredientToModify = new Ingredient(ingredients.get(1));
+		Ingredient ingredientToModify = (ingredients.get(1));
 
 		List<Ingredient> ingredientsTransformed = cardumen.getIngredientTransformationStrategy().transform(mp15,
 				ingredientToModify);
 
 		for (Ingredient ingInstance : ingredientsTransformed) {
 			assertTrue(DynamicIngredient.class.isInstance(ingInstance));
-			//log.debug(ingInstance.getCode());
+			// log.debug(ingInstance.getCode());
 			String c = ingInstance.getCode().toString();
 			assertFalse("_double_0".equals(c));
 		}
@@ -842,11 +813,11 @@ public class CardumenApproachTest {
 
 		// assertEquals(0, Stats.createStat().ingredientSpaceSize.get());
 
-		List<CtCodeElement> bases1 = estrategy.getNotExhaustedBaseElements(mp1, op1);
+		List<Ingredient> bases1 = estrategy.getNotExhaustedBaseElements(mp1, op1);
 
 		assertNotNull(bases1);
 
-		CtCodeElement base1 = bases1.get(0);
+		CtElement base1 = bases1.get(0).getCode();
 		assertNotNull(base1);
 		log.debug("base 1:" + base1);
 
@@ -869,7 +840,7 @@ public class CardumenApproachTest {
 		assertEquals(2, (long) Stats.currentStat.getIngredientsStats().combinationByIngredientSize.get(nrcomb));
 
 		for (int i = 1; i < nrcomb; i++) {
-			//log.debug("-->" + i);
+			// log.debug("-->" + i);
 			Ingredient ins1i = estrategy.getNotUsedTransformedElement(mp1, op1, new Ingredient(base1));
 			assertNotNull(ins1i);
 
@@ -928,12 +899,12 @@ public class CardumenApproachTest {
 
 		log.debug("-------Base 2-------------");
 
-		CtCodeElement base2 = bases1.get(1);
+		CtElement base2 = bases1.get(1).getCode();
 		assertNotNull(base2);
 		log.debug("base 2" + base2);
 		assertEquals(1, estrategy.exhaustTemplates.keySet().size());
 
-		List<CtCodeElement> bases2 = estrategy.getNotExhaustedBaseElements(mp1, op1);
+		List<Ingredient> bases2 = estrategy.getNotExhaustedBaseElements(mp1, op1);
 
 		assertNotNull(bases2);
 
@@ -952,10 +923,10 @@ public class CardumenApproachTest {
 		assertFalse(bases2.contains(base1));
 
 		log.debug("-------Base 3-----------");
-		List<CtCodeElement> bases3 = estrategy.getNotExhaustedBaseElements(mp1, op1);
+		List<Ingredient> bases3 = estrategy.getNotExhaustedBaseElements(mp1, op1);
 
 		log.debug("\nbase 3 " + bases3);
-		CtCodeElement base3 = bases3.get(2);
+		CtElement base3 = bases3.get(2).getCode();
 		log.debug("before 3: " + Stats.currentStat.getIngredientsStats().combinationByIngredientSize);
 
 		List<Ingredient> ingredientsAfterTransformation3 = estrategy.getInstancesFromBase(mp1, op1,
@@ -965,7 +936,7 @@ public class CardumenApproachTest {
 
 		int ingredientsAfterTransformation3Size = ingredientsAfterTransformation3.size();
 		for (int i = 1; i <= ingredientsAfterTransformation3Size; i++) {
-		//	log.debug("-->" + i);
+			// log.debug("-->" + i);
 			Ingredient ins3i = estrategy.getNotUsedTransformedElement(mp1, op1, new Ingredient(base3));
 			assertNotNull(ins3i);
 			log.debug("After: " + Stats.currentStat.getIngredientsStats().combinationByIngredientSize);
@@ -993,7 +964,7 @@ public class CardumenApproachTest {
 
 		log.debug("--------BASE 4--no trasformation--------");
 
-		List<CtCodeElement> bases4 = estrategy.getNotExhaustedBaseElements(mp1, op1);
+		List<Ingredient> bases4 = estrategy.getNotExhaustedBaseElements(mp1, op1);
 		assertFalse(bases4.contains(base3));
 
 		///
@@ -1035,8 +1006,6 @@ public class CardumenApproachTest {
 
 	}
 
-	
-
 	@Test
 	public void testCardumentM70MaxModPoints() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
@@ -1059,11 +1028,9 @@ public class CardumenApproachTest {
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
 		Stats.createStat();
-		
+
 		assertEquals(maxModPoints, main1.getEngine().getVariants().get(0).getModificationPoints().size());
 	}
-
-	
 
 	@Test
 	@Ignore
@@ -1221,9 +1188,7 @@ public class CardumenApproachTest {
 
 		ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
-		for (CtElement c : space.allElementsFromSpace) {
-		//	log.info("-> " + c);
-		}
+
 	}
 
 	@Test
@@ -1404,10 +1369,10 @@ public class CardumenApproachTest {
 
 		EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) ingapproach.getIngredientSearchStrategy();
 
-		List<CtCodeElement> baseElements = estrategy.getNotExhaustedBaseElements(mp156,
+		List<Ingredient> baseElements = estrategy.getNotExhaustedBaseElements(mp156,
 				approach.getOperatorSpace().getOperators().get(0));
 
-		CtCodeElement ingredient = baseElements.get(43);
+		CtElement ingredient = baseElements.get(43).getCode();
 		assertEquals("((_long_0 ^ _int_1) >= 0)", ingredient.toString());
 
 		VarMapping vmapping = VariableResolver.mapVariablesFromContext(varContextClearResult, ingredient);

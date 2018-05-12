@@ -19,7 +19,6 @@ import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.util.MapList;
 import fr.inria.astor.util.StringUtil;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
@@ -53,7 +52,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 	 */
 	public Map<String, List<String>> appliedCache = new HashMap<String, List<String>>();
 	public Map<String, List<Ingredient>> appliedIngredientsCache = new HashMap<String, List<Ingredient>>();
-	public MapList<String, CtElement> exhaustTemplates = new MapList<>();
+	public MapList<String, Ingredient> exhaustTemplates = new MapList<>();
 
 	/**
 	 * Return an ingredient. As it has a cache, it never returns twice the same
@@ -70,7 +69,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 		int attemptsBaseIngredients = 0;
 
-		List<CtCodeElement> baseElements = getNotExhaustedBaseElements(modificationPoint, operationType);
+		List<Ingredient> baseElements = getNotExhaustedBaseElements(modificationPoint, operationType);
 
 		if (baseElements == null || baseElements.isEmpty()) {
 			log.debug("Any template available for mp " + modificationPoint);
@@ -90,7 +89,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			log.debug(String.format("Attempts Base Ingredients  %d total %d", attemptsBaseIngredients,
 					elementsFromFixSpace));
 
-			Ingredient baseIngredient = new Ingredient(getRandomStatementFromSpace(baseElements), null);
+			Ingredient baseIngredient = getRandomStatementFromSpace(baseElements);
 
 			if (baseIngredient == null || baseIngredient.getCode() == null) {
 
@@ -162,7 +161,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 					appliedIngredientsCache.put(keyBaseIngredient, null);
 					Stats.currentStat.getIngredientsStats()
 							.addSize(Stats.currentStat.getIngredientsStats().combinationByIngredientSize, 0);
-					exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
+					exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient);
 				}
 			} catch (Throwable e) {
 				log.equals("errooor mp:" + modificationPoint + " ingredient " + baseIngredient);
@@ -222,7 +221,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 				log.debug("Not Removing ingredient from cache");
 			} else {
 				if (ingredientsAfterTransformation.isEmpty()) {
-					exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient.getCode());
+					exhaustTemplates.add(getKey(modificationPoint, operator), baseIngredient);
 				}
 			}
 
@@ -357,7 +356,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 	 * @param fixSpace
 	 * @return
 	 */
-	protected CtCodeElement getRandomStatementFromSpace(List<CtCodeElement> fixSpace) {
+	protected Ingredient getRandomStatementFromSpace(List<Ingredient> fixSpace) {
 		if (fixSpace == null)
 			return null;
 		int size = fixSpace.size();
@@ -366,7 +365,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 	}
 
-	public List<CtCodeElement> getNotExhaustedBaseElements(ModificationPoint modificationPoint,
+	public List<Ingredient> getNotExhaustedBaseElements(ModificationPoint modificationPoint,
 			AstorOperator operationType) {
 
 		String type = null;
@@ -374,7 +373,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 			type = modificationPoint.getCodeElement().getClass().getSimpleName();
 		}
 
-		List<CtCodeElement> elements = null;
+		List<Ingredient> elements = null;
 		if (type == null) {
 			elements = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement());
 
@@ -385,10 +384,10 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 		if (elements == null)
 			return null;
 
-		List<CtCodeElement> uniques = new ArrayList<>(elements);
+		List<Ingredient> uniques = new ArrayList<>(elements);
 
 		String key = getKey(modificationPoint, operationType);
-		List<CtElement> exhaustives = this.exhaustTemplates.get(key);
+		List<Ingredient> exhaustives = this.exhaustTemplates.get(key);
 
 		if (exhaustives != null) {
 			boolean removed = uniques.removeAll(exhaustives);

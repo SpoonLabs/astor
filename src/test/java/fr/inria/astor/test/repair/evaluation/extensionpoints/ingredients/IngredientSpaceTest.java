@@ -28,7 +28,6 @@ import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtPackage;
@@ -231,13 +230,14 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 		Assert.assertTrue(files.size() > 0);
 		Assert.assertTrue(files.contains(mpoint.getProgramVariant().getAffectedClasses().get(0).getQualifiedName()));
 
-		List<CtCodeElement> ingredients = ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
+		List<Ingredient> ingredients = ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
 		Assert.assertTrue(ingredients.size() > 0);
 		Assert.assertTrue(hasIngredient(ingredients, ingLast));
 
 		// Now, we check if all ingredients retrieved belongs affected classes
-		for (CtCodeElement ctCodeElement : ingredients) {
-			assertTrue(mpoint.getProgramVariant().getAffectedClasses().contains(ctCodeElement.getParent(CtType.class)));
+		for (Ingredient ctCodeElement : ingredients) {
+			assertTrue(mpoint.getProgramVariant().getAffectedClasses()
+					.contains(ctCodeElement.getCode().getParent(CtType.class)));
 		}
 
 	}
@@ -261,7 +261,8 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 
 		main1.execute(args);
 		JGenProg astor = (JGenProg) main1.getEngine();
-		Assert.assertEquals(maxgenerations, astor.getCurrentStat().getGeneralStats().get(GeneralStatEnum.NR_GENERATIONS).toString());
+		Assert.assertEquals(maxgenerations,
+				astor.getCurrentStat().getGeneralStats().get(GeneralStatEnum.NR_GENERATIONS).toString());
 
 	}
 
@@ -297,15 +298,15 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 		Assert.assertTrue(packages.contains(
 				mpoint.getProgramVariant().getAffectedClasses().get(0).getParent(CtPackage.class).getQualifiedName()));
 
-		List<CtCodeElement> ingredients = ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
+		List<Ingredient> ingredients = ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
 		Assert.assertTrue(ingredients.size() > 0);
 		Assert.assertTrue(hasIngredient(ingredients, ingLast));
 
 		boolean ingrePackageCorrect = false;
 		// Now, we check if all ingredients retrieved belongs affected classes
-		for (CtCodeElement ctCodeElement : ingredients) {
+		for (Ingredient ctCodeElement : ingredients) {
 			for (CtType aff : mpoint.getProgramVariant().getAffectedClasses()) {
-				if (aff.getPackage().equals(ctCodeElement.getParent(CtPackage.class)))
+				if (aff.getPackage().equals(ctCodeElement.getCode().getParent(CtPackage.class)))
 					ingrePackageCorrect = true;
 			}
 			;
@@ -345,20 +346,20 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 		List<String> methods = ingStrategy.getIngredientSpace().getLocations();
 		Assert.assertTrue(methods.size() > 0);
 
-		List<CtCodeElement> ingredients = ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
+		List<Ingredient> ingredients = ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
 		Assert.assertTrue(ingredients.size() > 0);
 		Assert.assertTrue(hasIngredient(ingredients, ingLast));
 
 		CtExecutable exec = (mpoint.getCodeElement().getParent(CtExecutable.class));
-		for (CtCodeElement ctCodeElement : ingredients) {
-			assertEquals(exec, ctCodeElement.getParent(CtExecutable.class));
+		for (Ingredient ctCodeElement : ingredients) {
+			assertEquals(exec, ctCodeElement.getCode().getParent(CtExecutable.class));
 		}
 
 	}
 
-	private boolean hasIngredient(List<CtCodeElement> ingredients, Ingredient ing) {
-		for (CtCodeElement ctCodeElement : ingredients) {
-			if (ctCodeElement.toString().equals(ing.getCode().toString()))
+	private boolean hasIngredient(List<Ingredient> ingredients, Ingredient ing) {
+		for (Ingredient codei : ingredients) {
+			if (codei.toString().equals(ing.getCode().toString()))
 				return true;
 		}
 		return false;

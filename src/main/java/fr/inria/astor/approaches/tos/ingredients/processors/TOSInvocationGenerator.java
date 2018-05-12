@@ -10,7 +10,6 @@ import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 
 /**

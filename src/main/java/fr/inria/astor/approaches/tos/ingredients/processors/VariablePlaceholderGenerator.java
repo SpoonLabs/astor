@@ -17,7 +17,6 @@ import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.MapList;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
 

@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
 
@@ -21,14 +21,14 @@ public class ExpressionClassTypeIngredientSpace extends ExpressionTypeIngredient
 	}
 
 	@Override
-	public List<CtCodeElement> getIngredients(CtElement element) {
+	public List<Ingredient> getIngredients(CtElement element) {
 		if (element instanceof CtExpression) {
 
 			String keyLocation = mapKey(element);
 			CtExpression ctExpr = (CtExpression) element;
 			String typeExpression = ctExpr.getClass().getSimpleName();
 			String returnTypeExpression = (ctExpr.getType() == null) ? "null" : ctExpr.getType().getSimpleName();
-			List ingredients = (List<CtCodeElement>) mkp.get(keyLocation, typeExpression, returnTypeExpression);
+			List ingredients = (List<Ingredient>) mkp.get(keyLocation, typeExpression, returnTypeExpression);
 			return ingredients;
 		}
 		log.error("Element is not a expression: " + element.getClass().getCanonicalName());
@@ -36,16 +36,16 @@ public class ExpressionClassTypeIngredientSpace extends ExpressionTypeIngredient
 	}
 
 	@Override
-	protected List<CtCodeElement> getIngrediedientsFromKey(String keyLocation, CtExpression ctExpr) {
+	protected List<Ingredient> getIngrediedientsFromKey(String keyLocation, CtExpression ctExpr) {
 		String typeExpression = ctExpr.getClass().getSimpleName();
 
 		String returnTypeExpression = (ctExpr.getType() != null) ? ctExpr.getType().getSimpleName() : "null";
 
-		List<CtCodeElement> ingredientsKey = (List<CtCodeElement>) mkp.get(keyLocation, typeExpression,
+		List<Ingredient> ingredientsKey = (List<Ingredient>) mkp.get(keyLocation, typeExpression,
 				returnTypeExpression);
 
 		if (!mkp.containsKey(keyLocation, typeExpression, returnTypeExpression)) {
-			ingredientsKey = new CacheList<CtCodeElement>();
+			ingredientsKey = new CacheList<Ingredient>();
 			mkp.put(keyLocation, typeExpression, returnTypeExpression, ingredientsKey);
 
 		}

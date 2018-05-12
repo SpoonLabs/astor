@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -32,7 +33,6 @@ import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
 
@@ -186,10 +186,10 @@ public class ExpressionBooleanOperatorTest {
 		for (Object object : allIng) {
 			// log.debug((i++) + object.toString());
 		}
-		CtElement cd = ingredientSpace.getAllIngredients().get(3027);
-		CtElement mi = ingredientSpace.getAllIngredients().get(2962);
+		CtElement cd = ingredientSpace.getAllIngredients().get(3027).getCode();
+		CtElement mi = ingredientSpace.getAllIngredients().get(2962).getCode();
 
-		CtElement cd2 = ingredientSpace.getAllIngredients().get(3033);
+		CtElement cd2 = ingredientSpace.getAllIngredients().get(3033).getCode();
 		System.out.println("before " + cd.getParent(CtBlock.class));
 		System.out.println("before " + mi);
 		cd.replace(cd2);
@@ -235,11 +235,7 @@ public class ExpressionBooleanOperatorTest {
 		}
 		;
 
-		List<CtCodeElement> allIngredients = ingredientSpace.allElementsFromSpace;
-
-		for (CtCodeElement ctCodeElement : allIngredients) {
-			log.debug(ctCodeElement);
-		}
+		
 		assertEquals(allIng.size(), ingredientSpace.allElementsFromSpace.size());
 
 		log.debug("\nLinked templates");
@@ -280,17 +276,16 @@ public class ExpressionBooleanOperatorTest {
 		assertNotNull(ingredientSpace);
 
 		for (ModificationPoint modificationPoint : jgp.getVariants().get(0).getModificationPoints()) {
-			List<CtCodeElement> allIng = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
+			List<Ingredient> allIng = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
 
 			System.out.println("--> Mp " + modificationPoint);
 
 			System.out.println(allIng.size());
-			for (CtCodeElement code : allIng) {
+			for (Ingredient code : allIng) {
 
 				assertEquals(((CtExpression) modificationPoint.getCodeElement()).getType().box().getQualifiedName(),
-						((CtExpression) code).getType().box().getQualifiedName());
-				// assertEquals(modificationPoint.getCodeElement().getClass().getName(),
-				// code.getClass().getName());
+						((CtExpression) code.getCode()).getType().box().getQualifiedName());
+			
 			}
 		}
 

@@ -11,7 +11,6 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -36,7 +35,7 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
 
 		// We get ingredients that we can use to modify the point.
-		List<CtCodeElement> ingredientsLocation = null;
+		List<Ingredient> ingredientsLocation = null;
 		if (operationType instanceof ReplaceOp)
 			// we specify the kind of operator, so, ingredients are returned
 			// according to it.
@@ -56,13 +55,13 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 			locationsAnalyzed.add(modificationPoint.getCodeElement());
 			// We create the list to reorder the ingredients without modifying
 			// the original.
-			List<CtCodeElement> ingredientsLocationSort = new ArrayList(ingredientsLocation);
+			List<Ingredient> ingredientsLocationSort = new ArrayList<>(ingredientsLocation);
 
 			// We have never analyze this location, let's sort the ingredients.
-			Collections.sort(ingredientsLocationSort, new Comparator<CtCodeElement>() {
+			Collections.sort(ingredientsLocationSort, new Comparator<Ingredient>() {
 
 				@Override
-				public int compare(CtCodeElement o1, CtCodeElement o2) {
+				public int compare(Ingredient o1, Ingredient o2) {
 					return Integer.compare(o1.toString().length(), o2.toString().length());
 				}
 			});
@@ -73,7 +72,7 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 		int size = ingredientsLocation.size();
 		if (size > 0) {
 			// We get the smaller element
-			CtCodeElement element = ingredientsLocation.get(0);
+			CtElement element = ingredientsLocation.get(0).getCode();
 			// we remove it from space
 			ingredientsLocation.remove(0);
 			return new Ingredient(element, this.ingredientSpace.spaceScope());

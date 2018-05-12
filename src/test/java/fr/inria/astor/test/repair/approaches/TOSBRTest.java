@@ -27,8 +27,8 @@ import fr.inria.astor.approaches.tos.entity.placeholders.VarLiPlaceholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.approaches.tos.ingredients.LiteralsSpace;
-import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSpace;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientRandomSearchStrategy;
+import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSpace;
 import fr.inria.astor.approaches.tos.ingredients.processors.LiteralPlaceholderGenerator;
 import fr.inria.astor.approaches.tos.ingredients.processors.TOSInvocationGenerator;
 import fr.inria.astor.core.entities.Ingredient;
@@ -49,7 +49,6 @@ import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtAbstractInvocation;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
@@ -1111,7 +1110,7 @@ public class TOSBRTest {
 		System.out.println("locations " + locations);
 		assertEquals(1, locations.size());
 		String loc1 = "org.apache.commons.math.analysis.solvers.BisectionSolver";
-		List<CtCodeElement> ingredients = lspace.retrieveIngredients(loc1);
+		List<Ingredient> ingredients = lspace.retrieveIngredients(loc1);
 		System.out.println("ingredient " + ingredients);
 		assertTrue(ingredients.size() > 0);
 		assertEquals(4, ingredients.size());
@@ -1123,11 +1122,11 @@ public class TOSBRTest {
 		System.out.println("locationsP " + locationsP);
 		assertEquals(1, locationsP.size());
 		String locP1 = "org.apache.commons.math.analysis.solvers";
-		List<CtCodeElement> ingredientsPackage = lspaceP.retrieveIngredients(locP1);
+		List<Ingredient> ingredientsPackage = lspaceP.retrieveIngredients(locP1);
 		System.out.println("ingredientP " + ingredientsPackage);
 		assertTrue(ingredientsPackage.size() > 0);
 		assertEquals(34, ingredientsPackage.size());
-		for (CtCodeElement literalPackage : ingredientsPackage) {
+		for (Ingredient literalPackage : ingredientsPackage) {
 			System.out.println("--> " + literalPackage + " " + ((CtLiteral) literalPackage).getType());
 		}
 

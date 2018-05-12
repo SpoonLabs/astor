@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
 import spoon.reflect.code.CtCodeElement;
@@ -14,7 +15,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElement,String, CtCodeElement,String,CtCodeElement> {
+public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElement,String, Ingredient,String,CtCodeElement> {
 
 	boolean discartDuplicates = true;
 	
@@ -59,13 +60,14 @@ public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElem
 
 	public void storeInSpace(CtCodeElement ctCodeElement) {
 		String key = mapKey(ctCodeElement);
-		List<CtCodeElement> ingredientsKey = getFixSpace().get(key);
+		List<Ingredient> ingredientsKey = getFixSpace().get(key);
 		if (!getFixSpace().containsKey(key)) {
-			ingredientsKey = new CacheList<CtCodeElement>();
+			ingredientsKey = new CacheList<Ingredient>();
 			getFixSpace().put(key, ingredientsKey);
 		}
-		if(!discartDuplicates || !ingredientsKey.contains(ctCodeElement)){
-			ingredientsKey.add(ctCodeElement);
+		Ingredient ingredientTOInsert = new Ingredient(ctCodeElement);
+		if(!discartDuplicates || !ingredientsKey.contains(ingredientTOInsert)){
+			ingredientsKey.add(ingredientTOInsert);
 		}
 	}
 	

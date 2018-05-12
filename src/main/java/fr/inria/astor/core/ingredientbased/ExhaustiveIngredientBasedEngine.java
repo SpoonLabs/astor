@@ -165,6 +165,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 					try {
 						operatorInstances = createInstance(modificationPoint, astorOperator);
 					} catch (Exception e) {
+						e.printStackTrace();
 						log.error("Error creating op instances: \n" + e);
 					}
 
