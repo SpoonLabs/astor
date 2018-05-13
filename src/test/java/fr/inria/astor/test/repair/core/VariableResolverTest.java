@@ -18,6 +18,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
@@ -297,10 +298,10 @@ public class VariableResolverTest {
 		System.out.println("Mpoint Context \n" + mp.getContextOfModificationPoint());
 
 		IngredientSpace ispace = jgp.getIngredientSearchStrategy().getIngredientSpace();
-		List<CtElement> ingredients = ispace.getIngredients(mp.getCodeElement());
+		List<Ingredient> ingredients = ispace.getIngredients(mp.getCodeElement());
 
 		// For with a induction variable
-		CtElement ifor = findElement(ingredients, "for (int i = tableau.getNumObjectiveFunctions");// ingredients.get(46);
+		CtElement ifor = findElement(ingredients, "for (int i = tableau.getNumObjectiveFunctions").getCode();// ingredients.get(46);
 																									// //for
 																									// (int
 																									// i
@@ -316,7 +317,7 @@ public class VariableResolverTest {
 		assertTrue(matchFor);
 
 		CtElement iif = findElement(ingredients,
-				"if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i)");// ingredients.get(45);
+				"if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i)").getCode();// ingredients.get(45);
 																								// //if
 																								// ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0,
 																								// i),
@@ -328,14 +329,14 @@ public class VariableResolverTest {
 		// the variable 'i' does not exist in the context
 		assertFalse(matchIf);
 
-		CtElement iStaticSame = findElement(ingredients, "setMaxIterations(");// ingredients.get(0);//static
+		CtElement iStaticSame = findElement(ingredients, "setMaxIterations(").getCode();// ingredients.get(0);//static
 																				// setMaxIterations(org.apache.commons.math.optimization.linear.AbstractLinearOptimizer.DEFAULT_MAX_ITERATIONS)
 		assertTrue(iStaticSame instanceof CtInvocation);
 		assertTrue(iStaticSame.toString().startsWith("setMaxIterations("));
 		boolean matchStSame = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iStaticSame, true);
 		assertTrue(matchStSame);
 
-		CtElement iStaticDouble = findElement(ingredients, "double minRatio = java.lang.Double.MAX_VALUE");// ingredients.get(55);//static
+		CtElement iStaticDouble = findElement(ingredients, "double minRatio = java.lang.Double.MAX_VALUE").getCode();// ingredients.get(55);//static
 		assertTrue(iStaticDouble instanceof CtLocalVariable);
 		assertTrue(iStaticDouble.toString().startsWith("double minRatio = java.lang.Double.MAX_VALUE"));
 		boolean matchSt = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iStaticDouble, true);
@@ -351,9 +352,9 @@ public class VariableResolverTest {
 		return null;
 	}
 
-	private CtElement findElement(List<CtElement> ingredients, String tofind) {
-		for (CtElement ingredient : ingredients) {
-			if (ingredient.toString().startsWith(tofind))
+	private Ingredient findElement(List<Ingredient> ingredients, String tofind) {
+		for (Ingredient ingredient : ingredients) {
+			if (ingredient.getCode().toString().startsWith(tofind))
 				return ingredient;
 		}
 		return null;

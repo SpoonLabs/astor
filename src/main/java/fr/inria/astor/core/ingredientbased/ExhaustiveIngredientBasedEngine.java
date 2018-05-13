@@ -26,6 +26,7 @@ import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * Exhaustive Search Engine
@@ -188,7 +189,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 			AstorOperator astorOperator) throws Exception {
 
 		List<OperatorInstance> ops = new ArrayList<>();
-		List<CtCodeElement> ingredients = new ArrayList<>();
+		List<Ingredient> ingredients = new ArrayList<>();
 
 		if (astorOperator.needIngredient()) {
 			if (astorOperator instanceof ReplaceOp) {
@@ -204,12 +205,14 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 				return ops;
 			}
 			log.debug("Number of ingredients " + ingredients.size());
-			for (CtCodeElement ingredient : ingredients) {
+			for (Ingredient ingredient : ingredients) {
+				
+				CtElement ingredientElement  = ingredient.getCode();
 
 				List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
 
 				List<Ingredient> ingredientsAfterTransformation = this.ingredientTransformationStrategy
-						.transform(modificationPoint, new Ingredient(ingredient));
+						.transform(modificationPoint, new Ingredient(ingredientElement));
 
 				if (instances != null && instances.size() > 0) {
 

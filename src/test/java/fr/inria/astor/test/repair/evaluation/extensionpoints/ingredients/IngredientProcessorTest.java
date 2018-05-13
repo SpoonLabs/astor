@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
@@ -44,7 +45,7 @@ public class IngredientProcessorTest {
 		assertTrue(solutions.size() > 0);
 
 		ProgramVariant pv = solutions.get(0);
-	
+
 		JGenProg jgp = (JGenProg) main1.getEngine();
 		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
@@ -105,11 +106,11 @@ public class IngredientProcessorTest {
 			assertTrue(classToProcess.isInstance(elementFromPoint));
 		}
 
-		List ingredients = ingSpace.getAllIngredients();
+		List<Ingredient> ingredients = ingSpace.getAllIngredients();
 		assertTrue(ingredients.size() > 0);
 
-		for (Object ingredient : ingredients) {
-			assertTrue(classToProcess.isInstance(ingredient));
+		for (Ingredient ingredient : ingredients) {
+			assertTrue(classToProcess.isInstance(ingredient.getCode()));
 		}
 	}
 

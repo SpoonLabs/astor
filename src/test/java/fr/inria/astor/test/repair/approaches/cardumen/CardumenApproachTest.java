@@ -135,13 +135,15 @@ public class CardumenApproachTest {
 
 		log.debug("Locations " + locations);
 
-		for (Ingredient ingredientElement : ingredients) {
+		for (Ingredient ingredient : ingredients) {
+			CtElement ingredientElement = ingredient.getCode();
+
 			assertEquals(codeElement0.getParent(CtType.class).getQualifiedName(),
-					ingredientElement.getCode().getParent(CtType.class).getQualifiedName());
+					ingredientElement.getParent(CtType.class).getQualifiedName());
 			assertEquals(((CtExpression) codeElement0).getType().getQualifiedName(),
 					((CtExpression) ingredientElement).getType().getQualifiedName());
 			assertEquals("org.apache.commons.math.analysis.solvers.BisectionSolver",
-					ingredientElement.getCode().getParent(CtType.class).getQualifiedName());
+					ingredientElement.getParent(CtType.class).getQualifiedName());
 		}
 
 		///
@@ -164,13 +166,15 @@ public class CardumenApproachTest {
 
 		log.debug("Locations " + locations40);
 
-		for (Ingredient ingredientElement : ingredients40) {
+		for (Ingredient ingredient : ingredients40) {
+			CtElement ingredientElement = ingredient.getCode();
+
 			assertEquals(codeElement40.getParent(CtType.class).getQualifiedName(),
-					ingredientElement.getCode().getParent(CtType.class).getQualifiedName());
+					ingredientElement.getParent(CtType.class).getQualifiedName());
 			assertEquals(((CtExpression) codeElement40).getType().getQualifiedName(),
 					((CtExpression) ingredientElement).getType().getQualifiedName());
 			assertEquals("org.apache.commons.math.analysis.solvers.UnivariateRealSolverImpl",
-					ingredientElement.getCode().getParent(CtType.class).getQualifiedName());
+					ingredientElement.getParent(CtType.class).getQualifiedName());
 		}
 
 	}
@@ -212,13 +216,15 @@ public class CardumenApproachTest {
 
 		log.debug("Locations " + locations);
 
-		for (Ingredient ingredientElement : ingredients) {
+		for (Ingredient ingredient : ingredients) {
+
+			CtElement ingredientElement = ingredient.getCode();
 			assertEquals(codeElement0.getParent(CtPackage.class).getQualifiedName(),
-					ingredientElement.getCode().getParent(CtPackage.class).getQualifiedName());
+					ingredientElement.getParent(CtPackage.class).getQualifiedName());
 			assertEquals(((CtExpression) codeElement0).getType().getQualifiedName(),
 					((CtExpression) ingredientElement).getType().getQualifiedName());
 			assertEquals("org.apache.commons.math.analysis.solvers",
-					ingredientElement.getCode().getParent(CtPackage.class).getQualifiedName());
+					ingredientElement.getParent(CtPackage.class).getQualifiedName());
 		}
 
 		///
@@ -243,13 +249,15 @@ public class CardumenApproachTest {
 
 		log.debug("Locations " + locations40);
 
-		for (Ingredient ingredientElement : ingredients40) {
+		for (Ingredient ingredient : ingredients40) {
+			CtElement ingredientElement = ingredient.getCode();
+
 			assertEquals(codeElement40.getParent(CtPackage.class).getQualifiedName(),
-					ingredientElement.getCode().getParent(CtPackage.class).getQualifiedName());
+					ingredientElement.getParent(CtPackage.class).getQualifiedName());
 			assertEquals(((CtExpression) codeElement40).getType().getQualifiedName(),
 					((CtExpression) ingredientElement).getType().getQualifiedName());
 			assertEquals("org.apache.commons.math.analysis.solvers",
-					ingredientElement.getCode().getParent(CtPackage.class).getQualifiedName());
+					ingredientElement.getParent(CtPackage.class).getQualifiedName());
 		}
 
 	}
@@ -895,7 +903,7 @@ public class CardumenApproachTest {
 
 		assertEquals(1, estrategy.exhaustTemplates.keySet().size());
 		assertTrue(!estrategy.exhaustTemplates.get(estrategy.getKey(mp1, op1)).isEmpty());
-		assertTrue(estrategy.exhaustTemplates.get(estrategy.getKey(mp1, op1)).contains(base1));
+		assertTrue(estrategy.exhaustTemplates.get(estrategy.getKey(mp1, op1)).contains(new Ingredient(base1)));
 
 		log.debug("-------Base 2-------------");
 
@@ -920,7 +928,7 @@ public class CardumenApproachTest {
 		int nrcomb2 = ingredientsAfterTransformation2.size();
 		assertEquals(bases1.size(), bases2.size() + 1);
 
-		assertFalse(bases2.contains(base1));
+		assertFalse(bases2.contains(new Ingredient(base1)));
 
 		log.debug("-------Base 3-----------");
 		List<Ingredient> bases3 = estrategy.getNotExhaustedBaseElements(mp1, op1);
@@ -960,19 +968,19 @@ public class CardumenApproachTest {
 		log.debug("Putting zero for " + base3 + " total attepts with zero "
 				+ Stats.currentStat.getIngredientsStats().combinationByIngredientSize.get((long) 0));
 
-		assertTrue(estrategy.exhaustTemplates.get(estrategy.getKey(mp1, op1)).contains(base3));
+		assertTrue(estrategy.exhaustTemplates.get(estrategy.getKey(mp1, op1)).contains(new Ingredient(base3)));
 
 		log.debug("--------BASE 4--no trasformation--------");
 
 		List<Ingredient> bases4 = estrategy.getNotExhaustedBaseElements(mp1, op1);
-		assertFalse(bases4.contains(base3));
+		assertFalse(bases4.contains(new Ingredient(base3)));
 
 		///
 
 		assertTrue(!estrategy.exhaustTemplates.get(estrategy.getKey(mp1, op1)).isEmpty());
 
-		List l = (List) ingredientSpace.mkp.values().toArray()[0];
-		CtCodeElement base4 = (CtCodeElement) l.get(0);
+		List<Ingredient> l = (List) ingredientSpace.mkp.values().toArray()[0];
+		CtCodeElement base4 = (CtCodeElement) l.get(0).getCode();
 		assertEquals("clearResult()", base4.toString());
 
 		long before = Stats.currentStat.getIngredientsStats().combinationByIngredientSize.get((long) 1);
