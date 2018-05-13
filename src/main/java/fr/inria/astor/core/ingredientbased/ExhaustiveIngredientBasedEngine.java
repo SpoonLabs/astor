@@ -206,13 +206,11 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 			}
 			log.debug("Number of ingredients " + ingredients.size());
 			for (Ingredient ingredient : ingredients) {
-				
-				CtElement ingredientElement  = ingredient.getCode();
 
 				List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
 
 				List<Ingredient> ingredientsAfterTransformation = this.ingredientTransformationStrategy
-						.transform(modificationPoint, new Ingredient(ingredientElement));
+						.transform(modificationPoint, ingredient);
 
 				if (instances != null && instances.size() > 0) {
 
