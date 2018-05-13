@@ -105,15 +105,17 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 					if (solution) {
 						log.info("Solution found " + getSolutions().size());
 						this.solutions.add(solutionVariant);
-						if (ConfigurationProperties.getPropertyBool("stopfirst")) {
-							this.setOutputStatus(AstorOutputStatus.STOP_BY_PATCH_FOUND);
-							log.debug(" modpoint analyzed " + modifPointsAnalyzed + ", operators " + operatorExecuted);
-							return;
-						}
+
 					}
 
 					// We undo the operator (for try the next one)
 					undoOperationToSpoonElement(pointOperation);
+
+					if (!this.solutions.isEmpty() && ConfigurationProperties.getPropertyBool("stopfirst")) {
+						this.setOutputStatus(AstorOutputStatus.STOP_BY_PATCH_FOUND);
+						log.debug(" modpoint analyzed " + modifPointsAnalyzed + ", operators " + operatorExecuted);
+						return;
+					}
 
 					if (!belowMaxTime(dateInitEvolution, maxMinutes)) {
 						this.setOutputStatus(AstorOutputStatus.TIME_OUT);
