@@ -12,6 +12,7 @@ function compile {
 compile "examples/Math-0c1ef/"
 compile "examples/math_85/"
 compile "examples/math_70/"
+compile "examples/Math-issue-280/"
 compile "examples/Math-issue-288/"
 compile "examples/math_2/"
 compile "examples/jsoup31be24/"
