@@ -3,7 +3,7 @@ package fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 
 /**
@@ -15,7 +15,7 @@ public class FakeIngredientStrategy extends IngredientSearchStrategy {
 
 	
 
-	public FakeIngredientStrategy(IngredientSpace space) {
+	public FakeIngredientStrategy(IngredientPool space) {
 		super(space);
 	}
 

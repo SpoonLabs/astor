@@ -19,14 +19,12 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.ExhaustiveSearchEngine;
 import fr.inria.astor.core.solutionsearch.navigation.SuspiciousNavigationValues;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.ExtensionPoints;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtElement;
 
 /**
  * Exhaustive Search Engine
@@ -36,7 +34,7 @@ import spoon.reflect.declaration.CtElement;
  */
 public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine implements IngredientBasedApproach {
 
-	protected IngredientSpace ingredientSpace = null;
+	protected IngredientPool ingredientSpace = null;
 
 	protected IngredientTransformationStrategy ingredientTransformationStrategy;
 
@@ -234,21 +232,21 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 		return ops;
 	}
 
-	public IngredientSpace getIngredientSpace() {
+	public IngredientPool getIngredientSpace() {
 		return ingredientSpace;
 	}
 
-	public void setIngredientSpace(IngredientSpace ingredientSpace) {
+	public void setIngredientSpace(IngredientPool ingredientSpace) {
 		this.ingredientSpace = ingredientSpace;
 	}
 
 	@Override
-	public IngredientSpace getIngredientPool() {
+	public IngredientPool getIngredientPool() {
 		return this.ingredientSpace;
 	}
 
 	@Override
-	public void setIngredientPool(IngredientSpace ingredientPool) {
+	public void setIngredientPool(IngredientPool ingredientPool) {
 		this.ingredientSpace = ingredientPool;
 
 	}
@@ -287,7 +285,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	protected void loadIngredientPool() throws JSAPException, Exception {
 		List<TargetElementProcessor<?>> ingredientProcessors = this.getTargetElementProcessors();
 		// The ingredients for build the patches
-		IngredientSpace ingredientspace = IngredientBasedPlugInLoader.getIngredientPool(ingredientProcessors);
+		IngredientPool ingredientspace = IngredientBasedPlugInLoader.getIngredientPool(ingredientProcessors);
 
 		this.setIngredientPool(ingredientspace);
 

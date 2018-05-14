@@ -28,7 +28,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.test.repair.evaluation.extensionpoints.deep.DeepRepairTest;
 import fr.inria.main.evolution.AstorMain;
 import spoon.Launcher;
@@ -297,7 +297,7 @@ public class VariableResolverTest {
 
 		System.out.println("Mpoint Context \n" + mp.getContextOfModificationPoint());
 
-		IngredientSpace ispace = jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPool ispace = jgp.getIngredientSearchStrategy().getIngredientSpace();
 		List<Ingredient> ingredients = ispace.getIngredients(mp.getCodeElement());
 
 		// For with a induction variable

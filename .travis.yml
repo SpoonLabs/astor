@@ -23,9 +23,9 @@ env:
   - TEST=fr.inria.astor.test.repair.core.ValidationTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.RepairnatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.LangTest
-  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngScopeTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientScopeTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientProcessorTest
-  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientSpaceTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientPoolTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.patchsorting.PatchPriorizationTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.SelectionOperatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.RepairOperatorTest

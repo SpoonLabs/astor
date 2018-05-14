@@ -24,7 +24,7 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.InScopeVarsTransformation;
@@ -77,7 +77,7 @@ public class ExpressionBooleanOperatorTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		// Let's check the ingredient space
 		List allingredients = ingSpace.getAllIngredients();

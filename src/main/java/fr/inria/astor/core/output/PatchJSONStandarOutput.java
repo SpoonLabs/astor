@@ -47,6 +47,7 @@ public class PatchJSONStandarOutput implements ReportResults {
 					Object value = parser.parse(vStat.toString());
 					generalStatsjson.put(generalStat.name(), value);
 				} catch (ParseException e) {
+					//e.printStackTrace();
 					log.error(e);
 				}
 			}

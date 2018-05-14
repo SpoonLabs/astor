@@ -12,8 +12,8 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.ingredientbased.IngredientBasedPlugInLoader;
 import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
@@ -35,7 +35,7 @@ public class EfficientIngredientStrategy extends IngredientSearchStrategy {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
-	public EfficientIngredientStrategy(IngredientSpace space) {
+	public EfficientIngredientStrategy(IngredientPool space) {
 		super(space);
 
 		try {

@@ -35,7 +35,7 @@ import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.DynamicIngredient;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.ProbabilisticTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.RandomTransformationStrategy;
@@ -103,7 +103,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70ScopeLocal() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+		IngredientPoolScope scope = IngredientPoolScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -183,7 +183,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70ScopePackage() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -266,7 +266,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70TransformationBugSameCombination() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -324,7 +324,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70TransformationBugSameCombination2() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -383,7 +383,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70bugHEAP() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -447,7 +447,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70InspectIngredients() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -488,7 +488,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70IngredientPartialMapped() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -564,7 +564,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70TransformationReference() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -614,7 +614,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70Evolve() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -642,7 +642,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70EvolveNotUniformreplacement() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 		// Configuration for paper experiment
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.1");
@@ -670,7 +670,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70EvolveUniformreplacement() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+		IngredientPoolScope scope = IngredientPoolScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -703,7 +703,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70EvolveUniformreplacementMostUsedTemplate() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+		IngredientPoolScope scope = IngredientPoolScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.01");
@@ -732,7 +732,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70Suspicious() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+		IngredientPoolScope scope = IngredientPoolScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		Integer maxsusp = 2;
@@ -783,7 +783,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70AssertStats() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+		IngredientPoolScope scope = IngredientPoolScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.1");
@@ -1018,7 +1018,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70MaxModPoints() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 
 		int maxModPoints = 7;// Let's say 7, the number of MP over this
 								// configuration is 12.
@@ -1045,7 +1045,7 @@ public class CardumenApproachTest {
 	public void testCardumentM42() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath42Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 		boolean uniformreplacement = false;
 		command.command.put("-mode", ExecutionMode.custom.name());
 		command.command.put("-flthreshold", "0.1");
@@ -1067,7 +1067,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70ScopeLocalProbTransformation() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+		IngredientPoolScope scope = IngredientPoolScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.00");
@@ -1121,7 +1121,7 @@ public class CardumenApproachTest {
 	public void testCardumentM70ScopeLocalRandomTransformation() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+		IngredientPoolScope scope = IngredientPoolScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.00");
@@ -1174,7 +1174,7 @@ public class CardumenApproachTest {
 	public void testCardumentM57() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath57Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+		IngredientPoolScope scope = IngredientPoolScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
 		command.command.put("-flthreshold", "0.1");

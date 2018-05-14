@@ -8,7 +8,7 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.util.MapList;
@@ -20,7 +20,7 @@ import fr.inria.astor.util.MapList;
  */
 public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy {
 
-	public ProbabilisticIngredientStrategy(IngredientSpace space) {
+	public ProbabilisticIngredientStrategy(IngredientPool space) {
 		super(space);
 	}
 

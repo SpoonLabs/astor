@@ -19,7 +19,7 @@ import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.population.PopulationConformation;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.CommandSummary;
@@ -32,7 +32,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class IngScopeTest extends BaseEvolutionaryTest {
+public class IngredientScopeTest extends BaseEvolutionaryTest {
 
 	@SuppressWarnings("rawtypes")
 	@Test
@@ -59,7 +59,7 @@ public class IngScopeTest extends BaseEvolutionaryTest {
 
 		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
-		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());
+		assertEquals(IngredientPoolScope.LOCAL, mi.getIngredientScope());
 
 		assertEquals("return solve(f, min, max)", mi.getModified().toString());
 
@@ -96,7 +96,7 @@ public class IngScopeTest extends BaseEvolutionaryTest {
 
 		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
-		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());
+		assertEquals(IngredientPoolScope.LOCAL, mi.getIngredientScope());
 
 		// mi.getIngredientScope()
 		// Program variant ref to

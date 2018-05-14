@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.astor.core.validation.results.TestResult;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
@@ -47,7 +47,7 @@ public class TestRunnerTest {
 
 		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
-		assertEquals(IngredientSpaceScope.LOCAL, mi.getIngredientScope());
+		assertEquals(IngredientPoolScope.LOCAL, mi.getIngredientScope());
 
 		assertEquals("return solve(f, min, max)", mi.getModified().toString());
 

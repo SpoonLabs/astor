@@ -8,7 +8,7 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -21,7 +21,7 @@ import spoon.reflect.declaration.CtType;
  *
  */
 public class CtLocationIngredientSpace
-		extends AstorIngredientSpace<CtElement, CtElement, Ingredient, String, CtCodeElement> {
+		extends IngredientPoolLocationType<CtElement, CtElement, Ingredient, String, CtCodeElement> {
 
 	/**
 	 * This class indicate the scope of a ingredient search. If the class is a
@@ -87,8 +87,8 @@ public class CtLocationIngredientSpace
 	}
 
 	@Override
-	public IngredientSpaceScope spaceScope() {
-		return IngredientSpaceScope.CUSTOM;
+	public IngredientPoolScope spaceScope() {
+		return IngredientPoolScope.CUSTOM;
 	}
 
 	@Override

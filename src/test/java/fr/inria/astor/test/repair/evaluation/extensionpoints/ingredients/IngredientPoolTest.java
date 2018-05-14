@@ -19,7 +19,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.CtLocationIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.MethodBasicIngredientScope;
@@ -39,11 +39,11 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class IngredientSpaceTest extends BaseEvolutionaryTest {
+public class IngredientPoolTest extends BaseEvolutionaryTest {
 
 	File out = null;
 
-	public IngredientSpaceTest() {
+	public IngredientPoolTest() {
 		out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 	}
 
@@ -386,7 +386,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 
 		// We retrieve the engine
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		IngredientSpace ispace = jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPool ispace = jgp.getIngredientSearchStrategy().getIngredientSpace();
 		// List of locations considered by the space
 		List<CtElement> ctLocations = ispace.getLocations();
 		// Only one class has suspicious:
@@ -419,7 +419,7 @@ public class IngredientSpaceTest extends BaseEvolutionaryTest {
 
 		// We retrieve the engine
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		IngredientSpace ispace = jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPool ispace = jgp.getIngredientSearchStrategy().getIngredientSpace();
 		// List of locations considered by the space
 		List<CtElement> ctLocations = ispace.getLocations();
 		// Only one class has suspicious:

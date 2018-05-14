@@ -12,12 +12,12 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.CacheList;
 
 /**
  * 
- * This class defines an implementation of IngredientSpace, which groups
+ * This class defines an implementation of IngredientPool, which groups
  * ingredients according to the content of the ingredient.
  * 
  * @author Matias Martinez
  */
-public abstract class AstorIngredientSpace<Q, K, I, T, P> implements IngredientSpace<Q, K, I, T> {
+public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements IngredientPool<Q, K, I, T> {
 	/**
 	 * Maps that represent the ingredient space. We define different structures
 	 * to optimize the search.
@@ -29,7 +29,7 @@ public abstract class AstorIngredientSpace<Q, K, I, T, P> implements IngredientS
 
 	protected IngredientProcessor<Q, P> ingredientProcessor;
 
-	public AstorIngredientSpace() throws JSAPException {
+	public IngredientPoolLocationType() throws JSAPException {
 		super();
 		ingredientProcessor = new IngredientProcessor<Q, P>();
 
@@ -41,7 +41,7 @@ public abstract class AstorIngredientSpace<Q, K, I, T, P> implements IngredientS
 	 *            processor such as @link{InvocationFixSpaceProcessor}
 	 * @throws JSAPException
 	 */
-	public AstorIngredientSpace(TargetElementProcessor<?> processor) throws JSAPException {
+	public IngredientPoolLocationType(TargetElementProcessor<?> processor) throws JSAPException {
 		super();
 		ingredientProcessor = new IngredientProcessor<Q, P>(processor);
 	}
@@ -51,7 +51,7 @@ public abstract class AstorIngredientSpace<Q, K, I, T, P> implements IngredientS
 	 * @param processors
 	 * @throws JSAPException
 	 */
-	public AstorIngredientSpace(List<TargetElementProcessor<?>> processors) throws JSAPException {
+	public IngredientPoolLocationType(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super();
 		ingredientProcessor = new IngredientProcessor<Q, P>(processors);
 	}

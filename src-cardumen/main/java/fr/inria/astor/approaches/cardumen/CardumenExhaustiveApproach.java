@@ -12,7 +12,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionClassTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.main.evolution.ExtensionPoints;
 
 /**
@@ -50,7 +50,7 @@ public class CardumenExhaustiveApproach extends ExhaustiveIngredientBasedEngine 
 				: new ExpressionTypeIngredientSpace(ingredientProcessors));
 		String scope = ConfigurationProperties.getProperty(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE.identifier);
 		if (scope != null) {
-			ingredientspace.scope = IngredientSpaceScope.valueOf(scope.toUpperCase());
+			ingredientspace.scope = IngredientPoolScope.valueOf(scope.toUpperCase());
 		}
 		this.setIngredientPool(ingredientspace);
 	}

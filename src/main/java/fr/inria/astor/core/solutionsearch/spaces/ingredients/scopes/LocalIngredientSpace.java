@@ -16,7 +16,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class LocalIngredientSpace extends AstorCtIngredientSpace {
+public class LocalIngredientSpace extends AstorCtIngredientPool {
 
 	public LocalIngredientSpace(TargetElementProcessor<?> processor) throws JSAPException {
 		super(processor);
@@ -47,8 +47,8 @@ public class LocalIngredientSpace extends AstorCtIngredientSpace {
 	}
 
 	@Override
-	public IngredientSpaceScope spaceScope() {
-		return IngredientSpaceScope.LOCAL;
+	public IngredientPoolScope spaceScope() {
+		return IngredientPoolScope.LOCAL;
 	}
 
 	@Override

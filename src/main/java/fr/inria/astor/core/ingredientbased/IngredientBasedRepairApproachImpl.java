@@ -14,8 +14,8 @@ import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
@@ -46,7 +46,7 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 
 	protected IngredientSearchStrategy ingredientSearchStrategy;
 	protected IngredientTransformationStrategy ingredientTransformationStrategy;
-	protected IngredientSpace ingredientPool;
+	protected IngredientPool ingredientPool;
 
 	public IngredientBasedRepairApproachImpl(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
@@ -156,11 +156,11 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 		this.ingredientSearchStrategy = ingredientStrategy;
 	}
 
-	public IngredientSpace getIngredientPool() {
+	public IngredientPool getIngredientPool() {
 		return ingredientPool;
 	}
 
-	public void setIngredientPool(IngredientSpace ingredientPool) {
+	public void setIngredientPool(IngredientPool ingredientPool) {
 		this.ingredientPool = ingredientPool;
 	}
 
@@ -168,16 +168,16 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 	protected void loadIngredientPool() throws JSAPException, Exception {
 		List<TargetElementProcessor<?>> ingredientProcessors = this.getTargetElementProcessors();
 		// The ingredients for build the patches
-		IngredientSpace ingredientspace = getIngredientPool(ingredientProcessors);
+		IngredientPool ingredientspace = getIngredientPool(ingredientProcessors);
 
 		this.setIngredientPool(ingredientspace);
 
 	}
 
-	public static IngredientSpace getIngredientPool(List<TargetElementProcessor<?>> ingredientProcessors)
+	public static IngredientPool getIngredientPool(List<TargetElementProcessor<?>> ingredientProcessors)
 			throws JSAPException, Exception {
 		String scope = ConfigurationProperties.properties.getProperty("scope");
-		IngredientSpace ingredientspace = null;
+		IngredientPool ingredientspace = null;
 		if ("global".equals(scope)) {
 			ingredientspace = (new GlobalBasicIngredientSpace(ingredientProcessors));
 		} else if ("package".equals(scope)) {
@@ -185,7 +185,7 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 		} else if ("local".equals(scope) || "file".equals(scope)) {
 			ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
 		} else {
-			ingredientspace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
+			ingredientspace = (IngredientPool) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
 					new Class[] { List.class }, new Object[] { ingredientProcessors });
 
 		}
@@ -195,7 +195,7 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientSearchStrategy() throws Exception {
 
-		IngredientSpace ingredientspace = this.getIngredientPool();
+		IngredientPool ingredientspace = this.getIngredientPool();
 
 		IngredientSearchStrategy ingStrategy = null;
 
@@ -212,7 +212,7 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 				ingStrategy = new CloneIngredientSearchStrategy(ingredientspace);
 			} else {
 				ingStrategy = (IngredientSearchStrategy) PlugInLoader.loadPlugin(
-						ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[] { IngredientSpace.class },
+						ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[] { IngredientPool.class },
 						new Object[] { ingredientspace });
 			}
 		} else {

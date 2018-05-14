@@ -21,9 +21,9 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.CacheList;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
@@ -36,10 +36,10 @@ import spoon.reflect.declaration.CtType;
  *
  */
 public class TOSIngredientSpace<T extends CtElement>
-		extends AstorIngredientSpace<CtElement, String, Ingredient, String, CtCodeElement> {
+		extends IngredientPoolLocationType<CtElement, String, Ingredient, String, CtCodeElement> {
 
 	// TODO:
-	public IngredientSpaceScope scope;
+	public IngredientPoolScope scope;
 	/**
 	 * Entity that stores the stats of TOS.
 	 */
@@ -213,7 +213,7 @@ public class TOSIngredientSpace<T extends CtElement>
 
 	protected List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {
 
-		if (IngredientSpaceScope.PACKAGE.equals(scope)) {
+		if (IngredientPoolScope.PACKAGE.equals(scope)) {
 			List<CtType<?>> affected = variant.getAffectedClasses();
 			List<CtType<?>> types = new ArrayList<>();
 			List<CtPackage> packageAnalyzed = new ArrayList<>();
@@ -229,28 +229,28 @@ public class TOSIngredientSpace<T extends CtElement>
 			}
 			return types;
 		}
-		if (IngredientSpaceScope.LOCAL.equals(scope)) {
+		if (IngredientPoolScope.LOCAL.equals(scope)) {
 			return variant.getAffectedClasses();
 		}
-		if (IngredientSpaceScope.GLOBAL.equals(scope)) {
+		if (IngredientPoolScope.GLOBAL.equals(scope)) {
 			return MutationSupporter.getFactory().Type().getAll();
 		}
 		return null;
 	}
 
 	@Override
-	public IngredientSpaceScope spaceScope() {
+	public IngredientPoolScope spaceScope() {
 		return this.scope;
 	}
 
 	@Override
 	public String calculateLocation(CtElement elementToModify) {
 
-		if (IngredientSpaceScope.PACKAGE.equals(scope)) {
+		if (IngredientPoolScope.PACKAGE.equals(scope)) {
 			return elementToModify.getParent(CtPackage.class).getQualifiedName();
-		} else if (IngredientSpaceScope.LOCAL.equals(scope)) {
+		} else if (IngredientPoolScope.LOCAL.equals(scope)) {
 			return elementToModify.getParent(CtType.class).getQualifiedName();
-		} else if (IngredientSpaceScope.GLOBAL.equals(scope))
+		} else if (IngredientPoolScope.GLOBAL.equals(scope))
 			return "Global";
 
 		return null;

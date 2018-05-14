@@ -14,7 +14,7 @@ import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy4Exhaustive;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.main.evolution.ExtensionPoints;
@@ -37,7 +37,7 @@ public class DeepRepairExhausitiveCloneEngine extends ExhaustiveIngredientBasedE
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 
 		try {
-			this.ingredientSpace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
+			this.ingredientSpace = (IngredientPool) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
 					new Class[] { List.class }, new Object[] { ingredientProcessors });
 	
 		} catch (Exception e) {

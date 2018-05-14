@@ -31,7 +31,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -206,7 +206,7 @@ public class PatchGenerator {
 	public LiteralsSpace getSpace(ProgramVariant pv) {
 
 		String scope = ConfigurationProperties.properties.getProperty("scope");
-		IngredientSpaceScope ingScope = IngredientSpaceScope.valueOf(scope.toUpperCase());
+		IngredientPoolScope ingScope = IngredientPoolScope.valueOf(scope.toUpperCase());
 		if (literalspace == null) {
 			try {
 				logger.debug("Initializing literal space: scope " + ingScope);

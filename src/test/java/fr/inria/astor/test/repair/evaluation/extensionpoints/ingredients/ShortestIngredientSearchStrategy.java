@@ -9,7 +9,7 @@ import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import spoon.reflect.declaration.CtElement;
 
@@ -25,7 +25,7 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 
 	private List<CtElement> locationsAnalyzed = new ArrayList<>();
 
-	public ShortestIngredientSearchStrategy(IngredientSpace space) {
+	public ShortestIngredientSearchStrategy(IngredientPool space) {
 		super(space);
 
 	}

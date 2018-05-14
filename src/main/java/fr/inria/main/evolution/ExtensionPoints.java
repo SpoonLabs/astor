@@ -8,8 +8,8 @@ import fr.inria.astor.core.solutionsearch.extension.VariantCompiler;
 import fr.inria.astor.core.solutionsearch.navigation.SuspiciousNavigationStrategy;
 import fr.inria.astor.core.solutionsearch.population.FitnessFunction;
 import fr.inria.astor.core.solutionsearch.population.PopulationController;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
@@ -26,7 +26,7 @@ public enum ExtensionPoints {
 	FITNESS_FUNCTION("fitnessfunction",FitnessFunction.class), //
 	COMPILER("compiler",VariantCompiler.class),//
 	POPULATION_CONTROLLER("populationcontroller",PopulationController.class),//
-	INGREDIENT_STRATEGY_SCOPE("scope",IngredientSpace.class),//
+	INGREDIENT_STRATEGY_SCOPE("scope",IngredientPool.class),//
 	SOLUTION_SORT_CRITERION("patchprioritization",SolutionVariantSortCriterion.class), 
 	VALIDATION("validation",ProgramVariantValidator.class), //
 	CUSTOM_OPERATOR("customop",AstorOperator.class),//

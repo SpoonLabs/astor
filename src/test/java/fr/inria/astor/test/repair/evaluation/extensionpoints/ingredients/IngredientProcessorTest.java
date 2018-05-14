@@ -14,7 +14,7 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.MethodInvocationFixSpaceProcessor;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
@@ -47,7 +47,7 @@ public class IngredientProcessorTest {
 		ProgramVariant pv = solutions.get(0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		List ingredients = ingSpace.getAllIngredients();
 		assertTrue(ingredients.size() > 0);
@@ -72,7 +72,7 @@ public class IngredientProcessorTest {
 		ProgramVariant pv = variantss.get(0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		checkIngredientTypes(variantss, ingSpace, CtInvocation.class);
 	}
@@ -92,13 +92,13 @@ public class IngredientProcessorTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		checkIngredientTypes(variantss, ingSpace, CtExpression.class);
 
 	}
 
-	public void checkIngredientTypes(List<ProgramVariant> variantss, AstorIngredientSpace ingSpace,
+	public void checkIngredientTypes(List<ProgramVariant> variantss, IngredientPoolLocationType ingSpace,
 			Class classToProcess) {
 		ProgramVariant pv = variantss.get(0);
 		for (ModificationPoint modificationPoint : pv.getModificationPoints()) {

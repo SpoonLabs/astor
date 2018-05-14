@@ -57,8 +57,8 @@ public class GlobalBasicIngredientSpace extends LocalIngredientSpace {
 	}
 
 	@Override
-	public IngredientSpaceScope spaceScope() {
-		return IngredientSpaceScope.GLOBAL;
+	public IngredientPoolScope spaceScope() {
+		return IngredientPoolScope.GLOBAL;
 	}
 
 	public String toString() {

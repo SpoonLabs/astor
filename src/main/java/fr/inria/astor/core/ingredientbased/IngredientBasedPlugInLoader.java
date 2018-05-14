@@ -9,8 +9,8 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
@@ -45,16 +45,16 @@ public class IngredientBasedPlugInLoader  {
 		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 		List<TargetElementProcessor<?>> ingredientProcessors = approach.getTargetElementProcessors();
 		// The ingredients for build the patches
-		IngredientSpace ingredientspace = getIngredientPool(ingredientProcessors);
+		IngredientPool ingredientspace = getIngredientPool(ingredientProcessors);
 
 		ibra.setIngredientPool(ingredientspace);
 
 	}
 
-	public static IngredientSpace getIngredientPool(List<TargetElementProcessor<?>> ingredientProcessors)
+	public static IngredientPool getIngredientPool(List<TargetElementProcessor<?>> ingredientProcessors)
 			throws JSAPException, Exception {
 		String scope = ConfigurationProperties.properties.getProperty("scope");
-		IngredientSpace ingredientspace = null;
+		IngredientPool ingredientspace = null;
 		if ("global".equals(scope)) {
 			ingredientspace = (new GlobalBasicIngredientSpace(ingredientProcessors));
 		} else if ("package".equals(scope)) {
@@ -62,7 +62,7 @@ public class IngredientBasedPlugInLoader  {
 		} else if ("local".equals(scope) || "file".equals(scope)) {
 			ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
 		} else {
-			ingredientspace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
+			ingredientspace = (IngredientPool) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
 					new Class[] { List.class }, new Object[] { ingredientProcessors });
 
 		}
@@ -74,7 +74,7 @@ public class IngredientBasedPlugInLoader  {
 
 		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 
-		IngredientSpace ingredientspace = ibra.getIngredientPool();
+		IngredientPool ingredientspace = ibra.getIngredientPool();
 
 		IngredientSearchStrategy ingStrategy = null;
 
@@ -91,7 +91,7 @@ public class IngredientBasedPlugInLoader  {
 				ingStrategy = new CloneIngredientSearchStrategy(ingredientspace);
 			} else {
 				ingStrategy = (IngredientSearchStrategy) PlugInLoader.loadPlugin(
-						ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[] { IngredientSpace.class },
+						ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[] { IngredientPool.class },
 						new Object[] { ingredientspace });
 			}
 		} else {

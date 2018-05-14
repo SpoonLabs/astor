@@ -15,7 +15,7 @@ import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine4Stats;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
@@ -37,7 +37,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 	public void testCardumentM70ExhausitveComplete() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 		// Configuration for paper experiment
 		command.command.put("-mode", ExecutionMode.custom.name());
 		command.command.put("-flthreshold", "0.1");
@@ -72,7 +72,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 	public void testCardumentM70Exhausitve() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.LOCAL;
+		IngredientPoolScope scope = IngredientPoolScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.custom.name());
 		command.command.put("-flthreshold", "0.1");
@@ -115,7 +115,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 	public void testCardumentM70ExhausitveMaxLimited() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 		// Configuration for paper experiment
 		command.command.put("-mode", ExecutionMode.custom.name());
 		command.command.put("-flthreshold", "0.1");
@@ -144,7 +144,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 	public void testCardumentM70ExhausitveMaxSuspiciousLimited() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 
 		command.command.put("-mode", ExecutionMode.custom.name());
 		command.command.put("-flthreshold", "0.1");
@@ -180,7 +180,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 	public void testCardumentM70ExhausitveReplacement() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 
-		IngredientSpaceScope scope = IngredientSpaceScope.PACKAGE;
+		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 		boolean uniformreplacement = false;
 		command.command.put("-mode", ExecutionMode.custom.name());
 		command.command.put("-flthreshold", "0.1");

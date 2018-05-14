@@ -23,7 +23,7 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -39,9 +39,9 @@ import spoon.reflect.declaration.CtType;
  *
  */
 public class ExpressionTypeIngredientSpace
-		extends AstorIngredientSpace<CtElement, String, Ingredient, String, CtCodeElement> {
+		extends IngredientPoolLocationType<CtElement, String, Ingredient, String, CtCodeElement> {
 
-	public IngredientSpaceScope scope;
+	public IngredientPoolScope scope;
 
 	public MultiKeyMap mkp = new MultiKeyMap();
 
@@ -128,31 +128,31 @@ public class ExpressionTypeIngredientSpace
 
 	protected List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {
 
-		if (IngredientSpaceScope.PACKAGE.equals(scope)) {
+		if (IngredientPoolScope.PACKAGE.equals(scope)) {
 			return variant.getAffectedClasses();
 		}
-		if (IngredientSpaceScope.LOCAL.equals(scope)) {
+		if (IngredientPoolScope.LOCAL.equals(scope)) {
 			return variant.getAffectedClasses();
 		}
-		if (IngredientSpaceScope.GLOBAL.equals(scope)) {
+		if (IngredientPoolScope.GLOBAL.equals(scope)) {
 			return MutationSupporter.getFactory().Type().getAll();
 		}
 		return null;
 	}
 
 	@Override
-	public IngredientSpaceScope spaceScope() {
+	public IngredientPoolScope spaceScope() {
 		return null;
 	}
 
 	@Override
 	public String calculateLocation(CtElement elementToModify) {
 
-		if (IngredientSpaceScope.PACKAGE.equals(scope)) {
+		if (IngredientPoolScope.PACKAGE.equals(scope)) {
 			return elementToModify.getParent(CtPackage.class).getQualifiedName();
-		} else if (IngredientSpaceScope.LOCAL.equals(scope)) {
+		} else if (IngredientPoolScope.LOCAL.equals(scope)) {
 			return elementToModify.getParent(CtType.class).getQualifiedName();
-		} else if (IngredientSpaceScope.GLOBAL.equals(scope))
+		} else if (IngredientPoolScope.GLOBAL.equals(scope))
 			return "Global";
 
 		return null;

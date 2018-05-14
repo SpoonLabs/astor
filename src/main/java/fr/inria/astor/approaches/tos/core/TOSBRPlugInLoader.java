@@ -12,7 +12,7 @@ import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.main.evolution.ExtensionPoints;
 
@@ -40,7 +40,7 @@ public class TOSBRPlugInLoader {
 		TOSIngredientSpace ingredientspace = new TOSIngredientSpace(ingredientProcessors);
 		String scope = ConfigurationProperties.getProperty(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE.identifier);
 		if (scope != null) {
-			ingredientspace.scope = IngredientSpaceScope.valueOf(scope.toUpperCase());
+			ingredientspace.scope = IngredientPoolScope.valueOf(scope.toUpperCase());
 		}
 		ibra.setIngredientPool(ingredientspace);
 	

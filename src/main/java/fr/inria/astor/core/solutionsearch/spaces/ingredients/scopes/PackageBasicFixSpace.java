@@ -55,8 +55,8 @@ public class PackageBasicFixSpace extends LocalIngredientSpace {
 	}
 
 	@Override
-	public IngredientSpaceScope spaceScope() {
-		return IngredientSpaceScope.PACKAGE;
+	public IngredientPoolScope spaceScope() {
+		return IngredientPoolScope.PACKAGE;
 	}
 	
 	

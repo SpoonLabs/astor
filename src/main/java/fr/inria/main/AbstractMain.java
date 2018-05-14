@@ -30,7 +30,7 @@ import fr.inria.astor.core.solutionsearch.population.FitnessFunction;
 import fr.inria.astor.core.solutionsearch.population.PopulationConformation;
 import fr.inria.astor.core.solutionsearch.population.PopulationController;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.AstorCtIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.AstorCtIngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
@@ -174,7 +174,7 @@ public abstract class AbstractMain {
 		options.addOption("scope", true,
 				"(Optional) Scope of the ingredient seach space: Local (same class), package (classes from the same package) or global (all classes from the application under analysis). Default: local."
 						+ " It accepts customize scopes, which must implement from "
-						+ AstorCtIngredientSpace.class.getCanonicalName());
+						+ AstorCtIngredientPool.class.getCanonicalName());
 
 		options.addOption("skipfaultlocalization", false,
 				"The fault localization is skipped and all statements are considered");
