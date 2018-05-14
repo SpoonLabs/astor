@@ -20,15 +20,15 @@ import spoon.support.RuntimeProcessingManager;
  * @param <T>
  *
  */
-public class IngredientProcessor<K, T> 
+public class CodeParserLauncher<K, T> 
 	extends Launcher {
 	
 	
-	private Logger logger = Logger.getLogger(IngredientProcessor.class.getName());
+	private Logger logger = Logger.getLogger(CodeParserLauncher.class.getName());
 	
 	private ProcessingManager processing = null;
 			
-	public IngredientProcessor() throws JSAPException {
+	public CodeParserLauncher() throws JSAPException {
 		super();
 		this.processing = new RuntimeProcessingManager(MutationSupporter.getFactory());
 		
@@ -38,7 +38,7 @@ public class IngredientProcessor<K, T>
 	 * @param processor processor such as  @link{InvocationFixSpaceProcessor}
 	 * @throws JSAPException
 	 */
-	public IngredientProcessor(TargetElementProcessor<?> processor) throws JSAPException {
+	public CodeParserLauncher(TargetElementProcessor<?> processor) throws JSAPException {
 		this();
 		processing.addProcessor(processor.getClass().getName());
 
@@ -48,7 +48,7 @@ public class IngredientProcessor<K, T>
 	 * @param processors
 	 * @throws JSAPException
 	 */
-	public IngredientProcessor(List<TargetElementProcessor<?>> processors) throws JSAPException {
+	public CodeParserLauncher(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		this();
 		for (TargetElementProcessor<?> abstractFixSpaceProcessor : processors) {
 			processing.addProcessor(abstractFixSpaceProcessor.getClass().getName() );

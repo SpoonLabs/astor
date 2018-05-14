@@ -25,7 +25,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.InScopeVarsTransformation;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
@@ -63,7 +63,7 @@ public class ExpressionBooleanOperatorTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "cleantemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
@@ -90,7 +90,7 @@ public class ExpressionBooleanOperatorTest {
 
 		ExpressionBooleanIngredientSpaceProcessor bexp = new ExpressionBooleanIngredientSpaceProcessor();
 
-		IngredientProcessor ip = new IngredientProcessor<>(bexp);
+		CodeParserLauncher ip = new CodeParserLauncher<>(bexp);
 
 		assertEquals("BisectionSolver", variantss.get(0).getAffectedClasses().get(0).getSimpleName());
 		List ingredientRetrieved = ip.createFixSpace(variantss.get(0).getAffectedClasses().get(0));
@@ -139,7 +139,7 @@ public class ExpressionBooleanOperatorTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator
@@ -161,7 +161,7 @@ public class ExpressionBooleanOperatorTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates"
@@ -203,7 +203,7 @@ public class ExpressionBooleanOperatorTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates"
@@ -254,7 +254,7 @@ public class ExpressionBooleanOperatorTest {
 	public void testM70CheckTypesOfKeys() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates:false");
@@ -295,7 +295,7 @@ public class ExpressionBooleanOperatorTest {
 	public void testM70ExpressionProcessingTransform() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates:false");
@@ -361,7 +361,7 @@ public class ExpressionBooleanOperatorTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "cleantemplates:false");
 		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
@@ -430,7 +430,7 @@ public class ExpressionBooleanOperatorTest {
 				"target/classes/", "-bintestfolder", "target/test-classes/", "-flthreshold", "0.1", "-loglevel",
 				"DEBUG", "-scope", ExpressionTypeIngredientSpace.class.getCanonicalName(), "-customop",
 				"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator", "-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier
 						+ ":fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:"
 						+ "ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation:"
 						+ "cleantemplates:true", };

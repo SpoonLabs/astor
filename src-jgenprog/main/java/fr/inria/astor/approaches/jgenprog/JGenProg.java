@@ -25,7 +25,7 @@ public class JGenProg extends IngredientBasedRepairApproachImpl {
 		super(mutatorExecutor, projFacade);
 		setPropertyIfNotDefined(ExtensionPoints.OPERATORS_SPACE.identifier, "irr-statements");
 
-		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
+		setPropertyIfNotDefined(ExtensionPoints.TARGET_CODE_PROCESSOR.identifier, "statements");
 	}
 
 	@Override

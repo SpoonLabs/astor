@@ -27,11 +27,11 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 	protected Map<T, List<I>> fixSpaceByType = new HashMap<T, List<I>>();
 	protected Map<Q, K> keysLocation = new HashMap<Q, K>();
 
-	protected IngredientProcessor<Q, P> ingredientProcessor;
+	protected CodeParserLauncher<Q, P> ingredientProcessor;
 
 	public IngredientPoolLocationType() throws JSAPException {
 		super();
-		ingredientProcessor = new IngredientProcessor<Q, P>();
+		ingredientProcessor = new CodeParserLauncher<Q, P>();
 
 	}
 
@@ -43,7 +43,7 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 	 */
 	public IngredientPoolLocationType(TargetElementProcessor<?> processor) throws JSAPException {
 		super();
-		ingredientProcessor = new IngredientProcessor<Q, P>(processor);
+		ingredientProcessor = new CodeParserLauncher<Q, P>(processor);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 	 */
 	public IngredientPoolLocationType(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super();
-		ingredientProcessor = new IngredientProcessor<Q, P>(processors);
+		ingredientProcessor = new CodeParserLauncher<Q, P>(processors);
 	}
 
 	protected Map<K, List<I>> getFixSpace() {
@@ -193,11 +193,11 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 		return s;
 	}
 
-	public IngredientProcessor<Q, P> getIngredientProcessor() {
+	public CodeParserLauncher<Q, P> getIngredientProcessor() {
 		return ingredientProcessor;
 	}
 
-	public void setIngredientProcessor(IngredientProcessor<Q, P> ingredientProcessor) {
+	public void setIngredientProcessor(CodeParserLauncher<Q, P> ingredientProcessor) {
 		this.ingredientProcessor = ingredientProcessor;
 	}
 	public List<I> retrieveIngredients(K key) {

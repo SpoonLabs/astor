@@ -59,7 +59,7 @@ public class IngredientProcessorTest {
 	public void testM70MethodInvocation() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ MethodInvocationFixSpaceProcessor.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 
@@ -81,7 +81,7 @@ public class IngredientProcessorTest {
 	public void testM70Expression() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionIngredientSpaceProcessor.class.getCanonicalName());
 		command.command.put("-maxgen", "0");// Avoid evolution
 

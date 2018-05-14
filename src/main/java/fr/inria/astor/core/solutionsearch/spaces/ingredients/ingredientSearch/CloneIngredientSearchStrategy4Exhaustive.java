@@ -29,7 +29,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
@@ -421,7 +421,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 		log.debug("For " + suspicious.getSimpleName() + " simlist: " + simlist.size());
 		for (T element : simlist) {
 			try {
-				IngredientProcessor<?, CtStatement> ipro = new IngredientProcessor<>(
+				CodeParserLauncher<?, CtStatement> ipro = new CodeParserLauncher<>(
 						new SingleStatementFixSpaceProcessor());
 				statements = ipro.createFixSpace(element);
 				//log.debug(element.getSimpleName() + " from simlist, statements: (" + statements.size() + ")");

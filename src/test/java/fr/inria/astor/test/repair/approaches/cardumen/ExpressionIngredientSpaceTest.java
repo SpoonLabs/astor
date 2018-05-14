@@ -66,7 +66,7 @@ public class ExpressionIngredientSpaceTest {
 	public void testM70ExpressionAdaptation() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates:false");
@@ -180,7 +180,7 @@ public class ExpressionIngredientSpaceTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "applytemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
@@ -251,7 +251,7 @@ public class ExpressionIngredientSpaceTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "applytemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
@@ -304,7 +304,7 @@ public class ExpressionIngredientSpaceTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "applytemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
@@ -369,7 +369,7 @@ public class ExpressionIngredientSpaceTest {
 	public void testM70InspectSpace() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "applytemplates:false");

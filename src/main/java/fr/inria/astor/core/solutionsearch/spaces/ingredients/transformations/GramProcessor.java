@@ -15,7 +15,7 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
@@ -63,7 +63,7 @@ public class GramProcessor {
 		
 		NGrams gramsFromClass = new NGrams();
 
-		IngredientProcessor ingp = new IngredientProcessor<>(ingredientProcessor);
+		CodeParserLauncher ingp = new CodeParserLauncher<>(ingredientProcessor);
 		int allElements = 0;
 		CtType typeToProcess = type;
 		while (typeToProcess != null // &&
@@ -94,7 +94,7 @@ public class GramProcessor {
 	 * @param ingp
 	 * @return
 	 */
-	private int getNGramsFromCodeElements(CtElement codeToProcess, NGrams ngramStore, IngredientProcessor ingp) {
+	private int getNGramsFromCodeElements(CtElement codeToProcess, NGrams ngramStore, CodeParserLauncher ingp) {
 
 		int allElements = 0;
 
@@ -144,7 +144,7 @@ public class GramProcessor {
 	public Map<String, NGrams> calculateByPackage(List<CtType<?>> all) throws JSAPException {
 
 		Map<String, NGrams> result = new HashedMap();
-		IngredientProcessor ingp = new IngredientProcessor<>(ingredientProcessor);
+		CodeParserLauncher ingp = new CodeParserLauncher<>(ingredientProcessor);
 		int allElements = 0;
 
 		for (CtType<?> ctType : all) {
@@ -162,7 +162,7 @@ public class GramProcessor {
 	public Map<String, NGrams> calculateByType(List<CtType<?>> all) throws JSAPException {
 
 		Map<String, NGrams> result = new HashedMap();
-		IngredientProcessor ingp = new IngredientProcessor<>(ingredientProcessor);
+		CodeParserLauncher ingp = new CodeParserLauncher<>(ingredientProcessor);
 		int allElements = 0;
 
 		for (CtType<?> ctType : all) {
@@ -178,7 +178,7 @@ public class GramProcessor {
 
 		NGrams ns = new NGrams();
 
-		IngredientProcessor ingp = new IngredientProcessor<>(ingredientProcessor);
+		CodeParserLauncher ingp = new CodeParserLauncher<>(ingredientProcessor);
 		int allElements = 0;
 
 		for (CtType<?> ctType : all) {

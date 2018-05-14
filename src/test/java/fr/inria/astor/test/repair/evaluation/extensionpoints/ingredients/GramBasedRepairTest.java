@@ -253,7 +253,7 @@ public class GramBasedRepairTest {
 	public void testProbabilistiComplete() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				//
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator

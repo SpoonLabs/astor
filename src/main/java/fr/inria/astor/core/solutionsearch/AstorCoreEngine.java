@@ -1444,7 +1444,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		this.setTargetElementProcessors(targetElementProcessors);
 		// Fix Space
-		ExtensionPoints epoint = ExtensionPoints.INGREDIENT_PROCESSOR;
+		ExtensionPoints epoint = ExtensionPoints.TARGET_CODE_PROCESSOR;
 		if (!ConfigurationProperties.hasProperty(epoint.identifier)) {
 			// By default, we use statements as granularity level.
 			this.getTargetElementProcessors().add(new SingleStatementFixSpaceProcessor());

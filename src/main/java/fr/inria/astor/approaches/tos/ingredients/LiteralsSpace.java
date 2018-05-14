@@ -9,7 +9,7 @@ import fr.inria.astor.approaches.tos.core.LiteralsProcessor;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.AstorCtIngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import spoon.reflect.declaration.CtElement;
@@ -27,7 +27,7 @@ public class LiteralsSpace extends AstorCtIngredientPool {
 	public LiteralsSpace(IngredientPoolScope scope) throws JSAPException {
 		super();
 		this.scope = scope;
-		this.setIngredientProcessor(new IngredientProcessor<>(new LiteralsProcessor()));
+		this.setIngredientProcessor(new CodeParserLauncher<>(new LiteralsProcessor()));
 	}
 
 	@Override

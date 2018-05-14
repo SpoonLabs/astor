@@ -28,7 +28,7 @@ public class DeepRepairEngine extends IngredientBasedRepairApproachImpl {
 	public DeepRepairEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws Exception {
 		super(mutatorExecutor, projFacade);
 		ConfigurationProperties.setProperty("transformingredient", Boolean.TRUE.toString());
-		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
+		setPropertyIfNotDefined(ExtensionPoints.TARGET_CODE_PROCESSOR.identifier, "statements");
 		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier, "name-cluster-based");
 		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier, "code-similarity-based");
 

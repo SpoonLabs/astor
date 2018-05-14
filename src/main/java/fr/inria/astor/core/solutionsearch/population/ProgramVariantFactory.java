@@ -19,7 +19,7 @@ import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -282,7 +282,7 @@ public class ProgramVariantFactory {
 		List<CtElement> ctMatching = new ArrayList<CtElement>();
 
 		try {
-			IngredientProcessor spaceProcessor = new IngredientProcessor(processors);
+			CodeParserLauncher spaceProcessor = new CodeParserLauncher(processors);
 			for (CtElement element : ctSuspects) {
 				List<CtElement> result = spaceProcessor.createFixSpace(element, false);
 

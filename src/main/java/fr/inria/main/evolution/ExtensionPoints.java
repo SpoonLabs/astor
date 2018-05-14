@@ -33,7 +33,7 @@ public enum ExtensionPoints {
 	OPERATORS_SPACE("operatorspace",OperatorSpace.class),//
 	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy",IngredientSearchStrategy.class),//
 	INGREDIENT_TRANSFORM_STRATEGY("ingredienttransformstrategy", IngredientTransformationStrategy.class),//
-	INGREDIENT_PROCESSOR("targetelementprocessor",TargetElementProcessor.class),
+	TARGET_CODE_PROCESSOR("targetelementprocessor",TargetElementProcessor.class),
 	CLONE_GRANULARITY("clonegranularity",Class.class),
 	OUTPUT_RESULTS("outputresult",ReportResults.class),
 	SUSPICIOUS_NAVIGATION("modificationpointnavigation", SuspiciousNavigationStrategy.class);

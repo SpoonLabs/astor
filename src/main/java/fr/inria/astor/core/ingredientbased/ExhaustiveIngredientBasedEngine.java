@@ -41,7 +41,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	public ExhaustiveIngredientBasedEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
-		ConfigurationProperties.properties.setProperty(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
+		ConfigurationProperties.properties.setProperty(ExtensionPoints.TARGET_CODE_PROCESSOR.identifier, "statements");
 		ConfigurationProperties.properties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "irr-statements");
 		ConfigurationProperties.properties.setProperty(ExtensionPoints.SUSPICIOUS_NAVIGATION.identifier,
 				SuspiciousNavigationValues.INORDER.toString());
