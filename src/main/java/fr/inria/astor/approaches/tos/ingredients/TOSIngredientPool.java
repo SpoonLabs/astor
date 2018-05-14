@@ -35,7 +35,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class TOSIngredientSpace<T extends CtElement>
+public class TOSIngredientPool<T extends CtElement>
 		extends IngredientPoolLocationType<CtElement, String, Ingredient, String, CtCodeElement> {
 
 	// TODO:
@@ -52,7 +52,7 @@ public class TOSIngredientSpace<T extends CtElement>
 	 */
 	protected List<PlaceholderGenerator<T>> tosGenerators = new ArrayList<>();
 
-	public TOSIngredientSpace(List<TargetElementProcessor<?>> processors) throws JSAPException {
+	public TOSIngredientPool(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super(processors);
 
 		if (!ConfigurationProperties.getPropertyBool("excludevariableplaceholder"))

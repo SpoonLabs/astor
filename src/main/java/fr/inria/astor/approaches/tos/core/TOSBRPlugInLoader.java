@@ -7,7 +7,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientRandomSearchStrategy;
-import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSpace;
+import fr.inria.astor.approaches.tos.ingredients.TOSIngredientPool;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -37,7 +37,7 @@ public class TOSBRPlugInLoader {
 		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 
 		List<TargetElementProcessor<?>> ingredientProcessors = approach.getTargetElementProcessors();
-		TOSIngredientSpace ingredientspace = new TOSIngredientSpace(ingredientProcessors);
+		TOSIngredientPool ingredientspace = new TOSIngredientPool(ingredientProcessors);
 		String scope = ConfigurationProperties.getProperty(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE.identifier);
 		if (scope != null) {
 			ingredientspace.scope = IngredientPoolScope.valueOf(scope.toUpperCase());
