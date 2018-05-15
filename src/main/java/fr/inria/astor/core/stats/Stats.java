@@ -180,6 +180,10 @@ public class Stats {
 					hunk.getStats().put(HunkStatEnum.OPERATOR, genOperationInstance.getOperationApplied().toString());
 					hunk.getStats().put(HunkStatEnum.LOCATION,
 							genOperationInstance.getModificationPoint().getCtClass().getQualifiedName());
+					
+					hunk.getStats().put(HunkStatEnum.PATH,
+							genOperationInstance.getModificationPoint().getCtClass().getPosition().getFile().getAbsolutePath());
+					
 
 					hunk.getStats().put(HunkStatEnum.MP_RANKING,
 							genOperationInstance.getModificationPoint().identified);

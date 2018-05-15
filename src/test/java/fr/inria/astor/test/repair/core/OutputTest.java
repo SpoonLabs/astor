@@ -1,6 +1,7 @@
 package fr.inria.astor.test.repair.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -113,12 +114,6 @@ public class OutputTest {
 
 		assertNotNull(stats);
 
-		// OutputResults outResults = main1.getEngine().getOutputResults();
-
-		// assertNotNull(outResults.produceOutput(statsForPatches, output));
-
-		// assertTrue(stats.getStatsOfPatches().size() > 0);
-
 		String jsonpath = main1.getEngine().getProjectFacade().getProperties().getWorkingDirRoot() + File.separator
 				+ ConfigurationProperties.getProperty("jsonoutputname") + ".json";
 		File filejson = new File(jsonpath);
@@ -158,6 +153,9 @@ public class OutputTest {
 		assertEquals("return solve(f, min, max)", hunkStats.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
 
 		assertEquals("return solve(min, max)", hunkob.get(HunkStatEnum.ORIGINAL_CODE.name()));
+
+		assertNotNull(hunkStats.getStats().get(HunkStatEnum.PATH));
+		assertFalse(hunkStats.getStats().get(HunkStatEnum.PATH).toString().isEmpty());
 
 	}
 
