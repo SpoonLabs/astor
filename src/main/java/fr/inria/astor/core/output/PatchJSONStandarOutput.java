@@ -18,6 +18,7 @@ import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
+import fr.inria.main.AstorOutputStatus;
 
 /**
  * 
@@ -44,10 +45,13 @@ public class PatchJSONStandarOutput implements ReportResults {
 				generalStatsjson.put(generalStat.name(), null);
 			else {
 				try {
-					Object value = parser.parse(vStat.toString());
+					Object value = null;
+					if (vStat instanceof AstorOutputStatus)
+						value = parser.parse("\"" + vStat + "\"");
+					else
+						value = parser.parse(vStat.toString());
 					generalStatsjson.put(generalStat.name(), value);
 				} catch (ParseException e) {
-					//e.printStackTrace();
 					log.error(e);
 				}
 			}
