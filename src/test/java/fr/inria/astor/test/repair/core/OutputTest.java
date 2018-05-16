@@ -179,6 +179,36 @@ public class OutputTest {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testOutputsAPI1() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		cs.command.put("-stopfirst", "true");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+
+		ProgramVariant solution = main1.getEngine().getSolutions().get(0);
+		assertNotNull(solution.getPatchInfo());
+		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED));
+		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.PATCH_DIFF_ORIG));
+		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.HUNKS));
+
+		List<PatchHunkStats> hunksApi = (List<PatchHunkStats>) solution.getPatchInfo().getStats()
+				.get(PatchStatEnum.HUNKS);
+		assertTrue(hunksApi.size() > 0);
+		PatchHunkStats hunkInfo = hunksApi.get(0);
+		assertNotNull(hunkInfo.getStats().get(HunkStatEnum.PATH));
+		assertFalse(hunkInfo.getStats().get(HunkStatEnum.PATH).toString().isEmpty());
+
+	}
+
 	@Test
 	public void testMath70LogFile() throws Exception {
 

@@ -147,11 +147,12 @@ public class Stats {
 
 	public List<PatchStat> createStatsForPatches(List<ProgramVariant> variants, int generation,
 			Date dateInitEvolution) {
-		List<PatchStat> patches = new ArrayList();
+		List<PatchStat> patches = new ArrayList<>();
 
 		for (ProgramVariant solutionVariant : variants) {
 
 			PatchStat patch_i = new PatchStat();
+			solutionVariant.setPatchInfo(patch_i);
 			patches.add(patch_i);
 			patch_i.addStat(PatchStatEnum.TIME,
 					TimeUtil.getDateDiff(dateInitEvolution, solutionVariant.getBornDate(), TimeUnit.SECONDS));
@@ -159,8 +160,9 @@ public class Stats {
 
 			patch_i.addStat(PatchStatEnum.VALIDATION, solutionVariant.getValidationResult().toString());
 
-			patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG, solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
-			
+			patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
+					solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
+
 			patch_i.addStat(PatchStatEnum.PATCH_DIFF_FORMATTED, solutionVariant.getPatchDiff().getFormattedDiff());
 
 			List<PatchHunkStats> hunks = new ArrayList<>();
@@ -180,10 +182,9 @@ public class Stats {
 					hunk.getStats().put(HunkStatEnum.OPERATOR, genOperationInstance.getOperationApplied().toString());
 					hunk.getStats().put(HunkStatEnum.LOCATION,
 							genOperationInstance.getModificationPoint().getCtClass().getQualifiedName());
-					
-					hunk.getStats().put(HunkStatEnum.PATH,
-							genOperationInstance.getModificationPoint().getCtClass().getPosition().getFile().getAbsolutePath());
-					
+
+					hunk.getStats().put(HunkStatEnum.PATH, genOperationInstance.getModificationPoint().getCtClass()
+							.getPosition().getFile().getAbsolutePath());
 
 					hunk.getStats().put(HunkStatEnum.MP_RANKING,
 							genOperationInstance.getModificationPoint().identified);
@@ -239,6 +240,5 @@ public class Stats {
 		}
 		return patches;
 	}
-
 
 }
