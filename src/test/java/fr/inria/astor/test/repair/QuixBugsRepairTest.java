@@ -8,12 +8,15 @@ import java.util.Optional;
 
 import org.junit.Test;
 
+import fr.inria.astor.approaches.cardumholes.Cardumen1HApproach;
 import fr.inria.astor.approaches.jgenprog.extension.TibraApproach;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
+import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
+import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
 
 /**
@@ -24,7 +27,7 @@ import fr.inria.main.evolution.AstorMain;
  */
 public class QuixBugsRepairTest {
 
-	protected CommandSummary getCommand(String name) {
+	public static CommandSummary getCommand(String name) {
 
 		CommandSummary cs = new CommandSummary();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
@@ -41,8 +44,9 @@ public class QuixBugsRepairTest {
 		cs.command.put("-bintestfolder", "/bin");
 		cs.command.put("-flthreshold", "0.0");
 		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-stopfirst", "TRUE");
 		cs.command.put("-parameters", "logtestexecution:TRUE:"
-				+ "stopfirst:TRUE:disablelog:TRUE:maxtime:120:loglevel:debug:autocompile:true:gzoltarpackagetonotinstrument:com.google.gson_engine");
+				+ "disablelog:TRUE:maxtime:120:loglevel:debug:autocompile:true:gzoltarpackagetonotinstrument:com.google.gson_engine");
 		cs.command.put("-location", new File("./examples/quixbugs/" + name).getAbsolutePath());
 
 		return cs;
@@ -54,7 +58,7 @@ public class QuixBugsRepairTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void test_shortest_path_lengthsRepair() throws Exception {
+	public void test_shortest_path_lengthsRepair_statement() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getCommand("shortest_path_lengths"));
@@ -124,7 +128,7 @@ public class QuixBugsRepairTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void test_next_permutationRepair() throws Exception {
+	public void test_next_permutationRepair_mutation() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getCommand("next_permutation"));
@@ -142,7 +146,7 @@ public class QuixBugsRepairTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void test_next_knapsackRepair() throws Exception {
+	public void test_next_knapsackRepairMutation() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getCommand("knapsack"));
@@ -214,7 +218,7 @@ public class QuixBugsRepairTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void test_levenshteinRepair() throws Exception {
+	public void test_levenshteinRepair_cardumen() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getCommand("levenshtein"));
@@ -232,7 +236,7 @@ public class QuixBugsRepairTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void test_get_factorsRepair() throws Exception {
+	public void test_get_factorsRepair_cardumen() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getCommand("get_factors"));
@@ -250,7 +254,7 @@ public class QuixBugsRepairTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void test_mergesortRepair() throws Exception {
+	public void test_mergesortRepair_mergesort() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getCommand("mergesort"));
@@ -268,7 +272,7 @@ public class QuixBugsRepairTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void test_powersetRepair() throws Exception {
+	public void test_powersetRepair_tibra() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getCommand("powerset"));
@@ -309,7 +313,7 @@ public class QuixBugsRepairTest {
 	 */
 
 	@Test
-	public void testLISRepair() throws Exception {
+	public void testLISRepair_statement() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getCommand("lis"));
@@ -355,6 +359,49 @@ public class QuixBugsRepairTest {
 				.filter(e -> e.getCodeElement().toString().startsWith("int length")).findAny();
 		assertTrue(opMP.isPresent());
 
+	}
+
+	/**
+	 * Repaired in paper
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void ne_test_depth_first_searchRepair_cardumen1h() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary command = (getCommand("depth_first_search"));
+		command.command.put("-maxgen", "2000");
+		command.command.put("-scope", "global");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-mode", ExecutionMode.custom.toString());
+		command.command.put("-customengine", Cardumen1HApproach.class.getCanonicalName());
+		main1.execute(command.flat());
+
+		assertTrue(main1.getEngine().getSolutions().size() >= 2);
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, main1.getEngine().getOutputStatus());
+
+	}
+
+	/**
+	 * Repaired in paper
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void ne_test_levenshteinRepair_cardumen1h() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary command = (getCommand("levenshtein"));
+		command.command.put("-maxgen", "2000");
+		command.command.put("-scope", "global");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-mode", ExecutionMode.custom.toString());
+		command.command.put("-customengine", Cardumen1HApproach.class.getCanonicalName());
+		main1.execute(command.flat());
+
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertEquals(AstorOutputStatus.MAX_GENERATION, main1.getEngine().getOutputStatus());
 	}
 
 }
