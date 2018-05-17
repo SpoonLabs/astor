@@ -40,8 +40,9 @@ public class TOSIngredientRandomSearchStrategy extends IngredientSearchStrategy 
 	@Override
 	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
 
+		Object type = ingredientSpace.getType(new Ingredient(modificationPoint.getCodeElement()));
 		List<Ingredient> baseIngedients = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement(),
-				modificationPoint.getCodeElement().getClass().getSimpleName());
+				type.toString());
 
 		if (baseIngedients == null) {
 			log.debug("No elements ingredients for mp " + modificationPoint);
@@ -96,8 +97,7 @@ public class TOSIngredientRandomSearchStrategy extends IngredientSearchStrategy 
 			for (Ingredient ingredient : ing) {
 				ingredientTransformed.add((TOSInstance) ingredient);
 			}
-			
-			
+
 			this.cacheInstances.put(modificationPoint, ingredientBaseSelected.getChacheCodeString(),
 					ingredientTransformed);
 

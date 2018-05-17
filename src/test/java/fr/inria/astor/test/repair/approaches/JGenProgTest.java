@@ -27,7 +27,6 @@ import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 

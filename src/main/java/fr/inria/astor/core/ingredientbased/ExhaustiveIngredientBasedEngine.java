@@ -185,6 +185,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<OperatorInstance> createInstance(SuspiciousModificationPoint modificationPoint,
 			AstorOperator astorOperator) throws Exception {
 
@@ -193,7 +194,8 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 
 		if (astorOperator.needIngredient()) {
 			if (astorOperator instanceof ReplaceOp) {
-				String type = modificationPoint.getCodeElement().getClass().getSimpleName();
+				String type = ingredientSpace.getType(new Ingredient(modificationPoint.getCodeElement())).toString();
+
 				ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
 
 			} else {

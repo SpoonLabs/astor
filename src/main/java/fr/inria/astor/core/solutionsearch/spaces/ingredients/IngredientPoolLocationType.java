@@ -119,7 +119,6 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 
 	}
 
-	protected abstract T getType(I element);
 
 	@Override
 	public List<I> getIngredients(Q location) {

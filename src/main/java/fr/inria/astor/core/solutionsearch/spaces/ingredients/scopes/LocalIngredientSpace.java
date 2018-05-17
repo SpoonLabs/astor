@@ -41,7 +41,7 @@ public class LocalIngredientSpace extends AstorCtIngredientPool {
 	}
 
 	@Override
-	protected String getType(Ingredient element) {
+	public String getType(Ingredient element) {
 
 		return element.getCode().getClass().getSimpleName();
 	}

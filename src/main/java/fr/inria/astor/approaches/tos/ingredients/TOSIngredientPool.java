@@ -25,6 +25,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocat
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.CacheList;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -257,10 +258,16 @@ public class TOSIngredientPool<T extends CtElement>
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	protected String getType(Ingredient ingredient) {
-		// before was new code
-		return ingredient.getDerivedFrom().getClass().getSimpleName();
+	public String getType(Ingredient ingredient) {
+
+		if (ingredient.getCode() instanceof CtExpression) {
+
+			CtExpression exp = (CtExpression) ingredient.getCode();
+			return exp.getType().getSimpleName();
+		}
+		return ingredient.getCode().getClass().getSimpleName();
 	}
 
 	public TOSCounter getTosCounter() {

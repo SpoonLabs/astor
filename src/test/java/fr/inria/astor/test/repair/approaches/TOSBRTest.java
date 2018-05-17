@@ -1074,7 +1074,8 @@ public class TOSBRTest {
 	}
 
 	public Ingredient findInstance(List<TOSInstance> ingredients, String code) {
-		Optional<TOSInstance> findFirst = ingredients.stream().filter(e -> e.getChacheCodeString().equals(code))
+		String codese = code.replace(" ", "").replace("\n","");
+		Optional<TOSInstance> findFirst = ingredients.stream().filter(e -> e.getChacheCodeString().replace(" ", "").replace("\n","").equals(codese))
 				.findFirst();
 		if (!findFirst.isPresent())
 			return null;
@@ -1127,7 +1128,7 @@ public class TOSBRTest {
 		assertTrue(ingredientsPackage.size() > 0);
 		assertEquals(34, ingredientsPackage.size());
 		for (Ingredient literalPackage : ingredientsPackage) {
-			System.out.println("--> " + literalPackage + " " + ((CtLiteral) literalPackage).getType());
+			System.out.println("--> " + literalPackage + " " + ((CtLiteral) literalPackage.getCode()).getType());
 		}
 
 	}
@@ -1530,13 +1531,13 @@ public class TOSBRTest {
 
 		for (TOSInstance tosInstance : instancesph2) {
 			tosInstance.generatePatch();
-		//	System.out.println("-ph2-> " + tosInstance.getChacheCodeString());
+			// System.out.println("-ph2-> " +
+			// tosInstance.getChacheCodeString());
 		}
+		assertTrue(instancesph2.size() > 0);
 		assertNotNull(findInstance(instancesph2, "return solve(min, 1.0E-6)"));
 		assertNotNull(findInstance(instancesph2, "return solve(min, 0.0)"));
-		
-		
-		
+
 		////////
 		i = 0;
 		List<TOSEntity> elassing = tosIngredientPool.createAllTOSCombined((CtStatement) mp4.getCodeElement());
@@ -1584,7 +1585,8 @@ public class TOSBRTest {
 		assertVarToLi2(strategy, mp8, inglitvar2);
 	}
 
-	private void assertVarChange1(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8, Ingredient ingRetvar) {
+	private void assertVarChange1(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8,
+			Ingredient ingRetvar) {
 		List<TOSInstance> instancesReturn1 = strategy.getInstances(mp8, ingRetvar);
 		for (TOSInstance tosInstancer : instancesReturn1) {
 			tosInstancer.generatePatch();
@@ -1594,7 +1596,8 @@ public class TOSBRTest {
 		assertNotNull(findInstance(instancesReturn1, "return (a + b) * 0.5"));
 	}
 
-	private void assertChangeLit2(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8, Ingredient ingLit1) {
+	private void assertChangeLit2(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8,
+			Ingredient ingLit1) {
 		List<TOSInstance> instancesLit1 = strategy.getInstances(mp8, ingLit1);
 		for (TOSInstance tosInstancel : instancesLit1) {
 			System.out.println(tosInstancel.generatePatch());
@@ -1607,7 +1610,8 @@ public class TOSBRTest {
 		assertTrue(instancesLit1.size() > 0);
 	}
 
-	private void assertVarToLi1(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8, Ingredient ingLitVar1) {
+	private void assertVarToLi1(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8,
+			Ingredient ingLitVar1) {
 		List<TOSInstance> instancesVarLit1 = strategy.getInstances(mp8, ingLitVar1);
 		for (TOSInstance tosInstancev : instancesVarLit1) {
 			System.out.println(tosInstancev.generatePatch());
@@ -1617,7 +1621,8 @@ public class TOSBRTest {
 		assertNotNull(findInstance(instancesVarLit1, "return (a + 0.5) * 0.5"));
 	}
 
-	private void assertVarToLi2(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8, Ingredient inglitvar2) {
+	private void assertVarToLi2(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8,
+			Ingredient inglitvar2) {
 		List<TOSInstance> instancesVarLit2 = strategy.getInstances(mp8, inglitvar2);
 		for (TOSInstance tosInstance2 : instancesVarLit2) {
 			System.out.println(tosInstance2.generatePatch());

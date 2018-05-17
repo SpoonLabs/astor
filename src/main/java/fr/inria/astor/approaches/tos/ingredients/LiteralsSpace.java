@@ -85,7 +85,7 @@ public class LiteralsSpace extends AstorCtIngredientPool {
 	}
 
 	@Override
-	protected String getType(Ingredient ingredient) {
+	public String getType(Ingredient ingredient) {
 		// before was new code
 		return ingredient.getCode().getClass().getSimpleName();
 	}

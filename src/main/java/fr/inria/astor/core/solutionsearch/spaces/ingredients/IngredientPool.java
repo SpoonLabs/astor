@@ -74,4 +74,6 @@ public interface IngredientPool<Q extends Object, K extends Object, I extends Ob
 	 */
 	public List<K> getLocations();
 
+	public T getType(I element);
+	
 }
