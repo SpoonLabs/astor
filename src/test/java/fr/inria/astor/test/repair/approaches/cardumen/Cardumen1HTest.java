@@ -22,6 +22,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
+import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
@@ -157,4 +158,43 @@ public class Cardumen1HTest {
 		assertFalse(patch.getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED).toString().isEmpty());
 	}
 
+	
+	@Test
+	public void testCardumenHolesRepairExha() throws Exception {
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", ExecutionMode.custom.toString());
+		command.command.put("-customengine", Cardumen1HApproach.class.getCanonicalName());
+		command.command.put("-flthreshold", "0.8");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-population", "1");
+		command.command.put("-parameters",
+				"nrPlaceholders:" + 1 + File.pathSeparator + "excludevariableplaceholder" + File.pathSeparator + "false" //
+						+ File.pathSeparator + "excludeliteralplaceholder" + File.pathSeparator + "true"
+						+ File.pathSeparator + "excludeinvocationplaceholder" + File.pathSeparator + "true"
+						+ File.pathSeparator + "excludevarliteralplaceholder" + File.pathSeparator + "true"
+
+		);
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		assertTrue(main1.getEngine() instanceof Cardumen1HApproach);
+		Cardumen1HApproach cardumenholes = (Cardumen1HApproach) main1.getEngine();
+
+		assertTrue(cardumenholes.getSolutions().size() > 0);
+
+		assertTrue(cardumenholes.getPatchInfo().size() > 0);
+
+		PatchStat patch = cardumenholes.getPatchInfo().get(0);
+
+		assertNotNull(patch.getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED));
+		assertFalse(patch.getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED).toString().isEmpty());
+		
+		
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, cardumenholes.getOutputStatus());
+	}
+	
+	
 }

@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.approaches.tos.ingredients.TOSIngredientRandomSearchStrategy;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientPool;
+import fr.inria.astor.approaches.tos.ingredients.TOSIngredientRandomSearchStrategy;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientTransformationStrategy;
 import fr.inria.astor.core.ingredientbased.ExhaustiveIngredientBasedEngine;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -23,13 +23,18 @@ import spoon.reflect.code.CtExpression;
  */
 public class Cardumen1HApproach extends ExhaustiveIngredientBasedEngine {
 
-	public Cardumen1HApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
-			throws JSAPException {
+	public Cardumen1HApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 
 		super(mutatorExecutor, projFacade);
 
 		ConfigurationProperties.setProperty(ExtensionPoints.TARGET_CODE_PROCESSOR.identifier, "expression");
 		ConfigurationProperties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "r-expression");
+
+		ConfigurationProperties.setProperty("nrPlaceholders", "1");
+		ConfigurationProperties.setProperty("excludevariableplaceholder", "false");
+		ConfigurationProperties.setProperty("excludeliteralplaceholder", "true");
+		ConfigurationProperties.setProperty("excludeinvocationplaceholder", "true");
+		ConfigurationProperties.setProperty("excludevarliteralplaceholder", "true");
 
 	}
 
