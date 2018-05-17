@@ -199,6 +199,8 @@ public class OutputTest {
 		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED));
 		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.PATCH_DIFF_ORIG));
 		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.HUNKS));
+		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.FOLDER_SOLUTION_CODE));
+		assertFalse(((String) solution.getPatchInfo().getStats().get(PatchStatEnum.FOLDER_SOLUTION_CODE)).isEmpty());
 
 		List<PatchHunkStats> hunksApi = (List<PatchHunkStats>) solution.getPatchInfo().getStats()
 				.get(PatchStatEnum.HUNKS);
