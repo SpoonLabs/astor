@@ -259,6 +259,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		for (ReportResults out : this.getOutputResults()) {
 			out.produceOutput(patchInfo, this.currentStat.getGeneralStats(), output);
 		}
+
 	}
 
 	protected void computePatchDiff(List<ProgramVariant> solutions) throws Exception {
@@ -1114,10 +1115,16 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	public void initModel() throws Exception {
 
 		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
-			Factory fcurrent = MutationSupporter.getFactory();
-			log.debug("The Spoon Model was already built.");
-			Factory fnew = MutationSupporter.cleanFactory();
-			log.debug("New factory created? " + !fnew.equals(fcurrent));
+			if (ConfigurationProperties.getPropertyBool("resetmodel")) {
+				Factory fcurrent = MutationSupporter.getFactory();
+				log.debug("The Spoon Model was already built.");
+				Factory fnew = MutationSupporter.cleanFactory();
+				log.debug("New factory created? " + !fnew.equals(fcurrent));
+			} else {
+				log.debug("we keep previous factory");
+				// we do not generate a new model
+				return;
+			}
 		}
 
 		List<String> codeLocations = projectFacade.getProperties().getOriginalDirSrc();
