@@ -13,6 +13,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.extension.IdentifierPriorityCriterion;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
+import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.AstorMain;
 
 /**
@@ -32,10 +33,10 @@ public class PatchPriorizationTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", 
-				"-seed", "10", "-maxgen", "500", "-stopfirst", "false",
-				"-maxtime", "10",//
-				"-patchprioritization", IdentifierPriorityCriterion.class.getName(),
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false",
+				"-maxtime", "10", //
+				"-patchprioritization", IdentifierPriorityCriterion.class.getName(), "-parameters",
+				"maxnumbersolutions:2"
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -46,6 +47,7 @@ public class PatchPriorizationTest {
 		assertEquals(2, solutions.size());
 		ProgramVariant variant = solutions.get(0);
 		assertTrue(((TestCasesProgramValidationResult) variant.getValidationResult()).isRegressionExecuted());
-		//TODO: include new assertions
+		
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
 	}
 }
