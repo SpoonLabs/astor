@@ -422,10 +422,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-scope", "package", "-seed", "10", "-maxgen", "1000", "-stopfirst", "false", "-maxtime", "10",
-				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString()
-
-		};
+				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", "-maxtime", "10",
+				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(), "-parameters",
+				"maxnumbersolutions:2" };
 		System.out.println(Arrays.toString(args));
 		CommandSummary command = new CommandSummary(args);
 
@@ -440,6 +439,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		solutions = main1.getEngine().getSolutions();
 		assertEquals(1, solutions.size());
+		
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
+
 
 	}
 
