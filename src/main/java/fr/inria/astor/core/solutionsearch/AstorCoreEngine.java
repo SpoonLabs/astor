@@ -517,12 +517,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	public void saveVariant(ProgramVariant programVariant) throws Exception {
 		final boolean codeFormated = true;
-		save(programVariant, !codeFormated);
-		save(programVariant, codeFormated);
+		savePatchDiff(programVariant, !codeFormated);
+		savePatchDiff(programVariant, codeFormated);
 
 	}
 
-	private void save(ProgramVariant programVariant, boolean format) throws Exception {
+	private void savePatchDiff(ProgramVariant programVariant, boolean format) throws Exception {
 
 		boolean originalValue = ConfigurationProperties.getPropertyBool("preservelinenumbers");
 
