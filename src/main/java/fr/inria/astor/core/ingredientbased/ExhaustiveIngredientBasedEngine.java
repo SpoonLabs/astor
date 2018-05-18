@@ -90,6 +90,10 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 
 					operatorExecuted++;
 
+					log.debug("-----\nNew Op:" + operatorExecuted + " at mp" + modifPointsAnalyzed);
+					log.debug("\n--> Buggy " + pointOperation.getOriginal().toString());
+					log.debug("\n--> patched " + pointOperation.getModified().toString());
+
 					// We validate the variant after applying the operator
 					ProgramVariant solutionVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
 							generationsExecuted);

@@ -10,9 +10,13 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.cardumholes.Cardumen1HApproach;
 import fr.inria.astor.approaches.jgenprog.extension.TibraApproach;
+import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.OperatorInstance;
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
+import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
@@ -200,7 +204,7 @@ public class QuixBugsRepairTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void test_rpn_evalRepair() throws Exception {
+	public void test_rpn_evalRepair_Cardumen() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getCommand("rpn_eval"));
@@ -362,7 +366,7 @@ public class QuixBugsRepairTest {
 	}
 
 	/**
-	 * Repaired in paper
+	 * 
 	 * 
 	 * @throws Exception
 	 */
@@ -384,7 +388,7 @@ public class QuixBugsRepairTest {
 	}
 
 	/**
-	 * Repaired in paper
+	 * 
 	 * 
 	 * @throws Exception
 	 */
@@ -401,7 +405,54 @@ public class QuixBugsRepairTest {
 		main1.execute(command.flat());
 
 		assertTrue(main1.getEngine().getSolutions().size() > 0);
-		assertEquals(AstorOutputStatus.MAX_GENERATION, main1.getEngine().getOutputStatus());
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, main1.getEngine().getOutputStatus());
 	}
+	
+	@Test
+	public void ne_test_rpn_evalRepair_cardumen1h() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary command = (getCommand("rpn_eval"));
+		command.command.put("-maxgen", "20000");
+		command.command.put("-scope", "global");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-mode", ExecutionMode.custom.toString());
+		command.command.put("-customengine", Cardumen1HApproach.class.getCanonicalName());
+		main1.execute(command.flat());
+
+		
+		Cardumen1HApproach engine = (Cardumen1HApproach) main1.getEngine();
+		printSpaces(engine);
+		
+		
+	
+		ModificationPoint mp23 = engine.getVariants().get(0).getModificationPoints().get(22);
+		List<OperatorInstance> instances = engine.createInstance((SuspiciousModificationPoint) mp23, new ExpressionReplaceOperator());
+		for (OperatorInstance operatorInstance : instances) {
+			System.out.println("op instance: "+ operatorInstance);
+		}
+		assertEquals(0, engine.getSolutions().size());
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, engine.getOutputStatus());
+		
+		
+	}
+
+	private void printSpaces(AstorCoreEngine engine) {
+		IngredientPoolLocationType pool = (IngredientPoolLocationType) ((IngredientBasedApproach) engine)
+				.getIngredientPool();
+		int i = 0;
+		for (ModificationPoint mp : engine.getVariants().get(0).getModificationPoints()) {
+			System.out.println("mp: "+ (i++)  +" " + mp.getCodeElement());
+		}
+
+		List<Ingredient> allIngredients = pool.getAllIngredients();
+		i = 0;
+		for (Ingredient ingredient : allIngredients) {
+			System.out.println("-ing->" + (i++)  +" " + ingredient);
+		}
+	}
+	
+	
+	
 
 }
