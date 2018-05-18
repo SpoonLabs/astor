@@ -32,9 +32,9 @@ public class PatchPriorizationTest {
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "1", "-out",
 				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false",
-				"-maxtime", "10", //
+				"-maxtime", "15", //
 				"-patchprioritization", IdentifierPriorityCriterion.class.getName(), "-parameters",
 				"maxnumbersolutions:2"
 
