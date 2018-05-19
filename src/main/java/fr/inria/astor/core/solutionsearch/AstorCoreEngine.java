@@ -1135,17 +1135,18 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		String bytecodeLocation = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
 		String[] cpArray = classpath.split(File.pathSeparator);
-		
+
 		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		
-		log.info("Creating model v1: Code location from working folder: "+codeLocation);
-		log.info("Creating model v2: Code location from buggy folder: "+originalCodeLocationMerged);
-		
-		
+
+		log.info("Creating model v1: Code location from working folder: " + codeLocation);
+		log.info("Creating model v2: Code location from buggy folder: " + originalCodeLocationMerged);
+
 		try {
-		//	mutatorSupporter.buildModel(originalCodeLocationMerged, bytecodeLocation, cpArray);
-		//	log.debug("Spoon Model built from location: " + originalCodeLocationMerged);
-			//Trying to fix 
+			// mutatorSupporter.buildModel(originalCodeLocationMerged,
+			// bytecodeLocation, cpArray);
+			// log.debug("Spoon Model built from location: " +
+			// originalCodeLocationMerged);
+			// Trying to fix
 			mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
 			log.debug("Spoon Model built from location: " + codeLocation);
 		} catch (Exception e) {
@@ -1539,8 +1540,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 			patch_i.addStat(PatchStatEnum.VALIDATION, solutionVariant.getValidationResult().toString());
 
-		//	patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
-		//			solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
+			patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
+					solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
 
 			patch_i.addStat(PatchStatEnum.PATCH_DIFF_FORMATTED, solutionVariant.getPatchDiff().getFormattedDiff());
 
