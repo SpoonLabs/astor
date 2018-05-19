@@ -1137,6 +1137,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		String[] cpArray = classpath.split(File.pathSeparator);
 		
 		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		
+		log.info("Creating model v1: Code location from working folder: "+codeLocation);
+		log.info("Creating model v2: Code location from buggy folder: "+originalCodeLocationMerged);
+		
+		
 		try {
 		//	mutatorSupporter.buildModel(originalCodeLocationMerged, bytecodeLocation, cpArray);
 		//	log.debug("Spoon Model built from location: " + originalCodeLocationMerged);
