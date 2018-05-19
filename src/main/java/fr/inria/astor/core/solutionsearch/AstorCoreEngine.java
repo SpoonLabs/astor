@@ -637,7 +637,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * @param variant
 	 * @param generation
 	 */
-	protected void reverseOperationInModel(ProgramVariant variant, int generation) {
+	public void reverseOperationInModel(ProgramVariant variant, int generation) {
 
 		if (variant.getOperations() == null || variant.getOperations().isEmpty()) {
 			return;
@@ -821,7 +821,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * @param currentGeneration
 	 * @throws IllegalAccessException
 	 */
-	protected void applyPreviousOperationsToVariantModel(ProgramVariant variant, int currentGeneration)
+	public void applyPreviousOperationsToVariantModel(ProgramVariant variant, int currentGeneration)
 			throws IllegalAccessException {
 
 		// We do not include the current generation (should be empty)
@@ -1530,8 +1530,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 			patch_i.addStat(PatchStatEnum.VALIDATION, solutionVariant.getValidationResult().toString());
 
-			patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
-					solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
+		//	patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
+		//			solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
 
 			patch_i.addStat(PatchStatEnum.PATCH_DIFF_FORMATTED, solutionVariant.getPatchDiff().getFormattedDiff());
 
