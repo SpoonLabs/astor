@@ -1135,10 +1135,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		String bytecodeLocation = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
 		String[] cpArray = classpath.split(File.pathSeparator);
-
+		
+		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		try {
-			mutatorSupporter.buildModel(originalCodeLocationMerged, bytecodeLocation, cpArray);
-			log.debug("Spoon Model built from location: " + originalCodeLocationMerged);
+		//	mutatorSupporter.buildModel(originalCodeLocationMerged, bytecodeLocation, cpArray);
+		//	log.debug("Spoon Model built from location: " + originalCodeLocationMerged);
+			//Trying to fix 
+			mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
+			log.debug("Spoon Model built from location: " + codeLocation);
 		} catch (Exception e) {
 			log.error("Problem compiling the model with compliance level "
 					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
