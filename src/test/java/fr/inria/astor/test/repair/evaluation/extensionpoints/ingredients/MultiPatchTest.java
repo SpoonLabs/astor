@@ -51,7 +51,7 @@ public class MultiPatchTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-loglevel", "DEBUG", "-scope", "package", "-seed", "10", "-maxgen", "0", "-stopfirst", "false",
+				"-loglevel", "INFO", "-scope", "package", "-seed", "10", "-maxgen", "0", "-stopfirst", "false",
 				"-maxtime", "10", "-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(),
 				"-parameters", "logtestexecution:true:saveall:true" };
 
@@ -124,7 +124,7 @@ public class MultiPatchTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-loglevel", "DEBUG", "-scope", "package", "-seed", "10", "-maxgen", "0", "-stopfirst", "false",
+				"-loglevel", "INFO", "-scope", "package", "-seed", "10", "-maxgen", "0", "-stopfirst", "false",
 				"-maxtime", "10", "-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(),
 				"-parameters", "logtestexecution:true:saveall:true" };
 

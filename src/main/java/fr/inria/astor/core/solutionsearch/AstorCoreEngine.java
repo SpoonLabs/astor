@@ -687,7 +687,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		List<ModificationPoint> modificationPointsToProcess = this.suspiciousNavigationStrategy
 				.getSortedModificationPointsList(variant);
 
-		// log.debug("modifPointsToProcess " + modificationPointsToProcess);
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
 
 			log.debug("---analyzing modificationPoint position: " + modificationPoint.identified);
@@ -1127,18 +1126,29 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			}
 		}
 
-		List<String> codeLocations = projectFacade.getProperties().getOriginalDirSrc();
-		String originalCodeLocationMerged = "";
-		for (String source : codeLocations) {
-			originalCodeLocationMerged += source + File.pathSeparator;
+		String codeLocation = "";
+		if (ConfigurationProperties.getPropertyBool("parsesourcefromoriginal")) {
+			List<String> codeLocations = projectFacade.getProperties().getOriginalDirSrc();
+			for (String source : codeLocations) {
+				codeLocation += source + File.pathSeparator;
+			}
+			if (codeLocation.length() > 0) {
+				codeLocation = codeLocation.substring(0, codeLocation.length() - 1);
+			}
+		} else {
+			codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		}
+
 		String bytecodeLocation = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
 		String[] cpArray = classpath.split(File.pathSeparator);
 
+		log.info("Creating model,  Code location from working folder: " + codeLocation);
+
 		try {
-			mutatorSupporter.buildModel(originalCodeLocationMerged, bytecodeLocation, cpArray);
-			log.debug("Spoon Model built from location: " + originalCodeLocationMerged);
+
+			mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
+			log.debug("Spoon Model built from location: " + codeLocation);
 		} catch (Exception e) {
 			log.error("Problem compiling the model with compliance level "
 					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
@@ -1530,8 +1540,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 			patch_i.addStat(PatchStatEnum.VALIDATION, solutionVariant.getValidationResult().toString());
 
-		//	patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
-		//			solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
+			patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
+					solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
 
 			patch_i.addStat(PatchStatEnum.PATCH_DIFF_FORMATTED, solutionVariant.getPatchDiff().getFormattedDiff());
 
