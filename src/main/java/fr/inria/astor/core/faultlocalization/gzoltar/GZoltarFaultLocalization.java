@@ -5,6 +5,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -221,7 +222,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
 
 		List<Statement> gzCandidates = new ArrayList();
-
+		List<TestResult> testResults = gz.getTestResults();
+		logger.info("nr test results " + testResults.size());
 		for (Statement gzoltarStatement : gz.getSuspiciousStatements()) {
 			String compName = gzoltarStatement.getMethod().getParent().getLabel();
 			if (isSource(compName, srcFolder) && (!ConfigurationProperties.getPropertyBool("limitbysuspicious")
@@ -260,11 +262,32 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 					gzoltarStatement.getLineNumber(), gzoltarStatement.getSuspiciousness(),
 					gzoltarStatement.getCountMap());
 			candidates.add(suspcode);
+
+			List<TestCaseResult> test = getTestCaseResults(testResults, gzoltarStatement);
+			suspcode.setCoveredByTests(test);
+
 		}
 
 		logger.info("Gzoltar found: " + candidates.size() + " with susp > " + thr + ", we consider: " + max);
 
 		return new FaultLocalizationResult(candidates, failingTestCases);
+	}
+
+	private List<TestCaseResult> getTestCaseResults(List<TestResult> testResults, Statement gzoltarStatement) {
+		List<TestCaseResult> tcresults = new ArrayList<>();
+
+		BitSet coverage = gzoltarStatement.getCoverage();
+		int nextTest = coverage.nextSetBit(0);
+		while (nextTest != -1) {
+			TestResult testResult = testResults.get(nextTest);
+			if (!ConfigurationProperties.getPropertyBool("savecoverbyfailtests") || !testResult.wasSuccessful()) {
+
+				TestCaseResult tcri = new TestCaseResult(testResult.getName(), testResult.wasSuccessful());
+				tcresults.add(tcri);
+			}
+			nextTest = coverage.nextSetBit(nextTest + 1);
+		}
+		return tcresults;
 	}
 
 	private boolean isSource(String compName, String srcFolder) {
