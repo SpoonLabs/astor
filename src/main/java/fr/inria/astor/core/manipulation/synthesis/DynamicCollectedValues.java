@@ -12,7 +12,8 @@ import fr.inria.lille.repair.common.Candidates;
  *
  */
 public class DynamicCollectedValues {
-
+	//Key: test name
+	//Value: list of executions
 	Map<String, List<Candidates>> values;
 
 	public DynamicCollectedValues() {
@@ -31,5 +32,7 @@ public class DynamicCollectedValues {
 	public void setValues(Map<String, List<Candidates>> values) {
 		this.values = values;
 	}
-
+	public List<Candidates> getDataValuesFromTest(String testname){
+		return values.get(testname);
+	}
 }

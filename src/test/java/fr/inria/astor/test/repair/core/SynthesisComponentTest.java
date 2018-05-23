@@ -3,7 +3,6 @@ package fr.inria.astor.test.repair.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +12,10 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.faultlocalization.gzoltar.TestCaseResult;
 import fr.inria.astor.core.manipulation.synthesis.DynamothCollector;
 import fr.inria.astor.core.manipulation.synthesis.SynthesisComponent;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.lille.repair.common.Candidates;
-import fr.inria.lille.repair.synthesis.DynamothCodeGenesisImpl;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 
@@ -40,7 +37,7 @@ public class SynthesisComponentTest {
 		cs.command.put("-loglevel", "DEBUG");
 		cs.command.put("-saveall", "true");
 		cs.command.put("-maxgen", "0");
-		cs.append("-parameters", ("logtestexecution:trueL"));
+		cs.append("-parameters", ("logtestexecution:true:disablelog:true"));
 
 		log.info(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -70,20 +67,8 @@ public class SynthesisComponentTest {
 	private void valuesOfModificationPoint(AstorMain main1, SynthesisComponent sc, SuspiciousModificationPoint mp0) {
 
 		log.info("-mp-> " + mp0.getCodeElement());
-		String[] tests = new String[mp0.getSuspicious().getCoveredByTests().size()];
-		int i = 0;
-		int nrfailing = 0;
-		int nrpassing = 0;
-		for (TestCaseResult tr : mp0.getSuspicious().getCoveredByTests()) {
-			tests[i++] = tr.getTestCaseCompleteName();
-			if (tr.isCorrect())
-				nrpassing++;
-			else
-				nrfailing++;
-		}
-		log.info("nr passing " + nrpassing + " nr failing " + nrfailing);
 
-		DynamothCollector dynamothCodeGenesis = sc.createSynthesizer(main1.getEngine().getProjectFacade(), mp0, tests);
+		DynamothCollector dynamothCodeGenesis = sc.createSynthesizer(main1.getEngine().getProjectFacade(), mp0);
 
 		Map<String, List<Candidates>> values = dynamothCodeGenesis.getValues();
 		assertTrue(!values.isEmpty());
@@ -92,7 +77,7 @@ public class SynthesisComponentTest {
 			log.info("test " + nrtest++ + " :" + key);
 			List<Candidates> candidates1 = values.get(key);
 			log.info("nr candidates 1: " + candidates1.size());
-			i = 0;
+			int i = 0;
 			for (Candidates candidates2 : candidates1) {
 				log.info("--Nr of candidates of " + (i++) + ": " + candidates2.size());
 				int j = 0;
