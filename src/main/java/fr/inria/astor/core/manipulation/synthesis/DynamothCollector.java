@@ -1,29 +1,61 @@
 package fr.inria.astor.core.manipulation.synthesis;
 
-import com.sun.jdi.*;
-import com.sun.jdi.event.*;
-import com.sun.jdi.request.BreakpointRequest;
-import com.sun.jdi.request.ClassPrepareRequest;
-import com.sun.jdi.request.EventRequestManager;
-import fr.inria.lille.commons.spoon.SpoonedProject;
-import fr.inria.lille.repair.common.config.NopolContext;
-import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.repair.common.Candidates;
-import fr.inria.lille.repair.expression.Expression;
-import fr.inria.lille.repair.expression.access.*;
-import fr.inria.lille.repair.synthesis.collect.DynamothDataCollector;
-import fr.inria.lille.repair.synthesis.collect.SpoonElementsCollector;
-import fr.inria.lille.repair.synthesis.collect.spoon.*;
-import fr.inria.lille.repair.vm.DebugJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sun.jdi.AbsentInformationException;
+import com.sun.jdi.IncompatibleThreadStateException;
+import com.sun.jdi.Location;
+import com.sun.jdi.ObjectReference;
+import com.sun.jdi.ReferenceType;
+import com.sun.jdi.StackFrame;
+import com.sun.jdi.ThreadReference;
+import com.sun.jdi.VirtualMachine;
+import com.sun.jdi.event.BreakpointEvent;
+import com.sun.jdi.event.ClassPrepareEvent;
+import com.sun.jdi.event.Event;
+import com.sun.jdi.event.EventQueue;
+import com.sun.jdi.event.EventSet;
+import com.sun.jdi.event.VMDeathEvent;
+import com.sun.jdi.event.VMDisconnectEvent;
+import com.sun.jdi.request.BreakpointRequest;
+import com.sun.jdi.request.ClassPrepareRequest;
+import com.sun.jdi.request.EventRequestManager;
+
+import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.lille.repair.common.Candidates;
+import fr.inria.lille.repair.common.config.NopolContext;
+import fr.inria.lille.repair.expression.Expression;
+import fr.inria.lille.repair.expression.access.Variable;
+import fr.inria.lille.repair.nopol.SourceLocation;
+import fr.inria.lille.repair.synthesis.collect.DynamothDataCollector;
+import fr.inria.lille.repair.synthesis.collect.SpoonElementsCollector;
+import fr.inria.lille.repair.synthesis.collect.spoon.ClassCollector;
+import fr.inria.lille.repair.synthesis.collect.spoon.DynamothConstantCollector;
+import fr.inria.lille.repair.synthesis.collect.spoon.MethodCollector;
+import fr.inria.lille.repair.synthesis.collect.spoon.StatCollector;
+import fr.inria.lille.repair.synthesis.collect.spoon.VariableTypeCollector;
+import fr.inria.lille.repair.synthesis.collect.spoon.VariablesInSuspiciousCollector;
+import fr.inria.lille.repair.vm.DebugJUnitRunner;
+import spoon.processing.ProcessingManager;
+import spoon.processing.Processor;
+import spoon.support.RuntimeProcessingManager;
 
 /**
  * Created by Thomas Durieux on 06/03/15.
@@ -43,7 +75,6 @@ public class DynamothCollector {
 	 */
 	private final SortedMap<String, List<Candidates>> values;
 	private final NopolContext nopolContext;
-	private SpoonedProject spoon;
 
 	private int nbExpressionEvaluated = 0;
 
@@ -62,33 +93,10 @@ public class DynamothCollector {
 	private StatCollector statCollector;
 	private Map<String, String> variableType;
 	private Set<String> calledMethods;
-	
+
+	private SuspiciousModificationPoint mp = null;
 
 	private final int dataCollectionTimeoutInSeconds;
-
-	/**
-	 * Create a new DynaMoth synthesizer
-	 * 
-	 * @param spoon
-	 *            the spoon instance of the project
-	 * @param projectRoots
-	 *            the root folders of the project
-	 * @param location
-	 *            the location of the code to synthesizer
-	 * @param classpath
-	 *            the classpath of the project
-	 * @param oracle
-	 *            the oracle of the project Map<testClass#testMethod, {value
-	 *            iteration 1, value iteration 2, ...}>
-	 * @param tests
-	 *            tests to execute
-	 */
-
-	public DynamothCollector(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath,
-			Map<String, Object[]> oracle, String[] tests, NopolContext nopolContext) {
-		this(projectRoots, location, classpath, oracle, tests, nopolContext);
-		this.spoon = spoon;
-	}
 
 	/**
 	 * Create a new DynaMoth synthesizer
@@ -106,9 +114,9 @@ public class DynamothCollector {
 	 *            tests to execute
 	 */
 
-	public DynamothCollector(File[] projectRoots, SourceLocation location, URL[] classpath,
-			Map<String, Object[]> oracle, String[] tests, NopolContext nopolContext) {
-
+	public DynamothCollector(SuspiciousModificationPoint smp, File[] projectRoots, SourceLocation location,
+			URL[] classpath, Map<String, Object[]> oracle, String[] tests, NopolContext nopolContext) {
+		this.mp = smp;
 		this.projectRoots = projectRoots;
 		this.location = location;
 		this.dataCollectionTimeoutInSeconds = nopolContext.getDataCollectionTimeoutInSecondForSynthesis();
@@ -340,14 +348,7 @@ public class DynamothCollector {
 			}
 			classFile = null;
 		}
-		if (spoon == null) {
-			try {
-				spoon = new SpoonedProject(new File[] { classFile }, nopolContext);
-			} catch (Exception e) {
-				logger.warn("Unable to spoon the project", e);
-				return;
-			}
-		}
+
 		if (nopolContext.isCollectLiterals()) {
 			constants = collectLiterals();
 		}
@@ -359,13 +360,18 @@ public class DynamothCollector {
 		this.calledMethods = collectMethod();
 		this.variableType = variableType;
 		try {
-			nopolContext.getComplianceLevel();
+			// nopolContext.getComplianceLevel();
 			StatCollector statCollector = new StatCollector(buggyMethod);
-			spoon.processClass(location.getContainingClassName(), statCollector);
+
+			setProcessor(statCollector);
+			manager.process(mp.getCodeElement());
+
 			this.statCollector = statCollector;
 			VariablesInSuspiciousCollector variablesInSuspiciousCollector = new VariablesInSuspiciousCollector(
 					location);
-			spoon.processClass(location.getContainingClassName(), variablesInSuspiciousCollector);
+			setProcessor(variablesInSuspiciousCollector);
+			manager.process(mp.getCodeElement());
+
 			spoonElementsCollector = new SpoonElementsCollector(variablesInSuspiciousCollector.getVariables(),
 					nopolContext);
 		} catch (Exception e) {
@@ -396,8 +402,10 @@ public class DynamothCollector {
 	private Candidates collectLiterals() {
 		Candidates candidates = new Candidates();
 		try {
-			spoon.processClass(location.getContainingClassName(),
-					new DynamothConstantCollector(candidates, buggyMethod, nopolContext));
+
+			DynamothConstantCollector d = new DynamothConstantCollector(candidates, buggyMethod, nopolContext);
+			setProcessor(d);
+			manager.process(mp.getCodeElement());
 		} catch (Exception e) {
 			logger.warn("Unable to collect literals", e);
 		}
@@ -407,7 +415,9 @@ public class DynamothCollector {
 	private List<String> collectUsedClasses() {
 		try {
 			ClassCollector classCollector = new ClassCollector(buggyMethod);
-			spoon.processClass(location.getContainingClassName(), classCollector);
+			setProcessor(classCollector);
+			this.manager.process(mp.getCodeElement());
+
 			return classCollector.getClasses();
 		} catch (Exception e) {
 			logger.warn("Unable to collect used classes", e);
@@ -418,7 +428,6 @@ public class DynamothCollector {
 	private Set<String> collectMethod() {
 		try {
 			MethodCollector methodCollector = new MethodCollector();
-			spoon.process(methodCollector);
 
 			return methodCollector.getMethods();
 		} catch (Exception e) {
@@ -431,14 +440,15 @@ public class DynamothCollector {
 		try {
 			VariableTypeCollector variableTypeCollector = new VariableTypeCollector(buggyMethod,
 					this.location.getLineNumber());
-			spoon.processClass(location.getContainingClassName(), variableTypeCollector);
+
+			setProcessor(variableTypeCollector);
+			manager.process(mp.getCodeElement());
 			return variableTypeCollector.getVariableType();
 		} catch (Exception e) {
 			logger.warn("Unable to collect used classes", e);
 		}
 		return new HashMap<>();
 	}
-
 
 	private void printSummary(Candidates result) {
 		if (values.values().isEmpty())
@@ -504,4 +514,12 @@ public class DynamothCollector {
 		return values;
 	}
 
+	private void setProcessor(Processor processor) {
+		manager.getProcessors().clear();
+
+		manager.addProcessor(processor);
+
+	}
+
+	ProcessingManager manager = new RuntimeProcessingManager(MutationSupporter.getFactory());
 }

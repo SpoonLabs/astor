@@ -7,7 +7,7 @@ import java.util.Map;
 import fr.inria.lille.repair.common.Candidates;
 
 /**
- * 
+ * Encapsulates the collected data.
  * @author Matias Martinez
  *
  */

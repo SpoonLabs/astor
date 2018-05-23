@@ -104,7 +104,7 @@ public class SynthesisComponent {
 			oracle.put(string, new Boolean[] { true });
 		}
 
-		DynamothCollector dynamothCodeGenesis = new DynamothCollector(sources, location, urls, oracle, testClasses,
+		DynamothCollector dynamothCodeGenesis = new DynamothCollector(smp, sources, location, urls, oracle, testClasses,
 				nopolContext);
 
 		dynamothCodeGenesis.run(TimeUnit.MINUTES.toMillis(15));
