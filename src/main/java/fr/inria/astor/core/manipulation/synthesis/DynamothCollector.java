@@ -68,7 +68,7 @@ public class DynamothCollector {
 	private final URL[] classpath;
 	private final Map<String, Object[]> oracle;
 	private final String[] tests;
-
+	private final int dataCollectionTimeoutInSeconds;
 	/**
 	 * key: test name, value: list of runtime contexts (if a statement is
 	 * executed several times in the same test
@@ -96,7 +96,7 @@ public class DynamothCollector {
 
 	private SuspiciousModificationPoint mp = null;
 
-	private final int dataCollectionTimeoutInSeconds;
+	
 
 	/**
 	 * Create a new DynaMoth synthesizer
@@ -114,12 +114,21 @@ public class DynamothCollector {
 	 *            tests to execute
 	 */
 
-	public DynamothCollector(SuspiciousModificationPoint smp, File[] projectRoots, SourceLocation location,
-			URL[] classpath, Map<String, Object[]> oracle, String[] tests, NopolContext nopolContext) {
+	public DynamothCollector(SuspiciousModificationPoint smp, File[] projectRoots, 
+			URL[] classpath,  String[] tests, NopolContext nopolContext) {
 		this.mp = smp;
 		this.projectRoots = projectRoots;
+		SourceLocation location = new SourceLocation(smp.getCtClass().getQualifiedName(),
+				smp.getSuspicious().getLineNumber());
 		this.location = location;
 		this.dataCollectionTimeoutInSeconds = nopolContext.getDataCollectionTimeoutInSecondForSynthesis();
+		
+		Map<String, Object[]> oracle = new HashMap<>();
+
+		for (String testCase : tests) {
+			oracle.put(testCase, new Boolean[] { true });
+		}
+		
 		this.oracle = oracle;
 		this.tests = tests;
 		this.values = new TreeMap<>();

@@ -12,8 +12,9 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.manipulation.synthesis.DynamicCollectedValues;
 import fr.inria.astor.core.manipulation.synthesis.DynamothCollector;
-import fr.inria.astor.core.manipulation.synthesis.SynthesisComponent;
+import fr.inria.astor.core.manipulation.synthesis.ValueCollector;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.main.CommandSummary;
@@ -45,7 +46,7 @@ public class SynthesisComponentTest {
 		assertEquals(1, main1.getEngine().getVariants().size());
 		ProgramVariant variant = main1.getEngine().getVariants().get(0);
 
-		SynthesisComponent sc = new SynthesisComponent();
+		ValueCollector sc = new ValueCollector();
 
 		log.info("***First mp to test: ");
 		SuspiciousModificationPoint mp0 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
@@ -64,11 +65,12 @@ public class SynthesisComponentTest {
 
 	}
 
-	private void valuesOfModificationPoint(AstorMain main1, SynthesisComponent sc, SuspiciousModificationPoint mp0) {
+	private DynamicCollectedValues valuesOfModificationPoint(AstorMain main1, ValueCollector sc,
+			SuspiciousModificationPoint mp0) {
 
 		log.info("-mp-> " + mp0.getCodeElement());
 
-		DynamothCollector dynamothCodeGenesis = sc.createSynthesizer(main1.getEngine().getProjectFacade(), mp0);
+		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp0);
 
 		Map<String, List<Candidates>> values = dynamothCodeGenesis.getValues();
 		assertTrue(!values.isEmpty());
@@ -89,5 +91,6 @@ public class SynthesisComponentTest {
 			}
 
 		}
+		return new DynamicCollectedValues(values);
 	}
 }
