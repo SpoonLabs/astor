@@ -526,13 +526,18 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		boolean originalValue = ConfigurationProperties.getPropertyBool("preservelinenumbers");
 
-		final String suffix = format ? PatchDiffCalculator.DIFF_SUFFIX : "";
-		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier()) + suffix;
+		String srcOutput = determineSourceFolderInWorkspace(programVariant, format);
 		log.debug("\n-Saving child on disk variant #" + programVariant.getId() + " at " + srcOutput);
 		ConfigurationProperties.setProperty("preservelinenumbers", Boolean.toString(!format));
 		mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
 
 		ConfigurationProperties.setProperty("preservelinenumbers", Boolean.toString(originalValue));
+	}
+
+	private String determineSourceFolderInWorkspace(ProgramVariant programVariant, boolean format) {
+		final String suffix = format ? PatchDiffCalculator.DIFF_SUFFIX : "";
+		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier()) + suffix;
+		return srcOutput;
 	}
 
 	/**
@@ -1568,6 +1573,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 					hunk.getStats().put(HunkStatEnum.PATH, genOperationInstance.getModificationPoint().getCtClass()
 							.getPosition().getFile().getAbsolutePath());
+
+					boolean originalAlingment = ConfigurationProperties.getPropertyBool("parsesourcefromoriginal");
+					String mpath = determineSourceFolderInWorkspace(solutionVariant, !originalAlingment)
+							+ File.separator + genOperationInstance.getModificationPoint().getCtClass()
+									.getQualifiedName().replace(".", File.separator)+".java";
+					hunk.getStats().put(HunkStatEnum.MODIFIED_FILE_PATH, mpath);
 
 					hunk.getStats().put(HunkStatEnum.MP_RANKING,
 							genOperationInstance.getModificationPoint().identified);

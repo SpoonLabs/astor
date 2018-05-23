@@ -152,7 +152,7 @@ public class OutputTest {
 
 		assertEquals("return solve(f, min, max)", hunkStats.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
 
-		assertEquals("return solve(min, max)", hunkob.get(HunkStatEnum.ORIGINAL_CODE.name()));
+		assertEquals("return solve(min, max)", hunkStats.getStats().get(HunkStatEnum.ORIGINAL_CODE));
 
 		assertNotNull(hunkStats.getStats().get(HunkStatEnum.PATH));
 		assertFalse(hunkStats.getStats().get(HunkStatEnum.PATH).toString().isEmpty());
@@ -285,4 +285,54 @@ public class OutputTest {
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, engine.getOutputStatus());
 
 	}
+
+	@Test
+	public void testMath70Path() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-parameters", "parsesourcefromoriginal:true");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+		PatchStat patchstats = main1.getEngine().getPatchInfo().get(0);
+
+		Stats stats = Stats.getCurrentStat();
+
+		assertNotNull(stats);
+
+		assertEquals(1, main1.getEngine().getPatchInfo().size());
+
+		List<PatchHunkStats> hunksApi = (List<PatchHunkStats>) patchstats.getStats().get(PatchStatEnum.HUNKS);
+
+		assertNotNull(hunksApi);
+
+		PatchHunkStats hunkStats = hunksApi.get(0);
+
+		assertNotNull(hunkStats);
+
+		assertEquals("return solve(f, min, max)", hunkStats.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
+
+		assertEquals("return solve(min, max)", hunkStats.getStats().get(HunkStatEnum.ORIGINAL_CODE));
+
+		assertNotNull(hunkStats.getStats().get(HunkStatEnum.PATH));
+		assertFalse(hunkStats.getStats().get(HunkStatEnum.PATH).toString().isEmpty());
+
+		String mpath = hunkStats.getStats().get(HunkStatEnum.MODIFIED_FILE_PATH).toString();
+		assertNotNull(mpath);
+		assertTrue(new File(mpath).exists());
+
+		String rpath = hunkStats.getStats().get(HunkStatEnum.PATH).toString();
+		assertNotNull(rpath);
+		assertTrue(new File(rpath).exists());
+
+		assertFalse(rpath.equals(mpath));
+
+	}
+
 }
