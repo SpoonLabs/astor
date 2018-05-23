@@ -17,7 +17,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.output.ReportResults;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
@@ -39,7 +38,6 @@ import fr.inria.astor.util.TimeUtil;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder.InputType;
-import spoon.reflect.factory.Factory;
 
 /**
  * Abstract entry point of the framework. It defines and manages program
@@ -52,9 +50,7 @@ public abstract class AbstractMain {
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 
-	protected MutationSupporter mutSupporter;
-	protected Factory factory;
-	protected ProjectRepairFacade projectFacade;
+	public static ProjectRepairFacade projectFacade;
 
 	static Options options = new Options();
 
@@ -703,22 +699,22 @@ public abstract class AbstractMain {
 		for (String s : properties.getTestDirSrc())
 			launcher.addInputResource(s);
 
-		String binoutput = properties.getWorkingDirForBytecode() + File.separator + (ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		launcher.setBinaryOutputDirectory(
-				binoutput);
-		
+		String binoutput = properties.getWorkingDirForBytecode() + File.separator
+				+ (ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		launcher.setBinaryOutputDirectory(binoutput);
 
 		log.debug("Compiling original code from " + launcher.getModelBuilder().getInputSources() + " saved in "
 				+ launcher.getModelBuilder().getBinaryOutputDirectory());
 
-		launcher.getEnvironment().setPreserveLineNumbers(ConfigurationProperties.getPropertyBool("preservelinenumbers"));
+		launcher.getEnvironment()
+				.setPreserveLineNumbers(ConfigurationProperties.getPropertyBool("preservelinenumbers"));
 		launcher.getEnvironment().setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 		launcher.getEnvironment().setShouldCompile(true);
 		launcher.getEnvironment().setSourceClasspath(properties.getDependenciesString().split(File.pathSeparator));
 		launcher.buildModel();
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 		launcher.getModelBuilder().compile(InputType.CTTYPES);
-		//launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
+		// launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 
 	}
 
@@ -751,8 +747,8 @@ public abstract class AbstractMain {
 		}
 
 		if (!ConfigurationProperties.getPropertyBool("autocompile")) {
-	//		compileProject(properties);
-	//	} else {
+			// compileProject(properties);
+			// } else {
 			String originalBin = determineBinFolder(originalProjectRoot,
 					ConfigurationProperties.getProperty("binjavafolder"));
 			properties.setOriginalAppBinDir(originalBin);

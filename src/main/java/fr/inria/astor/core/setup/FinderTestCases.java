@@ -33,7 +33,7 @@ public class FinderTestCases {
 	}
 	
 
-	private static URL[] classpathFrom(String classpath) {
+	public static URL[] classpathFrom(String classpath) {
 		String[] folderNames = classpath.split(File.pathSeparator);
 		URL[] folders = new URL[folderNames.length];
 		int index = 0;
@@ -44,7 +44,7 @@ public class FinderTestCases {
 		return folders;
 	}
 	
-	private static URL urlFrom(String path) {
+	public static URL urlFrom(String path) {
 		URL url = null;
 		try {
 			url = new File(path).toURI().toURL();
