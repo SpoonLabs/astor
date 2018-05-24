@@ -12,11 +12,19 @@ import spoon.reflect.declaration.CtVariable;
 /**
  * Interface for synthesizing ingredients
  * 
+ * Called by SynthesisBasedTransformationStrategy
+ *
  * @author Matias Martinez
  *
  */
 public interface IngredientSynthesizer extends AstorExtensionPoint {
 
+	/** 
+	* Performs a synthesis for a given hole.
+	*
+	* expectedtype is null in case of CtStatement
+	*
+	*/
 	@SuppressWarnings("rawtypes")
 	public List<Ingredient> executeSynthesis(ModificationPoint modificationPoint, CtElement hole, CtType expectedtype,
 			List<CtVariable> contextOfModificationPoint, DynamicCollectedValues values);
