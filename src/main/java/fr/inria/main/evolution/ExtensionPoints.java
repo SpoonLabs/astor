@@ -2,6 +2,7 @@ package fr.inria.main.evolution;
 
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
+import fr.inria.astor.core.manipulation.synthesis.IngredientSynthesizer;
 import fr.inria.astor.core.output.ReportResults;
 import fr.inria.astor.core.solutionsearch.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.solutionsearch.extension.VariantCompiler;
@@ -36,7 +37,8 @@ public enum ExtensionPoints {
 	TARGET_CODE_PROCESSOR("targetelementprocessor",TargetElementProcessor.class),
 	CLONE_GRANULARITY("clonegranularity",Class.class),
 	OUTPUT_RESULTS("outputresult",ReportResults.class),
-	SUSPICIOUS_NAVIGATION("modificationpointnavigation", SuspiciousNavigationStrategy.class);
+	SUSPICIOUS_NAVIGATION("modificationpointnavigation", SuspiciousNavigationStrategy.class),
+	CODE_SYNTHESIS("codesynthesis", IngredientSynthesizer.class);
 	
 	public String identifier;
 	public Class<?> _class;

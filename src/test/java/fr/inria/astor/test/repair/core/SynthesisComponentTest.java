@@ -1,8 +1,10 @@
 package fr.inria.astor.test.repair.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,15 +12,22 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.synthesis.DynamicCollectedValues;
 import fr.inria.astor.core.manipulation.synthesis.DynamothCollector;
+import fr.inria.astor.core.manipulation.synthesis.IngredientSynthesizer;
+import fr.inria.astor.core.manipulation.synthesis.SynthesisBasedTransformationStrategy;
 import fr.inria.astor.core.manipulation.synthesis.ValueCollector;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
+import fr.inria.astor.test.repair.DummySynthesizer4TestImpl;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
+import fr.inria.main.evolution.ExtensionPoints;
 
 /**
  * 
@@ -93,4 +102,46 @@ public class SynthesisComponentTest {
 		}
 		return new DynamicCollectedValues(values);
 	}
+
+	@Test
+	public void testExtensionPoint() throws Exception {
+		AstorMain main1 = new AstorMain();
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+
+		cs.command.put("-flthreshold", "0.1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.command.put("-maxgen", "0");
+		cs.append("-parameters",
+				"logtestexecution:true:disablelog:true:"//
+						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
+						+ SynthesisBasedTransformationStrategy.class.getCanonicalName() + File.pathSeparator + //
+						ExtensionPoints.CODE_SYNTHESIS.identifier + File.pathSeparator
+						+ DummySynthesizer4TestImpl.class.getCanonicalName()
+
+		);
+
+		log.info(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		assertEquals(1, main1.getEngine().getVariants().size());
+		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+
+		IngredientTransformationStrategy transfst = ((IngredientBasedApproach) main1.getEngine())
+				.getIngredientTransformationStrategy();
+
+		assertNotNull(transfst);
+		assertTrue(transfst instanceof SynthesisBasedTransformationStrategy);
+		SynthesisBasedTransformationStrategy synthesizerStrategy = (SynthesisBasedTransformationStrategy) transfst;
+		IngredientSynthesizer synthesizer = synthesizerStrategy.getSynthesizer();
+		assertNotNull(synthesizer);
+		assertTrue(synthesizer instanceof DummySynthesizer4TestImpl);
+
+		SuspiciousModificationPoint mp0 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
+
+		List<Ingredient> ingredients = synthesizerStrategy.transform(mp0, new Ingredient(mp0.getCodeElement()));
+
+	}
+
 }

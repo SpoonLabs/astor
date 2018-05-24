@@ -6,6 +6,8 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.main.evolution.AstorMain;
+import fr.inria.main.evolution.ExtensionPoints;
+import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtType;
 
@@ -14,7 +16,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public abstract class SynthesisBasedTransformationStrategy implements IngredientTransformationStrategy {
+public class SynthesisBasedTransformationStrategy implements IngredientTransformationStrategy {
 
 	IngredientSynthesizer synthesizer = null;
 
@@ -23,7 +25,7 @@ public abstract class SynthesisBasedTransformationStrategy implements Ingredient
 		this.synthesizer = synthesizer;
 	}
 
-	public SynthesisBasedTransformationStrategy() {
+	public SynthesisBasedTransformationStrategy() throws Exception {
 		this.synthesizer = loadIngredientSynthesizer();
 	}
 
@@ -45,6 +47,18 @@ public abstract class SynthesisBasedTransformationStrategy implements Ingredient
 		return synthesizedIngredients;
 	}
 
-	public abstract IngredientSynthesizer loadIngredientSynthesizer();
+	public IngredientSynthesizer loadIngredientSynthesizer() throws Exception {
+
+		return (IngredientSynthesizer) PlugInLoader.loadPlugin(ExtensionPoints.CODE_SYNTHESIS);
+
+	}
+
+	public IngredientSynthesizer getSynthesizer() {
+		return synthesizer;
+	}
+
+	public void setSynthesizer(IngredientSynthesizer synthesizer) {
+		this.synthesizer = synthesizer;
+	};
 
 }
