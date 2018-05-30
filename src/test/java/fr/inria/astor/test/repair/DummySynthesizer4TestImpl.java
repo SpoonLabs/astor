@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.manipulation.synthesis.DynamicCollectedValues;
 import fr.inria.astor.core.manipulation.synthesis.IngredientSynthesizer;
@@ -23,7 +22,7 @@ public class DummySynthesizer4TestImpl implements IngredientSynthesizer {
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	@Override
-	public List<Ingredient> executeSynthesis(ModificationPoint modificationPoint, CtElement hole, CtType expectedtype,
+	public List<CtElement> executeSynthesis(ModificationPoint modificationPoint, CtElement hole, CtType expectedtype,
 			List<CtVariable> contextOfModificationPoint, DynamicCollectedValues values) {
 
 		log.debug("--> modif point: " + modificationPoint);
@@ -32,7 +31,7 @@ public class DummySynthesizer4TestImpl implements IngredientSynthesizer {
 		log.debug("--> context vars: " + contextOfModificationPoint);
 		log.debug("--> Collected Values: \n" + values.toString());
 
-		List<Ingredient> result = new ArrayList<>();
+		List<CtElement> result = new ArrayList<>();
 
 		return result;
 	}

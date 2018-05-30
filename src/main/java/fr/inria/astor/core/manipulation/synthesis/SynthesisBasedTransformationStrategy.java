@@ -1,5 +1,6 @@
 package fr.inria.astor.core.manipulation.synthesis;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.core.entities.Ingredient;
@@ -9,6 +10,7 @@ import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -40,11 +42,16 @@ public class SynthesisBasedTransformationStrategy implements IngredientTransform
 			CtExpression exp = (CtExpression) modificationPoint.getCodeElement();
 			expectedType = exp.getType().getTypeDeclaration();
 		}
-		List<Ingredient> synthesizedIngredients = this.synthesizer.executeSynthesis(modificationPoint,
+		List<CtElement> synthesizedElements = this.synthesizer.executeSynthesis(modificationPoint,
 				modificationPoint.getCodeElement(), expectedType, modificationPoint.getContextOfModificationPoint(),
 				collectedValues);
 
-		return synthesizedIngredients;
+		List<Ingredient> ingredients = new ArrayList<>();
+		for (CtElement ctElement : synthesizedElements) {
+			ingredients.add(new Ingredient(ctElement));
+		}
+
+		return ingredients;
 	}
 
 	public IngredientSynthesizer loadIngredientSynthesizer() throws Exception {
