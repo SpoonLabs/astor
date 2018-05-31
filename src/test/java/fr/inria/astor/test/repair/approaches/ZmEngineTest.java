@@ -38,11 +38,11 @@ public class ZmEngineTest {
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
 
-		//Check it astor loads the mode correctly
+		// Check it astor loads the mode correctly
 		Assert.assertTrue(main1.getEngine() instanceof ZmEngine);
 		ZmEngine zmengine = (ZmEngine) main1.getEngine();
-		
-		//Get the suspicious
+
+		// Get the suspicious
 		List<SuspiciousModificationPoint> susp = zmengine.getSuspicious();
 		Assert.assertTrue(susp.size() > 0);
 
@@ -84,5 +84,36 @@ public class ZmEngineTest {
 		Assert.assertTrue(resultFailing.getPassingTestCases() > 0);
 		Assert.assertTrue(resultFailing.getFailureCount() > 0);
 
+	}
+
+	@Test
+	public void testMath70FileZmSuspicFile() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		CommandSummary cs = new CommandSummary();
+		cs.command.put("-dependencies", dep);
+		cs.command.put("-location", new File("./examples/math_70").getAbsolutePath());
+		cs.command.put("-flthreshold", "0.5");
+		cs.command.put("-maxgen", "0");
+		cs.command.put("-customengine", ZmEngine.class.getCanonicalName());
+		cs.command.put("-parameters", "disablelog:false:logtestexecution:true");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		// Check it astor loads the mode correctly
+		Assert.assertTrue(main1.getEngine() instanceof ZmEngine);
+		ZmEngine zmengine = (ZmEngine) main1.getEngine();
+
+		// Get the suspicious
+		List<SuspiciousModificationPoint> susp = zmengine.getSuspicious();
+		Assert.assertTrue(susp.size() > 0);
+		for (SuspiciousModificationPoint suspiciousModificationPoint : susp) {
+			// GZoltar does not provide that info
+			Assert.assertNull(suspiciousModificationPoint.getSuspicious().getFileName());
+			Assert.assertNotNull(suspiciousModificationPoint.getCodeElement().getPosition().getFile());
+			System.out.println(suspiciousModificationPoint.getCodeElement().getPosition().getFile());
+		}
 	}
 }
