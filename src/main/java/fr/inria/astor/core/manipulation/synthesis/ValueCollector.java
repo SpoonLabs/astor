@@ -43,7 +43,19 @@ public class ValueCollector {
 	public DynamothCollector createCollector(ProjectRepairFacade facade, ModificationPoint mp) {
 
 		SuspiciousModificationPoint smp = (SuspiciousModificationPoint) mp;
-		String[] testClasses = getCoverTest(smp);
+		String[] tests = getCoverTest(smp);
+		Map<String, Object[]> oracle = new HashMap<>();
+
+		for (String testCase : tests) {
+			oracle.put(testCase, new Boolean[] { true });
+		}
+		return this.createCollector(facade, mp, oracle, tests);
+	}
+
+	public DynamothCollector createCollector(ProjectRepairFacade facade, ModificationPoint mp,
+			Map<String, Object[]> oracle, String[] testClasses) {
+
+		SuspiciousModificationPoint smp = (SuspiciousModificationPoint) mp;
 
 		String classPath = facade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT) + File.pathSeparator
 				+ facade.getProperties().getDependenciesString();
@@ -59,6 +71,7 @@ public class ValueCollector {
 
 		NopolContext nopolContext = new NopolContext(sources, urls, testClasses);
 		nopolContext.setDataCollectionTimeoutInSecondForSynthesis(5);
+		nopolContext.setOnlyOneSynthesisResult(false);
 		System.out.println("-sources: " + Arrays.toString(sources));
 		System.out.println("-url: " + Arrays.toString(urls));
 		System.out.println("-testClasses: " + Arrays.toString(testClasses));
@@ -69,14 +82,15 @@ public class ValueCollector {
 			System.out.println("----> " + url);
 		}
 
-		DynamothCollector dynamothCodeGenesis = new DynamothCollector(smp, sources, urls, testClasses, nopolContext);
+		DynamothCollector dynamothCodeGenesis = new DynamothCollector(oracle, smp, sources, urls, testClasses,
+				nopolContext);
 
 		dynamothCodeGenesis.run(TimeUnit.MINUTES.toMillis(15));
 
 		return dynamothCodeGenesis;
 	}
 
-	private String[] getCoverTest(SuspiciousModificationPoint mp0) {
+	public String[] getCoverTest(SuspiciousModificationPoint mp0) {
 		String[] tests = new String[mp0.getSuspicious().getCoveredByTests().size()];
 		int i = 0;
 		int nrfailing = 0;
