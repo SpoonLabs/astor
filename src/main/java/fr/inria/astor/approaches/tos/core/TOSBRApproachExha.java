@@ -19,13 +19,9 @@ public class TOSBRApproachExha extends ExhaustiveIngredientBasedEngine {
 	public TOSBRApproachExha(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
 
-		if (ConfigurationProperties.hasProperty("probabilistictransformation")) {
-			if (ConfigurationProperties.getPropertyBool("probabilistictransformation")) {
-				ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier,
-						"name-probability-based");
-			} else
-				ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier,
-						"random-variable-replacement");
+		if (!ConfigurationProperties.hasProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier)) {
+			ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier,
+					"random-variable-replacement");
 		}
 
 	}

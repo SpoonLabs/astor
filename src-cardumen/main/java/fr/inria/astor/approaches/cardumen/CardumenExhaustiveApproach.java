@@ -28,20 +28,17 @@ public class CardumenExhaustiveApproach extends ExhaustiveIngredientBasedEngine 
 		// Default configuration of Cardumen:
 		ConfigurationProperties.setProperty("cleantemplates", "true");
 
-		if (ConfigurationProperties.hasProperty("probabilistictransformation")) {
-			if (ConfigurationProperties.getPropertyBool("probabilistictransformation")) {
-				ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier,
-						"name-probability-based");
-			} else
-				ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier,
-						"random-variable-replacement");
+		if (ConfigurationProperties.getPropertyBool("probabilistictransformation")) {
+			ConfigurationProperties.setProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier,
+					"name-probability-based");
 		}
+
 		ConfigurationProperties.setProperty(ExtensionPoints.TARGET_CODE_PROCESSOR.identifier, "expression");
 		ConfigurationProperties.setProperty(ExtensionPoints.OPERATORS_SPACE.identifier, "r-expression");
 		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier, "name-probability-based");
 
 	}
-	
+
 	@Override
 	protected void loadIngredientPool() throws JSAPException, Exception {
 		List<TargetElementProcessor<?>> ingredientProcessors = this.getTargetElementProcessors();
@@ -54,7 +51,5 @@ public class CardumenExhaustiveApproach extends ExhaustiveIngredientBasedEngine 
 		}
 		this.setIngredientPool(ingredientspace);
 	}
-
-	
 
 }
