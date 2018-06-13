@@ -293,6 +293,7 @@ public class OutputTest {
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-parameters", "parsesourcefromoriginal:true");
+		cs.command.put("-loglevel", "DEBUG");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());

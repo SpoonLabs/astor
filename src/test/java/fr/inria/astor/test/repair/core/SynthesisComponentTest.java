@@ -19,6 +19,7 @@ import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.synthesis.DynamicCollectedValues;
 import fr.inria.astor.core.manipulation.synthesis.DynamothCollector;
+import fr.inria.astor.core.manipulation.synthesis.DynamothSynthesizer;
 import fr.inria.astor.core.manipulation.synthesis.IngredientSynthesizer;
 import fr.inria.astor.core.manipulation.synthesis.SynthesisBasedTransformationStrategy;
 import fr.inria.astor.core.manipulation.synthesis.ValueCollector;
@@ -99,7 +100,10 @@ public class SynthesisComponentTest {
 		SuspiciousModificationPoint mp8 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
 
 		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp8);
-		Candidates candidates = dynamothCodeGenesis.combineValues();
+		DynamothSynthesizer synthesis = new DynamothSynthesizer(dynamothCodeGenesis.getValues(),
+				dynamothCodeGenesis.getNopolContext(), dynamothCodeGenesis.getOracle());
+
+		Candidates candidates = synthesis.combineValues();
 		printValuesCollected(dynamothCodeGenesis);
 
 		// TODO: BinaryExpressionImpl modified at line 91
@@ -144,7 +148,10 @@ public class SynthesisComponentTest {
 		}
 		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp8, oracle,
 				tests);
-		Candidates candidates = dynamothCodeGenesis.combineValues();
+		DynamothSynthesizer synthesis = new DynamothSynthesizer(dynamothCodeGenesis.getValues(),
+				dynamothCodeGenesis.getNopolContext(), dynamothCodeGenesis.getOracle());
+
+		Candidates candidates = synthesis.combineValues();
 		printValuesCollected(dynamothCodeGenesis);
 
 		// TODO: BinaryExpressionImpl modified at line 91
@@ -190,7 +197,10 @@ public class SynthesisComponentTest {
 		}
 		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp8, oracle,
 				tests);
-		Candidates candidates = dynamothCodeGenesis.combineValues();
+		DynamothSynthesizer synthesis = new DynamothSynthesizer(dynamothCodeGenesis.getValues(),
+				dynamothCodeGenesis.getNopolContext(), dynamothCodeGenesis.getOracle());
+
+		Candidates candidates = synthesis.combineValues();
 		printValuesCollected(dynamothCodeGenesis);
 
 		// TODO: BinaryExpressionImpl modified at line 91
