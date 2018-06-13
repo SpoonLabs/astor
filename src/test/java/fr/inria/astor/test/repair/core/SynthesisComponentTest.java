@@ -1,6 +1,7 @@
 package fr.inria.astor.test.repair.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -19,6 +20,7 @@ import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.synthesis.DynamicCollectedValues;
 import fr.inria.astor.core.manipulation.synthesis.DynamothCollector;
+import fr.inria.astor.core.manipulation.synthesis.DynamothIngredientSynthesizer;
 import fr.inria.astor.core.manipulation.synthesis.DynamothSynthesizer;
 import fr.inria.astor.core.manipulation.synthesis.IngredientSynthesizer;
 import fr.inria.astor.core.manipulation.synthesis.SynthesisBasedTransformationStrategy;
@@ -30,6 +32,7 @@ import fr.inria.lille.repair.common.Candidates;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * 
@@ -288,6 +291,54 @@ public class SynthesisComponentTest {
 
 		List<Ingredient> ingredients = synthesizerStrategy.transform(mp0, new Ingredient(mp0.getCodeElement()));
 
+	}
+
+	@Test
+	public void testExtensionPoint_real() throws Exception {
+		AstorMain main1 = new AstorMain();
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		cs.command.put("-mode", "cardumen");
+		cs.command.put("-flthreshold", "0.1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.command.put("-maxgen", "0");
+		cs.append("-parameters",
+				"logtestexecution:true:disablelog:true:probabilistictransformation:false:"//
+						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
+						+ SynthesisBasedTransformationStrategy.class.getCanonicalName() + File.pathSeparator + //
+						ExtensionPoints.CODE_SYNTHESIS.identifier + File.pathSeparator
+						+ DynamothIngredientSynthesizer.class.getCanonicalName()
+
+		);
+
+		log.info(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		assertEquals(1, main1.getEngine().getVariants().size());
+		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+
+		IngredientTransformationStrategy transfst = ((IngredientBasedApproach) main1.getEngine())
+				.getIngredientTransformationStrategy();
+
+		assertNotNull(transfst);
+		assertTrue(transfst instanceof SynthesisBasedTransformationStrategy);
+		SynthesisBasedTransformationStrategy synthesizerStrategy = (SynthesisBasedTransformationStrategy) transfst;
+		IngredientSynthesizer synthesizer = synthesizerStrategy.getSynthesizer();
+		assertNotNull(synthesizer);
+		assertTrue(synthesizer instanceof DynamothIngredientSynthesizer);
+
+		SuspiciousModificationPoint mp0 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
+
+		List<Ingredient> ingredients = synthesizerStrategy.transform(mp0, new Ingredient(mp0.getCodeElement()));
+		assertTrue(ingredients.size() > 0);
+		log.info("Ingredients retrieved: " + ingredients);
+		for (Ingredient ingredient : ingredients) {
+			CtElement elementIng = ingredient.getCode();
+			assertNotNull(elementIng);
+			assertFalse(elementIng.toString().isEmpty());
+			log.info("--> " + elementIng.toString());
+		}
 	}
 
 }

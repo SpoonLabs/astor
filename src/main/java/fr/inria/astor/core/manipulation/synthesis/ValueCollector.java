@@ -37,7 +37,7 @@ public class ValueCollector {
 
 		DynamothCollector collector = createCollector(facade, mp);
 
-		return new DynamicCollectedValues(collector.getValues());
+		return new DynamicCollectedValues(collector.getValues(), collector.getNopolContext(), collector.getOracle());
 	}
 
 	public DynamothCollector createCollector(ProjectRepairFacade facade, ModificationPoint mp) {

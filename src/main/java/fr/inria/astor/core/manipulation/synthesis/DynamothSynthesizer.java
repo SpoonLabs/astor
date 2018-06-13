@@ -21,8 +21,8 @@ import fr.inria.lille.repair.expression.Expression;
  */
 public class DynamothSynthesizer {
 	// private long remainingTime;
-	private final Map<String, List<Candidates>> values;
-	private final NopolContext nopolContext;
+	private Map<String, List<Candidates>> values;
+	private NopolContext nopolContext;
 	private Map<String, Object[]> oracle;
 
 	private int nbExpressionEvaluated = 0;
@@ -33,6 +33,17 @@ public class DynamothSynthesizer {
 		this.values = values;
 		this.nopolContext = nopolContext;
 		this.oracle = oracle;
+	}
+
+	public DynamothSynthesizer() {
+		super();
+	}
+
+	public DynamothSynthesizer(DynamicCollectedValues data) {
+		super();
+		this.values = data.getValues();
+		this.nopolContext = data.getNopolContext();
+		this.oracle = data.getOracle();
 	}
 
 	public Candidates combineValues() {

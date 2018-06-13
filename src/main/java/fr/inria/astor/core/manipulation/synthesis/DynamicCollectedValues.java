@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.inria.lille.repair.common.Candidates;
+import fr.inria.lille.repair.common.config.NopolContext;
 
 /**
  * Encapsulates the collected data.
@@ -15,7 +16,17 @@ import fr.inria.lille.repair.common.Candidates;
 public class DynamicCollectedValues {
 	// Key: test name
 	// Value: list of executions
-	Map<String, List<Candidates>> values;
+	private Map<String, List<Candidates>> values;
+	private NopolContext nopolContext;
+	private Map<String, Object[]> oracle;
+
+	public DynamicCollectedValues(Map<String, List<Candidates>> values, NopolContext nopolContext,
+			Map<String, Object[]> oracle) {
+		super();
+		this.values = values;
+		this.nopolContext = nopolContext;
+		this.oracle = oracle;
+	}
 
 	public DynamicCollectedValues() {
 		this.values = new HashMap<>();
@@ -59,6 +70,22 @@ public class DynamicCollectedValues {
 
 		}
 		return out;
+	}
+
+	public NopolContext getNopolContext() {
+		return nopolContext;
+	}
+
+	public void setNopolContext(NopolContext nopolContext) {
+		this.nopolContext = nopolContext;
+	}
+
+	public Map<String, Object[]> getOracle() {
+		return oracle;
+	}
+
+	public void setOracle(Map<String, Object[]> oracle) {
+		this.oracle = oracle;
 	}
 
 }
