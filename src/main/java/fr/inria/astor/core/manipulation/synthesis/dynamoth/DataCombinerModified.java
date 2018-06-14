@@ -1,4 +1,4 @@
-package fr.inria.astor.core.manipulation.synthesis;
+package fr.inria.astor.core.manipulation.synthesis.dynamoth;
 
 import java.util.ArrayList;
 import java.util.Arrays;

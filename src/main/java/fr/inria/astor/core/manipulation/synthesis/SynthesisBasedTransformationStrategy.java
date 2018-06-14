@@ -20,22 +20,26 @@ import spoon.reflect.declaration.CtType;
  */
 public class SynthesisBasedTransformationStrategy implements IngredientTransformationStrategy {
 
+	ExecutionContextCollector contextColector = null;
 	IngredientSynthesizer synthesizer = null;
 
-	public SynthesisBasedTransformationStrategy(IngredientSynthesizer synthesizer) {
+	public SynthesisBasedTransformationStrategy(ExecutionContextCollector contextColector,
+			IngredientSynthesizer synthesizer) {
 		super();
+		this.contextColector = contextColector;
 		this.synthesizer = synthesizer;
 	}
 
 	public SynthesisBasedTransformationStrategy() throws Exception {
 		this.synthesizer = loadIngredientSynthesizer();
+		this.contextColector = loadContextCollector();
 	}
 
 	@Override
 	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient ingredient) {
 		// TODO: create a cache:
-		ValueCollector vcollector = new ValueCollector();
-		DynamicCollectedValues collectedValues = vcollector.collectValues(AstorMain.projectFacade, modificationPoint);
+
+		ExecutionContext collectedValues = contextColector.collectValues(AstorMain.projectFacade, modificationPoint);
 
 		CtType expectedType = null;
 		if (modificationPoint.getCodeElement() instanceof CtExpression) {
@@ -52,6 +56,12 @@ public class SynthesisBasedTransformationStrategy implements IngredientTransform
 		}
 
 		return ingredients;
+	}
+
+	public ExecutionContextCollector loadContextCollector() throws Exception {
+
+		return (ExecutionContextCollector) PlugInLoader.loadPlugin(ExtensionPoints.CONTEXT_COLLECTOR);
+
 	}
 
 	public IngredientSynthesizer loadIngredientSynthesizer() throws Exception {

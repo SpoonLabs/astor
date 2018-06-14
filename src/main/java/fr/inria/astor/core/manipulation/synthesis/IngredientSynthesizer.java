@@ -26,6 +26,6 @@ public interface IngredientSynthesizer extends AstorExtensionPoint {
 	 */
 	@SuppressWarnings("rawtypes")
 	public List<CtElement> executeSynthesis(ModificationPoint modificationPoint, CtElement hole, CtType expectedtype,
-			List<CtVariable> contextOfModificationPoint, DynamicCollectedValues values);
+			List<CtVariable> contextOfModificationPoint, ExecutionContext values);
 
 }

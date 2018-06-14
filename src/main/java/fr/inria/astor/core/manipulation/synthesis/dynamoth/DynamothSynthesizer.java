@@ -1,4 +1,4 @@
-package fr.inria.astor.core.manipulation.synthesis;
+package fr.inria.astor.core.manipulation.synthesis.dynamoth;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +39,7 @@ public class DynamothSynthesizer {
 		super();
 	}
 
-	public DynamothSynthesizer(DynamicCollectedValues data) {
+	public DynamothSynthesizer(DynamothSynthesisContext data) {
 		super();
 		this.values = data.getValues();
 		this.nopolContext = data.getNopolContext();

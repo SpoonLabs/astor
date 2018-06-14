@@ -1,4 +1,4 @@
-package fr.inria.astor.core.manipulation.synthesis;
+package fr.inria.astor.core.manipulation.synthesis.dynamoth;
 
 import java.io.File;
 import java.net.URL;
@@ -18,6 +18,7 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.faultlocalization.gzoltar.TestCaseResult;
+import fr.inria.astor.core.manipulation.synthesis.ExecutionContextCollector;
 import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.lille.repair.common.config.NopolContext;
@@ -29,16 +30,9 @@ import fr.inria.lille.repair.nopol.synth.AngelicExecution;
  * @author Matias Martinez
  *
  */
-public class ValueCollector {
+public class DynamothCollectorFacade implements ExecutionContextCollector {
 
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
-
-	public DynamicCollectedValues collectValues(ProjectRepairFacade facade, ModificationPoint mp) {
-
-		DynamothCollector collector = createCollector(facade, mp);
-
-		return new DynamicCollectedValues(collector.getValues(), collector.getNopolContext(), collector.getOracle());
-	}
 
 	public DynamothCollector createCollector(ProjectRepairFacade facade, ModificationPoint mp) {
 
@@ -104,6 +98,13 @@ public class ValueCollector {
 		}
 		log.info("nr passing " + nrpassing + " nr failing " + nrfailing);
 		return tests;
+	}
+
+	public DynamothSynthesisContext collectValues(ProjectRepairFacade facade, ModificationPoint mp) {
+
+		DynamothCollector collector = createCollector(facade, mp);
+
+		return new DynamothSynthesisContext(collector.getValues(), collector.getNopolContext(), collector.getOracle());
 	}
 
 	@SuppressWarnings("unused")

@@ -18,13 +18,13 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
-import fr.inria.astor.core.manipulation.synthesis.DynamicCollectedValues;
-import fr.inria.astor.core.manipulation.synthesis.DynamothCollector;
-import fr.inria.astor.core.manipulation.synthesis.DynamothIngredientSynthesizer;
-import fr.inria.astor.core.manipulation.synthesis.DynamothSynthesizer;
 import fr.inria.astor.core.manipulation.synthesis.IngredientSynthesizer;
 import fr.inria.astor.core.manipulation.synthesis.SynthesisBasedTransformationStrategy;
-import fr.inria.astor.core.manipulation.synthesis.ValueCollector;
+import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothCollector;
+import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothCollectorFacade;
+import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothIngredientSynthesizer;
+import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesisContext;
+import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesizer;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.test.repair.DummySynthesizer4TestImpl;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
@@ -60,7 +60,7 @@ public class SynthesisComponentTest {
 		assertEquals(1, main1.getEngine().getVariants().size());
 		ProgramVariant variant = main1.getEngine().getVariants().get(0);
 
-		ValueCollector sc = new ValueCollector();
+		DynamothCollectorFacade sc = new DynamothCollectorFacade();
 
 		log.info("***First mp to test: ");
 		SuspiciousModificationPoint mp0 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
@@ -98,7 +98,7 @@ public class SynthesisComponentTest {
 		assertEquals(1, main1.getEngine().getVariants().size());
 		ProgramVariant variant = main1.getEngine().getVariants().get(0);
 
-		ValueCollector sc = new ValueCollector();
+		DynamothCollectorFacade sc = new DynamothCollectorFacade();
 
 		SuspiciousModificationPoint mp8 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
 
@@ -139,7 +139,7 @@ public class SynthesisComponentTest {
 		assertEquals(1, main1.getEngine().getVariants().size());
 		ProgramVariant variant = main1.getEngine().getVariants().get(0);
 
-		ValueCollector sc = new ValueCollector();
+		DynamothCollectorFacade sc = new DynamothCollectorFacade();
 
 		SuspiciousModificationPoint mp8 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
 
@@ -188,7 +188,7 @@ public class SynthesisComponentTest {
 		assertEquals(1, main1.getEngine().getVariants().size());
 		ProgramVariant variant = main1.getEngine().getVariants().get(0);
 
-		ValueCollector sc = new ValueCollector();
+		DynamothCollectorFacade sc = new DynamothCollectorFacade();
 
 		SuspiciousModificationPoint mp8 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
 
@@ -218,7 +218,7 @@ public class SynthesisComponentTest {
 
 	}
 
-	private DynamicCollectedValues valuesOfModificationPoint(AstorMain main1, ValueCollector sc,
+	private DynamothSynthesisContext valuesOfModificationPoint(AstorMain main1, DynamothCollectorFacade sc,
 			SuspiciousModificationPoint mp0) {
 
 		log.info("-mp-> " + mp0.getCodeElement());
@@ -226,7 +226,7 @@ public class SynthesisComponentTest {
 		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp0);
 
 		Map<String, List<Candidates>> values = printValuesCollected(dynamothCodeGenesis);
-		return new DynamicCollectedValues(values);
+		return new DynamothSynthesisContext(values);
 	}
 
 	private Map<String, List<Candidates>> printValuesCollected(DynamothCollector dynamothCodeGenesis) {
@@ -308,9 +308,9 @@ public class SynthesisComponentTest {
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ SynthesisBasedTransformationStrategy.class.getCanonicalName() + File.pathSeparator + //
 						ExtensionPoints.CODE_SYNTHESIS.identifier + File.pathSeparator
-						+ DynamothIngredientSynthesizer.class.getCanonicalName()
-
-		);
+						+ DynamothIngredientSynthesizer.class.getCanonicalName()//
+						+ File.pathSeparator + ExtensionPoints.CONTEXT_COLLECTOR.identifier + File.pathSeparator
+						+ DynamothCollectorFacade.class.getCanonicalName());
 
 		log.info(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());

@@ -1,26 +1,27 @@
-package fr.inria.astor.core.manipulation.synthesis;
+package fr.inria.astor.core.manipulation.synthesis.dynamoth;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.inria.astor.core.manipulation.synthesis.ExecutionContext;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.common.config.NopolContext;
 
 /**
- * Encapsulates the collected data.
+ * Encapsulates the collected data necessary by Dynamoth to synthesize code.
  * 
  * @author Matias Martinez
  *
  */
-public class DynamicCollectedValues {
+public class DynamothSynthesisContext extends ExecutionContext {
 	// Key: test name
 	// Value: list of executions
 	private Map<String, List<Candidates>> values;
 	private NopolContext nopolContext;
 	private Map<String, Object[]> oracle;
 
-	public DynamicCollectedValues(Map<String, List<Candidates>> values, NopolContext nopolContext,
+	public DynamothSynthesisContext(Map<String, List<Candidates>> values, NopolContext nopolContext,
 			Map<String, Object[]> oracle) {
 		super();
 		this.values = values;
@@ -28,11 +29,11 @@ public class DynamicCollectedValues {
 		this.oracle = oracle;
 	}
 
-	public DynamicCollectedValues() {
+	public DynamothSynthesisContext() {
 		this.values = new HashMap<>();
 	}
 
-	public DynamicCollectedValues(Map<String, List<Candidates>> values) {
+	public DynamothSynthesisContext(Map<String, List<Candidates>> values) {
 		super();
 		this.values = values;
 	}
@@ -47,6 +48,22 @@ public class DynamicCollectedValues {
 
 	public List<Candidates> getDataValuesFromTest(String testname) {
 		return values.get(testname);
+	}
+
+	public NopolContext getNopolContext() {
+		return nopolContext;
+	}
+
+	public void setNopolContext(NopolContext nopolContext) {
+		this.nopolContext = nopolContext;
+	}
+
+	public Map<String, Object[]> getOracle() {
+		return oracle;
+	}
+
+	public void setOracle(Map<String, Object[]> oracle) {
+		this.oracle = oracle;
 	}
 
 	public String toString() {
@@ -70,22 +87,6 @@ public class DynamicCollectedValues {
 
 		}
 		return out;
-	}
-
-	public NopolContext getNopolContext() {
-		return nopolContext;
-	}
-
-	public void setNopolContext(NopolContext nopolContext) {
-		this.nopolContext = nopolContext;
-	}
-
-	public Map<String, Object[]> getOracle() {
-		return oracle;
-	}
-
-	public void setOracle(Map<String, Object[]> oracle) {
-		this.oracle = oracle;
 	}
 
 }

@@ -1,4 +1,4 @@
-package fr.inria.astor.core.manipulation.synthesis;
+package fr.inria.astor.core.manipulation.synthesis.dynamoth;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +59,11 @@ import spoon.support.RuntimeProcessingManager;
 
 /**
  * Created by Thomas Durieux on 06/03/15.
+ * 
+ * Code that collects runtime values
+ * 
+ * @modified by Matias Martinez
+ *
  */
 public class DynamothCollector {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
