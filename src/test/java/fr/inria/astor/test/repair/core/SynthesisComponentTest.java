@@ -253,7 +253,7 @@ public class SynthesisComponentTest {
 	}
 
 	@Test
-	public void testExtensionPoint() throws Exception {
+	public void testExtensionPointSynthesis() throws Exception {
 		AstorMain main1 = new AstorMain();
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 
@@ -267,9 +267,9 @@ public class SynthesisComponentTest {
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ SynthesisBasedTransformationStrategy.class.getCanonicalName() + File.pathSeparator + //
 						ExtensionPoints.CODE_SYNTHESIS.identifier + File.pathSeparator
-						+ DummySynthesizer4TestImpl.class.getCanonicalName()
-
-		);
+						+ DummySynthesizer4TestImpl.class.getCanonicalName() + File.pathSeparator
+						+ ExtensionPoints.CONTEXT_COLLECTOR.identifier + File.pathSeparator
+						+ DynamothCollectorFacade.class.getCanonicalName());
 
 		log.info(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -290,7 +290,7 @@ public class SynthesisComponentTest {
 		SuspiciousModificationPoint mp0 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
 
 		List<Ingredient> ingredients = synthesizerStrategy.transform(mp0, new Ingredient(mp0.getCodeElement()));
-
+		assertTrue(ingredients.isEmpty());
 	}
 
 	@Test
