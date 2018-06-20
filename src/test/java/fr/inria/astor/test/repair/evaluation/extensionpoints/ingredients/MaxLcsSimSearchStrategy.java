@@ -96,10 +96,10 @@ public class MaxLcsSimSearchStrategy extends IngredientSearchStrategy {
 		}
 	}
 
-	// http://heim.ifi.uio.no/%7Edanielry/StringMetric.pdf
+	// Normalized longest common subsequence (LCS) distance. http://heim.ifi.uio.no/%7Edanielry/StringMetric.pdf
 	public static double getLcsSimilarity(String a, String b)
 	{
-		// Exact copy cannot be ingredient
+		// Exact copy cannot be ingredient, therefore we give it score 0
 		if(a.replaceAll("\\s+","").equals(b.replaceAll("\\s+","")))
 		{
 			return 0;
