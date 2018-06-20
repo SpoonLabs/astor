@@ -28,9 +28,9 @@ import fr.inria.astor.core.manipulation.sourcecode.VarAccessWrapper;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.util.StringUtil;
@@ -68,7 +68,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 	// Cache of elements' similarity lists.
 	private Map<T, List<T>> element2simlist = new HashMap<>();
 
-	public CloneIngredientSearchStrategy4Exhaustive(IngredientSpace space)
+	public CloneIngredientSearchStrategy4Exhaustive(IngredientPool space)
 			throws ClassNotFoundException, IOException {
 		super(space);
 		cls = Class.forName(ConfigurationProperties.properties.getProperty("clonegranularity"));
@@ -259,7 +259,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 			Stats.currentStat.getIngredientsStats().incrementIngCounter(variant_id);
 
 			if (!continueSearching) {
-				IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
+				IngredientPoolScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
 				int ingCounter = Stats.currentStat.getIngredientsStats().getIngCounter(variant_id);
 				log.debug("---attempts on ingredient space: " + ingCounter);
 				return new Ingredient(ingredient, scope);
@@ -421,7 +421,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 		log.debug("For " + suspicious.getSimpleName() + " simlist: " + simlist.size());
 		for (T element : simlist) {
 			try {
-				IngredientProcessor<?, CtStatement> ipro = new IngredientProcessor<>(
+				CodeParserLauncher<?, CtStatement> ipro = new CodeParserLauncher<>(
 						new SingleStatementFixSpaceProcessor());
 				statements = ipro.createFixSpace(element);
 				//log.debug(element.getSimpleName() + " from simlist, statements: (" + statements.size() + ")");
@@ -560,7 +560,7 @@ public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> 
 							boolean fits = VariableResolver.fitInPlace(
 									modificationPoint.getContextOfModificationPoint(), ingredient);
 							if(fits){
-								IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
+								IngredientPoolScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(), ingredient);
 								
 								//TODO: move to main
 								int ingCounter = Stats.currentStat.getIngredientsStats().getIngCounter(variant_id);

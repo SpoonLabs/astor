@@ -9,6 +9,8 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import fr.inria.main.CommandSummary;
 /**
  * 
  * @author Matias Martinez

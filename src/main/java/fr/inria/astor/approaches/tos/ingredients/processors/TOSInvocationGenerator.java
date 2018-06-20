@@ -10,27 +10,27 @@ import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * 
  * @author Matias Martinez
  *
  */
-public class TOSInvocationGenerator implements PlaceholderGenerator {
+public class TOSInvocationGenerator<T extends CtElement> implements PlaceholderGenerator<T> {
 
 	public static String PATTERN = "_%s_%s_%d_";
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public List<? extends Placeholder> createTOS(CtStatement ingredientStatement) {
+	public List<? extends Placeholder> createTOS(T ingredientSource) {
 
 		List<InvocationPlaceholder> tosGenerated = new ArrayList<>();
-		List<CtAbstractInvocation> invocations = InvocationResolver.collectInvocation(ingredientStatement, true);
+		List<CtAbstractInvocation> invocations = InvocationResolver.collectInvocation(ingredientSource, true);
 		for (CtAbstractInvocation ctAbstractInvocation : invocations) {
 			//this.log.debug("--> analyzing " + ingredientStatement);
-			tosGenerated.addAll(generate(ctAbstractInvocation, ingredientStatement));
+			tosGenerated.addAll(generate(ctAbstractInvocation, ingredientSource));
 		}
 
 		return tosGenerated;
@@ -38,7 +38,7 @@ public class TOSInvocationGenerator implements PlaceholderGenerator {
 
 	@SuppressWarnings("rawtypes")
 	private List<InvocationPlaceholder> generate(CtAbstractInvocation ctAbstractInvocation,
-			CtStatement originalStatement) {
+			T originalStatement) {
 		List<InvocationPlaceholder> tosGenerated = new ArrayList<>();
 
 		// We collect all variables

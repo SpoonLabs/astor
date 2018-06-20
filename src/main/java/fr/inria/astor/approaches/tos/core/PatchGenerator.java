@@ -20,6 +20,7 @@ import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.approaches.tos.entity.transf.VarLiTransformation;
 import fr.inria.astor.approaches.tos.entity.transf.VariableTransformation;
 import fr.inria.astor.approaches.tos.ingredients.LiteralsSpace;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
@@ -30,10 +31,9 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtAbstractInvocation;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtVariable;
@@ -60,7 +60,7 @@ public class PatchGenerator {
 		List<Transformation> transformed = new ArrayList<>();
 		InvocationMatching matchingVar = InvocationResolver.mapImplicitInvocation(modificationPoint.getCtClass(),
 				varplaceholder.getInvocation());
-		
+
 		if (!matchingVar.isCorrect()) {
 			logger.debug("Incorrect: we cannot put that ingredient there.");
 			return transformed;
@@ -89,7 +89,7 @@ public class PatchGenerator {
 		if (executableTarget.getType().equals(varplaceholder.getType()) && varplaceholder.getInvocation()
 				.getExecutable().getParameters().equals(executableTarget.getParameters())) {
 
-			InvocationTransformation it = new InvocationTransformation(varplaceholder,executableTarget);
+			InvocationTransformation it = new InvocationTransformation(varplaceholder, executableTarget);
 
 			transformed.add(it);
 		}
@@ -152,7 +152,8 @@ public class PatchGenerator {
 				if (allCombinations.size() > 0) {
 
 					for (VarCombinationForIngredient varCombinationForIngredient : allCombinations) {
-						transformation.add(new VariableTransformation(varplaceholder,placeholders,varCombinationForIngredient, mapping));
+						transformation.add(new VariableTransformation(varplaceholder, placeholders,
+								varCombinationForIngredient, mapping));
 					}
 				}
 			}
@@ -205,7 +206,7 @@ public class PatchGenerator {
 	public LiteralsSpace getSpace(ProgramVariant pv) {
 
 		String scope = ConfigurationProperties.properties.getProperty("scope");
-		IngredientSpaceScope ingScope = IngredientSpaceScope.valueOf(scope.toUpperCase());
+		IngredientPoolScope ingScope = IngredientPoolScope.valueOf(scope.toUpperCase());
 		if (literalspace == null) {
 			try {
 				logger.debug("Initializing literal space: scope " + ingScope);
@@ -225,14 +226,14 @@ public class PatchGenerator {
 		List<Transformation> transformation = new ArrayList<>();
 
 		///
-		List<CtCodeElement> ingredients = getSpace(modificationPoint.getProgramVariant())
+		List<Ingredient> ingredients = getSpace(modificationPoint.getProgramVariant())
 				.getIngredients(modificationPoint.getCodeElement());
 		logger.debug("Ingredients lit (" + ingredients.size() + ") " + ingredients);
 		// logger.debug("Placeholder vars "+
 		// varplaceholder.getPalceholders().keySet().size());
 
-		for (CtCodeElement ctCodeElement : ingredients) {
-			CtLiteral literal4Space = (CtLiteral) ctCodeElement;
+		for (Ingredient ctCodeElement : ingredients) {
+			CtLiteral literal4Space = (CtLiteral) ctCodeElement.getCode();
 			if (literal4Space.getType().isSubtypeOf(literalPlaceholder.getAffected().getType())) {
 				Transformation t = new LiteralTransformation(literalPlaceholder, literalPlaceholder.getAffected(),
 						literal4Space.getValue());
@@ -247,14 +248,14 @@ public class PatchGenerator {
 
 		List<Transformation> transformation = new ArrayList<>();
 
-		List<CtCodeElement> ingredients = getSpace(modificationPoint.getProgramVariant())
+		List<Ingredient> ingredients = getSpace(modificationPoint.getProgramVariant())
 				.getIngredients(modificationPoint.getCodeElement());
 		logger.debug("Ingredients lit (" + ingredients.size() + ") " + ingredients);
 
-		for (CtCodeElement ctCodeElement : ingredients) {
-			CtLiteral literal4Space = (CtLiteral) ctCodeElement;
+		for (Ingredient ctCodeElement : ingredients) {
+			CtLiteral literal4Space = (CtLiteral) ctCodeElement.getCode();
 			if (literal4Space.getType().isSubtypeOf(varLiPlaceholder.getAffectedVariable().getType())) {
-				Transformation t = new VarLiTransformation(varLiPlaceholder,varLiPlaceholder.getAffectedVariable(),
+				Transformation t = new VarLiTransformation(varLiPlaceholder, varLiPlaceholder.getAffectedVariable(),
 						literal4Space.clone());
 				transformation.add(t);
 			}

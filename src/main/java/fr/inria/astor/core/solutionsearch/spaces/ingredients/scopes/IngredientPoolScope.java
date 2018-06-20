@@ -4,7 +4,7 @@ package fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes;
  * @author Matias Martinez matias.martinez@inria.fr
  *
  */
-public enum IngredientSpaceScope {
+public enum IngredientPoolScope {
 	//Order from most restrictive to less
 	LOCAL,
 	PACKAGE,

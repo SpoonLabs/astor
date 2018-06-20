@@ -4,8 +4,9 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -14,20 +15,20 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElement,String, CtCodeElement,String,CtCodeElement> {
+public abstract class AstorCtIngredientPool extends IngredientPoolLocationType<CtElement,String, Ingredient,String,CtCodeElement> {
 
 	boolean discartDuplicates = true;
 	
-	public AstorCtIngredientSpace() throws JSAPException {
+	public AstorCtIngredientPool() throws JSAPException {
 		super();
 	}
 	
-	public AstorCtIngredientSpace(TargetElementProcessor<?> processor)
+	public AstorCtIngredientPool(TargetElementProcessor<?> processor)
 			throws JSAPException {
 		super(processor);
 	}
 
-	public AstorCtIngredientSpace(List<TargetElementProcessor<?>> processors)
+	public AstorCtIngredientPool(List<TargetElementProcessor<?>> processors)
 			throws JSAPException {
 		super(processors);
 	}
@@ -59,13 +60,14 @@ public abstract class AstorCtIngredientSpace extends AstorIngredientSpace<CtElem
 
 	public void storeInSpace(CtCodeElement ctCodeElement) {
 		String key = mapKey(ctCodeElement);
-		List<CtCodeElement> ingredientsKey = getFixSpace().get(key);
+		List<Ingredient> ingredientsKey = getFixSpace().get(key);
 		if (!getFixSpace().containsKey(key)) {
-			ingredientsKey = new CacheList<CtCodeElement>();
+			ingredientsKey = new CacheList<Ingredient>();
 			getFixSpace().put(key, ingredientsKey);
 		}
-		if(!discartDuplicates || !ingredientsKey.contains(ctCodeElement)){
-			ingredientsKey.add(ctCodeElement);
+		Ingredient ingredientTOInsert = new Ingredient(ctCodeElement);
+		if(!discartDuplicates || !ingredientsKey.contains(ingredientTOInsert)){
+			ingredientsKey.add(ingredientTOInsert);
 		}
 	}
 	

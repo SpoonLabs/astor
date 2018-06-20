@@ -27,8 +27,8 @@ import fr.inria.astor.approaches.tos.entity.placeholders.VarLiPlaceholder;
 import fr.inria.astor.approaches.tos.entity.placeholders.VariablePlaceholder;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.approaches.tos.ingredients.LiteralsSpace;
-import fr.inria.astor.approaches.tos.ingredients.TOSBStatementIngredientSpace;
-import fr.inria.astor.approaches.tos.ingredients.TOSIngredientSearchStrategy;
+import fr.inria.astor.approaches.tos.ingredients.TOSIngredientRandomSearchStrategy;
+import fr.inria.astor.approaches.tos.ingredients.TOSIngredientPool;
 import fr.inria.astor.approaches.tos.ingredients.processors.LiteralPlaceholderGenerator;
 import fr.inria.astor.approaches.tos.ingredients.processors.TOSInvocationGenerator;
 import fr.inria.astor.core.entities.Ingredient;
@@ -38,18 +38,17 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver;
 import fr.inria.astor.core.manipulation.sourcecode.InvocationResolver.InvocationMatching;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
 import fr.inria.astor.util.MapCounter;
 import fr.inria.astor.util.Probability;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.main.AstorOutputStatus;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtAbstractInvocation;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
@@ -98,10 +97,10 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
-		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy strategy = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
@@ -246,10 +245,10 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
-		TOSIngredientSearchStrategy iss = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy iss = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		// assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
@@ -390,8 +389,8 @@ public class TOSBRTest {
 		int nrPlaceholders = 1;
 		TOSBRApproach approach = runTestForPlaceholder(nrPlaceholders);
 
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		TOSCounter tosCounter = tosIngredientPool.getTosCounter();
 		assertNotNull(tosCounter);
@@ -416,8 +415,8 @@ public class TOSBRTest {
 		int nrPlaceholders = 2;
 		TOSBRApproach approach = runTestForPlaceholder(nrPlaceholders);
 
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		TOSCounter tosCounter = tosIngredientPool.getTosCounter();
 		assertNotNull(tosCounter);
@@ -446,12 +445,12 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
+		IngredientPool ingredientPool = approach.getIngredientPool();
 		// one location i.e., the package
 		assertEquals(1, ingredientPool.getLocations().size());
 		assertEquals("org.apache.commons.math.analysis.solvers", ingredientPool.getLocations().get(0).toString());
 
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		// We should have at least one ingredient
 		assertTrue(tosIngredientPool.getAllIngredients().size() > 0);
@@ -542,8 +541,8 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		TOSCounter tosCounter = tosIngredientPool.getTosCounter();
 		assertNotNull(tosCounter);
@@ -623,12 +622,12 @@ public class TOSBRTest {
 				tos.getCode().toString());
 
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
+		IngredientPool ingredientPool = approach.getIngredientPool();
 		// one location i.e., the package
 		assertEquals(1, ingredientPool.getLocations().size());
 		assertEquals("org.apache.commons.math.analysis.solvers", ingredientPool.getLocations().get(0).toString());
 
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		List<Ingredient> allIngredients = tosIngredientPool.getAllIngredients();
 		int i = 0;
@@ -646,7 +645,7 @@ public class TOSBRTest {
 		assertTrue((ing0.getPlaceholders().get(0)) instanceof InvocationPlaceholder);
 		CtAbstractInvocation invocation0 = ((InvocationPlaceholder) (ing0.getPlaceholders().get(0))).getInvocation();
 
-		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy strategy = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		InvocationMatching matchingVar0 = InvocationResolver.mapImplicitInvocation(mp0.getCtClass(), invocation0);
 		assertEquals(InvocationMatching.TARGET_SAME_TYPE.toString(), matchingVar0.toString());
@@ -739,9 +738,9 @@ public class TOSBRTest {
 				tos.getCode().toString());
 
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
+		IngredientPool ingredientPool = approach.getIngredientPool();
 
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		List<String> locations = tosIngredientPool.getLocations();
 		assertTrue(locations.contains("org.apache.commons.math.analysis.solvers"));
@@ -764,7 +763,7 @@ public class TOSBRTest {
 		String patch0 = "_long_0 = 0";
 		String derived0 = "n = 0";
 
-		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy strategy = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		assertEquals(patch0, allIngredientsRank.get(0).getChacheCodeString());
 		assertEquals(derived0, allIngredientsRank.get(0).getDerivedFrom().toString());
@@ -878,9 +877,9 @@ public class TOSBRTest {
 				tos.getCode().toString());
 
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
+		IngredientPool ingredientPool = approach.getIngredientPool();
 
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		List<String> locations = tosIngredientPool.getLocations();
 		assertTrue(locations.contains("org.apache.commons.math.analysis.solvers"));
@@ -910,7 +909,7 @@ public class TOSBRTest {
 					+ tosIngredient.getDerivedFrom());
 		}
 
-		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy strategy = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		// -ic->1
 		// tos:
@@ -980,9 +979,9 @@ public class TOSBRTest {
 		ModificationPoint mp0 = mps.get(0);
 
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
+		IngredientPool ingredientPool = approach.getIngredientPool();
 
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		List<String> locations = tosIngredientPool.getLocations();
 
@@ -1014,10 +1013,10 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
-		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy strategy = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
@@ -1075,7 +1074,8 @@ public class TOSBRTest {
 	}
 
 	public Ingredient findInstance(List<TOSInstance> ingredients, String code) {
-		Optional<TOSInstance> findFirst = ingredients.stream().filter(e -> e.getChacheCodeString().equals(code))
+		String codese = code.replace(" ", "").replace("\n","");
+		Optional<TOSInstance> findFirst = ingredients.stream().filter(e -> e.getChacheCodeString().replace(" ", "").replace("\n","").equals(codese))
 				.findFirst();
 		if (!findFirst.isPresent())
 			return null;
@@ -1102,33 +1102,33 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 		// Local
-		LiteralsSpace lspace = new LiteralsSpace(IngredientSpaceScope.LOCAL);
+		LiteralsSpace lspace = new LiteralsSpace(IngredientPoolScope.LOCAL);
 		lspace.defineSpace(main.getEngine().getVariants().get(0));
 		List<String> locations = lspace.getLocations();
 		System.out.println("locations " + locations);
 		assertEquals(1, locations.size());
 		String loc1 = "org.apache.commons.math.analysis.solvers.BisectionSolver";
-		List<CtCodeElement> ingredients = lspace.retrieveIngredients(loc1);
+		List<Ingredient> ingredients = lspace.retrieveIngredients(loc1);
 		System.out.println("ingredient " + ingredients);
 		assertTrue(ingredients.size() > 0);
 		assertEquals(4, ingredients.size());
 
 		//
-		LiteralsSpace lspaceP = new LiteralsSpace(IngredientSpaceScope.PACKAGE);
+		LiteralsSpace lspaceP = new LiteralsSpace(IngredientPoolScope.PACKAGE);
 		lspaceP.defineSpace(main.getEngine().getVariants().get(0));
 		List<String> locationsP = lspaceP.getLocations();
 		System.out.println("locationsP " + locationsP);
 		assertEquals(1, locationsP.size());
 		String locP1 = "org.apache.commons.math.analysis.solvers";
-		List<CtCodeElement> ingredientsPackage = lspaceP.retrieveIngredients(locP1);
+		List<Ingredient> ingredientsPackage = lspaceP.retrieveIngredients(locP1);
 		System.out.println("ingredientP " + ingredientsPackage);
 		assertTrue(ingredientsPackage.size() > 0);
 		assertEquals(34, ingredientsPackage.size());
-		for (CtCodeElement literalPackage : ingredientsPackage) {
-			System.out.println("--> " + literalPackage + " " + ((CtLiteral) literalPackage).getType());
+		for (Ingredient literalPackage : ingredientsPackage) {
+			System.out.println("--> " + literalPackage + " " + ((CtLiteral) literalPackage.getCode()).getType());
 		}
 
 	}
@@ -1153,8 +1153,8 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
@@ -1202,7 +1202,7 @@ public class TOSBRTest {
 		// two ints
 		assertEquals(2, transformations.size());
 
-		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy strategy = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		List<TOSInstance> instances4super = strategy.getInstances(mp4, ingredientSuper);
 		assertFalse(instances4super.isEmpty());
@@ -1234,8 +1234,8 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
@@ -1274,7 +1274,7 @@ public class TOSBRTest {
 		assertNull(findIngredient(ingredientsLocalBi, "_lit_double_0 = m"));
 		assertNull(findIngredient(ingredientsLocalBi, "int _lit_int_0 = 0"));
 		assertNotNull(findIngredient(ingredientsLocalBi, "verifyInterval(_lit_double_0, max)"));
-		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy strategy = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		List<TOSInstance> instances4super = strategy.getInstances(mp4, ingrAssing);
 		assertFalse(instances4super.isEmpty());
@@ -1315,8 +1315,8 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
@@ -1354,7 +1354,7 @@ public class TOSBRTest {
 		ModificationPoint mp4 = mps.get(4);
 		assertEquals("int i = 0", mp4.getCodeElement().toString());
 
-		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy strategy = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		List<TOSInstance> instancesSolve3args = strategy.getInstances(mp0, ingSolve3arg);
 		assertFalse(instancesSolve3args.isEmpty());
@@ -1407,8 +1407,8 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		// assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
 
@@ -1420,7 +1420,7 @@ public class TOSBRTest {
 		ModificationPoint mp4 = mps.get(4);
 		assertEquals("int i = 0", mp4.getCodeElement().toString());
 
-		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy strategy = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		String packageName = "org.apache.commons.math.analysis.solvers.BisectionSolver";
 
@@ -1472,8 +1472,8 @@ public class TOSBRTest {
 
 		assertTrue(main.getEngine() instanceof TOSBRApproach);
 		TOSBRApproach approach = (TOSBRApproach) main.getEngine();
-		IngredientSpace ingredientPool = approach.getIngredientPool();
-		TOSBStatementIngredientSpace tosIngredientPool = (TOSBStatementIngredientSpace) ingredientPool;
+		IngredientPool ingredientPool = approach.getIngredientPool();
+		TOSIngredientPool tosIngredientPool = (TOSIngredientPool) ingredientPool;
 
 		List<ModificationPoint> mps = approach.getVariants().get(0).getModificationPoints();
 
@@ -1483,7 +1483,7 @@ public class TOSBRTest {
 		ModificationPoint mp4 = mps.get(4);
 		assertEquals("int i = 0", mp4.getCodeElement().toString());
 
-		TOSIngredientSearchStrategy strategy = new TOSIngredientSearchStrategy(tosIngredientPool);
+		TOSIngredientRandomSearchStrategy strategy = new TOSIngredientRandomSearchStrategy(tosIngredientPool);
 
 		String packageName = "org.apache.commons.math.analysis.solvers.BisectionSolver";
 
@@ -1531,13 +1531,13 @@ public class TOSBRTest {
 
 		for (TOSInstance tosInstance : instancesph2) {
 			tosInstance.generatePatch();
-		//	System.out.println("-ph2-> " + tosInstance.getChacheCodeString());
+			// System.out.println("-ph2-> " +
+			// tosInstance.getChacheCodeString());
 		}
+		assertTrue(instancesph2.size() > 0);
 		assertNotNull(findInstance(instancesph2, "return solve(min, 1.0E-6)"));
 		assertNotNull(findInstance(instancesph2, "return solve(min, 0.0)"));
-		
-		
-		
+
 		////////
 		i = 0;
 		List<TOSEntity> elassing = tosIngredientPool.createAllTOSCombined((CtStatement) mp4.getCodeElement());
@@ -1585,7 +1585,8 @@ public class TOSBRTest {
 		assertVarToLi2(strategy, mp8, inglitvar2);
 	}
 
-	private void assertVarChange1(TOSIngredientSearchStrategy strategy, ModificationPoint mp8, Ingredient ingRetvar) {
+	private void assertVarChange1(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8,
+			Ingredient ingRetvar) {
 		List<TOSInstance> instancesReturn1 = strategy.getInstances(mp8, ingRetvar);
 		for (TOSInstance tosInstancer : instancesReturn1) {
 			tosInstancer.generatePatch();
@@ -1595,7 +1596,8 @@ public class TOSBRTest {
 		assertNotNull(findInstance(instancesReturn1, "return (a + b) * 0.5"));
 	}
 
-	private void assertChangeLit2(TOSIngredientSearchStrategy strategy, ModificationPoint mp8, Ingredient ingLit1) {
+	private void assertChangeLit2(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8,
+			Ingredient ingLit1) {
 		List<TOSInstance> instancesLit1 = strategy.getInstances(mp8, ingLit1);
 		for (TOSInstance tosInstancel : instancesLit1) {
 			System.out.println(tosInstancel.generatePatch());
@@ -1608,7 +1610,8 @@ public class TOSBRTest {
 		assertTrue(instancesLit1.size() > 0);
 	}
 
-	private void assertVarToLi1(TOSIngredientSearchStrategy strategy, ModificationPoint mp8, Ingredient ingLitVar1) {
+	private void assertVarToLi1(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8,
+			Ingredient ingLitVar1) {
 		List<TOSInstance> instancesVarLit1 = strategy.getInstances(mp8, ingLitVar1);
 		for (TOSInstance tosInstancev : instancesVarLit1) {
 			System.out.println(tosInstancev.generatePatch());
@@ -1618,7 +1621,8 @@ public class TOSBRTest {
 		assertNotNull(findInstance(instancesVarLit1, "return (a + 0.5) * 0.5"));
 	}
 
-	private void assertVarToLi2(TOSIngredientSearchStrategy strategy, ModificationPoint mp8, Ingredient inglitvar2) {
+	private void assertVarToLi2(TOSIngredientRandomSearchStrategy strategy, ModificationPoint mp8,
+			Ingredient inglitvar2) {
 		List<TOSInstance> instancesVarLit2 = strategy.getInstances(mp8, inglitvar2);
 		for (TOSInstance tosInstance2 : instancesVarLit2) {
 			System.out.println(tosInstance2.generatePatch());

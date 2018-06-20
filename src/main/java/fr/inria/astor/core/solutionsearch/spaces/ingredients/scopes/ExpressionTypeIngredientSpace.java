@@ -17,11 +17,13 @@ import org.json.simple.JSONObject;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -36,15 +38,16 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
+public class ExpressionTypeIngredientSpace
+		extends IngredientPoolLocationType<CtElement, String, Ingredient, String, CtCodeElement> {
 
-	public IngredientSpaceScope scope;
+	public IngredientPoolScope scope;
 
 	public MultiKeyMap mkp = new MultiKeyMap();
 
-	public List<CtCodeElement> allElementsFromSpace = new ArrayList<>();
+	public List<Ingredient> allElementsFromSpace = new ArrayList<>();
 
-	public MapList<String, CtCodeElement> linkTemplateElements = new MapList<>();
+	public MapList<String, Ingredient> linkTemplateElements = new MapList<>();
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
@@ -63,6 +66,7 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 			TargetElementProcessor.mustClone = true;
 
 			for (CtCodeElement originalIngredient : ingredients) {
+				Ingredient ingredientOriginal = new Ingredient(originalIngredient);
 				String keyLocation = mapKey(originalIngredient);
 				if (originalIngredient instanceof CtExpression) {
 					CtExpression ctExpr = (CtExpression) originalIngredient;
@@ -72,7 +76,7 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 					if (ctExpr.getType() == null) {
 						continue;
 					}
-					List<CtCodeElement> ingredientsKey = getIngrediedientsFromKey(keyLocation, ctExpr);
+					List<Ingredient> ingredientsKey = getIngrediedientsFromKey(keyLocation, ctExpr);
 
 					if (ConfigurationProperties.getPropertyBool("cleantemplates")) {
 						MutationSupporter.getEnvironment().setNoClasspath(true);// ?
@@ -80,20 +84,17 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 						CtCodeElement templateElement = MutationSupporter.clone(ctExpr);
 						formatIngredient(templateElement);
 
-						log.debug("Adding ingredient: " + originalIngredient  + " | type: "+originalIngredient.getClass().getCanonicalName());
-
-						log.debug("Template ingredient: " + templateElement + " "
-								+ ingredientsKey.contains(templateElement));
+						Ingredient templateIngredient = new Ingredient(templateElement);
 
 						if (ConfigurationProperties.getPropertyBool("duplicateingredientsinspace")
-								|| !ingredientsKey.contains(templateElement)) {
-							ingredientsKey.add(templateElement);
-							this.allElementsFromSpace.add(templateElement);
+								|| !ingredientsKey.contains(templateIngredient)) {
+							ingredientsKey.add(templateIngredient);
+							this.allElementsFromSpace.add(templateIngredient);
 						}
 						// We must always link elements, beyond the template is
 						// duplicate or new
 						// linking
-						this.linkTemplateElements.add(templateElement.toString(), originalIngredient);
+						this.linkTemplateElements.add(templateElement.toString(), ingredientOriginal);
 
 					} else {
 
@@ -101,9 +102,9 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 								|| !ingredientsKey.contains(originalIngredient)) {
 							// log.debug("Adding ingredient: " +
 							// originalIngredient);
-							ingredientsKey.add(originalIngredient);
+							ingredientsKey.add(ingredientOriginal);
 							// all
-							this.allElementsFromSpace.add(originalIngredient);
+							this.allElementsFromSpace.add(ingredientOriginal);
 						}
 					}
 				}
@@ -127,31 +128,31 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 
 	protected List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {
 
-		if (IngredientSpaceScope.PACKAGE.equals(scope)) {
+		if (IngredientPoolScope.PACKAGE.equals(scope)) {
 			return variant.getAffectedClasses();
 		}
-		if (IngredientSpaceScope.LOCAL.equals(scope)) {
+		if (IngredientPoolScope.LOCAL.equals(scope)) {
 			return variant.getAffectedClasses();
 		}
-		if (IngredientSpaceScope.GLOBAL.equals(scope)) {
+		if (IngredientPoolScope.GLOBAL.equals(scope)) {
 			return MutationSupporter.getFactory().Type().getAll();
 		}
 		return null;
 	}
 
 	@Override
-	public IngredientSpaceScope spaceScope() {
+	public IngredientPoolScope spaceScope() {
 		return null;
 	}
 
 	@Override
 	public String calculateLocation(CtElement elementToModify) {
 
-		if (IngredientSpaceScope.PACKAGE.equals(scope)) {
+		if (IngredientPoolScope.PACKAGE.equals(scope)) {
 			return elementToModify.getParent(CtPackage.class).getQualifiedName();
-		} else if (IngredientSpaceScope.LOCAL.equals(scope)) {
+		} else if (IngredientPoolScope.LOCAL.equals(scope)) {
 			return elementToModify.getParent(CtType.class).getQualifiedName();
-		} else if (IngredientSpaceScope.GLOBAL.equals(scope))
+		} else if (IngredientPoolScope.GLOBAL.equals(scope))
 			return "Global";
 
 		return null;
@@ -159,19 +160,20 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 	}
 
 	@Override
-	protected String getType(CtCodeElement element) {
+	public String getType(Ingredient element) {
 
-		return element.getClass().getSimpleName();
+		return element.getCode().getClass().getSimpleName();
 	}
 
 	@Override
-	public List<CtCodeElement> getIngredients(CtElement element) {
+	public List<Ingredient> getIngredients(CtElement element) {
 		if (element instanceof CtExpression) {
 
 			String keyLocation = mapKey(element);
 			CtExpression ctExpr = (CtExpression) element;
 			String returnTypeExpression = (ctExpr.getType() == null) ? "null" : ctExpr.getType().getSimpleName();
-			List ingredients = (List<CtCodeElement>) mkp.get(keyLocation, returnTypeExpression);
+			List<Ingredient> ingredients = (List<Ingredient>) mkp.get(keyLocation, returnTypeExpression);
+
 			return ingredients;
 		}
 		log.error("Element is not a expression: " + element.getClass().getCanonicalName());
@@ -179,7 +181,7 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 	}
 
 	@Override
-	public List<CtCodeElement> getIngredients(CtElement element, String type) {
+	public List<Ingredient> getIngredients(CtElement element, String type) {
 		return getIngredients(element);
 	}
 
@@ -190,8 +192,8 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 	}
 
 	@Override
-	public List<CtCodeElement> getAllIngredients() {
-		List<CtCodeElement> allIngredients = new ArrayList<>();
+	public List<Ingredient> getAllIngredients() {
+		List<Ingredient> allIngredients = new ArrayList<>();
 		for (Iterator iterator = mkp.values().iterator(); iterator.hasNext();) {
 			allIngredients.addAll((List) iterator.next());
 		}
@@ -278,14 +280,14 @@ public class ExpressionTypeIngredientSpace extends AstorCtIngredientSpace {
 
 	}
 
-	protected List<CtCodeElement> getIngrediedientsFromKey(String keyLocation, CtExpression ctExpr) {
+	protected List<Ingredient> getIngrediedientsFromKey(String keyLocation, CtExpression ctExpr) {
 
 		String returnTypeExpression = (ctExpr.getType() != null) ? ctExpr.getType().getSimpleName() : "null";
 
-		List<CtCodeElement> ingredientsKey = (List<CtCodeElement>) mkp.get(keyLocation, returnTypeExpression);
+		List<Ingredient> ingredientsKey = (List<Ingredient>) mkp.get(keyLocation, returnTypeExpression);
 
 		if (!mkp.containsKey(keyLocation, returnTypeExpression)) {
-			ingredientsKey = new CacheList<CtCodeElement>();
+			ingredientsKey = new CacheList<Ingredient>();
 			mkp.put(keyLocation, returnTypeExpression, ingredientsKey);
 
 		}

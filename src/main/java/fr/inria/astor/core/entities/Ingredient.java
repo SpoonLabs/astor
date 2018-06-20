@@ -1,6 +1,6 @@
 package fr.inria.astor.core.entities;
 
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -11,12 +11,12 @@ import spoon.reflect.declaration.CtElement;
 public class Ingredient {
 
 	protected CtElement ingredientCode;
-	protected IngredientSpaceScope scope;
+	protected IngredientPoolScope scope;
 	protected CtElement derivedFrom;
 	// Store the value of code var
 	protected String cacheString = null;
 
-	public Ingredient(CtElement code, IngredientSpaceScope scope, CtElement derivedFrom) {
+	public Ingredient(CtElement code, IngredientPoolScope scope, CtElement derivedFrom) {
 		super();
 		this.ingredientCode = code;
 		this.derivedFrom = derivedFrom;
@@ -28,7 +28,7 @@ public class Ingredient {
 		this.ingredientCode = element;
 	}
 
-	public Ingredient(CtElement element, IngredientSpaceScope scope) {
+	public Ingredient(CtElement element, IngredientPoolScope scope) {
 		super();
 		this.ingredientCode = element;
 		this.scope = scope;
@@ -42,11 +42,11 @@ public class Ingredient {
 		this.ingredientCode = element;
 	}
 
-	public IngredientSpaceScope getScope() {
+	public IngredientPoolScope getScope() {
 		return scope;
 	}
 
-	public void setScope(IngredientSpaceScope scope) {
+	public void setScope(IngredientPoolScope scope) {
 		this.scope = scope;
 	}
 
@@ -60,7 +60,7 @@ public class Ingredient {
 
 	@Override
 	public String toString() {
-		return "Ingredient [code=" + getCode() + "]";
+		return this.getCode().toString();
 	}
 
 	/**
@@ -73,6 +73,31 @@ public class Ingredient {
 			cacheString = this.getCode().toString();
 		}
 		return cacheString;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ingredientCode == null) ? 0 : ingredientCode.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Ingredient other = (Ingredient) obj;
+		if (ingredientCode == null) {
+			if (other.ingredientCode != null)
+				return false;
+		} else if (!ingredientCode.equals(other.ingredientCode))
+			return false;
+		return true;
 	}
 
 }

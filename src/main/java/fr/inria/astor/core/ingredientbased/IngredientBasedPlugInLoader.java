@@ -2,13 +2,15 @@ package fr.inria.astor.core.ingredientbased;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
@@ -22,34 +24,37 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.Pro
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
-import fr.inria.main.evolution.PlugInVisitor;
 
 /**
  * 
  * @author Matias Martinez
  *
  */
-public class IngredientBasedPlugInLoader extends PlugInVisitor {
+public class IngredientBasedPlugInLoader  {
 
 	public IngredientBasedPlugInLoader() {
 		super();
 	}
 
+	
+
+	protected static Logger log = Logger.getLogger(PlugInLoader.class);
+	
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientPool(AstorCoreEngine approach) throws JSAPException, Exception {
 		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 		List<TargetElementProcessor<?>> ingredientProcessors = approach.getTargetElementProcessors();
 		// The ingredients for build the patches
-		IngredientSpace ingredientspace = getIngredientPool(ingredientProcessors);
+		IngredientPool ingredientspace = getIngredientPool(ingredientProcessors);
 
 		ibra.setIngredientPool(ingredientspace);
 
 	}
 
-	public static IngredientSpace getIngredientPool(List<TargetElementProcessor<?>> ingredientProcessors)
+	public static IngredientPool getIngredientPool(List<TargetElementProcessor<?>> ingredientProcessors)
 			throws JSAPException, Exception {
 		String scope = ConfigurationProperties.properties.getProperty("scope");
-		IngredientSpace ingredientspace = null;
+		IngredientPool ingredientspace = null;
 		if ("global".equals(scope)) {
 			ingredientspace = (new GlobalBasicIngredientSpace(ingredientProcessors));
 		} else if ("package".equals(scope)) {
@@ -57,7 +62,7 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 		} else if ("local".equals(scope) || "file".equals(scope)) {
 			ingredientspace = (new LocalIngredientSpace(ingredientProcessors));
 		} else {
-			ingredientspace = (IngredientSpace) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
+			ingredientspace = (IngredientPool) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
 					new Class[] { List.class }, new Object[] { ingredientProcessors });
 
 		}
@@ -65,11 +70,11 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected void loadIngredientSearchStrategy(AstorCoreEngine approach) throws Exception {
+	protected static IngredientSearchStrategy loadIngredientSearchStrategy(AstorCoreEngine approach) throws Exception {
 
 		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 
-		IngredientSpace ingredientspace = ibra.getIngredientPool();
+		IngredientPool ingredientspace = ibra.getIngredientPool();
 
 		IngredientSearchStrategy ingStrategy = null;
 
@@ -86,25 +91,26 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 				ingStrategy = new CloneIngredientSearchStrategy(ingredientspace);
 			} else {
 				ingStrategy = (IngredientSearchStrategy) PlugInLoader.loadPlugin(
-						ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[] { IngredientSpace.class },
+						ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[] { IngredientPool.class },
 						new Object[] { ingredientspace });
 			}
 		} else {
 			ingStrategy = new EfficientIngredientStrategy(ingredientspace);
 		}
 
-		ibra.setIngredientSearchStrategy(ingStrategy);
+		return (ingStrategy);
 
 	}
 
+	@Deprecated
 	protected void loadIngredientTransformationStrategy(AstorCoreEngine approach) throws Exception {
 		
-		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = getIngredientTransformationStrategy();
+		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = retrieveIngredientTransformationStrategy();
 		IngredientBasedApproach ibra = (IngredientBasedApproach) approach;
 		ibra.setIngredientTransformationStrategy(ingredientTransformationStrategyLoaded);
 	}
 
-	public static IngredientTransformationStrategy getIngredientTransformationStrategy() throws Exception {
+	public static IngredientTransformationStrategy retrieveIngredientTransformationStrategy() throws Exception {
 		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = null;
 		String ingredientTransformationStrategy = ConfigurationProperties.properties
 				.getProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier);
@@ -128,11 +134,4 @@ public class IngredientBasedPlugInLoader extends PlugInVisitor {
 		return ingredientTransformationStrategyLoaded;
 	}
 
-	@Override
-	public void load(AstorCoreEngine approach) throws Exception {
-		super.load(approach);
-		this.loadIngredientPool(approach);
-		this.loadIngredientSearchStrategy(approach);
-		this.loadIngredientTransformationStrategy(approach);
-	}
 }

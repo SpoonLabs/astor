@@ -1,6 +1,7 @@
 package fr.inria.astor.test.repair.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -27,8 +28,8 @@ import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 
 /**
@@ -113,12 +114,6 @@ public class OutputTest {
 
 		assertNotNull(stats);
 
-		// OutputResults outResults = main1.getEngine().getOutputResults();
-
-		// assertNotNull(outResults.produceOutput(statsForPatches, output));
-
-		// assertTrue(stats.getStatsOfPatches().size() > 0);
-
 		String jsonpath = main1.getEngine().getProjectFacade().getProperties().getWorkingDirRoot() + File.separator
 				+ ConfigurationProperties.getProperty("jsonoutputname") + ".json";
 		File filejson = new File(jsonpath);
@@ -157,7 +152,10 @@ public class OutputTest {
 
 		assertEquals("return solve(f, min, max)", hunkStats.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
 
-		assertEquals("return solve(min, max)", hunkob.get(HunkStatEnum.ORIGINAL_CODE.name()));
+		assertEquals("return solve(min, max)", hunkStats.getStats().get(HunkStatEnum.ORIGINAL_CODE));
+
+		assertNotNull(hunkStats.getStats().get(HunkStatEnum.PATH));
+		assertFalse(hunkStats.getStats().get(HunkStatEnum.PATH).toString().isEmpty());
 
 	}
 
@@ -178,6 +176,38 @@ public class OutputTest {
 		assertEquals(1, solutions.size());
 
 		assertEquals(2, main1.getEngine().getOutputResults().size());
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testOutputsAPI1() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		cs.command.put("-stopfirst", "true");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+
+		ProgramVariant solution = main1.getEngine().getSolutions().get(0);
+		assertNotNull(solution.getPatchInfo());
+		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED));
+		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.PATCH_DIFF_ORIG));
+		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.HUNKS));
+		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.FOLDER_SOLUTION_CODE));
+		assertFalse(((String) solution.getPatchInfo().getStats().get(PatchStatEnum.FOLDER_SOLUTION_CODE)).isEmpty());
+
+		List<PatchHunkStats> hunksApi = (List<PatchHunkStats>) solution.getPatchInfo().getStats()
+				.get(PatchStatEnum.HUNKS);
+		assertTrue(hunksApi.size() > 0);
+		PatchHunkStats hunkInfo = hunksApi.get(0);
+		assertNotNull(hunkInfo.getStats().get(HunkStatEnum.PATH));
+		assertFalse(hunkInfo.getStats().get(HunkStatEnum.PATH).toString().isEmpty());
 
 	}
 
@@ -255,4 +285,55 @@ public class OutputTest {
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, engine.getOutputStatus());
 
 	}
+
+	@Test
+	public void testMath70Path() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-parameters", "parsesourcefromoriginal:true");
+		cs.command.put("-loglevel", "DEBUG");
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+		PatchStat patchstats = main1.getEngine().getPatchInfo().get(0);
+
+		Stats stats = Stats.getCurrentStat();
+
+		assertNotNull(stats);
+
+		assertEquals(1, main1.getEngine().getPatchInfo().size());
+
+		List<PatchHunkStats> hunksApi = (List<PatchHunkStats>) patchstats.getStats().get(PatchStatEnum.HUNKS);
+
+		assertNotNull(hunksApi);
+
+		PatchHunkStats hunkStats = hunksApi.get(0);
+
+		assertNotNull(hunkStats);
+
+		assertEquals("return solve(f, min, max)", hunkStats.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
+
+		assertEquals("return solve(min, max)", hunkStats.getStats().get(HunkStatEnum.ORIGINAL_CODE));
+
+		assertNotNull(hunkStats.getStats().get(HunkStatEnum.PATH));
+		assertFalse(hunkStats.getStats().get(HunkStatEnum.PATH).toString().isEmpty());
+
+		String mpath = hunkStats.getStats().get(HunkStatEnum.MODIFIED_FILE_PATH).toString();
+		assertNotNull(mpath);
+		assertTrue(new File(mpath).exists());
+
+		String rpath = hunkStats.getStats().get(HunkStatEnum.PATH).toString();
+		assertNotNull(rpath);
+		assertTrue(new File(rpath).exists());
+
+		assertFalse(rpath.equals(mpath));
+
+	}
+
 }

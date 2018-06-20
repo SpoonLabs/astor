@@ -1,7 +1,7 @@
 package fr.inria.astor.core.ingredientbased;
 
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 
 /**
@@ -12,12 +12,12 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.Ing
 public interface IngredientBasedApproach {
 
 	// Ingredients pools
-	public IngredientSpace getIngredientPool();
+	public IngredientPool getIngredientPool();
 
-	public void setIngredientPool(IngredientSpace ingredientPool);
+	public void setIngredientPool(IngredientPool ingredientPool);
 
 	// Ingredients transformations
-	public IngredientTransformationStrategy getIngredientTransformationStrategy();
+	public IngredientTransformationStrategy getIngredientTransformationStrategy() throws Exception;
 
 	public void setIngredientTransformationStrategy(IngredientTransformationStrategy ingredientTransformationStrategy);
 

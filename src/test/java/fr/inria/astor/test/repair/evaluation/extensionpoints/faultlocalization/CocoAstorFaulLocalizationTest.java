@@ -22,7 +22,7 @@ import fr.inria.astor.core.manipulation.bytecode.classloader.BytecodeClassLoader
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtType;
 

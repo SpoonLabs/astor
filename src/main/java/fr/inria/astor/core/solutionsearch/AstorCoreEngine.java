@@ -15,39 +15,65 @@ import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.cardumen.CardumenOperatorSpace;
+import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator;
+import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
+import fr.inria.astor.approaches.jkali.JKaliSpace;
+import fr.inria.astor.approaches.jmutrepair.MutRepairSpace;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
+import fr.inria.astor.core.entities.PatchDiff;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.VariantValidationResult;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
+import fr.inria.astor.core.faultlocalization.cocospoon.CocoFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
+import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.IFConditionFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.IFExpressionFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
+import fr.inria.astor.core.output.PatchJSONStandarOutput;
 import fr.inria.astor.core.output.ReportResults;
+import fr.inria.astor.core.output.StandardOutputReport;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.extension.AstorExtensionPoint;
 import fr.inria.astor.core.solutionsearch.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.solutionsearch.extension.VariantCompiler;
+import fr.inria.astor.core.solutionsearch.navigation.InOrderSuspiciousNavigation;
+import fr.inria.astor.core.solutionsearch.navigation.SequenceSuspiciousNavigationStrategy;
 import fr.inria.astor.core.solutionsearch.navigation.SuspiciousNavigationStrategy;
+import fr.inria.astor.core.solutionsearch.navigation.SuspiciousNavigationValues;
+import fr.inria.astor.core.solutionsearch.navigation.UniformRandomSuspiciousNavigation;
+import fr.inria.astor.core.solutionsearch.navigation.WeightRandomSuspiciousNavitation;
 import fr.inria.astor.core.solutionsearch.population.FitnessFunction;
 import fr.inria.astor.core.solutionsearch.population.PopulationController;
 import fr.inria.astor.core.solutionsearch.population.ProgramVariantFactory;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
+import fr.inria.astor.core.solutionsearch.spaces.operators.UniformRandomRepairOperatorSpace;
+import fr.inria.astor.core.solutionsearch.spaces.operators.WeightedRandomOperatorSelection;
+import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
+import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
+import fr.inria.astor.core.validation.processbased.ProcessValidator;
 import fr.inria.astor.util.PatchDiffCalculator;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.astor.util.TimeUtil;
 import fr.inria.main.AstorOutputStatus;
-import fr.inria.main.evolution.PlugInVisitor;
+import fr.inria.main.evolution.ExtensionPoints;
+import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -103,7 +129,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected List<TargetElementProcessor<?>> targetElementProcessors = null;
 
-	protected PlugInVisitor pluginLoaded = null;
+	// protected PlugInVisitor pluginLoaded = null;
 
 	// Output
 	protected List<ReportResults> outputResults = null;
@@ -136,7 +162,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		this.currentStat = Stats.createStat();
 
-		pluginLoaded = new PlugInVisitor();
 	}
 
 	public void startEvolution() throws Exception {
@@ -212,9 +237,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		log.info("generationsexecuted: " + this.generationsExecuted);
 
 		currentStat.getGeneralStats().put(GeneralStatEnum.OUTPUT_STATUS, this.getOutputStatus());
-		
 
-		this.computePatchDiff(this.solutions);
+		try {
+			this.computePatchDiff(this.solutions);
+		} catch (Exception e) {
+			log.error("Problem at computing diff" + e);
+		}
 		this.sortPatches();
 		this.printFinalStatus();
 
@@ -222,7 +250,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		// Recreate statistiques of patches
 		if (!solutions.isEmpty()) {
-			patchInfo = this.currentStat.createStatsForPatches(solutions, generationsExecuted, dateInitEvolution);
+			patchInfo = createStatsForPatches(solutions, generationsExecuted, dateInitEvolution);
 		}
 
 		String output = this.projectFacade.getProperties().getWorkingDirRoot();
@@ -231,22 +259,29 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		for (ReportResults out : this.getOutputResults()) {
 			out.produceOutput(patchInfo, this.currentStat.getGeneralStats(), output);
 		}
+
 	}
 
-	protected void computePatchDiff(List<ProgramVariant> solutions) {
-
-		// Save code of default variant
-		String srcOutput = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		try {
-			mutatorSupporter.saveSourceCodeOnDiskProgramVariant(this.originalVariant, srcOutput);
-		} catch (Exception e) {
-			log.error(e);
-		}
+	protected void computePatchDiff(List<ProgramVariant> solutions) throws Exception {
 
 		PatchDiffCalculator cdiff = new PatchDiffCalculator();
 		for (ProgramVariant solutionVariant : solutions) {
-			String diffPatch = cdiff.getDiff(getProjectFacade(), solutionVariant);
-			solutionVariant.setPatchDiff(diffPatch);
+			PatchDiff pdiff = new PatchDiff();
+			boolean format = true;
+
+			String diffPatchFormated = cdiff.getDiff(getProjectFacade(), this.originalVariant, solutionVariant, format,
+					this.mutatorSupporter);
+
+			pdiff.setFormattedDiff(diffPatchFormated);
+
+			format = false;
+
+			String diffPatchOriginalAlign = cdiff.getDiff(getProjectFacade(), this.originalVariant, solutionVariant,
+					format, this.mutatorSupporter);
+
+			pdiff.setOriginalStatementAlignmentDiff(diffPatchOriginalAlign);
+
+			solutionVariant.setPatchDiff(pdiff);
 		}
 
 	}
@@ -481,13 +516,28 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public void saveVariant(ProgramVariant programVariant) throws Exception {
+		final boolean codeFormated = true;
+		savePatchDiff(programVariant, !codeFormated);
+		savePatchDiff(programVariant, codeFormated);
 
-		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier());
+	}
+
+	private void savePatchDiff(ProgramVariant programVariant, boolean format) throws Exception {
+
+		boolean originalValue = ConfigurationProperties.getPropertyBool("preservelinenumbers");
+
+		String srcOutput = determineSourceFolderInWorkspace(programVariant, format);
 		log.debug("\n-Saving child on disk variant #" + programVariant.getId() + " at " + srcOutput);
-		// This method should be refactored, and replace by the
-		// output from memory compilation
+		ConfigurationProperties.setProperty("preservelinenumbers", Boolean.toString(!format));
 		mutatorSupporter.saveSourceCodeOnDiskProgramVariant(programVariant, srcOutput);
 
+		ConfigurationProperties.setProperty("preservelinenumbers", Boolean.toString(originalValue));
+	}
+
+	private String determineSourceFolderInWorkspace(ProgramVariant programVariant, boolean format) {
+		final String suffix = format ? PatchDiffCalculator.DIFF_SUFFIX : "";
+		String srcOutput = projectFacade.getInDirWithPrefix(programVariant.currentMutatorIdentifier()) + suffix;
+		return srcOutput;
 	}
 
 	/**
@@ -527,9 +577,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			if (validationResult != null && validationResult.isSuccessful()) {
 				log.info("-Found Solution, child variant #" + programVariant.getId());
 				saveStaticSucessful(programVariant.getId(), generation);
-				if (ConfigurationProperties.getPropertyBool("savesolution")) {
-					saveVariant(programVariant);
-				}
+				saveVariant(programVariant);
+
 				return true;
 			}
 		} else {
@@ -593,7 +642,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * @param variant
 	 * @param generation
 	 */
-	protected void reverseOperationInModel(ProgramVariant variant, int generation) {
+	public void reverseOperationInModel(ProgramVariant variant, int generation) {
 
 		if (variant.getOperations() == null || variant.getOperations().isEmpty()) {
 			return;
@@ -643,7 +692,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		List<ModificationPoint> modificationPointsToProcess = this.suspiciousNavigationStrategy
 				.getSortedModificationPointsList(variant);
 
-		// log.debug("modifPointsToProcess " + modificationPointsToProcess);
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
 
 			log.debug("---analyzing modificationPoint position: " + modificationPoint.identified);
@@ -777,7 +825,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * @param currentGeneration
 	 * @throws IllegalAccessException
 	 */
-	protected void applyPreviousOperationsToVariantModel(ProgramVariant variant, int currentGeneration)
+	public void applyPreviousOperationsToVariantModel(ProgramVariant variant, int currentGeneration)
 			throws IllegalAccessException {
 
 		// We do not include the current generation (should be empty)
@@ -950,8 +998,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				}
 			}
 			line += "\nvalidation=" + solutionVariant.getValidationResult().toString();
-			String diffPatch = solutionVariant.getPatchDiff();
+			String diffPatch = solutionVariant.getPatchDiff().getFormattedDiff();
 			line += "\ndiffpatch=" + diffPatch;
+			String diffPatchoriginal = solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff();
+			line += "\ndiffpatchoriginal=" + diffPatchoriginal;
 		}
 		return line;
 	}
@@ -1003,15 +1053,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	public void setCompiler(VariantCompiler compiler) {
 		this.compiler = compiler;
 	}
-
-	/**
-	 * Load the extension Points according to the requirements of the engine
-	 * 
-	 * @throws Exception
-	 */
-	public final void loadExtensionPoints() throws Exception {
-		this.pluginLoaded.load(this);
-	};
 
 	/**
 	 * By default, it initializes the spoon model. It should not be created
@@ -1078,18 +1119,39 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	public void initModel() throws Exception {
 
 		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
-			Factory fcurrent = MutationSupporter.getFactory();
-			log.debug("The Spoon Model was already built.");
-			Factory fnew = MutationSupporter.cleanFactory();
-			log.debug("New factory created? " + !fnew.equals(fcurrent));
+			if (ConfigurationProperties.getPropertyBool("resetmodel")) {
+				Factory fcurrent = MutationSupporter.getFactory();
+				log.debug("The Spoon Model was already built.");
+				Factory fnew = MutationSupporter.cleanFactory();
+				log.debug("New factory created? " + !fnew.equals(fcurrent));
+			} else {
+				log.debug("we keep previous factory");
+				// we do not generate a new model
+				return;
+			}
 		}
 
-		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		String codeLocation = "";
+		if (ConfigurationProperties.getPropertyBool("parsesourcefromoriginal")) {
+			List<String> codeLocations = projectFacade.getProperties().getOriginalDirSrc();
+			for (String source : codeLocations) {
+				codeLocation += source + File.pathSeparator;
+			}
+			if (codeLocation.length() > 0) {
+				codeLocation = codeLocation.substring(0, codeLocation.length() - 1);
+			}
+		} else {
+			codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		}
+
 		String bytecodeLocation = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
 		String[] cpArray = classpath.split(File.pathSeparator);
 
+		log.info("Creating model,  Code location from working folder: " + codeLocation);
+
 		try {
+
 			mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
 			log.debug("Spoon Model built from location: " + codeLocation);
 		} catch (Exception e) {
@@ -1252,8 +1314,340 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		String bytecodeOutput = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		File variantOutputFile = new File(bytecodeOutput);
 		MutationSupporter.currentSupporter.getOutput().saveByteCode(programVariant.getCompilation(), variantOutputFile);
-		
+
 		this.currentStat = Stats.createStat();
+	}
+
+	protected void loadFaultLocalization() throws Exception {
+
+		// Fault localization
+		String flvalue = ConfigurationProperties.getProperty("faultlocalization").toLowerCase();
+		if (flvalue.equals("gzoltar")) {
+			this.setFaultLocalization(new GZoltarFaultLocalization());
+		} else if (flvalue.equals("cocospoon")) {
+			this.setFaultLocalization(new CocoFaultLocalization());
+		} else
+			this.setFaultLocalization(
+					(FaultLocalizationStrategy) PlugInLoader.loadPlugin(ExtensionPoints.FAULT_LOCALIZATION));
+
+	}
+
+	protected void loadSuspiciousNavigation() throws Exception {
+		String mode = ConfigurationProperties.getProperty(ExtensionPoints.SUSPICIOUS_NAVIGATION.identifier)
+				.toUpperCase();
+
+		SuspiciousNavigationStrategy suspiciousNavigationStrategy = null;
+		if (SuspiciousNavigationValues.INORDER.toString().equals(mode)) {
+			suspiciousNavigationStrategy = new InOrderSuspiciousNavigation();
+		} else if (SuspiciousNavigationValues.WEIGHT.toString().equals(mode))
+			suspiciousNavigationStrategy = new WeightRandomSuspiciousNavitation();
+		else if (SuspiciousNavigationValues.RANDOM.toString().equals(mode)) {
+			suspiciousNavigationStrategy = new UniformRandomSuspiciousNavigation();
+		} else if (SuspiciousNavigationValues.SEQUENCE.toString().equals(mode)) {
+			suspiciousNavigationStrategy = new SequenceSuspiciousNavigationStrategy();
+		} else {
+			suspiciousNavigationStrategy = (SuspiciousNavigationStrategy) PlugInLoader
+					.loadPlugin(ExtensionPoints.SUSPICIOUS_NAVIGATION);
+		}
+		this.setSuspiciousNavigationStrategy(suspiciousNavigationStrategy);
+	}
+
+	protected void loadOperatorSpaceDefinition() throws Exception {
+
+		// We check if the user defines the operators to include in the operator
+		// space
+		OperatorSpace operatorSpace = null;
+		String customOp = ConfigurationProperties.getProperty("customop");
+		if (customOp != null && !customOp.isEmpty()) {
+			operatorSpace = createCustomOperatorSpace(customOp);
+		} else {
+			customOp = ConfigurationProperties.getProperty("operatorspace");
+			if ("irr-statements".equals(customOp) || "jgenprogspace".equals(customOp)) {
+				operatorSpace = new jGenProgSpace();
+			} else if ("relational-Logical-op".equals(customOp) || "mutationspace".equals(customOp)) {
+				operatorSpace = new MutRepairSpace();
+			} else if ("suppression".equals(customOp) || "jkalispace".equals(customOp)) {
+				operatorSpace = new JKaliSpace();
+			} else if ("r-expression".equals(customOp) || "cardumenspace".equals(customOp)) {
+				operatorSpace = new CardumenOperatorSpace();
+			} else
+			// Custom
+			if (customOp != null && !customOp.isEmpty())
+				operatorSpace = (OperatorSpace) PlugInLoader.loadPlugin(ExtensionPoints.OPERATORS_SPACE);
+		}
+
+		this.setOperatorSpace(operatorSpace);
+
+	}
+
+	protected static OperatorSpace createCustomOperatorSpace(String customOp) throws Exception {
+		OperatorSpace customSpace = new OperatorSpace();
+		String[] operators = customOp.split(File.pathSeparator);
+		for (String op : operators) {
+			AstorOperator aop = (AstorOperator) PlugInLoader.loadPlugin(op, ExtensionPoints.CUSTOM_OPERATOR._class);
+			if (aop != null)
+				customSpace.register(aop);
+		}
+		if (customSpace.getOperators().isEmpty()) {
+
+			throw new Exception("Empty custom operator space");
+		}
+		return customSpace;
+	}
+
+	protected void loadFitnessFunction() throws Exception {
+		// Fault localization
+		this.setFitnessFunction((FitnessFunction) PlugInLoader.loadPlugin(ExtensionPoints.FITNESS_FUNCTION));
+	}
+
+	protected void loadOperatorSelectorStrategy() throws Exception {
+		String opStrategyClassName = ConfigurationProperties.properties.getProperty("opselectionstrategy");
+		if (opStrategyClassName != null) {
+			if ("uniform-random".equals(opStrategyClassName)) {
+				this.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(this.getOperatorSpace()));
+			} else if ("weighted-random".equals(opStrategyClassName)) {
+				this.setOperatorSelectionStrategy(new WeightedRandomOperatorSelection(this.getOperatorSpace()));
+			} else {
+				OperatorSelectionStrategy strategy = createOperationSelectionStrategy(opStrategyClassName,
+						this.getOperatorSpace());
+				this.setOperatorSelectionStrategy(strategy);
+			}
+		} else {// By default, uniform strategy
+			this.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(this.getOperatorSpace()));
+		}
+	}
+
+	protected OperatorSelectionStrategy createOperationSelectionStrategy(String opSelectionStrategyClassName,
+			OperatorSpace space) throws Exception {
+		Object object = null;
+		try {
+			Class classDefinition = Class.forName(opSelectionStrategyClassName);
+			object = classDefinition.getConstructor(OperatorSpace.class).newInstance(space);
+		} catch (Exception e) {
+			throw new Exception("Loading strategy: " + e);
+		}
+		if (object instanceof OperatorSelectionStrategy)
+			return (OperatorSelectionStrategy) object;
+		else
+			throw new Exception("The strategy " + opSelectionStrategyClassName + " does not extend from "
+					+ OperatorSelectionStrategy.class.getName());
+	}
+
+	protected void loadValidator() throws Exception {
+
+		// After initializing population, we set up specific validation
+		// mechanism
+		// Select the kind of validation of a variant.
+		String validationArgument = ConfigurationProperties.properties.getProperty("validation");
+		if (validationArgument.equals("evosuite") || validationArgument.equals("augmented-test-suite")) {
+			ProcessEvoSuiteValidator validator = new ProcessEvoSuiteValidator();
+			this.setProgramValidator(validator);
+		} else
+		// if validation is different to default (process)
+		if (validationArgument.equals("process") || validationArgument.equals("test-suite")) {
+			ProcessValidator validator = new ProcessValidator();
+			this.setProgramValidator(validator);
+		} else {
+			this.setProgramValidator((ProgramVariantValidator) PlugInLoader.loadPlugin(ExtensionPoints.VALIDATION));
+		}
+	}
+
+	protected void loadCompiler() throws Exception {
+		this.setCompiler((VariantCompiler) PlugInLoader.loadPlugin(ExtensionPoints.COMPILER));
+	}
+
+	protected void loadPopulation() throws Exception {
+		// Population controller
+		this.setPopulationControler(
+				(PopulationController) PlugInLoader.loadPlugin(ExtensionPoints.POPULATION_CONTROLLER));
+	}
+
+	protected void loadTargetElements() throws Exception {
+
+		List<TargetElementProcessor<?>> targetElementProcessors = new ArrayList<TargetElementProcessor<?>>();
+
+		this.setTargetElementProcessors(targetElementProcessors);
+		// Fix Space
+		ExtensionPoints epoint = ExtensionPoints.TARGET_CODE_PROCESSOR;
+		if (!ConfigurationProperties.hasProperty(epoint.identifier)) {
+			// By default, we use statements as granularity level.
+			this.getTargetElementProcessors().add(new SingleStatementFixSpaceProcessor());
+		} else {
+			// We load custom processors
+			String ingrProcessors = ConfigurationProperties.getProperty(epoint.identifier);
+			String[] in = ingrProcessors.split(File.pathSeparator);
+			for (String processor : in) {
+				if (processor.equals("statements")) {
+					this.getTargetElementProcessors().add(new SingleStatementFixSpaceProcessor());
+				} else if (processor.equals("expression")) {
+					this.getTargetElementProcessors().add(new ExpressionIngredientSpaceProcessor());
+				} else if (processor.equals("logical-relationaloperators")) {
+					this.getTargetElementProcessors().add(new IFExpressionFixSpaceProcessor());
+				} else if (processor.equals("if-conditions")) {
+					this.getTargetElementProcessors().add(new IFConditionFixSpaceProcessor());
+				} else {
+					TargetElementProcessor proc_i = (TargetElementProcessor) PlugInLoader.loadPlugin(processor,
+							epoint._class);
+					targetElementProcessors.add(proc_i);
+				}
+			}
+		}
+		this.setVariantFactory(new ProgramVariantFactory(this.getTargetElementProcessors()));
+	}
+
+	protected void loadSolutionPrioritization() throws Exception {
+
+		String patchpriority = ConfigurationProperties.getProperty("patchprioritization");
+		if (patchpriority != null && !patchpriority.trim().isEmpty()) {
+			SolutionVariantSortCriterion priorizStrategy = null;
+
+			priorizStrategy = (SolutionVariantSortCriterion) PlugInLoader
+					.loadPlugin(ExtensionPoints.SOLUTION_SORT_CRITERION);
+			this.setPatchSortCriterion(priorizStrategy);
+
+		}
+	}
+
+	protected void loadOutputResults() throws Exception {
+
+		List<ReportResults> outputs = new ArrayList<>();
+		this.setOutputResults(outputs);
+
+		String outputproperty = ConfigurationProperties.getProperty("outputresults");
+		if (outputproperty != null && !outputproperty.trim().isEmpty()) {
+			String[] outprocess = outputproperty.split("|");
+
+			for (String outp : outprocess) {
+				ReportResults outputresult = (ReportResults) PlugInLoader.loadPlugin(outp,
+						ExtensionPoints.OUTPUT_RESULTS._class);
+				outputs.add(outputresult);
+			}
+
+		} else {
+			outputs.add(new StandardOutputReport());
+			outputs.add(new PatchJSONStandarOutput());
+		}
+
+	}
+
+	public List<PatchStat> createStatsForPatches(List<ProgramVariant> variants, int generation,
+			Date dateInitEvolution) {
+		List<PatchStat> patches = new ArrayList<>();
+
+		for (ProgramVariant solutionVariant : variants) {
+
+			PatchStat patch_i = new PatchStat();
+			solutionVariant.setPatchInfo(patch_i);
+			patches.add(patch_i);
+			patch_i.addStat(PatchStatEnum.TIME,
+					TimeUtil.getDateDiff(dateInitEvolution, solutionVariant.getBornDate(), TimeUnit.SECONDS));
+			patch_i.addStat(PatchStatEnum.VARIANT_ID, solutionVariant.getId());
+
+			patch_i.addStat(PatchStatEnum.VALIDATION, solutionVariant.getValidationResult().toString());
+
+			patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
+					solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
+
+			patch_i.addStat(PatchStatEnum.PATCH_DIFF_FORMATTED, solutionVariant.getPatchDiff().getFormattedDiff());
+
+			patch_i.addStat(PatchStatEnum.FOLDER_SOLUTION_CODE,
+					projectFacade.getOutDirWithPrefix(solutionVariant.currentMutatorIdentifier()));
+
+			List<PatchHunkStats> hunks = new ArrayList<>();
+			patch_i.addStat(PatchStatEnum.HUNKS, hunks);
+
+			int lastGeneration = -1;
+			for (int i = 1; i <= generation; i++) {
+				List<OperatorInstance> genOperationInstances = solutionVariant.getOperations().get(i);
+				if (genOperationInstances == null)
+					continue;
+				lastGeneration = i;
+
+				for (OperatorInstance genOperationInstance : genOperationInstances) {
+
+					PatchHunkStats hunk = new PatchHunkStats();
+					hunks.add(hunk);
+					hunk.getStats().put(HunkStatEnum.OPERATOR, genOperationInstance.getOperationApplied().toString());
+					hunk.getStats().put(HunkStatEnum.LOCATION,
+							genOperationInstance.getModificationPoint().getCtClass().getQualifiedName());
+
+					hunk.getStats().put(HunkStatEnum.PATH, genOperationInstance.getModificationPoint().getCtClass()
+							.getPosition().getFile().getAbsolutePath());
+
+					boolean originalAlingment = ConfigurationProperties.getPropertyBool("parsesourcefromoriginal");
+					String mpath = determineSourceFolderInWorkspace(solutionVariant, !originalAlingment)
+							+ File.separator + genOperationInstance.getModificationPoint().getCtClass()
+									.getQualifiedName().replace(".", File.separator)+".java";
+					hunk.getStats().put(HunkStatEnum.MODIFIED_FILE_PATH, mpath);
+
+					hunk.getStats().put(HunkStatEnum.MP_RANKING,
+							genOperationInstance.getModificationPoint().identified);
+
+					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
+						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
+								.getModificationPoint();
+						hunk.getStats().put(HunkStatEnum.LINE, gs.getSuspicious().getLineNumber());
+						hunk.getStats().put(HunkStatEnum.SUSPICIOUNESS, gs.getSuspicious().getSuspiciousValueString());
+					}
+					hunk.getStats().put(HunkStatEnum.ORIGINAL_CODE, genOperationInstance.getOriginal().toString());
+					hunk.getStats().put(HunkStatEnum.BUGGY_CODE_TYPE,
+							genOperationInstance.getOriginal().getClass().getSimpleName() + "|"
+									+ genOperationInstance.getOriginal().getParent().getClass().getSimpleName());
+
+					if (genOperationInstance.getModified() != null) {
+						// if fix content is the same that original buggy
+						// content, we do not write the patch, remaining empty
+						// the property fixed statement
+						if (genOperationInstance.getModified().toString() != genOperationInstance.getOriginal()
+								.toString())
+
+							hunk.getStats().put(HunkStatEnum.PATCH_HUNK_CODE,
+									genOperationInstance.getModified().toString());
+						else {
+							hunk.getStats().put(HunkStatEnum.PATCH_HUNK_CODE,
+									genOperationInstance.getOriginal().toString());
+
+						}
+						// Information about types Parents
+
+						hunk.getStats().put(HunkStatEnum.PATCH_HUNK_TYPE,
+								genOperationInstance.getModified().getClass().getSimpleName() + "|"
+										+ genOperationInstance.getModified().getParent().getClass().getSimpleName());
+					}
+
+					hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE,
+							((genOperationInstance.getIngredientScope() != null)
+									? genOperationInstance.getIngredientScope() : "-"));
+
+					if (genOperationInstance.getIngredient() != null
+							&& genOperationInstance.getIngredient().getDerivedFrom() != null)
+						hunk.getStats().put(HunkStatEnum.INGREDIENT_PARENT,
+								genOperationInstance.getIngredient().getDerivedFrom());
+
+				}
+			}
+			if (lastGeneration > 0) {
+				patch_i.addStat(PatchStatEnum.GENERATION, lastGeneration);
+
+			}
+
+		}
+		return patches;
+	}
+
+	public void loadExtensionPoints() throws Exception {
+		this.loadFaultLocalization();
+		this.loadTargetElements();
+		this.loadSuspiciousNavigation();
+		this.loadCompiler();
+		this.loadValidator();
+		this.loadPopulation();
+		this.loadFitnessFunction();
+		this.loadOperatorSpaceDefinition();
+		this.loadOperatorSelectorStrategy();
+		this.loadSolutionPrioritization();
+		this.loadOutputResults();
+
 	}
 
 }

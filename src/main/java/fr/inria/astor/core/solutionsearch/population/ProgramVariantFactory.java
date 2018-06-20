@@ -19,7 +19,7 @@ import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -117,9 +117,7 @@ public class ProgramVariantFactory {
 
 		if (!suspiciousList.isEmpty()) {
 			for (SuspiciousCode suspiciousCode : suspiciousList) {
-				// For each suspicious code, we create one or more ModPoint
-				// (when it
-				// is possible)
+
 				List<SuspiciousModificationPoint> modifPoints = createModificationPoints(suspiciousCode, progInstance);
 				if (modifPoints != null && !modifPoints.isEmpty()) {
 					progInstance.addModificationPoints(modifPoints);
@@ -142,7 +140,7 @@ public class ProgramVariantFactory {
 			log.info("Reducing Total ModPoint created to: " + progInstance.getModificationPoints().size());
 		}
 
-		//Indicating id
+		// Indicating id
 		for (int i = 0; i < progInstance.getModificationPoints().size(); i++) {
 			ModificationPoint mp = progInstance.getModificationPoints().get(0);
 			mp.identified = i + 1;
@@ -210,7 +208,7 @@ public class ProgramVariantFactory {
 	private List<SuspiciousModificationPoint> createModificationPoints(SuspiciousCode suspiciousCode,
 			ProgramVariant progInstance) {
 
-		List<SuspiciousModificationPoint> suspGen = new ArrayList<SuspiciousModificationPoint>();
+		List<SuspiciousModificationPoint> suspiciousModificationPoints = new ArrayList<SuspiciousModificationPoint>();
 
 		CtClass ctclasspointed = resolveCtClass(suspiciousCode.getClassName(), progInstance);
 		if (ctclasspointed == null) {
@@ -246,21 +244,21 @@ public class ProgramVariantFactory {
 		List<CtElement> filterByType = extractChildElements(ctSuspects, processors);
 
 		List<CtElement> filteredTypeByLine = intersection(filterByType, ctSuspects);
-		// For each filtered element, we create a Gen.
-		int id = 0;
+		// For each filtered element, we create a ModificationPoint.
+	
 		for (CtElement ctElement : filteredTypeByLine) {
 			SuspiciousModificationPoint modifPoint = new SuspiciousModificationPoint();
 			modifPoint.setSuspicious(suspiciousCode);
 			modifPoint.setClonedClass(ctclasspointed);
 			modifPoint.setCodeElement(ctElement);
 			modifPoint.setContextOfModificationPoint(contextOfPoint);
-			suspGen.add(modifPoint);
+			suspiciousModificationPoints.add(modifPoint);
 			log.debug("--ModifPoint:" + ctElement.getClass().getSimpleName() + ", suspValue "
 					+ suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
 					+ ((ctElement.getPosition().getFile() == null) ? "-null-file-"
 							: ctElement.getPosition().getFile().getName()));
 		}
-		return suspGen;
+		return suspiciousModificationPoints;
 	}
 
 	/**
@@ -282,7 +280,7 @@ public class ProgramVariantFactory {
 		List<CtElement> ctMatching = new ArrayList<CtElement>();
 
 		try {
-			IngredientProcessor spaceProcessor = new IngredientProcessor(processors);
+			CodeParserLauncher spaceProcessor = new CodeParserLauncher(processors);
 			for (CtElement element : ctSuspects) {
 				List<CtElement> result = spaceProcessor.createFixSpace(element, false);
 

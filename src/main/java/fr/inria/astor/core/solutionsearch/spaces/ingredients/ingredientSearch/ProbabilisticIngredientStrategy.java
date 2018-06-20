@@ -8,11 +8,10 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.util.MapList;
-import spoon.reflect.code.CtCodeElement;
 
 /**
  * 
@@ -21,7 +20,7 @@ import spoon.reflect.code.CtCodeElement;
  */
 public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy {
 
-	public ProbabilisticIngredientStrategy(IngredientSpace space) {
+	public ProbabilisticIngredientStrategy(IngredientPool space) {
 		super(space);
 	}
 
@@ -38,7 +37,7 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 		return ingredientsAfterTransformation.get(0);
 	}
 
-	private CtCodeElement getTemplateByWeighted(List<CtCodeElement> elements, List<String> elements2String,
+	private Ingredient getTemplateByWeighted(List<Ingredient> elements, List<String> elements2String,
 			Map<String, Double> probs) {
 		// Random value
 		Double randomElement = RandomManager.nextDouble();
@@ -48,7 +47,7 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 			double probTemplate = probs.get(template);
 			if (randomElement <= probTemplate) {
 				int index = elements2String.indexOf(template);
-				CtCodeElement templateElement = elements.get(index);
+				Ingredient templateElement = elements.get(index);
 				log.debug("BI with prob "+probTemplate+" "+(i++) +" "+templateElement);
 				return templateElement;
 			}
@@ -60,10 +59,10 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 	Map<String, Double> probs = null;
 
 	@Override
-	public List<CtCodeElement> getNotExhaustedBaseElements(ModificationPoint modificationPoint,
+	public List<Ingredient> getNotExhaustedBaseElements(ModificationPoint modificationPoint,
 			AstorOperator operationType) {
 
-		List<CtCodeElement> elements = super.getNotExhaustedBaseElements(modificationPoint, operationType);
+		List<Ingredient> elements = super.getNotExhaustedBaseElements(modificationPoint, operationType);
 
 		if(elements == null){
 			return null;
@@ -75,7 +74,7 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 			// Ingredients from space
 			// ingredients to string
 			elements2String = new ArrayList<>();
-			for (CtCodeElement cm : elements) {
+			for (Ingredient cm : elements) {
 				elements2String.add(cm.toString());
 			}
 			// Obtaining counting of templates from the space
@@ -92,7 +91,7 @@ public class ProbabilisticIngredientStrategy extends EfficientIngredientStrategy
 	}
 
 	@Override
-	protected CtCodeElement getRandomStatementFromSpace(List<CtCodeElement> fixSpace) {
+	protected Ingredient getRandomStatementFromSpace(List<Ingredient> fixSpace) {
 
 		if (ConfigurationProperties.getPropertyBool("frequenttemplate"))
 

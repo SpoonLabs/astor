@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.NGramManager;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
@@ -857,7 +857,7 @@ public class VariableResolver {
 
 	}
 
-	public static IngredientSpaceScope determineIngredientScope(CtElement ingredient, CtElement fix) {
+	public static IngredientPoolScope determineIngredientScope(CtElement ingredient, CtElement fix) {
 
 		File ingp = ingredient.getPosition().getFile();
 		File fixp = fix.getPosition().getFile();
@@ -866,19 +866,19 @@ public class VariableResolver {
 			return null;
 
 		if (ingp.getAbsolutePath().equals(fixp.getAbsolutePath())) {
-			return IngredientSpaceScope.LOCAL;
+			return IngredientPoolScope.LOCAL;
 		}
 		if (ingp.getParentFile().getAbsolutePath().equals(fixp.getParentFile().getAbsolutePath())) {
-			return IngredientSpaceScope.PACKAGE;
+			return IngredientPoolScope.PACKAGE;
 		}
-		return IngredientSpaceScope.GLOBAL;
+		return IngredientPoolScope.GLOBAL;
 	}
 
 	@Deprecated
-	protected IngredientSpaceScope determineIngredientScope(CtElement modificationpoint, CtElement selectedFix,
+	protected IngredientPoolScope determineIngredientScope(CtElement modificationpoint, CtElement selectedFix,
 			List<?> ingredients) {
 		// This is the original ingredient scope
-		IngredientSpaceScope orig = VariableResolver.determineIngredientScope(modificationpoint, selectedFix);
+		IngredientPoolScope orig = VariableResolver.determineIngredientScope(modificationpoint, selectedFix);
 
 		String fixStr = selectedFix.toString();
 
@@ -893,13 +893,13 @@ public class VariableResolver {
 			}
 			// if it's the same fix
 			if (ing.toString().equals(fixStr)) {
-				IngredientSpaceScope n = VariableResolver.determineIngredientScope(modificationpoint, (CtElement) ing);
+				IngredientPoolScope n = VariableResolver.determineIngredientScope(modificationpoint, (CtElement) ing);
 				// if the scope of the ingredient ing is narrower than the fix,
 				// we keep it.
 				if (n.ordinal() < orig.ordinal()) {
 					orig = n;
 					// if it's local, we return
-					if (IngredientSpaceScope.values()[0].equals(orig))
+					if (IngredientPoolScope.values()[0].equals(orig))
 						return orig;
 				}
 

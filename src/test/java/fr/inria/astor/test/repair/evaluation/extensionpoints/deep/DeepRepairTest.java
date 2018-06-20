@@ -28,14 +28,14 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.CtLocationIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -321,7 +321,7 @@ public class DeepRepairTest {
 		main1.execute(args);
 		JGenProg engine = (JGenProg) main1.getEngine();
 
-		IngredientSpace ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPool ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
 
 		assertTrue(ingredientSpace.getLocations().size() > 0);
 
@@ -415,7 +415,7 @@ public class DeepRepairTest {
 		main1.execute(args);
 		JGenProg engine = (JGenProg) main1.getEngine();
 
-		IngredientSpace ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPool ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
 
 		assertTrue(ingredientSpace.getLocations().size() > 0);
 
@@ -587,7 +587,7 @@ public class DeepRepairTest {
 		main1.execute(args);
 		DeepRepairEngine engine = (DeepRepairEngine) main1.getEngine();
 
-		IngredientSpace ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPool ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
 
 		assertTrue(ingredientSpace.getLocations().size() > 0);
 

@@ -17,11 +17,11 @@ Getting started:
      
 Then the main command (note that the "location" argument is mandatory, and must be an absolute path):
 
-     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.AstorMain -mode jGenProg -srcjavafolder examples/Math-issue-280/src/java/ -srctestfolder examples/Math-issue-280/src/test/  -binjavafolder examples/Math-issue-280/target/classes/ -bintestfolder  examples/Math-issue-280/target/test-classes/ -location /home/user/astor/examples/Math-issue-280/ -dependencies examples/Math-issue-280/lib
+     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.AstorMain -mode jGenProg -srcjavafolder /src/java/ -srctestfolder /src/test/  -binjavafolder /target/classes/ -bintestfolder  /target/test-classes/ -location /home/user/astor/examples/Math-issue-280/ -dependencies examples/Math-issue-280/lib
 
 
 Output: Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
-Astor writes in the output folder (property `workingDirectory` in the mentioned file), a folder with all the variants that fulfill the goals i.e., repair the bugs. Example output:
+Astor writes in the output folder (property `workingDirectory` in the mentioned command line), a folder with all the variants that fulfill the goals i.e., repair the bugs. Example output:
 
 ```
 PATCH_DIFF=--- /afs/pdc.kth.se/home/m/monp/astor/./output_astor/AstorMain-Math-issue-280/src/default/org/apache/commons/math/analysis/solvers/UnivariateRealSolverUtils.java	
@@ -43,18 +43,18 @@ PATCH_DIFF=--- /afs/pdc.kth.se/home/m/monp/astor/./output_astor/AstorMain-Math-i
 
 ```
 
-Each variant folder contains the files that Astor has analyzed (and eventually modified). Additionally, it contains a file called 'Patch.xml' that summarized all changes done in the variant.
-The summary of the execution is also printed on the screen at the end of the execution. If there is at least one solution, it prints “Solution found” and then it lists the program variants that are solution i.e., they fixed versions of the program. Then, if you go to the folder to each of those variants, the file patch appears, which summarizes the changes done for repairing the bug. In other words, the file `patch.xml` is only present if the variant is a valid solution (fixes the failing test and no regression).
+Each variant folder contains the files that Astor has analyzed (and eventually modified). Additionally, it contains a file called `patch.diff` that summarized all changes done in the variant.
+The summary of the execution is also printed on the screen at the end of the execution. If there is at least one solution, it prints “Solution found” and then it lists the program variants that are solution i.e., they fixed versions of the program. Then, if you go to the folder to each of those variants, the file patch appears, which summarizes the changes done for repairing the bug. In other words, the file `patch.diff` is only present if the variant is a valid solution (fixes the failing test and no regression).
 If Astor does not find any solution in the execution, it prints at the screen something like “Not solution found”. 
 
 
 Moreover, Astor saves the patched version of the program on disk.
-The Astor's output is located in folder "./output_astor". You can change it through command line argument '-out'. There Astor writes a JSON file which summarizes the information of each patch found (location, code modified, etc.) and some statistics.
+The Astor's output is located in folder "./output_astor". You can change it through command line argument '-out'. There Astor writes a JSON file ('astor_output.json') which summarizes the information of each patch found (location, code modified, etc.) and some statistics.
 Inside the folder "/src/" Astor stores the source code of the solutions that it found.
 
 Folder “default” contains the original program, without any modification. It's a sanity check, it’s the output of spoon without applying any processor over the spoon model of the application under repair.
 
-Each folder "variant-x" is a valid solution to the repair problem (passes all tests). There is an command line argument `saveall` that allows you to save all variants that Astor generates, even they are not solution.
+Each folder "variant-x" is a valid solution to the repair problem (passes all tests). The "x" corresponds to the id (unique identifier) assigned to a variant. There is an command line argument `saveall` that allows you to save all variants that Astor generates, even they are not solution.
 
 ## jKali
 
@@ -68,11 +68,11 @@ For executing Astor in jMutRepair mode:
 
     java  -cp astor.jar fr.inria.main.evolution.AstorMain -mode jMutRepair -location <>......
 
-## Command line arguments
+# Command line arguments
 
      -mode statement 
 
-    -location "location of the project to repair" (**MANDATORY**)
+    -location "absolute location of the project to repair" (**MANDATORY**)
 
     -dependencies "folder with the dependencies of the application to repair" 
 
@@ -80,11 +80,11 @@ For executing Astor in jMutRepair mode:
         
     -package "package to manipulate" (only the statements from this package are manipulated to find a patch)
 
-    -jvm4testexecution "jdklocation"/java-1.7.0/bin/ 
+    -jvm4testexecution "Path to the Java VM used by Astor to execute the validation (e.g., running test cases). It must reference to the `bin` subfolder" 
 
     -javacompliancelevel "compliance level of source code e.g. 5"
 
-    -stopfirst true 
+    -stopfirst "indicates whether Astor stops the search after finding the first solution." (true/false)
 
     -flthreshold "minimun suspicious value for fault localization e.g. 0.1"
     
@@ -95,4 +95,57 @@ For executing Astor in jMutRepair mode:
     -binjavafolder "class folder"
     
     -bintestfolder "test class folder" 
+    
+    
+### Command line arguments example Math-70 from Defects4J: 
+	
+	-location <PATH_TO_ASTOR_FOLDER>/examples/math_70 
+  	
+    -mode statement
+	
+	-package  org.apache.commons 
+	
+	-jvm4testexecution "<PATH_TO_JVM_FOLDER>"/bin/ 
+	
+	-failing org.apache.commons.math.analysis.solvers.BisectionSolverTest
+	
+	-srcjavafolder /src/java/
+	
+	-srctestfolder /src/test/
+	
+	-binjavafolder /target/classes
+	
+	-bintestfolder /target/test-classes 
+	
+	-flthreshold 0.5 
+	 
+	-stopfirst true 
+	
+	-dependencies <PATH_TO_ASTOR_FOLDER>examples/libs/junit-4.4.jar, 
+
+Note that `-location` argument has a absolute path to the project to repair, and -dependency has the absolute path to the libraries or to the folder that contains them.
+However, note that the folders that specify the structure of the project under repair (`-srcjavafolder`, `-srctestfolder`, `-binjavafolder` and `-bintestfolder`) are relative.
+
+
+# Notes about running Astor over [Defects4J](https://github.com/rjust/defects4j) bugs.
+
+Astor needs to be executed over a JVM 8+. By default, Astor uses the JVM specified on the `JAVA_HOME` variable to run the test cases for validating candidate patches. However, Defects4J subjects needs to be executed using a JMV 7 (according to the official documentation).
+For example, running bug Math-70 from Defects4J on a JVM 8 could produce two failing/errored test cases:
+
+  	testMath280(org.apache.commons.math.distribution.NormalDistributionTest)
+	testMinpackMeyer(org.apache.commons.math.estimation.MinpackTest)
+
+The first one (`testMath280`) is the test that expose the bug Math-70. It's correct that it fails. However, the second one (`testMinpackMeyer`) fails due to the JVM and it must not fail. It's a platform-related error.
+As conclusion, using a java VM 8+ could produce that Astor does not find patches for bugs that must be repaired by the tool.
+
+As solution, Astor provides an argument (`-jvm4testexecution`) to specify the location of the virtual machine that will be used to run the test cases (in the case of trying to repair Defects4J bugsit must be a JVM 7).
+
+
+
+
+
+
+
+ 
+
 

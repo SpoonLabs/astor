@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -33,7 +33,7 @@ public class DefaultIngredientTransformation implements IngredientTransformation
 				elementFromIngredient);
 
 		if (fit) {
-			IngredientSpaceScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(),
+			IngredientPoolScope scope = VariableResolver.determineIngredientScope(modificationPoint.getCodeElement(),
 					elementFromIngredient);
 
 			boolean changeShadow = VariableResolver.changeShadowedVars(modificationPoint.getCodeElement(),

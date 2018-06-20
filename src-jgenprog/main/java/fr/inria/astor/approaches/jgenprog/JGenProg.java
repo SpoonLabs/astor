@@ -25,7 +25,7 @@ public class JGenProg extends IngredientBasedRepairApproachImpl {
 		super(mutatorExecutor, projFacade);
 		setPropertyIfNotDefined(ExtensionPoints.OPERATORS_SPACE.identifier, "irr-statements");
 
-		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "statements");
+		setPropertyIfNotDefined(ExtensionPoints.TARGET_CODE_PROCESSOR.identifier, "statements");
 	}
 
 	@Override
@@ -36,6 +36,18 @@ public class JGenProg extends IngredientBasedRepairApproachImpl {
 		if (ConfigurationProperties.getPropertyBool("applyCrossover")) {
 			applyCrossover(generation);
 		}
+	}
+
+	@Override
+	public void loadOperatorSpaceDefinition() throws Exception {
+
+		super.loadOperatorSpaceDefinition();
+
+		if (this.getOperatorSpace() == null) {
+
+			this.setOperatorSpace(new jGenProgSpace());
+		}
+
 	}
 
 	private void applyCrossover(int generation) {

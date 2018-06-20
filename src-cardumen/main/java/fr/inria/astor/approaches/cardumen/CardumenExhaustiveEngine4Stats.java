@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -27,8 +28,8 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 
 /**
@@ -78,9 +79,10 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 
 				AstorOperator pointOperation = this.getOperatorSpace().getOperators().get(0);
 
-				EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) this.getIngredientSearchStrategy();
+				EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) this
+						.getIngredientSearchStrategy();
 
-				List<CtCodeElement> baseElements = estrategy.getNotExhaustedBaseElements(modifPoint, pointOperation);
+				List<Ingredient> baseElements = estrategy.getNotExhaustedBaseElements(modifPoint, pointOperation);
 
 				if (baseElements == null) {
 					continue;
@@ -94,8 +96,9 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 				log.info("###\nMP  " + modifPoint + "| code: " + modifPoint.getCodeElement().toString() + "| ("
 						+ ((CtExpression) modifPoint.getCodeElement()).getType() + ") " + ": " + baseElements.size());
 
-				for (CtCodeElement baseIngredient : baseElements) {
+				for (Ingredient ingredient : baseElements) {
 					base++;
+					CtElement baseIngredient = ingredient.getCode();
 					log.debug("\nMP:  (" + (mp) + "/" + total + ") " + modifPoint + "|| code: "
 							+ modifPoint.getCodeElement().toString() + "|| "
 							+ modifPoint.getCodeElement().getClass().getCanonicalName() + " ("
@@ -138,15 +141,14 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 		 */
 	}
 
-	public static long[] getNrIngredients(ModificationPoint modificationPoint, CtCodeElement baseIngredient) {
-		CtCodeElement codeElementToModifyFromBase = (CtCodeElement) baseIngredient;
+	public static long[] getNrIngredients(ModificationPoint modificationPoint, CtElement codeElementToModifyFromBase) {
+
 		VarMapping mapping = VariableResolver.mapVariablesFromContext(modificationPoint.getContextOfModificationPoint(),
 				codeElementToModifyFromBase);
-		return getNrIngredients(modificationPoint,  mapping);
+		return getNrIngredients(modificationPoint, mapping);
 	}
 
-	public static long[] getNrIngredients(ModificationPoint modificationPoint,
-			VarMapping mapping) {
+	public static long[] getNrIngredients(ModificationPoint modificationPoint, VarMapping mapping) {
 
 		if (modificationPoint.getContextOfModificationPoint().isEmpty()) {
 			return new long[] { 0, 0 };

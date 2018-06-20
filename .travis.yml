@@ -2,6 +2,8 @@ language: java
 install: "./.travis_install.sh"
 env:
   matrix:
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.MultiPatchTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.patchsorting.PatchPriorizationTest
   - TEST=fr.inria.astor.test.repair.approaches.ExhaustiveAstorTest
   - TEST=fr.inria.astor.test.repair.approaches.jKaliTest
   - TEST=fr.inria.astor.test.repair.approaches.MutRepairTest
@@ -10,6 +12,7 @@ env:
   - TEST=fr.inria.astor.test.repair.approaches.EvoSuiteGenerationTest
   - TEST=fr.inria.astor.test.repair.approaches.TibraApproachTest
   - TEST=fr.inria.astor.test.repair.approaches.cardumen.CardumenApproachTest
+  - TEST=fr.inria.astor.test.repair.approaches.cardumen.CardumenExahustiveTest
   - TEST=fr.inria.astor.test.repair.approaches.JGenProgEvolutionaryTest
   - TEST=fr.inria.astor.test.repair.core.ConfigurationTest
   - TEST=fr.inria.astor.test.repair.core.ValidationTest
@@ -22,22 +25,21 @@ env:
   - TEST=fr.inria.astor.test.repair.core.ValidationTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.RepairnatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.regression.LangTest
-  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngScopeTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientScopeTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientProcessorTest
-  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientSpaceTest
-  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.patchsorting.PatchPriorizationTest
+  - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientPoolTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.SelectionOperatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.RepairOperatorTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.suspiciousnavigation.SuspiciousNavigationStrategyTest
   - TEST=fr.inria.astor.util.CommandSummaryTest
-  
-  
+
+
   global:
     secure: KAXmlzbC3aTis3In/HnYpLHgnWmcct9ou7cHTGZZhv+8Tu7eta7HPHBQBju+qD4WkAA8PqyjEhOBHHd7GoSVtUY0nHqPRhjKjeQAPHDgA+kvWVVPyzSEar/gCbFqyzf6MhTs5Feq0PkljmfqF/0Omlps06B7qDVmYaALSFIvgrg=
 script:
 - mvn clean
 - mvn test -DskipTests -DfailIfNoTests=false
-- mvn surefire:test -DfailIfNoTests=false -Dtest=$TEST 
+- mvn surefire:test -DfailIfNoTests=false -Dtest=$TEST
 sudo: required
 before_script:
  - "echo Java_OPTS $JAVA_OPTS"
@@ -50,8 +52,8 @@ cache:
   - examples/
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- '[[ $TRAVIS_BRANCH == "master" ]] && [[ $TEST == "fr.inria.astor.test.repair.evaluation.IntroClassTest"
-  ]] && { mvn deploy --settings .travis-settings.xml -DskipTests=true -B; };'
+- '[[ $TRAVIS_BRANCH == "master" ]] && [[ $TEST == "fr.inria.astor.test.repair.approaches.IntroClassTest"
+  ]] && { mvn versions:set -DnewVersion=`git rev-parse HEAD`; mvn deploy --settings .travis-settings.xml -DskipTests=true -B; };'
 notifications:
   email:
   - martin.monperrus@gnieh.org

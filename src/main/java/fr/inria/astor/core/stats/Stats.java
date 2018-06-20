@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.util.TimeUtil;
@@ -143,95 +144,6 @@ public class Stats {
 	public static Stats createStat() {
 		currentStat = new Stats();
 		return currentStat;
-	}
-
-	public List<PatchStat> createStatsForPatches(List<ProgramVariant> variants, int generation,
-			Date dateInitEvolution) {
-		List<PatchStat> patches = new ArrayList();
-
-		for (ProgramVariant solutionVariant : variants) {
-
-			PatchStat patch_i = new PatchStat();
-			patches.add(patch_i);
-			patch_i.addStat(PatchStatEnum.TIME,
-					TimeUtil.getDateDiff(dateInitEvolution, solutionVariant.getBornDate(), TimeUnit.SECONDS));
-			patch_i.addStat(PatchStatEnum.VARIANT_ID, solutionVariant.getId());
-
-			patch_i.addStat(PatchStatEnum.VALIDATION, solutionVariant.getValidationResult().toString());
-
-			patch_i.addStat(PatchStatEnum.PATCH_DIFF, solutionVariant.getPatchDiff());
-
-			List<PatchHunkStats> hunks = new ArrayList<>();
-			patch_i.addStat(PatchStatEnum.HUNKS, hunks);
-
-			int lastGeneration = -1;
-			for (int i = 1; i <= generation; i++) {
-				List<OperatorInstance> genOperationInstances = solutionVariant.getOperations().get(i);
-				if (genOperationInstances == null)
-					continue;
-				lastGeneration = i;
-
-				for (OperatorInstance genOperationInstance : genOperationInstances) {
-
-					PatchHunkStats hunk = new PatchHunkStats();
-					hunks.add(hunk);
-					hunk.getStats().put(HunkStatEnum.OPERATOR, genOperationInstance.getOperationApplied().toString());
-					hunk.getStats().put(HunkStatEnum.LOCATION,
-							genOperationInstance.getModificationPoint().getCtClass().getQualifiedName());
-
-					hunk.getStats().put(HunkStatEnum.MP_RANKING,
-							genOperationInstance.getModificationPoint().identified);
-
-					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
-						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
-								.getModificationPoint();
-						hunk.getStats().put(HunkStatEnum.LINE, gs.getSuspicious().getLineNumber());
-						hunk.getStats().put(HunkStatEnum.SUSPICIOUNESS, gs.getSuspicious().getSuspiciousValueString());
-					}
-					hunk.getStats().put(HunkStatEnum.ORIGINAL_CODE, genOperationInstance.getOriginal().toString());
-					hunk.getStats().put(HunkStatEnum.BUGGY_CODE_TYPE,
-							genOperationInstance.getOriginal().getClass().getSimpleName() + "|"
-									+ genOperationInstance.getOriginal().getParent().getClass().getSimpleName());
-
-					if (genOperationInstance.getModified() != null) {
-						// if fix content is the same that original buggy
-						// content, we do not write the patch, remaining empty
-						// the property fixed statement
-						if (genOperationInstance.getModified().toString() != genOperationInstance.getOriginal()
-								.toString())
-
-							hunk.getStats().put(HunkStatEnum.PATCH_HUNK_CODE,
-									genOperationInstance.getModified().toString());
-						else {
-							hunk.getStats().put(HunkStatEnum.PATCH_HUNK_CODE,
-									genOperationInstance.getOriginal().toString());
-
-						}
-						// Information about types Parents
-
-						hunk.getStats().put(HunkStatEnum.PATCH_HUNK_TYPE,
-								genOperationInstance.getModified().getClass().getSimpleName() + "|"
-										+ genOperationInstance.getModified().getParent().getClass().getSimpleName());
-					}
-
-					hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE,
-							((genOperationInstance.getIngredientScope() != null)
-									? genOperationInstance.getIngredientScope() : "-"));
-
-					if (genOperationInstance.getIngredient() != null
-							&& genOperationInstance.getIngredient().getDerivedFrom() != null)
-						hunk.getStats().put(HunkStatEnum.INGREDIENT_PARENT,
-								genOperationInstance.getIngredient().getDerivedFrom());
-
-				}
-			}
-			if (lastGeneration > 0) {
-				patch_i.addStat(PatchStatEnum.GENERATION, lastGeneration);
-
-			}
-
-		}
-		return patches;
 	}
 
 

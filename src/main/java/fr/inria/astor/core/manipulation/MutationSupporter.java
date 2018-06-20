@@ -76,7 +76,7 @@ public class MutationSupporter {
 		logger.info("building model: " + srcPathToBuild + ", compliance level: "
 				+ factory.getEnvironment().getComplianceLevel());
 
-		factory.getEnvironment().setPreserveLineNumbers(true);
+		factory.getEnvironment().setPreserveLineNumbers(ConfigurationProperties.getPropertyBool("preservelinenumbers"));
 
 		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
 
@@ -134,7 +134,6 @@ public class MutationSupporter {
 		if (output == null || output.getJavaPrinter() == null) {
 			throw new IllegalArgumentException("Spoon compiler must be initialized");
 		}
-		// spoonClassCompiler.saveSourceCode((CtClass) type);
 		output.saveSourceCode((CtClass) type);
 		// --
 		// End Workarround
@@ -163,87 +162,6 @@ public class MutationSupporter {
 		return getFactory();
 	}
 
-	public void saveSolutionData(ProgramVariant childVariant, String srcOutput, int generation) {
-		try {
-			Map<String, Integer> result = new HashMap<String, Integer>();
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-
-			Document root = dBuilder.newDocument();
-			Element rootElement = root.createElement("patch");
-			root.appendChild(rootElement);
-
-			for (int i = 1; i <= generation; i++) {
-				List<OperatorInstance> genOperationInstances = childVariant.getOperations().get(i);
-				if (genOperationInstances == null)
-					continue;
-
-				for (OperatorInstance genOperationInstance : genOperationInstances) {
-
-					Element op = root.createElement("operation");
-					rootElement.appendChild(op);
-
-					Attr attr_location = root.createAttribute("location");
-					attr_location.setValue(genOperationInstance.getModificationPoint().getCtClass().getQualifiedName());
-					op.setAttributeNode(attr_location);
-
-					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
-						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
-								.getModificationPoint();
-						int line = gs.getSuspicious().getLineNumber();
-						Attr attr_line = root.createAttribute("line");
-						attr_line.setValue(Integer.toString(line));
-						op.setAttributeNode(attr_line);
-					}
-
-					Attr attr_gen = root.createAttribute("generation");
-					attr_gen.setValue(Integer.toString(i));
-					op.setAttributeNode(attr_gen);
-
-					Attr attr_type = root.createAttribute("type");
-					attr_type.setValue(genOperationInstance.getOperationApplied().toString());
-					op.setAttributeNode(attr_type);
-
-					Element original = root.createElement("original");
-					op.appendChild(original);
-					original.setTextContent(genOperationInstance.getOriginal().toString());
-					Element mod = root.createElement("modified");
-					op.appendChild(mod);
-
-					if (genOperationInstance.getModified() != null) {
-						mod.setTextContent(genOperationInstance.getModified().toString());
-
-						if (genOperationInstance.getIngredientScope() != null) {
-							Attr attr_ing = root.createAttribute("scope");
-							attr_ing.setValue(genOperationInstance.getIngredientScope().toString());
-							mod.setAttributeNode(attr_ing);
-						}
-					} else {
-						// mod.setTextContent(genOperationInstance.getOriginal().toString());
-						mod.setNodeValue(genOperationInstance.getOriginal().toString());
-					}
-
-				}
-			}
-
-			// write the content into xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(root);
-			// StreamResult result1 = new StreamResult(System.out);
-			StreamResult result1 = new StreamResult(new File(srcOutput + File.separator + "patch.xml"));
-
-			// Output to console for testing
-			// StreamResult result = new StreamResult(System.out);
-
-			// ----
-
-			transformer.transform(source, result1);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	public static final CtElement ROOT_ELEMENT = new ROOTTYPE();
 

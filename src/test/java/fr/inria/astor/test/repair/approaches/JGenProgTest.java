@@ -8,12 +8,14 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
@@ -22,10 +24,9 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.population.PopulationConformation;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
 import fr.inria.main.AstorOutputStatus;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
@@ -51,28 +52,26 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 	}
-	
+
 	@Test
 	public void testExample280Arguments() throws Exception {
 		AstorMain main1 = new AstorMain();
-	
+
 		CommandSummary cs = new CommandSummary();
 		cs.command.put("-mode", "jGenProg");
 		cs.command.put("-srcjavafolder", "/src/java/");
-		cs.command.put("-srctestfolder",  "/src/test/");
+		cs.command.put("-srctestfolder", "/src/test/");
 		cs.command.put("-binjavafolder", "/target/classes");
-		cs.command.put("-bintestfolder",  "/target/test-classes/");
-		cs.command.put("-location",  new File("./examples/Math-issue-280/").getAbsolutePath());
-		cs.command.put("-dependencies",  new File("./examples/Math-issue-280/lib").getAbsolutePath());
+		cs.command.put("-bintestfolder", "/target/test-classes/");
+		cs.command.put("-location", new File("./examples/Math-issue-280/").getAbsolutePath());
+		cs.command.put("-dependencies", new File("./examples/Math-issue-280/lib").getAbsolutePath());
 		cs.command.put("-maxgen", "0");
-	
+
 		main1.execute(cs.flat());
 		List<ProgramVariant> variants = main1.getEngine().getVariants();
 		assertTrue(variants.size() > 0);
 	}
-	
-	
-	
+
 	// @Test
 	public void testExample288CommandLine() throws Exception {
 		AstorMain main1 = new AstorMain();
@@ -124,10 +123,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 0);
 
 	}
-	
 
-
-	 
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMath70ThisKeyword() throws Exception {
@@ -156,10 +152,13 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertEquals(elMP1.toString(), "return solve(min, max)");
 		System.out.println(elMP1);
 
-		List<CtCodeElement> ingredients = jgp.getIngredientSearchStrategy().getIngredientSpace().getIngredients(elMP1,
+		List<Ingredient> ingredients = jgp.getIngredientSearchStrategy().getIngredientSpace().getIngredients(elMP1,
 				elMP1.getClass().getSimpleName());
 		System.out.println(ingredients);
-		CtCodeElement patch = ingredients.get(0);
+		Optional<Ingredient> patchOptional = ingredients.stream()
+				.filter(e -> e.getCode().toString().equals("return solve(f, min, max)")).findAny();
+		assertTrue(patchOptional.isPresent());
+		CtElement patch = patchOptional.get().getCode();
 		assertEquals(patch.toString(), "return solve(f, min, max)");
 
 		OperatorInstance operation = new OperatorInstance();
@@ -188,23 +187,18 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 
-	
-
-	
-
 	public static String[] commandMath70(String dep, File out, int generations) {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
 				"-stopfirst", "true", "-maxtime", "5", "-loglevel", "INFO", "-parameters", "disablelog:false"
 
 		};
 		return args;
 	}
-
 
 	@Test
 	public void testArguments() throws Exception {
@@ -227,9 +221,6 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		assertTrue(javahome.endsWith("bin"));
 	}
-
-
-
 
 	/**
 	 * Testing injected bug at CharacterReader line 118, commit version 31be24.
@@ -397,12 +388,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(deducedFailingTest.contains(originalFailing));
 	}
 
-
 	@Test
 	public void testMath70DiffOfSolution() throws Exception {
 		AstorMain main1 = new AstorMain();
-		
-		CommandSummary cs  = MathCommandsTests.getMath70Command();
+
+		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
 
 		System.out.println(Arrays.toString(cs.flat()));
@@ -412,10 +402,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
-		assertFalse(variant.getPatchDiff().isEmpty());
+		assertFalse(variant.getPatchDiff().getFormattedDiff().isEmpty());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
 
-		String diff = variant.getPatchDiff();
+		String diff = variant.getPatchDiff().getFormattedDiff();
 		log.debug("Patch: " + diff);
 
 	}
@@ -432,10 +422,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-scope", "package", "-seed", "10", "-maxgen", "1000", "-stopfirst", "false", "-maxtime", "10",
-				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString()
-
-		};
+				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", "-maxtime", "10",
+				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(), "-parameters",
+				"maxnumbersolutions:2" };
 		System.out.println(Arrays.toString(args));
 		CommandSummary command = new CommandSummary(args);
 
@@ -450,9 +439,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		solutions = main1.getEngine().getSolutions();
 		assertEquals(1, solutions.size());
+		
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
+
 
 	}
-
-
 
 }

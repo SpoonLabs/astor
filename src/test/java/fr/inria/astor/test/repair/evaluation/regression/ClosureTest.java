@@ -116,7 +116,7 @@ public class ClosureTest {
 				"-parameters",
 				"logtestexecution:true"
 						+ ":tmax2:1960000:"
-						+ ExtensionPoints.INGREDIENT_PROCESSOR.identifier+":fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation",
+						+ ExtensionPoints.TARGET_CODE_PROCESSOR.identifier+":fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation",
 				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace", "-customop",
 				"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator",
 

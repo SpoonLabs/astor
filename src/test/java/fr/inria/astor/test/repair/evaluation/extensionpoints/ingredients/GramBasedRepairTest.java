@@ -38,8 +38,8 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.NGr
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.ProbabilisticTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
 import fr.inria.astor.util.MapCounter;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.code.CtCodeElement;
@@ -253,7 +253,7 @@ public class GramBasedRepairTest {
 	public void testProbabilistiComplete() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				//
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator

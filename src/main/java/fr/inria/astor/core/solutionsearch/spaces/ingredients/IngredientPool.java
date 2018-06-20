@@ -4,7 +4,7 @@ import java.util.List;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.solutionsearch.extension.AstorExtensionPoint;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 
 /**
  * Representation of Fix Location Space.
@@ -19,7 +19,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSp
  *         
  *         T type of the ingredient (e.g., a statement, if, a while, etc)
  */
-public interface IngredientSpace<Q extends Object, K extends Object, I extends Object, T extends Object> extends AstorExtensionPoint {
+public interface IngredientPool<Q extends Object, K extends Object, I extends Object, T extends Object> extends AstorExtensionPoint {
 
 	/**
 	 * Creates the Space using the classes from a Variant
@@ -55,7 +55,7 @@ public interface IngredientSpace<Q extends Object, K extends Object, I extends O
 	 */
 	public void setIngredients(Q elementToModify, List<I> ingredients);
 	
-	public IngredientSpaceScope spaceScope();
+	public IngredientPoolScope spaceScope();
 	
 	/**
 	 * For a given piece of code Q, it returns the location according to the scope.
@@ -74,4 +74,6 @@ public interface IngredientSpace<Q extends Object, K extends Object, I extends O
 	 */
 	public List<K> getLocations();
 
+	public T getType(I element);
+	
 }

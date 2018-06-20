@@ -10,6 +10,7 @@ import java.util.Map;
 
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.stats.PatchStat;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -95,7 +96,10 @@ public class ProgramVariant {
 
 	VariantValidationResult validationResult = null;
 
-	String patchDiff = null;
+	PatchDiff patchDiff = null;
+
+	// Summary if the patch, not null when the variant is a solution
+	PatchStat patchInfo = null;
 
 	public ProgramVariant() {
 		modificationPoints = new ArrayList<ModificationPoint>();
@@ -273,11 +277,19 @@ public class ProgramVariant {
 		return typesToProcess;
 	}
 
-	public String getPatchDiff() {
+	public PatchDiff getPatchDiff() {
 		return patchDiff;
 	}
 
-	public void setPatchDiff(String patchDiff) {
+	public void setPatchDiff(PatchDiff patchDiff) {
 		this.patchDiff = patchDiff;
+	}
+
+	public PatchStat getPatchInfo() {
+		return patchInfo;
+	}
+
+	public void setPatchInfo(PatchStat patchInfo) {
+		this.patchInfo = patchInfo;
 	}
 }

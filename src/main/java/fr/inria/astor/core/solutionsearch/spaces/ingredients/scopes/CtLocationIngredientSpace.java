@@ -5,9 +5,10 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -20,7 +21,7 @@ import spoon.reflect.declaration.CtType;
  *
  */
 public class CtLocationIngredientSpace
-		extends AstorIngredientSpace<CtElement, CtElement, CtCodeElement, String, CtCodeElement> {
+		extends IngredientPoolLocationType<CtElement, CtElement, Ingredient, String, CtCodeElement> {
 
 	/**
 	 * This class indicate the scope of a ingredient search. If the class is a
@@ -70,13 +71,13 @@ public class CtLocationIngredientSpace
 	public void determineScopeOfIngredient(List<CtCodeElement> ingredients) {
 
 		for (CtCodeElement ctCodeElement : ingredients) {
-
+			Ingredient ing = new Ingredient(ctCodeElement);
 			CtElement key = mapKey(ctCodeElement);
 			if (getFixSpace().containsKey(key)) {
-				getFixSpace().get(key).add(ctCodeElement);
+				getFixSpace().get(key).add(ing);
 			} else {
-				List<CtCodeElement> ingr = new ArrayList<CtCodeElement>();
-				ingr.add(ctCodeElement);
+				List<Ingredient> ingr = new ArrayList<>();
+				ingr.add(ing);
 				getFixSpace().put(key, ingr);
 			}
 
@@ -86,8 +87,8 @@ public class CtLocationIngredientSpace
 	}
 
 	@Override
-	public IngredientSpaceScope spaceScope() {
-		return IngredientSpaceScope.CUSTOM;
+	public IngredientPoolScope spaceScope() {
+		return IngredientPoolScope.CUSTOM;
 	}
 
 	@Override
@@ -96,9 +97,9 @@ public class CtLocationIngredientSpace
 	}
 
 	@Override
-	protected String getType(CtCodeElement element) {
+	public String getType(Ingredient element) {
 
-		return element.getClass().getSimpleName();
+		return element.getCode().getClass().getSimpleName();
 	}
 
 	public Class getCtElementForSplitSpace() {

@@ -25,19 +25,18 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.AstorCtIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.AstorCtIngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.InScopeVarsTransformation;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -67,7 +66,7 @@ public class ExpressionIngredientSpaceTest {
 	public void testM70ExpressionAdaptation() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates:false");
@@ -97,12 +96,12 @@ public class ExpressionIngredientSpaceTest {
 
 		// Let's test the creation of a operator instance.
 		OperatorInstance opInstance = engine.createOperatorInstanceForPoint(modificationPoint);
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(opInstance.getOriginal(),
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(opInstance.getOriginal(),
 				ExpressionReplaceOperator.class.getName());
 
 		log.debug("\nAll ingredients " + ingredients);
 
-		CtCodeElement ingredientTargeted = ingredients.get(4);
+		CtElement ingredientTargeted = ingredients.get(4).getCode();
 
 		assertEquals("maximumIterations <= 0", ingredientTargeted.toString());
 
@@ -181,7 +180,7 @@ public class ExpressionIngredientSpaceTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "applytemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
@@ -229,14 +228,14 @@ public class ExpressionIngredientSpaceTest {
 
 		assertEquals(((CtBinaryOperator) opInstance.getOriginal()).getType(), binOpIngredient.getType());
 
-		List<CtCodeElement> ingredients = ingredientSpace.getIngredients(opInstance.getOriginal(),
+		List<Ingredient> ingredients = ingredientSpace.getIngredients(opInstance.getOriginal(),
 				ExpressionReplaceOperator.class.getName());
 
 		// let's check all ingredients
-		for (CtCodeElement ingredient : ingredients) {
+		for (Ingredient ingredient : ingredients) {
 			assertTrue(CtBinaryOperator.class.isInstance(ingredient));
 			assertEquals(((CtBinaryOperator) opInstance.getOriginal()).getType(),
-					((CtBinaryOperator) ingredient).getType());
+					((CtBinaryOperator) ingredient.getCode()).getType());
 		}
 
 	}
@@ -252,7 +251,7 @@ public class ExpressionIngredientSpaceTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "applytemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
@@ -281,7 +280,7 @@ public class ExpressionIngredientSpaceTest {
 		log.debug("Op instance Ingredient:  " + opInstance.getModified());
 
 		// Let's inspect the ingredient space:
-		AstorCtIngredientSpace ingredientSpace = (AstorCtIngredientSpace) engine.getIngredientSearchStrategy()
+		AstorCtIngredientPool ingredientSpace = (AstorCtIngredientPool) engine.getIngredientSearchStrategy()
 				.getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
@@ -305,7 +304,7 @@ public class ExpressionIngredientSpaceTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "applytemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
@@ -317,7 +316,7 @@ public class ExpressionIngredientSpaceTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		int i = 0;
 		for (ModificationPoint modpoint : variantss.get(0).getModificationPoints()) {
@@ -370,7 +369,7 @@ public class ExpressionIngredientSpaceTest {
 	public void testM70InspectSpace() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "applytemplates:false");
@@ -389,7 +388,7 @@ public class ExpressionIngredientSpaceTest {
 		ModificationPoint modificationPoint = variantss.get(0).getModificationPoints().get(14);
 		
 		
-		IngredientSpace space = engine.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPool space = engine.getIngredientSearchStrategy().getIngredientSpace();
 		ExpressionTypeIngredientSpace expressionSpace = (ExpressionTypeIngredientSpace) space;
 		assertNotNull(expressionSpace);
 		

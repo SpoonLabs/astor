@@ -18,7 +18,5 @@ public enum AstorOutputStatus {
 	// stops due to a convergence on the search
 	CONVERGED,
 	// stops due the navigation is finished, i.e., space exhaustively navigated
-	EXHAUSTIVE_NAVIGATED,
-	// max solutions
-	MAX_SOLUTIONS_FOUND;
+	EXHAUSTIVE_NAVIGATED;
 }

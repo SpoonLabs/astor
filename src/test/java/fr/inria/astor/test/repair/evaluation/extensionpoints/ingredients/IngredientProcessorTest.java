@@ -9,13 +9,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.MethodInvocationFixSpaceProcessor;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.code.CtExpression;
@@ -44,9 +45,9 @@ public class IngredientProcessorTest {
 		assertTrue(solutions.size() > 0);
 
 		ProgramVariant pv = solutions.get(0);
-	
+
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		List ingredients = ingSpace.getAllIngredients();
 		assertTrue(ingredients.size() > 0);
@@ -58,7 +59,7 @@ public class IngredientProcessorTest {
 	public void testM70MethodInvocation() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ MethodInvocationFixSpaceProcessor.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 
@@ -71,7 +72,7 @@ public class IngredientProcessorTest {
 		ProgramVariant pv = variantss.get(0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		checkIngredientTypes(variantss, ingSpace, CtInvocation.class);
 	}
@@ -80,7 +81,7 @@ public class IngredientProcessorTest {
 	public void testM70Expression() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionIngredientSpaceProcessor.class.getCanonicalName());
 		command.command.put("-maxgen", "0");// Avoid evolution
 
@@ -91,13 +92,13 @@ public class IngredientProcessorTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		checkIngredientTypes(variantss, ingSpace, CtExpression.class);
 
 	}
 
-	public void checkIngredientTypes(List<ProgramVariant> variantss, AstorIngredientSpace ingSpace,
+	public void checkIngredientTypes(List<ProgramVariant> variantss, IngredientPoolLocationType ingSpace,
 			Class classToProcess) {
 		ProgramVariant pv = variantss.get(0);
 		for (ModificationPoint modificationPoint : pv.getModificationPoints()) {
@@ -105,11 +106,11 @@ public class IngredientProcessorTest {
 			assertTrue(classToProcess.isInstance(elementFromPoint));
 		}
 
-		List ingredients = ingSpace.getAllIngredients();
+		List<Ingredient> ingredients = ingSpace.getAllIngredients();
 		assertTrue(ingredients.size() > 0);
 
-		for (Object ingredient : ingredients) {
-			assertTrue(classToProcess.isInstance(ingredient));
+		for (Ingredient ingredient : ingredients) {
+			assertTrue(classToProcess.isInstance(ingredient.getCode()));
 		}
 	}
 

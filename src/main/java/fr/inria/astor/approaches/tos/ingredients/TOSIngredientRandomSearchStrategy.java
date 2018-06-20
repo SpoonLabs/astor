@@ -8,16 +8,13 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.Lists;
 
-import fr.inria.astor.approaches.tos.core.PatchGenerator;
 import fr.inria.astor.approaches.tos.entity.TOSEntity;
 import fr.inria.astor.approaches.tos.entity.TOSInstance;
-import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
-import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.util.StringUtil;
 import spoon.reflect.code.CtVariableAccess;
@@ -27,23 +24,25 @@ import spoon.reflect.code.CtVariableAccess;
  * @author Matias Martinez
  *
  */
-public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
+public class TOSIngredientRandomSearchStrategy extends IngredientSearchStrategy {
 
-	MultiKeyMap cacheInstances = new MultiKeyMap();
+	protected MultiKeyMap cacheInstances = new MultiKeyMap();
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
-	PatchGenerator patchGenerator = null;
 
-	public TOSIngredientSearchStrategy(IngredientSpace space) {
+	protected TOSIngredientTransformationStrategy transformationStrategy = null;
+
+	public TOSIngredientRandomSearchStrategy(IngredientPool space) {
 		super(space);
-		patchGenerator = new PatchGenerator();
+		transformationStrategy = new TOSIngredientTransformationStrategy();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Ingredient getFixIngredient(ModificationPoint modificationPoint, AstorOperator operationType) {
 
+		Object type = ingredientSpace.getType(new Ingredient(modificationPoint.getCodeElement()));
 		List<Ingredient> baseIngedients = this.ingredientSpace.getIngredients(modificationPoint.getCodeElement(),
-				modificationPoint.getCodeElement().getClass().getSimpleName());
+				type.toString());
 
 		if (baseIngedients == null) {
 			log.debug("No elements ingredients for mp " + modificationPoint);
@@ -93,41 +92,15 @@ public class TOSIngredientSearchStrategy extends IngredientSearchStrategy {
 				return Lists.newArrayList();
 			}
 			log.debug("Tos fits " + StringUtil.trunc(tos.getCode()) + " in location" + modificationPoint);
-			ingredientTransformed = calculateAllTransformations(modificationPoint, tos);
+			ingredientTransformed = new ArrayList<>();
+			List<Ingredient> ing = transformationStrategy.transform(modificationPoint, tos);
+			for (Ingredient ingredient : ing) {
+				ingredientTransformed.add((TOSInstance) ingredient);
+			}
 
 			this.cacheInstances.put(modificationPoint, ingredientBaseSelected.getChacheCodeString(),
 					ingredientTransformed);
 
-		}
-		return ingredientTransformed;
-	}
-
-	private List<TOSInstance> calculateAllTransformations(ModificationPoint modificationPoint, TOSEntity tos) {
-		List<TOSInstance> ingredientTransformed = new ArrayList<>();
-		for (Placeholder placeholder : tos.getPlaceholders()) {
-			List<Transformation> transpl = placeholder.visit(modificationPoint, patchGenerator);
-
-			if (ingredientTransformed.isEmpty()) {
-				for (Transformation transformation : transpl) {
-					TOSInstance tosIn = new TOSInstance(tos.getCode(), tos);
-					tosIn.getTransformations().add(transformation);
-					ingredientTransformed.add(tosIn);
-				}
-
-			} else {
-				List<TOSInstance> newingredientTransformed = new ArrayList<>();
-				for (Transformation transformation : transpl) {
-					//
-					for (TOSInstance tosIngredient : ingredientTransformed) {
-
-						TOSInstance tosIn = new TOSInstance(tos.getCode(), tos);
-						tosIn.getTransformations().addAll(tosIngredient.getTransformations());
-						tosIn.getTransformations().add(transformation);
-						newingredientTransformed.add(tosIn);
-					}
-				}
-				ingredientTransformed = newingredientTransformed;
-			}
 		}
 		return ingredientTransformed;
 	}

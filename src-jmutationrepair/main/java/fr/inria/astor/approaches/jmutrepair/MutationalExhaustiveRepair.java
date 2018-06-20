@@ -21,7 +21,7 @@ public class MutationalExhaustiveRepair extends ExhaustiveSearchEngine{
 		ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");
 		ConfigurationProperties.properties.setProperty("population", "1");
 		setPropertyIfNotDefined(ExtensionPoints.OPERATORS_SPACE.identifier, "mutationspace");	
-		setPropertyIfNotDefined(ExtensionPoints.INGREDIENT_PROCESSOR.identifier, "if-conditions");	
+		setPropertyIfNotDefined(ExtensionPoints.TARGET_CODE_PROCESSOR.identifier, "if-conditions");	
 	}
 
 	

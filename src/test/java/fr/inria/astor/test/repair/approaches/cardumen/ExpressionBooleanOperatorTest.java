@@ -18,21 +18,21 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.AstorIngredientSpace;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.InScopeVarsTransformation;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.CommandSummary;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
 
@@ -63,7 +63,7 @@ public class ExpressionBooleanOperatorTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "cleantemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
@@ -77,7 +77,7 @@ public class ExpressionBooleanOperatorTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		AstorIngredientSpace ingSpace = (AstorIngredientSpace) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
 
 		// Let's check the ingredient space
 		List allingredients = ingSpace.getAllIngredients();
@@ -90,7 +90,7 @@ public class ExpressionBooleanOperatorTest {
 
 		ExpressionBooleanIngredientSpaceProcessor bexp = new ExpressionBooleanIngredientSpaceProcessor();
 
-		IngredientProcessor ip = new IngredientProcessor<>(bexp);
+		CodeParserLauncher ip = new CodeParserLauncher<>(bexp);
 
 		assertEquals("BisectionSolver", variantss.get(0).getAffectedClasses().get(0).getSimpleName());
 		List ingredientRetrieved = ip.createFixSpace(variantss.get(0).getAffectedClasses().get(0));
@@ -139,7 +139,7 @@ public class ExpressionBooleanOperatorTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator
@@ -161,7 +161,7 @@ public class ExpressionBooleanOperatorTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates"
@@ -186,10 +186,10 @@ public class ExpressionBooleanOperatorTest {
 		for (Object object : allIng) {
 			// log.debug((i++) + object.toString());
 		}
-		CtElement cd = ingredientSpace.getAllIngredients().get(3027);
-		CtElement mi = ingredientSpace.getAllIngredients().get(2962);
+		CtElement cd = ingredientSpace.getAllIngredients().get(3027).getCode();
+		CtElement mi = ingredientSpace.getAllIngredients().get(2962).getCode();
 
-		CtElement cd2 = ingredientSpace.getAllIngredients().get(3033);
+		CtElement cd2 = ingredientSpace.getAllIngredients().get(3033).getCode();
 		System.out.println("before " + cd.getParent(CtBlock.class));
 		System.out.println("before " + mi);
 		cd.replace(cd2);
@@ -203,7 +203,7 @@ public class ExpressionBooleanOperatorTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates"
@@ -235,11 +235,7 @@ public class ExpressionBooleanOperatorTest {
 		}
 		;
 
-		List<CtCodeElement> allIngredients = ingredientSpace.allElementsFromSpace;
-
-		for (CtCodeElement ctCodeElement : allIngredients) {
-			log.debug(ctCodeElement);
-		}
+		
 		assertEquals(allIng.size(), ingredientSpace.allElementsFromSpace.size());
 
 		log.debug("\nLinked templates");
@@ -258,7 +254,7 @@ public class ExpressionBooleanOperatorTest {
 	public void testM70CheckTypesOfKeys() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates:false");
@@ -280,17 +276,16 @@ public class ExpressionBooleanOperatorTest {
 		assertNotNull(ingredientSpace);
 
 		for (ModificationPoint modificationPoint : jgp.getVariants().get(0).getModificationPoints()) {
-			List<CtCodeElement> allIng = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
+			List<Ingredient> allIng = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
 
 			System.out.println("--> Mp " + modificationPoint);
 
 			System.out.println(allIng.size());
-			for (CtCodeElement code : allIng) {
+			for (Ingredient code : allIng) {
 
 				assertEquals(((CtExpression) modificationPoint.getCodeElement()).getType().box().getQualifiedName(),
-						((CtExpression) code).getType().box().getQualifiedName());
-				// assertEquals(modificationPoint.getCodeElement().getClass().getName(),
-				// code.getClass().getName());
+						((CtExpression) code.getCode()).getType().box().getQualifiedName());
+			
 			}
 		}
 
@@ -300,7 +295,7 @@ public class ExpressionBooleanOperatorTest {
 	public void testM70ExpressionProcessingTransform() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-		command.command.put("-parameters", ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+		command.command.put("-parameters", ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 				+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates:false");
@@ -366,7 +361,7 @@ public class ExpressionBooleanOperatorTest {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier + File.pathSeparator
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "cleantemplates:false");
 		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
@@ -435,7 +430,7 @@ public class ExpressionBooleanOperatorTest {
 				"target/classes/", "-bintestfolder", "target/test-classes/", "-flthreshold", "0.1", "-loglevel",
 				"DEBUG", "-scope", ExpressionTypeIngredientSpace.class.getCanonicalName(), "-customop",
 				"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator", "-parameters",
-				ExtensionPoints.INGREDIENT_PROCESSOR.identifier
+				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier
 						+ ":fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:"
 						+ "ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation:"
 						+ "cleantemplates:true", };

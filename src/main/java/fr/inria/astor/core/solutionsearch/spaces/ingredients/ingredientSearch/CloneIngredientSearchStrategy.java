@@ -28,8 +28,8 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientProcessor;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSpace;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.ClusterIngredientTransformation;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
@@ -70,7 +70,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 
 	private IngredientTransformationStrategy ingTransformationStrategy = null;
 
-	public CloneIngredientSearchStrategy(IngredientSpace space) throws Exception {
+	public CloneIngredientSearchStrategy(IngredientPool space) throws Exception {
 		super(space);
 		cls = Class.forName(ConfigurationProperties.properties.getProperty("clonegranularity"));
 		setfilter();
@@ -83,7 +83,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		}
 	}
 
-	public CloneIngredientSearchStrategy(IngredientSpace space, Class _cloneClass,
+	public CloneIngredientSearchStrategy(IngredientPool space, Class _cloneClass,
 			IngredientTransformationStrategy ingredientTransformationStrategy) throws Exception {
 		super(space);
 		cls = _cloneClass;
@@ -389,7 +389,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		log.debug("For " + suspicious.getSimpleName() + " simlist: " + simlist.size());
 		for (T element : simlist) {
 			try {
-				IngredientProcessor<?, CtStatement> ipro = new IngredientProcessor<>(
+				CodeParserLauncher<?, CtStatement> ipro = new CodeParserLauncher<>(
 						new SingleStatementFixSpaceProcessor());
 				statements = ipro.createFixSpace(element);
 				// log.debug(element.getSimpleName() + " from simlist,

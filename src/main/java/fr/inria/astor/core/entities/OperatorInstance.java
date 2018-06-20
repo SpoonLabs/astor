@@ -2,7 +2,7 @@ package fr.inria.astor.core.entities;
 
 import org.apache.log4j.Logger;
 
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientSpaceScope;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.util.StringUtil;
 import spoon.reflect.code.CtBlock;
@@ -199,7 +199,7 @@ public class OperatorInstance {
 		return true;
 	}
 
-	public IngredientSpaceScope getIngredientScope() {
+	public IngredientPoolScope getIngredientScope() {
 		return (ingredient != null) ? ingredient.scope : null;
 	}
 
