@@ -25,10 +25,12 @@ import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothCollectorFaca
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothIngredientSynthesizer;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesisContext;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesizer;
+import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesizerWOracle;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.test.repair.DummySynthesizer4TestImpl;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.lille.repair.common.Candidates;
+import fr.inria.lille.repair.expression.Expression;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;
@@ -114,7 +116,10 @@ public class SynthesisComponentTest {
 
 		assertTrue(candidates.size() > 0);
 		for (int i = 0; i < candidates.size(); i++) {
-			System.out.println("i " + i + ": " + candidates.get(i));
+			Expression expr = candidates.get(i);
+			System.out.println("i " + i + ": " + expr + " value: " + expr.getValue());
+			// By default, the angelic value is a boolean True
+			assertTrue(Boolean.TRUE.equals(expr.getValue()));
 		}
 		assertTrue(candidates.stream().filter(e -> e.toString().equals("!this.resultComputed")).findAny().isPresent());
 
@@ -195,8 +200,9 @@ public class SynthesisComponentTest {
 		String[] tests = sc.getCoverTest(mp8);
 		Map<String, Object[]> oracle = new HashMap<>();
 
+		Double angelicValue = 0.0;
 		for (String testCase : tests) {
-			oracle.put(testCase, new Double[] { 0.0 });
+			oracle.put(testCase, new Double[] { angelicValue });
 		}
 		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp8, oracle,
 				tests);
@@ -211,10 +217,31 @@ public class SynthesisComponentTest {
 
 		assertTrue(candidates.size() > 0);
 		for (int i = 0; i < candidates.size(); i++) {
-			System.out.println("i " + i + ": " + candidates.get(i));
+			Expression expr = candidates.get(i);
+			System.out.println("i " + i + ": " + expr + " eval: " + expr.getValue());
+			assertTrue(angelicValue.equals(expr.getValue().getRealValue()));
 		}
 		assertTrue(candidates.stream().filter(e -> e.toString().equals("this.result")).findAny().isPresent());
 		assertTrue(candidates.stream().filter(e -> e.toString().equals("this.functionValue")).findAny().isPresent());
+
+		Double angelicValue62 = 6.2;
+		oracle.clear();
+		for (String testCase : tests) {
+			oracle.put(testCase, new Double[] { angelicValue62 });
+		}
+		DynamothSynthesizer synthesis2 = new DynamothSynthesizer(dynamothCodeGenesis.getValues(),
+				dynamothCodeGenesis.getNopolContext(), oracle);
+		Candidates candidates62 = synthesis2.combineValues();
+		assertTrue(candidates62.size() > 0);
+		for (int i = 0; i < candidates62.size(); i++) {
+			Expression expr = candidates62.get(i);
+			System.out.println("i " + i + ": " + expr + " eval: " + expr.getValue());
+			assertTrue(angelicValue62.equals(expr.getValue().getRealValue()));
+		}
+		assertTrue(candidates62.stream().filter(e -> e.toString().equals("min + max")).findAny().isPresent());
+		assertTrue(candidates62.stream().filter(e -> e.toString().equals("this.functionValue + (min + max)")).findAny()
+				.isPresent());
+		assertTrue(candidates62.stream().filter(e -> e.toString().equals("initial + initial")).findAny().isPresent());
 
 	}
 
@@ -338,6 +365,57 @@ public class SynthesisComponentTest {
 			assertNotNull(elementIng);
 			assertFalse(elementIng.toString().isEmpty());
 			log.info("--> " + elementIng.toString());
+		}
+	}
+
+	@Test
+	public void testSymthesisWOOrale() throws Exception {
+		AstorMain main1 = new AstorMain();
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		cs.command.put("-mode", "cardumen");
+		cs.command.put("-flthreshold", "0.1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.command.put("-maxgen", "0");
+		cs.append("-parameters",
+				"logtestexecution:true:disablelog:true:probabilistictransformation:false:"//
+						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
+						+ SynthesisBasedTransformationStrategy.class.getCanonicalName() + File.pathSeparator + //
+						ExtensionPoints.CODE_SYNTHESIS.identifier + File.pathSeparator
+						+ DynamothIngredientSynthesizer.class.getCanonicalName()//
+						+ File.pathSeparator + ExtensionPoints.CONTEXT_COLLECTOR.identifier + File.pathSeparator
+						+ DynamothCollectorFacade.class.getCanonicalName());
+
+		log.info(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		assertEquals(1, main1.getEngine().getVariants().size());
+		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+
+		DynamothCollectorFacade sc = new DynamothCollectorFacade();
+
+		SuspiciousModificationPoint mp8 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
+
+		String[] tests = sc.getCoverTest(mp8);
+		Map<String, Object[]> oracle = new HashMap<>();
+
+		for (String testCase : tests) {
+			oracle.put(testCase, new Integer[] { 0 });
+		}
+
+		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp8, oracle,
+				tests);
+
+		assertTrue(dynamothCodeGenesis.getValues().size() > 0);
+		DynamothSynthesisContext data = new DynamothSynthesisContext(dynamothCodeGenesis.getValues());
+		data.setNopolContext(dynamothCodeGenesis.getNopolContext());
+		DynamothSynthesizerWOracle soo = new DynamothSynthesizerWOracle(data);
+		Candidates candidates = soo.combineValues();
+		assertTrue(candidates.size() > 0);
+		for (int i = 0; i < candidates.size(); i++) {
+			Expression expr = candidates.get(i);
+			System.out.println("i " + i + ": " + expr + ", evaluation: " + expr.getValue());
 		}
 	}
 

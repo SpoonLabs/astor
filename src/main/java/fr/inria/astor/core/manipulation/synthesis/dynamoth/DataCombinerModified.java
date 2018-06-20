@@ -57,13 +57,6 @@ public class DataCombinerModified {
 		for (int i = 0; i < maxDepth - 1 && !stop && executionTime <= maxTime; i++) {
 			lastTurn.addAll(newCombiner(lastTurn, operators, i == maxDepth - 2 ? angelicValue : null));
 
-			/*
-			 * lastTurn.addAll(combinePrimitives(lastTurn, previousSize, i ==
-			 * maxDepth - 2 ? angelicValue : null)); if (stop) { return result;
-			 * } lastTurn.addAll(combineComplex(lastTurn, previousSize, i ==
-			 * maxDepth - 2 ? angelicValue : null)); previousSize =
-			 * candidates.size();
-			 */
 			executionTime = System.currentTimeMillis() - startTime;
 		}
 		// result.addAll(lastTurn);
