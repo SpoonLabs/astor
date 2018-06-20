@@ -1,5 +1,6 @@
 package fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
