@@ -17,9 +17,9 @@ import fr.inria.lille.repair.common.config.NopolContext;
 public class DynamothSynthesisContext extends ExecutionContext {
 	// Key: test name
 	// Value: list of executions
-	private Map<String, List<Candidates>> values;
-	private NopolContext nopolContext;
-	private Map<String, Object[]> oracle;
+	protected Map<String, List<Candidates>> values;
+	protected NopolContext nopolContext;
+	protected Map<String, Object[]> oracle;
 
 	public DynamothSynthesisContext(Map<String, List<Candidates>> values, NopolContext nopolContext,
 			Map<String, Object[]> oracle) {

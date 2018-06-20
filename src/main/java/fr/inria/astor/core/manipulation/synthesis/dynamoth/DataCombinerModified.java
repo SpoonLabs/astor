@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.expression.Expression;
@@ -27,7 +28,7 @@ import fr.inria.lille.repair.expression.value.Value;
 public class DataCombinerModified {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public static int maxDepth;
+	public static int maxDepth = ConfigurationProperties.getPropertyInt("synthesis_depth");
 
 	private final List<CombineListener> listeners = new ArrayList<>();
 	private boolean stop = false;
@@ -36,10 +37,11 @@ public class DataCombinerModified {
 	private long executionTime;
 	private NopolContext nopolContext;
 
-	private int MAX_NUMBER_COMBINATIONS = 20000;
+	protected int max_number_combinations;
 
 	public Candidates combine(Candidates candidates, Object angelicValue, long maxTime, NopolContext nopolContext) {
 		this.nopolContext = nopolContext;
+		max_number_combinations = ConfigurationProperties.getPropertyInt("max_synthesis_step");
 		maxDepth = nopolContext.getSynthesisDepth();
 		this.maxTime = maxTime;
 		this.startTime = System.currentTimeMillis();
@@ -48,6 +50,7 @@ public class DataCombinerModified {
 		Candidates result = new Candidates();
 		result.addAll(candidates);
 		List<Expression> lastTurn = new ArrayList<>();
+		// puts al
 		lastTurn.addAll(candidates);
 
 		executionTime = System.currentTimeMillis() - startTime;
@@ -62,7 +65,7 @@ public class DataCombinerModified {
 
 			executionTime = System.currentTimeMillis() - startTime;
 		}
-		// result.addAll(lastTurn);
+		result.addAll(lastTurn);
 		logger.debug("[combine] end " + lastTurn.size() + " evaluated elements");
 		return result;
 	}
@@ -86,7 +89,8 @@ public class DataCombinerModified {
 				CombinationExpression binaryExpression = CombinationFactory.create(operator, expressions, nopolContext);
 				if (addExpressionIn(binaryExpression, result, false)) {
 					if (callListener(binaryExpression)) {
-						if (nopolContext.isOnlyOneSynthesisResult() || result.size() >= MAX_NUMBER_COMBINATIONS) {
+						result.add(binaryExpression);
+						if (nopolContext.isOnlyOneSynthesisResult() || result.size() > max_number_combinations) {
 							return result;
 						}
 					}
@@ -97,8 +101,9 @@ public class DataCombinerModified {
 								Arrays.asList(expressions.get(1), expressions.get(0)), nopolContext);
 						if (addExpressionIn(binaryExpression, result, false)) {
 							if (callListener(binaryExpression)) {
+								result.add(binaryExpression);
 								if (nopolContext.isOnlyOneSynthesisResult()
-										|| result.size() >= MAX_NUMBER_COMBINATIONS) {
+										|| result.size() > max_number_combinations) {
 									return result;
 								}
 							}
@@ -110,6 +115,7 @@ public class DataCombinerModified {
 		return result;
 	}
 
+	@Deprecated
 	private List<Expression> combinePrimitives(List<Expression> toCombine, int previousSize, Object value) {
 		logger.debug("[combine] primitive start on " + toCombine.size() + " elements");
 		List<Expression> result = new ArrayList<>();
@@ -188,6 +194,7 @@ public class DataCombinerModified {
 		return result;
 	}
 
+	@Deprecated
 	private List<Expression> combineExpressionOperator(Expression expression, Expression expression1,
 			BinaryOperator operator, Object value, List<Expression> result) {
 		BinaryExpression binaryExpression = CombinationFactory.create(operator, expression, expression1, nopolContext);
@@ -217,6 +224,7 @@ public class DataCombinerModified {
 		return null;
 	}
 
+	@Deprecated
 	private List<Expression> combineComplex(List<Expression> toCombine, int previousSize, Object value) {
 		Expression nullExpression = AccessFactory.literal(null, nopolContext);
 		logger.debug("[combine] complex start on " + toCombine.size() + " elements");

@@ -3,16 +3,10 @@ package fr.inria.astor.core.manipulation.synthesis.dynamoth;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
-
 import fr.inria.lille.repair.common.Candidates;
-import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.expression.Expression;
 
 /**
@@ -21,35 +15,17 @@ import fr.inria.lille.repair.expression.Expression;
  * @author Matias Martinez
  *
  */
-public class DynamothSynthesizerWOracle {
-
-	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
-	// private long remainingTime;
-	private Map<String, List<Candidates>> values;
-	private NopolContext nopolContext;
-	private Map<String, Object[]> oracle;
-
-	private int nbExpressionEvaluated = 0;
-
-	public DynamothSynthesizerWOracle(Map<String, List<Candidates>> values, NopolContext nopolContext,
-			Map<String, Object[]> oracle) {
-		super();
-		this.values = values;
-		this.nopolContext = nopolContext;
-		this.oracle = oracle;
-	}
-
-	public DynamothSynthesizerWOracle() {
-		super();
-	}
+public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 
 	public DynamothSynthesizerWOracle(DynamothSynthesisContext data) {
 		super();
 		this.values = data.getValues();
 		this.nopolContext = data.getNopolContext();
-		this.oracle = data.getOracle();
+		// Explicitly NULL
+		this.oracle = null;
 	}
 
+	@Override
 	public Candidates combineValues() {
 		final Candidates result = new Candidates();
 		List<String> collectedTests = new ArrayList<>(values.keySet());
@@ -134,7 +110,7 @@ public class DynamothSynthesizerWOracle {
 						// return false;
 						// }
 						if (checkExpression(key, iterationNumber, expression)) {
-							result.add(expression);
+							// result.add(expression);//Not modify the result...
 							return true;
 						}
 						return false;
@@ -144,7 +120,10 @@ public class DynamothSynthesizerWOracle {
 				// combine eexps
 				long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
 
-				combiner.combine(eexps, /* angelicValue */ null, maxCombinerTime, nopolContext);
+				// combiner.combine(eexps, /* angelicValue */ null,
+				// maxCombinerTime, nopolContext);
+				Candidates result1 = combiner.combine(eexps, /* angelicValue */ null, maxCombinerTime, nopolContext);
+				result.addAll(result1);
 				if (result.size() > 0) {
 					if (nopolContext.isOnlyOneSynthesisResult()) {
 						// return result;
@@ -154,68 +133,6 @@ public class DynamothSynthesizerWOracle {
 		}
 
 		return result;
-	}
-
-	private final Set<String> checkedExpression = new HashSet<>();
-
-	private boolean checkExpression(String testName, int iterationNumber, Expression expression) {
-		nbExpressionEvaluated++;
-		if (checkedExpression.contains(expression.toString())) {
-			return false;
-		}
-		checkedExpression.add(expression.toString());
-		for (String test : values.keySet()) {
-			List<Candidates> listCandidates = values.get(test);
-			for (int i = 0; i < listCandidates.size(); i++) {
-				Candidates valueOtherTest = listCandidates.get(i);
-				if (test.equals(testName) && iterationNumber == i) {
-					continue;
-				}
-				Object v;
-				if (i < oracle.get(test).length) {
-					v = oracle.get(test)[i];
-				} else {
-					v = oracle.get(test)[oracle.get(test).length - 1];
-				}
-				try {
-					fr.inria.lille.repair.expression.value.Value expressionValue = expression.evaluate(valueOtherTest);
-					if (expressionValue == null) {
-						return false;
-					}
-					if (!v.equals(expressionValue.getRealValue())) {
-						// logger.debug(expression + " not valid for the test "
-						// + test);
-						return false;
-					}
-				} catch (RuntimeException e) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	private boolean isConstant(Expression e) {
-		if (e.getValue().isConstant()) {
-			return true;
-		}
-		for (List<Candidates> candidates : values.values()) {
-			loopCandidate: for (Candidates candidate : candidates) {
-				for (Expression expression : candidate) {
-					if (e.sameExpression(expression)) {
-						if (expression.getValue().isConstant()) {
-							return true;
-						}
-						if (!e.getValue().equals(expression.getValue())) {
-							return false;
-						}
-						continue loopCandidate;
-					}
-				}
-				return false;
-			}
-		}
-		return true;
 	}
 
 }

@@ -21,9 +21,10 @@ import fr.inria.lille.repair.expression.Expression;
  */
 public class DynamothSynthesizer {
 	// private long remainingTime;
-	private Map<String, List<Candidates>> values;
-	private NopolContext nopolContext;
-	private Map<String, Object[]> oracle;
+	protected Map<String, List<Candidates>> values;
+	protected NopolContext nopolContext;
+	protected Map<String, Object[]> oracle;
+	private final Set<String> checkedExpression = new HashSet<>();
 
 	private int nbExpressionEvaluated = 0;
 
@@ -100,10 +101,7 @@ public class DynamothSynthesizer {
 				}
 				currentTime = System.currentTimeMillis();
 				// check if one of the collected value can be a patch
-				for (int j = 0; j < eexps
-						.size() /*
-								 * && currentTime - startTime <= remainingTime
-								 */; j++) {
+				for (int j = 0; j < eexps.size(); j++) {
 					Expression expression = eexps.get(j);
 					if (expression == null || expression.getValue() == null) {
 						continue;
@@ -135,11 +133,7 @@ public class DynamothSynthesizer {
 				});
 				currentTime = System.currentTimeMillis();
 				// combine eexps
-				long maxCombinerTime = TimeUnit.SECONDS.toMillis(10); // remainingTime
-																		// -
-																		// (currentTime
-																		// -
-																		// startTime);
+				long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
 
 				combiner.combine(eexps, angelicValue, maxCombinerTime, nopolContext);
 				if (result.size() > 0) {
@@ -153,9 +147,7 @@ public class DynamothSynthesizer {
 		return result;
 	}
 
-	private final Set<String> checkedExpression = new HashSet<>();
-
-	private boolean checkExpression(String testName, int iterationNumber, Expression expression) {
+	protected boolean checkExpression(String testName, int iterationNumber, Expression expression) {
 		nbExpressionEvaluated++;
 		if (checkedExpression.contains(expression.toString())) {
 			return false;
@@ -192,7 +184,7 @@ public class DynamothSynthesizer {
 		return true;
 	}
 
-	private boolean isConstant(Expression e) {
+	protected boolean isConstant(Expression e) {
 		if (e.getValue().isConstant()) {
 			return true;
 		}

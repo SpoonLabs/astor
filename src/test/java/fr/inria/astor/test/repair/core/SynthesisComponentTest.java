@@ -382,7 +382,7 @@ public class SynthesisComponentTest {
 		cs.command.put("-saveall", "true");
 		cs.command.put("-maxgen", "0");
 		cs.append("-parameters",
-				"logtestexecution:true:disablelog:true:probabilistictransformation:false:"//
+				"logtestexecution:true:disablelog:true:probabilistictransformation:false:max_synthesis_step:12000:"//
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ SynthesisBasedTransformationStrategy.class.getCanonicalName() + File.pathSeparator + //
 						ExtensionPoints.CODE_SYNTHESIS.identifier + File.pathSeparator
@@ -409,7 +409,7 @@ public class SynthesisComponentTest {
 
 		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp8, oracle,
 				tests);
-
+		dynamothCodeGenesis.getNopolContext().setSynthesisDepth(3);
 		assertTrue(dynamothCodeGenesis.getValues().size() > 0);
 		DynamothSynthesisContext data = new DynamothSynthesisContext(dynamothCodeGenesis.getValues());
 		data.setNopolContext(dynamothCodeGenesis.getNopolContext());
@@ -424,10 +424,11 @@ public class SynthesisComponentTest {
 			values.add(expr.getValue().getRealValue());
 			clusterValues.add(expr.getValue().getRealValue(), expr);
 		}
-		assertTrue(candidates.stream().filter(e -> e.toString().equals("min + max")).findAny().isPresent());
-
+		System.out.println("Total candidates: " + candidates.size());
 		System.out.println("Values retrieved (size " + values.size() + "): \n" + values);
 		System.out.println("Cluster (size " + clusterValues.keySet().size() + ") :\n " + clusterValues);
+
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("min + max")).findAny().isPresent());
 
 	}
 
