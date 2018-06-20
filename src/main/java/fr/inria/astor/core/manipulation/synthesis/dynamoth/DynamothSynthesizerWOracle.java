@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.expression.Expression;
@@ -20,6 +22,8 @@ import fr.inria.lille.repair.expression.Expression;
  *
  */
 public class DynamothSynthesizerWOracle {
+
+	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 	// private long remainingTime;
 	private Map<String, List<Candidates>> values;
 	private NopolContext nopolContext;
@@ -138,11 +142,7 @@ public class DynamothSynthesizerWOracle {
 				});
 				currentTime = System.currentTimeMillis();
 				// combine eexps
-				long maxCombinerTime = TimeUnit.SECONDS.toMillis(10); // remainingTime
-																		// -
-																		// (currentTime
-																		// -
-																		// startTime);
+				long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
 
 				combiner.combine(eexps, /* angelicValue */ null, maxCombinerTime, nopolContext);
 				if (result.size() > 0) {

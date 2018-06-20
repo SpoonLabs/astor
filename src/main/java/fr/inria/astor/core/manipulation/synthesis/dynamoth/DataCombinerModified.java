@@ -36,7 +36,7 @@ public class DataCombinerModified {
 	private long executionTime;
 	private NopolContext nopolContext;
 
-	private int MAX = 100;
+	private int MAX_NUMBER_COMBINATIONS = 20000;
 
 	public Candidates combine(Candidates candidates, Object angelicValue, long maxTime, NopolContext nopolContext) {
 		this.nopolContext = nopolContext;
@@ -49,12 +49,15 @@ public class DataCombinerModified {
 		result.addAll(candidates);
 		List<Expression> lastTurn = new ArrayList<>();
 		lastTurn.addAll(candidates);
-		int previousSize = 0;
+
 		executionTime = System.currentTimeMillis() - startTime;
+
 		List<Operator> operators = new ArrayList<>();
 		operators.addAll(Arrays.asList(UnaryOperator.values()));
 		operators.addAll(Arrays.asList(BinaryOperator.values()));
+
 		for (int i = 0; i < maxDepth - 1 && !stop && executionTime <= maxTime; i++) {
+			System.out.println("----max depth i: " + i);
 			lastTurn.addAll(newCombiner(lastTurn, operators, i == maxDepth - 2 ? angelicValue : null));
 
 			executionTime = System.currentTimeMillis() - startTime;
@@ -68,82 +71,6 @@ public class DataCombinerModified {
 			final Object angelicValue) {
 		final List<Expression> result = new ArrayList<>();
 
-		class Combination {
-			private final List<List<Expression>> toCombine = new ArrayList<>();
-			private final Operator operator;
-			private final List<Integer> positions;
-			private final int nbExpression;
-			private boolean isEnd = false;
-
-			Combination(List<Expression> toCombine, Operator operator, int nbExpression) {
-				// select compatible element for each parameter
-				for (int i = 0; i < operator.getTypeParameters().size(); i++) {
-					Class aClass = operator.getTypeParameters().get(i);
-					for (int j = 0; j < toCombine.size(); j++) {
-						Expression expression = toCombine.get(j);
-						if (expression.getValue().isCompatibleWith(aClass)) {
-							if (this.toCombine.size() < i + 1) {
-								this.toCombine.add(new ArrayList<Expression>());
-							}
-							this.toCombine.get(i).add(expression);
-						}
-					}
-				}
-				this.operator = operator;
-				this.nbExpression = nbExpression;
-				this.positions = new ArrayList<>(nbExpression);
-				for (int i = 0; i < nbExpression; i++) {
-					positions.add(0);
-				}
-				if (this.toCombine.isEmpty()) {
-					isEnd = true;
-				}
-				for (List<Expression> expressions : this.toCombine) {
-					if (expressions.isEmpty()) {
-						isEnd = true;
-						return;
-					}
-				}
-			}
-
-			public synchronized List<Expression> perform() {
-				if (isEnd || stop) {
-					return null;
-				}
-				List<Expression> current = new ArrayList<>();
-				for (int i = 0; i < nbExpression; i++) {
-					current.add(toCombine.get(i).get(positions.get(i)));
-				}
-				incrementPosition();
-				return current;
-			}
-
-			public boolean isEnd() {
-				return isEnd || stop;
-			}
-
-			private synchronized void incrementPosition() {
-				for (int i = positions.size() - 1; i >= 0; i--) {
-					Integer position = positions.get(i);
-					int size = toCombine.get(i).size();
-					if (position < size - 1) {
-						position++;
-						positions.set(i, position);
-						return;
-					} else {
-						positions.set(i, 0);
-						if (i == positions.size() - 1 && positions.size() > 1) {
-							// positions.set(i, Math.min(positions.get(i - 1) +
-							// 2, size - 1));
-						}
-						if (i == 0) {
-							isEnd = true;
-							return;
-						}
-					}
-				}
-			}
-		}
 		if (nopolContext.isSortExpressions()) {
 			Collections.sort(toCombine, Collections.reverseOrder());
 		}
@@ -154,12 +81,12 @@ public class DataCombinerModified {
 			}
 			int nbExpression = operator.getTypeParameters().size();
 			Combination combination = new Combination(toCombine, operator, nbExpression);
-			while (!combination.isEnd()) {
-				List<Expression> expressions = combination.perform();
+			while (!combination.isEnd(this.stop)) {
+				List<Expression> expressions = combination.perform(this.stop);
 				CombinationExpression binaryExpression = CombinationFactory.create(operator, expressions, nopolContext);
 				if (addExpressionIn(binaryExpression, result, false)) {
 					if (callListener(binaryExpression)) {
-						if (nopolContext.isOnlyOneSynthesisResult() || result.size() >= MAX) {
+						if (nopolContext.isOnlyOneSynthesisResult() || result.size() >= MAX_NUMBER_COMBINATIONS) {
 							return result;
 						}
 					}
@@ -170,7 +97,8 @@ public class DataCombinerModified {
 								Arrays.asList(expressions.get(1), expressions.get(0)), nopolContext);
 						if (addExpressionIn(binaryExpression, result, false)) {
 							if (callListener(binaryExpression)) {
-								if (nopolContext.isOnlyOneSynthesisResult() || result.size() >= MAX) {
+								if (nopolContext.isOnlyOneSynthesisResult()
+										|| result.size() >= MAX_NUMBER_COMBINATIONS) {
 									return result;
 								}
 							}

@@ -8,8 +8,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesizerWO
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.test.repair.DummySynthesizer4TestImpl;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
+import fr.inria.astor.util.MapList;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
 import fr.inria.main.CommandSummary;
@@ -413,10 +416,19 @@ public class SynthesisComponentTest {
 		DynamothSynthesizerWOracle soo = new DynamothSynthesizerWOracle(data);
 		Candidates candidates = soo.combineValues();
 		assertTrue(candidates.size() > 0);
+		Set<Object> values = new HashSet<>();
+		MapList<Object, Expression> clusterValues = new MapList<>();
 		for (int i = 0; i < candidates.size(); i++) {
 			Expression expr = candidates.get(i);
 			System.out.println("i " + i + ": " + expr + ", evaluation: " + expr.getValue());
+			values.add(expr.getValue().getRealValue());
+			clusterValues.add(expr.getValue().getRealValue(), expr);
 		}
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("min + max")).findAny().isPresent());
+
+		System.out.println("Values retrieved (size " + values.size() + "): \n" + values);
+		System.out.println("Cluster (size " + clusterValues.keySet().size() + ") :\n " + clusterValues);
+
 	}
 
 }
