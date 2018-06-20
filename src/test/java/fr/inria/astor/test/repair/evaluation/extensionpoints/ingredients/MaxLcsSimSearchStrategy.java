@@ -1,7 +1,5 @@
 package fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -16,8 +14,9 @@ import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.code.CtCodeElement;
+
 
 
 public class MaxLcsSimSearchStrategy extends IngredientSearchStrategy {
