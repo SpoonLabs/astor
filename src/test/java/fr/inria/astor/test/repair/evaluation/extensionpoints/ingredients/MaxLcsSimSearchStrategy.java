@@ -65,8 +65,6 @@ public class MaxLcsSimSearchStrategy extends IngredientSearchStrategy {
 			this.ingredientSpace.setIngredients(modificationPoint.getCodeElement(), ingredientsLocationSort);
 			ingredientsLocation = ingredientsLocationSort;
 		}
-		//System.out.println("***INGREDIENT***");
-		//System.out.println(Arrays.toString(ingredientsLocation.toArray()));
 		int size = ingredientsLocation.size();
 		if (size > 0) {
 			// We get the smaller element
@@ -74,8 +72,6 @@ public class MaxLcsSimSearchStrategy extends IngredientSearchStrategy {
 			// we remove it from space
 			ingredientsLocation.remove(0);
 
-			//System.out.println("ModificationPoint: " + modificationPoint_toString);
-			//System.out.println("Repair ingredient: " + element.toString());
 			return new Ingredient(element, this.ingredientSpace.spaceScope());
 		} // any ingredient
 		return null;
