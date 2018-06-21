@@ -24,7 +24,7 @@ public class MathCommandsTests {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 50;
 		
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -43,7 +43,7 @@ public class MathCommandsTests {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 50;
 		
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.stat.clustering.KMeansPlusPlusClustererTest", "-location",
 				new File("./examples/math_57").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java/ ", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -61,7 +61,7 @@ public class MathCommandsTests {
 	public static CommandSummary getMath85Command(){
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -77,7 +77,7 @@ public class MathCommandsTests {
 		int generations = 50;
 		
 		
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.optimization.linear.SimplexSolverTestt", "-location",
 				new File("/Users/matias/develop/extractedbug/math/math_42").getAbsolutePath(), 
 				"-package", "org.apache.commons", "-srcjavafolder",
@@ -99,7 +99,7 @@ public class MathCommandsTests {
 		int generations = 50;
 		
 		
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement",  "-location",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",  "-location",
 				new File("./examples/math_20").getAbsolutePath(), 
 				"-package", "org.apache.commons", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -134,7 +134,7 @@ public class MathCommandsTests {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",
 				//
 				"-failing",
 				"org.apache.commons.math3.fraction.FractionTest:org.apache.commons.math3.fraction.BigFractionTest",

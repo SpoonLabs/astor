@@ -41,7 +41,7 @@ public class QuixBugsRepairTest {
 		cs.command.put("-package", "java_programs");
 		cs.command.put("-dependencies", dep);
 		cs.command.put("-scope", "package");
-		cs.command.put("-mode", "statement");
+		cs.command.put("-mode", "jgenprog");
 		cs.command.put("-id", name);
 		cs.command.put("-population", "1");
 		cs.command.put("-srcjavafolder", "/src");

@@ -29,7 +29,7 @@ public class ChartTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { //
 				"-dependencies", dep, //
-				"-mode", "statement", //
+				"-mode", "jgenprog", //
 				"-location", projectLocation.getAbsolutePath(), //
 				"-srcjavafolder", "/source/", //
 				"-srctestfolder", "/tests/", //

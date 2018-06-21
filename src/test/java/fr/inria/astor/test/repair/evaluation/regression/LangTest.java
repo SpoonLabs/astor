@@ -91,7 +91,7 @@ public class LangTest {
 	}
 
 	public String[] commandLang63(String dep, File out, boolean step) {
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.lang.time.DurationFormatUtilsTest", "-location",
 				new File("./examples/lang_63/").getAbsolutePath(),
 				//
@@ -117,7 +117,7 @@ public class LangTest {
 		Class cloneGranularityClass = CtExecutable.class;
 		String scope = CtClassIngredientSpace.class.getCanonicalName();
 
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.lang3.time.FastDateFormat_PrinterTest" + File.pathSeparator
 						+ "org.apache.commons.lang3.time.FastDatePrinterTest",
 				//
@@ -153,7 +153,7 @@ public class LangTest {
 	}
 
 	public String[] commandLang55(String dep, File out, boolean step) {
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.lang.time.StopWatchTest", //
 				"-location", new File("./examples/lang_55/").getAbsolutePath(),
 				//
@@ -175,7 +175,7 @@ public class LangTest {
 		String dep = getLangCommonLibs();
 		String[] args = new String[] {
 				///
-				"-dependencies", dep, "-mode", "statement", // "-failing",
+				"-dependencies", dep, "-mode", "jgenprog", // "-failing",
 															// "org.apache.commons.lang3.math.NumberUtilsTest",
 															// //
 				"-location", new File("./examples/lang_1/").getAbsolutePath(),

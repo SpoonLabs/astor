@@ -322,7 +322,7 @@ public class VarMappingTest {
 
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",
 				//
 				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest",
 				//

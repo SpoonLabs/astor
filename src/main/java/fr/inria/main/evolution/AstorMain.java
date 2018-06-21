@@ -172,9 +172,9 @@ public class AstorMain extends AbstractMain {
 			astorCore = createEngine(ExecutionMode.DeepRepair);
 		else if ("cardumen".equals(mode))
 			astorCore = createEngine(ExecutionMode.CARDUMEN);
-		else if ("statement".equals(mode) || "jgenprog".equals(mode))
+		else if ("jgenprog".equals(mode))
 			astorCore = createEngine(ExecutionMode.jGenProg);
-		else if ("statement-remove".equals(mode) || "jkali".equals(mode))
+		else if ("jkali".equals(mode))
 			astorCore = createEngine(ExecutionMode.jKali);
 		else if ("mutation".equals(mode) || "jmutrepair".equals(mode))
 			astorCore = createEngine(ExecutionMode.MutRepair);

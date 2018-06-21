@@ -24,7 +24,7 @@ public class ConfigurationTest extends BaseEvolutionaryTest {
 		
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -47,7 +47,7 @@ public class ConfigurationTest extends BaseEvolutionaryTest {
 		
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",

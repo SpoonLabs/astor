@@ -37,7 +37,7 @@ public class D4JDeepLearningTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { //
 				"-dependencies", dep, //
-				"-mode", "statement", //
+				"-mode", "jgenprog", //
 				"-location", projectLocation.getAbsolutePath(), //
 				"-srcjavafolder", "/source/", //
 				"-srctestfolder", "/tests/", //
@@ -84,7 +84,7 @@ public class D4JDeepLearningTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",
 				//
 				"-failing",
 				"org.apache.commons.math3.fraction.FractionTest:org.apache.commons.math3.fraction.BigFractionTest",

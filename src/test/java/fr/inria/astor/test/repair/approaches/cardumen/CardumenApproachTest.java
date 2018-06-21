@@ -1209,7 +1209,7 @@ public class CardumenApproachTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { //
 				"-dependencies", dep, //
-				"-mode", "statement", //
+				"-mode", "jgenprog", //
 				"-location", projectLocation.getAbsolutePath(), //
 				"-srcjavafolder", "/src/:/test/", //
 				"-srctestfolder", "/test/", //
@@ -1281,7 +1281,7 @@ public class CardumenApproachTest {
 			throw new Exception(m2path + "does not exit");
 		}
 
-		String[] cms = new String[] { "-mode", "statement"
+		String[] cms = new String[] { "-mode", "jgenprog"
 
 				, "-location", (new File("./examples/time_11")).getAbsolutePath(), "-dependencies",
 				new File("./examples/libs/junit-3.8.2.jar").getAbsolutePath() + File.pathSeparator
@@ -1325,7 +1325,7 @@ public class CardumenApproachTest {
 		if (!fm2.exists()) {
 			throw new Exception(m2path + "does not exit");
 		}
-		String[] cms = new String[] { "-mode", "statement"
+		String[] cms = new String[] { "-mode", "jgenprog"
 
 				, "-location", (new File("./examples/time_11")).getAbsolutePath(), "-dependencies",
 				new File("./examples/libs/junit-3.8.2.jar").getAbsolutePath() + File.pathSeparator

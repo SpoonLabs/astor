@@ -110,7 +110,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	public void testMath85() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -188,7 +188,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 	}
 
 	public static String[] commandMath70(String dep, File out, int generations) {
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
@@ -205,7 +205,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -235,7 +235,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		String dep = new File("./examples/libs/junit-4.5.jar").getAbsolutePath();
 		AstorMain main1 = new AstorMain();
 
-		String[] args = new String[] { "-mode", "statement", "-location",
+		String[] args = new String[] { "-mode", "jgenprog", "-location",
 				new File("./examples/jsoup31be24").getAbsolutePath(), "-dependencies", dep,
 				// The injected bug produces 4 failing cases in two files
 				"-failing",
@@ -269,7 +269,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.8.2.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.RegulaFalsiSolverTest", "-location",
 				new File("./examples/math_50").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
@@ -298,7 +298,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.linear.SingularValueSolverTest", "-location",
 				new File("./examples/math_76").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
@@ -321,7 +321,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.ode.nonstiff.AdamsMoultonIntegratorTest", "-location",
 				new File("./examples/math_74").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
@@ -346,7 +346,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				+ new File("./examples/libs/commons-logging-1.0.4.jar").getAbsolutePath() + File.pathSeparator
 				+ new File("./examples/libs/junit-3.8.2.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.fraction.FractionFormatTest", "-location",
 				new File("./examples/math_106").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
@@ -371,7 +371,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", //
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", //
 
 				"-location", new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons",
 				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
@@ -415,7 +415,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",

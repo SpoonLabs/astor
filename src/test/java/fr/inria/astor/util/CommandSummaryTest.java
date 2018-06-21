@@ -24,7 +24,7 @@ public class CommandSummaryTest {
 
 	@Test
 	public void testCommand1() {
-		String[] args = new String[] { "-dependencies","dd", "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies","dd", "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
