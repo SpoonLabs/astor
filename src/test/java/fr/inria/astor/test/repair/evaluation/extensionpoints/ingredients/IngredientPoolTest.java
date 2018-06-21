@@ -35,7 +35,7 @@ import spoon.reflect.declaration.CtType;
 
 /**
  * Test of Ingredient Space
- * 
+ *
  * @author Matias Martinez
  *
  */
@@ -50,8 +50,95 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 	/**
 	 * This test asserts the navigation of the ing search space using a
 	 * modification point and a operation type The strategy used returns
+	 * ingredients according to LCS distance compared with modificationPoint.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testMaxLcsSimSearchStrategyMath85() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+				// We put 0 as max generation, so we force to not evolve the
+				// population
+				"-maxgen", "0", "-scope", "local", "-seed", "10", "-ingredientstrategy",
+				MaxLcsSimSearchStrategy.class.getName() };
+
+		main1.execute(args);
+		JGenProg astor = (JGenProg) main1.getEngine();
+		IngredientSearchStrategy ingStrategy = astor.getIngredientSearchStrategy();
+		// Let's take a modification point from the first variant. I take the
+		// element at 12, it's an assignement.
+		ModificationPoint mpoint = astor.getVariants().get(0).getModificationPoints().get(12);
+		String modificationPoint_toString = mpoint.getCodeElement().toString().trim();
+		Ingredient ingLast = ingStrategy.getFixIngredient(mpoint, null);
+		Assert.assertNotNull(ingLast);
+		boolean respectOrder = true;
+		while (respectOrder) {
+			Ingredient ingN = ingStrategy.getFixIngredient(mpoint, null);
+			if (ingN == null)
+				break;
+			respectOrder = getLcsSimilarity(ingLast.getCode().toString().trim(), modificationPoint_toString) >= getLcsSimilarity(ingN.getCode().toString().trim(), modificationPoint_toString);
+			ingLast = ingN;
+		}
+		Assert.assertTrue(respectOrder);
+	}
+
+	/**
+	 * This test asserts the navigation of the ing search space using a
+	 * modification point and a operation type The strategy used returns
+	 * ingredients according to LCS distance compared with modificationPoint.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testMaxLcsSimSearchStrategyReplaceMath85() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
+				// We put 0 as max generation, so we force to not evolve the
+				// population
+				"-maxgen", "0", "-scope", "local", "-seed", "10", "-ingredientstrategy",
+				MaxLcsSimSearchStrategy.class.getName() };
+
+		main1.execute(args);
+		JGenProg astor = (JGenProg) main1.getEngine();
+		IngredientSearchStrategy ingStrategy = astor.getIngredientSearchStrategy();
+
+		//
+		AstorOperator operator = new ReplaceOp();
+		// Let's take a modification point from the first variant. I take the
+		// element at 12, it's an assignement.
+		ModificationPoint mpoint = astor.getVariants().get(0).getModificationPoints().get(12);
+		String modificationPoint_toString = mpoint.getCodeElement().toString().trim();
+		Ingredient ingLast = ingStrategy.getFixIngredient(mpoint, operator);
+		Assert.assertNotNull(ingLast);
+		boolean respectOrder = true;
+		while (respectOrder) {
+			Ingredient ingN = ingStrategy.getFixIngredient(mpoint, operator);
+			if (ingN == null)
+				break;
+			respectOrder = getLcsSimilarity(ingLast.getCode().toString().trim(), modificationPoint_toString) >= getLcsSimilarity(ingN.getCode().toString().trim(), modificationPoint_toString);
+			ingLast = ingN;
+		}
+		Assert.assertTrue(respectOrder);
+	}
+
+	/**
+	 * This test asserts the navigation of the ing search space using a
+	 * modification point and a operation type The strategy used returns
 	 * ingredients according to their length (in term of number of chars)
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -93,7 +180,7 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 	 * modification point and a operation type For this reason, we assert that
 	 * the ingredients returned by the strategy are of the same type than the
 	 * modif point.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -453,6 +540,38 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 				.getIngredients(mp.getCodeElement(), mp.getCodeElement().getClass().getSimpleName());
 		assertEquals(4, ingredientsWithDuplicates.size());
 
+	}
+
+	// Normalized longest common subsequence (LCS) distance. http://heim.ifi.uio.no/%7Edanielry/StringMetric.pdf
+	private double getLcsSimilarity(String a, String b)
+	{
+		// Exact copy cannot be ingredient, therefore we give it score 0
+		if(a.replaceAll("\\s+","").equals(b.replaceAll("\\s+","")))
+		{
+			return 0;
+		}
+
+		int m = a.length();
+		int n = b.length();
+		int[][] lcsDistance = new int[m+1][n+1];
+		// Dynamic programming to compute lcs distance
+		for(int i = 0; i <= m; i++)
+		{
+			for(int j = 0; j <= n; j++)
+			{
+				if(i == 0 || j == 0)
+				{
+					lcsDistance[i][j] = 0;
+				}else if(a.charAt(i-1) == b.charAt(j-1)){
+					lcsDistance[i][j] = lcsDistance[i-1][j-1] + 1;
+				}else{
+					lcsDistance[i][j] = Math.max(lcsDistance[i-1][j], lcsDistance[i][j-1]);
+				}
+			}
+		}
+
+		// Normalize lcs distance with max(m,n)
+		return (double)lcsDistance[m][n]/Math.max(m,n);
 	}
 
 }
