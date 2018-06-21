@@ -375,7 +375,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 	@Test
 	public void testM70Regression() throws Exception {
-		String command = "-mode,statement," + "-location," + (new File("./examples/math_70")).getAbsolutePath() + ","
+		String command = "-mode,jgenprog," + "-location," + (new File("./examples/math_70")).getAbsolutePath() + ","
 				+ "-dependencies," + new File("./examples/libs/junit-4.11.jar").getAbsolutePath() + ",out,"
 				+ new File(ConfigurationProperties.getProperty("workingDirectory"))
 
