@@ -110,7 +110,7 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 						// return false;
 						// }
 						if (checkExpression(key, iterationNumber, expression)) {
-							// result.add(expression);//Not modify the result...
+							result.add(expression);// Not modify the result...
 							return true;
 						}
 						return false;
@@ -123,12 +123,6 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 				// combiner.combine(eexps, /* angelicValue */ null,
 				// maxCombinerTime, nopolContext);
 				Candidates result1 = combiner.combine(eexps, /* angelicValue */ null, maxCombinerTime, nopolContext);
-				result.addAll(result1);
-				if (result.size() > 0) {
-					if (nopolContext.isOnlyOneSynthesisResult()) {
-						// return result;
-					}
-				}
 			}
 		}
 

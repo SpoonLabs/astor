@@ -1,7 +1,9 @@
 package fr.inria.astor.core.manipulation.synthesis;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -22,6 +24,10 @@ public class SynthesisBasedTransformationStrategy implements IngredientTransform
 
 	ExecutionContextCollector contextColector = null;
 	IngredientSynthesizer synthesizer = null;
+	/**
+	 * Stores the already analyzed contexts
+	 */
+	Map<ModificationPoint, ExecutionContext> cacheContent = new HashMap<>();
 
 	public SynthesisBasedTransformationStrategy(ExecutionContextCollector contextColector,
 			IngredientSynthesizer synthesizer) {
@@ -37,9 +43,8 @@ public class SynthesisBasedTransformationStrategy implements IngredientTransform
 
 	@Override
 	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient ingredient) {
-		// TODO: create a cache:
 
-		ExecutionContext collectedValues = contextColector.collectValues(AstorMain.projectFacade, modificationPoint);
+		ExecutionContext collectedValues = getContext(modificationPoint);
 
 		CtType expectedType = null;
 		if (modificationPoint.getCodeElement() instanceof CtExpression) {
@@ -56,6 +61,17 @@ public class SynthesisBasedTransformationStrategy implements IngredientTransform
 		}
 
 		return ingredients;
+	}
+
+	private ExecutionContext getContext(ModificationPoint modificationPoint) {
+		if (this.cacheContent.containsKey(modificationPoint)) {
+			return this.cacheContent.get(modificationPoint);
+		} else {
+			ExecutionContext collectedValues = contextColector.collectValues(AstorMain.projectFacade,
+					modificationPoint);
+			this.cacheContent.put(modificationPoint, collectedValues);
+			return collectedValues;
+		}
 	}
 
 	public ExecutionContextCollector loadContextCollector() throws Exception {

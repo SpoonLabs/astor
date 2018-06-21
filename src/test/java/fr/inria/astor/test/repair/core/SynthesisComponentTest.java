@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.Ingredient;
@@ -122,10 +123,16 @@ public class SynthesisComponentTest {
 			Expression expr = candidates.get(i);
 			System.out.println("i " + i + ": " + expr + " value: " + expr.getValue());
 			// By default, the angelic value is a boolean True
-			assertTrue(Boolean.TRUE.equals(expr.getValue()));
+			assertTrue("Wrong value: " + expr.getValue().getRealValue(),
+					Boolean.TRUE.equals(expr.getValue().getRealValue()));
 		}
 		assertTrue(candidates.stream().filter(e -> e.toString().equals("!this.resultComputed")).findAny().isPresent());
-
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("this.f == null")).findAny().isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("min != max")).findAny().isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("!(1 < 0)")).findAny().isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("!(this.absoluteAccuracy < this.functionValue)"))
+				.findAny().isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("!(this.result < 0)")).findAny().isPresent());
 	}
 
 	@Test
@@ -174,11 +181,21 @@ public class SynthesisComponentTest {
 		}
 		assertTrue(candidates.stream().filter(e -> e.toString().equals("this.iterationCount")).findAny().isPresent());
 		assertTrue(candidates.stream().filter(e -> e.toString().equals("0")).findAny().isPresent());
+		assertTrue(candidates.stream()
+				.filter(e -> e.toString()
+						.equals("(1 - this.defaultMaximalIterationCount) + (this.defaultMaximalIterationCount - 1)"))
+				.findAny().isPresent());
+		assertTrue(candidates.stream()
+				.filter(e -> e.toString().equals("this.defaultMaximalIterationCount - this.maximalIterationCount"))
+				.findAny().isPresent());
+		assertTrue(candidates.stream()
+				.filter(e -> e.toString().equals("this.maximalIterationCount - this.defaultMaximalIterationCount"))
+				.findAny().isPresent());
 
 	}
 
 	@Test
-	public void testSynthesis2_double() throws Exception {
+	public void testSynthesis2_double_1() throws Exception {
 
 		AstorMain main1 = new AstorMain();
 		CommandSummary cs = MathCommandsTests.getMath70Command();
@@ -227,11 +244,133 @@ public class SynthesisComponentTest {
 		assertTrue(candidates.stream().filter(e -> e.toString().equals("this.result")).findAny().isPresent());
 		assertTrue(candidates.stream().filter(e -> e.toString().equals("this.functionValue")).findAny().isPresent());
 
+	}
+
+	@Test
+	public void testSynthesis2_double_3() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+
+		cs.command.put("-flthreshold", "0.0");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.command.put("-maxgen", "0");
+		cs.append("-parameters", ("logtestexecution:true:disablelog:true"));
+
+		log.info(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		assertEquals(1, main1.getEngine().getVariants().size());
+		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+
+		DynamothCollectorFacade sc = new DynamothCollectorFacade();
+
+		SuspiciousModificationPoint mp8 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
+
+		String[] tests = sc.getCoverTest(mp8);
+		Map<String, Object[]> oracle = new HashMap<>();
+
+		Double angelicValue = 4.0;
+		for (String testCase : tests) {
+			oracle.put(testCase, new Double[] { angelicValue });
+		}
+		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp8, oracle,
+				tests);
+		DynamothSynthesizer synthesis = new DynamothSynthesizer(dynamothCodeGenesis.getValues(),
+				dynamothCodeGenesis.getNopolContext(), dynamothCodeGenesis.getOracle());
+
+		Candidates candidates = synthesis.combineValues();
+		printValuesCollected(dynamothCodeGenesis);
+
+		// TODO: BinaryExpressionImpl modified at line 91
+		System.out.println("Candidates: " + candidates.size() + " " + candidates);
+
+		assertEquals(16, candidates.size());
+		for (int i = 0; i < candidates.size(); i++) {
+			Expression expr = candidates.get(i);
+			System.out.println("i " + i + ": " + expr + " eval: " + expr.getValue());
+			assertTrue(angelicValue.equals(expr.getValue().getRealValue()));
+		}
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("min + 1")).findAny().isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("(min + this.functionValue) + 1")).findAny()
+				.isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("min + (1 - 0)")).findAny().isPresent());
+	}
+
+	@Test
+	@Ignore
+	public void testSynthesisCollectWithEmptyOracle() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+
+		cs.command.put("-flthreshold", "0.0");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.command.put("-maxgen", "0");
+		cs.append("-parameters", ("logtestexecution:true:disablelog:true"));
+
+		log.info(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		assertEquals(1, main1.getEngine().getVariants().size());
+		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+
+		DynamothCollectorFacade sc = new DynamothCollectorFacade();
+
+		SuspiciousModificationPoint mp8 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
+
+		String[] tests = sc.getCoverTest(mp8);
+		Map<String, Object[]> oracle = new HashMap<>();
+
+		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp8, oracle,
+				tests);
+
 		Double angelicValue62 = 6.2;
 		oracle.clear();
 		for (String testCase : tests) {
 			oracle.put(testCase, new Double[] { angelicValue62 });
 		}
+	}
+
+	@Test
+	public void testSynthesis2_double_2() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+
+		cs.command.put("-flthreshold", "0.0");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.command.put("-maxgen", "0");
+		cs.append("-parameters", ("logtestexecution:true:disablelog:true"));
+
+		log.info(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		assertEquals(1, main1.getEngine().getVariants().size());
+		ProgramVariant variant = main1.getEngine().getVariants().get(0);
+
+		DynamothCollectorFacade sc = new DynamothCollectorFacade();
+
+		SuspiciousModificationPoint mp8 = (SuspiciousModificationPoint) variant.getModificationPoints().get(0);
+
+		String[] tests = sc.getCoverTest(mp8);
+		Map<String, Object[]> oracle = new HashMap<>();
+
+		Double angelicValue62 = 6.2;
+		oracle.clear();
+		for (String testCase : tests) {
+			oracle.put(testCase, new Double[] { angelicValue62 });
+		}
+
+		DynamothCollector dynamothCodeGenesis = sc.createCollector(main1.getEngine().getProjectFacade(), mp8, oracle,
+				tests);
+
 		DynamothSynthesizer synthesis2 = new DynamothSynthesizer(dynamothCodeGenesis.getValues(),
 				dynamothCodeGenesis.getNopolContext(), oracle);
 		Candidates candidates62 = synthesis2.combineValues();
@@ -239,11 +378,18 @@ public class SynthesisComponentTest {
 		for (int i = 0; i < candidates62.size(); i++) {
 			Expression expr = candidates62.get(i);
 			System.out.println("i " + i + ": " + expr + " eval: " + expr.getValue());
+			// assertTrue(angelicValue62.equals(expr.getValue().getRealValue()));
+		}
+		for (int i = 0; i < candidates62.size(); i++) {
+			Expression expr = candidates62.get(i);
+			// System.out.println("i " + i + ": " + expr + " eval: " +
+			// expr.getValue());
 			assertTrue(angelicValue62.equals(expr.getValue().getRealValue()));
 		}
 		assertTrue(candidates62.stream().filter(e -> e.toString().equals("min + max")).findAny().isPresent());
-		assertTrue(candidates62.stream().filter(e -> e.toString().equals("this.functionValue + (min + max)")).findAny()
-				.isPresent());
+		// assertTrue(candidates62.stream().filter(e ->
+		// e.toString().equals("this.functionValue + (min + max)")).findAny()
+		// .isPresent());
 		assertTrue(candidates62.stream().filter(e -> e.toString().equals("initial + initial")).findAny().isPresent());
 
 	}
@@ -416,19 +562,40 @@ public class SynthesisComponentTest {
 		DynamothSynthesizerWOracle soo = new DynamothSynthesizerWOracle(data);
 		Candidates candidates = soo.combineValues();
 		assertTrue(candidates.size() > 0);
-		Set<Object> values = new HashSet<>();
+		Set<Object> differentValues = new HashSet<>();
 		MapList<Object, Expression> clusterValues = new MapList<>();
 		for (int i = 0; i < candidates.size(); i++) {
 			Expression expr = candidates.get(i);
 			System.out.println("i " + i + ": " + expr + ", evaluation: " + expr.getValue());
-			values.add(expr.getValue().getRealValue());
+			differentValues.add(expr.getValue().getRealValue());
 			clusterValues.add(expr.getValue().getRealValue(), expr);
 		}
 		System.out.println("Total candidates: " + candidates.size());
-		System.out.println("Values retrieved (size " + values.size() + "): \n" + values);
+		System.out.println("Values retrieved (size " + differentValues.size() + "): \n" + differentValues);
 		System.out.println("Cluster (size " + clusterValues.keySet().size() + ") :\n " + clusterValues);
 
 		assertTrue(candidates.stream().filter(e -> e.toString().equals("min + max")).findAny().isPresent());
+		assertTrue(differentValues.size() > 170);
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("min == max")).findAny().isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("1 == 0")).findAny().isPresent());
+		assertTrue(
+				candidates.stream().filter(e -> e.toString().equals("this.iterationCount == 0")).findAny().isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("this.defaultFunctionValueAccuracy")).findAny()
+				.isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("max + this.defaultMaximalIterationCount"))
+				.findAny().isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("this.functionValue + this.result")).findAny()
+				.isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("this.defaultMaximalIterationCount + min"))
+				.findAny().isPresent());
+		assertTrue(candidates.stream().filter(e -> e.toString().equals("max * min")).findAny().isPresent());
+		assertTrue(candidates.stream()
+				.filter(e -> e.toString().equals("this.resultComputed && (this.defaultMaximalIterationCount != 1)"))
+				.findAny().isPresent());
+		assertTrue(candidates.stream()
+				.filter(e -> e.toString()
+						.equals("!this.resultComputed && (this.functionValue != this.defaultFunctionValueAccuracy)"))
+				.findAny().isPresent());
 
 	}
 

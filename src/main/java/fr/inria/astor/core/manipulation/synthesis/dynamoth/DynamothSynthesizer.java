@@ -135,12 +135,8 @@ public class DynamothSynthesizer {
 				// combine eexps
 				long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
 
-				combiner.combine(eexps, angelicValue, maxCombinerTime, nopolContext);
-				if (result.size() > 0) {
-					if (nopolContext.isOnlyOneSynthesisResult()) {
-						// return result;
-					}
-				}
+				Candidates candidates = combiner.combine(eexps, angelicValue, maxCombinerTime, nopolContext);
+				// result.addAll(candidates);
 			}
 		}
 

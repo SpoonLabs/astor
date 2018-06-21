@@ -59,13 +59,14 @@ public class DataCombinerModified {
 		operators.addAll(Arrays.asList(UnaryOperator.values()));
 		operators.addAll(Arrays.asList(BinaryOperator.values()));
 
-		for (int i = 0; i < maxDepth - 1 && !stop && executionTime <= maxTime; i++) {
+		for (int i = 0; i < maxDepth - 1
+				&& !stop /* && executionTime <= maxTime */; i++) {
 			System.out.println("----max depth i: " + i);
-			lastTurn.addAll(newCombiner(lastTurn, operators, i == maxDepth - 2 ? angelicValue : null));
-
+			List<Expression> expr = newCombiner(lastTurn, operators, i == maxDepth - 2 ? angelicValue : null);
+			lastTurn.addAll(expr);
 			executionTime = System.currentTimeMillis() - startTime;
 		}
-		result.addAll(lastTurn);
+		// result.addAll(lastTurn);
 		logger.debug("[combine] end " + lastTurn.size() + " evaluated elements");
 		return result;
 	}
