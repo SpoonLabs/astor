@@ -17,7 +17,7 @@ Getting started:
      
 Then the main command (note that the "location" argument is mandatory, and must be an absolute path):
 
-     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.AstorMain -mode jGenProg -srcjavafolder /src/java/ -srctestfolder /src/test/  -binjavafolder /target/classes/ -bintestfolder  /target/test-classes/ -location /home/user/astor/examples/Math-issue-280/ -dependencies examples/Math-issue-280/lib
+     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.AstorMain -mode jgenprog -srcjavafolder /src/java/ -srctestfolder /src/test/  -binjavafolder /target/classes/ -bintestfolder  /target/test-classes/ -location /home/user/astor/examples/Math-issue-280/ -dependencies examples/Math-issue-280/lib
 
 
 Output: Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
@@ -60,7 +60,7 @@ Each folder "variant-x" is a valid solution to the repair problem (passes all te
 
 For executing Astor in jKali mode:
 
-    java  -cp astor.jar fr.inria.main.evolution.AstorMain -mode statement-remove -location <>......
+    java  -cp astor.jar fr.inria.main.evolution.AstorMain -mode jkali -location <>......
 
 ## jMutRepair
 
@@ -70,7 +70,7 @@ For executing Astor in jMutRepair mode:
 
 # Command line arguments
 
-     -mode statement 
+     -mode jgenprog|jkali|jMutRepair|... 
 
     -location "absolute location of the project to repair" (**MANDATORY**)
 
