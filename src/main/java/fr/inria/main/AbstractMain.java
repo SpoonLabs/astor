@@ -58,7 +58,7 @@ public abstract class AbstractMain {
 
 	static {
 		options.addOption("id", true, "(Optional) Name/identified of the project to evaluate (Default: folder name)");
-		options.addOption("mode", true, " (Optional) Mode (Default: Statement Mode)");
+		options.addOption("mode", true, " (Optional) Mode (Default: jGenProg Mode)");
 		options.addOption("location", true, "URL of the project to manipulate");
 		options.addOption("dependencies", true,
 				"dependencies of the application, separated by char " + File.pathSeparator);
