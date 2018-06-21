@@ -36,7 +36,7 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -74,7 +74,7 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 		///Now, we trigger the second execution we different time budget for ES.
 		///////
 		
-		String[] argsExtendedBudget = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] argsExtendedBudget = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -127,7 +127,7 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 	public void testM70withthread() throws Exception{
 		
 		String[] args = new String[] { "-dependencies", new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
-				, "-mode", "statement", "-failing",
+				, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -191,7 +191,7 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 	public void testM70withthread2() throws Exception{
 		
 		String[] args = new String[] { "-dependencies", new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
-				, "-mode", "statement", "-failing",
+				, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -238,7 +238,7 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 	public void testM70Dependencies() throws Exception{
 		
 		String[] args = new String[] { "-dependencies", new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
-				, "-mode", "statement", "-failing",
+				, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -303,7 +303,7 @@ public class EvoSuiteArgumentVariationTest  extends BaseEvolutionaryTest{
 		// Running Astor
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",

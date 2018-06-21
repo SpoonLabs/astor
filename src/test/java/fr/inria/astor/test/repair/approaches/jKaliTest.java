@@ -32,7 +32,7 @@ public class jKaliTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		File out = new File("./outputMutation/");
 		String[] args = new String[] { "-dependencies",
-				new File(projectpath + File.separator + "lib/").getAbsolutePath(), "-mode", "statement-remove",
+				new File(projectpath + File.separator + "lib/").getAbsolutePath(), "-mode", "jkali",
 				"-failing", "mooctest.TestSuite_all", "-location", new File(projectpath).getAbsolutePath(), "-package",
 				"mooctest", "-srcjavafolder", "/src/", "-srctestfolder", "/junit/", "-binjavafolder", "bin/",
 				"-bintestfolder", "bin/", "-flthreshold", "0.1", "-out", out.getAbsolutePath() };
@@ -71,7 +71,7 @@ public class jKaliTest extends BaseEvolutionaryTest {
 	public void testMath2ExampleRemoveModeOneSolution() throws Exception {
 		AstorMain main1 = new AstorMain();
 
-		String[] args = (new String[] { "-dependencies", "./examples/math_2/libmvn/", "-mode", "statement-remove",
+		String[] args = (new String[] { "-dependencies", "./examples/math_2/libmvn/", "-mode", "jkali",
 				"-failing", "org.apache.commons.math3.distribution.HypergeometricDistributionTest", "-location",
 				"./examples/math_2/", "-package", "org.apache.commons", "-stopfirst", "true", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes",
@@ -87,7 +87,7 @@ public class jKaliTest extends BaseEvolutionaryTest {
 	public void testMath2ExampleRemoveModeManySolutions() throws Exception {
 		AstorMain main1 = new AstorMain();
 
-		String[] args = (new String[] { "-dependencies", "./examples/math_2/libmvn/", "-mode", "statement-remove",
+		String[] args = (new String[] { "-dependencies", "./examples/math_2/libmvn/", "-mode", "jkali",
 				"-failing", "org.apache.commons.math3.distribution.HypergeometricDistributionTest", "-location",
 				new File("./examples/math_2/").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes",

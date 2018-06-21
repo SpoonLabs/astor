@@ -113,7 +113,7 @@ public class RepairnatorTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 500;
 		// Changing the location of source folders
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-location",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-location",
 				new File("./examples/math_20").getAbsolutePath(), "-package", "org.apache.commons", 
 				//Abstracts (refering to another folder)
 				"-srcjavafolder",new File("./examples/math_70").getAbsolutePath() + "/src/main/java/", //
@@ -154,7 +154,7 @@ public class RepairnatorTest {
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 500;
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-location",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", 
 				//Abstracts (refering to another folder)
 				"-srcjavafolder",new File("./examples/math_70").getAbsolutePath() + "/src/main/java/", //

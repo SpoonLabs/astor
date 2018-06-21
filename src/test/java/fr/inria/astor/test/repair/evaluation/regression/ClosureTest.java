@@ -38,7 +38,7 @@ public class ClosureTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { //
 				"-dependencies", dep, //
-				"-mode", "statement", //
+				"-mode", "jgenprog", //
 				"-location", projectLocation.getAbsolutePath(), //
 				// "-package", "com.google",
 				"-srcjavafolder", "/src/:/test/", //
@@ -96,7 +96,7 @@ public class ClosureTest {
 				+ projectLocation.getAbsolutePath() + "/lib/protobuf-java.jar:";
 		String[] args = new String[] { //
 				"-dependencies", dep2, //
-				"-mode", "statement", //
+				"-mode", "jgenprog", //
 				"-population", "1", //
 				"-failing",
 				"com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:",
@@ -175,7 +175,7 @@ public class ClosureTest {
 
 		String[] args = new String[] { //
 				"-dependencies", dep, //
-				"-mode", "statement", //
+				"-mode", "jgenprog", //
 				"-location", projectLocation.getAbsolutePath(), //
 				// "-package", "com.google",
 				"-srcjavafolder", "/src/", //// "/src/:/test/", //

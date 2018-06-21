@@ -107,7 +107,7 @@ public class MockitoTest {
 		String location = new File(exampleRoot + "/mockito_"+id).getAbsolutePath();
 		
 		
-		String[] args = new String[] { "-mode", "statement", 
+		String[] args = new String[] { "-mode", "jgenprog", 
 				//
 				"-location", location, "-flthreshold", "0.1", 
 				//

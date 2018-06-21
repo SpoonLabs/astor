@@ -420,7 +420,7 @@ public class ExpressionBooleanOperatorTest {
 		String dep = new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
-		String[] args = new String[] { "-mode", "statement", "-location",
+		String[] args = new String[] { "-mode", "jgenprog", "-location",
 				new File("./examples/math_20").getAbsolutePath(), "-dependencies", dep, "-out", out.getAbsolutePath(),
 				"-failing", "org.apache.commons.math3.optimization.direct.CMAESOptimizerTest"//
 				, "-package", "org.apache.commons", //

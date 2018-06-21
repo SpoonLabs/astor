@@ -125,7 +125,7 @@ public class GZoltarFaultLocalizationTest {
 	}
 
 	private String[] commandMath70(String dep, File out, int generation, Double tr, boolean mansuper) {
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -148,7 +148,7 @@ public class GZoltarFaultLocalizationTest {
 				+ File.separator + libsdir + File.separator + "easymock.jar";//
 		String[] args = new String[] {
 				///
-				"-dependencies", dep, "-mode", "statement", // "-failing",
+				"-dependencies", dep, "-mode", "jgenprog", // "-failing",
 															// "org.apache.commons.lang3.math.NumberUtilsTest",
 															// //
 				"-location", new File("./examples/lang_1/").getAbsolutePath(),

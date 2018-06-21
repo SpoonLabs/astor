@@ -77,7 +77,7 @@ public class DeepRepairTest {
 
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",
 				//
 				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest",
 				//
@@ -175,7 +175,7 @@ public class DeepRepairTest {
 
 		String[] args = new String[] {
 				///
-				"-dependencies", dep, "-mode", "statement",
+				"-dependencies", dep, "-mode", "jgenprog",
 				// "-failing", "org.apache.commons.lang3.math.NumberUtilsTest",
 				// //
 				"-location", new File("./examples/lang_1/").getAbsolutePath(),

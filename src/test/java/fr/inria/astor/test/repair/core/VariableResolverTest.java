@@ -66,7 +66,7 @@ public class VariableResolverTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -108,7 +108,7 @@ public class VariableResolverTest {
 
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -140,7 +140,7 @@ public class VariableResolverTest {
 
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
@@ -221,7 +221,7 @@ public class VariableResolverTest {
 		String dep = new File("./examples/libs/junit-4.5.jar").getAbsolutePath();
 		AstorMain main1 = new AstorMain();
 
-		String[] args = new String[] { "-mode", "statement", "-location",
+		String[] args = new String[] { "-mode", "jgenprog", "-location",
 				new File("./examples/jsoup31be24").getAbsolutePath(), "-dependencies", dep,
 				// The injected bug produces 4 failing cases in two files
 				"-failing",
@@ -274,7 +274,7 @@ public class VariableResolverTest {
 
 		AstorMain main1 = new AstorMain();
 
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.optimization.linear.SimplexSolverTest", "-location",
 				new File("./examples/Math-issue-288").getAbsolutePath(), "-package", "org.apache.commons",
 				"-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/main/test/", "-binjavafolder",
@@ -366,7 +366,7 @@ public class VariableResolverTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.7.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.lang3.StringUtilsTest", "-location",
 				new File("./examples/lang_39/").getAbsolutePath(),
 				//
@@ -871,7 +871,7 @@ public class VariableResolverTest {
 
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", "-failing",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.optimization.linear.SimplexSolverTest", "-location",
 				new File("./examples/Math-issue-288").getAbsolutePath(), "-package", "org.apache.commons",
 				"-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/main/test/", "-binjavafolder",

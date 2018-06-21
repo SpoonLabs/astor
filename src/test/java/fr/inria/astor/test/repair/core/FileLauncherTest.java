@@ -41,7 +41,7 @@ public class FileLauncherTest {
 		FileLauncher l = new FileLauncher();
 
 		String location = new File(exampleRoot + "/math_70").getAbsolutePath();
-		String[] args = new String[] { "-mode", "statement", "-failing",
+		String[] args = new String[] { "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location", location, "-flthreshold",
 				"0.5", "-scope", "local",
 				//
@@ -74,7 +74,7 @@ public class FileLauncherTest {
 		
 		File learningDir = new File(classLoader.getResource("learningtime2").getPath());
 		
-		String[] args = new String[] { "-mode", "statement", 
+		String[] args = new String[] { "-mode", "jgenprog", 
 				//
 				"-location", location, "-flthreshold", "0.5", 
 				//
@@ -111,7 +111,7 @@ public class FileLauncherTest {
 		FileLauncher l = new FileLauncher();
 
 		String location = new File("/Users/matias/develop/extractedbug/closure/" + "/closure_1").getAbsolutePath();
-		String[] args = new String[] { "-mode", "statement",
+		String[] args = new String[] { "-mode", "jgenprog",
 				"-location", location, "-flthreshold",
 				"0.5", "-scope", "local",
 				//

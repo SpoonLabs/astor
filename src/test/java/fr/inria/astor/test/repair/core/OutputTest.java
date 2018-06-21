@@ -254,7 +254,7 @@ public class OutputTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "statement", //
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", //
 
 				"-location", new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons",
 				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
