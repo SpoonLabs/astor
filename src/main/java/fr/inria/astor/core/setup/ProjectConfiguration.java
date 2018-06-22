@@ -282,4 +282,15 @@ public class ProjectConfiguration {
 		}
 	}
 
+	public static boolean isJDKLowerThan8() {
+		String jvmversion = ConfigurationProperties.properties.getProperty("jvmversion");
+		// 1.8.0_101
+
+		String[] versioncomponents = jvmversion.split("\\.");
+		if (versioncomponents.length < 3) {
+			return false;
+		}
+		String sec = versioncomponents[1];
+		return (Integer.valueOf(sec) <= 7);
+	}
 }

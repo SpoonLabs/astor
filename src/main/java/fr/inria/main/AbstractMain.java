@@ -345,6 +345,10 @@ public abstract class AbstractMain {
 		if (!ProjectConfiguration.validJDK()) {
 			System.err.println("Error: invalid jdk folder");
 			return false;
+		} else {
+			String jvmhome = ConfigurationProperties.properties.getProperty("jvm4testexecution");
+			String jdkVersion = ProjectConfiguration.getVersionJDK(jvmhome);
+			ConfigurationProperties.properties.setProperty("jvmversion", jdkVersion);
 		}
 
 		if (!this.isExample(cmd)) {

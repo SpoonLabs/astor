@@ -2,25 +2,10 @@ package fr.inria.astor.core.manipulation;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.manipulation.bytecode.OutputWritter;
 import fr.inria.astor.core.manipulation.sourcecode.ROOTTYPE;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -161,7 +146,6 @@ public class MutationSupporter {
 		factory = null;
 		return getFactory();
 	}
-
 
 	public static final CtElement ROOT_ELEMENT = new ROOTTYPE();
 
