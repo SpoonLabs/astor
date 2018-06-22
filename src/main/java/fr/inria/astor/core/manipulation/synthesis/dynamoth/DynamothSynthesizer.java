@@ -24,9 +24,9 @@ public class DynamothSynthesizer {
 	protected Map<String, List<Candidates>> values;
 	protected NopolContext nopolContext;
 	protected Map<String, Object[]> oracle;
-	private final Set<String> checkedExpression = new HashSet<>();
+	protected final Set<String> checkedExpression = new HashSet<>();
 
-	private int nbExpressionEvaluated = 0;
+	protected int nbExpressionEvaluated = 0;
 
 	public DynamothSynthesizer(Map<String, List<Candidates>> values, NopolContext nopolContext,
 			Map<String, Object[]> oracle) {

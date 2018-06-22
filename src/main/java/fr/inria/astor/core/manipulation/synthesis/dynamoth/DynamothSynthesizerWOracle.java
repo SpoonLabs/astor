@@ -129,4 +129,22 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 		return result;
 	}
 
+	@Override
+	protected boolean checkExpression(String testName, int iterationNumber, Expression expression) {
+		nbExpressionEvaluated++;
+		if (checkedExpression.contains(expression.toString())) {
+			return false;
+		}
+		checkedExpression.add(expression.toString());
+		for (String test : values.keySet()) {
+			List<Candidates> listCandidates = values.get(test);
+			for (int i = 0; i < listCandidates.size(); i++) {
+				Candidates valueOtherTest = listCandidates.get(i);
+				if (test.equals(testName) && iterationNumber == i) {
+					continue;
+				}
+			}
+		}
+		return true;
+	}
 }

@@ -69,6 +69,7 @@ public class DynamothSynthesisContext extends ExecutionContext {
 	public String toString() {
 		String out = "";
 		int nrtest = 0;
+
 		for (String key : values.keySet()) {
 			out += ("test " + nrtest++ + " :" + key) + "\n";
 			List<Candidates> executions = values.get(key);
@@ -78,9 +79,12 @@ public class DynamothSynthesisContext extends ExecutionContext {
 				out += ("--Total nr of vars " + (i++) + ": " + candidates2.size()) + "\n";
 				int j = 0;
 				for (fr.inria.lille.repair.expression.Expression expression : candidates2) {
-
-					out += ("--*-->" + i + " " + (j++) + " " + expression.asPatch() + " " + expression.getValue())
-							+ "\n";
+					try {
+						out += ("--*-->" + i + " " + (j++) + " " + expression.asPatch() + " " + expression.getValue())
+								+ "\n";
+					} catch (Exception e) {
+						System.out.println("error c:" + e);
+					}
 
 				}
 			}

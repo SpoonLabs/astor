@@ -62,9 +62,9 @@ import fr.inria.astor.core.solutionsearch.spaces.operators.UniformRandomRepairOp
 import fr.inria.astor.core.solutionsearch.spaces.operators.WeightedRandomOperatorSelection;
 import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
-import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
+import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
 import fr.inria.astor.core.validation.processbased.ProcessValidator;
@@ -1577,7 +1577,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					boolean originalAlingment = ConfigurationProperties.getPropertyBool("parsesourcefromoriginal");
 					String mpath = determineSourceFolderInWorkspace(solutionVariant, !originalAlingment)
 							+ File.separator + genOperationInstance.getModificationPoint().getCtClass()
-									.getQualifiedName().replace(".", File.separator)+".java";
+									.getQualifiedName().replace(".", File.separator)
+							+ ".java";
 					hunk.getStats().put(HunkStatEnum.MODIFIED_FILE_PATH, mpath);
 
 					hunk.getStats().put(HunkStatEnum.MP_RANKING,

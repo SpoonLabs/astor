@@ -61,7 +61,6 @@ public class DataCombinerModified {
 
 		for (int i = 0; i < maxDepth - 1
 				&& !stop /* && executionTime <= maxTime */; i++) {
-			System.out.println("----max depth i: " + i);
 			List<Expression> expr = newCombiner(lastTurn, operators, i == maxDepth - 2 ? angelicValue : null);
 			lastTurn.addAll(expr);
 			executionTime = System.currentTimeMillis() - startTime;
