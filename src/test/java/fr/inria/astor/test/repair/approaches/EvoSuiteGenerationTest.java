@@ -478,7 +478,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 
 	@Test
 	public void testM70() throws Exception {
-		String command = "-mode,statement," + "-location," + (new File("./examples/math_70")).getAbsolutePath() + ","
+		String command = "-mode,jgenprog," + "-location," + (new File("./examples/math_70")).getAbsolutePath() + ","
 				+ "-dependencies," + new File("./examples/libs/junit-4.11.jar").getAbsolutePath()
 				// + ","
 				// + ",out," + new
@@ -491,6 +491,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String[] args = command.split(",");
 		AstorMain main1 = new AstorMain();
 		main1.execute(args);
+
+		assertEquals(1, main1.getEngine().getSolutions().size());
 	}
 
 	@SuppressWarnings("rawtypes")
