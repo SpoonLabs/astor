@@ -138,7 +138,7 @@ For example, running bug Math-70 from Defects4J on a JVM 8 could produce two fai
 The first one (`testMath280`) is the test that expose the bug Math-70. It's correct that it fails. However, the second one (`testMinpackMeyer`) fails due to the JVM and it must not fail. It's a platform-related error.
 As conclusion, using a java VM 8+ could produce that Astor does not find patches for bugs that must be repaired by the tool.
 
-As solution, Astor provides an argument (`-jvm4testexecution`) to specify the location of the virtual machine that will be used to run the test cases (in the case of trying to repair Defects4J bugsit must be a JVM 7).
+As solution, Astor provides an argument (`-jvm4testexecution`) to specify the location of the virtual machine that will be used to run the test cases. In the case of trying to repair Defects4J bugs it must be a JVM 7, otherwise the result of test cases could not be the expected (i.e., having more failing test cases) and, consequently, patches could not be found.
 
 
 
