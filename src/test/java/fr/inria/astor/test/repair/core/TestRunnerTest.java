@@ -35,7 +35,7 @@ public class TestRunnerTest {
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-saveall", "true");
-		cs.append("-parameters", ("logtestexecution:true:runexternalvalidator:true"));
+		cs.append("-parameters", ("logtestexecution:true:runjava7code:true"));
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -64,7 +64,7 @@ public class TestRunnerTest {
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-saveall", "true");
-		cs.append("-parameters", ("logtestexecution:true:runexternalvalidator:true"));
+		cs.append("-parameters", ("logtestexecution:true:runjava7code:true"));
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());

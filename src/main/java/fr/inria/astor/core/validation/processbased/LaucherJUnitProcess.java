@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.validation.junit.JUnitExternalExecutor;
 import fr.inria.astor.core.validation.junit.JUnitNologExternalExecutor;
 import fr.inria.astor.core.validation.results.TestResult;
@@ -53,12 +54,11 @@ public class LaucherJUnitProcess {
 		List<String> cls = new ArrayList<>(classesToExecute);
 
 		String newClasspath = classpath;
-		if(ConfigurationProperties.getPropertyBool("runexternalvalidator")){
-			newClasspath = (new File(ConfigurationProperties.getProperty("executorjar")).getAbsolutePath()) 
-					+ File.pathSeparator 
-					+ classpath;
+		if (ConfigurationProperties.getPropertyBool("runjava7code") || ProjectConfiguration.isJDKLowerThan8()) {
+			newClasspath = (new File(ConfigurationProperties.getProperty("executorjar")).getAbsolutePath())
+					+ File.pathSeparator + classpath;
 		}
-		
+
 		try {
 			File ftemp = null;
 			if (outputInFile)
