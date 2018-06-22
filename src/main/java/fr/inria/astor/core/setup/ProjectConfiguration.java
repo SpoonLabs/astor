@@ -284,7 +284,8 @@ public class ProjectConfiguration {
 
 	public static boolean isJDKLowerThan8() {
 		String jvmversion = ConfigurationProperties.properties.getProperty("jvmversion");
-		// 1.8.0_101
+		if (jvmversion == null || jvmversion.isEmpty())
+			return false;
 
 		String[] versioncomponents = jvmversion.split("\\.");
 		if (versioncomponents.length < 3) {
