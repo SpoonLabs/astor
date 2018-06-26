@@ -1,6 +1,5 @@
 package fr.inria.astor.approaches.cardumen;
 
-import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 
 /**

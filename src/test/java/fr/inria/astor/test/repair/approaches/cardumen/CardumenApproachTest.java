@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
 import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine4Stats;
-import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
+import fr.inria.astor.approaches.cardumen.ExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;

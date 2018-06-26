@@ -16,8 +16,8 @@ import org.apache.log4j.PatternLayout;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.cardumen.ExpressionReplaceOperator;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
-import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;

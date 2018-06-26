@@ -11,9 +11,9 @@ import java.util.Optional;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.cardumen.ExpressionReplaceOperator;
 import fr.inria.astor.approaches.cardumholes.Cardumen1HApproach;
 import fr.inria.astor.approaches.jgenprog.extension.TibraApproach;
-import fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
