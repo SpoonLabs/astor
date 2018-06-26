@@ -184,16 +184,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				break;
 			}
 
-			if (!(belowMaxTime(dateInitEvolution, maxMinutes))) {// &&
-																	// limitDate()
-
+			if (!(belowMaxTime(dateInitEvolution, maxMinutes))) {
 				log.debug("\n Max time reached " + generationsExecuted);
 				this.outputStatus = AstorOutputStatus.TIME_OUT;
 				break;
 			}
 
 			generationsExecuted++;
-			log.debug("\n----------Running generation/iteraction " + generationsExecuted + ", population size: "
+			log.debug("\n----------Running generation: " + generationsExecuted + ", population size: "
 					+ this.variants.size());
 			try {
 				boolean solutionFound = processGenerations(generationsExecuted);
@@ -212,7 +210,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 			} catch (Throwable e) {
 				log.error("Error at generation " + generationsExecuted + "\n" + e);
-				// log.equals(Arrays.toString(e.getStackTrace()));
 				e.printStackTrace();
 				this.outputStatus = AstorOutputStatus.ERROR;
 				break;
