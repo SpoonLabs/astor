@@ -45,6 +45,9 @@ public class EvalTOSBTTest {
 						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
 				.findAny().get();
 		assertNotNull(mp198);
+
+		assertEquals(40, mp198.identified);
+
 		// Let's indicate the number of candidate solutions we want to try
 		approach.MAX_GENERATIONS = 1000;
 		approach.analyzeModificationPoint(approach.getVariants().get(0), mp198);

@@ -140,10 +140,10 @@ public class ProgramVariantFactory {
 			log.info("Reducing Total ModPoint created to: " + progInstance.getModificationPoints().size());
 		}
 
-		// Indicating id
+		// Defining identified of each modif point
 		for (int i = 0; i < progInstance.getModificationPoints().size(); i++) {
-			ModificationPoint mp = progInstance.getModificationPoints().get(0);
-			mp.identified = i + 1;
+			ModificationPoint mp = progInstance.getModificationPoints().get(i);
+			mp.identified = i;
 		}
 		return progInstance;
 	}
@@ -245,7 +245,7 @@ public class ProgramVariantFactory {
 
 		List<CtElement> filteredTypeByLine = intersection(filterByType, ctSuspects);
 		// For each filtered element, we create a ModificationPoint.
-	
+
 		for (CtElement ctElement : filteredTypeByLine) {
 			SuspiciousModificationPoint modifPoint = new SuspiciousModificationPoint();
 			modifPoint.setSuspicious(suspiciousCode);
