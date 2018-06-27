@@ -61,20 +61,14 @@ public class DynamothCollectorFacade implements ExecutionContextCollector {
 			sources[i++] = new File(s);
 		}
 
-		System.out.println("Astor-Dynamoth config: ");
+		log.info("Astor-Dynamoth config: ");
 
 		NopolContext nopolContext = new NopolContext(sources, urls, testClasses);
 		nopolContext.setDataCollectionTimeoutInSecondForSynthesis(5);
 		nopolContext.setOnlyOneSynthesisResult(false);
-		System.out.println("-sources: " + Arrays.toString(sources));
-		System.out.println("-url: " + Arrays.toString(urls));
-		System.out.println("-testClasses: " + Arrays.toString(testClasses));
-
-		System.out.println("-classpath: ");
-
-		for (URL url : urls) {
-			System.out.println("----> " + url);
-		}
+		log.info("-sources: " + Arrays.toString(sources));
+		log.info("-url: " + Arrays.toString(urls));
+		log.info("-testClasses: " + Arrays.toString(testClasses));
 
 		DynamothCollector dynamothCodeGenesis = new DynamothCollector(oracle, smp, sources, urls, testClasses,
 				nopolContext);

@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.inria.astor.core.manipulation.synthesis.dynamoth.combinations.BinaryExpressionImpl;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.common.config.NopolContext;
@@ -17,6 +18,7 @@ import fr.inria.lille.repair.expression.combination.Operator;
 import fr.inria.lille.repair.expression.combination.binary.BinaryExpression;
 import fr.inria.lille.repair.expression.combination.binary.BinaryOperator;
 import fr.inria.lille.repair.expression.combination.unary.UnaryExpression;
+import fr.inria.lille.repair.expression.combination.unary.UnaryExpressionImpl;
 import fr.inria.lille.repair.expression.combination.unary.UnaryOperator;
 import fr.inria.lille.repair.expression.factory.AccessFactory;
 import fr.inria.lille.repair.expression.factory.CombinationFactory;
@@ -86,7 +88,7 @@ public class DataCombinerModified {
 			Combination combination = new Combination(toCombine, operator, nbExpression);
 			while (!combination.isEnd(this.stop)) {
 				List<Expression> expressions = combination.perform(this.stop);
-				CombinationExpression binaryExpression = CombinationFactory.create(operator, expressions, nopolContext);
+				CombinationExpression binaryExpression = create(operator, expressions, nopolContext);
 				if (addExpressionIn(binaryExpression, result, false)) {
 					if (callListener(binaryExpression)) {
 						result.add(binaryExpression);
@@ -115,6 +117,31 @@ public class DataCombinerModified {
 		return result;
 	}
 
+	//// Added by MM from Combination Factory
+
+	public static CombinationExpression create(Operator operator, List<Expression> expressions,
+			NopolContext nopolContext) {
+		switch (expressions.size()) {
+		case 1:
+			return create((UnaryOperator) operator, expressions.get(0), nopolContext);
+		case 2:
+			return create((BinaryOperator) operator, expressions.get(0), expressions.get(1), nopolContext);
+		default:
+			throw new IllegalArgumentException(
+					"Combination expression with " + expressions.size() + " is not supported");
+		}
+	}
+
+	public static BinaryExpression create(BinaryOperator operator, Expression first, Expression second,
+			NopolContext nopolContext) {
+		return new BinaryExpressionImpl(operator, first, second, nopolContext);
+	}
+
+	public static UnaryExpression create(UnaryOperator operator, Expression first, NopolContext nopolContext) {
+		return new UnaryExpressionImpl(operator, first, nopolContext);
+	}
+
+	//////
 	@Deprecated
 	private List<Expression> combinePrimitives(List<Expression> toCombine, int previousSize, Object value) {
 		logger.debug("[combine] primitive start on " + toCombine.size() + " elements");
@@ -197,7 +224,10 @@ public class DataCombinerModified {
 	@Deprecated
 	private List<Expression> combineExpressionOperator(Expression expression, Expression expression1,
 			BinaryOperator operator, Object value, List<Expression> result) {
-		BinaryExpression binaryExpression = CombinationFactory.create(operator, expression, expression1, nopolContext);
+		// MM Workaround
+		BinaryExpression binaryExpression = new BinaryExpressionImpl(operator, expression, expression1, nopolContext);
+		// = CombinationFactory.create(operator, expression, expression1,
+		// nopolcontext);
 		if (addExpressionIn(binaryExpression, result, value != null)) {
 			// expression.getInExpressions().add(binaryExpression);
 			if (!expression.sameExpression(expression1)) {
@@ -209,8 +239,10 @@ public class DataCombinerModified {
 		}
 
 		if (!operator.isCommutative()) {
-			binaryExpression = CombinationFactory.create(operator, expression1, expression, nopolContext);
-
+			// MM Workaround
+			// binaryExpression = CombinationFactory.create(operator,
+			// expression1, expression, nopolContext);
+			binaryExpression = new BinaryExpressionImpl(operator, expression, expression1, nopolContext);
 			if (addExpressionIn(binaryExpression, result, value != null)) {
 				// expression.getInExpressions().add(binaryExpression);
 				if (!expression.sameExpression(expression1)) {
@@ -248,8 +280,13 @@ public class DataCombinerModified {
 				continue;
 			}
 
-			BinaryExpression binaryExpression = CombinationFactory.create(BinaryOperator.EQ, expression, nullExpression,
+			// Workaround
+			BinaryExpression binaryExpression = new BinaryExpressionImpl(BinaryOperator.EQ, expression, nullExpression,
 					nopolContext);
+			// MM commented
+			// CombinationFactory.create(BinaryOperator.EQ, expression,
+			// nullExpression,
+			// nopolContext);
 			if (addExpressionIn(binaryExpression, result, value != null)) {
 				// expression.getInExpressions().add(binaryExpression);
 				if (!expression.sameExpression(nullExpression)) {

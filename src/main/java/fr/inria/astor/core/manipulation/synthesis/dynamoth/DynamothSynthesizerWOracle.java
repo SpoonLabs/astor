@@ -12,7 +12,7 @@ import fr.inria.lille.repair.expression.Expression;
 /**
  * Created by Thomas Durieux on 06/03/15.
  * 
- * @author Matias Martinez
+ * @author Modified by Matias Martinez
  *
  */
 public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
@@ -72,12 +72,7 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 				if (nopolContext.isSortExpressions()) {
 					Collections.sort(eexps, Collections.reverseOrder());
 				}
-				// final Object angelicValue;
-				// if (i < oracle.get(key).length) {
-				// angelicValue = oracle.get(key)[i];
-				// } else {
-				// angelicValue = oracle.get(key)[oracle.get(key).length - 1];
-				// }
+
 				currentTime = System.currentTimeMillis();
 				// check if one of the collected value can be a patch
 				for (int j = 0; j < eexps
@@ -88,10 +83,9 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 					if (expression == null || expression.getValue() == null) {
 						continue;
 					}
-					if (// angelicValue.equals(expression.getValue().getRealValue())
-						// &&
-					checkExpression(key, i, expression)) {
+					if (checkExpression(key, i, expression)) {
 						result.add(expression);
+
 						if (nopolContext.isOnlyOneSynthesisResult()) {
 							return result;
 						}
@@ -104,13 +98,11 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 				combiner.addCombineListener(new DataCombinerModified.CombineListener() {
 					@Override
 					public boolean check(Expression expression) {
-						// if
-						// (!angelicValue.equals(expression.getValue().getRealValue()))
-						// {
-						// return false;
-						// }
+
 						if (checkExpression(key, iterationNumber, expression)) {
-							result.add(expression);// Not modify the result...
+
+							result.add(expression);// MM Not modify the
+													// result...
 							return true;
 						}
 						return false;
@@ -120,8 +112,6 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 				// combine eexps
 				long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
 
-				// combiner.combine(eexps, /* angelicValue */ null,
-				// maxCombinerTime, nopolContext);
 				Candidates result1 = combiner.combine(eexps, /* angelicValue */ null, maxCombinerTime, nopolContext);
 			}
 		}

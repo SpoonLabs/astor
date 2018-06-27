@@ -518,7 +518,7 @@ public class SynthesisComponentTest {
 	}
 
 	@Test
-	public void testSymthesisWOOrale() throws Exception {
+	public void testSynthesisWOOrale() throws Exception {
 		AstorMain main1 = new AstorMain();
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-mode", "cardumen");
