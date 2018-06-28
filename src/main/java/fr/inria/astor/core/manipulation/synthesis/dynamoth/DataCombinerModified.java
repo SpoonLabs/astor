@@ -21,7 +21,6 @@ import fr.inria.lille.repair.expression.combination.unary.UnaryExpression;
 import fr.inria.lille.repair.expression.combination.unary.UnaryExpressionImpl;
 import fr.inria.lille.repair.expression.combination.unary.UnaryOperator;
 import fr.inria.lille.repair.expression.factory.AccessFactory;
-import fr.inria.lille.repair.expression.factory.CombinationFactory;
 import fr.inria.lille.repair.expression.value.Value;
 
 /**
@@ -88,7 +87,7 @@ public class DataCombinerModified {
 			Combination combination = new Combination(toCombine, operator, nbExpression);
 			while (!combination.isEnd(this.stop)) {
 				List<Expression> expressions = combination.perform(this.stop);
-				CombinationExpression binaryExpression = create(operator, expressions, nopolContext);
+				CombinationExpression binaryExpression = create(operator, expressions, nopolContext);// Modified
 				if (addExpressionIn(binaryExpression, result, false)) {
 					if (callListener(binaryExpression)) {
 						result.add(binaryExpression);
@@ -99,8 +98,9 @@ public class DataCombinerModified {
 				}
 				if (operator instanceof BinaryOperator) {
 					if (!((BinaryOperator) operator).isCommutative()) {
-						binaryExpression = CombinationFactory.create(operator,
-								Arrays.asList(expressions.get(1), expressions.get(0)), nopolContext);
+						// Modified:
+						binaryExpression = create(operator, Arrays.asList(expressions.get(1), expressions.get(0)),
+								nopolContext);
 						if (addExpressionIn(binaryExpression, result, false)) {
 							if (callListener(binaryExpression)) {
 								result.add(binaryExpression);
@@ -172,7 +172,8 @@ public class DataCombinerModified {
 				if (!operator.getReturnType().isAssignableFrom(expression.getValue().getType())) {
 					continue;
 				}
-				UnaryExpression unaryExpression = CombinationFactory.create(operator, expression, nopolContext);
+				// Modified: CombinationFactory.
+				UnaryExpression unaryExpression = create(operator, expression, nopolContext);
 				if (addExpressionIn(unaryExpression, result, value != null)) {
 					// expression.getInExpressions().add(unaryExpression);
 					if (callListener(unaryExpression) && nopolContext.isOnlyOneSynthesisResult()) {
@@ -296,8 +297,8 @@ public class DataCombinerModified {
 					}
 				}
 			}
-
-			binaryExpression = CombinationFactory.create(BinaryOperator.NEQ, expression, nullExpression, nopolContext);
+			// Modified: CombinationFactory.
+			binaryExpression = create(BinaryOperator.NEQ, expression, nullExpression, nopolContext);
 			if (addExpressionIn(binaryExpression, result, value != null)) {
 				// expression.getInExpressions().add(binaryExpression);
 				if (!expression.sameExpression(nullExpression)) {
