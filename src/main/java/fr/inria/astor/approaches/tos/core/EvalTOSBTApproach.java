@@ -21,6 +21,7 @@ import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothCollectorFacade;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesisContext;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesizerWOracle;
+import fr.inria.astor.core.manipulation.synthesis.dynamoth.EvaluatedExpression;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
@@ -90,7 +91,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 				System.out.println("MP code: " + iModifPoint.getCodeElement());
 
-				boolean stop = analyzeModificationPoint(parentVariant, iModifPoint);
+				boolean stop = analyzeModificationPointSingleValue(parentVariant, iModifPoint);
 				if (stop) {
 					return;
 				}
@@ -103,7 +104,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 	}
 
-	public boolean analyzeModificationPoint(ProgramVariant parentVariant, ModificationPoint iModifPoint)
+	public boolean analyzeModificationPointTest(ProgramVariant parentVariant, ModificationPoint iModifPoint)
 			throws IllegalAccessException, Exception, IllegalAccessError {
 
 		final boolean stop = true;
@@ -117,6 +118,51 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		// they are combination of variables in context of a
 		// modification point)
 		DynamothSynthesizerWOracle synthesizer = new DynamothSynthesizerWOracle(contextCollected);
+
+		Candidates candidatesnew = synthesizer.combineValuesEvaluated();
+		System.out.println(candidatesnew);
+		Candidates candidates = synthesizer.combineValues();
+
+		clusterCandidatesByValue(candidates);
+
+		List<CtCodeElement> holesFromMP = calculateHoles(iModifPoint);
+		log.debug("Total holes: " + holesFromMP.size());
+
+		for (CtCodeElement iHole : holesFromMP) {
+			if (!(iHole instanceof CtExpression)
+					// New Workaround: the hole will not be a complete
+					// statement
+					|| (iHole instanceof CtStatement)) {
+				continue;
+			}
+			// The hole to replace:
+			CtExpression aholeExpression = (CtExpression) iHole;
+			log.debug(
+					"\n\n---hole-> `" + iHole + "`,  return type " + aholeExpression.getType().box().getQualifiedName()
+							+ "--hole type: " + iHole.getClass().getCanonicalName());
+
+		}
+		return !stop;
+	}
+
+	public boolean analyzeModificationPointSingleValue(ProgramVariant parentVariant, ModificationPoint iModifPoint)
+			throws IllegalAccessException, Exception, IllegalAccessError {
+
+		final boolean stop = true;
+		DynamothSynthesisContext contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
+		// Collecting values:
+		// TODO: check if values are collected from a) only failing test, or b)
+		// all test.
+		log.debug("---> Collected Context size: " + contextCollected.getValues().size());
+
+		// Creating combinations (do not depend on the Holes because
+		// they are combination of variables in context of a
+		// modification point)
+		DynamothSynthesizerWOracle synthesizer = new DynamothSynthesizerWOracle(contextCollected);
+		//
+		Candidates candidatesnew = synthesizer.combineValuesEvaluated();
+		System.out.println(candidatesnew);
+		//
 		Candidates candidates = synthesizer.combineValues();
 
 		// Store candidates in structures
@@ -274,6 +320,19 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 			;
 		}
 		return clusterValues;
+	}
+
+	private void clusterCandidatesByValue(Candidates candidates) {
+		MapList<Value, Expression> clusterValues = new MapList<>();
+
+		for (int i = 0; i < candidates.size(); i++) {
+			EvaluatedExpression expr = (EvaluatedExpression) candidates.get(i);
+
+			int size = expr.getEvaluations().keySet().size();
+			System.out.println("test " + size);
+
+		}
+		// return clusterValues;
 	}
 
 	private void printCandidatesSummary(Candidates candidates, MapList<Value, Expression> clusterValues) {

@@ -592,10 +592,11 @@ public class SynthesisComponentTest {
 		assertTrue(candidates.stream()
 				.filter(e -> e.toString().equals("this.resultComputed && (this.defaultMaximalIterationCount != 1)"))
 				.findAny().isPresent());
-		assertTrue(candidates.stream()
-				.filter(e -> e.toString()
-						.equals("!this.resultComputed && (this.functionValue != this.defaultFunctionValueAccuracy)"))
-				.findAny().isPresent());
+		// assertTrue(candidates.stream()
+		// .filter(e -> e.toString()
+		// .equals("!this.resultComputed && (this.functionValue !=
+		// this.defaultFunctionValueAccuracy)"))
+		// .findAny().isPresent());
 
 	}
 

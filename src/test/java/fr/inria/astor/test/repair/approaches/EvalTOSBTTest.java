@@ -50,7 +50,7 @@ public class EvalTOSBTTest {
 
 		// Let's indicate the number of candidate solutions we want to try
 		approach.MAX_GENERATIONS = 1000;
-		approach.analyzeModificationPoint(approach.getVariants().get(0), mp198);
+		approach.analyzeModificationPointSingleValue(approach.getVariants().get(0), mp198);
 
 		assertTrue(approach.getSolutions().size() > 0);
 		assertEquals(maxSolutions, approach.getSolutions().size());
