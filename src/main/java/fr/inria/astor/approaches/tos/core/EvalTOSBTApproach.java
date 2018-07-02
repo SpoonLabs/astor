@@ -51,6 +51,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	protected List<TargetElementProcessor<?>> targetElementProcessors = new ArrayList<TargetElementProcessor<?>>();
 
 	protected DynamothCollectorFacade collectorFacade = new DynamothCollectorFacade();
+	public double COMPARISON_THRESHOLD = 1;
 
 	public EvalTOSBTApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -120,10 +121,10 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		DynamothSynthesizerWOracle synthesizer = new DynamothSynthesizerWOracle(contextCollected);
 
 		Candidates candidatesnew = synthesizer.combineValuesEvaluated();
-		System.out.println(candidatesnew);
-		Candidates candidates = synthesizer.combineValues();
 
-		clusterCandidatesByValue(candidates);
+		// System.out.println(candidatesnew);
+
+		MapList<String, List<EvaluatedExpression>> cluster = clusterCandidatesByValue(candidatesnew);
 
 		List<CtCodeElement> holesFromMP = calculateHoles(iModifPoint);
 		log.debug("Total holes: " + holesFromMP.size());
@@ -322,17 +323,79 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		return clusterValues;
 	}
 
-	private void clusterCandidatesByValue(Candidates candidates) {
-		MapList<Value, Expression> clusterValues = new MapList<>();
+	public MapList<String, List<EvaluatedExpression>> clusterCandidatesByValue(Candidates candidates) {
+
+		System.out.println("number candidates " + candidates.size());
+
+		// For each test:
+		// test name, cluster of expressions
+		MapList<String, List<EvaluatedExpression>> cluster = new MapList<>();
 
 		for (int i = 0; i < candidates.size(); i++) {
-			EvaluatedExpression expr = (EvaluatedExpression) candidates.get(i);
+			EvaluatedExpression i_expression = (EvaluatedExpression) candidates.get(i);
 
-			int size = expr.getEvaluations().keySet().size();
-			System.out.println("test " + size);
+			for (String i_testName : i_expression.getEvaluations().keySet()) {
+
+				if (!cluster.containsKey(i_testName)) {
+					List<EvaluatedExpression> evacluster = new ArrayList<>();
+					evacluster.add(i_expression);
+					cluster.add(i_testName, evacluster);
+				} else {
+
+					List<List<EvaluatedExpression>> clusterOfTest = cluster.get(i_testName);
+					boolean notClustered = true;
+					for (List<EvaluatedExpression> elementsFromCluster : clusterOfTest) {
+
+						if (elementsFromCluster != null && elementsFromCluster.size() > 0) {
+							EvaluatedExpression alreadyClustered = elementsFromCluster.get(0);
+
+							double similarity = calculateSimilarity(i_testName, alreadyClustered, i_expression);
+
+							if (similarity >= COMPARISON_THRESHOLD) {
+
+								elementsFromCluster.add(i_expression);
+								notClustered = false;
+								break;
+							}
+						}
+
+					}
+					if (notClustered) {
+						List<EvaluatedExpression> evacluster = new ArrayList<>();
+						evacluster.add(i_expression);
+						clusterOfTest.add(evacluster);
+					}
+
+				}
+
+			}
 
 		}
-		// return clusterValues;
+
+		return cluster;
+	}
+
+	private double calculateSimilarity(String i_testName, EvaluatedExpression alreadyClustered,
+			EvaluatedExpression i_expression) {
+		List<Value> valuesofTestToCluster = i_expression.getEvaluations().get(i_testName);
+		List<Value> valuesofTestAlreadyClustered = alreadyClustered.getEvaluations().get(i_testName);
+
+		int max = valuesofTestToCluster.size() > valuesofTestAlreadyClustered.size() ? valuesofTestToCluster.size()
+				: valuesofTestAlreadyClustered.size();
+
+		int total = 0;
+		for (int i = 0; i < max; i++) {
+
+			if (i < valuesofTestToCluster.size() && i < valuesofTestAlreadyClustered.size()) {
+				Object v1 = valuesofTestToCluster.get(i).getRealValue();
+				Object v2 = valuesofTestAlreadyClustered.get(i).getRealValue();
+				if (v1 != null && v2 != null && v1.equals(v2)) {
+					total += 1;
+				}
+			}
+		}
+
+		return (double) total / (double) max;
 	}
 
 	private void printCandidatesSummary(Candidates candidates, MapList<Value, Expression> clusterValues) {
@@ -453,5 +516,13 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		System.out.println("\nEND exhaustive search Summary:\n" + "modpoint:" + modifPointsAnalyzed + ":all:"
 				+ totalmodfpoints + ":operators:" + operatorExecuted);
 
+	}
+
+	public DynamothCollectorFacade getCollectorFacade() {
+		return collectorFacade;
+	}
+
+	public void setCollectorFacade(DynamothCollectorFacade collectorFacade) {
+		this.collectorFacade = collectorFacade;
 	}
 }
