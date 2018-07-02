@@ -114,12 +114,22 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 				}
 			}
 		}
+
 		result.addAll(singleEvalExpression.values());
 
 		Candidates allSingleExpressions = new Candidates();
-		allSingleExpressions.addAll(singleEvalExpression.values());
+		for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
+			final String i_test_name = collectedTests.get(i_test);
+			for (Expression combinedExpression : singleEvalExpression.values()) {
+				EvaluatedExpression ev = collectEvaluationForAllExecutions(i_test_name, combinedExpression);
+				allSingleExpressions.add(ev);
+			}
+		}
+		// allSingleExpressions.addAll(singleEvalExpression.values());
+
 		log.debug("All single expression: " + allSingleExpressions.size());
-		Candidates allCombinedExpressions = new Candidates();
+
+		Candidates allCombinedNotEvaluatedExpressions = new Candidates();
 
 		DataCombinerModified combiner = new DataCombinerModified();
 
@@ -127,30 +137,34 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 			@Override
 			public boolean check(Expression expression) {
 
-				if (!allCombinedExpressions.contains(expression)) {
-					allCombinedExpressions.add(expression);
+				if (!allCombinedNotEvaluatedExpressions.contains(expression)) {
+					allCombinedNotEvaluatedExpressions.add(expression);
 					return true;
 				}
 				return false;
 			}
 		});
 
+		Candidates allCombinedEvaluatedExpressions = new Candidates();
+
 		long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
 		combiner.combine(allSingleExpressions, null, maxCombinerTime, nopolContext);
 
-		log.debug("All combined expressions: " + allCombinedExpressions.size());
+		log.debug("All combined expressions: " + allCombinedEvaluatedExpressions.size());
 
 		for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
 			final String i_test_name = collectedTests.get(i_test);
-			for (Expression combinedExpression : allCombinedExpressions) {
+			for (Expression combinedExpression : allCombinedNotEvaluatedExpressions) {
 				EvaluatedExpression ev = collectEvaluationForAllExecutions(i_test_name, combinedExpression);
-				allCombinedExpressions.add(ev);
+				allCombinedEvaluatedExpressions.add(ev);
 			}
 
 		}
-		result.addAll(allCombinedExpressions);
-
-		return result;
+		// result.addAll(allCombinedEvaluatedExpressions);
+		Candidates resultAll = new Candidates();
+		resultAll.addAll(allSingleExpressions);
+		resultAll.addAll(allCombinedEvaluatedExpressions);
+		return resultAll;
 	}
 
 	@Override
@@ -314,40 +328,4 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 		return evalExpression;
 	}
 
-	private boolean checkExpressionOriginal(String testName, int iterationNumber, Expression expression) {
-		nbExpressionEvaluated++;
-		if (checkedExpression.contains(expression.toString())) {
-			return false;
-		}
-		checkedExpression.add(expression.toString());
-		for (String test : values.keySet()) {
-			List<Candidates> listCandidates = values.get(test);
-			for (int i = 0; i < listCandidates.size(); i++) {
-				Candidates valueOtherTest = listCandidates.get(i);
-				if (test.equals(testName) && iterationNumber == i) {
-					continue;
-				}
-				Object v;
-				if (i < oracle.get(test).length) {
-					v = oracle.get(test)[i];
-				} else {
-					v = oracle.get(test)[oracle.get(test).length - 1];
-				}
-				try {
-					fr.inria.lille.repair.expression.value.Value expressionValue = expression.evaluate(valueOtherTest);
-					if (expressionValue == null) {
-						return false;
-					}
-					if (!v.equals(expressionValue.getRealValue())) {
-						// logger.debug(expression + " not valid for the test "
-						// + test);
-						return false;
-					}
-				} catch (RuntimeException e) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
 }
