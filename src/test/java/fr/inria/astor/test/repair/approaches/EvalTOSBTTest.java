@@ -27,7 +27,7 @@ import fr.inria.main.evolution.AstorMain;
 public class EvalTOSBTTest {
 
 	@Test
-	public void testBT_Math85_1() throws Exception {
+	public void testBT_Math85_SingleValue() throws Exception {
 		// We want to find 4 solutions at most.
 		int maxSolutions = 4;
 
@@ -67,7 +67,7 @@ public class EvalTOSBTTest {
 	}
 
 	@Test
-	public void testBT_Math85_1_Cluster() throws Exception {
+	public void testBT_Math85_1_ClusterMultipleExecution() throws Exception {
 		// We want to find 4 solutions at most.
 		int maxSolutions = 4;
 
@@ -142,8 +142,8 @@ public class EvalTOSBTTest {
 
 	@Test
 	public void testBT_Math85_1_Evolve() throws Exception {
-		// We want to find 4 solutions at most.
-		int maxSolutions = 4;
+		// We want to find maxSolutions solutions at most.
+		int maxSolutions = 100;
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
@@ -168,11 +168,14 @@ public class EvalTOSBTTest {
 		assertNotNull(mp198);
 
 		assertEquals(40, mp198.identified);
-
+		approach.getSolutions().clear();
 		// Let's indicate the number of candidate solutions we want to try
 		approach.MAX_GENERATIONS = 1000;
-		approach.analyzeModificationPointTest(approach.getVariants().get(0), mp198);
-
+		approach.analyzeModificationPointMultipleExecutions(approach.getVariants().get(0), mp198);
+		assertTrue(approach.getSolutions().size() > 0);
+		assertEquals(maxSolutions, approach.getSolutions().size());
+		// Call atEnd to print the solutions.
+		approach.atEnd();
 	}
 
 	@Test

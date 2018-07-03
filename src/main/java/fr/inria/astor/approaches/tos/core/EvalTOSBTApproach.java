@@ -105,8 +105,8 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 	}
 
-	public boolean analyzeModificationPointTest(ProgramVariant parentVariant, ModificationPoint iModifPoint)
-			throws IllegalAccessException, Exception, IllegalAccessError {
+	public boolean analyzeModificationPointMultipleExecutions(ProgramVariant parentVariant,
+			ModificationPoint iModifPoint) throws IllegalAccessException, Exception, IllegalAccessError {
 
 		final boolean stop = true;
 		DynamothSynthesisContext contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
@@ -122,8 +122,8 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 		Candidates candidatesnew = synthesizer.combineValuesEvaluated();
 
-		// System.out.println(candidatesnew);
-
+		// Key: test name, value list of clusters, each cluster is a list of
+		// evaluated expressions
 		MapList<String, List<EvaluatedExpression>> cluster = clusterCandidatesByValue(candidatesnew);
 
 		List<CtCodeElement> holesFromMP = calculateHoles(iModifPoint);
@@ -141,6 +141,51 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 			log.debug(
 					"\n\n---hole-> `" + iHole + "`,  return type " + aholeExpression.getType().box().getQualifiedName()
 							+ "--hole type: " + iHole.getClass().getCanonicalName());
+
+			// Simplification
+			for (String i_testName : cluster.keySet()) {
+				List<List<EvaluatedExpression>> clustersOfTest = cluster.get(i_testName);
+				for (List<EvaluatedExpression> i_cluster : clustersOfTest) {
+
+					if (i_cluster.size() > 0) {
+						EvaluatedExpression firstExpressionOfCluster = i_cluster.get(0);
+
+						if (firstExpressionOfCluster.asPatch().toString().equals(iHole.toString())) {
+							continue;
+						}
+						operatorExecuted++;
+						boolean isExpressionASolution = createAndEvaluatePatch(operatorExecuted, parentVariant,
+								iModifPoint, aholeExpression, firstExpressionOfCluster);
+
+						if (isExpressionASolution) {
+							log.info(String.format("Patch found with expresion %s evaluated as %s in modif point %s ",
+									firstExpressionOfCluster.asPatch(),
+									firstExpressionOfCluster.getEvaluations().get(i_testName), iModifPoint.toString()));
+						}
+						if (MAX_GENERATIONS <= operatorExecuted) {
+
+							this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
+							log.info("Stop-Max operator Applied " + operatorExecuted);
+							return stop;
+						}
+
+						boolean stopSearch = !this.solutions.isEmpty()
+								&& (ConfigurationProperties.getPropertyBool("stopfirst")
+										// or nr solutions are greater than max
+										// allowed
+										|| (this.solutions.size() >= ConfigurationProperties
+												.getPropertyInt("maxnumbersolutions")));
+
+						if (stopSearch) {
+							log.debug("\n Max Solution found " + this.solutions.size());
+							this.outputStatus = AstorOutputStatus.STOP_BY_PATCH_FOUND;
+							return stop;
+						}
+
+					}
+				}
+
+			}
 
 		}
 		return !stop;
@@ -323,6 +368,13 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		return clusterValues;
 	}
 
+	/**
+	 * Key: test name, value list of clusters, each cluster is a list of
+	 * evaluated expressions
+	 * 
+	 * @param candidates
+	 * @return
+	 */
 	public MapList<String, List<EvaluatedExpression>> clusterCandidatesByValue(Candidates candidates) {
 
 		System.out.println("number candidates " + candidates.size());

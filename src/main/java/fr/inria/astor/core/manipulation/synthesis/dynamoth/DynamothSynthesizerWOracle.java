@@ -160,7 +160,6 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 			}
 
 		}
-		// result.addAll(allCombinedEvaluatedExpressions);
 		Candidates resultAll = new Candidates();
 		resultAll.addAll(allSingleExpressions);
 		resultAll.addAll(allCombinedEvaluatedExpressions);
