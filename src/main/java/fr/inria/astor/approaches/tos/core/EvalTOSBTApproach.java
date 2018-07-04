@@ -15,7 +15,7 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.ingredientbased.ExhaustiveIngredientBasedEngine;
-import fr.inria.astor.core.ingredientbased.IngredientBasedPlugInLoader;
+import fr.inria.astor.core.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothCollectorFacade;
@@ -64,7 +64,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	public void startEvolution() throws Exception {
 
 		if (this.ingredientSpace == null) {
-			this.ingredientSpace = IngredientBasedPlugInLoader.getIngredientPool(getTargetElementProcessors());
+			this.ingredientSpace = IngredientBasedRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
 		}
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
@@ -476,7 +476,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	public void startEvolutionOLD() throws Exception {
 
 		if (this.ingredientSpace == null) {
-			this.ingredientSpace = IngredientBasedPlugInLoader.getIngredientPool(getTargetElementProcessors());
+			this.ingredientSpace = IngredientBasedRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
 		}
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.

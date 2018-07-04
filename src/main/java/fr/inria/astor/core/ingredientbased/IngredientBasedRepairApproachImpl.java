@@ -197,6 +197,14 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 
 		IngredientPool ingredientspace = this.getIngredientPool();
 
+		IngredientSearchStrategy ingStrategy = retrieveIngredientSearchStrategy(ingredientspace);
+
+		this.setIngredientSearchStrategy(ingStrategy);
+
+	}
+
+	public static IngredientSearchStrategy retrieveIngredientSearchStrategy(IngredientPool ingredientspace)
+			throws Exception {
 		IngredientSearchStrategy ingStrategy = null;
 
 		String ingStrategySt = ConfigurationProperties.properties
@@ -218,9 +226,7 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 		} else {
 			ingStrategy = new EfficientIngredientStrategy(ingredientspace);
 		}
-
-		this.setIngredientSearchStrategy(ingStrategy);
-
+		return ingStrategy;
 	}
 
 	protected void loadIngredientTransformationStrategy() throws Exception {
@@ -231,6 +237,10 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 	}
 
 	public IngredientTransformationStrategy getIngredientTransformationStrategy() throws Exception {
+		return retrieveIngredientTransformationStrategy();
+	}
+
+	public static IngredientTransformationStrategy retrieveIngredientTransformationStrategy() throws Exception {
 		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = null;
 		String ingredientTransformationStrategy = ConfigurationProperties.properties
 				.getProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier);

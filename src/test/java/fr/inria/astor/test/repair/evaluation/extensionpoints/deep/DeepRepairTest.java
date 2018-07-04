@@ -16,7 +16,6 @@ import java.util.Queue;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.deeprepair.DeepRepairEngine;
@@ -27,8 +26,8 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.CtLocationIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
@@ -47,7 +46,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-@Ignore
+// @Ignore
 public class DeepRepairTest {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
@@ -501,13 +500,15 @@ public class DeepRepairTest {
 		main1.execute(args.flat());
 		DeepRepairEngine engine = (DeepRepairEngine) main1.getEngine();
 
-		assertEquals(CtClassIngredientSpace.class, engine.getIngredientSearchStrategy().getIngredientSpace().getClass());
+		assertEquals(CtClassIngredientSpace.class,
+				engine.getIngredientSearchStrategy().getIngredientSpace().getClass());
 
 		args.command.put("-scope", "package");
 		main1.execute(args.flat());
 		engine = (DeepRepairEngine) main1.getEngine();
 
-		assertEquals(CtPackageIngredientScope.class, engine.getIngredientSearchStrategy().getIngredientSpace().getClass());
+		assertEquals(CtPackageIngredientScope.class,
+				engine.getIngredientSearchStrategy().getIngredientSpace().getClass());
 
 		args = createDeepRepairModeCommandM70(learningDir, 0, false, scope, 0.5);
 
@@ -515,7 +516,8 @@ public class DeepRepairTest {
 		main1.execute(args.flat());
 		engine = (DeepRepairEngine) main1.getEngine();
 
-		assertEquals(CtGlobalIngredientScope.class, engine.getIngredientSearchStrategy().getIngredientSpace().getClass());
+		assertEquals(CtGlobalIngredientScope.class,
+				engine.getIngredientSearchStrategy().getIngredientSpace().getClass());
 	}
 
 	@Test
@@ -547,7 +549,8 @@ public class DeepRepairTest {
 		engine = (DeepRepairEngine) main1.getEngine();
 
 		assertTrue(CloneIngredientSearchStrategy.class.isInstance(engine.getIngredientSearchStrategy()));
-		assertEquals(CtExecutable.class, ((CloneIngredientSearchStrategy) engine.getIngredientSearchStrategy()).getCls());
+		assertEquals(CtExecutable.class,
+				((CloneIngredientSearchStrategy) engine.getIngredientSearchStrategy()).getCls());
 
 	}
 
@@ -566,7 +569,8 @@ public class DeepRepairTest {
 		DeepRepairEngine engine = (DeepRepairEngine) main1.getEngine();
 
 		assertTrue(CloneIngredientSearchStrategy.class.isInstance(engine.getIngredientSearchStrategy()));
-		assertEquals(CtExecutable.class, ((CloneIngredientSearchStrategy) engine.getIngredientSearchStrategy()).getCls());
+		assertEquals(CtExecutable.class,
+				((CloneIngredientSearchStrategy) engine.getIngredientSearchStrategy()).getCls());
 
 	}
 
