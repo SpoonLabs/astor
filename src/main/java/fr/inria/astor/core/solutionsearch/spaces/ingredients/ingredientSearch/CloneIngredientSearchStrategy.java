@@ -24,19 +24,18 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.ClusterIngredientTransformation;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.util.StringUtil;
-import fr.inria.main.evolution.ExtensionPoints;
-import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -76,8 +75,8 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Eff
 		setfilter();
 		readinput();
 
-		this.ingTransformationStrategy = (IngredientTransformationStrategy) PlugInLoader
-				.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
+		this.ingTransformationStrategy = IngredientBasedRepairApproachImpl.retrieveIngredientTransformationStrategy();
+
 		if (this.ingTransformationStrategy == null) {
 			this.ingTransformationStrategy = new ClusterIngredientTransformation();
 		}
