@@ -23,9 +23,9 @@ import fr.inria.astor.core.validation.results.TestResult;
 
 /**
  * Lauches a process and parses its output.
- * 
+ *
  * @author Matias Martinez, matias.martinez@inria.fr
- * 
+ *
  */
 public class LaucherJUnitProcess {
 
@@ -116,7 +116,12 @@ public class LaucherJUnitProcess {
 			}
 
 			//
-			p.waitFor(waitTime, TimeUnit.MILLISECONDS);
+			if(!p.waitFor(waitTime, TimeUnit.MILLISECONDS)) {
+				p.destroyForcibly();
+				log.info("The Process that runs JUnit test cases did not terminate within waitTime");
+				log.info("Killed the Process that runs JUnit test cases");
+				return null;
+			}
 			long t_end = System.currentTimeMillis();
 			// log.debug("Execution time " + ((t_end - t_start) / 1000) + "
 			// seconds");
@@ -198,7 +203,7 @@ public class LaucherJUnitProcess {
 	 * This method analyze the output of the junit executor (i.e.,
 	 * {@link JUnitTestExecutor}) and return an entity called TestResult with
 	 * the result of the test execution
-	 * 
+	 *
 	 * @param p
 	 * @return
 	 */
