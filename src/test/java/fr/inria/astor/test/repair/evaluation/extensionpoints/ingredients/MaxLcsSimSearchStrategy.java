@@ -4,22 +4,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.lang.Math;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
-import fr.inria.astor.core.manipulation.MutationSupporter;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.code.CtCodeElement;
 
-
-
+/**
+ * 
+ * @author Zimin Chen
+ *
+ */
 public class MaxLcsSimSearchStrategy extends IngredientSearchStrategy {
 
 	private List<CtElement> locationsAnalyzed = new ArrayList<>();
@@ -56,7 +54,7 @@ public class MaxLcsSimSearchStrategy extends IngredientSearchStrategy {
 			locationsAnalyzed.add(modificationPoint.getCodeElement());
 			// We create the list to reorder the ingredients without modifying
 			// the original.
-			List<Ingredient> ingredientsLocationSort = new ArrayList(ingredientsLocation);
+			List<Ingredient> ingredientsLocationSort = new ArrayList<>(ingredientsLocation);
 
 			// Sort the ingredient by normalized_lcs distance
 			Collections.sort(ingredientsLocationSort, new sortByLcsDistance(modificationPoint_toString));
@@ -78,54 +76,48 @@ public class MaxLcsSimSearchStrategy extends IngredientSearchStrategy {
 	}
 
 	// Comparator to sort ingredient by normalized longest common subsequence
-	private class sortByLcsDistance implements Comparator<Ingredient>
-	{
+	private class sortByLcsDistance implements Comparator<Ingredient> {
 		private String modificationPoint_toString;
 
-		sortByLcsDistance(String modificationPoint_toString)
-		{
+		sortByLcsDistance(String modificationPoint_toString) {
 			this.modificationPoint_toString = modificationPoint_toString;
 		}
 
-		public int compare(Ingredient o1, Ingredient o2)
-		{
+		public int compare(Ingredient o1, Ingredient o2) {
 			double lcs1 = getLcsSimilarity(modificationPoint_toString, o1.getCode().toString().trim());
 			double lcs2 = getLcsSimilarity(modificationPoint_toString, o2.getCode().toString().trim());
-			// return the reverse since larger value means higher similarity, which should be placed first
+			// return the reverse since larger value means higher similarity,
+			// which should be placed first
 			return Double.compare(lcs2, lcs1);
 		}
 	}
 
-	// Normalized longest common subsequence (LCS) distance. http://heim.ifi.uio.no/%7Edanielry/StringMetric.pdf
-	public static double getLcsSimilarity(String a, String b)
-	{
+	// Normalized longest common subsequence (LCS) distance.
+	// http://heim.ifi.uio.no/%7Edanielry/StringMetric.pdf
+	public double getLcsSimilarity(String a, String b) {
 		// Exact copy cannot be ingredient, therefore we give it score 0
-		if(a.replaceAll("\\s+","").equals(b.replaceAll("\\s+","")))
-		{
+		if (a.replaceAll("\\s+", "").equals(b.replaceAll("\\s+", ""))) {
 			return 0;
 		}
 
 		int m = a.length();
 		int n = b.length();
-		int[][] lcsDistance = new int[m+1][n+1];
+		int[][] lcsDistance = new int[m + 1][n + 1];
 		// Dynamic programming to compute lcs distance
-		for(int i = 0; i <= m; i++)
-		{
-			for(int j = 0; j <= n; j++)
-			{
-				if(i == 0 || j == 0)
-				{
+		for (int i = 0; i <= m; i++) {
+			for (int j = 0; j <= n; j++) {
+				if (i == 0 || j == 0) {
 					lcsDistance[i][j] = 0;
-				}else if(a.charAt(i-1) == b.charAt(j-1)){
-					lcsDistance[i][j] = lcsDistance[i-1][j-1] + 1;
-				}else{
-					lcsDistance[i][j] = Math.max(lcsDistance[i-1][j], lcsDistance[i][j-1]);
+				} else if (a.charAt(i - 1) == b.charAt(j - 1)) {
+					lcsDistance[i][j] = lcsDistance[i - 1][j - 1] + 1;
+				} else {
+					lcsDistance[i][j] = Math.max(lcsDistance[i - 1][j], lcsDistance[i][j - 1]);
 				}
 			}
 		}
 
 		// Normalize lcs distance with max(m,n)
-		return (double)lcsDistance[m][n]/Math.max(m,n);
+		return (double) lcsDistance[m][n] / Math.max(m, n);
 	}
 
 }
