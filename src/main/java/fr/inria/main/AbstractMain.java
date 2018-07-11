@@ -570,7 +570,7 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("populationcontroller")) {
 			ConfigurationProperties.properties.setProperty("populationcontroller",
-					cmd.getOptionValue("faultlocalization"));
+					cmd.getOptionValue("populationcontroller"));
 		}
 		if (cmd.hasOption("filterfaultlocalization"))
 			ConfigurationProperties.properties.setProperty("filterfaultlocalization",
