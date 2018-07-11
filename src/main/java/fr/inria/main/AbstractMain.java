@@ -561,7 +561,7 @@ public abstract class AbstractMain {
 		}
 
 		if (cmd.hasOption("fitnessfunction")) {
-			ConfigurationProperties.properties.setProperty("fitnessfunction", cmd.getOptionValue("faultlocalization"));
+			ConfigurationProperties.properties.setProperty("fitnessfunction", cmd.getOptionValue("fitnessfunction"));
 		}
 
 		if (cmd.hasOption("outputresult")) {
@@ -570,7 +570,7 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("populationcontroller")) {
 			ConfigurationProperties.properties.setProperty("populationcontroller",
-					cmd.getOptionValue("faultlocalization"));
+					cmd.getOptionValue("populationcontroller"));
 		}
 		if (cmd.hasOption("filterfaultlocalization"))
 			ConfigurationProperties.properties.setProperty("filterfaultlocalization",
