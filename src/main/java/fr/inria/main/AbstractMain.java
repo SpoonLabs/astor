@@ -561,7 +561,7 @@ public abstract class AbstractMain {
 		}
 
 		if (cmd.hasOption("fitnessfunction")) {
-			ConfigurationProperties.properties.setProperty("fitnessfunction", cmd.getOptionValue("faultlocalization"));
+			ConfigurationProperties.properties.setProperty("fitnessfunction", cmd.getOptionValue("fitnessfunction"));
 		}
 
 		if (cmd.hasOption("outputresult")) {
