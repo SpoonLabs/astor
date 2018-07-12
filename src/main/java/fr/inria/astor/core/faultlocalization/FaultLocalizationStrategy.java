@@ -11,6 +11,6 @@ import fr.inria.astor.core.solutionsearch.extension.AstorExtensionPoint;
  */
 public interface FaultLocalizationStrategy extends AstorExtensionPoint {
 
-	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade searchSuspicious) throws Exception;
+	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade projectToRepair) throws Exception;
 
 }
