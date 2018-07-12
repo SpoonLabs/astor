@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.entities.ProgramVariant;
+
 /**
  * 
  * @author Matias Martinez
@@ -14,8 +14,8 @@ import fr.inria.astor.core.entities.ProgramVariant;
 public class UniformRandomSuspiciousNavigation implements SuspiciousNavigationStrategy {
 
 	@Override
-	public List<ModificationPoint> getSortedModificationPointsList(ProgramVariant variant) {
-		List<ModificationPoint> shuffList = new ArrayList<ModificationPoint>(variant.getModificationPoints());
+	public List<ModificationPoint> getSortedModificationPointsList(List<ModificationPoint> modificationPoints) {
+		List<ModificationPoint> shuffList = new ArrayList<ModificationPoint>(modificationPoints);
 		Collections.shuffle(shuffList);
 		return shuffList;
 	}

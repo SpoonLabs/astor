@@ -43,7 +43,7 @@ public class SuspiciousNavigationStrategyTest {
 		ProgramVariant pv1 = main1.getEngine().getVariants().get(0);
 
 		List<ModificationPoint> mps = main1.getEngine().getSuspiciousNavigationStrategy()
-				.getSortedModificationPointsList(pv1);
+				.getSortedModificationPointsList(pv1.getModificationPoints());
 		assertNotEquals(pv1.getModificationPoints(), mps);
 
 		csDefault = MathCommandsTests.getMath70Command();
@@ -57,12 +57,12 @@ public class SuspiciousNavigationStrategyTest {
 		ProgramVariant pv2 = main2.getEngine().getVariants().get(0);
 
 		List<ModificationPoint> mps2 = main2.getEngine().getSuspiciousNavigationStrategy()
-				.getSortedModificationPointsList(pv2);
+				.getSortedModificationPointsList(pv2.getModificationPoints());
 		assertNotEquals(pv2.getModificationPoints(), mps2);
 		assertNotEquals(mps, mps2);
 
 		List<ModificationPoint> mps2b = main2.getEngine().getSuspiciousNavigationStrategy()
-				.getSortedModificationPointsList(pv2);
+				.getSortedModificationPointsList(pv2.getModificationPoints());
 		assertNotEquals(mps2, mps2b);
 
 		csDefault = MathCommandsTests.getMath70Command();
@@ -76,7 +76,7 @@ public class SuspiciousNavigationStrategyTest {
 		ProgramVariant pv3 = main3.getEngine().getVariants().get(0);
 
 		List<ModificationPoint> mpsInOrder = main3.getEngine().getSuspiciousNavigationStrategy()
-				.getSortedModificationPointsList(pv3);
+				.getSortedModificationPointsList(pv3.getModificationPoints());
 		assertEquals(pv3.getModificationPoints(), mpsInOrder);
 
 		Double dmax = Double.MAX_VALUE;

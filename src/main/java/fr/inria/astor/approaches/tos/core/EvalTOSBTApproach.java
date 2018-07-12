@@ -84,7 +84,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 			// For each modification point pm
 			for (ModificationPoint iModifPoint : this.getSuspiciousNavigationStrategy()
-					.getSortedModificationPointsList(parentVariant)) {
+					.getSortedModificationPointsList(parentVariant.getModificationPoints())) {
 
 				modifPointsAnalyzed++;
 				log.info("\n*************\n\n MP (" + modifPointsAnalyzed + "/"
@@ -494,7 +494,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		for (ProgramVariant parentVariant : variants) {
 
 			for (ModificationPoint modifPoint : this.getSuspiciousNavigationStrategy()
-					.getSortedModificationPointsList(parentVariant)) {
+					.getSortedModificationPointsList(parentVariant.getModificationPoints())) {
 
 				modifPointsAnalyzed++;
 
