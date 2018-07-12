@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.WeightElement;
 
@@ -17,9 +16,8 @@ import fr.inria.astor.core.entities.WeightElement;
 public class WeightRandomSuspiciousNavitation implements SuspiciousNavigationStrategy {
 
 	@Override
-	public List<ModificationPoint> getSortedModificationPointsList(ProgramVariant variant) {
+	public List<ModificationPoint> getSortedModificationPointsList(List<ModificationPoint> modificationPoints) {
 
-		List<ModificationPoint> modificationPoints = variant.getModificationPoints();
 		List<ModificationPoint> remaining = new ArrayList<ModificationPoint>(modificationPoints);
 		List<ModificationPoint> solution = new ArrayList<ModificationPoint>();
 

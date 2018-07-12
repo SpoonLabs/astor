@@ -687,7 +687,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		// We retrieve the list of modification point ready to be navigated
 		// sorted a criterion
 		List<ModificationPoint> modificationPointsToProcess = this.suspiciousNavigationStrategy
-				.getSortedModificationPointsList(variant);
+				.getSortedModificationPointsList(variant.getModificationPoints());
 
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
 

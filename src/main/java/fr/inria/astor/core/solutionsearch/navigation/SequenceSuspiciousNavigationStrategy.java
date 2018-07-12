@@ -14,8 +14,13 @@ import fr.inria.astor.core.entities.ProgramVariant;
 public class SequenceSuspiciousNavigationStrategy implements SuspiciousNavigationStrategy {
 
 	@Override
-	public List<ModificationPoint> getSortedModificationPointsList(ProgramVariant variant) {
-		List<ModificationPoint> modificationPoints = variant.getModificationPoints();
+	public List<ModificationPoint> getSortedModificationPointsList(List<ModificationPoint> modificationPoints) {
+		if (modificationPoints.isEmpty()) {
+			return Collections.EMPTY_LIST;
+		}
+
+		ProgramVariant variant = modificationPoints.get(0).getProgramVariant();
+
 		int i = variant.getLastModificationPointAnalyzed();
 		if (i < modificationPoints.size()) {
 			variant.setLastModificationPointAnalyzed(i + 1);

@@ -69,7 +69,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 		for (ProgramVariant parentVariant : variants) {
 
 			for (ModificationPoint modifPoint : this.getSuspiciousNavigationStrategy()
-					.getSortedModificationPointsList(parentVariant)) {
+					.getSortedModificationPointsList(parentVariant.getModificationPoints())) {
 
 				modifPointsAnalyzed++;
 
