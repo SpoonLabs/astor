@@ -98,7 +98,7 @@ public class AstorMain extends AbstractMain {
 			// interpretes as
 			// a custom engine, where the value corresponds to the class name of
 			// the engine class
-			String customengine = ConfigurationProperties.getProperty("customengine");
+			String customengine = ConfigurationProperties.getProperty(ExtensionPoints.NAVIGATION_ENGINE.identifier);
 			astorCore = createEngineFromArgument(customengine, mutSupporter, projectFacade);
 
 		}
@@ -130,29 +130,29 @@ public class AstorMain extends AbstractMain {
 	/**
 	 * We create an instance of the Engine which name is passed as argument.
 	 * 
-	 * @param customEngine
+	 * @param customEngineValue
 	 * @param mutSupporter
 	 * @param projectFacade
 	 * @return
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private AstorCoreEngine createEngineFromArgument(String customEngine, MutationSupporter mutSupporter,
+	private AstorCoreEngine createEngineFromArgument(String customEngineValue, MutationSupporter mutSupporter,
 			ProjectRepairFacade projectFacade) throws Exception {
 		Object object = null;
 		try {
-			Class classDefinition = Class.forName(customEngine);
+			Class classDefinition = Class.forName(customEngineValue);
 			object = classDefinition.getConstructor(mutSupporter.getClass(), projectFacade.getClass())
 					.newInstance(mutSupporter, projectFacade);
 		} catch (Exception e) {
-			log.error("Loading custom engine: " + customEngine + " --" + e);
+			log.error("Loading custom engine: " + customEngineValue + " --" + e);
 			throw new Exception("Error Loading Engine: " + e);
 		}
 		if (object instanceof AstorCoreEngine)
 			return (AstorCoreEngine) object;
 		else
 			throw new Exception(
-					"The strategy " + customEngine + " does not extend from " + AstorCoreEngine.class.getName());
+					"The strategy " + customEngineValue + " does not extend from " + AstorCoreEngine.class.getName());
 
 	}
 
@@ -164,7 +164,7 @@ public class AstorMain extends AbstractMain {
 		initProject(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
 		String mode = ConfigurationProperties.getProperty("mode").toLowerCase();
-		String customEngine = ConfigurationProperties.getProperty("customengine");
+		String customEngine = ConfigurationProperties.getProperty(ExtensionPoints.NAVIGATION_ENGINE.identifier);
 
 		if (customEngine != null && !customEngine.isEmpty())
 			astorCore = createEngine(ExecutionMode.custom);
