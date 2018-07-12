@@ -2,9 +2,10 @@ package fr.inria.main.evolution;
 
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
-import fr.inria.astor.core.manipulation.synthesis.IngredientSynthesizer;
 import fr.inria.astor.core.manipulation.synthesis.ExecutionContextCollector;
+import fr.inria.astor.core.manipulation.synthesis.IngredientSynthesizer;
 import fr.inria.astor.core.output.ReportResults;
+import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.core.solutionsearch.extension.SolutionVariantSortCriterion;
 import fr.inria.astor.core.solutionsearch.extension.VariantCompiler;
 import fr.inria.astor.core.solutionsearch.navigation.SuspiciousNavigationStrategy;
@@ -25,19 +26,20 @@ import fr.inria.astor.core.validation.ProgramVariantValidator;
  */
 public enum ExtensionPoints {
 
-	FAULT_LOCALIZATION("faultlocalization", FaultLocalizationStrategy.class), FITNESS_FUNCTION("fitnessfunction",
-			FitnessFunction.class), //
+	NAVIGATION_ENGINE("customengine", AstorCoreEngine.class), //
+	FAULT_LOCALIZATION("faultlocalization", FaultLocalizationStrategy.class), //
+	FITNESS_FUNCTION("fitnessfunction", FitnessFunction.class), //
 	COMPILER("compiler", VariantCompiler.class), //
 	POPULATION_CONTROLLER("populationcontroller", PopulationController.class), //
 	INGREDIENT_STRATEGY_SCOPE("scope", IngredientPool.class), //
-	SOLUTION_SORT_CRITERION("patchprioritization", SolutionVariantSortCriterion.class), VALIDATION("validation",
-			ProgramVariantValidator.class), //
+	SOLUTION_SORT_CRITERION("patchprioritization", SolutionVariantSortCriterion.class), //
+	VALIDATION("validation", ProgramVariantValidator.class), //
 	CUSTOM_OPERATOR("customop", AstorOperator.class), //
 	OPERATORS_SPACE("operatorspace", OperatorSpace.class), //
 	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy", IngredientSearchStrategy.class), //
 	INGREDIENT_TRANSFORM_STRATEGY("ingredienttransformstrategy", IngredientTransformationStrategy.class), //
-	TARGET_CODE_PROCESSOR("targetelementprocessor", TargetElementProcessor.class), CLONE_GRANULARITY("clonegranularity",
-			Class.class), //
+	TARGET_CODE_PROCESSOR("targetelementprocessor", TargetElementProcessor.class), //
+	CLONE_GRANULARITY("clonegranularity", Class.class), //
 	OUTPUT_RESULTS("outputresult", ReportResults.class), //
 	SUSPICIOUS_NAVIGATION("modificationpointnavigation", SuspiciousNavigationStrategy.class), //
 	CODE_SYNTHESIS("codesynthesis", IngredientSynthesizer.class), //
