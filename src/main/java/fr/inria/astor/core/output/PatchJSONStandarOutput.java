@@ -103,7 +103,7 @@ public class PatchJSONStandarOutput implements ReportResults {
 			log.error("Problem storing ing json file" + e.toString());
 		}
 
-		return null;
+		return statsjsonRoot;
 	}
 
 }
