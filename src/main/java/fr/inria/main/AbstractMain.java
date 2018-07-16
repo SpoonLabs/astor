@@ -35,6 +35,7 @@ import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSelectionStra
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
 import fr.inria.astor.util.TimeUtil;
+import fr.inria.main.evolution.ExtensionPoints;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder.InputType;
@@ -511,7 +512,7 @@ public abstract class AbstractMain {
 					cmd.getOptionValue("ingredientstrategy"));
 
 		if (cmd.hasOption("opselectionstrategy"))
-			ConfigurationProperties.properties.setProperty("opselectionstrategy",
+			ConfigurationProperties.properties.setProperty(ExtensionPoints.OPERATOR_SELECTION_STRATEGY.identifier,
 					cmd.getOptionValue("opselectionstrategy"));
 
 		if (cmd.hasOption("customengine"))

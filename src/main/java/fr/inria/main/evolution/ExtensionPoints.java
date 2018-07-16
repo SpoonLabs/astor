@@ -15,6 +15,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
+import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
 
@@ -36,6 +37,7 @@ public enum ExtensionPoints {
 	VALIDATION("validation", ProgramVariantValidator.class), //
 	CUSTOM_OPERATOR("customop", AstorOperator.class), //
 	OPERATORS_SPACE("operatorspace", OperatorSpace.class), //
+	OPERATOR_SELECTION_STRATEGY("opselectionstrategy", OperatorSelectionStrategy.class), //
 	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy", IngredientSearchStrategy.class), //
 	INGREDIENT_TRANSFORM_STRATEGY("ingredienttransformstrategy", IngredientTransformationStrategy.class), //
 	TARGET_CODE_PROCESSOR("targetelementprocessor", TargetElementProcessor.class), //

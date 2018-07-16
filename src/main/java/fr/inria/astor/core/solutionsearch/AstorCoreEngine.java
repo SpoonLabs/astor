@@ -1398,7 +1398,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	protected void loadOperatorSelectorStrategy() throws Exception {
-		String opStrategyClassName = ConfigurationProperties.properties.getProperty("opselectionstrategy");
+		String opStrategyClassName = ConfigurationProperties.properties
+				.getProperty(ExtensionPoints.OPERATOR_SELECTION_STRATEGY.identifier);
 		if (opStrategyClassName != null) {
 			if ("uniform-random".equals(opStrategyClassName)) {
 				this.setOperatorSelectionStrategy(new UniformRandomRepairOperatorSpace(this.getOperatorSpace()));
