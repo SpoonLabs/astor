@@ -37,6 +37,23 @@ buggy). New fault localization techniques such that PRFL presented by
 Zhang et al. [@Zhang et al. 2017] can be implemented in this extension point.
 
 
+### Implementation details, Inputs and outputs
+
+To implement the extension point, its necessary to create a class that implements the interface `fr.inria.astor.core.solutionsearch.extensionFaultLocalizationStrategy`.
+Then, the class must implement the method:
+
+```
+public FaultLocalizationResult searchSuspicious(ProjectRepairFacade projectToRepair) throws Exception;
+``` 
+
+
+The input `ProjectRepairFacade projectToRepair`  stores all the information of the project to repair (e.g., path to sources, dependencies, etc).
+
+The output is an object of class `FaultLocalizationResult`, which contains a list of all suspicious locations.
+
+
+
+
 Granularity of Modification points (EP\_MPG) 
 --------------------------------------------
 
@@ -51,7 +68,7 @@ Granularity of Modification points (EP\_MPG)
 -   *Custom*: name of class that implements interface `TargetElementProcessor`.
 
 
-#### Command line option: 
+#### Command line option 
 
 -targetelementprocessor
 
@@ -69,6 +86,23 @@ points refer to statements and it has 3 repair operators: add, remove
 and replace of statements. Differently, jMutation manipulates binary and
 unary expressions using repair operators that change binary and unary
 operators.
+
+
+### Implementation details, Inputs and outputs
+
+To implement the extension point, its necessary to create a class that extends the abstract class `fr.inria.astor.core.manipulation.filters.TargetElementProcessor`.
+Then, it is necessary to override the method that visit the elements that the new approach targets.
+For example, if the approach targets Literals (i.e., a modification point is a literal) then the class must contain the overrided method:
+
+```
+	@Override
+	public void process(CtLiteral element) {
+		add(element);
+	}
+``` 
+
+Finally, the method `process` must call the method `add` (defined on the abstract class `TargetElementProcessor`) to store the elements that it is interested in. (In the example, every literal is stored) 
+
 
 
 Navigation Strategy (EP\_NS)
@@ -138,6 +172,15 @@ the patch synthesized from the different operators applied) and then
 chooses the $S$ variants with best fitness values  to be part of the next generation.
 
 
+### Implementation details, Inputs and outputs
+
+To implement a new strategy of navigation of the search space (which it involves the creation of a new approach) it is necessary to create a class that extends `fr.inria.astor.core.solutionsearch.AstorCoreEngine`
+
+Then, that class must override the method `public void startEvolution() throws Exception` to implement the desired navigation strategy.
+Note that the suspicious space and the operator spaces are built according to the values of the extension point EP\_FL and EP\_OD, respectively.
+
+
+
 Selection of suspicious modification points (EP\_MPS)
 -----------------------------------------------------
 
@@ -164,6 +207,25 @@ points. This extension point is invoked in every iteration of the
 navigation loop: the strategy selects the
 modification points where the repair algorithm will apply repair
 operators.
+
+
+### Implementation details, Inputs and outputs
+
+
+To implement the extension point, its necessary to create a class that implements the interface `fr.inria.astor.core.solutionsearch.navigationuspiciousNavigationStrategy`.
+Then, the class must implement the method:
+
+```
+List<ModificationPoint> getSortedModificationPointsList(ProgramVariant variant);
+``` 
+
+
+The input of `List<ModificationPoint> modificationPoints`  is the list of modification points to be navigated in the order that the method ` getSortedModificationPointsList` defines.
+
+The output is a list of the modification points `FaultLocalizationResult`, which contains the points sorted according to a given criterion.
+
+
+
 
 
 Operator spaces definition (EP\_OD)
@@ -197,6 +259,18 @@ example, jGenProg has 3 operators (insert, replace and remove statement)
 whereas Cardumen has one (replace expression).
 
 
+
+### Implementation details, Inputs and outputs
+
+
+To implement the extension point, its necessary to create a class that extends the abstract class  `fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace`.
+That class has a field `List<AstorOperator> operators` that corresponds to the operator space.
+As initially it is empty, the class that we create can add operators from its constructor by calling the method `public void register(AstorOperator operator)`.
+The class `OperatorSpace` provides a getter of the mentioned field `List<AstorOperator> operators`.
+
+
+
+
 Selection of repair operator (EP\_OS)
 -------------------------------------
 
@@ -225,6 +299,28 @@ presented by [@Martinez et Monperrus,  2013]. In that work, several repair model
 defined from different sets of bug fix commits, where each model is
 composed by repair operators and their associated probabilities
 calculated based on changes found in the commits.
+
+### Implementation details, Inputs and outputs
+
+
+
+To implement the extension point, its necessary to create a class that extends the abstract class  `fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSelectionStrategy`.
+The class has a field, `protected OperatorSpace operatorSpace`, passed as argument in the constructor, which corresponds to the operator space i.e., all the operators available. Then, the strategy will select operators from there. 
+
+The strategy must implement two methods:
+
+
+ ```
+	public abstract AstorOperator getNextOperator(SuspiciousModificationPoint modificationPoint);
+```
+
+which has an input a modification point,
+and as output it retrieves an operator to apply to that point.
+
+```
+	public abstract AstorOperator getNextOperator();
+``` 
+which returns one operator, according to the strategy implemented. Here, the operator selection does not consider the modification point where the operator will be applied.
 
 
 Ingredient pool definition (EP\_IPD)
@@ -262,6 +358,83 @@ under repair. The "file" ingredient pool is smaller than the
 package-one, which is itself smaller than the global one.
 
 
+### Implementation details, Inputs and outputs
+
+
+To implement the extension point, its necessary to create a class that implements the interface `fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool`.
+A pool in Astor has a structure of a Map, i.e., there are keys and values related to one key.
+A key can be, for instance, the location of an ingredient in an application.
+
+IngredientPool is a parametrized interface, which parameters are:
+
+```
+ Q type of the element to modify using an ingredient from this space.
+       
+K  key of the ingredient, example, location of the ingredient according
+       
+ I ingredient (e.g., a= b+c;) 
+
+ T type of the ingredient (e.g., a statement, if, a while, etc)
+```
+
+
+Then, the class under construction must implement the methods:
+
+```
+public void defineSpace(ProgramVariant variant);
+``` 
+
+which creates the Space using the classes from a Variant.
+
+
+``` 
+List<I> getIngredients(Q elementToModify);
+``` 
+
+which returns the list of ingredients from location.
+
+
+``` 
+List<I> getIngredients(Q elementToModify, T type);
+``` 
+
+returns the list of ingredient of a given type from a location.
+
+``` 
+public void setIngredients(Q elementToModify, List<I> ingredients);	
+``` 
+
+set the lists of ingredients in the location.
+
+
+``` 
+public K calculateLocation(Q elementToModify);
+``` 
+	
+returns, for a given piece of code Q, the location according to the scope.
+For instance, if the scope of the Space is file, it returns the file name that contains Q, 
+if the scope is package, it returns the package where Q is located.
+
+
+
+``` 
+public List<K> getLocations();
+``` 
+
+gets all the locations for a given scope.
+For instance, if the scope is 'Package' it will return all package with ingredients.
+If the scope is method, it returns all methods with at least one ingredient.
+
+
+``` 
+public T getType(I element);
+``` 
+returns the type of an ingredient.
+
+
+
+
+
 Selection of ingredients (EP\_IS) 
 ---------------------------------
 
@@ -284,12 +457,31 @@ Selection of ingredients (EP\_IS)
 
 The extension point EP\_IS allows to specify the strategy that an
 ingredient-based repair approach from Astor uses for selecting an
-ingredient from the ingredient pool. Between the implementations of this
-point provided by Astor, One, used by default by jGenProg, executes
-uniform random selection for selecting an ingredient from a pool built
-given a scope. Another, defined for DeepRepair
-approach, prioritizes ingredients that come from methods which are
+ingredient from the ingredient pool. 
+Between the implementations of this point provided by Astor, 
+there is one,  used by default by jGenProg,which executes uniform random selection for selecting an ingredient from a pool built
+given a scope. 
+Another, defined for DeepRepair approach, prioritizes ingredients that come from methods which are
 similar to the buggy method.
+
+
+### Implementation details, Inputs and outputs
+
+
+To implement the extension point, its necessary to create a class that extends the abstract class  `fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy`.
+That class has a field `IngredientPool ingredientPool` that corresponds to the ingredient pool.
+When Astor instantiates the selection strategy,  it passes the ingredient pool to it (i.e., the constructor must receive an `IngredientPool`).
+Then, the strategy must implement the method:
+```
+public abstract Ingredient getFixIngredient(ModificationPoint modificationPoint, 
+			AstorOperator operationType);
+```
+
+The inputs of `getFixIngredient` are two: a) the modification point where the candidate patch under construction will be located, b) the operator used to synthesize the patch (For some approaches such as jGenProg, Astor considers the type of the operator for querying the ingredient pool).
+
+The output is an ingredient retrieved from the pool, which will be used to synthesize a patch at the modification point given as parameter.
+
+
 
 
 Ingredient transformation (EP\_IT)
@@ -324,6 +516,20 @@ which each cluster variable having semantically related names
 most frequent variables names to be used in the patch. On the contrary,
 jGenProg, as also the original GenProg, does not transform any
 ingredient.
+
+### Implementation details, Inputs and outputs
+
+
+To implement the extension point, its necessary to create a class that implements the interface `fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy`.
+There is one method to implement:
+
+```
+public  List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient ingredient);
+```
+
+It takes two inputs: a) the modification point where the candidate patch will be located, b) the ingredient used to synthesize the patch
+
+The output is a list of transformed ingredients, derived from that one received as argument.
 
 
 Candidate Patch Validation (EP\_PV)
@@ -371,6 +577,26 @@ energy computation. For that, that approach would extend this extension
 point for measuring the consumption of a program variant.
 
 
+### Implementation details, Inputs and outputs
+
+
+To implement the extension point, its necessary to create a class that extends the abstract class  `fr.inria.astor.core.validation.processbased.ProgramVariantValidator`.
+
+The class must implement the following method `validate`: 
+
+```
+public abstract VariantValidationResult validate(ProgramVariant variant, ProjectRepairFacade projectFacade);
+```
+
+As input, the validation strategy implemented in method `validate` receives two parameters: a) `ProgramVariant variant` the program variant to validate,  b) `ProjectRepairFacade projectFacade`, which contains all information related to the project under repair (classpath, location of sources, bytecodes, dependencies, etc.)
+
+As outputs the method `validate` must return an object that implements the interface `fr.inria.astor.core.entities.VariantValidationResult`.
+That interface was one method `public boolean isSuccessful();` which indicates if the program is valid (TRUE) or invalid (FALSE) according to the validation done by the validation strategy that extends `ProgramVariantValidator`.
+
+
+
+
+
 Fitness Function for evaluating candidate (EP\_FF)
 --------------------------------------------------
 
@@ -399,6 +625,22 @@ better fitness will be part of the population at generation $t+1$. On
 the contrary, on selective or exhaustive approaches, the fitness
 function is only used to determined if a patched program is solution o
 not.
+
+### Implementation details, Inputs and outputs
+
+To implement the extension point, its necessary to create a class that implements the interface `fr.inria.astor.core.solutionsearch.population.FitnessFunction`.
+There are two methods to implement:
+
+```
+	public double calculateFitnessValue(VariantValidationResult validationResult);
+```
+which retrieves the results of a validation process (a object `VariantValidationResult`, see explanation of Extension point EP\_PV) and returns a numerical value (a double).
+
+
+```
+	public double getWorstMaxFitnessValue();
+```
+which returns the max fitness value (i.e., the worst value). This is used when, for instance, a validation process of a program variant fails (e.g., an infinite loop that avoid to executing the test cases) so, this worst value is assigned to that program variant.
 
 
 Solution prioritization (EP\_SP)
@@ -430,6 +672,19 @@ patches with *less failing test cases* from those tests automatically
 generated during the validation process.
 
 
+### Implementation details, Inputs and outputs
+
+To implement the extension point, its necessary to create a class that implements the interface `fr.inria.astor.core.solutionsearch.extension.SolutionVariantSortCriterion`.
+There is one method to implement:
+
+```
+public List<ProgramVariant> priorize(List<ProgramVariant> patches);
+```
+
+which receives as input a list of patches (i.e., program variant that are solutions) and returns as output a list of the patches sorted by a given criterion.
+
+
+
 Output Result (EP\_OR)
 --------------------------------
 
@@ -446,7 +701,15 @@ Output Result (EP\_OR)
 
 
 
+### Implementation details, Inputs and outputs
 
+To implement the extension point, its necessary to create a class that implements the interface `fr.inria.astor.core.output.ReportResults`.
+There is one method to implement:
+```
+public Object produceOutput(List<PatchStat> statsForPatches, Map<GeneralStatEnum, Object> generalStats, String output);
+```
+which returns takes tree arguments as input: a) list of patches found (it can be empty), b) map with the statistics, c) path to the directory where Astor saves the results.
 
+The output is an Object that represents the output in a given format. Example, one implementation of `ReportResults`, the class ` PatchJSONStandarOutput` returns an JSON object which represents the output (patches + stats) in JSON format.
 
 
