@@ -76,7 +76,7 @@ public class MutationSupporter {
 		jdtSpoonModelBuilder.build();
 
 		if (ConfigurationProperties.getPropertyBool("savespoonmodelondisk")) {
-			jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
+			factory.getEnvironment().setSourceOutputDirectory(new File(srcPathToBuild));
 			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 			jdtSpoonModelBuilder.setBinaryOutputDirectory(new File(bytecodePathToBuild));
 			jdtSpoonModelBuilder.compile(InputType.CTTYPES);
