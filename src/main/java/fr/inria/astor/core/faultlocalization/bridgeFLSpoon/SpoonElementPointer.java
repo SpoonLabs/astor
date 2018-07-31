@@ -33,7 +33,7 @@ public class SpoonElementPointer extends AbstractProcessor<CtElement> {
 	public void process(CtElement element) {
 		
 		SourcePosition pos = element.getPosition();
-		if (pos != null && pos.getLine() == line) {
+		if (pos != null && pos.isValidPosition() && pos.getLine() == line) {
 			inLine.add(element);
 		}
 	}
