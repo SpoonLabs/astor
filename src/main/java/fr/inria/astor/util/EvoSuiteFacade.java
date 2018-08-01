@@ -266,6 +266,7 @@ public class EvoSuiteFacade {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
+			mutatorSupporter.getFactory().getModel().setBuildModelIsFinished(false); // avoid getting errors when trying to build back the model
 			mutatorSupporter.getFactory().getEnvironment()
 					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
 			mutatorSupporter.buildModel(codeLocation, classpath);
