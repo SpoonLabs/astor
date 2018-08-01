@@ -262,18 +262,19 @@ public class EvoSuiteFacade {
 		String codeLocation = evoTestpath;
 
 		try {
+			MutationSupporter.getFactory().getModel().setBuildModelIsFinished(false); // avoid getting errors when trying to build back the model
 			mutatorSupporter.buildModel(codeLocation, classpath);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			mutatorSupporter.getFactory().getModel().setBuildModelIsFinished(false); // avoid getting errors when trying to build back the model
-			mutatorSupporter.getFactory().getEnvironment()
+			MutationSupporter.getFactory().getModel().setBuildModelIsFinished(false); // avoid getting errors when trying to build back the model
+			MutationSupporter.getFactory().getEnvironment()
 					.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
 			mutatorSupporter.buildModel(codeLocation, classpath);
 
 		}
 
-		List<CtType<?>> allTypes = mutatorSupporter.getFactory().Type().getAll();
+		List<CtType<?>> allTypes = MutationSupporter.getFactory().Type().getAll();
 		List<CtClass> ESTestClasses = new ArrayList<>();
 		for (CtType<?> ctType : allTypes) {
 			if (ctType.getSimpleName().endsWith(EVOSUITE_SUFFIX)

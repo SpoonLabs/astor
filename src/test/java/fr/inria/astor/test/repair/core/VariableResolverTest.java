@@ -159,12 +159,12 @@ public class VariableResolverTest {
 		List<CtVariableAccess> varacc = VariableResolver.collectVariableAccess(mp.getCodeElement());
 
 		// Let's imagine that we take an ingredient. I created two statement.
+		// let's take the statement i= i+1
 		CtStatement statementsToTest = MutationSupporter.factory.Code()
 				.createCodeSnippetStatement("double i = 0; i= i+1;").compile();
-		// let's take the statement i= i+1
-		CtStatement varToQuery = ((CtBlock) statementsToTest.getParent()).getLastStatement();
+
 		// we collect the variable access.
-		List<CtVariableAccess> varsAccessCollectedToQuery = VariableResolver.collectVariableAccess(varToQuery);
+		List<CtVariableAccess> varsAccessCollectedToQuery = VariableResolver.collectVariableAccess(statementsToTest);
 		assertTrue(varsAccessCollectedToQuery.size() > 0);
 
 		// We do not match the names, only the types so double vars are mapped
@@ -173,7 +173,7 @@ public class VariableResolverTest {
 		assertTrue(!mappings1.isEmpty());
 
 		assertTrue(mappings1.get(varsAccessCollectedToQuery.get(0)).size() > 0);
-		boolean match1 = VariableResolver.fitInContext(varsInScope, varToQuery, false);
+		boolean match1 = VariableResolver.fitInContext(varsInScope, statementsToTest, false);
 		assertTrue(match1);
 
 		// Using var names, it must not be match (we have var i as ingredient)
@@ -181,7 +181,7 @@ public class VariableResolverTest {
 				varsAccessCollectedToQuery, true);
 		assertTrue(mappings1b.get(varsAccessCollectedToQuery.get(0)).isEmpty());
 
-		boolean match1b = VariableResolver.fitInContext(varsInScope, varToQuery, true);
+		boolean match1b = VariableResolver.fitInContext(varsInScope, statementsToTest, true);
 		assertFalse(match1b);
 
 		// Now, case with same name and type
@@ -189,31 +189,30 @@ public class VariableResolverTest {
 		// Let's imagine that we take an ingredient. I created two statement.
 		CtStatement statementsToTest2 = MutationSupporter.factory.Code()
 				.createCodeSnippetStatement("double p = 0; p= p+1;").compile();
-		CtStatement varToQuery2 = ((CtBlock) statementsToTest2.getParent()).getLastStatement();
-		assertTrue(VariableResolver.fitInContext(varsInScope, varToQuery2, false));
-		assertTrue(VariableResolver.fitInContext(varsInScope, varToQuery2, true));
+
+		assertTrue(VariableResolver.fitInContext(varsInScope, statementsToTest2, false));
+		assertTrue(VariableResolver.fitInContext(varsInScope, statementsToTest2, true));
 
 		// Now, case same name incomp type, no matching
 		CtStatement statementsToTest3 = MutationSupporter.factory.Code()
 				.createCodeSnippetStatement("int p = 0; p= p+1;").compile();
-		CtStatement varToQuery3 = ((CtBlock) statementsToTest3.getParent()).getLastStatement();
-		assertFalse(VariableResolver.fitInContext(varsInScope, varToQuery3, false));
-		assertFalse(VariableResolver.fitInContext(varsInScope, varToQuery3, true));
+
+		assertFalse(VariableResolver.fitInContext(varsInScope, statementsToTest3, false));
+		assertFalse(VariableResolver.fitInContext(varsInScope, statementsToTest3, true));
 
 		// Now, case two compatible variables
 		CtStatement statementsToTest4 = MutationSupporter.factory.Code()
 				.createCodeSnippetStatement("double p = 0;double lowerBound = 0; p= lowerBound+1;").compile();
-		CtStatement varToQuery4 = ((CtBlock) statementsToTest4.getParent()).getLastStatement();
-		assertTrue(VariableResolver.fitInContext(varsInScope, varToQuery4, false));
-		assertTrue(VariableResolver.fitInContext(varsInScope, varToQuery4, true));
+
+		assertTrue(VariableResolver.fitInContext(varsInScope, statementsToTest4, false));
+		assertTrue(VariableResolver.fitInContext(varsInScope, statementsToTest4, true));
 
 		// Now, case two variables, one compatible by name, the other not
 		CtStatement statementsToTest5 = MutationSupporter.factory.Code()
 				.createCodeSnippetStatement("double p = 0;double lowerBound1 = 0; p = lowerBound1 + 1;").compile();
-		CtStatement varToQuery5 = ((CtBlock) statementsToTest5.getParent()).getLastStatement();
-		assertTrue(VariableResolver.fitInContext(varsInScope, varToQuery5, false));
+		assertTrue(VariableResolver.fitInContext(varsInScope, statementsToTest5, false));
 		// One var name does not match
-		assertFalse(VariableResolver.fitInContext(varsInScope, varToQuery5, true));
+		assertFalse(VariableResolver.fitInContext(varsInScope, statementsToTest5, true));
 	}
 
 	@Test
