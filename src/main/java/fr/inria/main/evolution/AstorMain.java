@@ -168,23 +168,22 @@ public class AstorMain extends AbstractMain {
 
 		if (customEngine != null && !customEngine.isEmpty())
 			astorCore = createEngine(ExecutionMode.custom);
-		else if ("deeprepair".equals(mode))
-			astorCore = createEngine(ExecutionMode.DeepRepair);
-		else if ("cardumen".equals(mode))
-			astorCore = createEngine(ExecutionMode.CARDUMEN);
-		else if ("jgenprog".equals(mode))
-			astorCore = createEngine(ExecutionMode.jGenProg);
-		else if ("jkali".equals(mode))
-			astorCore = createEngine(ExecutionMode.jKali);
-		else if ("mutation".equals(mode) || "jmutrepair".equals(mode))
-			astorCore = createEngine(ExecutionMode.MutRepair);
-		else if ("exhaustive".equals(mode) || "exastor".equals(mode))
-			astorCore = createEngine(ExecutionMode.EXASTOR);
-
 		else {
-			System.err.println("Unknown mode of execution: '" + mode + "',  modes are: "
-					+ Arrays.toString(ExecutionMode.values()));
-			return;
+			for (ExecutionMode executionMode : ExecutionMode.values()) {
+				for (String acceptedName : executionMode.getAcceptedNames()) {
+					if (acceptedName.equals(mode)) {
+						astorCore = createEngine(executionMode);
+						break;
+					}
+				}
+			}
+
+			if (astorCore == null) {
+				System.err.println("Unknown mode of execution: '" + mode + "',  modes are: "
+						+ Arrays.toString(ExecutionMode.values()));
+				return;
+			}
+
 		}
 
 		ConfigurationProperties.print();
