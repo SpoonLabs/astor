@@ -60,7 +60,8 @@ public class MutationSupporter {
 		JDTBasedSpoonCompiler jdtSpoonModelBuilder = null;
 		logger.info("building model: " + srcPathToBuild + ", compliance level: "
 				+ factory.getEnvironment().getComplianceLevel());
-
+		factory.getEnvironment().setCommentEnabled(false);
+		factory.getEnvironment().setNoClasspath(false);
 		factory.getEnvironment().setPreserveLineNumbers(ConfigurationProperties.getPropertyBool("preservelinenumbers"));
 
 		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
@@ -76,7 +77,7 @@ public class MutationSupporter {
 		jdtSpoonModelBuilder.build();
 
 		if (ConfigurationProperties.getPropertyBool("savespoonmodelondisk")) {
-			jdtSpoonModelBuilder.setSourceOutputDirectory(new File(srcPathToBuild));
+			factory.getEnvironment().setSourceOutputDirectory(new File(srcPathToBuild));
 			jdtSpoonModelBuilder.generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 			jdtSpoonModelBuilder.setBinaryOutputDirectory(new File(bytecodePathToBuild));
 			jdtSpoonModelBuilder.compile(InputType.CTTYPES);

@@ -198,9 +198,7 @@ public class CrossoverOperationTest {
 	}
 
 	public CtElement createFix1() {
-		CtElement gen = createPatchStatementCode("int n=0; n += 2");
-		CtElement fix = ((CtBlock) gen.getParent()).getStatement(1);
-		return fix;
+		return createPatchStatementCode("int n=0; n += 2");
 	}
 	
 
