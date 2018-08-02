@@ -13,7 +13,6 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.ingredientbased.ExhaustiveIngredientBasedEngine;
 import fr.inria.astor.core.ingredientbased.IngredientBasedRepairApproachImpl;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -92,7 +91,13 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 				System.out.println("MP code: " + iModifPoint.getCodeElement());
 
-				boolean stop = analyzeModificationPointSingleValue(parentVariant, iModifPoint);
+				boolean stop = false;
+
+				if (ConfigurationProperties.getPropertyBool("clustercollectedvalues"))
+					stop = analyzeModificationPointMultipleExecutions(parentVariant, iModifPoint);
+				else
+					stop = analyzeModificationPointSingleValue(parentVariant, iModifPoint);
+
 				if (stop) {
 					return;
 				}
@@ -196,9 +201,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 		final boolean stop = true;
 		DynamothSynthesisContext contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
-		// Collecting values:
-		// TODO: check if values are collected from a) only failing test, or b)
-		// all test.
+
 		log.debug("---> Collected Context size: " + contextCollected.getValues().size());
 
 		// Creating combinations (do not depend on the Holes because
@@ -471,103 +474,6 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		}
 
 		return holes;
-	}
-
-	public void startEvolutionOLD() throws Exception {
-
-		if (this.ingredientSpace == null) {
-			this.ingredientSpace = IngredientBasedRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
-		}
-		dateInitEvolution = new Date();
-		// We don't evolve variants, so the generation is always one.
-		generationsExecuted = 1;
-		// For each variant (one is enough)
-		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
-		int maxGenerations = ConfigurationProperties.getPropertyInt("maxGeneration");
-		// for stats
-		int modifPointsAnalyzed = 0;
-		int operatorExecuted = 0;
-
-		getIngredientSpace().defineSpace(originalVariant);
-
-		int totalmodfpoints = variants.get(0).getModificationPoints().size();
-		for (ProgramVariant parentVariant : variants) {
-
-			for (ModificationPoint modifPoint : this.getSuspiciousNavigationStrategy()
-					.getSortedModificationPointsList(parentVariant.getModificationPoints())) {
-
-				modifPointsAnalyzed++;
-
-				log.info("\n MP (" + modifPointsAnalyzed + "/" + parentVariant.getModificationPoints().size()
-						+ ") location to modify: " + modifPoint);
-
-				// We create all operators to apply in the modifpoint
-				List<OperatorInstance> operatorInstances = createInstancesOfOperators(
-						(SuspiciousModificationPoint) modifPoint);
-
-				if (operatorInstances == null || operatorInstances.isEmpty())
-					continue;
-
-				for (OperatorInstance pointOperation : operatorInstances) {
-
-					operatorExecuted++;
-
-					// We validate the variant after applying the operator
-					ProgramVariant solutionVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
-							generationsExecuted);
-					solutionVariant.getOperations().put(generationsExecuted, Arrays.asList(pointOperation));
-
-					applyNewMutationOperationToSpoonElement(pointOperation);
-
-					log.debug("Operator:\n " + pointOperation);
-					log.debug("Modif point transformated:\n--> " + modifPoint.getCodeElement());
-					boolean solution = processCreatedVariant(solutionVariant, generationsExecuted);
-
-					if (solution) {
-						log.info("Solution found " + getSolutions().size());
-						this.solutions.add(solutionVariant);
-
-					}
-
-					// We undo the operator (for try the next one)
-					undoOperationToSpoonElement(pointOperation);
-
-					if (!this.solutions.isEmpty() && ConfigurationProperties.getPropertyBool("stopfirst")) {
-						this.setOutputStatus(AstorOutputStatus.STOP_BY_PATCH_FOUND);
-						log.debug(" modpoint analyzed " + modifPointsAnalyzed + ", operators " + operatorExecuted);
-						return;
-					}
-
-					if (!belowMaxTime(dateInitEvolution, maxMinutes)) {
-						this.setOutputStatus(AstorOutputStatus.TIME_OUT);
-						log.debug("Max time reached");
-						return;
-					}
-
-					if (maxGenerations <= operatorExecuted) {
-
-						this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
-						log.info("Stop-Max operator Applied " + operatorExecuted);
-						log.info("modpoint:" + modifPointsAnalyzed + ":all:" + totalmodfpoints + ":operators:"
-								+ operatorExecuted);
-						return;
-					}
-
-					if (this.getSolutions().size() >= ConfigurationProperties.getPropertyInt("maxnumbersolutions")) {
-						this.setOutputStatus(AstorOutputStatus.STOP_BY_PATCH_FOUND);
-						log.debug("Stop-Max solutions reached " + operatorExecuted);
-						log.debug("modpoint:" + modifPointsAnalyzed + ":all:" + totalmodfpoints + ":operators:"
-								+ operatorExecuted);
-						return;
-					}
-				}
-			}
-		}
-
-		this.setOutputStatus(AstorOutputStatus.EXHAUSTIVE_NAVIGATED);
-		System.out.println("\nEND exhaustive search Summary:\n" + "modpoint:" + modifPointsAnalyzed + ":all:"
-				+ totalmodfpoints + ":operators:" + operatorExecuted);
-
 	}
 
 	public DynamothCollectorFacade getCollectorFacade() {

@@ -33,137 +33,145 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 	}
 
 	public Candidates combineValuesEvaluated() {
-		final Candidates result = new Candidates();
-		List<String> collectedTests = new ArrayList<>(values.keySet());
 
-		Collections.sort(collectedTests, new Comparator<String>() {
-			@Override
-			public int compare(String s, String t1) {
-				if (values.get(t1).isEmpty()) {
-					return -1;
+		try {
+
+			final Candidates result = new Candidates();
+			List<String> collectedTests = new ArrayList<>(values.keySet());
+
+			Collections.sort(collectedTests, new Comparator<String>() {
+				@Override
+				public int compare(String s, String t1) {
+					if (values.get(t1).isEmpty()) {
+						return -1;
+					}
+					if (values.get(s).isEmpty()) {
+						return 1;
+					}
+					return values.get(t1).get(0).size() - values.get(s).get(0).size();
 				}
-				if (values.get(s).isEmpty()) {
-					return 1;
+			});
+			for (int i = 0; i < collectedTests.size(); i++) {
+				final String key = collectedTests.get(i);
+				List<Candidates> listValue = values.get(key);
+				for (Candidates expressions : listValue) {
+					for (Expression expression : expressions) {
+						expression.getValue().setConstant(isConstant(expression));
+					}
 				}
-				return values.get(t1).get(0).size() - values.get(s).get(0).size();
 			}
-		});
-		for (int i = 0; i < collectedTests.size(); i++) {
-			final String key = collectedTests.get(i);
-			List<Candidates> listValue = values.get(key);
-			for (Candidates expressions : listValue) {
-				for (Expression expression : expressions) {
-					expression.getValue().setConstant(isConstant(expression));
-				}
-			}
-		}
-		Candidates lastCollectedValues = null;
-		// Key: test name
-		Map<String, EvaluatedExpression> singleEvalExpression = new HashMap<>();
+			Candidates lastCollectedValues = null;
+			// Key: test name
+			Map<String, EvaluatedExpression> singleEvalExpression = new HashMap<>();
 
-		// Here, we collect the single values and we create an evaluation fo
-		// each iteration.
-		for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
-			final String i_test_name = collectedTests.get(i_test);
-			List<Candidates> listValue = values.get(i_test_name);
-			// Executions
-			for (int i_execution = 0; i_execution < listValue.size(); i_execution++) {
-				Candidates i_eexps = listValue.get(i_execution);
-				if (i_eexps == null) {
-					continue;
-				}
-				if (lastCollectedValues != null
-						&& lastCollectedValues.intersection(i_eexps, false).size() == i_eexps.size()) {
-					continue;
-				}
-				lastCollectedValues = i_eexps;
-				if (nopolContext.isSortExpressions()) {
-					Collections.sort(i_eexps, Collections.reverseOrder());
-				}
-
-				// check if one of the collected value can be a patch
-				for (int j_expresionVariable = 0; j_expresionVariable < i_eexps.size(); j_expresionVariable++) {
-					Expression expression = i_eexps.get(j_expresionVariable);
-					if (expression == null || expression.getValue() == null) {
+			// Here, we collect the single values and we create an evaluation fo
+			// each iteration.
+			for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
+				final String i_test_name = collectedTests.get(i_test);
+				List<Candidates> listValue = values.get(i_test_name);
+				// Executions
+				for (int i_execution = 0; i_execution < listValue.size(); i_execution++) {
+					Candidates i_eexps = listValue.get(i_execution);
+					if (i_eexps == null) {
 						continue;
 					}
-
-					EvaluatedExpression eval = null;
-					if (singleEvalExpression.containsKey(expression.asPatch())) {
-						eval = singleEvalExpression.get(expression.asPatch());
-					} else {
-						eval = new EvaluatedExpression(expression, new HashMap<String, List<Value>>());
-						singleEvalExpression.put(expression.asPatch(), eval);
+					if (lastCollectedValues != null
+							&& lastCollectedValues.intersection(i_eexps, false).size() == i_eexps.size()) {
+						continue;
+					}
+					lastCollectedValues = i_eexps;
+					if (nopolContext.isSortExpressions()) {
+						Collections.sort(i_eexps, Collections.reverseOrder());
 					}
 
-					Map<String, List<Value>> valuesExpression = eval.getEvaluations();
-					List<Value> valuePerIteration = null;
-					if (valuesExpression.containsKey(i_test_name)) {
-						valuePerIteration = valuesExpression.get(i_test_name);
-					} else {
-						valuePerIteration = new ArrayList<>();
-						valuesExpression.put(i_test_name, valuePerIteration);
+					// check if one of the collected value can be a patch
+					for (int j_expresionVariable = 0; j_expresionVariable < i_eexps.size(); j_expresionVariable++) {
+						Expression expression = i_eexps.get(j_expresionVariable);
+						if (expression == null || expression.getValue() == null) {
+							continue;
+						}
+
+						EvaluatedExpression eval = null;
+						if (singleEvalExpression.containsKey(expression.asPatch())) {
+							eval = singleEvalExpression.get(expression.asPatch());
+						} else {
+							eval = new EvaluatedExpression(expression, new HashMap<String, List<Value>>());
+							singleEvalExpression.put(expression.asPatch(), eval);
+						}
+
+						Map<String, List<Value>> valuesExpression = eval.getEvaluations();
+						List<Value> valuePerIteration = null;
+						if (valuesExpression.containsKey(i_test_name)) {
+							valuePerIteration = valuesExpression.get(i_test_name);
+						} else {
+							valuePerIteration = new ArrayList<>();
+							valuesExpression.put(i_test_name, valuePerIteration);
+						}
+						Value originaValue = expression.getValue();
+						Value valueFromEvaluation = expression.evaluate(i_eexps);
+
+						System.out.println("---> Patch from single expression: " + expression.asPatch() + ", test "
+								+ i_test_name + ", it " + i_execution + ", value at " + i_execution + ": "
+								+ valueFromEvaluation + " value from getValue " + originaValue);
+						valuePerIteration.add(valueFromEvaluation);
 					}
-					Value originaValue = expression.getValue();
-					Value valueFromEvaluation = expression.evaluate(i_eexps);
-
-					System.out.println("---> Patch from single expression: " + expression.asPatch() + ", test "
-							+ i_test_name + ", it " + i_execution + ", value at " + i_execution + ": "
-							+ valueFromEvaluation + " value from getValue " + originaValue);
-					valuePerIteration.add(valueFromEvaluation);
 				}
 			}
-		}
 
-		result.addAll(singleEvalExpression.values());
+			result.addAll(singleEvalExpression.values());
 
-		Candidates allSingleExpressions = new Candidates();
-		for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
-			final String i_test_name = collectedTests.get(i_test);
-			for (Expression combinedExpression : singleEvalExpression.values()) {
-				EvaluatedExpression ev = collectEvaluationForAllExecutions(i_test_name, combinedExpression);
-				allSingleExpressions.add(ev);
-			}
-		}
-		// allSingleExpressions.addAll(singleEvalExpression.values());
-
-		log.debug("All single expression: " + allSingleExpressions.size());
-
-		Candidates allCombinedNotEvaluatedExpressions = new Candidates();
-
-		DataCombinerModified combiner = new DataCombinerModified();
-
-		combiner.addCombineListener(new DataCombinerModified.CombineListener() {
-			@Override
-			public boolean check(Expression expression) {
-
-				if (!allCombinedNotEvaluatedExpressions.contains(expression)) {
-					allCombinedNotEvaluatedExpressions.add(expression);
-					return true;
+			Candidates allSingleExpressions = new Candidates();
+			for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
+				final String i_test_name = collectedTests.get(i_test);
+				for (Expression combinedExpression : singleEvalExpression.values()) {
+					EvaluatedExpression ev = collectEvaluationForAllExecutions(i_test_name, combinedExpression);
+					allSingleExpressions.add(ev);
 				}
-				return false;
 			}
-		});
+			// allSingleExpressions.addAll(singleEvalExpression.values());
 
-		Candidates allCombinedEvaluatedExpressions = new Candidates();
+			log.debug("All single expression: " + allSingleExpressions.size());
 
-		long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
-		combiner.combine(allSingleExpressions, null, maxCombinerTime, nopolContext);
+			Candidates allCombinedNotEvaluatedExpressions = new Candidates();
 
-		log.debug("All combined expressions: " + allCombinedEvaluatedExpressions.size());
+			DataCombinerModified combiner = new DataCombinerModified();
 
-		for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
-			final String i_test_name = collectedTests.get(i_test);
-			for (Expression combinedExpression : allCombinedNotEvaluatedExpressions) {
-				EvaluatedExpression ev = collectEvaluationForAllExecutions(i_test_name, combinedExpression);
-				allCombinedEvaluatedExpressions.add(ev);
+			combiner.addCombineListener(new DataCombinerModified.CombineListener() {
+				@Override
+				public boolean check(Expression expression) {
+
+					if (!allCombinedNotEvaluatedExpressions.contains(expression)) {
+						allCombinedNotEvaluatedExpressions.add(expression);
+						return true;
+					}
+					return false;
+				}
+			});
+
+			Candidates allCombinedEvaluatedExpressions = new Candidates();
+
+			long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
+			combiner.combine(allSingleExpressions, null, maxCombinerTime, nopolContext);
+
+			log.debug("All combined expressions: " + allCombinedEvaluatedExpressions.size());
+
+			for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
+				final String i_test_name = collectedTests.get(i_test);
+				for (Expression combinedExpression : allCombinedNotEvaluatedExpressions) {
+					EvaluatedExpression ev = collectEvaluationForAllExecutions(i_test_name, combinedExpression);
+					allCombinedEvaluatedExpressions.add(ev);
+				}
+
 			}
-
+			Candidates resultAll = new Candidates();
+			resultAll.addAll(allSingleExpressions);
+			resultAll.addAll(allCombinedEvaluatedExpressions);
+			return resultAll;
+		} catch (Exception e) {
+			log.error("Problems when combining expressions: " + e);
+			Candidates resultAll = new Candidates();
+			return resultAll;
 		}
-		Candidates resultAll = new Candidates();
-		resultAll.addAll(allSingleExpressions);
-		resultAll.addAll(allCombinedEvaluatedExpressions);
-		return resultAll;
 	}
 
 	@Override

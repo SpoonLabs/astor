@@ -39,7 +39,8 @@ public class EvalTOSBTTest {
 		command.command.put("-scope", "local");
 		command.command.put("-stopfirst", "false");
 		command.command.put("-flthreshold", "0.24");
-		command.command.put("-parameters", "disablelog:true:maxnumbersolutions:" + maxSolutions);
+		command.command.put("-parameters",
+				"clustercollectedvalues:false:disablelog:true:maxnumbersolutions:" + maxSolutions);
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -141,7 +142,7 @@ public class EvalTOSBTTest {
 	}
 
 	@Test
-	public void testBT_Math85_1_Evolve() throws Exception {
+	public void testBT_Math85_1_Evolve_Cluster_MultiExecution() throws Exception {
 		// We want to find maxSolutions solutions at most.
 		int maxSolutions = 100;
 
@@ -188,7 +189,7 @@ public class EvalTOSBTTest {
 		command.command.put("-scope", "local");
 		command.command.put("-stopfirst", "false");
 		command.command.put("-flthreshold", "0.5");
-		command.command.put("-parameters", "disablelog:true");
+		command.command.put("-parameters", "disablelog:true:clustercollectedvalues:false");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
