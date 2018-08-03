@@ -32,6 +32,7 @@ We do welcome bug fixes, features and new repair approaches as pull request. Wel
 * Thomas Durieux (Inria)
 * Martin G. White (William and Mary)
 * Claire Le Goues (CMU)
+* Simon Urli (Inria)
 
 jGenProg
 -------
