@@ -1,0 +1,8013 @@
+{
+  "differrors": 59, 
+  "diffwithactions": 35650, 
+  "diffzeroactions": 7546, 
+  "frequency": [
+    {
+      "c": "CtInvocationImpl", 
+      "f": 93269
+    }, 
+    {
+      "c": "CtLiteralImpl", 
+      "f": 36016
+    }, 
+    {
+      "c": "CtLocalVariableImpl", 
+      "f": 30056
+    }, 
+    {
+      "c": "CtMethodImpl", 
+      "f": 29898
+    }, 
+    {
+      "c": "CtVariableReadImpl", 
+      "f": 27903
+    }, 
+    {
+      "c": "CtFieldReadImpl", 
+      "f": 21933
+    }, 
+    {
+      "c": "CtTypeAccessImpl", 
+      "f": 17958
+    }, 
+    {
+      "c": "CtAssignmentImpl", 
+      "f": 17275
+    }, 
+    {
+      "c": "CtIfImpl", 
+      "f": 16095
+    }, 
+    {
+      "c": "CtTypeReferenceImpl", 
+      "f": 14617
+    }, 
+    {
+      "c": "CtFieldImpl", 
+      "f": 13012
+    }, 
+    {
+      "c": "CtBinaryOperatorImpl", 
+      "f": 12140
+    }, 
+    {
+      "c": "CtParameterImpl", 
+      "f": 9729
+    }, 
+    {
+      "c": "CtConstructorCallImpl", 
+      "f": 8057
+    }, 
+    {
+      "c": "CtAnnotationImpl", 
+      "f": 6440
+    }, 
+    {
+      "c": "CtBlockImpl", 
+      "f": 4919
+    }, 
+    {
+      "c": "CtReturnImpl", 
+      "f": 3349
+    }, 
+    {
+      "c": "CtFieldWriteImpl", 
+      "f": 3146
+    }, 
+    {
+      "c": "CtTryImpl", 
+      "f": 2797
+    }, 
+    {
+      "c": "CtUnaryOperatorImpl", 
+      "f": 2433
+    }, 
+    {
+      "c": "CtVariableWriteImpl", 
+      "f": 2404
+    }, 
+    {
+      "c": "CtClassImpl", 
+      "f": 2358
+    }, 
+    {
+      "c": "CtConstructorImpl", 
+      "f": 1992
+    }, 
+    {
+      "c": "CtAssertImpl", 
+      "f": 1673
+    }, 
+    {
+      "c": "CtCaseImpl", 
+      "f": 1509
+    }, 
+    {
+      "c": "CtNewArrayImpl", 
+      "f": 1219
+    }, 
+    {
+      "c": "CtForImpl", 
+      "f": 1172
+    }, 
+    {
+      "c": "CtArrayReadImpl", 
+      "f": 1103
+    }, 
+    {
+      "c": "CtForEachImpl", 
+      "f": 1090
+    }, 
+    {
+      "c": "CtArrayTypeReferenceImpl", 
+      "f": 861
+    }, 
+    {
+      "c": "CtCatchImpl", 
+      "f": 848
+    }, 
+    {
+      "c": "CtThisAccessImpl", 
+      "f": 835
+    }, 
+    {
+      "c": "CtThrowImpl", 
+      "f": 809
+    }, 
+    {
+      "c": "CtConditionalImpl", 
+      "f": 773
+    }, 
+    {
+      "c": "CtWhileImpl", 
+      "f": 691
+    }, 
+    {
+      "c": "CtCatchVariableImpl", 
+      "f": 601
+    }, 
+    {
+      "c": "CtNewClassImpl", 
+      "f": 583
+    }, 
+    {
+      "c": "CtOperatorAssignmentImpl", 
+      "f": 567
+    }, 
+    {
+      "c": "CtAnonymousExecutableImpl", 
+      "f": 473
+    }, 
+    {
+      "c": "CtSynchronizedImpl", 
+      "f": 466
+    }, 
+    {
+      "c": "CtBreakImpl", 
+      "f": 310
+    }, 
+    {
+      "c": "CtArrayWriteImpl", 
+      "f": 256
+    }, 
+    {
+      "c": "CtSwitchImpl", 
+      "f": 239
+    }, 
+    {
+      "c": "CtEnumValueImpl", 
+      "f": 148
+    }, 
+    {
+      "c": "CtContinueImpl", 
+      "f": 102
+    }, 
+    {
+      "c": "CtDoImpl", 
+      "f": 97
+    }, 
+    {
+      "c": "CtTryWithResourceImpl", 
+      "f": 68
+    }, 
+    {
+      "c": "CtInterfaceImpl", 
+      "f": 62
+    }, 
+    {
+      "c": "CtEnumImpl", 
+      "f": 43
+    }, 
+    {
+      "c": "CtTypeParameterImpl", 
+      "f": 34
+    }, 
+    {
+      "c": "CtTypeParameterReferenceImpl", 
+      "f": 24
+    }, 
+    {
+      "c": "CtSuperAccessImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "CtAnnotationTypeImpl", 
+      "f": 1
+    }
+  ], 
+  "frequencyParent": [
+    {
+      "c": "UPD_CtInvocationImpl_CtBlockImpl", 
+      "f": 19295
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtBinaryOperatorImpl", 
+      "f": 17791
+    }, 
+    {
+      "c": "INS_CtMethodImpl_CtClassImpl", 
+      "f": 15277
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtBlockImpl", 
+      "f": 13986
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtBlockImpl", 
+      "f": 13955
+    }, 
+    {
+      "c": "DEL_CtLocalVariableImpl_CtBlockImpl", 
+      "f": 9833
+    }, 
+    {
+      "c": "INS_CtIfImpl_CtBlockImpl", 
+      "f": 8342
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtInvocationImpl", 
+      "f": 8236
+    }, 
+    {
+      "c": "MOV_CtLocalVariableImpl_CtBlockImpl", 
+      "f": 7945
+    }, 
+    {
+      "c": "INS_CtLocalVariableImpl_CtBlockImpl", 
+      "f": 7824
+    }, 
+    {
+      "c": "UPD_CtTypeAccessImpl_CtInvocationImpl", 
+      "f": 7469
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtBlockImpl", 
+      "f": 7066
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtInvocationImpl", 
+      "f": 6789
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtBlockImpl", 
+      "f": 6223
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtInvocationImpl", 
+      "f": 6099
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtMethodImpl", 
+      "f": 5683
+    }, 
+    {
+      "c": "MOV_CtMethodImpl_CtClassImpl", 
+      "f": 5676
+    }, 
+    {
+      "c": "INS_CtFieldImpl_CtClassImpl", 
+      "f": 5619
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtLocalVariableImpl", 
+      "f": 5304
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtBlockImpl", 
+      "f": 5299
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtInvocationImpl", 
+      "f": 5194
+    }, 
+    {
+      "c": "DEL_CtMethodImpl_CtClassImpl", 
+      "f": 5147
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtInvocationImpl", 
+      "f": 5044
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtLocalVariableImpl", 
+      "f": 4731
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtBlockImpl", 
+      "f": 4508
+    }, 
+    {
+      "c": "DEL_CtIfImpl_CtBlockImpl", 
+      "f": 3880
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtInvocationImpl", 
+      "f": 3657
+    }, 
+    {
+      "c": "MOV_CtParameterImpl_CtMethodImpl", 
+      "f": 3619
+    }, 
+    {
+      "c": "MOV_CtBlockImpl_CtIfImpl", 
+      "f": 3443
+    }, 
+    {
+      "c": "MOV_CtIfImpl_CtBlockImpl", 
+      "f": 3404
+    }, 
+    {
+      "c": "UPD_CtTypeAccessImpl_CtFieldReadImpl", 
+      "f": 3302
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtAssignmentImpl", 
+      "f": 3201
+    }, 
+    {
+      "c": "UPD_CtMethodImpl_CtClassImpl", 
+      "f": 3095
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtParameterImpl", 
+      "f": 2735
+    }, 
+    {
+      "c": "DEL_CtFieldImpl_CtClassImpl", 
+      "f": 2697
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtInvocationImpl", 
+      "f": 2671
+    }, 
+    {
+      "c": "UPD_CtLocalVariableImpl_CtBlockImpl", 
+      "f": 2610
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtIfImpl", 
+      "f": 2505
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtInvocationImpl", 
+      "f": 2406
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtInvocationImpl", 
+      "f": 2363
+    }, 
+    {
+      "c": "MOV_CtTypeAccessImpl_CtThisAccessImpl", 
+      "f": 2332
+    }, 
+    {
+      "c": "MOV_CtFieldImpl_CtClassImpl", 
+      "f": 2259
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtBinaryOperatorImpl", 
+      "f": 2183
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtMethodImpl", 
+      "f": 2036
+    }, 
+    {
+      "c": "INS_CtParameterImpl_CtMethodImpl", 
+      "f": 2023
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtInvocationImpl", 
+      "f": 1870
+    }, 
+    {
+      "c": "MOV_CtTypeReferenceImpl_CtLocalVariableImpl", 
+      "f": 1850
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtBinaryOperatorImpl", 
+      "f": 1834
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtFieldImpl", 
+      "f": 1689
+    }, 
+    {
+      "c": "UPD_CtFieldImpl_CtClassImpl", 
+      "f": 1687
+    }, 
+    {
+      "c": "UPD_CtTypeAccessImpl_CtThisAccessImpl", 
+      "f": 1687
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtLocalVariableImpl", 
+      "f": 1681
+    }, 
+    {
+      "c": "MOV_CtTypeAccessImpl_CtInvocationImpl", 
+      "f": 1469
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtConstructorCallImpl", 
+      "f": 1457
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtLocalVariableImpl", 
+      "f": 1450
+    }, 
+    {
+      "c": "INS_CtTryImpl_CtBlockImpl", 
+      "f": 1445
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 1431
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtReturnImpl", 
+      "f": 1430
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtNewArrayImpl", 
+      "f": 1403
+    }, 
+    {
+      "c": "UPD_CtParameterImpl_CtMethodImpl", 
+      "f": 1370
+    }, 
+    {
+      "c": "MOV_CtReturnImpl_CtBlockImpl", 
+      "f": 1355
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtBinaryOperatorImpl", 
+      "f": 1292
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtBinaryOperatorImpl", 
+      "f": 1258
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtAssignmentImpl", 
+      "f": 1234
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtInvocationImpl", 
+      "f": 1197
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtIfImpl", 
+      "f": 1185
+    }, 
+    {
+      "c": "UPD_CtFieldWriteImpl_CtAssignmentImpl", 
+      "f": 1167
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtBinaryOperatorImpl", 
+      "f": 1151
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtInvocationImpl", 
+      "f": 1149
+    }, 
+    {
+      "c": "MOV_CtFieldWriteImpl_CtAssignmentImpl", 
+      "f": 1084
+    }, 
+    {
+      "c": "INS_CtReturnImpl_CtBlockImpl", 
+      "f": 1079
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtConstructorCallImpl", 
+      "f": 1015
+    }, 
+    {
+      "c": "INS_CtConstructorImpl_CtClassImpl", 
+      "f": 1011
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtInvocationImpl", 
+      "f": 972
+    }, 
+    {
+      "c": "INS_CtBlockImpl_CtIfImpl", 
+      "f": 951
+    }, 
+    {
+      "c": "MOV_CtTypeReferenceImpl_CtMethodImpl", 
+      "f": 941
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtInvocationImpl", 
+      "f": 897
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtLocalVariableImpl", 
+      "f": 887
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtConstructorCallImpl", 
+      "f": 872
+    }, 
+    {
+      "c": "UPD_CtVariableWriteImpl_CtAssignmentImpl", 
+      "f": 847
+    }, 
+    {
+      "c": "DEL_CtReturnImpl_CtBlockImpl", 
+      "f": 847
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtBinaryOperatorImpl", 
+      "f": 820
+    }, 
+    {
+      "c": "DEL_CtTryImpl_CtBlockImpl", 
+      "f": 819
+    }, 
+    {
+      "c": "INS_CtAssertImpl_CtBlockImpl", 
+      "f": 818
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtInvocationImpl", 
+      "f": 807
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtBinaryOperatorImpl", 
+      "f": 798
+    }, 
+    {
+      "c": "INS_CtParameterImpl_CtConstructorImpl", 
+      "f": 748
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtBinaryOperatorImpl", 
+      "f": 742
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtIfImpl", 
+      "f": 724
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtConstructorCallImpl", 
+      "f": 715
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtFieldReadImpl", 
+      "f": 712
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 705
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtNewArrayImpl", 
+      "f": 702
+    }, 
+    {
+      "c": "INS_CtClassImpl_CtClassImpl", 
+      "f": 701
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtBinaryOperatorImpl", 
+      "f": 695
+    }, 
+    {
+      "c": "DEL_CtAssertImpl_CtBlockImpl", 
+      "f": 693
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtIfImpl", 
+      "f": 693
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtBinaryOperatorImpl", 
+      "f": 692
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtConstructorCallImpl", 
+      "f": 677
+    }, 
+    {
+      "c": "MOV_CtParameterImpl_CtConstructorImpl", 
+      "f": 674
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtInvocationImpl", 
+      "f": 649
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtInvocationImpl", 
+      "f": 636
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtIfImpl", 
+      "f": 635
+    }, 
+    {
+      "c": "DEL_CtParameterImpl_CtMethodImpl", 
+      "f": 629
+    }, 
+    {
+      "c": "INS_CtCaseImpl_CtSwitchImpl", 
+      "f": 627
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtConstructorCallImpl", 
+      "f": 625
+    }, 
+    {
+      "c": "MOV_CtLocalVariableImpl_CtForImpl", 
+      "f": 603
+    }, 
+    {
+      "c": "DEL_CtFieldWriteImpl_CtAssignmentImpl", 
+      "f": 593
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtNewArrayImpl", 
+      "f": 593
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtAssignmentImpl", 
+      "f": 589
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtInvocationImpl", 
+      "f": 589
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtReturnImpl", 
+      "f": 581
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtInvocationImpl", 
+      "f": 580
+    }, 
+    {
+      "c": "UPD_CtClassImpl_CtNewClassImpl", 
+      "f": 575
+    }, 
+    {
+      "c": "INS_CtVariableWriteImpl_CtAssignmentImpl", 
+      "f": 571
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtThrowImpl", 
+      "f": 560
+    }, 
+    {
+      "c": "DEL_CtTypeAccessImpl_CtThisAccessImpl", 
+      "f": 559
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtConstructorCallImpl", 
+      "f": 556
+    }, 
+    {
+      "c": "MOV_CtCaseImpl_CtSwitchImpl", 
+      "f": 551
+    }, 
+    {
+      "c": "MOV_CtConstructorImpl_CtClassImpl", 
+      "f": 549
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtAssignmentImpl", 
+      "f": 547
+    }, 
+    {
+      "c": "MOV_CtCatchImpl_CtTryImpl", 
+      "f": 540
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtIfImpl", 
+      "f": 538
+    }, 
+    {
+      "c": "MOV_CtTryImpl_CtBlockImpl", 
+      "f": 530
+    }, 
+    {
+      "c": "INS_CtForEachImpl_CtBlockImpl", 
+      "f": 526
+    }, 
+    {
+      "c": "DEL_CtBlockImpl_CtIfImpl", 
+      "f": 525
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtBinaryOperatorImpl", 
+      "f": 517
+    }, 
+    {
+      "c": "INS_CtForImpl_CtBlockImpl", 
+      "f": 516
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtBinaryOperatorImpl", 
+      "f": 506
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtCaseImpl", 
+      "f": 495
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtReturnImpl", 
+      "f": 489
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtConstructorCallImpl", 
+      "f": 467
+    }, 
+    {
+      "c": "MOV_CtTypeAccessImpl_CtFieldReadImpl", 
+      "f": 460
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtConstructorCallImpl", 
+      "f": 447
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtConstructorCallImpl", 
+      "f": 446
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtLocalVariableImpl", 
+      "f": 440
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtForImpl", 
+      "f": 434
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtConstructorCallImpl", 
+      "f": 432
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtConstructorCallImpl", 
+      "f": 426
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 417
+    }, 
+    {
+      "c": "INS_CtMethodImpl_CtInterfaceImpl", 
+      "f": 415
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtConstructorCallImpl", 
+      "f": 405
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtForImpl", 
+      "f": 397
+    }, 
+    {
+      "c": "MOV_CtLocalVariableImpl_CtForEachImpl", 
+      "f": 390
+    }, 
+    {
+      "c": "UPD_CtArrayTypeReferenceImpl_CtLocalVariableImpl", 
+      "f": 389
+    }, 
+    {
+      "c": "DEL_CtConstructorImpl_CtClassImpl", 
+      "f": 385
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtReturnImpl", 
+      "f": 372
+    }, 
+    {
+      "c": "MOV_CtCatchVariableImpl_CtCatchImpl", 
+      "f": 371
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtUnaryOperatorImpl", 
+      "f": 368
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtAssignmentImpl", 
+      "f": 363
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtLocalVariableImpl", 
+      "f": 363
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtBinaryOperatorImpl", 
+      "f": 362
+    }, 
+    {
+      "c": "DEL_CtForImpl_CtBlockImpl", 
+      "f": 362
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtConstructorCallImpl", 
+      "f": 361
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtCaseImpl", 
+      "f": 358
+    }, 
+    {
+      "c": "DEL_CtClassImpl_CtClassImpl", 
+      "f": 351
+    }, 
+    {
+      "c": "UPD_CtLocalVariableImpl_CtForEachImpl", 
+      "f": 347
+    }, 
+    {
+      "c": "MOV_CtVariableWriteImpl_CtAssignmentImpl", 
+      "f": 346
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtCatchVariableImpl", 
+      "f": 340
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtLocalVariableImpl", 
+      "f": 340
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtFieldImpl", 
+      "f": 340
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtMethodImpl", 
+      "f": 338
+    }, 
+    {
+      "c": "UPD_CtParameterImpl_CtConstructorImpl", 
+      "f": 334
+    }, 
+    {
+      "c": "INS_CtThrowImpl_CtBlockImpl", 
+      "f": 332
+    }, 
+    {
+      "c": "DEL_CtParameterImpl_CtConstructorImpl", 
+      "f": 332
+    }, 
+    {
+      "c": "DEL_CtCaseImpl_CtSwitchImpl", 
+      "f": 331
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtAssignmentImpl", 
+      "f": 328
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtIfImpl", 
+      "f": 325
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtAssignmentImpl", 
+      "f": 322
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtAssignmentImpl", 
+      "f": 296
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtFieldImpl", 
+      "f": 295
+    }, 
+    {
+      "c": "MOV_CtForImpl_CtBlockImpl", 
+      "f": 292
+    }, 
+    {
+      "c": "DEL_CtThrowImpl_CtBlockImpl", 
+      "f": 291
+    }, 
+    {
+      "c": "INS_CtFieldImpl_CtInterfaceImpl", 
+      "f": 289
+    }, 
+    {
+      "c": "MOV_CtForEachImpl_CtBlockImpl", 
+      "f": 283
+    }, 
+    {
+      "c": "DEL_CtForEachImpl_CtBlockImpl", 
+      "f": 281
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtIfImpl", 
+      "f": 280
+    }, 
+    {
+      "c": "MOV_CtClassImpl_CtClassImpl", 
+      "f": 277
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtBinaryOperatorImpl", 
+      "f": 275
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtInvocationImpl", 
+      "f": 274
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtCaseImpl", 
+      "f": 268
+    }, 
+    {
+      "c": "MOV_CtIfImpl_CtCaseImpl", 
+      "f": 265
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtInvocationImpl", 
+      "f": 264
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtCaseImpl", 
+      "f": 259
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtReturnImpl", 
+      "f": 256
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtInvocationImpl", 
+      "f": 254
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtAssignmentImpl", 
+      "f": 252
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 251
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtReturnImpl", 
+      "f": 245
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtConstructorCallImpl", 
+      "f": 244
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtFieldReadImpl", 
+      "f": 243
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtNewArrayImpl", 
+      "f": 241
+    }, 
+    {
+      "c": "INS_CtWhileImpl_CtBlockImpl", 
+      "f": 237
+    }, 
+    {
+      "c": "INS_CtOperatorAssignmentImpl_CtBlockImpl", 
+      "f": 236
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtInvocationImpl", 
+      "f": 233
+    }, 
+    {
+      "c": "DEL_CtWhileImpl_CtBlockImpl", 
+      "f": 232
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtFieldReadImpl", 
+      "f": 227
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtAssignmentImpl", 
+      "f": 224
+    }, 
+    {
+      "c": "INS_CtSynchronizedImpl_CtBlockImpl", 
+      "f": 223
+    }, 
+    {
+      "c": "MOV_CtWhileImpl_CtBlockImpl", 
+      "f": 222
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtFieldReadImpl", 
+      "f": 221
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtAssignmentImpl", 
+      "f": 220
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtReturnImpl", 
+      "f": 219
+    }, 
+    {
+      "c": "UPD_CtVariableWriteImpl_CtUnaryOperatorImpl", 
+      "f": 218
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtReturnImpl", 
+      "f": 215
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtIfImpl", 
+      "f": 209
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtLocalVariableImpl", 
+      "f": 206
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtReturnImpl", 
+      "f": 206
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtReturnImpl", 
+      "f": 202
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtConditionalImpl", 
+      "f": 197
+    }, 
+    {
+      "c": "UPD_CtLocalVariableImpl_CtForImpl", 
+      "f": 193
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtAssignmentImpl", 
+      "f": 193
+    }, 
+    {
+      "c": "MOV_CtAnnotationImpl_CtMethodImpl", 
+      "f": 191
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtConstructorCallImpl", 
+      "f": 190
+    }, 
+    {
+      "c": "INS_CtTypeAccessImpl_CtThisAccessImpl", 
+      "f": 190
+    }, 
+    {
+      "c": "INS_CtTypeAccessImpl_CtInvocationImpl", 
+      "f": 187
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtAssignmentImpl", 
+      "f": 186
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtConstructorCallImpl", 
+      "f": 186
+    }, 
+    {
+      "c": "INS_CtCatchImpl_CtTryImpl", 
+      "f": 184
+    }, 
+    {
+      "c": "MOV_CtThrowImpl_CtBlockImpl", 
+      "f": 182
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtBinaryOperatorImpl", 
+      "f": 182
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtIfImpl", 
+      "f": 179
+    }, 
+    {
+      "c": "DEL_CtSynchronizedImpl_CtBlockImpl", 
+      "f": 178
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtConstructorCallImpl", 
+      "f": 178
+    }, 
+    {
+      "c": "INS_CtAnonymousExecutableImpl_CtClassImpl", 
+      "f": 177
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtFieldImpl", 
+      "f": 174
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtAssignmentImpl", 
+      "f": 173
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtForEachImpl", 
+      "f": 170
+    }, 
+    {
+      "c": "DEL_CtOperatorAssignmentImpl_CtBlockImpl", 
+      "f": 170
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtIfImpl", 
+      "f": 169
+    }, 
+    {
+      "c": "MOV_CtTypeReferenceImpl_CtFieldImpl", 
+      "f": 167
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtArrayReadImpl", 
+      "f": 165
+    }, 
+    {
+      "c": "MOV_CtAssertImpl_CtBlockImpl", 
+      "f": 161
+    }, 
+    {
+      "c": "DEL_CtAnonymousExecutableImpl_CtClassImpl", 
+      "f": 158
+    }, 
+    {
+      "c": "INS_CtFieldWriteImpl_CtAssignmentImpl", 
+      "f": 156
+    }, 
+    {
+      "c": "UPD_CtCatchVariableImpl_CtCatchImpl", 
+      "f": 156
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 156
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtCaseImpl", 
+      "f": 154
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtFieldImpl", 
+      "f": 152
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtInvocationImpl", 
+      "f": 152
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtCaseImpl", 
+      "f": 152
+    }, 
+    {
+      "c": "MOV_CtOperatorAssignmentImpl_CtBlockImpl", 
+      "f": 151
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtBinaryOperatorImpl", 
+      "f": 150
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtAssignmentImpl", 
+      "f": 149
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtIfImpl", 
+      "f": 148
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtConditionalImpl", 
+      "f": 148
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtLocalVariableImpl", 
+      "f": 146
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtBlockImpl", 
+      "f": 145
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtInvocationImpl", 
+      "f": 144
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtForEachImpl", 
+      "f": 144
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtFieldReadImpl", 
+      "f": 144
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 143
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtNewArrayImpl", 
+      "f": 139
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtInvocationImpl", 
+      "f": 138
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtUnaryOperatorImpl", 
+      "f": 138
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtThrowImpl", 
+      "f": 138
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtReturnImpl", 
+      "f": 138
+    }, 
+    {
+      "c": "MOV_CtArrayWriteImpl_CtAssignmentImpl", 
+      "f": 138
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtAssignmentImpl", 
+      "f": 137
+    }, 
+    {
+      "c": "MOV_CtFieldImpl_CtInterfaceImpl", 
+      "f": 137
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtNewArrayImpl", 
+      "f": 136
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtFieldReadImpl", 
+      "f": 136
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtReturnImpl", 
+      "f": 134
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtAssignmentImpl", 
+      "f": 133
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtBlockImpl", 
+      "f": 132
+    }, 
+    {
+      "c": "MOV_CtAnonymousExecutableImpl_CtClassImpl", 
+      "f": 132
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtLocalVariableImpl", 
+      "f": 131
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtReturnImpl", 
+      "f": 131
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtInvocationImpl", 
+      "f": 130
+    }, 
+    {
+      "c": "INS_CtIfImpl_CtCaseImpl", 
+      "f": 130
+    }, 
+    {
+      "c": "INS_CtClassImpl_CtPackageImpl", 
+      "f": 129
+    }, 
+    {
+      "c": "INS_CtSwitchImpl_CtBlockImpl", 
+      "f": 127
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtLocalVariableImpl", 
+      "f": 127
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtInvocationImpl", 
+      "f": 126
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtCaseImpl", 
+      "f": 125
+    }, 
+    {
+      "c": "DEL_CtCatchImpl_CtTryImpl", 
+      "f": 124
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtCaseImpl", 
+      "f": 123
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtInvocationImpl", 
+      "f": 123
+    }, 
+    {
+      "c": "UPD_CtFieldImpl_CtInterfaceImpl", 
+      "f": 123
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtConditionalImpl", 
+      "f": 122
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtReturnImpl", 
+      "f": 121
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtReturnImpl", 
+      "f": 121
+    }, 
+    {
+      "c": "MOV_CtTypeReferenceImpl_CtParameterImpl", 
+      "f": 120
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtReturnImpl", 
+      "f": 119
+    }, 
+    {
+      "c": "UPD_CtArrayTypeReferenceImpl_CtParameterImpl", 
+      "f": 118
+    }, 
+    {
+      "c": "MOV_CtArrayTypeReferenceImpl_CtLocalVariableImpl", 
+      "f": 117
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtCaseImpl", 
+      "f": 115
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtReturnImpl", 
+      "f": 115
+    }, 
+    {
+      "c": "DEL_CtMethodImpl_CtInterfaceImpl", 
+      "f": 114
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtBinaryOperatorImpl", 
+      "f": 114
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtArrayReadImpl", 
+      "f": 112
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 110
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtAssignmentImpl", 
+      "f": 110
+    }, 
+    {
+      "c": "DEL_CtClassImpl_CtPackageImpl", 
+      "f": 109
+    }, 
+    {
+      "c": "DEL_CtVariableWriteImpl_CtAssignmentImpl", 
+      "f": 107
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtReturnImpl", 
+      "f": 106
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtReturnImpl", 
+      "f": 105
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 105
+    }, 
+    {
+      "c": "DEL_CtFieldImpl_CtInterfaceImpl", 
+      "f": 104
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtAssignmentImpl", 
+      "f": 104
+    }, 
+    {
+      "c": "UPD_CtArrayTypeReferenceImpl_CtFieldImpl", 
+      "f": 103
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtConstructorCallImpl", 
+      "f": 103
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtInvocationImpl", 
+      "f": 100
+    }, 
+    {
+      "c": "UPD_CtArrayTypeReferenceImpl_CtMethodImpl", 
+      "f": 100
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtIfImpl", 
+      "f": 99
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtFieldReadImpl", 
+      "f": 98
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 97
+    }, 
+    {
+      "c": "INS_CtBreakImpl_CtCaseImpl", 
+      "f": 97
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtNewArrayImpl", 
+      "f": 97
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 96
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtArrayReadImpl", 
+      "f": 96
+    }, 
+    {
+      "c": "DEL_CtArrayWriteImpl_CtAssignmentImpl", 
+      "f": 96
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtReturnImpl", 
+      "f": 95
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtLocalVariableImpl", 
+      "f": 95
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtConditionalImpl", 
+      "f": 94
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtReturnImpl", 
+      "f": 93
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtNewClassImpl", 
+      "f": 93
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 93
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtAssignmentImpl", 
+      "f": 90
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtCaseImpl", 
+      "f": 90
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtAssignmentImpl", 
+      "f": 90
+    }, 
+    {
+      "c": "INS_CtBreakImpl_CtBlockImpl", 
+      "f": 89
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtClassImpl", 
+      "f": 88
+    }, 
+    {
+      "c": "DEL_CtTypeAccessImpl_CtInvocationImpl", 
+      "f": 86
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtBlockImpl", 
+      "f": 86
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtConstructorCallImpl", 
+      "f": 86
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtAssignmentImpl", 
+      "f": 86
+    }, 
+    {
+      "c": "MOV_CtSwitchImpl_CtBlockImpl", 
+      "f": 85
+    }, 
+    {
+      "c": "UPD_CtClassImpl_CtClassImpl", 
+      "f": 85
+    }, 
+    {
+      "c": "UPD_CtMethodImpl_CtInterfaceImpl", 
+      "f": 85
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtNewArrayImpl", 
+      "f": 85
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtNewArrayImpl", 
+      "f": 85
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtFieldReadImpl", 
+      "f": 84
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtIfImpl", 
+      "f": 84
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtLocalVariableImpl", 
+      "f": 84
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtFieldReadImpl", 
+      "f": 84
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtOperatorAssignmentImpl", 
+      "f": 83
+    }, 
+    {
+      "c": "DEL_CtTypeAccessImpl_CtFieldReadImpl", 
+      "f": 83
+    }, 
+    {
+      "c": "DEL_CtFieldImpl_CtEnumImpl", 
+      "f": 83
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtArrayReadImpl", 
+      "f": 83
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtLocalVariableImpl", 
+      "f": 81
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtLocalVariableImpl", 
+      "f": 81
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtIfImpl", 
+      "f": 80
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 78
+    }, 
+    {
+      "c": "INS_CtEnumValueImpl_CtEnumImpl", 
+      "f": 78
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 78
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtFieldReadImpl", 
+      "f": 76
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtNewArrayImpl", 
+      "f": 76
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtWhileImpl", 
+      "f": 76
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtForEachImpl", 
+      "f": 74
+    }, 
+    {
+      "c": "DEL_CtIfImpl_CtCaseImpl", 
+      "f": 74
+    }, 
+    {
+      "c": "DEL_CtBreakImpl_CtBlockImpl", 
+      "f": 72
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtReturnImpl", 
+      "f": 72
+    }, 
+    {
+      "c": "INS_CtVariableWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 70
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtReturnImpl", 
+      "f": 70
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtAssignmentImpl", 
+      "f": 70
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtFieldReadImpl", 
+      "f": 70
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtForEachImpl", 
+      "f": 69
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtAssignmentImpl", 
+      "f": 67
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtLocalVariableImpl", 
+      "f": 67
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtIfImpl", 
+      "f": 67
+    }, 
+    {
+      "c": "INS_CtTryWithResourceImpl_CtBlockImpl", 
+      "f": 67
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtInvocationImpl", 
+      "f": 66
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtSynchronizedImpl", 
+      "f": 66
+    }, 
+    {
+      "c": "UPD_CtTypeAccessImpl_CtBinaryOperatorImpl", 
+      "f": 65
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtFieldReadImpl", 
+      "f": 65
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtAssertImpl", 
+      "f": 65
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtLocalVariableImpl", 
+      "f": 64
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtNewArrayImpl", 
+      "f": 63
+    }, 
+    {
+      "c": "MOV_CtSynchronizedImpl_CtBlockImpl", 
+      "f": 63
+    }, 
+    {
+      "c": "INS_CtLocalVariableImpl_CtTryWithResourceImpl", 
+      "f": 62
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 61
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtFieldWriteImpl", 
+      "f": 61
+    }, 
+    {
+      "c": "MOV_CtVariableWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 61
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtFieldImpl", 
+      "f": 61
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtForEachImpl", 
+      "f": 61
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtSynchronizedImpl", 
+      "f": 60
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtArrayReadImpl", 
+      "f": 59
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtAssertImpl", 
+      "f": 59
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtConstructorCallImpl", 
+      "f": 59
+    }, 
+    {
+      "c": "INS_CtLocalVariableImpl_CtForImpl", 
+      "f": 58
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtThrowImpl", 
+      "f": 58
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtInvocationImpl", 
+      "f": 58
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtForImpl", 
+      "f": 58
+    }, 
+    {
+      "c": "INS_CtContinueImpl_CtBlockImpl", 
+      "f": 57
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtInvocationImpl", 
+      "f": 57
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtCaseImpl", 
+      "f": 57
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtForEachImpl", 
+      "f": 56
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtFieldImpl", 
+      "f": 56
+    }, 
+    {
+      "c": "MOV_CtMethodImpl_CtInterfaceImpl", 
+      "f": 55
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtForEachImpl", 
+      "f": 55
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtOperatorAssignmentImpl", 
+      "f": 55
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtReturnImpl", 
+      "f": 54
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtSwitchImpl", 
+      "f": 53
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtAssignmentImpl", 
+      "f": 53
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtReturnImpl", 
+      "f": 53
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtFieldImpl", 
+      "f": 52
+    }, 
+    {
+      "c": "UPD_CtVariableWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 52
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtForEachImpl", 
+      "f": 52
+    }, 
+    {
+      "c": "INS_CtLocalVariableImpl_CtCaseImpl", 
+      "f": 51
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtConditionalImpl", 
+      "f": 51
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtWhileImpl", 
+      "f": 50
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtNewArrayImpl", 
+      "f": 50
+    }, 
+    {
+      "c": "INS_CtDoImpl_CtBlockImpl", 
+      "f": 50
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtConditionalImpl", 
+      "f": 50
+    }, 
+    {
+      "c": "INS_CtCatchVariableImpl_CtCatchImpl", 
+      "f": 49
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtFieldImpl", 
+      "f": 49
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtFieldWriteImpl", 
+      "f": 49
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtArrayReadImpl", 
+      "f": 48
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtLocalVariableImpl", 
+      "f": 48
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtWhileImpl", 
+      "f": 48
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtArrayReadImpl", 
+      "f": 48
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtReturnImpl", 
+      "f": 47
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtAssertImpl", 
+      "f": 47
+    }, 
+    {
+      "c": "UPD_CtConstructorImpl_CtClassImpl", 
+      "f": 45
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtLocalVariableImpl", 
+      "f": 45
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtReturnImpl", 
+      "f": 45
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtFieldImpl", 
+      "f": 45
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtAssignmentImpl", 
+      "f": 45
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtForImpl", 
+      "f": 45
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtNewArrayImpl", 
+      "f": 45
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtLocalVariableImpl", 
+      "f": 44
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtFieldImpl", 
+      "f": 44
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtForEachImpl", 
+      "f": 44
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtUnaryOperatorImpl", 
+      "f": 44
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtNewArrayImpl", 
+      "f": 43
+    }, 
+    {
+      "c": "DEL_CtContinueImpl_CtBlockImpl", 
+      "f": 43
+    }, 
+    {
+      "c": "DEL_CtLocalVariableImpl_CtForImpl", 
+      "f": 42
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtFieldReadImpl", 
+      "f": 40
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtAssertImpl", 
+      "f": 39
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtForImpl", 
+      "f": 39
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtClassImpl", 
+      "f": 39
+    }, 
+    {
+      "c": "MOV_CtReturnImpl_CtCaseImpl", 
+      "f": 39
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtConstructorCallImpl", 
+      "f": 38
+    }, 
+    {
+      "c": "MOV_CtFieldWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 38
+    }, 
+    {
+      "c": "MOV_CtClassImpl_CtPackageImpl", 
+      "f": 37
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtLocalVariableImpl", 
+      "f": 37
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtConditionalImpl", 
+      "f": 37
+    }, 
+    {
+      "c": "INS_CtLocalVariableImpl_CtForEachImpl", 
+      "f": 37
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtInvocationImpl", 
+      "f": 36
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtNewArrayImpl", 
+      "f": 36
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtConstructorCallImpl", 
+      "f": 36
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 36
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtArrayWriteImpl", 
+      "f": 36
+    }, 
+    {
+      "c": "DEL_CtVariableWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 36
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtOperatorAssignmentImpl", 
+      "f": 36
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtFieldWriteImpl", 
+      "f": 35
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtIfImpl", 
+      "f": 35
+    }, 
+    {
+      "c": "DEL_CtEnumValueImpl_CtEnumImpl", 
+      "f": 35
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtLocalVariableImpl", 
+      "f": 35
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 35
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtLocalVariableImpl", 
+      "f": 35
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtBinaryOperatorImpl", 
+      "f": 34
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtConstructorImpl", 
+      "f": 34
+    }, 
+    {
+      "c": "DEL_CtFieldWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 34
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtFieldImpl", 
+      "f": 34
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtFieldReadImpl", 
+      "f": 34
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtForImpl", 
+      "f": 33
+    }, 
+    {
+      "c": "UPD_CtFieldWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 33
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtArrayWriteImpl", 
+      "f": 33
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtWhileImpl", 
+      "f": 33
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtAssignmentImpl", 
+      "f": 32
+    }, 
+    {
+      "c": "INS_CtEnumImpl_CtClassImpl", 
+      "f": 32
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtOperatorAssignmentImpl", 
+      "f": 32
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtArrayReadImpl", 
+      "f": 31
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtIfImpl", 
+      "f": 31
+    }, 
+    {
+      "c": "MOV_CtClassImpl_CtNewClassImpl", 
+      "f": 31
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtNewArrayImpl", 
+      "f": 31
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtAssignmentImpl", 
+      "f": 30
+    }, 
+    {
+      "c": "DEL_CtDoImpl_CtBlockImpl", 
+      "f": 30
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtAssignmentImpl", 
+      "f": 30
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtForEachImpl", 
+      "f": 30
+    }, 
+    {
+      "c": "INS_CtInterfaceImpl_CtClassImpl", 
+      "f": 30
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtUnaryOperatorImpl", 
+      "f": 30
+    }, 
+    {
+      "c": "DEL_CtLocalVariableImpl_CtForEachImpl", 
+      "f": 30
+    }, 
+    {
+      "c": "DEL_CtVariableWriteImpl_CtFieldWriteImpl", 
+      "f": 30
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtLocalVariableImpl", 
+      "f": 30
+    }, 
+    {
+      "c": "MOV_CtNewClassImpl_CtLocalVariableImpl", 
+      "f": 29
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtFieldImpl", 
+      "f": 29
+    }, 
+    {
+      "c": "INS_CtTypeAccessImpl_CtFieldReadImpl", 
+      "f": 29
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtNewArrayImpl", 
+      "f": 29
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtFieldWriteImpl", 
+      "f": 29
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtThrowImpl", 
+      "f": 28
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtNewArrayImpl", 
+      "f": 28
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtThrowImpl", 
+      "f": 28
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtFieldImpl", 
+      "f": 28
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtConditionalImpl", 
+      "f": 27
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtWhileImpl", 
+      "f": 27
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtConditionalImpl", 
+      "f": 27
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtWhileImpl", 
+      "f": 27
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtReturnImpl", 
+      "f": 26
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtFieldWriteImpl", 
+      "f": 26
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 26
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtArrayWriteImpl", 
+      "f": 26
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtCaseImpl", 
+      "f": 26
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtDoImpl", 
+      "f": 26
+    }, 
+    {
+      "c": "MOV_CtBreakImpl_CtCaseImpl", 
+      "f": 26
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtArrayReadImpl", 
+      "f": 26
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtReturnImpl", 
+      "f": 26
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtNewArrayImpl", 
+      "f": 25
+    }, 
+    {
+      "c": "MOV_CtEnumValueImpl_CtEnumImpl", 
+      "f": 25
+    }, 
+    {
+      "c": "DEL_CtCatchVariableImpl_CtCatchImpl", 
+      "f": 25
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtSwitchImpl", 
+      "f": 25
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtCaseImpl", 
+      "f": 25
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtUnaryOperatorImpl", 
+      "f": 25
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtConditionalImpl", 
+      "f": 25
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtConditionalImpl", 
+      "f": 25
+    }, 
+    {
+      "c": "DEL_CtSwitchImpl_CtBlockImpl", 
+      "f": 25
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtLocalVariableImpl", 
+      "f": 24
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtIfImpl", 
+      "f": 24
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtAssignmentImpl", 
+      "f": 24
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtLocalVariableImpl", 
+      "f": 24
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtForImpl", 
+      "f": 23
+    }, 
+    {
+      "c": "MOV_CtArrayTypeReferenceImpl_CtMethodImpl", 
+      "f": 23
+    }, 
+    {
+      "c": "MOV_CtVariableWriteImpl_CtUnaryOperatorImpl", 
+      "f": 23
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtArrayReadImpl", 
+      "f": 23
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtInvocationImpl", 
+      "f": 23
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtNewArrayImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "DEL_CtBreakImpl_CtCaseImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtConditionalImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtOperatorAssignmentImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtFieldImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtAssignmentImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "UPD_CtVariableWriteImpl_CtFieldWriteImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtFieldImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtAnnotationImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtBinaryOperatorImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtFieldImpl", 
+      "f": 22
+    }, 
+    {
+      "c": "INS_CtArrayWriteImpl_CtAssignmentImpl", 
+      "f": 21
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtInvocationImpl", 
+      "f": 21
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtOperatorAssignmentImpl", 
+      "f": 21
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtUnaryOperatorImpl", 
+      "f": 21
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtWhileImpl", 
+      "f": 21
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtThrowImpl", 
+      "f": 21
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtForImpl", 
+      "f": 20
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtAssertImpl", 
+      "f": 20
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtReturnImpl", 
+      "f": 20
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtArrayWriteImpl", 
+      "f": 20
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtNewClassImpl", 
+      "f": 20
+    }, 
+    {
+      "c": "MOV_CtLocalVariableImpl_CtCaseImpl", 
+      "f": 20
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtOperatorAssignmentImpl", 
+      "f": 20
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtUnaryOperatorImpl", 
+      "f": 19
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtInvocationImpl", 
+      "f": 19
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtSynchronizedImpl", 
+      "f": 19
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtSwitchImpl", 
+      "f": 19
+    }, 
+    {
+      "c": "MOV_CtNewClassImpl_CtInvocationImpl", 
+      "f": 19
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtArrayReadImpl", 
+      "f": 19
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtFieldImpl", 
+      "f": 19
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtThrowImpl", 
+      "f": 18
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtNewArrayImpl", 
+      "f": 18
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtInvocationImpl", 
+      "f": 18
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtUnaryOperatorImpl", 
+      "f": 18
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtArrayReadImpl", 
+      "f": 18
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtLocalVariableImpl", 
+      "f": 18
+    }, 
+    {
+      "c": "UPD_CtClassImpl_CtPackageImpl", 
+      "f": 18
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtConditionalImpl", 
+      "f": 18
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtConstructorCallImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtFieldReadImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtNewClassImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtFieldImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtCaseImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtReturnImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "MOV_CtTypeAccessImpl_CtBinaryOperatorImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtForEachImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtFieldWriteImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtConditionalImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtFieldImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtArrayReadImpl", 
+      "f": 17
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtConditionalImpl", 
+      "f": 16
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtLocalVariableImpl", 
+      "f": 16
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtNewArrayImpl", 
+      "f": 16
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtSynchronizedImpl", 
+      "f": 16
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtFieldReadImpl", 
+      "f": 16
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtAnnotationImpl", 
+      "f": 16
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtConstructorCallImpl", 
+      "f": 16
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtConditionalImpl", 
+      "f": 16
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtConditionalImpl", 
+      "f": 16
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtAssertImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "INS_CtReturnImpl_CtCaseImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtAssertImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtNewArrayImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "MOV_CtMethodImpl_CtEnumImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "INS_CtClassImpl_CtInterfaceImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtConditionalImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtConditionalImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "MOV_CtDoImpl_CtBlockImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtArrayReadImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "UPD_CtTypeAccessImpl_CtFieldWriteImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtNewArrayImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtAssignmentImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtInvocationImpl", 
+      "f": 15
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtFieldImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtConstructorCallImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtOperatorAssignmentImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtSynchronizedImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtBlockImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtAnnotationImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtOperatorAssignmentImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtArrayReadImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtAssignmentImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtForImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "MOV_CtFieldImpl_CtEnumImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtArrayWriteImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "DEL_CtReturnImpl_CtCaseImpl", 
+      "f": 14
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtArrayWriteImpl", 
+      "f": 13
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtForImpl", 
+      "f": 13
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtUnaryOperatorImpl", 
+      "f": 13
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtAssertImpl", 
+      "f": 13
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtBinaryOperatorImpl", 
+      "f": 13
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtConstructorCallImpl", 
+      "f": 13
+    }, 
+    {
+      "c": "MOV_CtClassImpl_CtInterfaceImpl", 
+      "f": 13
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtConstructorCallImpl", 
+      "f": 13
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtAssignmentImpl", 
+      "f": 13
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtFieldImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtArrayReadImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtForEachImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtLocalVariableImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtNewArrayImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtWhileImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtAssignmentImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "MOV_CtFieldWriteImpl_CtUnaryOperatorImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtInvocationImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtConditionalImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtUnaryOperatorImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtWhileImpl", 
+      "f": 12
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtNewArrayImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtNewClassImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtReturnImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtConstructorCallImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtArrayReadImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtFieldImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtAssignmentImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtWhileImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "UPD_CtUnaryOperatorImpl_CtForImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtAssignmentImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "MOV_CtTypeParameterImpl_CtMethodImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "INS_CtVariableWriteImpl_CtFieldWriteImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtConditionalImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtAnnotationImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtReturnImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtConditionalImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtReturnImpl", 
+      "f": 11
+    }, 
+    {
+      "c": "DEL_CtMethodImpl_CtEnumImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtForImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtSynchronizedImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtNewArrayImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtFieldImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtAssignmentImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtArrayReadImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtUnaryOperatorImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "UPD_CtEnumValueImpl_CtEnumImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "UPD_CtTypeParameterReferenceImpl_CtParameterImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtCaseImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtSwitchImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtFieldWriteImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "UPD_CtUnaryOperatorImpl_CtBlockImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "DEL_CtLocalVariableImpl_CtCaseImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtThrowImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "INS_CtFieldWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 10
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtUnaryOperatorImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "UPD_CtFieldWriteImpl_CtUnaryOperatorImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtOperatorAssignmentImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtInterfaceImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "DEL_CtClassImpl_CtInterfaceImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtThrowImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "INS_CtMethodImpl_CtEnumImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "INS_CtTypeParameterImpl_CtMethodImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtBinaryOperatorImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtBinaryOperatorImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtConditionalImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtLocalVariableImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtFieldWriteImpl", 
+      "f": 9
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtBinaryOperatorImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtOperatorAssignmentImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtLocalVariableImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtArrayReadImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtFieldWriteImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtNewClassImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtForImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtConstructorCallImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtBinaryOperatorImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtAssignmentImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "MOV_CtOperatorAssignmentImpl_CtCaseImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtNewClassImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtUnaryOperatorImpl", 
+      "f": 8
+    }, 
+    {
+      "c": "DEL_CtEnumImpl_CtClassImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtWhileImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "MOV_CtNewClassImpl_CtReturnImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtBinaryOperatorImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtArrayWriteImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtUnaryOperatorImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtBlockImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtSynchronizedImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtConditionalImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "DEL_CtInterfaceImpl_CtPackageImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "DEL_CtTypeParameterImpl_CtClassImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "MOV_CtInterfaceImpl_CtPackageImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtBinaryOperatorImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtEnumValueImpl", 
+      "f": 7
+    }, 
+    {
+      "c": "DEL_CtSuperAccessImpl_CtFieldReadImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "DEL_CtFieldWriteImpl_CtUnaryOperatorImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "UPD_CtAnonymousExecutableImpl_CtClassImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "UPD_CtTypeParameterReferenceImpl_CtMethodImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtSwitchImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "INS_CtVariableWriteImpl_CtUnaryOperatorImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtReturnImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtFieldReadImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtArrayWriteImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtBinaryOperatorImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "MOV_CtArrayTypeReferenceImpl_CtFieldImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtReturnImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtAssignmentImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtConstructorCallImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtNewClassImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtInvocationImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtWhileImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtThrowImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtReturnImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtConditionalImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtConstructorCallImpl", 
+      "f": 6
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtAssertImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtOperatorAssignmentImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtAnnotationImpl_CtFieldImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtForEachImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtBinaryOperatorImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtOperatorAssignmentImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtConditionalImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtSwitchImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtArrayReadImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtFieldReadImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtNewClassImpl_CtFieldImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtFieldImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtBlockImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtReturnImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtNewClassImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtArrayTypeReferenceImpl_CtParameterImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtWhileImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtArrayReadImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtReturnImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtBinaryOperatorImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtReturnImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtLocalVariableImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 5
+    }, 
+    {
+      "c": "INS_CtFieldWriteImpl_CtUnaryOperatorImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtVariableWriteImpl_CtUnaryOperatorImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtNewClassImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtReturnImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "MOV_CtBreakImpl_CtBlockImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtNewClassImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtOperatorAssignmentImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtArrayReadImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtWhileImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtSynchronizedImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtAssertImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtAnnotationImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtInvocationImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtInterfaceImpl_CtClassImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtSwitchImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtThrowImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtAssertImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtSuperAccessImpl_CtInvocationImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "UPD_CtClassImpl_CtInterfaceImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtInvocationImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtSynchronizedImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtAssertImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtFieldImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtDoImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtClassImpl_CtNewClassImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtFieldImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtEnumValueImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtArrayWriteImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtTypeParameterImpl_CtClassImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtSwitchImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtFieldImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtBinaryOperatorImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "MOV_CtNewClassImpl_CtAssignmentImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtCaseImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtUnaryOperatorImpl", 
+      "f": 4
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtForEachImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtNewClassImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtLocalVariableImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtSwitchImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "MOV_CtAnnotationImpl_CtConstructorImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtThrowImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtFieldWriteImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtAssertImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtArrayReadImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "DEL_CtTypeAccessImpl_CtFieldWriteImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtBinaryOperatorImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtThrowImpl_CtCaseImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtFieldWriteImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtFieldImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtSwitchImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtConditionalImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtReturnImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtConditionalImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "MOV_CtTypeReferenceImpl_CtCatchVariableImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "UPD_CtInterfaceImpl_CtClassImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtLocalVariableImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtSwitchImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtTypeAccessImpl_CtBinaryOperatorImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtReturnImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtUnaryOperatorImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtNewClassImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtNewArrayImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtAssertImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtInterfaceImpl_CtPackageImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtLocalVariableImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtConditionalImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 3
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtFieldImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtEnumImpl_CtClassImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtForImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtSwitchImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtInterfaceImpl_CtClassImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtInterfaceImpl_CtInterfaceImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtSwitchImpl_CtCaseImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtNewClassImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtArrayWriteImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtConditionalImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtTypeParameterImpl_CtInterfaceImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtNewArrayImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtDoImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtEnumValueImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtDoImpl_CtCaseImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtArrayWriteImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtTypeParameterReferenceImpl_CtLocalVariableImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "UPD_CtTypeParameterReferenceImpl_CtFieldImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtSynchronizedImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtSwitchImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtEnumValueImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtAssertImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtForImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtDoImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtDoImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtFieldImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtConstructorImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtFieldReadImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtAssignmentImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "UPD_CtTypeParameterReferenceImpl_CtLocalVariableImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtForEachImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtAssertImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtLocalVariableImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtForImpl_CtCaseImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtFieldImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtTypeParameterReferenceImpl_CtMethodImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtNewClassImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "UPD_CtUnaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtOperatorAssignmentImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtAssertImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtUnaryOperatorImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtContinueImpl_CtBlockImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtInterfaceImpl_CtInterfaceImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtTryImpl_CtCaseImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtNewClassImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtFieldImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtWhileImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtAssertImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtSynchronizedImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtSwitchImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtInterfaceImpl_CtInterfaceImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtTypeReferenceImpl_CtLocalVariableImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtAssertImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtNewArrayImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtUnaryOperatorImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "UPD_CtUnaryOperatorImpl_CtInvocationImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtAssignmentImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtEnumValueImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtOperatorAssignmentImpl", 
+      "f": 2
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtReturnImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtSynchronizedImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtTypeReferenceImpl_CtMethodImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtOperatorAssignmentImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtTryImpl_CtCaseImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtOperatorAssignmentImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtTypeAccessImpl_CtBinaryOperatorImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtInvocationImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtArrayWriteImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtSynchronizedImpl_CtCaseImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtThrowImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtAssignmentImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtLocalVariableImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtAssertImpl_CtCaseImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtNewClassImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtParameterImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtFieldImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtInvocationImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtAnnotationTypeImpl_CtClassImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtSuperAccessImpl_CtFieldReadImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtConstructorImpl_CtEnumImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtBlockImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtConstructorImpl_CtEnumImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtOperatorAssignmentImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtEnumImpl_CtInterfaceImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtOperatorAssignmentImpl_CtForImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtReturnImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtArrayWriteImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtArrayWriteImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtForEachImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtNewArrayImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtWhileImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtDoImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtArrayReadImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtArrayWriteImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtAnnotationImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtForEachImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtAnnotationImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtConditionalImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtIfImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtBlockImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtIfImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtArrayWriteImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtTypeParameterImpl_CtInterfaceImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtFieldImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtIfImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "UPD_CtLocalVariableImpl_CtCaseImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtAnnotationImpl_CtClassImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtEnumImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtOperatorAssignmentImpl_CtForImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtUnaryOperatorImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtTryWithResourceImpl_CtBlockImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtWhileImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtThrowImpl_CtCaseImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtThrowImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtArrayWriteImpl_CtUnaryOperatorImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtSuperAccessImpl_CtInvocationImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtNewClassImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtAssertImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "UPD_CtEnumImpl_CtClassImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtDoImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtAssertImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtSynchronizedImpl_CtCaseImpl", 
+      "f": 1
+    }, 
+    {
+      "c": "INS_CtTypeAccessImpl_CtFieldWriteImpl", 
+      "f": 1
+    }
+  ], 
+  "probability": [
+    {
+      "c": "CtInvocationImpl", 
+      "f": 0.2364442979732042
+    }, 
+    {
+      "c": "CtLiteralImpl", 
+      "f": 0.09130341094900689
+    }, 
+    {
+      "c": "CtLocalVariableImpl", 
+      "f": 0.07619433916824053
+    }, 
+    {
+      "c": "CtMethodImpl", 
+      "f": 0.07579379666130075
+    }, 
+    {
+      "c": "CtVariableReadImpl", 
+      "f": 0.07073631374139658
+    }, 
+    {
+      "c": "CtFieldReadImpl", 
+      "f": 0.05560189116905175
+    }, 
+    {
+      "c": "CtTypeAccessImpl", 
+      "f": 0.04552495151661111
+    }, 
+    {
+      "c": "CtAssignmentImpl", 
+      "f": 0.04379349245180181
+    }, 
+    {
+      "c": "CtIfImpl", 
+      "f": 0.040802099045542696
+    }, 
+    {
+      "c": "CtTypeReferenceImpl", 
+      "f": 0.03705525205024527
+    }, 
+    {
+      "c": "CtFieldImpl", 
+      "f": 0.032986450001901306
+    }, 
+    {
+      "c": "CtBinaryOperatorImpl", 
+      "f": 0.030775860976258982
+    }, 
+    {
+      "c": "CtParameterImpl", 
+      "f": 0.024663785126690582
+    }, 
+    {
+      "c": "CtConstructorCallImpl", 
+      "f": 0.020425132774770892
+    }, 
+    {
+      "c": "CtAnnotationImpl", 
+      "f": 0.01632590977653277
+    }, 
+    {
+      "c": "CtBlockImpl", 
+      "f": 0.012470054377447935
+    }, 
+    {
+      "c": "CtReturnImpl", 
+      "f": 0.00848998009962861
+    }, 
+    {
+      "c": "CtFieldWriteImpl", 
+      "f": 0.00797535903058573
+    }, 
+    {
+      "c": "CtTryImpl", 
+      "f": 0.00709061640449723
+    }, 
+    {
+      "c": "CtUnaryOperatorImpl", 
+      "f": 0.00616784759104103
+    }, 
+    {
+      "c": "CtVariableWriteImpl", 
+      "f": 0.006094330295463476
+    }, 
+    {
+      "c": "CtClassImpl", 
+      "f": 0.005977716654202527
+    }, 
+    {
+      "c": "CtConstructorImpl", 
+      "f": 0.005049877682430634
+    }, 
+    {
+      "c": "CtAssertImpl", 
+      "f": 0.004241187431077535
+    }, 
+    {
+      "c": "CtCaseImpl", 
+      "f": 0.003825434449190676
+    }, 
+    {
+      "c": "CtNewArrayImpl", 
+      "f": 0.003090261493415132
+    }, 
+    {
+      "c": "CtForImpl", 
+      "f": 0.002971112772996337
+    }, 
+    {
+      "c": "CtArrayReadImpl", 
+      "f": 0.0027961923111049143
+    }, 
+    {
+      "c": "CtForEachImpl", 
+      "f": 0.002763236282052907
+    }, 
+    {
+      "c": "CtArrayTypeReferenceImpl", 
+      "f": 0.002182703154906012
+    }, 
+    {
+      "c": "CtCatchImpl", 
+      "f": 0.0021497471258540048
+    }, 
+    {
+      "c": "CtThisAccessImpl", 
+      "f": 0.0021167910968019977
+    }, 
+    {
+      "c": "CtThrowImpl", 
+      "f": 0.0020508790386979834
+    }, 
+    {
+      "c": "CtConditionalImpl", 
+      "f": 0.001959616189015502
+    }, 
+    {
+      "c": "CtWhileImpl", 
+      "f": 0.0017517396980720724
+    }, 
+    {
+      "c": "CtCatchVariableImpl", 
+      "f": 0.001523582573865869
+    }, 
+    {
+      "c": "CtNewClassImpl", 
+      "f": 0.0014779511490246283
+    }, 
+    {
+      "c": "CtOperatorAssignmentImpl", 
+      "f": 0.001437389882499081
+    }, 
+    {
+      "c": "CtAnonymousExecutableImpl", 
+      "f": 0.001199092441661491
+    }, 
+    {
+      "c": "CtSynchronizedImpl", 
+      "f": 0.001181346887556564
+    }, 
+    {
+      "c": "CtBreakImpl", 
+      "f": 0.0007858745389324782
+    }, 
+    {
+      "c": "CtArrayWriteImpl", 
+      "f": 0.0006489802644087561
+    }, 
+    {
+      "c": "CtSwitchImpl", 
+      "f": 0.0006058839187253622
+    }, 
+    {
+      "c": "CtEnumValueImpl", 
+      "f": 0.00037519171536131216
+    }, 
+    {
+      "c": "CtContinueImpl", 
+      "f": 0.0002585780741003638
+    }, 
+    {
+      "c": "CtDoImpl", 
+      "f": 0.0002459026783111303
+    }, 
+    {
+      "c": "CtTryWithResourceImpl", 
+      "f": 0.00017238538273357587
+    }, 
+    {
+      "c": "CtInterfaceImpl", 
+      "f": 0.00015717490778649563
+    }, 
+    {
+      "c": "CtEnumImpl", 
+      "f": 0.00010900840378740826
+    }, 
+    {
+      "c": "CtTypeParameterImpl", 
+      "f": 8.619269136678793e-05
+    }, 
+    {
+      "c": "CtTypeParameterReferenceImpl", 
+      "f": 6.084189978832089e-05
+    }, 
+    {
+      "c": "CtSuperAccessImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "CtAnnotationTypeImpl", 
+      "f": 2.5350791578467036e-06
+    }
+  ], 
+  "probabilityParent": [
+    {
+      "c": "UPD_CtInvocationImpl_CtBlockImpl", 
+      "f": 0.04891435235065215
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtBinaryOperatorImpl", 
+      "f": 0.045101593297250706
+    }, 
+    {
+      "c": "INS_CtMethodImpl_CtClassImpl", 
+      "f": 0.03872840429442409
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtBlockImpl", 
+      "f": 0.035455617101644
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtBlockImpl", 
+      "f": 0.03537702964775075
+    }, 
+    {
+      "c": "DEL_CtLocalVariableImpl_CtBlockImpl", 
+      "f": 0.02492743335910664
+    }, 
+    {
+      "c": "INS_CtIfImpl_CtBlockImpl", 
+      "f": 0.0211476303347572
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtInvocationImpl", 
+      "f": 0.02087891194402545
+    }, 
+    {
+      "c": "MOV_CtLocalVariableImpl_CtBlockImpl", 
+      "f": 0.020141203909092062
+    }, 
+    {
+      "c": "INS_CtLocalVariableImpl_CtBlockImpl", 
+      "f": 0.01983445933099261
+    }, 
+    {
+      "c": "UPD_CtTypeAccessImpl_CtInvocationImpl", 
+      "f": 0.01893450622995703
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtBlockImpl", 
+      "f": 0.01791286932934481
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtInvocationImpl", 
+      "f": 0.017210652402621273
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtBlockImpl", 
+      "f": 0.015775797599280036
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtInvocationImpl", 
+      "f": 0.015461447783707047
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtMethodImpl", 
+      "f": 0.014406854854042818
+    }, 
+    {
+      "c": "MOV_CtMethodImpl_CtClassImpl", 
+      "f": 0.014389109299937891
+    }, 
+    {
+      "c": "INS_CtFieldImpl_CtClassImpl", 
+      "f": 0.014244609787940628
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtLocalVariableImpl", 
+      "f": 0.013446059853218917
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtBlockImpl", 
+      "f": 0.013433384457429684
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtInvocationImpl", 
+      "f": 0.013167201145855779
+    }, 
+    {
+      "c": "DEL_CtMethodImpl_CtClassImpl", 
+      "f": 0.013048052425436983
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtInvocationImpl", 
+      "f": 0.012786939272178773
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtLocalVariableImpl", 
+      "f": 0.011993459495772756
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtBlockImpl", 
+      "f": 0.01142813684357294
+    }, 
+    {
+      "c": "DEL_CtIfImpl_CtBlockImpl", 
+      "f": 0.009836107132445211
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtInvocationImpl", 
+      "f": 0.009270784480245396
+    }, 
+    {
+      "c": "MOV_CtParameterImpl_CtMethodImpl", 
+      "f": 0.00917445147224722
+    }, 
+    {
+      "c": "MOV_CtBlockImpl_CtIfImpl", 
+      "f": 0.008728277540466201
+    }, 
+    {
+      "c": "MOV_CtIfImpl_CtBlockImpl", 
+      "f": 0.00862940945331018
+    }, 
+    {
+      "c": "UPD_CtTypeAccessImpl_CtFieldReadImpl", 
+      "f": 0.008370831379209815
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtAssignmentImpl", 
+      "f": 0.008114788384267298
+    }, 
+    {
+      "c": "UPD_CtMethodImpl_CtClassImpl", 
+      "f": 0.007846069993535548
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtParameterImpl", 
+      "f": 0.006933441496710734
+    }, 
+    {
+      "c": "DEL_CtFieldImpl_CtClassImpl", 
+      "f": 0.00683710848871256
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtInvocationImpl", 
+      "f": 0.0067711964306085455
+    }, 
+    {
+      "c": "UPD_CtLocalVariableImpl_CtBlockImpl", 
+      "f": 0.0066165566019798965
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtIfImpl", 
+      "f": 0.006350373290405993
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtInvocationImpl", 
+      "f": 0.006099400453779169
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtInvocationImpl", 
+      "f": 0.005990392049991761
+    }, 
+    {
+      "c": "MOV_CtTypeAccessImpl_CtThisAccessImpl", 
+      "f": 0.005911804596098513
+    }, 
+    {
+      "c": "MOV_CtFieldImpl_CtClassImpl", 
+      "f": 0.005726743817575704
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtBinaryOperatorImpl", 
+      "f": 0.005534077801579354
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtMethodImpl", 
+      "f": 0.005161421165375889
+    }, 
+    {
+      "c": "INS_CtParameterImpl_CtMethodImpl", 
+      "f": 0.0051284651363238815
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtInvocationImpl", 
+      "f": 0.004740598025173336
+    }, 
+    {
+      "c": "MOV_CtTypeReferenceImpl_CtLocalVariableImpl", 
+      "f": 0.004689896442016402
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtBinaryOperatorImpl", 
+      "f": 0.004649335175490855
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtFieldImpl", 
+      "f": 0.004281748697603083
+    }, 
+    {
+      "c": "UPD_CtFieldImpl_CtClassImpl", 
+      "f": 0.004276678539287389
+    }, 
+    {
+      "c": "UPD_CtTypeAccessImpl_CtThisAccessImpl", 
+      "f": 0.004276678539287389
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtLocalVariableImpl", 
+      "f": 0.004261468064340309
+    }, 
+    {
+      "c": "MOV_CtTypeAccessImpl_CtInvocationImpl", 
+      "f": 0.003724031282876808
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtConstructorCallImpl", 
+      "f": 0.0036936103329826475
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtLocalVariableImpl", 
+      "f": 0.0036758647788777206
+    }, 
+    {
+      "c": "INS_CtTryImpl_CtBlockImpl", 
+      "f": 0.003663189383088487
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 0.0036276982748786333
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtReturnImpl", 
+      "f": 0.003625163195720786
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtNewArrayImpl", 
+      "f": 0.0035567160584589253
+    }, 
+    {
+      "c": "UPD_CtParameterImpl_CtMethodImpl", 
+      "f": 0.0034730584462499842
+    }, 
+    {
+      "c": "MOV_CtReturnImpl_CtBlockImpl", 
+      "f": 0.0034350322588822834
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtBinaryOperatorImpl", 
+      "f": 0.003275322271937941
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtBinaryOperatorImpl", 
+      "f": 0.0031891295805711534
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtAssignmentImpl", 
+      "f": 0.0031282876807828324
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtInvocationImpl", 
+      "f": 0.0030344897519425044
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtIfImpl", 
+      "f": 0.003004068802048344
+    }, 
+    {
+      "c": "UPD_CtFieldWriteImpl_CtAssignmentImpl", 
+      "f": 0.002958437377207103
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtBinaryOperatorImpl", 
+      "f": 0.002917876110681556
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtInvocationImpl", 
+      "f": 0.0029128059523658625
+    }, 
+    {
+      "c": "MOV_CtFieldWriteImpl_CtAssignmentImpl", 
+      "f": 0.002748025807105827
+    }, 
+    {
+      "c": "INS_CtReturnImpl_CtBlockImpl", 
+      "f": 0.0027353504113165933
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtConstructorCallImpl", 
+      "f": 0.0025731053452144044
+    }, 
+    {
+      "c": "INS_CtConstructorImpl_CtClassImpl", 
+      "f": 0.0025629650285830174
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtInvocationImpl", 
+      "f": 0.002464096941426996
+    }, 
+    {
+      "c": "INS_CtBlockImpl_CtIfImpl", 
+      "f": 0.0024108602791122155
+    }, 
+    {
+      "c": "MOV_CtTypeReferenceImpl_CtMethodImpl", 
+      "f": 0.0023855094875337482
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtInvocationImpl", 
+      "f": 0.0022739660045884933
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtLocalVariableImpl", 
+      "f": 0.002248615213010026
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtConstructorCallImpl", 
+      "f": 0.0022105890256423257
+    }, 
+    {
+      "c": "UPD_CtVariableWriteImpl_CtAssignmentImpl", 
+      "f": 0.002147212046696158
+    }, 
+    {
+      "c": "DEL_CtReturnImpl_CtBlockImpl", 
+      "f": 0.002147212046696158
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtBinaryOperatorImpl", 
+      "f": 0.0020787649094342973
+    }, 
+    {
+      "c": "DEL_CtTryImpl_CtBlockImpl", 
+      "f": 0.00207622983027645
+    }, 
+    {
+      "c": "INS_CtAssertImpl_CtBlockImpl", 
+      "f": 0.0020736947511186036
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtInvocationImpl", 
+      "f": 0.0020458088803822897
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtBinaryOperatorImpl", 
+      "f": 0.0020229931679616696
+    }, 
+    {
+      "c": "INS_CtParameterImpl_CtConstructorImpl", 
+      "f": 0.0018962392100693344
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtBinaryOperatorImpl", 
+      "f": 0.0018810287351222542
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtIfImpl", 
+      "f": 0.0018353973102810135
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtConstructorCallImpl", 
+      "f": 0.001812581597860393
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtFieldReadImpl", 
+      "f": 0.001804976360386853
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 0.001787230806281926
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtNewArrayImpl", 
+      "f": 0.001779625568808386
+    }, 
+    {
+      "c": "INS_CtClassImpl_CtClassImpl", 
+      "f": 0.0017770904896505393
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtBinaryOperatorImpl", 
+      "f": 0.0017618800147034591
+    }, 
+    {
+      "c": "DEL_CtAssertImpl_CtBlockImpl", 
+      "f": 0.0017568098563877656
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtIfImpl", 
+      "f": 0.0017568098563877656
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtBinaryOperatorImpl", 
+      "f": 0.001754274777229919
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtConstructorCallImpl", 
+      "f": 0.0017162485898622184
+    }, 
+    {
+      "c": "MOV_CtParameterImpl_CtConstructorImpl", 
+      "f": 0.0017086433523886783
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtInvocationImpl", 
+      "f": 0.0016452663734425107
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtInvocationImpl", 
+      "f": 0.0016123103443905036
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtIfImpl", 
+      "f": 0.001609775265232657
+    }, 
+    {
+      "c": "DEL_CtParameterImpl_CtMethodImpl", 
+      "f": 0.0015945647902855767
+    }, 
+    {
+      "c": "INS_CtCaseImpl_CtSwitchImpl", 
+      "f": 0.0015894946319698832
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtConstructorCallImpl", 
+      "f": 0.00158442447365419
+    }, 
+    {
+      "c": "MOV_CtLocalVariableImpl_CtForImpl", 
+      "f": 0.0015286527321815625
+    }, 
+    {
+      "c": "DEL_CtFieldWriteImpl_CtAssignmentImpl", 
+      "f": 0.0015033019406030953
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtNewArrayImpl", 
+      "f": 0.0015033019406030953
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtAssignmentImpl", 
+      "f": 0.0014931616239717085
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtInvocationImpl", 
+      "f": 0.0014931616239717085
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtReturnImpl", 
+      "f": 0.0014728809907089348
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtInvocationImpl", 
+      "f": 0.0014703459115510882
+    }, 
+    {
+      "c": "UPD_CtClassImpl_CtNewClassImpl", 
+      "f": 0.0014576705157618548
+    }, 
+    {
+      "c": "INS_CtVariableWriteImpl_CtAssignmentImpl", 
+      "f": 0.0014475301991304678
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtThrowImpl", 
+      "f": 0.0014196443283941542
+    }, 
+    {
+      "c": "DEL_CtTypeAccessImpl_CtThisAccessImpl", 
+      "f": 0.0014171092492363073
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtConstructorCallImpl", 
+      "f": 0.0014095040117627672
+    }, 
+    {
+      "c": "MOV_CtCaseImpl_CtSwitchImpl", 
+      "f": 0.0013968286159735338
+    }, 
+    {
+      "c": "MOV_CtConstructorImpl_CtClassImpl", 
+      "f": 0.0013917584576578403
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtAssignmentImpl", 
+      "f": 0.001386688299342147
+    }, 
+    {
+      "c": "MOV_CtCatchImpl_CtTryImpl", 
+      "f": 0.00136894274523722
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtIfImpl", 
+      "f": 0.0013638725869215267
+    }, 
+    {
+      "c": "MOV_CtTryImpl_CtBlockImpl", 
+      "f": 0.001343591953658753
+    }, 
+    {
+      "c": "INS_CtForEachImpl_CtBlockImpl", 
+      "f": 0.0013334516370273662
+    }, 
+    {
+      "c": "DEL_CtBlockImpl_CtIfImpl", 
+      "f": 0.0013309165578695194
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtBinaryOperatorImpl", 
+      "f": 0.0013106359246067459
+    }, 
+    {
+      "c": "INS_CtForImpl_CtBlockImpl", 
+      "f": 0.0013081008454488992
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtBinaryOperatorImpl", 
+      "f": 0.001282750053870432
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtCaseImpl", 
+      "f": 0.0012548641831341184
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtReturnImpl", 
+      "f": 0.0012396537081870382
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtConstructorCallImpl", 
+      "f": 0.0011838819667144107
+    }, 
+    {
+      "c": "MOV_CtTypeAccessImpl_CtFieldReadImpl", 
+      "f": 0.0011661364126094838
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtConstructorCallImpl", 
+      "f": 0.0011331803835574765
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtConstructorCallImpl", 
+      "f": 0.0011306453043996299
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtLocalVariableImpl", 
+      "f": 0.0011154348294525496
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtForImpl", 
+      "f": 0.0011002243545054694
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtConstructorCallImpl", 
+      "f": 0.001095154196189776
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtConstructorCallImpl", 
+      "f": 0.0010799437212426959
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 0.0010571280088220755
+    }, 
+    {
+      "c": "INS_CtMethodImpl_CtInterfaceImpl", 
+      "f": 0.001052057850506382
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtConstructorCallImpl", 
+      "f": 0.001026707058927915
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtForImpl", 
+      "f": 0.0010064264256651413
+    }, 
+    {
+      "c": "MOV_CtLocalVariableImpl_CtForEachImpl", 
+      "f": 0.0009886808715602144
+    }, 
+    {
+      "c": "UPD_CtArrayTypeReferenceImpl_CtLocalVariableImpl", 
+      "f": 0.0009861457924023678
+    }, 
+    {
+      "c": "DEL_CtConstructorImpl_CtClassImpl", 
+      "f": 0.0009760054757709809
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtReturnImpl", 
+      "f": 0.0009430494467189738
+    }, 
+    {
+      "c": "MOV_CtCatchVariableImpl_CtCatchImpl", 
+      "f": 0.0009405143675611271
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtUnaryOperatorImpl", 
+      "f": 0.000932909130087587
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtAssignmentImpl", 
+      "f": 0.0009202337342983535
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtLocalVariableImpl", 
+      "f": 0.0009202337342983535
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtBinaryOperatorImpl", 
+      "f": 0.0009176986551405067
+    }, 
+    {
+      "c": "DEL_CtForImpl_CtBlockImpl", 
+      "f": 0.0009176986551405067
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtConstructorCallImpl", 
+      "f": 0.0009151635759826601
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtCaseImpl", 
+      "f": 0.00090755833850912
+    }, 
+    {
+      "c": "DEL_CtClassImpl_CtClassImpl", 
+      "f": 0.000889812784404193
+    }, 
+    {
+      "c": "UPD_CtLocalVariableImpl_CtForEachImpl", 
+      "f": 0.0008796724677728062
+    }, 
+    {
+      "c": "MOV_CtVariableWriteImpl_CtAssignmentImpl", 
+      "f": 0.0008771373886149595
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtCatchVariableImpl", 
+      "f": 0.0008619269136678793
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtLocalVariableImpl", 
+      "f": 0.0008619269136678793
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtFieldImpl", 
+      "f": 0.0008619269136678793
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtMethodImpl", 
+      "f": 0.0008568567553521859
+    }, 
+    {
+      "c": "UPD_CtParameterImpl_CtConstructorImpl", 
+      "f": 0.000846716438720799
+    }, 
+    {
+      "c": "INS_CtThrowImpl_CtBlockImpl", 
+      "f": 0.0008416462804051056
+    }, 
+    {
+      "c": "DEL_CtParameterImpl_CtConstructorImpl", 
+      "f": 0.0008416462804051056
+    }, 
+    {
+      "c": "DEL_CtCaseImpl_CtSwitchImpl", 
+      "f": 0.0008391112012472589
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtAssignmentImpl", 
+      "f": 0.0008315059637737189
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtIfImpl", 
+      "f": 0.0008239007263001788
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtAssignmentImpl", 
+      "f": 0.0008162954888266386
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtAssignmentImpl", 
+      "f": 0.0007503834307226243
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtFieldImpl", 
+      "f": 0.0007478483515647776
+    }, 
+    {
+      "c": "MOV_CtForImpl_CtBlockImpl", 
+      "f": 0.0007402431140912375
+    }, 
+    {
+      "c": "DEL_CtThrowImpl_CtBlockImpl", 
+      "f": 0.0007377080349333908
+    }, 
+    {
+      "c": "INS_CtFieldImpl_CtInterfaceImpl", 
+      "f": 0.0007326378766176973
+    }, 
+    {
+      "c": "MOV_CtForEachImpl_CtBlockImpl", 
+      "f": 0.0007174274016706172
+    }, 
+    {
+      "c": "DEL_CtForEachImpl_CtBlockImpl", 
+      "f": 0.0007123572433549237
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtIfImpl", 
+      "f": 0.0007098221641970771
+    }, 
+    {
+      "c": "MOV_CtClassImpl_CtClassImpl", 
+      "f": 0.000702216926723537
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtBinaryOperatorImpl", 
+      "f": 0.0006971467684078435
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtInvocationImpl", 
+      "f": 0.0006946116892499968
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtCaseImpl", 
+      "f": 0.0006794012143029166
+    }, 
+    {
+      "c": "MOV_CtIfImpl_CtCaseImpl", 
+      "f": 0.0006717959768293765
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtInvocationImpl", 
+      "f": 0.0006692608976715297
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtCaseImpl", 
+      "f": 0.0006565855018822963
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtReturnImpl", 
+      "f": 0.0006489802644087561
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtInvocationImpl", 
+      "f": 0.0006439101060930628
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtAssignmentImpl", 
+      "f": 0.0006388399477773694
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 0.0006363048686195226
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtReturnImpl", 
+      "f": 0.0006210943936724424
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtConstructorCallImpl", 
+      "f": 0.0006185593145145958
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtFieldReadImpl", 
+      "f": 0.000616024235356749
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtNewArrayImpl", 
+      "f": 0.0006109540770410556
+    }, 
+    {
+      "c": "INS_CtWhileImpl_CtBlockImpl", 
+      "f": 0.0006008137604096688
+    }, 
+    {
+      "c": "INS_CtOperatorAssignmentImpl_CtBlockImpl", 
+      "f": 0.000598278681251822
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtInvocationImpl", 
+      "f": 0.000590673443778282
+    }, 
+    {
+      "c": "DEL_CtWhileImpl_CtBlockImpl", 
+      "f": 0.0005881383646204353
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtFieldReadImpl", 
+      "f": 0.0005754629688312018
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtAssignmentImpl", 
+      "f": 0.0005678577313576617
+    }, 
+    {
+      "c": "INS_CtSynchronizedImpl_CtBlockImpl", 
+      "f": 0.0005653226521998149
+    }, 
+    {
+      "c": "MOV_CtWhileImpl_CtBlockImpl", 
+      "f": 0.0005627875730419682
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtFieldReadImpl", 
+      "f": 0.0005602524938841215
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtAssignmentImpl", 
+      "f": 0.0005577174147262748
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtReturnImpl", 
+      "f": 0.0005551823355684282
+    }, 
+    {
+      "c": "UPD_CtVariableWriteImpl_CtUnaryOperatorImpl", 
+      "f": 0.0005526472564105814
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtReturnImpl", 
+      "f": 0.0005450420189370413
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtIfImpl", 
+      "f": 0.0005298315439899611
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtLocalVariableImpl", 
+      "f": 0.000522226306516421
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtReturnImpl", 
+      "f": 0.000522226306516421
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtReturnImpl", 
+      "f": 0.0005120859898850342
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtConditionalImpl", 
+      "f": 0.0004994105940958006
+    }, 
+    {
+      "c": "UPD_CtLocalVariableImpl_CtForImpl", 
+      "f": 0.0004892702774644138
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtAssignmentImpl", 
+      "f": 0.0004892702774644138
+    }, 
+    {
+      "c": "MOV_CtAnnotationImpl_CtMethodImpl", 
+      "f": 0.0004842001191487204
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtConstructorCallImpl", 
+      "f": 0.0004816650399908737
+    }, 
+    {
+      "c": "INS_CtTypeAccessImpl_CtThisAccessImpl", 
+      "f": 0.0004816650399908737
+    }, 
+    {
+      "c": "INS_CtTypeAccessImpl_CtInvocationImpl", 
+      "f": 0.0004740598025173336
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtAssignmentImpl", 
+      "f": 0.0004715247233594869
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtConstructorCallImpl", 
+      "f": 0.0004715247233594869
+    }, 
+    {
+      "c": "INS_CtCatchImpl_CtTryImpl", 
+      "f": 0.0004664545650437935
+    }, 
+    {
+      "c": "MOV_CtThrowImpl_CtBlockImpl", 
+      "f": 0.0004613844067281001
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtBinaryOperatorImpl", 
+      "f": 0.0004613844067281001
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtIfImpl", 
+      "f": 0.00045377916925456
+    }, 
+    {
+      "c": "DEL_CtSynchronizedImpl_CtBlockImpl", 
+      "f": 0.00045124409009671324
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtConstructorCallImpl", 
+      "f": 0.00045124409009671324
+    }, 
+    {
+      "c": "INS_CtAnonymousExecutableImpl_CtClassImpl", 
+      "f": 0.00044870901093886656
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtFieldImpl", 
+      "f": 0.00044110377346532644
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtAssignmentImpl", 
+      "f": 0.00043856869430747975
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtForEachImpl", 
+      "f": 0.00043096345683393963
+    }, 
+    {
+      "c": "DEL_CtOperatorAssignmentImpl_CtBlockImpl", 
+      "f": 0.00043096345683393963
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtIfImpl", 
+      "f": 0.00042842837767609294
+    }, 
+    {
+      "c": "MOV_CtTypeReferenceImpl_CtFieldImpl", 
+      "f": 0.0004233582193603995
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtArrayReadImpl", 
+      "f": 0.00041828806104470613
+    }, 
+    {
+      "c": "MOV_CtAssertImpl_CtBlockImpl", 
+      "f": 0.0004081477444133193
+    }, 
+    {
+      "c": "DEL_CtAnonymousExecutableImpl_CtClassImpl", 
+      "f": 0.0004005425069397792
+    }, 
+    {
+      "c": "INS_CtFieldWriteImpl_CtAssignmentImpl", 
+      "f": 0.0003954723486240858
+    }, 
+    {
+      "c": "UPD_CtCatchVariableImpl_CtCatchImpl", 
+      "f": 0.0003954723486240858
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 0.0003954723486240858
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtCaseImpl", 
+      "f": 0.0003904021903083924
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtFieldImpl", 
+      "f": 0.00038533203199269897
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtInvocationImpl", 
+      "f": 0.00038533203199269897
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtCaseImpl", 
+      "f": 0.00038533203199269897
+    }, 
+    {
+      "c": "MOV_CtOperatorAssignmentImpl_CtBlockImpl", 
+      "f": 0.0003827969528348523
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtBinaryOperatorImpl", 
+      "f": 0.0003802618736770056
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtAssignmentImpl", 
+      "f": 0.00037772679451915885
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtIfImpl", 
+      "f": 0.00037519171536131216
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtConditionalImpl", 
+      "f": 0.00037519171536131216
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtLocalVariableImpl", 
+      "f": 0.00037012155704561873
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtBlockImpl", 
+      "f": 0.00036758647788777204
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtInvocationImpl", 
+      "f": 0.00036505139872992535
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtForEachImpl", 
+      "f": 0.00036505139872992535
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtFieldReadImpl", 
+      "f": 0.00036505139872992535
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 0.00036251631957207866
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtNewArrayImpl", 
+      "f": 0.0003523760029406918
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtInvocationImpl", 
+      "f": 0.0003498409237828451
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtUnaryOperatorImpl", 
+      "f": 0.0003498409237828451
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtThrowImpl", 
+      "f": 0.0003498409237828451
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtReturnImpl", 
+      "f": 0.0003498409237828451
+    }, 
+    {
+      "c": "MOV_CtArrayWriteImpl_CtAssignmentImpl", 
+      "f": 0.0003498409237828451
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtAssignmentImpl", 
+      "f": 0.0003473058446249984
+    }, 
+    {
+      "c": "MOV_CtFieldImpl_CtInterfaceImpl", 
+      "f": 0.0003473058446249984
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtNewArrayImpl", 
+      "f": 0.00034477076546715174
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtFieldReadImpl", 
+      "f": 0.00034477076546715174
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtReturnImpl", 
+      "f": 0.0003397006071514583
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtAssignmentImpl", 
+      "f": 0.0003371655279936116
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtBlockImpl", 
+      "f": 0.0003346304488357649
+    }, 
+    {
+      "c": "MOV_CtAnonymousExecutableImpl_CtClassImpl", 
+      "f": 0.0003346304488357649
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtLocalVariableImpl", 
+      "f": 0.0003320953696779182
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtReturnImpl", 
+      "f": 0.0003320953696779182
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtInvocationImpl", 
+      "f": 0.0003295602905200715
+    }, 
+    {
+      "c": "INS_CtIfImpl_CtCaseImpl", 
+      "f": 0.0003295602905200715
+    }, 
+    {
+      "c": "INS_CtClassImpl_CtPackageImpl", 
+      "f": 0.0003270252113622248
+    }, 
+    {
+      "c": "INS_CtSwitchImpl_CtBlockImpl", 
+      "f": 0.0003219550530465314
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtLocalVariableImpl", 
+      "f": 0.0003219550530465314
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtInvocationImpl", 
+      "f": 0.0003194199738886847
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtCaseImpl", 
+      "f": 0.00031688489473083795
+    }, 
+    {
+      "c": "DEL_CtCatchImpl_CtTryImpl", 
+      "f": 0.00031434981557299126
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtCaseImpl", 
+      "f": 0.00031181473641514457
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtInvocationImpl", 
+      "f": 0.00031181473641514457
+    }, 
+    {
+      "c": "UPD_CtFieldImpl_CtInterfaceImpl", 
+      "f": 0.00031181473641514457
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtConditionalImpl", 
+      "f": 0.0003092796572572979
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtReturnImpl", 
+      "f": 0.00030674457809945114
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtReturnImpl", 
+      "f": 0.00030674457809945114
+    }, 
+    {
+      "c": "MOV_CtTypeReferenceImpl_CtParameterImpl", 
+      "f": 0.00030420949894160445
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtReturnImpl", 
+      "f": 0.00030167441978375776
+    }, 
+    {
+      "c": "UPD_CtArrayTypeReferenceImpl_CtParameterImpl", 
+      "f": 0.000299139340625911
+    }, 
+    {
+      "c": "MOV_CtArrayTypeReferenceImpl_CtLocalVariableImpl", 
+      "f": 0.00029660426146806433
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtCaseImpl", 
+      "f": 0.00029153410315237095
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtReturnImpl", 
+      "f": 0.00029153410315237095
+    }, 
+    {
+      "c": "DEL_CtMethodImpl_CtInterfaceImpl", 
+      "f": 0.0002889990239945242
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtBinaryOperatorImpl", 
+      "f": 0.0002889990239945242
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtArrayReadImpl", 
+      "f": 0.00028392886567883083
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 0.0002788587073631374
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtAssignmentImpl", 
+      "f": 0.0002788587073631374
+    }, 
+    {
+      "c": "DEL_CtClassImpl_CtPackageImpl", 
+      "f": 0.0002763236282052907
+    }, 
+    {
+      "c": "DEL_CtVariableWriteImpl_CtAssignmentImpl", 
+      "f": 0.0002712534698895973
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtReturnImpl", 
+      "f": 0.0002687183907317506
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtReturnImpl", 
+      "f": 0.0002661833115739039
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 0.0002661833115739039
+    }, 
+    {
+      "c": "DEL_CtFieldImpl_CtInterfaceImpl", 
+      "f": 0.00026364823241605716
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtAssignmentImpl", 
+      "f": 0.00026364823241605716
+    }, 
+    {
+      "c": "UPD_CtArrayTypeReferenceImpl_CtFieldImpl", 
+      "f": 0.0002611131532582105
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtConstructorCallImpl", 
+      "f": 0.0002611131532582105
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtInvocationImpl", 
+      "f": 0.00025350791578467036
+    }, 
+    {
+      "c": "UPD_CtArrayTypeReferenceImpl_CtMethodImpl", 
+      "f": 0.00025350791578467036
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtIfImpl", 
+      "f": 0.00025097283662682367
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtFieldReadImpl", 
+      "f": 0.000248437757468977
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 0.0002459026783111303
+    }, 
+    {
+      "c": "INS_CtBreakImpl_CtCaseImpl", 
+      "f": 0.0002459026783111303
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtNewArrayImpl", 
+      "f": 0.0002459026783111303
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 0.00024336759915328355
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtArrayReadImpl", 
+      "f": 0.00024336759915328355
+    }, 
+    {
+      "c": "DEL_CtArrayWriteImpl_CtAssignmentImpl", 
+      "f": 0.00024336759915328355
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtReturnImpl", 
+      "f": 0.00024083251999543686
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtLocalVariableImpl", 
+      "f": 0.00024083251999543686
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtConditionalImpl", 
+      "f": 0.00023829744083759015
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtReturnImpl", 
+      "f": 0.00023576236167974346
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtNewClassImpl", 
+      "f": 0.00023576236167974346
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 0.00023576236167974346
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtAssignmentImpl", 
+      "f": 0.00022815712420620334
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtCaseImpl", 
+      "f": 0.00022815712420620334
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtAssignmentImpl", 
+      "f": 0.00022815712420620334
+    }, 
+    {
+      "c": "INS_CtBreakImpl_CtBlockImpl", 
+      "f": 0.00022562204504835662
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtClassImpl", 
+      "f": 0.00022308696589050993
+    }, 
+    {
+      "c": "DEL_CtTypeAccessImpl_CtInvocationImpl", 
+      "f": 0.00021801680757481653
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtBlockImpl", 
+      "f": 0.00021801680757481653
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtConstructorCallImpl", 
+      "f": 0.00021801680757481653
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtAssignmentImpl", 
+      "f": 0.00021801680757481653
+    }, 
+    {
+      "c": "MOV_CtSwitchImpl_CtBlockImpl", 
+      "f": 0.00021548172841696981
+    }, 
+    {
+      "c": "UPD_CtClassImpl_CtClassImpl", 
+      "f": 0.00021548172841696981
+    }, 
+    {
+      "c": "UPD_CtMethodImpl_CtInterfaceImpl", 
+      "f": 0.00021548172841696981
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtNewArrayImpl", 
+      "f": 0.00021548172841696981
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtNewArrayImpl", 
+      "f": 0.00021548172841696981
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtFieldReadImpl", 
+      "f": 0.00021294664925912313
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtIfImpl", 
+      "f": 0.00021294664925912313
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtLocalVariableImpl", 
+      "f": 0.00021294664925912313
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtFieldReadImpl", 
+      "f": 0.00021294664925912313
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtOperatorAssignmentImpl", 
+      "f": 0.0002104115701012764
+    }, 
+    {
+      "c": "DEL_CtTypeAccessImpl_CtFieldReadImpl", 
+      "f": 0.0002104115701012764
+    }, 
+    {
+      "c": "DEL_CtFieldImpl_CtEnumImpl", 
+      "f": 0.0002104115701012764
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtArrayReadImpl", 
+      "f": 0.0002104115701012764
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtLocalVariableImpl", 
+      "f": 0.000205341411785583
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtLocalVariableImpl", 
+      "f": 0.000205341411785583
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtIfImpl", 
+      "f": 0.0002028063326277363
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 0.0001977361743120429
+    }, 
+    {
+      "c": "INS_CtEnumValueImpl_CtEnumImpl", 
+      "f": 0.0001977361743120429
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 0.0001977361743120429
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtFieldReadImpl", 
+      "f": 0.00019266601599634948
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtNewArrayImpl", 
+      "f": 0.00019266601599634948
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtWhileImpl", 
+      "f": 0.00019266601599634948
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtForEachImpl", 
+      "f": 0.00018759585768065608
+    }, 
+    {
+      "c": "DEL_CtIfImpl_CtCaseImpl", 
+      "f": 0.00018759585768065608
+    }, 
+    {
+      "c": "DEL_CtBreakImpl_CtBlockImpl", 
+      "f": 0.00018252569936496268
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtReturnImpl", 
+      "f": 0.00018252569936496268
+    }, 
+    {
+      "c": "INS_CtVariableWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 0.00017745554104926927
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtReturnImpl", 
+      "f": 0.00017745554104926927
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtAssignmentImpl", 
+      "f": 0.00017745554104926927
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtFieldReadImpl", 
+      "f": 0.00017745554104926927
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtForEachImpl", 
+      "f": 0.00017492046189142256
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtAssignmentImpl", 
+      "f": 0.00016985030357572915
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtLocalVariableImpl", 
+      "f": 0.00016985030357572915
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtIfImpl", 
+      "f": 0.00016985030357572915
+    }, 
+    {
+      "c": "INS_CtTryWithResourceImpl_CtBlockImpl", 
+      "f": 0.00016985030357572915
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtInvocationImpl", 
+      "f": 0.00016731522441788244
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtSynchronizedImpl", 
+      "f": 0.00016731522441788244
+    }, 
+    {
+      "c": "UPD_CtTypeAccessImpl_CtBinaryOperatorImpl", 
+      "f": 0.00016478014526003575
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtFieldReadImpl", 
+      "f": 0.00016478014526003575
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtAssertImpl", 
+      "f": 0.00016478014526003575
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtLocalVariableImpl", 
+      "f": 0.00016224506610218903
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtNewArrayImpl", 
+      "f": 0.00015970998694434234
+    }, 
+    {
+      "c": "MOV_CtSynchronizedImpl_CtBlockImpl", 
+      "f": 0.00015970998694434234
+    }, 
+    {
+      "c": "INS_CtLocalVariableImpl_CtTryWithResourceImpl", 
+      "f": 0.00015717490778649563
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 0.00015463982862864894
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtFieldWriteImpl", 
+      "f": 0.00015463982862864894
+    }, 
+    {
+      "c": "MOV_CtVariableWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 0.00015463982862864894
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtFieldImpl", 
+      "f": 0.00015463982862864894
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtForEachImpl", 
+      "f": 0.00015463982862864894
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtSynchronizedImpl", 
+      "f": 0.00015210474947080222
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtArrayReadImpl", 
+      "f": 0.0001495696703129555
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtAssertImpl", 
+      "f": 0.0001495696703129555
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtConstructorCallImpl", 
+      "f": 0.0001495696703129555
+    }, 
+    {
+      "c": "INS_CtLocalVariableImpl_CtForImpl", 
+      "f": 0.00014703459115510882
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtThrowImpl", 
+      "f": 0.00014703459115510882
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtInvocationImpl", 
+      "f": 0.00014703459115510882
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtForImpl", 
+      "f": 0.00014703459115510882
+    }, 
+    {
+      "c": "INS_CtContinueImpl_CtBlockImpl", 
+      "f": 0.0001444995119972621
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtInvocationImpl", 
+      "f": 0.0001444995119972621
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtCaseImpl", 
+      "f": 0.0001444995119972621
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtForEachImpl", 
+      "f": 0.00014196443283941542
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtFieldImpl", 
+      "f": 0.00014196443283941542
+    }, 
+    {
+      "c": "MOV_CtMethodImpl_CtInterfaceImpl", 
+      "f": 0.0001394293536815687
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtForEachImpl", 
+      "f": 0.0001394293536815687
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtOperatorAssignmentImpl", 
+      "f": 0.0001394293536815687
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtReturnImpl", 
+      "f": 0.000136894274523722
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtSwitchImpl", 
+      "f": 0.0001343591953658753
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtAssignmentImpl", 
+      "f": 0.0001343591953658753
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtReturnImpl", 
+      "f": 0.0001343591953658753
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtFieldImpl", 
+      "f": 0.00013182411620802858
+    }, 
+    {
+      "c": "UPD_CtVariableWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 0.00013182411620802858
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtForEachImpl", 
+      "f": 0.00013182411620802858
+    }, 
+    {
+      "c": "INS_CtLocalVariableImpl_CtCaseImpl", 
+      "f": 0.0001292890370501819
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtConditionalImpl", 
+      "f": 0.0001292890370501819
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtWhileImpl", 
+      "f": 0.00012675395789233518
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtNewArrayImpl", 
+      "f": 0.00012675395789233518
+    }, 
+    {
+      "c": "INS_CtDoImpl_CtBlockImpl", 
+      "f": 0.00012675395789233518
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtConditionalImpl", 
+      "f": 0.00012675395789233518
+    }, 
+    {
+      "c": "INS_CtCatchVariableImpl_CtCatchImpl", 
+      "f": 0.0001242188787344885
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtFieldImpl", 
+      "f": 0.0001242188787344885
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtFieldWriteImpl", 
+      "f": 0.0001242188787344885
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtArrayReadImpl", 
+      "f": 0.00012168379957664177
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtLocalVariableImpl", 
+      "f": 0.00012168379957664177
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtWhileImpl", 
+      "f": 0.00012168379957664177
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtArrayReadImpl", 
+      "f": 0.00012168379957664177
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtReturnImpl", 
+      "f": 0.00011914872041879507
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtAssertImpl", 
+      "f": 0.00011914872041879507
+    }, 
+    {
+      "c": "UPD_CtConstructorImpl_CtClassImpl", 
+      "f": 0.00011407856210310167
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtLocalVariableImpl", 
+      "f": 0.00011407856210310167
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtReturnImpl", 
+      "f": 0.00011407856210310167
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtFieldImpl", 
+      "f": 0.00011407856210310167
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtAssignmentImpl", 
+      "f": 0.00011407856210310167
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtForImpl", 
+      "f": 0.00011407856210310167
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtNewArrayImpl", 
+      "f": 0.00011407856210310167
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtLocalVariableImpl", 
+      "f": 0.00011154348294525497
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtFieldImpl", 
+      "f": 0.00011154348294525497
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtForEachImpl", 
+      "f": 0.00011154348294525497
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtUnaryOperatorImpl", 
+      "f": 0.00011154348294525497
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtNewArrayImpl", 
+      "f": 0.00010900840378740826
+    }, 
+    {
+      "c": "DEL_CtContinueImpl_CtBlockImpl", 
+      "f": 0.00010900840378740826
+    }, 
+    {
+      "c": "DEL_CtLocalVariableImpl_CtForImpl", 
+      "f": 0.00010647332462956156
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtFieldReadImpl", 
+      "f": 0.00010140316631386815
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtAssertImpl", 
+      "f": 9.886808715602144e-05
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtForImpl", 
+      "f": 9.886808715602144e-05
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtClassImpl", 
+      "f": 9.886808715602144e-05
+    }, 
+    {
+      "c": "MOV_CtReturnImpl_CtCaseImpl", 
+      "f": 9.886808715602144e-05
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtConstructorCallImpl", 
+      "f": 9.633300799817474e-05
+    }, 
+    {
+      "c": "MOV_CtFieldWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 9.633300799817474e-05
+    }, 
+    {
+      "c": "MOV_CtClassImpl_CtPackageImpl", 
+      "f": 9.379792884032804e-05
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtLocalVariableImpl", 
+      "f": 9.379792884032804e-05
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtConditionalImpl", 
+      "f": 9.379792884032804e-05
+    }, 
+    {
+      "c": "INS_CtLocalVariableImpl_CtForEachImpl", 
+      "f": 9.379792884032804e-05
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtInvocationImpl", 
+      "f": 9.126284968248134e-05
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtNewArrayImpl", 
+      "f": 9.126284968248134e-05
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtConstructorCallImpl", 
+      "f": 9.126284968248134e-05
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 9.126284968248134e-05
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtArrayWriteImpl", 
+      "f": 9.126284968248134e-05
+    }, 
+    {
+      "c": "DEL_CtVariableWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 9.126284968248134e-05
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtOperatorAssignmentImpl", 
+      "f": 9.126284968248134e-05
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtFieldWriteImpl", 
+      "f": 8.872777052463464e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtIfImpl", 
+      "f": 8.872777052463464e-05
+    }, 
+    {
+      "c": "DEL_CtEnumValueImpl_CtEnumImpl", 
+      "f": 8.872777052463464e-05
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtLocalVariableImpl", 
+      "f": 8.872777052463464e-05
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 8.872777052463464e-05
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtLocalVariableImpl", 
+      "f": 8.872777052463464e-05
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtBinaryOperatorImpl", 
+      "f": 8.619269136678793e-05
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtConstructorImpl", 
+      "f": 8.619269136678793e-05
+    }, 
+    {
+      "c": "DEL_CtFieldWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 8.619269136678793e-05
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtFieldImpl", 
+      "f": 8.619269136678793e-05
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtFieldReadImpl", 
+      "f": 8.619269136678793e-05
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtForImpl", 
+      "f": 8.365761220894122e-05
+    }, 
+    {
+      "c": "UPD_CtFieldWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 8.365761220894122e-05
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtArrayWriteImpl", 
+      "f": 8.365761220894122e-05
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtWhileImpl", 
+      "f": 8.365761220894122e-05
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtAssignmentImpl", 
+      "f": 8.112253305109452e-05
+    }, 
+    {
+      "c": "INS_CtEnumImpl_CtClassImpl", 
+      "f": 8.112253305109452e-05
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtOperatorAssignmentImpl", 
+      "f": 8.112253305109452e-05
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtArrayReadImpl", 
+      "f": 7.858745389324781e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtIfImpl", 
+      "f": 7.858745389324781e-05
+    }, 
+    {
+      "c": "MOV_CtClassImpl_CtNewClassImpl", 
+      "f": 7.858745389324781e-05
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtNewArrayImpl", 
+      "f": 7.858745389324781e-05
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtAssignmentImpl", 
+      "f": 7.605237473540111e-05
+    }, 
+    {
+      "c": "DEL_CtDoImpl_CtBlockImpl", 
+      "f": 7.605237473540111e-05
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtAssignmentImpl", 
+      "f": 7.605237473540111e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtForEachImpl", 
+      "f": 7.605237473540111e-05
+    }, 
+    {
+      "c": "INS_CtInterfaceImpl_CtClassImpl", 
+      "f": 7.605237473540111e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtUnaryOperatorImpl", 
+      "f": 7.605237473540111e-05
+    }, 
+    {
+      "c": "DEL_CtLocalVariableImpl_CtForEachImpl", 
+      "f": 7.605237473540111e-05
+    }, 
+    {
+      "c": "DEL_CtVariableWriteImpl_CtFieldWriteImpl", 
+      "f": 7.605237473540111e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtLocalVariableImpl", 
+      "f": 7.605237473540111e-05
+    }, 
+    {
+      "c": "MOV_CtNewClassImpl_CtLocalVariableImpl", 
+      "f": 7.351729557755441e-05
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtFieldImpl", 
+      "f": 7.351729557755441e-05
+    }, 
+    {
+      "c": "INS_CtTypeAccessImpl_CtFieldReadImpl", 
+      "f": 7.351729557755441e-05
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtNewArrayImpl", 
+      "f": 7.351729557755441e-05
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtFieldWriteImpl", 
+      "f": 7.351729557755441e-05
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtThrowImpl", 
+      "f": 7.098221641970771e-05
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtNewArrayImpl", 
+      "f": 7.098221641970771e-05
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtThrowImpl", 
+      "f": 7.098221641970771e-05
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtFieldImpl", 
+      "f": 7.098221641970771e-05
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtConditionalImpl", 
+      "f": 6.8447137261861e-05
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtWhileImpl", 
+      "f": 6.8447137261861e-05
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtConditionalImpl", 
+      "f": 6.8447137261861e-05
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtWhileImpl", 
+      "f": 6.8447137261861e-05
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtReturnImpl", 
+      "f": 6.591205810401429e-05
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtFieldWriteImpl", 
+      "f": 6.591205810401429e-05
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 6.591205810401429e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtArrayWriteImpl", 
+      "f": 6.591205810401429e-05
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtCaseImpl", 
+      "f": 6.591205810401429e-05
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtDoImpl", 
+      "f": 6.591205810401429e-05
+    }, 
+    {
+      "c": "MOV_CtBreakImpl_CtCaseImpl", 
+      "f": 6.591205810401429e-05
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtArrayReadImpl", 
+      "f": 6.591205810401429e-05
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtReturnImpl", 
+      "f": 6.591205810401429e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtNewArrayImpl", 
+      "f": 6.337697894616759e-05
+    }, 
+    {
+      "c": "MOV_CtEnumValueImpl_CtEnumImpl", 
+      "f": 6.337697894616759e-05
+    }, 
+    {
+      "c": "DEL_CtCatchVariableImpl_CtCatchImpl", 
+      "f": 6.337697894616759e-05
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtSwitchImpl", 
+      "f": 6.337697894616759e-05
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtCaseImpl", 
+      "f": 6.337697894616759e-05
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtUnaryOperatorImpl", 
+      "f": 6.337697894616759e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtConditionalImpl", 
+      "f": 6.337697894616759e-05
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtConditionalImpl", 
+      "f": 6.337697894616759e-05
+    }, 
+    {
+      "c": "DEL_CtSwitchImpl_CtBlockImpl", 
+      "f": 6.337697894616759e-05
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtLocalVariableImpl", 
+      "f": 6.084189978832089e-05
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtIfImpl", 
+      "f": 6.084189978832089e-05
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtAssignmentImpl", 
+      "f": 6.084189978832089e-05
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtLocalVariableImpl", 
+      "f": 6.084189978832089e-05
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtForImpl", 
+      "f": 5.8306820630474185e-05
+    }, 
+    {
+      "c": "MOV_CtArrayTypeReferenceImpl_CtMethodImpl", 
+      "f": 5.8306820630474185e-05
+    }, 
+    {
+      "c": "MOV_CtVariableWriteImpl_CtUnaryOperatorImpl", 
+      "f": 5.8306820630474185e-05
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtArrayReadImpl", 
+      "f": 5.8306820630474185e-05
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtInvocationImpl", 
+      "f": 5.8306820630474185e-05
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtNewArrayImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "DEL_CtBreakImpl_CtCaseImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtConditionalImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtOperatorAssignmentImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtFieldImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtAssignmentImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "UPD_CtVariableWriteImpl_CtFieldWriteImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtFieldImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtAnnotationImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtBinaryOperatorImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtFieldImpl", 
+      "f": 5.577174147262748e-05
+    }, 
+    {
+      "c": "INS_CtArrayWriteImpl_CtAssignmentImpl", 
+      "f": 5.323666231478078e-05
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtInvocationImpl", 
+      "f": 5.323666231478078e-05
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtOperatorAssignmentImpl", 
+      "f": 5.323666231478078e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtUnaryOperatorImpl", 
+      "f": 5.323666231478078e-05
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtWhileImpl", 
+      "f": 5.323666231478078e-05
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtThrowImpl", 
+      "f": 5.323666231478078e-05
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtForImpl", 
+      "f": 5.070158315693407e-05
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtAssertImpl", 
+      "f": 5.070158315693407e-05
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtReturnImpl", 
+      "f": 5.070158315693407e-05
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtArrayWriteImpl", 
+      "f": 5.070158315693407e-05
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtNewClassImpl", 
+      "f": 5.070158315693407e-05
+    }, 
+    {
+      "c": "MOV_CtLocalVariableImpl_CtCaseImpl", 
+      "f": 5.070158315693407e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtOperatorAssignmentImpl", 
+      "f": 5.070158315693407e-05
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtUnaryOperatorImpl", 
+      "f": 4.816650399908737e-05
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtInvocationImpl", 
+      "f": 4.816650399908737e-05
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtSynchronizedImpl", 
+      "f": 4.816650399908737e-05
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtSwitchImpl", 
+      "f": 4.816650399908737e-05
+    }, 
+    {
+      "c": "MOV_CtNewClassImpl_CtInvocationImpl", 
+      "f": 4.816650399908737e-05
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtArrayReadImpl", 
+      "f": 4.816650399908737e-05
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtFieldImpl", 
+      "f": 4.816650399908737e-05
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtThrowImpl", 
+      "f": 4.563142484124067e-05
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtNewArrayImpl", 
+      "f": 4.563142484124067e-05
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtInvocationImpl", 
+      "f": 4.563142484124067e-05
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtUnaryOperatorImpl", 
+      "f": 4.563142484124067e-05
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtArrayReadImpl", 
+      "f": 4.563142484124067e-05
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtLocalVariableImpl", 
+      "f": 4.563142484124067e-05
+    }, 
+    {
+      "c": "UPD_CtClassImpl_CtPackageImpl", 
+      "f": 4.563142484124067e-05
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtConditionalImpl", 
+      "f": 4.563142484124067e-05
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtConstructorCallImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtFieldReadImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtNewClassImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtFieldImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtCaseImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtReturnImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "MOV_CtTypeAccessImpl_CtBinaryOperatorImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtForEachImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtFieldWriteImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtConditionalImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtFieldImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtArrayReadImpl", 
+      "f": 4.309634568339397e-05
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtConditionalImpl", 
+      "f": 4.056126652554726e-05
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtLocalVariableImpl", 
+      "f": 4.056126652554726e-05
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtNewArrayImpl", 
+      "f": 4.056126652554726e-05
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtSynchronizedImpl", 
+      "f": 4.056126652554726e-05
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtFieldReadImpl", 
+      "f": 4.056126652554726e-05
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtAnnotationImpl", 
+      "f": 4.056126652554726e-05
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtConstructorCallImpl", 
+      "f": 4.056126652554726e-05
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtConditionalImpl", 
+      "f": 4.056126652554726e-05
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtConditionalImpl", 
+      "f": 4.056126652554726e-05
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtAssertImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "INS_CtReturnImpl_CtCaseImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtAssertImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtNewArrayImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "MOV_CtMethodImpl_CtEnumImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "INS_CtClassImpl_CtInterfaceImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtConditionalImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtConditionalImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "MOV_CtDoImpl_CtBlockImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtArrayReadImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "UPD_CtTypeAccessImpl_CtFieldWriteImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtNewArrayImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtAssignmentImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtInvocationImpl", 
+      "f": 3.8026187367700556e-05
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtFieldImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtConstructorCallImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtOperatorAssignmentImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtSynchronizedImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtBlockImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtAnnotationImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtOperatorAssignmentImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtArrayReadImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtAssignmentImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtForImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "MOV_CtFieldImpl_CtEnumImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtArrayWriteImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "DEL_CtReturnImpl_CtCaseImpl", 
+      "f": 3.5491108209853854e-05
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtArrayWriteImpl", 
+      "f": 3.2956029052007146e-05
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtForImpl", 
+      "f": 3.2956029052007146e-05
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtUnaryOperatorImpl", 
+      "f": 3.2956029052007146e-05
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtAssertImpl", 
+      "f": 3.2956029052007146e-05
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtBinaryOperatorImpl", 
+      "f": 3.2956029052007146e-05
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtConstructorCallImpl", 
+      "f": 3.2956029052007146e-05
+    }, 
+    {
+      "c": "MOV_CtClassImpl_CtInterfaceImpl", 
+      "f": 3.2956029052007146e-05
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtConstructorCallImpl", 
+      "f": 3.2956029052007146e-05
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtAssignmentImpl", 
+      "f": 3.2956029052007146e-05
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtFieldImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtArrayReadImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtForEachImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtLocalVariableImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtNewArrayImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtWhileImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtAssignmentImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "MOV_CtFieldWriteImpl_CtUnaryOperatorImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtInvocationImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtConditionalImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtUnaryOperatorImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtWhileImpl", 
+      "f": 3.0420949894160444e-05
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtNewArrayImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtNewClassImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtReturnImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtConstructorCallImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtArrayReadImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtFieldImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtAssignmentImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtWhileImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "UPD_CtUnaryOperatorImpl_CtForImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtAssignmentImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "MOV_CtTypeParameterImpl_CtMethodImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "INS_CtVariableWriteImpl_CtFieldWriteImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtConditionalImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtAnnotationImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtReturnImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtConditionalImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtReturnImpl", 
+      "f": 2.788587073631374e-05
+    }, 
+    {
+      "c": "DEL_CtMethodImpl_CtEnumImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtForImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtSynchronizedImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtNewArrayImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtFieldImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtAssignmentImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtArrayReadImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtUnaryOperatorImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "UPD_CtEnumValueImpl_CtEnumImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "UPD_CtTypeParameterReferenceImpl_CtParameterImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtCaseImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtSwitchImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtFieldWriteImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "UPD_CtUnaryOperatorImpl_CtBlockImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "DEL_CtLocalVariableImpl_CtCaseImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtThrowImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "INS_CtFieldWriteImpl_CtOperatorAssignmentImpl", 
+      "f": 2.5350791578467036e-05
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtUnaryOperatorImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "UPD_CtFieldWriteImpl_CtUnaryOperatorImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "UPD_CtLiteralImpl_CtOperatorAssignmentImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtInterfaceImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "DEL_CtClassImpl_CtInterfaceImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtThrowImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "INS_CtMethodImpl_CtEnumImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "INS_CtTypeParameterImpl_CtMethodImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtBinaryOperatorImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtBinaryOperatorImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtConditionalImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtLocalVariableImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtFieldWriteImpl", 
+      "f": 2.2815712420620334e-05
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtBinaryOperatorImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtOperatorAssignmentImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtLocalVariableImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtArrayReadImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtFieldWriteImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtNewClassImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtForImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtConstructorCallImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtBinaryOperatorImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtAssignmentImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "MOV_CtOperatorAssignmentImpl_CtCaseImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtNewClassImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtUnaryOperatorImpl", 
+      "f": 2.028063326277363e-05
+    }, 
+    {
+      "c": "DEL_CtEnumImpl_CtClassImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtWhileImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "MOV_CtNewClassImpl_CtReturnImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtBinaryOperatorImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtArrayWriteImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtUnaryOperatorImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtBlockImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtSynchronizedImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtConditionalImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "DEL_CtInterfaceImpl_CtPackageImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "DEL_CtTypeParameterImpl_CtClassImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "MOV_CtInterfaceImpl_CtPackageImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtBinaryOperatorImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtEnumValueImpl", 
+      "f": 1.7745554104926927e-05
+    }, 
+    {
+      "c": "DEL_CtSuperAccessImpl_CtFieldReadImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "DEL_CtFieldWriteImpl_CtUnaryOperatorImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "UPD_CtAnonymousExecutableImpl_CtClassImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "UPD_CtTypeParameterReferenceImpl_CtMethodImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtSwitchImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "INS_CtVariableWriteImpl_CtUnaryOperatorImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtReturnImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtFieldReadImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtArrayWriteImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtBinaryOperatorImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "MOV_CtArrayTypeReferenceImpl_CtFieldImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtReturnImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtAssignmentImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtConstructorCallImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtNewClassImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtInvocationImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtWhileImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtThrowImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtReturnImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtConditionalImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "UPD_CtNewClassImpl_CtConstructorCallImpl", 
+      "f": 1.5210474947080222e-05
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtAssertImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtOperatorAssignmentImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtAnnotationImpl_CtFieldImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtForEachImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "DEL_CtThisAccessImpl_CtBinaryOperatorImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtOperatorAssignmentImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtBinaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtConditionalImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtSwitchImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtArrayReadImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtFieldReadImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtNewClassImpl_CtFieldImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtFieldImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtBlockImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtReturnImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtNewClassImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtArrayTypeReferenceImpl_CtParameterImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtWhileImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtArrayReadImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtReturnImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtBinaryOperatorImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtReturnImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtLocalVariableImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtLocalVariableImpl", 
+      "f": 1.2675395789233518e-05
+    }, 
+    {
+      "c": "INS_CtFieldWriteImpl_CtUnaryOperatorImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtVariableWriteImpl_CtUnaryOperatorImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtNewClassImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtReturnImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "MOV_CtBreakImpl_CtBlockImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtNewClassImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtOperatorAssignmentImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtArrayReadImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtWhileImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtSynchronizedImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtAssertImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtAnnotationImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtInvocationImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtInterfaceImpl_CtClassImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtSwitchImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtThrowImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtAssertImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtSuperAccessImpl_CtInvocationImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "UPD_CtClassImpl_CtInterfaceImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtInvocationImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtSynchronizedImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtAssertImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtFieldImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtBinaryOperatorImpl_CtDoImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtClassImpl_CtNewClassImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtFieldImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtEnumValueImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtArrayWriteImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtTypeParameterImpl_CtClassImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtSwitchImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtFieldImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "DEL_CtConstructorCallImpl_CtBinaryOperatorImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "MOV_CtNewClassImpl_CtAssignmentImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtCaseImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtUnaryOperatorImpl", 
+      "f": 1.0140316631386815e-05
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtForEachImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtNewClassImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtLocalVariableImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtVariableReadImpl_CtSwitchImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "MOV_CtAnnotationImpl_CtConstructorImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtThrowImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtFieldWriteImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "MOV_CtFieldReadImpl_CtAssertImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtArrayReadImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "DEL_CtTypeAccessImpl_CtFieldWriteImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtBinaryOperatorImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtThrowImpl_CtCaseImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtFieldWriteImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtFieldImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtSwitchImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtConditionalImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtReturnImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtConditionalImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "MOV_CtTypeReferenceImpl_CtCatchVariableImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "UPD_CtInterfaceImpl_CtClassImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtLocalVariableImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtSwitchImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtTypeAccessImpl_CtBinaryOperatorImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtReturnImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "DEL_CtVariableReadImpl_CtUnaryOperatorImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtNewClassImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtNewArrayImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtAssertImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtInterfaceImpl_CtPackageImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtLocalVariableImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtConditionalImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtArrayWriteImpl", 
+      "f": 7.605237473540111e-06
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtFieldImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtEnumImpl_CtClassImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtForImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtSwitchImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtInterfaceImpl_CtClassImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtInterfaceImpl_CtInterfaceImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtSwitchImpl_CtCaseImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtNewClassImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtArrayWriteImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtConditionalImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtTypeParameterImpl_CtInterfaceImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtNewArrayImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtBinaryOperatorImpl_CtDoImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtEnumValueImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtDoImpl_CtCaseImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtArrayWriteImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtTypeParameterReferenceImpl_CtLocalVariableImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "UPD_CtTypeParameterReferenceImpl_CtFieldImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtSynchronizedImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "UPD_CtFieldReadImpl_CtSwitchImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtAnnotationImpl_CtEnumValueImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtAssertImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtForImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtDoImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtDoImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtFieldImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtConstructorImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtFieldReadImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtAssignmentImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "UPD_CtTypeParameterReferenceImpl_CtLocalVariableImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtForEachImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtAssertImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtAssignmentImpl_CtLocalVariableImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtForImpl_CtCaseImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtNewArrayImpl_CtFieldImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtTypeParameterReferenceImpl_CtMethodImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtConstructorCallImpl_CtNewClassImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "UPD_CtUnaryOperatorImpl_CtBinaryOperatorImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtArrayReadImpl_CtOperatorAssignmentImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtLiteralImpl_CtAssertImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtUnaryOperatorImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtContinueImpl_CtBlockImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtInterfaceImpl_CtInterfaceImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtTryImpl_CtCaseImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "UPD_CtConstructorCallImpl_CtNewClassImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtFieldImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtWhileImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtAssertImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtSynchronizedImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtInvocationImpl_CtSwitchImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtInterfaceImpl_CtInterfaceImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtTypeReferenceImpl_CtLocalVariableImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtAssertImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "DEL_CtUnaryOperatorImpl_CtNewArrayImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtUnaryOperatorImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "UPD_CtUnaryOperatorImpl_CtInvocationImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtAssignmentImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "UPD_CtTypeReferenceImpl_CtEnumValueImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtOperatorAssignmentImpl", 
+      "f": 5.070158315693407e-06
+    }, 
+    {
+      "c": "INS_CtNewArrayImpl_CtReturnImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "UPD_CtVariableReadImpl_CtSynchronizedImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "UPD_CtBinaryOperatorImpl_CtConstructorCallImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtTypeReferenceImpl_CtMethodImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtOperatorAssignmentImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtTryImpl_CtCaseImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtUnaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtOperatorAssignmentImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtTypeAccessImpl_CtBinaryOperatorImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtInvocationImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtInvocationImpl_CtArrayWriteImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtSynchronizedImpl_CtCaseImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtThrowImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtNewClassImpl_CtAssignmentImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtLocalVariableImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtOperatorAssignmentImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtAssertImpl_CtCaseImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtNewClassImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtParameterImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtConditionalImpl_CtFieldImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtInvocationImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtAnnotationTypeImpl_CtClassImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtSuperAccessImpl_CtFieldReadImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtConstructorImpl_CtEnumImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtNewClassImpl_CtBlockImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtConstructorImpl_CtEnumImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtOperatorAssignmentImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtEnumImpl_CtInterfaceImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtOperatorAssignmentImpl_CtForImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtReturnImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtArrayWriteImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "UPD_CtInvocationImpl_CtArrayWriteImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtForEachImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtNewArrayImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtVariableReadImpl_CtWhileImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtDoImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtConditionalImpl_CtArrayReadImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtArrayReadImpl_CtArrayWriteImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtFieldReadImpl_CtAnnotationImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtThisAccessImpl_CtForEachImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtNewArrayImpl_CtAnnotationImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtConditionalImpl_CtConditionalImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtIfImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtConstructorCallImpl_CtBlockImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtAssignmentImpl_CtIfImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtArrayReadImpl_CtArrayWriteImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtTypeParameterImpl_CtInterfaceImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtFieldImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtAssignmentImpl_CtIfImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "UPD_CtLocalVariableImpl_CtCaseImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtAnnotationImpl_CtClassImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtAnnotationImpl_CtEnumImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtOperatorAssignmentImpl_CtForImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtLiteralImpl_CtUnaryOperatorImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtTryWithResourceImpl_CtBlockImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtWhileImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtThrowImpl_CtCaseImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtFieldReadImpl_CtThrowImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtArrayWriteImpl_CtUnaryOperatorImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtSuperAccessImpl_CtInvocationImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtThisAccessImpl_CtNewClassImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "MOV_CtUnaryOperatorImpl_CtAssertImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "UPD_CtEnumImpl_CtClassImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtInvocationImpl_CtDoImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "DEL_CtLiteralImpl_CtAssertImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtSynchronizedImpl_CtCaseImpl", 
+      "f": 2.5350791578467036e-06
+    }, 
+    {
+      "c": "INS_CtTypeAccessImpl_CtFieldWriteImpl", 
+      "f": 2.5350791578467036e-06
+    }
+  ]
+}

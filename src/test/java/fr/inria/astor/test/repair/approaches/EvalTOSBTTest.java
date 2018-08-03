@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
@@ -13,11 +14,13 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesisContext;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesizerWOracle;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.EvaluatedExpression;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.MapList;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.code.CtCodeElement;
 
 /**
  * 
@@ -197,6 +200,55 @@ public class EvalTOSBTTest {
 		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
 		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
 		assertTrue(approach.getSolutions().isEmpty());
+	}
+
+	@Test
+	public void testBT_Math85_1_Sort() throws Exception {
+		// We want to find maxSolutions solutions at most.
+		int maxSolutions = 100;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath85Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-flthreshold", "0.24");
+
+		command.command.put("-parameters",
+				"disablelog:true:maxnumbersolutions:" + maxSolutions + ":pathjsonfrequency:" + filef.getAbsolutePath());
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		// Retrieve the buggy if condition.
+		ModificationPoint mp198 = approach.getVariants().get(0)
+				.getModificationPoints().stream().filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e
+						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
+				.findAny().get();
+		assertNotNull(mp198);
+
+		assertEquals(40, mp198.identified);
+
+		ConfigurationProperties.setProperty("sortholes", "false");
+		List<CtCodeElement> holes = approach.calculateHoles(mp198);
+		List<CtCodeElement> holesSorted = approach.orderHoleElements(holes);
+
+		assertEquals(holes.size(), holesSorted.size());
+		assertEquals(holes, holesSorted);
+
+		ConfigurationProperties.setProperty("sortholes", "true");
+		holes = approach.calculateHoles(mp198);
+		holesSorted = approach.orderHoleElements(holes);
+
+		assertEquals(holes.size(), holesSorted.size());
+		assertTrue(!holes.equals(holesSorted));
+
 	}
 
 }

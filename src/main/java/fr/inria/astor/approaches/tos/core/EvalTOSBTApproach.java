@@ -131,7 +131,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		// evaluated expressions
 		MapList<String, List<EvaluatedExpression>> cluster = clusterCandidatesByValue(candidatesnew);
 
-		List<CtCodeElement> holesFromMP = calculateHoles(iModifPoint);
+		List<CtCodeElement> holesFromMP = calculateHolesSorted(iModifPoint);
 		log.debug("Total holes: " + holesFromMP.size());
 
 		for (CtCodeElement iHole : holesFromMP) {
@@ -221,7 +221,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 		// Get holes (CtExpression as granularity) of the Modification
 		// point
-		List<CtCodeElement> holesFromMP = calculateHoles(iModifPoint);
+		List<CtCodeElement> holesFromMP = calculateHolesSorted(iModifPoint);
 		log.debug("Total holes: " + holesFromMP.size());
 
 		for (CtCodeElement iHole : holesFromMP) {
@@ -466,14 +466,30 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<CtCodeElement> calculateHoles(ModificationPoint modifPoint) {
+	public List<CtCodeElement> calculateHoles(ModificationPoint modifPoint) {
 		boolean mustclone = false;
 		List<CtCodeElement> holes = this.ingredientProcessor.createFixSpace(modifPoint.getCodeElement(), mustclone);
 		if (holes.size() > MAX_HOLES_PER_MODIFICATION_POINT) {
 			return holes.subList(0, MAX_HOLES_PER_MODIFICATION_POINT);
 		}
-
 		return holes;
+	}
+
+	public List<CtCodeElement> calculateHolesSorted(ModificationPoint modifPoint) {
+		List<CtCodeElement> holes = calculateHoles(modifPoint);
+		return orderHoleElements(holes);
+	}
+
+	public List<CtCodeElement> orderHoleElements(List<CtCodeElement> holes) {
+
+		if (!ConfigurationProperties.getPropertyBool("sortholes")) {
+			return holes;
+		} else {
+			HoleOrder dorder = new DiffOrder();
+			List<CtCodeElement> sorted = dorder.orderHoleElements(holes);
+			return sorted;
+		}
+
 	}
 
 	public DynamothCollectorFacade getCollectorFacade() {
