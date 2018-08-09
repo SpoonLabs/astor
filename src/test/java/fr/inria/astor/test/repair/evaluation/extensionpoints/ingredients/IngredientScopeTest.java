@@ -54,8 +54,34 @@ public class IngredientScopeTest extends BaseEvolutionaryTest {
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
 
-		// validatePatchExistence(out + File.separator + "AstorMain-math_70/",
-		// solutions.size());
+		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
+		assertNotNull(mi);
+		assertEquals(IngredientPoolScope.LOCAL, mi.getIngredientScope());
+
+		assertEquals("return solve(f, min, max)", mi.getModified().toString());
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath70LocalSimpleAutocompile() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		cs.command.put("-location", new File("./examples/math_70_ac").getAbsolutePath());
+		cs.command.put("-flthreshold", "1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.append("-parameters", ("logtestexecution:true:autocompile:true"));
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+		ProgramVariant variant = solutions.get(0);
 
 		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
 		assertNotNull(mi);
