@@ -698,18 +698,22 @@ public abstract class AbstractMain {
 	 */
 	protected void compileProject(ProjectConfiguration properties) {
 		final Launcher launcher = new Launcher();
-		for (String s : properties.getOriginalDirSrc())
-			launcher.addInputResource(s);
+		for (String path_src : properties.getOriginalDirSrc()) {
+			log.debug("Add folder to compile: " + path_src);
+			launcher.addInputResource(path_src);
+		}
 
-		for (String s : properties.getTestDirSrc())
-			launcher.addInputResource(s);
+		for (String path_test : properties.getTestDirSrc()) {
+			log.debug("Add folder to compile: " + path_test);
+			launcher.addInputResource(path_test);
+		}
 
 		String binoutput = properties.getWorkingDirForBytecode() + File.separator
 				+ (ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		launcher.setBinaryOutputDirectory(binoutput);
 
-		log.debug("Compiling original code from " + launcher.getModelBuilder().getInputSources() + " saved in "
-				+ launcher.getModelBuilder().getBinaryOutputDirectory());
+		log.info("Compiling original code from " + launcher.getModelBuilder().getInputSources()
+				+ "\n bytecode saved in " + launcher.getModelBuilder().getBinaryOutputDirectory());
 
 		launcher.getEnvironment()
 				.setPreserveLineNumbers(ConfigurationProperties.getPropertyBool("preservelinenumbers"));
@@ -718,7 +722,7 @@ public abstract class AbstractMain {
 		launcher.getEnvironment().setSourceClasspath(properties.getDependenciesString().split(File.pathSeparator));
 		launcher.buildModel();
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
-		launcher.getModelBuilder().compile(InputType.CTTYPES);
+		launcher.getModelBuilder().compile(InputType.FILES);
 		// launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 
 	}
