@@ -48,6 +48,9 @@ public class ConfigurationProperties {
 	}
 
 	public static Integer getPropertyInt(String key) {
+		if (properties.getProperty(key) == null) {
+			return 0;
+		}
 		return Integer.valueOf(properties.getProperty(key));
 	}
 
