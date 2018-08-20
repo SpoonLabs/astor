@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,18 +22,19 @@ import spoon.reflect.code.CtCodeElement;
  * @author Matias Martinez
  *
  */
-public class DiffOrder implements HoleOrder {
+public class SimpleDiffOrderFromJSON implements HoleOrder {
+	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	protected Map<String, Integer> frequancies = null;
 
-	public DiffOrder() {
+	public SimpleDiffOrderFromJSON() {
 
 		if (!ConfigurationProperties.hasProperty("pathjsonfrequency")) {
 			throw new IllegalArgumentException("Missing pathjsonfrequency");
 		}
-
+		log.debug("Loading Json file");
 		String path = ConfigurationProperties.getProperty("pathjsonfrequency");
-		this.frequancies = load(path);
+		this.frequancies = loadFile(path);
 	}
 
 	@Override
@@ -57,12 +59,7 @@ public class DiffOrder implements HoleOrder {
 
 	}
 
-	public String getKey(CtCodeElement element) {
-
-		return element.getClass().getSimpleName();
-	}
-
-	public LinkedHashMap load(String path) {
+	public LinkedHashMap loadFile(String path) {
 		Map<String, Integer> frq = new LinkedHashMap<>();
 
 		JSONParser parser = new JSONParser();
@@ -75,18 +72,16 @@ public class DiffOrder implements HoleOrder {
 			System.out.println(jsonObject);
 
 			// loop array
-			JSONArray msg = (JSONArray) jsonObject.get("frequency");
+			JSONArray msg = (JSONArray) jsonObject.get(tagName());
 			Iterator<JSONObject> iterator = msg.iterator();
 			while (iterator.hasNext()) {
 				JSONObject io = iterator.next();
 				Object type = io.get("c");
-				Integer frequency = Integer.valueOf(io.get("f").toString());
-				String key = "";
-				// example: UPD_CtInvocationImpl_CtBlockImpl
-				// String[] comp = type.toString().split("_");
-				// key += comp[1];// Element affected
-				key += type;
-				frq.put(key, frequency);
+				if (accept(type)) {
+					Integer frequency = Integer.valueOf(io.get("f").toString());
+					String key = getKeyFromJSON(type);
+					frq.put(key, frequency);
+				}
 			}
 
 			LinkedHashMap sorted = frq.entrySet().stream()
@@ -101,6 +96,24 @@ public class DiffOrder implements HoleOrder {
 			return null;
 		}
 
+	}
+
+	public boolean accept(Object type) {
+		// accept all changes
+		return true;
+	}
+
+	public String getKey(CtCodeElement element) {
+
+		return element.getClass().getSimpleName();
+	}
+
+	public String getKeyFromJSON(Object type) {
+		return type.toString();
+	}
+
+	public String tagName() {
+		return "frequency";
 	}
 
 	public Map<String, Integer> getFrequancies() {

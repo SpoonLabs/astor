@@ -51,7 +51,7 @@ public class PlugInLoader {
 		if (type.isInstance(object))
 			return (AstorExtensionPoint) object;
 		else
-			throw new Exception("The strategy " + className + " does not extend from " + type.getClass().getName());
+			throw new Exception("The strategy " + className + " does not extend from " + type.getCanonicalName());
 
 	}
 

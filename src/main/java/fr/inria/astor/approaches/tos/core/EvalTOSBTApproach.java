@@ -29,6 +29,7 @@ import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
 import fr.inria.lille.repair.expression.value.Value;
 import fr.inria.main.AstorOutputStatus;
+import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
@@ -52,19 +53,35 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	protected DynamothCollectorFacade collectorFacade = new DynamothCollectorFacade();
 	public double COMPARISON_THRESHOLD = 1;
 
+	protected HoleOrder holeOrderEngine = null;
+
 	public EvalTOSBTApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		targetElementProcessors.add(new CtExpressionIngredientSpaceProcessor());
 		ingredientProcessor = new CodeParserLauncher(targetElementProcessors);
+
+	}
+
+	@Override
+	public void loadExtensionPoints() throws Exception {
+		super.loadExtensionPoints();
+		if (this.ingredientSpace == null) {
+			this.ingredientSpace = IngredientBasedRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
+		}
+
+		String holeorder = ConfigurationProperties.properties.getProperty("holeorder");
+		if (holeorder == null) {
+			this.holeOrderEngine = new SimpleDiffOrderFromJSON();
+		} else {
+			holeOrderEngine = (HoleOrder) PlugInLoader.loadPlugin(holeorder, HoleOrder.class);
+		}
+
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void startEvolution() throws Exception {
 
-		if (this.ingredientSpace == null) {
-			this.ingredientSpace = IngredientBasedRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
-		}
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
 		generationsExecuted = 1;
@@ -498,9 +515,9 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 			log.debug("---Not Sorting holes ");
 			return holes;
 		} else {
-			HoleOrder dorder = new DiffOrder();
+
 			log.debug("---Sorting holes ");
-			List<CtCodeElement> sorted = dorder.orderHoleElements(holes);
+			List<CtCodeElement> sorted = holeOrderEngine.orderHoleElements(holes);
 			return sorted;
 		}
 
@@ -512,5 +529,13 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 	public void setCollectorFacade(DynamothCollectorFacade collectorFacade) {
 		this.collectorFacade = collectorFacade;
+	}
+
+	public HoleOrder getHoleOrderEngine() {
+		return holeOrderEngine;
+	}
+
+	public void setHoleOrderEngine(HoleOrder holeOrderEngine) {
+		this.holeOrderEngine = holeOrderEngine;
 	}
 }
