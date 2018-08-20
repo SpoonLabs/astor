@@ -199,10 +199,11 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	public boolean analyzeModificationPointSingleValue(ProgramVariant parentVariant, ModificationPoint iModifPoint)
 			throws IllegalAccessException, Exception, IllegalAccessError {
 
+		log.debug("-Step A--> Analyzing extension point: \n" + iModifPoint.getCodeElement());
 		final boolean stop = true;
 		DynamothSynthesisContext contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
 
-		log.debug("---> Collected Context size: " + contextCollected.getValues().size());
+		log.debug("-Step B--> Collected Context size: " + contextCollected.getValues().size());
 
 		// Creating combinations (do not depend on the Holes because
 		// they are combination of variables in context of a
@@ -222,7 +223,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		// Get holes (CtExpression as granularity) of the Modification
 		// point
 		List<CtCodeElement> holesFromMP = calculateHolesSorted(iModifPoint);
-		log.debug("Total holes: " + holesFromMP.size());
+		log.debug("Total holes: " + holesFromMP.size() + " " + holesFromMP);
 
 		for (CtCodeElement iHole : holesFromMP) {
 			if (!(iHole instanceof CtExpression)
@@ -231,6 +232,8 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 					|| (iHole instanceof CtStatement)) {
 				continue;
 			}
+			int maxsolutionsiHole = 0;
+
 			// The hole to replace:
 			CtExpression aholeExpression = (CtExpression) iHole;
 			log.debug(
@@ -272,9 +275,18 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 							aholeExpression, expression);
 
 					if (isExpressionASolution) {
-						log.info(String.format("Patch found with expresion %s evaluated as %s in modif point %s ",
-								expression.asPatch(), iCompatibleValue, iModifPoint.toString()));
+						log.info(String.format(
+								"Patch found with expresion %s evaluated as %s in hole %s at modif point %s ",
+								expression.asPatch(), iCompatibleValue, iHole.toString(), iModifPoint.toString()));
+						maxsolutionsiHole++;
 					}
+
+					if (maxsolutionsiHole > 0
+							&& maxsolutionsiHole >= ConfigurationProperties.getPropertyInt("maxsolutionsperhole")) {
+						log.debug("Max number of sol per hole");
+						break;
+					}
+
 					if (MAX_GENERATIONS <= operatorExecuted) {
 
 						this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
@@ -483,9 +495,11 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	public List<CtCodeElement> orderHoleElements(List<CtCodeElement> holes) {
 
 		if (!ConfigurationProperties.getPropertyBool("sortholes")) {
+			log.debug("---Not Sorting holes ");
 			return holes;
 		} else {
 			HoleOrder dorder = new DiffOrder();
+			log.debug("---Sorting holes ");
 			List<CtCodeElement> sorted = dorder.orderHoleElements(holes);
 			return sorted;
 		}

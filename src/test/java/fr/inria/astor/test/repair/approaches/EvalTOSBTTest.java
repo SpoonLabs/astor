@@ -251,4 +251,46 @@ public class EvalTOSBTTest {
 
 	}
 
+	@Test
+	public void testBT_Math85_SingleValue_More() throws Exception {
+		// One per each term in the if
+		int maxSolutions = 5;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath85Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-parameters", "clustercollectedvalues:false:disablelog:true:maxnumbersolutions:"
+				+ maxSolutions + ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath());
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		// Retrieve the buggy if condition.
+		ModificationPoint mp198 = approach.getVariants().get(0)
+				.getModificationPoints().stream().filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e
+						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
+				.findAny().get();
+		assertNotNull(mp198);
+
+		assertEquals(40, mp198.identified);
+
+		// Let's indicate the number of candidate solutions we want to try
+		approach.MAX_GENERATIONS = 1000;
+		approach.analyzeModificationPointSingleValue(approach.getVariants().get(0), mp198);
+		// Call atEnd to print the solutions.
+		approach.atEnd();
+		assertTrue(approach.getSolutions().size() > 0);
+		assertEquals(maxSolutions, approach.getSolutions().size());
+
+	}
+
 }
