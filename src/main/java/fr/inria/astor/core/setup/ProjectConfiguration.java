@@ -260,6 +260,7 @@ public class ProjectConfiguration {
 		if (!javaFolder.exists()) {
 			return null;
 		}
+		String processOutput = "";
 		try {
 			jvmPath += File.separator + "java";
 
@@ -273,13 +274,22 @@ public class ProjectConfiguration {
 			pb.directory(new File((ConfigurationProperties.getProperty("location"))));
 			Process p = pb.start();
 			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String fullVersion = br.readLine();
-			String version = fullVersion.split("\"")[1];
-			return version;
+
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				if (line.contains("\"")) {
+					String version = line.split("\"")[1];
+					logger.debug("Version of the JVM used: " + version);
+					return version;
+				}
+				processOutput += line;
+			}
+
 		} catch (Exception e) {
-			logger.error(e);
-			return null;
+			logger.error("Error retrieving java version: " + e);
 		}
+		logger.error("Error retrieving java version ouput obtained: \n" + processOutput);
+		return null;
 	}
 
 	public static boolean isJDKLowerThan8() {
