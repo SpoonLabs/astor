@@ -42,7 +42,7 @@ import spoon.reflect.code.CtStatement;
  */
 public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
-	public int MAX_HOLES_PER_MODIFICATION_POINT = 10;
+	public int MAX_HOLES_PER_MODIFICATION_POINT;
 	public int MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
 	public int modifPointsAnalyzed = 0;
 	public int operatorExecuted = 0;
@@ -59,6 +59,9 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		super(mutatorExecutor, projFacade);
 		targetElementProcessors.add(new CtExpressionIngredientSpaceProcessor());
 		ingredientProcessor = new CodeParserLauncher(targetElementProcessors);
+
+		MAX_HOLES_PER_MODIFICATION_POINT = (ConfigurationProperties.hasProperty("maxholespermp"))
+				? ConfigurationProperties.getPropertyInt("maxholespermp") : 10;
 
 	}
 
