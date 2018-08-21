@@ -349,7 +349,10 @@ public abstract class AbstractMain {
 		} else {
 			String jvmhome = ConfigurationProperties.properties.getProperty("jvm4testexecution");
 			String jdkVersion = ProjectConfiguration.getVersionJDK(jvmhome);
-			ConfigurationProperties.properties.setProperty("jvmversion", jdkVersion);
+			if (jdkVersion != null)
+				ConfigurationProperties.properties.setProperty("jvmversion", jdkVersion);
+			else
+				log.equals("Error: problems to determine the version of the JDK located at path: " + jvmhome);
 		}
 
 		if (!this.isExample(cmd)) {
