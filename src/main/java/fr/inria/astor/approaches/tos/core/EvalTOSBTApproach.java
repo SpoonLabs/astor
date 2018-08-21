@@ -167,6 +167,9 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 			// Simplification
 			for (String i_testName : cluster.keySet()) {
 				List<List<EvaluatedExpression>> clustersOfTest = cluster.get(i_testName);
+
+				log.debug(String.format("Nr cl of test %s: %d", i_testName, clustersOfTest.size()));
+
 				for (List<EvaluatedExpression> i_cluster : clustersOfTest) {
 
 					if (i_cluster.size() > 0) {
@@ -409,7 +412,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	 */
 	public MapList<String, List<EvaluatedExpression>> clusterCandidatesByValue(Candidates candidates) {
 
-		System.out.println("number candidates " + candidates.size());
+		log.debug("number candidates " + candidates.size());
 
 		// For each test:
 		// test name, cluster of expressions
@@ -495,18 +498,26 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CtCodeElement> calculateHoles(ModificationPoint modifPoint) {
+	public List<CtCodeElement> calculateAllHoles(ModificationPoint modifPoint) {
 		boolean mustclone = false;
 		List<CtCodeElement> holes = this.ingredientProcessor.createFixSpace(modifPoint.getCodeElement(), mustclone);
+
+		return holes;
+	}
+
+	public List<CtCodeElement> reduceHoles(List<CtCodeElement> holes) {
+
 		if (holes.size() > MAX_HOLES_PER_MODIFICATION_POINT) {
+			log.debug("Cutting nr of holes: " + holes.size() + " to " + MAX_HOLES_PER_MODIFICATION_POINT);
 			return holes.subList(0, MAX_HOLES_PER_MODIFICATION_POINT);
 		}
 		return holes;
 	}
 
 	public List<CtCodeElement> calculateHolesSorted(ModificationPoint modifPoint) {
-		List<CtCodeElement> holes = calculateHoles(modifPoint);
-		return orderHoleElements(holes);
+		List<CtCodeElement> holes = calculateAllHoles(modifPoint);
+		List<CtCodeElement> holesSorted = orderHoleElements(holes);
+		return reduceHoles(holesSorted);
 	}
 
 	public List<CtCodeElement> orderHoleElements(List<CtCodeElement> holes) {

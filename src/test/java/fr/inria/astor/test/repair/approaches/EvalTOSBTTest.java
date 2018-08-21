@@ -238,14 +238,14 @@ public class EvalTOSBTTest {
 		assertEquals(40, mp198.identified);
 
 		ConfigurationProperties.setProperty("sortholes", "false");
-		List<CtCodeElement> holes = approach.calculateHoles(mp198);
+		List<CtCodeElement> holes = approach.calculateAllHoles(mp198);
 		List<CtCodeElement> holesSorted = approach.orderHoleElements(holes);
 
 		assertEquals(holes.size(), holesSorted.size());
 		assertEquals(holes, holesSorted);
 
 		ConfigurationProperties.setProperty("sortholes", "true");
-		holes = approach.calculateHoles(mp198);
+		holes = approach.calculateAllHoles(mp198);
 		holesSorted = approach.orderHoleElements(holes);
 
 		assertEquals(holes.size(), holesSorted.size());
@@ -254,7 +254,7 @@ public class EvalTOSBTTest {
 	}
 
 	@Test
-	public void testBT_Math85_SingleValue_More() throws Exception {
+	public void testBT_Math85_SingleValue_SingleChange() throws Exception {
 		// One per each term in the if
 		int maxSolutions = 5;
 		File filef = new File("src/test/resources/changes_analisis_frequency.json");
@@ -296,9 +296,9 @@ public class EvalTOSBTTest {
 	}
 
 	@Test
-	public void testBT_Math85_UpdateParent() throws Exception {
+	public void testBT_Math85_SingleValue_UpdateParent() throws Exception {
 		// One per each term in the if
-		int maxSolutions = 5;
+		int maxSolutions = 4;// TODO:check
 		File filef = new File("src/test/resources/changes_analisis_frequency.json");
 		assertTrue(filef.exists());
 
@@ -340,6 +340,61 @@ public class EvalTOSBTTest {
 		// Let's indicate the number of candidate solutions we want to try
 		approach.MAX_GENERATIONS = 1000;
 		approach.analyzeModificationPointSingleValue(approach.getVariants().get(0), mp198);
+		// Call atEnd to print the solutions.
+		approach.atEnd();
+		assertTrue(approach.getSolutions().size() > 0);
+		assertEquals(maxSolutions, approach.getSolutions().size());
+
+	}
+
+	@Test
+	public void testBT_Math85_Cluster_UpdateParent() throws Exception {
+		// One per each term in the if
+		int maxSolutions = 4;// TODO:check
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath85Command();
+		command.command.put("-mode", "custom");
+		// command.command.put("-customengine",
+		// EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName());
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertTrue(approach.getHoleOrderEngine() instanceof UpdateParentDiffOrderFromJSON);
+
+		UpdateParentDiffOrderFromJSON reader = (UpdateParentDiffOrderFromJSON) approach.getHoleOrderEngine();
+
+		assertTrue(reader.accept("UPD_d_s"));
+		assertFalse(reader.accept("INS_d_s"));
+
+		// Retrieve the buggy if condition.
+		ModificationPoint mp198 = approach.getVariants().get(0)
+				.getModificationPoints().stream().filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e
+						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
+				.findAny().get();
+		assertNotNull(mp198);
+
+		assertEquals(40, mp198.identified);
+
+		// Let's indicate the number of candidate solutions we want to try
+		approach.MAX_GENERATIONS = 1000;
+		approach.analyzeModificationPointMultipleExecutions(approach.getVariants().get(0), mp198);
 		// Call atEnd to print the solutions.
 		approach.atEnd();
 		assertTrue(approach.getSolutions().size() > 0);
