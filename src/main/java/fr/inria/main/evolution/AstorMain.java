@@ -208,6 +208,9 @@ public class AstorMain extends AbstractMain {
 
 	public void execute(String[] args) throws Exception {
 		boolean correct = processArguments(args);
+
+		log.info("Running Astor on a JDK at " + System.getProperty("java.home"));
+
 		if (!correct) {
 			System.err.println("Problems with commands arguments");
 			return;
