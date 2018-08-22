@@ -97,11 +97,14 @@ Usage of Astor in education
 
 Astor in the literature
 -----------------------
-* Urli, S., Yu, Z., Seinturier, L., & Monperrus, M. How to design a program repair bot?: insights from the repairnator project. In Proceedings of the 40th International Conference on Software Engineering: Software Engineering in Practice (pp. 95-104). ACM. 2018
+
+* X. Liu and H. Zhong, Mining stackoverflow for program repair, IEEE 25th International Conference on Software Analysis, Evolution and Reengineering (SANER), 2018.
+
+* Urli, S., Yu, Z., Seinturier, L., & Monperrus, M. How to design a program repair bot?: insights from the repairnator project. In Proceedings of the 40th International Conference on Software Engineering: Software Engineering in Practice (pp. 95-104). ACM. 2018.
 
 * K. Naitou, A. Tanikado, S. Matsumoto, Y. Higo, S. Kusumoto, H.  Kirinuki, T. Kurabayashi, H. Tanno, Haruto. Toward introducing automated program repair techniques to industrial software development. ICPC, 2018.
 
-Ye, H., Martinez, M., & Monperrus, M. A Comprehensive Study of Automatic Program Repair on the QuixBugs Benchmark. arXiv preprint arXiv:1805.03454, 2018.
+* Ye, H., Martinez, M., & Monperrus, M. A Comprehensive Study of Automatic Program Repair on the QuixBugs Benchmark. arXiv preprint arXiv:1805.03454, 2018.
 
 * A. Tanikado, H. Yokoyama, M. Yamamoto, S. Sumi, Y. Higo, and S. Kusumoto. New strategies for selecting reuse candidates on automated program repair. In 2017 IEEE 41st Annual Computer Software and Appli- cations Conference (COMPSAC), volume 2, pages 266–267, July 2017.
 
