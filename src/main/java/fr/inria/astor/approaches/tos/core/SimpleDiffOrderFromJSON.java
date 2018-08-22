@@ -50,6 +50,18 @@ public class SimpleDiffOrderFromJSON implements HoleOrder {
 				String k2 = getKey(o2);
 				Integer f1 = frequancies.get(k1);
 				Integer f2 = frequancies.get(k2);
+				if (f1 == null && f2 == null) {
+					log.debug("Comparison error: elements are null " + k1 + " and " + k2);
+					return 0;
+				}
+				if (f1 == null) {
+					log.debug("Comparison error: k1 is null " + k1);
+					return 1;
+				}
+				if (f2 == null) {
+					log.debug("Comparison error: k2 is null " + k2);
+					return -1;
+				}
 				return f2.compareTo(f1);
 			}
 
