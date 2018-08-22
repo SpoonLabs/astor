@@ -97,6 +97,7 @@ Usage of Astor in education
 
 Astor in the literature
 -----------------------
+* Urli, S., Yu, Z., Seinturier, L., & Monperrus, M. How to design a program repair bot?: insights from the repairnator project. In Proceedings of the 40th International Conference on Software Engineering: Software Engineering in Practice (pp. 95-104). ACM. 2018
 
 * K. Naitou, A. Tanikado, S. Matsumoto, Y. Higo, S. Kusumoto, H.  Kirinuki, T. Kurabayashi, H. Tanno, Haruto. Toward introducing automated program repair techniques to industrial software development. ICPC, 2018.
 
