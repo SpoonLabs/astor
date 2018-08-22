@@ -23,7 +23,7 @@ import fr.inria.main.AstorOutputStatus;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class ExhaustiveSearchEngine extends AstorCoreEngine {
+public abstract class ExhaustiveSearchEngine extends AstorCoreEngine {
 
 	public ExhaustiveSearchEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {

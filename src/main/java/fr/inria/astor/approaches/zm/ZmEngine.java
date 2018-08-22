@@ -13,7 +13,7 @@ import fr.inria.astor.core.entities.VariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.EvolutionarySearchEngine;
 
 /**
  * Engine for Zimin approach which validates variants stored on Files.
@@ -21,7 +21,7 @@ import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
  * @author Matias Martinez
  *
  */
-public class ZmEngine extends AstorCoreEngine {
+public class ZmEngine extends EvolutionarySearchEngine {
 
 	public ZmEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);

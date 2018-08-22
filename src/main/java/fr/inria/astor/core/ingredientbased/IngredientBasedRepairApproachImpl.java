@@ -13,12 +13,12 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.EvolutionarySearchEngine;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.GlobalBasicIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.LocalIngredientSpace;
@@ -42,7 +42,8 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine implements IngredientBasedApproach {
+public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySearchEngine
+		implements IngredientBasedApproach {
 
 	protected IngredientSearchStrategy ingredientSearchStrategy;
 	protected IngredientTransformationStrategy ingredientTransformationStrategy;

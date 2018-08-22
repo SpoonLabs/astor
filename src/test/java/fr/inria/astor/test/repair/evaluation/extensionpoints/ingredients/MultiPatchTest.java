@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -80,8 +81,11 @@ public class MultiPatchTest {
 		assertTrue(changeShadow);
 
 		OperatorInstance op1 = createSecondPatch(nVariant, mp0, ingp.getCode(), currentGeneration);
+		assertTrue("Wrong engine created", main1.getEngine() instanceof JGenProg);
 
-		main1.getEngine().applyNewOperationsToVariantModel(nVariant, currentGeneration);
+		JGenProg jgp = (JGenProg) main1.getEngine();
+
+		jgp.applyNewOperationsToVariantModel(nVariant, currentGeneration);
 
 		// assertEquals("return solve(f, initial, max)",
 		// mp0.getCodeElement().toString());
@@ -103,14 +107,14 @@ public class MultiPatchTest {
 
 		OperatorInstance op2 = createSecondPatch(nVariant2, mp0_2, ingp2.getCode(), currentGeneration);
 
-		main1.getEngine().applyNewOperationsToVariantModel(nVariant2, currentGeneration);
+		jgp.applyNewOperationsToVariantModel(nVariant2, currentGeneration);
 
 		boolean result2 = main1.getEngine().processCreatedVariant(nVariant2, 10);
 		assertTrue(result2);
 		main1.getEngine().reverseOperationInModel(nVariant2, currentGeneration);
 
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMath70StepsInverted1() throws Exception {
@@ -143,7 +147,6 @@ public class MultiPatchTest {
 		assertNotNull(ingredients);
 		assertTrue(ingredients.size() > 0);
 
-		
 		/////
 		currentGeneration++;
 		Ingredient ingp2 = ingredients.stream()
@@ -157,13 +160,13 @@ public class MultiPatchTest {
 		assertFalse(changeShadow2);
 
 		OperatorInstance op2 = createSecondPatch(nVariant2, mp0_2, ingp2.getCode(), currentGeneration);
-
-		main1.getEngine().applyNewOperationsToVariantModel(nVariant2, currentGeneration);
+		JGenProg jgp = (JGenProg) main1.getEngine();
+		jgp.applyNewOperationsToVariantModel(nVariant2, currentGeneration);
 
 		boolean result2 = main1.getEngine().processCreatedVariant(nVariant2, 10);
 		assertTrue(result2);
 		main1.getEngine().reverseOperationInModel(nVariant2, currentGeneration);
-/////
+		/////
 		Ingredient ingp = ingredients.stream().filter(e -> e.getCode().toString().equals("return solve(f, min, max)"))
 				.findFirst().get();
 
@@ -175,7 +178,7 @@ public class MultiPatchTest {
 
 		OperatorInstance op1 = createSecondPatch(nVariant, mp0, ingp.getCode(), currentGeneration);
 
-		main1.getEngine().applyNewOperationsToVariantModel(nVariant, currentGeneration);
+		jgp.applyNewOperationsToVariantModel(nVariant, currentGeneration);
 
 		// assertEquals("return solve(f, initial, max)",
 		// mp0.getCodeElement().toString());

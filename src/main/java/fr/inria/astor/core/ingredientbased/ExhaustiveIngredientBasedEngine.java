@@ -151,6 +151,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	 * @param modificationPoint
 	 * @return
 	 */
+	@Override
 	protected List<OperatorInstance> createInstancesOfOperators(SuspiciousModificationPoint modificationPoint) {
 
 		log.debug("Creating instance of MP: " + modificationPoint.getCodeElement().getShortRepresentation());
