@@ -6,14 +6,14 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtStatement;
+
 /**
  * 
  * @author Matias Martinez
  *
  */
-public class InsertBeforeOp extends InsertOp {
+public class InsertBeforeOp extends InsertStatementOp {
 
-	
 	@Override
 	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {
 		boolean successful = false;
@@ -32,8 +32,9 @@ public class InsertBeforeOp extends InsertOp {
 			log.error("Operation not applied. Parent null ");
 		}
 		return successful;
-	
+
 	}
+
 	@Override
 	public boolean undoChangesInModel(OperatorInstance operation, ProgramVariant p) {
 		CtStatement ctst = (CtStatement) operation.getOriginal();
@@ -45,11 +46,11 @@ public class InsertBeforeOp extends InsertOp {
 		return sucess;
 
 	}
-	
+
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
 
-		boolean apply = super.canBeAppliedToPoint(point);
+		boolean apply = canBeAppliedToPoint(point);
 		if (!apply)
 			return apply;
 

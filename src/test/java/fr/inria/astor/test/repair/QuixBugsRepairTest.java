@@ -428,7 +428,7 @@ public class QuixBugsRepairTest {
 		printSpaces(engine);
 
 		ModificationPoint mp23 = engine.getVariants().get(0).getModificationPoints().get(22);
-		List<OperatorInstance> instances = engine.createInstance((SuspiciousModificationPoint) mp23,
+		List<OperatorInstance> instances = engine.createIngredientOpInstance((SuspiciousModificationPoint) mp23,
 				new ExpressionReplaceOperator());
 		for (OperatorInstance operatorInstance : instances) {
 			System.out.println("op instance: " + operatorInstance);

@@ -6,12 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp;
+import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.approaches.jgenprog.operators.StatementLevelOperator;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.solutionsearch.spaces.operators.AutonomousOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtReturn;
@@ -24,13 +25,15 @@ import spoon.reflect.reference.CtTypeReference;
  * @author Matias Martinez
  *
  */
-public class ReplaceReturnOp extends InsertBeforeOp {
+public class ReplaceReturnOp extends AutonomousOperator implements StatementLevelOperator {
+
+	ReplaceOp replaceOp = new ReplaceOp();
 
 	final Set<String> prim = new HashSet<String>(Arrays.asList("byte", "Byte", "long", "Long", "int", "Integer",
 			"float", "Float", "double", "Double", "short", "Short", "char", "Character"));
 
 	@Override
-	public List<OperatorInstance> createOperatorInstance(SuspiciousModificationPoint modificationPoint) {
+	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
 		List<OperatorInstance> instances = new ArrayList<>();
 
 		OperatorInstance opInsertReturn = new OperatorInstance(modificationPoint, this,
@@ -88,22 +91,25 @@ public class ReplaceReturnOp extends InsertBeforeOp {
 	}
 
 	@Override
-	public boolean canBeAppliedToPoint(ModificationPoint point) {
-		return false;
-	}
+	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {
 
-	@Override
-	public boolean applyChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
-		return false;
+		return replaceOp.applyChangesInModel(operation, p);
+
 	}
 
 	@Override
 	public boolean undoChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
-		return false;
+		return replaceOp.undoChangesInModel(opInstance, p);
 	}
 
 	@Override
 	public boolean updateProgramVariant(OperatorInstance opInstance, ProgramVariant p) {
+		return replaceOp.updateProgramVariant(opInstance, p);
+	}
+
+	@Override
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 

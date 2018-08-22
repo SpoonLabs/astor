@@ -232,7 +232,7 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 		AstorOperator[] operators = getOperatorSpace().values();
 		for (AstorOperator astorOperator : operators) {
 			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
-				List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
+				List<OperatorInstance> instances = astorOperator.createOperatorInstances(modificationPoint);
 				if (instances != null && instances.size() > 0) {
 					ops.addAll(instances);
 				}

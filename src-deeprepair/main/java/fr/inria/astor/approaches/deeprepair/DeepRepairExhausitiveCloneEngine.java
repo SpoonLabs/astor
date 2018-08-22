@@ -16,7 +16,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy4Exhaustive;
-import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
+import fr.inria.astor.core.solutionsearch.spaces.operators.IngredientBasedOperator;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.code.CtCodeElement;
@@ -31,7 +31,7 @@ public class DeepRepairExhausitiveCloneEngine extends ExhaustiveIngredientBasedE
 	public DeepRepairExhausitiveCloneEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
-		
+
 		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
 		// Fix Space
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
@@ -39,29 +39,29 @@ public class DeepRepairExhausitiveCloneEngine extends ExhaustiveIngredientBasedE
 		try {
 			this.ingredientSpace = (IngredientPool) PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE,
 					new Class[] { List.class }, new Object[] { ingredientProcessors });
-	
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public List<OperatorInstance> createInstance(SuspiciousModificationPoint modificationPoint,
-			AstorOperator astorOperator) {
-		
+	public List<OperatorInstance> createIngredientOpInstance(SuspiciousModificationPoint modificationPoint,
+			IngredientBasedOperator astorOperator) {
+
 		List<OperatorInstance> ops = new ArrayList<>();
 		log.debug("\n---------\n STEP 1:-----Find Ingredients------");
-		log.debug("\n->ModPoint: \n"+modificationPoint.getCodeElement());
-		
+		log.debug("\n->ModPoint: \n" + modificationPoint.getCodeElement());
+
 		CloneIngredientSearchStrategy4Exhaustive repairengine = null;
-		
+
 		try {
 			repairengine = new CloneIngredientSearchStrategy4Exhaustive(ingredientSpace);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		List<CtCodeElement>  ingredients = null;
+
+		List<CtCodeElement> ingredients = null;
 		if (astorOperator instanceof ReplaceOp) {
 			String type = modificationPoint.getCodeElement().getClass().getSimpleName();
 			ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
@@ -70,34 +70,32 @@ public class DeepRepairExhausitiveCloneEngine extends ExhaustiveIngredientBasedE
 			ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
 
 		}
-		
+
 		ingredients = repairengine.getAllFixIngredient(modificationPoint, astorOperator);
-		
-		if(ingredients == null || ingredients.isEmpty()){
-			log.debug("Any ingredient for mp "+ modificationPoint + " and op "+astorOperator);
+
+		if (ingredients == null || ingredients.isEmpty()) {
+			log.debug("Any ingredient for mp " + modificationPoint + " and op " + astorOperator);
 			return ops;
 		}
-		
+
 		log.debug("\n************\n STEP 2:  Apply ingredients. Number of ingredients " + ingredients.size());
 		for (CtCodeElement ingredient : ingredients) {
 
-				
-			if(!VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(),
-					ingredient)){
-				log.debug("Ingredient not fix in place: "+ingredient);
+			if (!VariableResolver.fitInPlace(modificationPoint.getContextOfModificationPoint(), ingredient)) {
+				log.debug("Ingredient not fix in place: " + ingredient);
 				continue;
-			}else{
-				log.debug("Accepting Ingredient: "+ingredient);
+			} else {
+				log.debug("Accepting Ingredient: " + ingredient);
 			}
-		
-			List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
-			
+
+			List<OperatorInstance> instances = astorOperator.createOperatorInstances(modificationPoint);
+
 			if (instances != null && instances.size() > 0) {
-				
+
 				for (OperatorInstance operatorInstance : instances) {
-					
+
 					operatorInstance.setModified(ingredient);
-					
+
 					ops.add(operatorInstance);
 				}
 			}

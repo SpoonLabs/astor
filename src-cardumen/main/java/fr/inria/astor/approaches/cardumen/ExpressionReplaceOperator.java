@@ -71,13 +71,4 @@ public class ExpressionReplaceOperator extends ReplaceOp {
 
 		return (point.getCodeElement() instanceof CtExpression);
 	}
-
-	/**
-	 * The replace operator *needs* an ingredient.
-	 * 
-	 * @return
-	 */
-	public boolean needIngredient() {
-		return true;
-	}
 }

@@ -104,9 +104,15 @@ public abstract class ExhaustiveSearchEngine extends AstorCoreEngine {
 		AstorOperator[] operators = getOperatorSpace().values();
 		for (AstorOperator astorOperator : operators) {
 			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
-				List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
-				if (instances != null && instances.size() > 0) {
-					ops.addAll(instances);
+				if (!astorOperator.needIngredient()) {
+					List<OperatorInstance> instances = astorOperator.createOperatorInstances(modificationPoint);
+
+					if (instances != null && instances.size() > 0) {
+						ops.addAll(instances);
+					} else {
+						log.error("Ignored operator: The approach has an operator that needs ingredients: "
+								+ astorOperator.getClass().getCanonicalName());
+					}
 				}
 			}
 		}

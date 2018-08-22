@@ -29,12 +29,12 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.Ing
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.ProbabilisticTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
+import fr.inria.astor.core.solutionsearch.spaces.operators.IngredientBasedOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
-import spoon.reflect.declaration.CtElement;
 
 /**
  * Ingredient based-repair approach.
@@ -52,7 +52,6 @@ public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySear
 	public IngredientBasedRepairApproachImpl(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
-		// pluginLoaded = new IngredientBasedPlugInLoader();
 	}
 
 	/**
@@ -77,33 +76,28 @@ public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySear
 			throws IllegalAccessException {
 		SuspiciousModificationPoint suspModificationPoint = (SuspiciousModificationPoint) modificationPoint;
 
-		AstorOperator operationType = operatorSelectionStrategy.getNextOperator(suspModificationPoint);
+		AstorOperator operatorSelected = operatorSelectionStrategy.getNextOperator(suspModificationPoint);
 
-		if (operationType == null) {
+		if (operatorSelected == null) {
 			log.debug("Operation Null");
 			return null;
 		}
 
-		CtElement targetStmt = suspModificationPoint.getCodeElement();
+		List<OperatorInstance> operatorInstances = null;
 
-		OperatorInstance operation = new OperatorInstance();
-		operation.setOriginal(targetStmt);
-		operation.setOperationApplied(operationType);
-		operation.setModificationPoint(suspModificationPoint);
-		operation.defineParentInformation(suspModificationPoint);
+		if (operatorSelected.needIngredient()) {
+			IngredientBasedOperator ingbasedapproach = (IngredientBasedOperator) operatorSelected;
 
-		if (operationType.needIngredient()) {
-			Ingredient ingredient = null;
-			ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operationType);
-			if (ingredient == null) {
-				log.debug("Any ingredient for this point, we discard it");
-				return null;
-			}
-			operation.setModified(ingredient.getCode());
-			operation.setIngredient(ingredient);
+			Ingredient ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operatorSelected);
+
+			operatorInstances = ingbasedapproach.createOperatorInstances(modificationPoint, ingredient,
+					this.ingredientTransformationStrategy);
+
+		} else {
+			operatorInstances = operatorSelected.createOperatorInstances(modificationPoint);
 		}
 
-		return operation;
+		return selectRandomly(operatorInstances);
 	}
 
 	@Override
