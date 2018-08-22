@@ -69,7 +69,6 @@ public class SimpleDiffOrderFromJSON implements HoleOrder {
 			Object obj = parser.parse(new FileReader(path));
 
 			JSONObject jsonObject = (JSONObject) obj;
-			System.out.println(jsonObject);
 
 			// loop array
 			JSONArray msg = (JSONArray) jsonObject.get(tagName());
