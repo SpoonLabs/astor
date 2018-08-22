@@ -29,13 +29,13 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class EfficientIngredientStrategy extends IngredientSearchStrategy {
+public class RandomSelectionIngredientStrategy extends IngredientSearchStrategy {
 
 	IngredientTransformationStrategy ingredientTransformationStrategy;
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
-	public EfficientIngredientStrategy(IngredientPool space) {
+	public RandomSelectionIngredientStrategy(IngredientPool space) {
 		super(space);
 
 		try {

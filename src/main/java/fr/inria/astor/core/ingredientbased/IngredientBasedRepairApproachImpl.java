@@ -17,7 +17,7 @@ import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.GlobalBasicIngredientSpace;
@@ -213,7 +213,7 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 		if (ingStrategySt != null) {
 
 			if (ingStrategySt.equals("uniform-random")) {
-				ingStrategy = new EfficientIngredientStrategy(ingredientspace);
+				ingStrategy = new RandomSelectionIngredientStrategy(ingredientspace);
 			} else if (ingStrategySt.equals("name-probability-based")) {
 				ingStrategy = new ProbabilisticIngredientStrategy(ingredientspace);
 			} else if (ingStrategySt.equals("code-similarity-based")) {
@@ -224,7 +224,7 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 						new Object[] { ingredientspace });
 			}
 		} else {
-			ingStrategy = new EfficientIngredientStrategy(ingredientspace);
+			ingStrategy = new RandomSelectionIngredientStrategy(ingredientspace);
 		}
 		return ingStrategy;
 	}
