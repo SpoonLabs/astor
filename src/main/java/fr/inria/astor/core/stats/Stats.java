@@ -1,21 +1,11 @@
 package fr.inria.astor.core.stats;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-
-import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
-import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
-import fr.inria.astor.util.TimeUtil;
 
 /**
  * Stores and manages statistics
@@ -31,7 +21,7 @@ public class Stats {
 	 *
 	 */
 	public enum GeneralStatEnum {
-		TOTAL_TIME, NR_GENERATIONS, NR_RIGHT_COMPILATIONS, NR_FAILLING_COMPILATIONS, NR_FAILING_VALIDATION_PROCESS, OUTPUT_STATUS
+		TOTAL_TIME, NR_GENERATIONS, NR_RIGHT_COMPILATIONS, NR_FAILLING_COMPILATIONS, NR_ERRONEOUS_VARIANCES, NR_FAILING_VALIDATION_PROCESS, OUTPUT_STATUS
 	};
 
 	/**
@@ -145,6 +135,5 @@ public class Stats {
 		currentStat = new Stats();
 		return currentStat;
 	}
-
 
 }

@@ -24,6 +24,7 @@ import fr.inria.astor.core.manipulation.synthesis.dynamoth.EvaluatedExpression;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
+import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.util.MapList;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
@@ -134,10 +135,17 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 			ModificationPoint iModifPoint) throws IllegalAccessException, Exception, IllegalAccessError {
 
 		final boolean stop = true;
-		DynamothSynthesisContext contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
+		DynamothSynthesisContext contextCollected = null;
+		try {
+			contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
+		} catch (Exception e) {
+			log.error("Error calling Dynamoth value recolection");
+			log.error(e);
+			currentStat.increment(GeneralStatEnum.NR_ERRONEOUS_VARIANCES);
+			return false;
+		}
 		// Collecting values:
-		// TODO: check if values are collected from a) only failing test, or b)
-		// all test.
+		// values are collected from all test.
 		log.debug("---> Collected Context size: " + contextCollected.getValues().size());
 
 		// Creating combinations (do not depend on the Holes because
@@ -182,6 +190,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 							continue;
 						}
 						operatorExecuted++;
+						currentStat.increment(GeneralStatEnum.NR_GENERATIONS);
 						boolean isExpressionASolution = createAndEvaluatePatch(operatorExecuted, parentVariant,
 								iModifPoint, aholeExpression, firstExpressionOfCluster);
 
@@ -362,8 +371,10 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 			if (isSolution) {
 				log.info("Solution found " + getSolutions().size());
 				this.solutions.add(candidateVariant);
+				currentStat.increment(GeneralStatEnum.NR_RIGHT_COMPILATIONS);
 			} else {
 				log.info("No solution");
+				currentStat.increment(GeneralStatEnum.NR_FAILING_VALIDATION_PROCESS);
 			}
 
 			if (!modifPoint.getCodeElement().toString().contains(ingredientSynthesized.getCode().toString())) {
