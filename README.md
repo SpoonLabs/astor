@@ -98,10 +98,11 @@ Usage of Astor in education
 Astor in the literature
 -----------------------
 
+* K. Naitou, A. Tanikado, S. Matsumoto, Y. Higo, S. Kusumoto, H.  Kirinuki, T. Kurabayashi, H. Tanno, Haruto. Toward introducing automated program repair techniques to industrial software development. ICPC, 2018.
 
 * A. Tanikado, H. Yokoyama, M. Yamamoto, S. Sumi, Y. Higo, and S. Kusumoto. New strategies for selecting reuse candidates on automated program repair. In 2017 IEEE 41st Annual Computer Software and Appli- cations Conference (COMPSAC), volume 2, pages 266–267, July 2017.
 
-* Ming Wen, Junjie Chen, Rongxin Wu, Dan Hao, and Shing-Chi Cheung. An empirical analysis of the influence of fault space on search-based automated program repair, 2017. Arxiv 1707.05172.
+* Ming Wen, Junjie Chen, Rongxin Wu, Dan Hao, and Shing-Chi Cheung. An empirical analysis of the influence of fault space on search-based automated program repair.  Arxiv 1707.05172,  2017.
 
 * Liu, Yuefei. Understanding and generating patches for bugs introduced by third-party library upgrades. Master’s thesis, 2017.
 
