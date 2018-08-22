@@ -32,7 +32,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
@@ -802,7 +802,7 @@ public class CardumenApproachTest {
 		Stats.createStat();
 		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
 
-		EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) cardumen.getIngredientSearchStrategy();
+		RandomSelectionIngredientStrategy estrategy = (RandomSelectionIngredientStrategy) cardumen.getIngredientSearchStrategy();
 		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) cardumen
 				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
@@ -1375,7 +1375,7 @@ public class CardumenApproachTest {
 		List<CtVariable> varContextClearResult = VariableResolver.searchVariablesInScope(mp156.getCodeElement());//
 		CtElement returnExpression = pv.getModificationPoints().get(8).getCodeElement();
 
-		EfficientIngredientStrategy estrategy = (EfficientIngredientStrategy) ingapproach.getIngredientSearchStrategy();
+		RandomSelectionIngredientStrategy estrategy = (RandomSelectionIngredientStrategy) ingapproach.getIngredientSearchStrategy();
 
 		List<Ingredient> baseElements = estrategy.getNotExhaustedBaseElements(mp156,
 				approach.getOperatorSpace().getOperators().get(0));

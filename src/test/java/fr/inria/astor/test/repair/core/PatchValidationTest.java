@@ -29,59 +29,56 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+
 /**
- * This test cases aims at validating the mechanism of patch validation 
- * (We manually generate the candidate patches)
+ * This test cases aims at validating the mechanism of patch validation (We
+ * manually generate the candidate patches)
+ * 
  * @author Matias Martinez
  *
  */
 public class PatchValidationTest {
 
 	protected Logger log = Logger.getLogger(PatchValidationTest.class.getName());
-	
+
 	@Test
 	@Ignore
 	public void testPatchMath0C1() throws Exception {
-		
+
 		log.debug("\nInit test with one failing TC");
-		
-		String dependenciespath = new File("./examples/Math-0c1ef/lib/junit-4.11.jar").getAbsolutePath() 
-				+ File.pathSeparator
-				+ new File("./examples/Math-0c1ef/lib/hamcrest-core-1.3.jar").getAbsolutePath();
+
+		String dependenciespath = new File("./examples/Math-0c1ef/lib/junit-4.11.jar").getAbsolutePath()
+				+ File.pathSeparator + new File("./examples/Math-0c1ef/lib/hamcrest-core-1.3.jar").getAbsolutePath();
 		String projectId = "Math-0c1ef";
 		String failing = "org.apache.commons.math3.primes.PrimesTest";
 		File exampleLocation = new File("./examples/Math-0c1ef/");
 		String location = exampleLocation.getAbsolutePath();
 		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
-		
-		String[] command = new String[]{"-dependencies",dependenciespath,"-location",location,
-				"-flthreshold",Double.toString(thfl),
-				"-package",packageToInstrument,
-				"-failing", failing,
-				"-id",projectId,
-				"-population","1"};
-		
+
+		String[] command = new String[] { "-dependencies", dependenciespath, "-location", location, "-flthreshold",
+				Double.toString(thfl), "-package", packageToInstrument, "-failing", failing, "-id", projectId,
+				"-population", "1" };
 
 		int processBeforeAll = ProcessUtil.currentNumberProcess();
 
 		AstorMain main = new AstorMain();
-		
+
 		boolean correctArguments = main.processArguments(command);
 		assertTrue(correctArguments);
-		
+
 		main.initProject(location, projectId, dependenciespath, packageToInstrument, thfl, failing);
 
 		AstorCoreEngine astor = main.createEngine(ExecutionMode.jGenProg);
-		
-		assertTrue("Wrong engine created",astor instanceof JGenProg);
-		
+
+		assertTrue("Wrong engine created", astor instanceof JGenProg);
+
 		JGenProg jgp = (JGenProg) astor;
-		
+
 		Assert.assertEquals(1, astor.getVariants().size());
 
 		ProgramVariant variant = astor.getVariants().get(0);
-	
+
 		int currentGeneration = 1;
 		OperatorInstance operation1 = createDummyOperation1(variant, currentGeneration);
 		System.out.println("operation " + operation1);
@@ -93,23 +90,22 @@ public class PatchValidationTest {
 		assertFalse("Any solution was expected here", isSolution);
 
 		int afterFirstValidation = ProcessUtil.currentNumberProcess();
-		
-		astor.applyNewOperationsToVariantModel(variant, currentGeneration);
 
-		
+		jgp.applyNewOperationsToVariantModel(variant, currentGeneration);
+
 		isSolution = astor.processCreatedVariant(variant, currentGeneration);
 
 		int afterPatchValidation = ProcessUtil.currentNumberProcess();
 
-		assertTrue("The variant must be a solution",isSolution);
+		assertTrue("The variant must be a solution", isSolution);
 
 		System.out.println("\nSolutions:\n" + astor.getSolutionData(astor.getVariants(), 1));
 
-		astor.prepareNextGeneration(astor.getVariants(), 1);
+		jgp.prepareNextGeneration(astor.getVariants(), 1);
 
-		assertNotNull("Any solution found",astor.getSolutions());
+		assertNotNull("Any solution found", astor.getSolutions());
 
-		assertFalse("Solution set must be not empty",astor.getSolutions().isEmpty());
+		assertFalse("Solution set must be not empty", astor.getSolutions().isEmpty());
 
 		assertEquals("Problems with number of process", processBeforeAll, afterFirstValidation);
 
@@ -123,9 +119,8 @@ public class PatchValidationTest {
 	@Ignore
 	public void testPatchMath0C1TwoFailing() throws Exception {
 		log.debug("\nInit test with two failing TC");
-		String dependenciespath = new File("./examples/Math-0c1ef/lib/junit-4.11.jar").getAbsolutePath() 
-				+ File.pathSeparator
-				+ new File("./examples/Math-0c1ef/lib/hamcrest-core-1.3.jar").getAbsolutePath();
+		String dependenciespath = new File("./examples/Math-0c1ef/lib/junit-4.11.jar").getAbsolutePath()
+				+ File.pathSeparator + new File("./examples/Math-0c1ef/lib/hamcrest-core-1.3.jar").getAbsolutePath();
 		String folder = "Math-0c1ef";
 		// Only the first one fails
 		String failing = "org.apache.commons.math3.primes.PrimesTest" + File.pathSeparator
@@ -135,40 +130,41 @@ public class PatchValidationTest {
 		String location = projectId.getAbsolutePath();
 		String packageToInstrument = "org.apache.commons";
 		double thfl = 0.5;
-		
-		String[] command = new String[]{"-dependencies",dependenciespath,"-location",location,
-				"-flthreshold",Double.toString(thfl),
-				"-package",packageToInstrument,
-				"-failing", failing,
-				"-id",projectId.getName(),
-				"-population","1"};
-		
+
+		String[] command = new String[] { "-dependencies", dependenciespath, "-location", location, "-flthreshold",
+				Double.toString(thfl), "-package", packageToInstrument, "-failing", failing, "-id", projectId.getName(),
+				"-population", "1" };
 
 		AstorMain main = new AstorMain();
-		
+
 		boolean correctArguments = main.processArguments(command);
-		assertTrue("Problems with arguments",correctArguments);
-		
+		assertTrue("Problems with arguments", correctArguments);
+
 		main.initProject(location, folder, dependenciespath, packageToInstrument, thfl, failing);
 
 		AstorCoreEngine astor = main.createEngine(ExecutionMode.jGenProg);
-		
+
+		assertTrue("Wrong engine created", astor instanceof JGenProg);
+
+		JGenProg jgp = (JGenProg) astor;
+
 		Assert.assertEquals(1, astor.getVariants().size());
 
 		ProgramVariant variant = astor.getVariants().get(0);
-		
+
 		int currentGeneration = 1;
 		OperatorInstance operation1 = createDummyOperation1(variant, currentGeneration);
 		assertNotNull(operation1);
 
 		boolean isSolution = false;
-	
-		astor.applyNewOperationsToVariantModel(variant, currentGeneration);
-		
+
+		jgp.applyNewOperationsToVariantModel(variant, currentGeneration);
+
 		isSolution = astor.processCreatedVariant(variant, currentGeneration);
-		assertTrue("A solution is attended",isSolution);
+		assertTrue("A solution is attended", isSolution);
 
 	}
+
 	private OperatorInstance createDummyOperation1(ProgramVariant variant, int currentGeneration) {
 
 		SuspiciousModificationPoint genSusp = searchSuspiciousElement(variant, "n += 3", " ", 93);
@@ -200,7 +196,6 @@ public class PatchValidationTest {
 	public CtElement createFix1() {
 		return createPatchStatementCode("int n=0;n += 2;");
 	}
-	
 
 	public CtStatement createPatchStatementCode(String snippet) {
 
@@ -209,7 +204,8 @@ public class PatchValidationTest {
 		return st;
 	}
 
-	public SuspiciousModificationPoint searchSuspiciousElement(ProgramVariant variant, String snippet, String fileName, int line) {
+	public SuspiciousModificationPoint searchSuspiciousElement(ProgramVariant variant, String snippet, String fileName,
+			int line) {
 
 		for (ModificationPoint gen : variant.getModificationPoints()) {
 
@@ -218,8 +214,6 @@ public class PatchValidationTest {
 		}
 
 		return null;
-	}	
-	
-	
-	
+	}
+
 }

@@ -18,24 +18,26 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
+
 /**
  * 
  * @author Matias Martinez
  *
  */
 public class ReplaceReturnOp extends InsertBeforeOp {
-	
-	final Set<String> prim = new HashSet<String>(Arrays.asList("byte","Byte", "long","Long", "int","Integer", "float","Float",  "double","Double", "short","Short", "char", "Character"));
 
-	public List<OperatorInstance> createOperatorInstance(SuspiciousModificationPoint modificationPoint){
+	final Set<String> prim = new HashSet<String>(Arrays.asList("byte", "Byte", "long", "Long", "int", "Integer",
+			"float", "Float", "double", "Double", "short", "Short", "char", "Character"));
+
+	@Override
+	public List<OperatorInstance> createOperatorInstance(SuspiciousModificationPoint modificationPoint) {
 		List<OperatorInstance> instances = new ArrayList<>();
-		
+
 		OperatorInstance opInsertReturn = new OperatorInstance(modificationPoint, this,
 				modificationPoint.getCodeElement(), createReturn(modificationPoint.getCodeElement()));
 		instances.add(opInsertReturn);
 		return instances;
 	}
-	
 
 	@SuppressWarnings({ "rawtypes", "unchecked", "static-access" })
 	private CtElement createReturn(CtElement rootElement) {
@@ -47,8 +49,7 @@ public class ReplaceReturnOp extends InsertBeforeOp {
 		}
 		// We create the "if(true)"{}
 		CtIf ifReturn = MutationSupporter.getFactory().Core().createIf();
-		CtExpression ifTrueExpression = MutationSupporter.getFactory().Code()
-				.createCodeSnippetExpression("true");
+		CtExpression ifTrueExpression = MutationSupporter.getFactory().Code().createCodeSnippetExpression("true");
 		ifReturn.setCondition(ifTrueExpression);
 
 		// Now we create the return statement
@@ -60,7 +61,7 @@ public class ReplaceReturnOp extends InsertBeforeOp {
 			String codeExpression = "";
 			if (prim.contains(typeR.getSimpleName())) {
 				codeExpression = getZeroValue(typeR.getSimpleName().toLowerCase());
-			} else if(typeR.getSimpleName().toLowerCase().equals("boolean")){
+			} else if (typeR.getSimpleName().toLowerCase().equals("boolean")) {
 				codeExpression = "false";
 			} else {
 				codeExpression = "null";
@@ -77,15 +78,14 @@ public class ReplaceReturnOp extends InsertBeforeOp {
 	}
 
 	private String getZeroValue(String simpleName) {
-		if("float".equals(simpleName))
+		if ("float".equals(simpleName))
 			return "0f";
-		if("long".equals(simpleName))
+		if ("long".equals(simpleName))
 			return "0l";
-		if("double".equals(simpleName))
+		if ("double".equals(simpleName))
 			return "0d";
 		return "0";
 	}
-	
 
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
@@ -106,6 +106,5 @@ public class ReplaceReturnOp extends InsertBeforeOp {
 	public boolean updateProgramVariant(OperatorInstance opInstance, ProgramVariant p) {
 		return false;
 	}
-
 
 }

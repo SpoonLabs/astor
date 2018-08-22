@@ -13,6 +13,12 @@ import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
+@SuppressWarnings("rawtypes")
 public class IfExpresionMutOp extends AstorOperator {
 
 	MutatorComposite mutatorBinary = null;

@@ -13,12 +13,12 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.EvolutionarySearchEngine;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.EfficientIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.GlobalBasicIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.LocalIngredientSpace;
@@ -42,7 +42,8 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine implements IngredientBasedApproach {
+public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySearchEngine
+		implements IngredientBasedApproach {
 
 	protected IngredientSearchStrategy ingredientSearchStrategy;
 	protected IngredientTransformationStrategy ingredientTransformationStrategy;
@@ -148,6 +149,10 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 		this.ingredientTransformationStrategy = ingredientTransformationStrategy;
 	}
 
+	public IngredientTransformationStrategy getIngredientTransformationStrategy() throws Exception {
+		return this.ingredientTransformationStrategy;
+	}
+
 	public IngredientSearchStrategy getIngredientSearchStrategy() {
 		return ingredientSearchStrategy;
 	}
@@ -213,7 +218,7 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 		if (ingStrategySt != null) {
 
 			if (ingStrategySt.equals("uniform-random")) {
-				ingStrategy = new EfficientIngredientStrategy(ingredientspace);
+				ingStrategy = new RandomSelectionIngredientStrategy(ingredientspace);
 			} else if (ingStrategySt.equals("name-probability-based")) {
 				ingStrategy = new ProbabilisticIngredientStrategy(ingredientspace);
 			} else if (ingStrategySt.equals("code-similarity-based")) {
@@ -224,20 +229,16 @@ public abstract class IngredientBasedRepairApproachImpl extends AstorCoreEngine 
 						new Object[] { ingredientspace });
 			}
 		} else {
-			ingStrategy = new EfficientIngredientStrategy(ingredientspace);
+			ingStrategy = new RandomSelectionIngredientStrategy(ingredientspace);
 		}
 		return ingStrategy;
 	}
 
 	protected void loadIngredientTransformationStrategy() throws Exception {
 
-		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = getIngredientTransformationStrategy();
+		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = retrieveIngredientTransformationStrategy();
 
 		this.setIngredientTransformationStrategy(ingredientTransformationStrategyLoaded);
-	}
-
-	public IngredientTransformationStrategy getIngredientTransformationStrategy() throws Exception {
-		return retrieveIngredientTransformationStrategy();
 	}
 
 	public static IngredientTransformationStrategy retrieveIngredientTransformationStrategy() throws Exception {
