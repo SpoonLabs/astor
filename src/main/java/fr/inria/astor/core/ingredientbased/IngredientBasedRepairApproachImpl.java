@@ -149,6 +149,10 @@ public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySear
 		this.ingredientTransformationStrategy = ingredientTransformationStrategy;
 	}
 
+	public IngredientTransformationStrategy getIngredientTransformationStrategy() throws Exception {
+		return this.ingredientTransformationStrategy;
+	}
+
 	public IngredientSearchStrategy getIngredientSearchStrategy() {
 		return ingredientSearchStrategy;
 	}
@@ -232,13 +236,9 @@ public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySear
 
 	protected void loadIngredientTransformationStrategy() throws Exception {
 
-		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = getIngredientTransformationStrategy();
+		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = retrieveIngredientTransformationStrategy();
 
 		this.setIngredientTransformationStrategy(ingredientTransformationStrategyLoaded);
-	}
-
-	public IngredientTransformationStrategy getIngredientTransformationStrategy() throws Exception {
-		return retrieveIngredientTransformationStrategy();
 	}
 
 	public static IngredientTransformationStrategy retrieveIngredientTransformationStrategy() throws Exception {
