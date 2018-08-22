@@ -77,7 +77,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 
 /**
- * Evolutionary program transformation Loop
+ * 
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 

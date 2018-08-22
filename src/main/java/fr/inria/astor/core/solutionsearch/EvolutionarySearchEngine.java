@@ -23,6 +23,7 @@ import fr.inria.main.AstorOutputStatus;
 import spoon.reflect.declaration.CtElement;
 
 /**
+ * Evolutionary program transformation Loop
  * 
  * @author Matias Martinez
  *
