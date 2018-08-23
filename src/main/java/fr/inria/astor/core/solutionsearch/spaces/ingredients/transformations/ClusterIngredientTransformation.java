@@ -24,14 +24,19 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  *
  */
-public class ClusterIngredientTransformation implements IngredientTransformationStrategy {
+public class ClusterIngredientTransformation extends CacheTransformationStrategy
+		implements IngredientTransformationStrategy {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	@Override
 	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient ingredient) {
 
-		List<Ingredient> result = new ArrayList<>();
+		if (this.alreadyTransformed(modificationPoint, ingredient)) {
+			return getCachedTransformations(modificationPoint, ingredient);
+		}
+
+		List<Ingredient> transformedIngredientResult = new ArrayList<>();
 
 		CtCodeElement ctIngredient = (CtCodeElement) ingredient.getCode();
 
@@ -40,15 +45,15 @@ public class ClusterIngredientTransformation implements IngredientTransformation
 		}
 		// I wrote all branches even they are not necessaries to easily
 		// observe all cases.
-		VarMapping mapping = VariableResolver.mapVariablesUsingCluster(modificationPoint.getContextOfModificationPoint(),
-				ctIngredient);
+		VarMapping mapping = VariableResolver
+				.mapVariablesUsingCluster(modificationPoint.getContextOfModificationPoint(), ctIngredient);
 		// if we map all variables
 		if (mapping.getNotMappedVariables().isEmpty()) {
 			if (mapping.getMappedVariables().isEmpty()) {
 				// nothing to transform, accept the ingredient
 				log.debug("Any transf sucessful: The var Mapping is empty, we keep the ingredient");
-				result.add(new Ingredient(ctIngredient));
-				
+				transformedIngredientResult.add(new Ingredient(ctIngredient));
+
 			} else {// We have mappings between variables
 				log.debug("Ingredient before transformation: " + ingredient);
 				List<Map<String, CtVariable>> allCombinations = VariableResolver
@@ -66,7 +71,7 @@ public class ClusterIngredientTransformation implements IngredientTransformation
 					// Cloned transformed element
 					CtCodeElement codeElementCloned = MutationSupporter.clone(ctIngredient);
 					Ingredient ingredient4Combination = new Ingredient(codeElementCloned, null);
-					result.add(ingredient4Combination);
+					transformedIngredientResult.add(ingredient4Combination);
 
 					VariableResolver.resetIngredient(originalMap);
 
@@ -75,8 +80,8 @@ public class ClusterIngredientTransformation implements IngredientTransformation
 		} else {
 			log.debug("Any transformation was sucessful: Vars not mapped: " + mapping.getNotMappedVariables());
 		}
-
-		return result;
+		this.storingIngredients(modificationPoint, ingredient, transformedIngredientResult);
+		return transformedIngredientResult;
 	}
 
 	/**
