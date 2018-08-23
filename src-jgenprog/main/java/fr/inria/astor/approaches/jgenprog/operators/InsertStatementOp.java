@@ -1,5 +1,6 @@
 package fr.inria.astor.approaches.jgenprog.operators;
 
+import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.solutionsearch.spaces.operators.IngredientBasedOperator;
@@ -34,6 +35,11 @@ public abstract class InsertStatementOp extends IngredientBasedOperator implemen
 	@Override
 	public boolean updateProgramVariant(OperatorInstance opInstance, ProgramVariant p) {
 		return addPoint(p, opInstance);
+	}
+
+	@Override
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
+		return (point.getCodeElement() instanceof CtStatement);
 	}
 
 }

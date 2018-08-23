@@ -48,7 +48,7 @@ public class InsertAfterOp extends InsertStatementOp {
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
 
-		boolean apply = canBeAppliedToPoint(point);
+		boolean apply = super.canBeAppliedToPoint(point);
 		if (!apply)
 			return apply;
 
