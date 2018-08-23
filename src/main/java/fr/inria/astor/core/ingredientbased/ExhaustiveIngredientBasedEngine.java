@@ -52,7 +52,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	public void startEvolution() throws Exception {
 
 		if (this.ingredientSpace == null) {
-			this.ingredientSpace = IngredientBasedRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
+			this.ingredientSpace = IngredientBasedEvolutionaryRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
 		}
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
@@ -266,7 +266,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	protected void loadIngredientPool() throws JSAPException, Exception {
 		List<TargetElementProcessor<?>> ingredientProcessors = this.getTargetElementProcessors();
 		// The ingredients for build the patches
-		IngredientPool ingredientspace = IngredientBasedRepairApproachImpl.getIngredientPool(ingredientProcessors);
+		IngredientPool ingredientspace = IngredientBasedEvolutionaryRepairApproachImpl.getIngredientPool(ingredientProcessors);
 
 		this.setIngredientPool(ingredientspace);
 
@@ -275,12 +275,12 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientSearchStrategy() throws Exception {
 		this.setIngredientSearchStrategy(
-				IngredientBasedRepairApproachImpl.retrieveIngredientSearchStrategy(getIngredientPool()));
+				IngredientBasedEvolutionaryRepairApproachImpl.retrieveIngredientSearchStrategy(getIngredientPool()));
 	}
 
 	protected void loadIngredientTransformationStrategy() throws Exception {
 
-		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = IngredientBasedRepairApproachImpl
+		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = IngredientBasedEvolutionaryRepairApproachImpl
 				.retrieveIngredientTransformationStrategy();
 		this.setIngredientTransformationStrategy(ingredientTransformationStrategyLoaded);
 	}

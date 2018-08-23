@@ -14,7 +14,7 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.ingredientbased.ExhaustiveIngredientBasedEngine;
-import fr.inria.astor.core.ingredientbased.IngredientBasedRepairApproachImpl;
+import fr.inria.astor.core.ingredientbased.IngredientBasedEvolutionaryRepairApproachImpl;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothCollectorFacade;
@@ -70,7 +70,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	public void loadExtensionPoints() throws Exception {
 		super.loadExtensionPoints();
 		if (this.ingredientSpace == null) {
-			this.ingredientSpace = IngredientBasedRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
+			this.ingredientSpace = IngredientBasedEvolutionaryRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
 		}
 
 		String holeorder = ConfigurationProperties.properties.getProperty("holeorder");

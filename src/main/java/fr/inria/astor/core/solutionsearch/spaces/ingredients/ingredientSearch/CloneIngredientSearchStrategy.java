@@ -24,7 +24,7 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.ingredientbased.IngredientBasedRepairApproachImpl;
+import fr.inria.astor.core.ingredientbased.IngredientBasedEvolutionaryRepairApproachImpl;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -53,7 +53,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
  * @author Martin White
  *
  */
-public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends RandomSelectionIngredientStrategy {
+public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends RandomSelectionTransformedIngredientStrategy {
 
 	private final Class cls;
 	private TypeFilter typeFilter;
@@ -75,7 +75,7 @@ public class CloneIngredientSearchStrategy<T extends CtNamedElement> extends Ran
 		setfilter();
 		readinput();
 
-		this.ingTransformationStrategy = IngredientBasedRepairApproachImpl.retrieveIngredientTransformationStrategy();
+		this.ingTransformationStrategy = IngredientBasedEvolutionaryRepairApproachImpl.retrieveIngredientTransformationStrategy();
 
 		if (this.ingTransformationStrategy == null) {
 			this.ingTransformationStrategy = new ClusterIngredientTransformation();

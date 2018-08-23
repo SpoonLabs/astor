@@ -18,7 +18,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionIngredientStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.SimpleRandomSelectionIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.GlobalBasicIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.LocalIngredientSpace;
@@ -42,21 +42,21 @@ import fr.inria.main.evolution.PlugInLoader;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySearchEngine
+public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends EvolutionarySearchEngine
 		implements IngredientBasedApproach {
 
 	protected IngredientSearchStrategy ingredientSearchStrategy;
 	protected IngredientTransformationStrategy ingredientTransformationStrategy;
 	protected IngredientPool ingredientPool;
 
-	public IngredientBasedRepairApproachImpl(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
-			throws JSAPException {
+	public IngredientBasedEvolutionaryRepairApproachImpl(MutationSupporter mutatorExecutor,
+			ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
 	}
 
 	/**
-	 * By default, it initializes the spoon model. It should not be created
-	 * before. Otherwise, an exception occurs.
+	 * By default, it initializes the spoon model. It should not be created before.
+	 * Otherwise, an exception occurs.
 	 * 
 	 * @param suspicious
 	 * @throws Exception
@@ -90,6 +90,9 @@ public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySear
 
 			Ingredient ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operatorSelected);
 
+			if (ingredient == null) {
+				return null;
+			}
 			operatorInstances = ingbasedapproach.createOperatorInstances(modificationPoint, ingredient,
 					this.ingredientTransformationStrategy);
 
@@ -212,7 +215,8 @@ public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySear
 		if (ingStrategySt != null) {
 
 			if (ingStrategySt.equals("uniform-random")) {
-				ingStrategy = new RandomSelectionIngredientStrategy(ingredientspace);
+				ingStrategy = new SimpleRandomSelectionIngredientStrategy(ingredientspace);
+				// new RandomSelectionTransformedIngredientStrategy(ingredientspace);
 			} else if (ingStrategySt.equals("name-probability-based")) {
 				ingStrategy = new ProbabilisticIngredientStrategy(ingredientspace);
 			} else if (ingStrategySt.equals("code-similarity-based")) {
@@ -223,7 +227,8 @@ public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySear
 						new Object[] { ingredientspace });
 			}
 		} else {
-			ingStrategy = new RandomSelectionIngredientStrategy(ingredientspace);
+			ingStrategy = new SimpleRandomSelectionIngredientStrategy(ingredientspace);
+			// new RandomSelectionTransformedIngredientStrategy(ingredientspace);
 		}
 		return ingStrategy;
 	}

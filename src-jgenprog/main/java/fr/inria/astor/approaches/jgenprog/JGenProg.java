@@ -6,7 +6,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.ingredientbased.IngredientBasedRepairApproachImpl;
+import fr.inria.astor.core.ingredientbased.IngredientBasedEvolutionaryRepairApproachImpl;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -19,7 +19,7 @@ import fr.inria.main.evolution.ExtensionPoints;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class JGenProg extends IngredientBasedRepairApproachImpl {
+public class JGenProg extends IngredientBasedEvolutionaryRepairApproachImpl {
 
 	public JGenProg(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);

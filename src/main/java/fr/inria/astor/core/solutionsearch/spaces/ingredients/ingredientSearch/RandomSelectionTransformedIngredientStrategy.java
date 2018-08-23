@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.ingredientbased.IngredientBasedRepairApproachImpl;
+import fr.inria.astor.core.ingredientbased.IngredientBasedEvolutionaryRepairApproachImpl;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
@@ -29,17 +29,17 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class RandomSelectionIngredientStrategy extends IngredientSearchStrategy {
+public class RandomSelectionTransformedIngredientStrategy extends IngredientSearchStrategy {
 
 	IngredientTransformationStrategy ingredientTransformationStrategy;
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
-	public RandomSelectionIngredientStrategy(IngredientPool space) {
+	public RandomSelectionTransformedIngredientStrategy(IngredientPool space) {
 		super(space);
 
 		try {
-			this.ingredientTransformationStrategy = IngredientBasedRepairApproachImpl
+			this.ingredientTransformationStrategy = IngredientBasedEvolutionaryRepairApproachImpl
 					.retrieveIngredientTransformationStrategy();
 		} catch (Exception e) {
 			log.error(e);
