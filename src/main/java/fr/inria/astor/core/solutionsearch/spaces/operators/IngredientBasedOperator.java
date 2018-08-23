@@ -23,11 +23,11 @@ public abstract class IngredientBasedOperator extends AstorOperator {
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint, Ingredient ingredient,
 			IngredientTransformationStrategy transformationStrategy) {
 
-		List<OperatorInstance> operator = new ArrayList<>();
+		List<OperatorInstance> operatorIntances = new ArrayList<>();
 
 		if (ingredient == null) {
 			log.error("The ingredient cannot be null");
-			return operator;
+			return operatorIntances;
 		}
 
 		if (transformationStrategy != null) {
@@ -35,12 +35,17 @@ public abstract class IngredientBasedOperator extends AstorOperator {
 			List<Ingredient> ingredientsAfterTransformation = transformationStrategy.transform(modificationPoint,
 					ingredient);
 
+			if (ingredientsAfterTransformation == null) {
+				log.debug("Empty transformations mp " + modificationPoint + " " + ingredient);
+				return operatorIntances;
+			}
+
 			for (Ingredient ingredientTransformed : ingredientsAfterTransformation) {
 
 				OperatorInstance operatorInstance = this.createOperatorInstance(modificationPoint);
 				operatorInstance.setModified(ingredientTransformed.getCode());
 				operatorInstance.setIngredient(ingredientTransformed);
-				operator.add(operatorInstance);
+				operatorIntances.add(operatorInstance);
 
 			}
 		} else {// No transformation
@@ -48,7 +53,7 @@ public abstract class IngredientBasedOperator extends AstorOperator {
 			opInstance.setModified(ingredient.getCode());
 			opInstance.setIngredient(ingredient);
 		}
-		return operator;
+		return operatorIntances;
 	}
 
 	protected OperatorInstance createOperatorInstance(ModificationPoint mp) {
