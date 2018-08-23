@@ -242,8 +242,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 	}
 
 	/**
-	 * We take the output of evosuite, we generate the spoon model, then we
-	 * compile it, and finally we run the tests.
+	 * We take the output of evosuite, we generate the spoon model, then we compile
+	 * it, and finally we run the tests.
 	 * 
 	 * @throws Exception
 	 */
@@ -341,7 +341,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "400", "-population", "1",
+				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "2000", "-population", "1",
 				"-stopfirst", "true", "-maxtime", "20",
 				// PARAMETER TO TEST
 				"-validation", "evosuite"
@@ -412,8 +412,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 	}
 
 	/**
-	 * This test reproduce the bug of calling a regression using a process.
-	 * After calling it, it does not return.
+	 * This test reproduce the bug of calling a regression using a process. After
+	 * calling it, it does not return.
 	 * 
 	 * @throws Exception
 	 */
