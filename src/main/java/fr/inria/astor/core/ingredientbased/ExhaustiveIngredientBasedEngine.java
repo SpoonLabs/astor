@@ -23,6 +23,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
+import fr.inria.astor.core.solutionsearch.spaces.operators.IngredientBasedOperator;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.ExtensionPoints;
 
@@ -51,7 +52,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	public void startEvolution() throws Exception {
 
 		if (this.ingredientSpace == null) {
-			this.ingredientSpace = IngredientBasedRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
+			this.ingredientSpace = IngredientBasedEvolutionaryRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
 		}
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
@@ -164,20 +165,20 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 				log.debug("Applying operator " + astorOperator + " from " + Arrays.toString(operators));
 				List<OperatorInstance> operatorInstances = null;
 				if (astorOperator.needIngredient()) {
+					IngredientBasedOperator ingbasedoperator = (IngredientBasedOperator) astorOperator;
 					try {
-						operatorInstances = createInstance(modificationPoint, astorOperator);
+						operatorInstances = createIngredientOpInstance(modificationPoint, ingbasedoperator);
 					} catch (Exception e) {
 						e.printStackTrace();
 						log.error("Error creating op instances: \n" + e);
 					}
 
 				} else {// if does not need ingredients
-					operatorInstances = astorOperator.createOperatorInstance(modificationPoint);
+					operatorInstances = astorOperator.createOperatorInstances(modificationPoint);
 
 				}
 				if (operatorInstances != null)
 					ops.addAll(operatorInstances);
-
 			}
 		}
 
@@ -187,52 +188,39 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<OperatorInstance> createInstance(SuspiciousModificationPoint modificationPoint,
-			AstorOperator astorOperator) throws Exception {
+	public List<OperatorInstance> createIngredientOpInstance(SuspiciousModificationPoint modificationPoint,
+			IngredientBasedOperator astorOperator) throws Exception {
 
 		List<OperatorInstance> ops = new ArrayList<>();
 		List<Ingredient> ingredients = new ArrayList<>();
 
-		if (astorOperator.needIngredient()) {
-			if (astorOperator instanceof ReplaceOp) {
-				String type = ingredientSpace.getType(new Ingredient(modificationPoint.getCodeElement())).toString();
+		if (astorOperator instanceof ReplaceOp) {// TODO
+			String type = ingredientSpace.getType(new Ingredient(modificationPoint.getCodeElement())).toString();
 
-				ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
+			ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement(), type);
 
-			} else {
-				ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
-
-			}
-			if (ingredients == null) {
-				log.error("Zero ingredients mp: " + modificationPoint + ", op " + astorOperator);
-				return ops;
-			}
-			log.debug("Number of ingredients " + ingredients.size());
-			for (Ingredient ingredient : ingredients) {
-
-				List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
-
-				List<Ingredient> ingredientsAfterTransformation = this.ingredientTransformationStrategy
-						.transform(modificationPoint, ingredient);
-
-				if (instances != null && instances.size() > 0) {
-
-					for (Ingredient ingredientTransformed : ingredientsAfterTransformation) {
-
-						OperatorInstance operatorInstance = createOperatorInstance(modificationPoint, astorOperator);
-						operatorInstance.setModified(ingredientTransformed.getCode());
-						operatorInstance.setIngredient(ingredientTransformed);
-						ops.add(operatorInstance);
-					}
-				}
-			}
 		} else {
+			ingredients = ingredientSpace.getIngredients(modificationPoint.getCodeElement());
 
-			OperatorInstance operatorInstance = createOperatorInstance(modificationPoint, astorOperator);
-
-			ops.add(operatorInstance);
 		}
+
+		if (ingredients == null) {
+			log.error("Zero ingredients mp: " + modificationPoint + ", op " + astorOperator);
+			return ops;
+		}
+		log.debug("Number of ingredients " + ingredients.size());
+		for (Ingredient ingredient : ingredients) {
+
+			List<OperatorInstance> operatorInstances = null;
+			operatorInstances = astorOperator.createOperatorInstances(modificationPoint, ingredient,
+					this.ingredientTransformationStrategy);
+
+			ops.addAll(operatorInstances);
+
+		}
+
 		return ops;
+
 	}
 
 	public IngredientPool getIngredientSpace() {
@@ -274,21 +262,11 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 
 	}
 
-	public OperatorInstance createOperatorInstance(ModificationPoint mp, AstorOperator operator) {
-		OperatorInstance operation = new OperatorInstance();
-		operation.setOriginal(mp.getCodeElement());
-		operation.setOperationApplied(operator);
-		operation.setModificationPoint(mp);
-		operation.defineParentInformation(mp);
-
-		return operation;
-	}
-
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientPool() throws JSAPException, Exception {
 		List<TargetElementProcessor<?>> ingredientProcessors = this.getTargetElementProcessors();
 		// The ingredients for build the patches
-		IngredientPool ingredientspace = IngredientBasedRepairApproachImpl.getIngredientPool(ingredientProcessors);
+		IngredientPool ingredientspace = IngredientBasedEvolutionaryRepairApproachImpl.getIngredientPool(ingredientProcessors);
 
 		this.setIngredientPool(ingredientspace);
 
@@ -297,12 +275,12 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientSearchStrategy() throws Exception {
 		this.setIngredientSearchStrategy(
-				IngredientBasedRepairApproachImpl.retrieveIngredientSearchStrategy(getIngredientPool()));
+				IngredientBasedEvolutionaryRepairApproachImpl.retrieveIngredientSearchStrategy(getIngredientPool()));
 	}
 
 	protected void loadIngredientTransformationStrategy() throws Exception {
 
-		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = IngredientBasedRepairApproachImpl
+		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = IngredientBasedEvolutionaryRepairApproachImpl
 				.retrieveIngredientTransformationStrategy();
 		this.setIngredientTransformationStrategy(ingredientTransformationStrategyLoaded);
 	}

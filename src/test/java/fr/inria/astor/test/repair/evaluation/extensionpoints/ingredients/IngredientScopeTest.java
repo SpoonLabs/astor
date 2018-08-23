@@ -22,6 +22,7 @@ import fr.inria.astor.core.solutionsearch.population.PopulationConformation;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
+import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
@@ -179,16 +180,15 @@ public class IngredientScopeTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-scope", "package", "-seed", "10", "-maxgen", "400", "-stopfirst", "false", // two
-																								// solutions
-				"-maxtime", "10", "-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString()
-
-		};
+				"-scope", "package", "-seed", "10", "-maxgen", "2000", "-stopfirst", "false", "-maxtime", "10",
+				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(),
+				// Parameters:
+				"-parameters", "maxnumbersolutions:2" };// Two ingredients from package
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
-		assertTrue(solutions.size() >= 2);
-		assertTrue(solutions.size() <= 3);
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
+		assertEquals(2, solutions.size());
 	}
 }

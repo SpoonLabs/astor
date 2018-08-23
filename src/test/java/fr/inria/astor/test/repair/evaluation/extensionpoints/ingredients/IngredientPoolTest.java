@@ -20,7 +20,7 @@ import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionIngredientStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionTransformedIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.CtLocationIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.MethodBasicIngredientScope;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
@@ -247,7 +247,7 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "true",
 				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy",
-				RandomSelectionIngredientStrategy.class.getCanonicalName() };
+				RandomSelectionTransformedIngredientStrategy.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 		validatePatchExistence(out + File.separator + "AstorMain-math_85/");

@@ -25,7 +25,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionIngredientStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionTransformedIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
 import spoon.reflect.code.CtExpression;
@@ -79,7 +79,7 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 
 				AstorOperator pointOperation = this.getOperatorSpace().getOperators().get(0);
 
-				RandomSelectionIngredientStrategy estrategy = (RandomSelectionIngredientStrategy) this
+				RandomSelectionTransformedIngredientStrategy estrategy = (RandomSelectionTransformedIngredientStrategy) this
 						.getIngredientSearchStrategy();
 
 				List<Ingredient> baseElements = estrategy.getNotExhaustedBaseElements(modifPoint, pointOperation);
@@ -232,7 +232,7 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 		AstorOperator[] operators = getOperatorSpace().values();
 		for (AstorOperator astorOperator : operators) {
 			if (astorOperator.canBeAppliedToPoint(modificationPoint)) {
-				List<OperatorInstance> instances = astorOperator.createOperatorInstance(modificationPoint);
+				List<OperatorInstance> instances = astorOperator.createOperatorInstances(modificationPoint);
 				if (instances != null && instances.size() > 0) {
 					ops.addAll(instances);
 				}

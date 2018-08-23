@@ -23,7 +23,8 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  *
  */
-public class RandomTransformationStrategy implements IngredientTransformationStrategy {
+public class RandomTransformationStrategy extends CacheTransformationStrategy
+		implements IngredientTransformationStrategy {
 
 	protected Logger logger = Logger.getLogger(RandomTransformationStrategy.class.getName());
 
@@ -33,6 +34,10 @@ public class RandomTransformationStrategy implements IngredientTransformationStr
 
 	@Override
 	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient baseIngredient) {
+
+		if (this.alreadyTransformed(modificationPoint, baseIngredient)) {
+			return getCachedTransformations(modificationPoint, baseIngredient);
+		}
 
 		List<Ingredient> result = new ArrayList<>();
 
@@ -79,6 +84,8 @@ public class RandomTransformationStrategy implements IngredientTransformationStr
 						+ ingredient.getVariable().getType().getQualifiedName());
 			}
 		}
+
+		this.storingIngredients(modificationPoint, baseIngredient, result);
 
 		return result;
 	}

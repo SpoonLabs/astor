@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.approaches.jgenprog.operators.StatementLevelOperator;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.solutionsearch.spaces.operators.AutonomousOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 
@@ -16,7 +18,9 @@ import spoon.reflect.code.CtIf;
  * @author Matias Martinez
  *
  */
-public class ReplaceIfBooleanOp extends ReplaceOp {
+public class ReplaceIfBooleanOp extends AutonomousOperator implements StatementLevelOperator {
+
+	ReplaceOp replaceOp = new ReplaceOp();
 
 	public ReplaceIfBooleanOp() {
 		super();
@@ -29,7 +33,7 @@ public class ReplaceIfBooleanOp extends ReplaceOp {
 	}
 
 	@Override
-	public List<OperatorInstance> createOperatorInstance(SuspiciousModificationPoint modificationPoint) {
+	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
 		List<OperatorInstance> instances = new ArrayList<>();
 
 		OperatorInstance opChangeIftrue = new OperatorInstance(modificationPoint, this,
@@ -64,6 +68,23 @@ public class ReplaceIfBooleanOp extends ReplaceOp {
 		clonedIf.setCondition(ifExpression);
 
 		return clonedIf;
+	}
+
+	@Override
+	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {
+
+		return replaceOp.applyChangesInModel(operation, p);
+
+	}
+
+	@Override
+	public boolean undoChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
+		return replaceOp.undoChangesInModel(opInstance, p);
+	}
+
+	@Override
+	public boolean updateProgramVariant(OperatorInstance opInstance, ProgramVariant p) {
+		return replaceOp.updateProgramVariant(opInstance, p);
 	}
 
 }

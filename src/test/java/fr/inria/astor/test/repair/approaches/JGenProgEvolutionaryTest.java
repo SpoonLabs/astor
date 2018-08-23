@@ -1,5 +1,6 @@
 package fr.inria.astor.test.repair.approaches;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -39,19 +40,18 @@ public class JGenProgEvolutionaryTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-scope", "package", "-seed", "10", "-maxgen", "500", "-stopfirst", "false", // two
-																								// solutions
-				"-maxtime", "10", "-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString()
-						+ File.pathSeparator + PopulationConformation.SOLUTIONS.toString()// Here
-																							// we
-																							// test.
+				"-scope", "package", "-seed", "10", "-maxgen", "3000", "-stopfirst", "false", "-maxtime", "10",
+				"-population", "1", "-reintroduce",
+				PopulationConformation.PARENTS.toString() + File.pathSeparator
+						+ PopulationConformation.SOLUTIONS.toString(), // Parameters:
+				"-parameters", "maxnumbersolutions:3"
 
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
-		assertTrue(solutions.size() > 3);
+		assertEquals(3, solutions.size());
 		boolean withMultiple = false;
 		for (ProgramVariant programVariant : solutions) {
 			log.info("-->" + programVariant.getOperations().values());

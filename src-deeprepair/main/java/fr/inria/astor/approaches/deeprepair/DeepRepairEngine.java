@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.astor.core.ingredientbased.IngredientBasedRepairApproachImpl;
+import fr.inria.astor.core.ingredientbased.IngredientBasedEvolutionaryRepairApproachImpl;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -23,7 +23,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class DeepRepairEngine extends IngredientBasedRepairApproachImpl {
+public class DeepRepairEngine extends IngredientBasedEvolutionaryRepairApproachImpl {
 
 	public DeepRepairEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws Exception {
 		super(mutatorExecutor, projFacade);

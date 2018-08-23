@@ -107,8 +107,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", //
 				"-maxtime", "100", "-loglevel", "INFO",
 				// For excluding regression
-				"-excludeRegression", "-parameters",
-				"maxCombinationVariableLimit:true"
+				"-excludeRegression", "-parameters", "maxCombinationVariableLimit:true"
 						// reduced search space
 						+ ":maxVarCombination:1" + ":ingredienttransformstrategy:"
 						+ RandomTransformationStrategy.class.getCanonicalName()

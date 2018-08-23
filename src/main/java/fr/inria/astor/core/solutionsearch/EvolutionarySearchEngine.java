@@ -16,11 +16,11 @@ import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
+import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.util.StringUtil;
 import fr.inria.main.AstorOutputStatus;
-import spoon.reflect.declaration.CtElement;
 
 /**
  * Evolutionary program transformation Loop
@@ -67,18 +67,19 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 			try {
 				boolean solutionFound = processGenerations(generationsExecuted);
 
-				stopSearch = solutionFound &&
-				// one solution
-						(ConfigurationProperties.getPropertyBool("stopfirst")
-								// or nr solutions are greater than max allowed
-								|| (this.solutions.size() >= ConfigurationProperties
-										.getPropertyInt("maxnumbersolutions")));
+				if (solutionFound) {
+					stopSearch =
+							// one solution
+							(ConfigurationProperties.getPropertyBool("stopfirst")
+									// or nr solutions are greater than max allowed
+									|| (this.solutions.size() >= ConfigurationProperties
+											.getPropertyInt("maxnumbersolutions")));
 
-				if (stopSearch) {
-					log.debug("\n Max Solution found " + this.solutions.size());
-					this.outputStatus = AstorOutputStatus.STOP_BY_PATCH_FOUND;
+					if (stopSearch) {
+						log.debug("\n Max Solution found " + this.solutions.size());
+						this.outputStatus = AstorOutputStatus.STOP_BY_PATCH_FOUND;
+					}
 				}
-
 			} catch (Throwable e) {
 				log.error("Error at generation " + generationsExecuted + "\n" + e);
 				e.printStackTrace();
@@ -100,22 +101,25 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 			throws IllegalAccessException {
 		SuspiciousModificationPoint suspModificationPoint = (SuspiciousModificationPoint) modificationPoint;
 
-		AstorOperator operationType = operatorSelectionStrategy.getNextOperator(suspModificationPoint);
+		AstorOperator operatorSelected = operatorSelectionStrategy.getNextOperator(suspModificationPoint);
 
-		if (operationType == null) {
+		if (operatorSelected == null) {
 			log.debug("Operation Null");
 			return null;
 		}
 
-		CtElement targetStmt = suspModificationPoint.getCodeElement();
+		List<OperatorInstance> operatorInstances = operatorSelected.createOperatorInstances(modificationPoint);
 
-		OperatorInstance operation = new OperatorInstance();
-		operation.setOriginal(targetStmt);
-		operation.setOperationApplied(operationType);
-		operation.setModificationPoint(suspModificationPoint);
-		operation.defineParentInformation(suspModificationPoint);
+		return selectRandomly(operatorInstances);
+	}
 
-		return operation;
+	protected OperatorInstance selectRandomly(List<OperatorInstance> operatorInstances) {
+		if (operatorInstances != null && operatorInstances.size() > 0) {
+
+			return operatorInstances.get(RandomManager.nextInt(operatorInstances.size()));
+		}
+
+		return null;
 	}
 
 	/**
@@ -174,8 +178,8 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 	}
 
 	/**
-	 * Create a child mutated. Return null if not mutation is produced by the
-	 * engine (i.e. the child is equal to the parent)
+	 * Create a child mutated. Return null if not mutation is produced by the engine
+	 * (i.e. the child is equal to the parent)
 	 * 
 	 * @param parentVariant
 	 * @param generation
@@ -225,9 +229,8 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 	}
 
 	/**
-	 * Given a program variant, the method generates operations for modifying
-	 * that variants. Each operation is related to one gen of the program
-	 * variant.
+	 * Given a program variant, the method generates operations for modifying that
+	 * variants. Each operation is related to one gen of the program variant.
 	 * 
 	 * @param variant
 	 * @param generation
@@ -299,8 +302,8 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 	}
 
 	/**
-	 * Return true if the gen passed as parameter was already affected by a
-	 * previous operator.
+	 * Return true if the gen passed as parameter was already affected by a previous
+	 * operator.
 	 * 
 	 * @param genProgInstance
 	 * @param map

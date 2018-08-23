@@ -7,9 +7,8 @@ import fr.inria.astor.approaches.jmutrepair.MutantCtElement;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
+import fr.inria.astor.core.solutionsearch.spaces.operators.AutonomousOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 
@@ -19,7 +18,7 @@ import spoon.reflect.code.CtIf;
  *
  */
 @SuppressWarnings("rawtypes")
-public class IfExpresionMutOp extends AstorOperator {
+public class IfExpresionMutOp extends AutonomousOperator {
 
 	MutatorComposite mutatorBinary = null;
 
@@ -60,11 +59,6 @@ public class IfExpresionMutOp extends AstorOperator {
 		return (point.getCodeElement() instanceof CtIf);
 	}
 
-	@Override
-	public boolean needIngredient() {
-		return false;
-	}
-
 	protected OperatorInstance createModificationInstance(ModificationPoint point, MutantCtElement fix)
 			throws IllegalAccessException {
 		CtIf targetIF = (CtIf) point.getCodeElement();
@@ -78,7 +72,7 @@ public class IfExpresionMutOp extends AstorOperator {
 	}
 
 	@Override
-	public List<OperatorInstance> createOperatorInstance(SuspiciousModificationPoint modificationPoint) {
+	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
 		List<OperatorInstance> ops = new ArrayList<>();
 
 		CtIf targetIF = (CtIf) modificationPoint.getCodeElement();
@@ -100,7 +94,7 @@ public class IfExpresionMutOp extends AstorOperator {
 	}
 
 	/** Return the list of CtElements Mutanted */
-	public List<MutantCtElement> getMutants(CtIf targetIF) {
+	private List<MutantCtElement> getMutants(CtIf targetIF) {
 		List<MutantCtElement> mutations = null;
 		mutations = this.mutatorBinary.execute(targetIF.getCondition());
 		return mutations;

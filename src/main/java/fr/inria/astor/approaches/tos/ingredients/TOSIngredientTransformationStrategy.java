@@ -10,6 +10,7 @@ import fr.inria.astor.approaches.tos.entity.placeholders.Placeholder;
 import fr.inria.astor.approaches.tos.entity.transf.Transformation;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.CacheTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 
 /**
@@ -17,12 +18,18 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.Ing
  * @author Matias Martinez
  *
  */
-public class TOSIngredientTransformationStrategy implements IngredientTransformationStrategy {
+public class TOSIngredientTransformationStrategy extends CacheTransformationStrategy
+		implements IngredientTransformationStrategy {
 
 	PatchGenerator patchGenerator = new PatchGenerator();
 
 	@Override
 	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient ingredient) {
+
+		if (this.alreadyTransformed(modificationPoint, ingredient)) {
+			return getCachedTransformations(modificationPoint, ingredient);
+		}
+
 		TOSEntity tos = (TOSEntity) ingredient;
 		List<Ingredient> ingredientTransformed = new ArrayList<>();
 		for (Placeholder placeholder : tos.getPlaceholders()) {
@@ -50,6 +57,8 @@ public class TOSIngredientTransformationStrategy implements IngredientTransforma
 				ingredientTransformed = newingredientTransformed;
 			}
 		}
+
+		storingIngredients(modificationPoint, ingredient, ingredientTransformed);
 		return ingredientTransformed;
 	}
 }

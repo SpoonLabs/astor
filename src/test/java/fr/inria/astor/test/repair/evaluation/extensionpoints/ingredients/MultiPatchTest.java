@@ -228,17 +228,17 @@ public class MultiPatchTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(),
 				//
-				"-scope", "package", "-seed", "10", "-maxgen", "400", "-stopfirst", "false", // two
-																								// solutions
-				"-maxtime", "10", "-population", "1", "-reintroduce",
-				PopulationConformation.PARENTS.toString() + "-parameters", "maxnumbersolutions:2" };
+				"-scope", "package", "-seed", "10", "-maxgen", "2000", "-stopfirst", "false", "-maxtime", "10",
+				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(), "-parameters",
+				"maxnumbersolutions:2" };
 
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 
-		assertTrue(solutions.size() == 2);
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
+		assertEquals(2, solutions.size());
 
 		System.out.println("Patches: ");
 		for (PatchStat ps : main1.getEngine().getPatchInfo()) {

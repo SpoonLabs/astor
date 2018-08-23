@@ -57,7 +57,7 @@ public class OutputTest {
 		cs.command.put("-seed", "0");
 		cs.command.put("-scope", "package");
 		cs.command.put("-loglevel", "INFO");
-		cs.command.put("-maxgen", "200");
+		cs.command.put("-maxgen", "500");
 		cs.command.put("-parameters", "disablelog:false");
 		File fileLog = File.createTempFile("logTest", ".log");
 		cs.append("-parameters", "logfilepath:" + fileLog.getAbsolutePath());
@@ -90,8 +90,8 @@ public class OutputTest {
 	/**
 	 * Math 70 bug can be fixed by replacing a method invocation inside a return
 	 * statement. + return solve(f, min, max); - return solve(min, max); One
-	 * solution with local scope, another with package This test validates the
-	 * stats via API and JSON
+	 * solution with local scope, another with package This test validates the stats
+	 * via API and JSON
 	 * 
 	 * @throws Exception
 	 */
@@ -278,7 +278,7 @@ public class OutputTest {
 		assertEquals(AstorOutputStatus.TIME_OUT, engine.getOutputStatus());
 
 		command.command.put("-maxtime", "60");
-		command.command.put("-maxgen", "200");
+		command.command.put("-maxgen", "1000");
 		main1.execute(command.flat());
 		engine = main1.getEngine();
 

@@ -18,7 +18,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionIngredientStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.SimpleRandomSelectionIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.GlobalBasicIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.LocalIngredientSpace;
@@ -29,12 +29,12 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.Ing
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.ProbabilisticTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
+import fr.inria.astor.core.solutionsearch.spaces.operators.IngredientBasedOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
-import spoon.reflect.declaration.CtElement;
 
 /**
  * Ingredient based-repair approach.
@@ -42,22 +42,21 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySearchEngine
+public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends EvolutionarySearchEngine
 		implements IngredientBasedApproach {
 
 	protected IngredientSearchStrategy ingredientSearchStrategy;
 	protected IngredientTransformationStrategy ingredientTransformationStrategy;
 	protected IngredientPool ingredientPool;
 
-	public IngredientBasedRepairApproachImpl(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
-			throws JSAPException {
+	public IngredientBasedEvolutionaryRepairApproachImpl(MutationSupporter mutatorExecutor,
+			ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
-		// pluginLoaded = new IngredientBasedPlugInLoader();
 	}
 
 	/**
-	 * By default, it initializes the spoon model. It should not be created
-	 * before. Otherwise, an exception occurs.
+	 * By default, it initializes the spoon model. It should not be created before.
+	 * Otherwise, an exception occurs.
 	 * 
 	 * @param suspicious
 	 * @throws Exception
@@ -77,33 +76,31 @@ public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySear
 			throws IllegalAccessException {
 		SuspiciousModificationPoint suspModificationPoint = (SuspiciousModificationPoint) modificationPoint;
 
-		AstorOperator operationType = operatorSelectionStrategy.getNextOperator(suspModificationPoint);
+		AstorOperator operatorSelected = operatorSelectionStrategy.getNextOperator(suspModificationPoint);
 
-		if (operationType == null) {
+		if (operatorSelected == null) {
 			log.debug("Operation Null");
 			return null;
 		}
 
-		CtElement targetStmt = suspModificationPoint.getCodeElement();
+		List<OperatorInstance> operatorInstances = null;
 
-		OperatorInstance operation = new OperatorInstance();
-		operation.setOriginal(targetStmt);
-		operation.setOperationApplied(operationType);
-		operation.setModificationPoint(suspModificationPoint);
-		operation.defineParentInformation(suspModificationPoint);
+		if (operatorSelected.needIngredient()) {
+			IngredientBasedOperator ingbasedapproach = (IngredientBasedOperator) operatorSelected;
 
-		if (operationType.needIngredient()) {
-			Ingredient ingredient = null;
-			ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operationType);
+			Ingredient ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operatorSelected);
+
 			if (ingredient == null) {
-				log.debug("Any ingredient for this point, we discard it");
 				return null;
 			}
-			operation.setModified(ingredient.getCode());
-			operation.setIngredient(ingredient);
+			operatorInstances = ingbasedapproach.createOperatorInstances(modificationPoint, ingredient,
+					this.ingredientTransformationStrategy);
+
+		} else {
+			operatorInstances = operatorSelected.createOperatorInstances(modificationPoint);
 		}
 
-		return operation;
+		return selectRandomly(operatorInstances);
 	}
 
 	@Override
@@ -218,7 +215,8 @@ public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySear
 		if (ingStrategySt != null) {
 
 			if (ingStrategySt.equals("uniform-random")) {
-				ingStrategy = new RandomSelectionIngredientStrategy(ingredientspace);
+				ingStrategy = new SimpleRandomSelectionIngredientStrategy(ingredientspace);
+				// new RandomSelectionTransformedIngredientStrategy(ingredientspace);
 			} else if (ingStrategySt.equals("name-probability-based")) {
 				ingStrategy = new ProbabilisticIngredientStrategy(ingredientspace);
 			} else if (ingStrategySt.equals("code-similarity-based")) {
@@ -229,7 +227,8 @@ public abstract class IngredientBasedRepairApproachImpl extends EvolutionarySear
 						new Object[] { ingredientspace });
 			}
 		} else {
-			ingStrategy = new RandomSelectionIngredientStrategy(ingredientspace);
+			ingStrategy = new SimpleRandomSelectionIngredientStrategy(ingredientspace);
+			// new RandomSelectionTransformedIngredientStrategy(ingredientspace);
 		}
 		return ingStrategy;
 	}

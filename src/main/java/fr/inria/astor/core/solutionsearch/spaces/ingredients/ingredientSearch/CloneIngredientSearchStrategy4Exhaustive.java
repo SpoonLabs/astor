@@ -54,7 +54,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
  * @author Martin White
  *
  */
-public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> extends RandomSelectionIngredientStrategy {
+public class CloneIngredientSearchStrategy4Exhaustive<T extends CtNamedElement> extends RandomSelectionTransformedIngredientStrategy {
 
 	private final Class cls;
 	private TypeFilter typeFilter;

@@ -18,7 +18,7 @@ import fr.inria.astor.util.MapList;
  * @author Matias Martinez
  *
  */
-public class ProbabilisticIngredientStrategy extends RandomSelectionIngredientStrategy {
+public class ProbabilisticIngredientStrategy extends RandomSelectionTransformedIngredientStrategy {
 
 	public ProbabilisticIngredientStrategy(IngredientPool space) {
 		super(space);

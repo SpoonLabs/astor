@@ -153,6 +153,14 @@ public class ProgramVariant {
 		return operations;
 	}
 
+	public List<OperatorInstance> getAllOperations() {
+		List<OperatorInstance> allops = new ArrayList<>();
+		for (List<OperatorInstance> ops : this.operations.values()) {
+			allops.addAll(ops);
+		}
+		return allops;
+	}
+
 	public List<OperatorInstance> getOperations(int generation) {
 		return operations.get(generation);
 	}

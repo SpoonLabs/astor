@@ -402,4 +402,73 @@ public class EvalTOSBTTest {
 
 	}
 
+	@Test
+	public void testBT_Math85_Cluster_UpdateParent_EvolveRemovingMP() throws Exception {
+		// One per each term in the if
+		int maxSolutions = 4;// TODO:check
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath85Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName());
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		approach.getVariants().get(0).getModificationPoints()
+				.removeIf(e -> !(e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
+						.getFile().getName().equals("UnivariateRealSolverUtils.java")));
+
+		assertEquals(1, approach.getVariants().get(0).getModificationPoints().size());
+
+		approach.MAX_GENERATIONS = 1000;
+		approach.startEvolution();
+		approach.atEnd();
+		assertTrue(main.getEngine().getSolutions().size() > 0);
+
+	}
+
+	@Test
+	public void testBT_Math85_Cluster_UpdateParent_Evolve() throws Exception {
+		// One per each term in the if
+		int maxSolutions = 4;// TODO:check
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath85Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "100");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName());
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+	}
+
 }

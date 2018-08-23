@@ -12,7 +12,7 @@ import spoon.reflect.code.CtStatement;
  * @author Matias Martinez
  *
  */
-public class InsertAfterOp extends InsertOp {
+public class InsertAfterOp extends InsertStatementOp {
 
 	@Override
 	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {

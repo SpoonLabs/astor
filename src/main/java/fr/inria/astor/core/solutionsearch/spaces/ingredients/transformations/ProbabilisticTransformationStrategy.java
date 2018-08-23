@@ -27,7 +27,8 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  *
  */
-public class ProbabilisticTransformationStrategy implements IngredientTransformationStrategy {
+public class ProbabilisticTransformationStrategy extends CacheTransformationStrategy
+		implements IngredientTransformationStrategy {
 
 	protected Logger logger = Logger.getLogger(ProbabilisticTransformationStrategy.class.getName());
 	protected NGramManager ngramManager = new NGramManager(null, null);
@@ -49,6 +50,10 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 	@Override
 	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient baseIngredient) {
 
+		if (this.alreadyTransformed(modificationPoint, baseIngredient)) {
+			return getCachedTransformations(modificationPoint, baseIngredient);
+		}
+
 		if (!this.ngramManager.initialized()) {
 
 			logger.debug("Initializing probabilistics");
@@ -60,7 +65,7 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 			}
 		}
 
-		List<Ingredient> result = new ArrayList<>();
+		List<Ingredient> transformedIngredientsResults = new ArrayList<>();
 
 		CtCodeElement codeElementToModifyFromBase = (CtCodeElement) baseIngredient.getCode();
 
@@ -75,7 +80,7 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 			if (mapping.getMappedVariables().isEmpty()) {
 				// nothing to transform, accept the ingredient
 				logger.debug("Any transf sucessful: The var Mapping is empty, we keep the ingredient");
-				result.add(new Ingredient(codeElementToModifyFromBase));
+				transformedIngredientsResults.add(new Ingredient(codeElementToModifyFromBase));
 
 			} else {// We have mappings between variables
 				logger.debug("Ingredient before transformation: " + baseIngredient.getCode() + " mined from "
@@ -90,7 +95,7 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 
 						DynamicIngredient ding = new DynamicIngredient(varCombinationForIngredient, mapping,
 								codeElementToModifyFromBase);
-						result.add(ding);
+						transformedIngredientsResults.add(ding);
 					}
 				}
 			}
@@ -107,7 +112,9 @@ public class ProbabilisticTransformationStrategy implements IngredientTransforma
 			}
 		}
 
-		return result;
+		this.storingIngredients(modificationPoint, baseIngredient, transformedIngredientsResults);
+
+		return transformedIngredientsResults;
 	}
 
 	/**
