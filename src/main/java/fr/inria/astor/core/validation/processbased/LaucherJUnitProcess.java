@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,10 +117,9 @@ public class LaucherJUnitProcess {
 			}
 
 			//
-			if(!p.waitFor(waitTime, TimeUnit.MILLISECONDS)) {
-				p.destroyForcibly();
-				log.info("The Process that runs JUnit test cases did not terminate within waitTime");
-				log.info("Killed the Process that runs JUnit test cases");
+			if (!p.waitFor(waitTime, TimeUnit.MILLISECONDS)) {
+				killProcess(p);
+
 				return null;
 			}
 			long t_end = System.currentTimeMillis();
@@ -141,10 +141,49 @@ public class LaucherJUnitProcess {
 			return tr;
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
 			log.info("The Process that runs JUnit test cases had problems: " + ex.getMessage());
-			if (p != null)
-				p.destroyForcibly();
+			killProcess(p);
 		}
 		return null;
+	}
+
+	/**
+	 * Workarrond. I will be solved when migrating to java 9.
+	 * https://docs.oracle.com/javase/9/docs/api/java/lang/Process.html#descendants--
+	 */
+	private void killProcess(Process p) {
+		if (p == null)
+			return;
+
+		Object pid = null;
+		try {
+			Field f = p.getClass().getDeclaredField("pid");
+			f.setAccessible(true);
+			pid = f.get(p);
+			log.debug("-Killed id: pid->" + pid);
+
+		} catch (Exception e) {
+			log.error(e);
+		}
+		p.destroyForcibly();
+
+		log.info("The Process that runs JUnit test cases did not terminate within waitTime");
+		log.info("Killed the Process that runs JUnit test cases " + pid);
+
+		// workarrond!!
+		if (ConfigurationProperties.getPropertyBool("forcesubprocesskilling")) {
+			Integer subprocessid = Integer.valueOf(pid.toString()) + 1;
+			try {
+				log.debug("Killing subprocess " + subprocessid);
+				Process process = new ProcessBuilder(new String[] { "kill", subprocessid.toString() }).start();
+				process.waitFor();
+
+			} catch (Exception e) {
+				log.error("Problems killing subprocess " + subprocessid);
+				log.error(e);
+			}
+
+		}
+
 	}
 
 	private String getPath(Class<?> class1) {
@@ -201,8 +240,8 @@ public class LaucherJUnitProcess {
 
 	/**
 	 * This method analyze the output of the junit executor (i.e.,
-	 * {@link JUnitTestExecutor}) and return an entity called TestResult with
-	 * the result of the test execution
+	 * {@link JUnitTestExecutor}) and return an entity called TestResult with the
+	 * result of the test execution
 	 *
 	 * @param p
 	 * @return
