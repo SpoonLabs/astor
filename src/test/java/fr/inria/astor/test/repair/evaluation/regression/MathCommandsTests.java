@@ -19,48 +19,46 @@ import fr.inria.main.evolution.AstorMain;
  */
 public class MathCommandsTests {
 
-	public static CommandSummary getMath70Command(){
+	public static CommandSummary getMath70Command() {
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 50;
-		
+
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations), "-stopfirst", "true",
-				"-maxtime", "100",
-				//"-loglevel","DEBUG",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
+				"-stopfirst", "true", "-maxtime", "100",
+				// "-loglevel","DEBUG",
 
 		};
 		return new CommandSummary(args);
-		
+
 	}
-	
-	public static CommandSummary getMath57Command(){
+
+	public static CommandSummary getMath57Command() {
 		String dep = new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 50;
-		
+
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.stat.clustering.KMeansPlusPlusClustererTest", "-location",
 				new File("./examples/math_57").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/main/java/", "-srctestfolder", "/src/test/java/ ", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations), "-stopfirst", "true",
-				"-maxtime", "100",
-				"-loglevel","DEBUG",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/ ", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
+				"-stopfirst", "true", "-maxtime", "100", "-loglevel", "DEBUG",
 
 		};
 		return new CommandSummary(args);
-		
+
 	}
-	
-	
-	public static CommandSummary getMath85Command(){
+
+	public static CommandSummary getMath85Command() {
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		
+
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
@@ -69,52 +67,57 @@ public class MathCommandsTests {
 				"-maxgen", "200", "-scope", "package", "-seed", "10" };
 		return new CommandSummary(args);
 	}
-	
-	
-	public static CommandSummary getMath42Command(){
+
+	public static CommandSummary getMath63Command() {
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",
+				// "-failing",
+				// "org.apache.commons.math.distribution.NormalDistributionTest",
+				"-location", new File("./examples/math_63").getAbsolutePath(), "-package", "org.apache.commons",
+				"-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder",
+				"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7",
+				"-flthreshold", "0.5", "-stopfirst", "false", "-maxgen", "200", "-scope", "package", "-seed", "10" };
+		return new CommandSummary(args);
+	}
+
+	public static CommandSummary getMath42Command() {
 		String dep = new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 50;
-		
-		
+
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.optimization.linear.SimplexSolverTestt", "-location",
-				new File("/Users/matias/develop/extractedbug/math/math_42").getAbsolutePath(), 
-				"-package", "org.apache.commons", "-srcjavafolder",
-				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.1", "-out",
-				out.getAbsolutePath(), "-scope", "local", "-seed", "410", "-maxgen", Integer.toString(generations), "-stopfirst", "true",
-				"-maxtime", "100",
-				//"-loglevel","DEBUG",
+				new File("/Users/matias/develop/extractedbug/math/math_42").getAbsolutePath(), "-package",
+				"org.apache.commons", "-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/",
+				"-binjavafolder", "/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel",
+				"5", "-flthreshold", "0.1", "-out", out.getAbsolutePath(), "-scope", "local", "-seed", "410", "-maxgen",
+				Integer.toString(generations), "-stopfirst", "true", "-maxtime", "100",
+				// "-loglevel","DEBUG",
 
 		};
 		return new CommandSummary(args);
-		
+
 	}
-	
-	
-	public static CommandSummary getMath20Command(){
+
+	public static CommandSummary getMath20Command() {
 		String dep = new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 50;
-		
-		
-		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",  "-location",
-				new File("./examples/math_20").getAbsolutePath(), 
-				"-package", "org.apache.commons", "-srcjavafolder",
-				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.1", "-out",
-				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations), "-stopfirst", "true",
-				"-maxtime", "100",
-				//"-loglevel","DEBUG",
+
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-location",
+				new File("./examples/math_20").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.1", "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
+				"-stopfirst", "true", "-maxtime", "100",
+				// "-loglevel","DEBUG",
 
 		};
 		return new CommandSummary(args);
-		
+
 	}
-	
-	
-	
+
 	@Test
 	public void testMath1() throws Exception {
 
@@ -142,23 +145,21 @@ public class MathCommandsTests {
 				"-srcjavafolder", "/src/main/java/ ", "-srctestfolder", "/src/test/java/", "-binjavafolder",
 				"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "5",
 				"-flthreshold", "0.1", "-out", out.getAbsolutePath(), //
-				"-seed", "11", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100",//
+				"-seed", "11", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100", //
 				"-customop",
 				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
 				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope",
 				"-ingredientstrategy",
 				"fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy",
 				"-clonegranularity", "spoon.reflect.declaration.CtExecutable"//
-				, "-transformingredient",
-				 "-population","1",
-				"-learningdir",learningDir.getAbsolutePath()
-			,	"-loglevel",Level.INFO.toString()//
+				, "-transformingredient", "-population", "1", "-learningdir", learningDir.getAbsolutePath(),
+				"-loglevel", Level.INFO.toString()//
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
-		//assertTrue(solutions.size() > 0);
+		// assertTrue(solutions.size() > 0);
 	}
 
 }

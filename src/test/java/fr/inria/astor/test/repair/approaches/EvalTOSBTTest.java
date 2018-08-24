@@ -20,6 +20,7 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.MapList;
 import fr.inria.lille.repair.common.Candidates;
+import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;
@@ -53,9 +54,9 @@ public class EvalTOSBTTest {
 		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
 		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
 		// Retrieve the buggy if condition.
-		ModificationPoint mp198 = approach.getVariants().get(0)
-				.getModificationPoints().stream().filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e
-						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
+		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
+						.getFile().getName().equals("UnivariateRealSolverUtils.java")))
 				.findAny().get();
 		assertNotNull(mp198);
 
@@ -93,9 +94,9 @@ public class EvalTOSBTTest {
 		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
 		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
 		// Retrieve the buggy if condition.
-		ModificationPoint mp198 = approach.getVariants().get(0)
-				.getModificationPoints().stream().filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e
-						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
+		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
+						.getFile().getName().equals("UnivariateRealSolverUtils.java")))
 				.findAny().get();
 		assertNotNull(mp198);
 
@@ -167,9 +168,9 @@ public class EvalTOSBTTest {
 		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
 		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
 		// Retrieve the buggy if condition.
-		ModificationPoint mp198 = approach.getVariants().get(0)
-				.getModificationPoints().stream().filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e
-						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
+		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
+						.getFile().getName().equals("UnivariateRealSolverUtils.java")))
 				.findAny().get();
 		assertNotNull(mp198);
 
@@ -229,9 +230,9 @@ public class EvalTOSBTTest {
 		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
 		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
 		// Retrieve the buggy if condition.
-		ModificationPoint mp198 = approach.getVariants().get(0)
-				.getModificationPoints().stream().filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e
-						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
+		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
+						.getFile().getName().equals("UnivariateRealSolverUtils.java")))
 				.findAny().get();
 		assertNotNull(mp198);
 
@@ -277,9 +278,9 @@ public class EvalTOSBTTest {
 		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
 		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
 		// Retrieve the buggy if condition.
-		ModificationPoint mp198 = approach.getVariants().get(0)
-				.getModificationPoints().stream().filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e
-						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
+		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
+						.getFile().getName().equals("UnivariateRealSolverUtils.java")))
 				.findAny().get();
 		assertNotNull(mp198);
 
@@ -329,9 +330,9 @@ public class EvalTOSBTTest {
 		assertFalse(reader.accept("INS_d_s"));
 
 		// Retrieve the buggy if condition.
-		ModificationPoint mp198 = approach.getVariants().get(0)
-				.getModificationPoints().stream().filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e
-						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
+		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
+						.getFile().getName().equals("UnivariateRealSolverUtils.java")))
 				.findAny().get();
 		assertNotNull(mp198);
 
@@ -384,9 +385,9 @@ public class EvalTOSBTTest {
 		assertFalse(reader.accept("INS_d_s"));
 
 		// Retrieve the buggy if condition.
-		ModificationPoint mp198 = approach.getVariants().get(0)
-				.getModificationPoints().stream().filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e
-						.getCodeElement().getPosition().getFile().getName().equals("UnivariateRealSolverUtils.java")))
+		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
+						.getFile().getName().equals("UnivariateRealSolverUtils.java")))
 				.findAny().get();
 		assertNotNull(mp198);
 
@@ -443,6 +444,49 @@ public class EvalTOSBTTest {
 	}
 
 	@Test
+	public void testBT_Math85_Cluster_Killing() throws Exception {
+		// One per each term in the if
+		int maxSolutions = 4;// TODO:check
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath85Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:" + "disablelog:false:"
+				// + "disablelog:false:"
+						+ "tmax1:10000:"//
+						+ "maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName());
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		ModificationPoint mp21 = approach.getVariants().get(0).getModificationPoints().get(20);
+
+		approach.getVariants().get(0).getModificationPoints().clear();
+		approach.getVariants().get(0).getModificationPoints().add(mp21);
+		assertEquals(1, approach.getVariants().get(0).getModificationPoints().size());
+
+		approach.MAX_GENERATIONS = 100;
+		approach.startEvolution();
+		approach.atEnd();
+		// assertTrue(main.getEngine().getSolutions().size() > 0);
+
+	}
+
+	@Test
 	public void testBT_Math85_Cluster_UpdateParent_Evolve() throws Exception {
 		// One per each term in the if
 		int maxSolutions = 4;// TODO:check
@@ -451,7 +495,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-maxgen", "100");
+		command.command.put("-maxgen", "10000");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
 		command.command.put("-stopfirst", "true");
@@ -468,6 +512,38 @@ public class EvalTOSBTTest {
 
 		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
 		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertEquals(1, approach.getSolutions().size());
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
+	}
+
+	@Test
+	public void testBT_Math63_evotest() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath63Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "100");
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName());
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertEquals(1, approach.getSolutions().size());
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
 
 	}
 
