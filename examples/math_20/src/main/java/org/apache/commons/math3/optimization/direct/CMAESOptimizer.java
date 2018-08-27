@@ -994,9 +994,7 @@ public class CMAESOptimizer
                 if (x[i] < 0) {
                     repaired[i] = 0;
                 } else if (x[i] > 1.0) {
-                //	repaired[i] = 1.0E-11 ; //MM fix
-                	repaired[i] = 1.0; 	//MM 1.0E-11      repaired[i] = 1.0;
-                	//isRepairMode = true;//MM fix
+                	repaired[i] = 1.0; 	//MM 1.0E-11  //MM fix    repaired[i] = 1.0; //isRepairMode = true;//MM fix
                 } else {
                     repaired[i] = x[i];
                 }
