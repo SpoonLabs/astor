@@ -46,7 +46,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	public int MAX_HOLES_PER_MODIFICATION_POINT;
 	public int MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
 	public int modifPointsAnalyzed = 0;
-	public int operatorExecuted = 0;
+	public int operationsExecuted = 0;
 
 	protected CodeParserLauncher ingredientProcessor = null;
 	protected List<TargetElementProcessor<?>> targetElementProcessors = new ArrayList<TargetElementProcessor<?>>();
@@ -62,7 +62,8 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		ingredientProcessor = new CodeParserLauncher(targetElementProcessors);
 
 		MAX_HOLES_PER_MODIFICATION_POINT = (ConfigurationProperties.hasProperty("maxholespermp"))
-				? ConfigurationProperties.getPropertyInt("maxholespermp") : 10;
+				? ConfigurationProperties.getPropertyInt("maxholespermp")
+				: 10;
 
 	}
 
@@ -70,7 +71,8 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	public void loadExtensionPoints() throws Exception {
 		super.loadExtensionPoints();
 		if (this.ingredientSpace == null) {
-			this.ingredientSpace = IngredientBasedEvolutionaryRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
+			this.ingredientSpace = IngredientBasedEvolutionaryRepairApproachImpl
+					.getIngredientPool(getTargetElementProcessors());
 		}
 
 		String holeorder = ConfigurationProperties.properties.getProperty("holeorder");
@@ -127,7 +129,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 		this.setOutputStatus(AstorOutputStatus.EXHAUSTIVE_NAVIGATED);
 		System.out.println("\nEND exhaustive search Summary:\n" + "modpoint:" + modifPointsAnalyzed + ":all:"
-				+ totalmodfpoints + ":operators:" + operatorExecuted);
+				+ totalmodfpoints + ":operators:" + operationsExecuted);
 
 	}
 
@@ -139,7 +141,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		try {
 			contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
 		} catch (Exception e) {
-			log.error("Error calling Dynamoth value recolection");
+			log.error("Error calling Dynamoth value recolection MP id: " + iModifPoint.identified);
 			log.error(e);
 			currentStat.increment(GeneralStatEnum.NR_ERRONEOUS_VARIANCES);
 			return false;
@@ -162,7 +164,9 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		List<CtCodeElement> holesFromMP = calculateHolesSorted(iModifPoint);
 		log.debug("Total holes: " + holesFromMP.size());
 
+		int nrholefrommpi = 0;
 		for (CtCodeElement iHole : holesFromMP) {
+			nrholefrommpi++;
 			if (!(iHole instanceof CtExpression)
 					// New Workaround: the hole will not be a complete
 					// statement
@@ -176,22 +180,28 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 							+ "--hole type: " + iHole.getClass().getCanonicalName());
 
 			// Simplification
+			int nrtestfromholei = 0;
 			for (String i_testName : cluster.keySet()) {
 				List<List<EvaluatedExpression>> clustersOfTest = cluster.get(i_testName);
+				nrtestfromholei++;
+				log.debug(String.format("Nr clusters of test %s: %d/%d", i_testName, nrtestfromholei,
+						clustersOfTest.size()));
 
-				log.debug(String.format("Nr cl of test %s: %d", i_testName, clustersOfTest.size()));
-
+				int valuefromtesti = 0;
 				for (List<EvaluatedExpression> i_cluster : clustersOfTest) {
-
+					valuefromtesti++;
 					if (i_cluster.size() > 0) {
 						EvaluatedExpression firstExpressionOfCluster = i_cluster.get(0);
 
 						if (firstExpressionOfCluster.asPatch().toString().equals(iHole.toString())) {
 							continue;
 						}
-						operatorExecuted++;
+
+						log.debug(String.format("Analyzing value %d/%d of test %d from hole %d", valuefromtesti,
+								clustersOfTest.size(), nrtestfromholei, nrholefrommpi));
+						operationsExecuted++;
 						currentStat.increment(GeneralStatEnum.NR_GENERATIONS);
-						boolean isExpressionASolution = createAndEvaluatePatch(operatorExecuted, parentVariant,
+						boolean isExpressionASolution = createAndEvaluatePatch(operationsExecuted, parentVariant,
 								iModifPoint, aholeExpression, firstExpressionOfCluster);
 
 						if (isExpressionASolution) {
@@ -199,10 +209,10 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 									firstExpressionOfCluster.asPatch(),
 									firstExpressionOfCluster.getEvaluations().get(i_testName), iModifPoint.toString()));
 						}
-						if (MAX_GENERATIONS <= operatorExecuted) {
+						if (MAX_GENERATIONS <= operationsExecuted) {
 
 							this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
-							log.info("Stop-Max operator Applied " + operatorExecuted);
+							log.info("Stop-Max operator Applied " + operationsExecuted);
 							return stop;
 						}
 
@@ -302,8 +312,8 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 					if (expression.asPatch().toString().equals(iHole.toString())) {
 						continue;
 					}
-					operatorExecuted++;
-					boolean isExpressionASolution = createAndEvaluatePatch(operatorExecuted, parentVariant, iModifPoint,
+					operationsExecuted++;
+					boolean isExpressionASolution = createAndEvaluatePatch(operationsExecuted, parentVariant, iModifPoint,
 							aholeExpression, expression);
 
 					if (isExpressionASolution) {
@@ -319,10 +329,10 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 						break;
 					}
 
-					if (MAX_GENERATIONS <= operatorExecuted) {
+					if (MAX_GENERATIONS <= operationsExecuted) {
 
 						this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
-						log.info("Stop-Max operator Applied " + operatorExecuted);
+						log.info("Stop-Max operator Applied " + operationsExecuted);
 						return stop;
 					}
 
@@ -367,19 +377,18 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 			isSolution = processCreatedVariant(candidateVariant, generationsExecuted);
 
-			log.info("Transformed Mod point:\n" + modifPoint.getCodeElement().toString());
+			log.debug("Transformed Mod point:\n" + modifPoint.getCodeElement().toString());
 			if (isSolution) {
-				log.info("Solution found " + getSolutions().size());
+				log.debug("Solution found " + getSolutions().size());
 				this.solutions.add(candidateVariant);
 				currentStat.increment(GeneralStatEnum.NR_RIGHT_COMPILATIONS);
 			} else {
-				log.info("No solution");
 				currentStat.increment(GeneralStatEnum.NR_FAILING_VALIDATION_PROCESS);
 			}
 
 			if (!modifPoint.getCodeElement().toString().contains(ingredientSynthesized.getCode().toString())) {
-				log.error("Error: diff code");
-				// throw new IllegalAccessError("error code transformation");
+				log.debug(
+						" Error: not well transformed? Type of hole " + aholeExpression.getClass().getCanonicalName());
 			}
 
 			// We undo the operator (for try the next
@@ -418,8 +427,8 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	}
 
 	/**
-	 * Key: test name, value list of clusters, each cluster is a list of
-	 * evaluated expressions
+	 * Key: test name, value list of clusters, each cluster is a list of evaluated
+	 * expressions
 	 * 
 	 * @param candidates
 	 * @return
