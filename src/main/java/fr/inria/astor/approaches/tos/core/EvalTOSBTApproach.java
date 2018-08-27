@@ -163,6 +163,7 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 		List<CtCodeElement> holesFromMP = calculateHolesSorted(iModifPoint);
 		log.debug("Total holes: " + holesFromMP.size());
+		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 
 		int nrholefrommpi = 0;
 		for (CtCodeElement iHole : holesFromMP) {
@@ -214,6 +215,12 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 							this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
 							log.info("Stop-Max operator Applied " + operationsExecuted);
 							return stop;
+						}
+
+						if (!(belowMaxTime(dateInitEvolution, maxMinutes))) {
+							log.debug("\n Max time reached " + generationsExecuted);
+							this.outputStatus = AstorOutputStatus.TIME_OUT;
+							break;
 						}
 
 						boolean stopSearch = !this.solutions.isEmpty()
@@ -313,8 +320,8 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 						continue;
 					}
 					operationsExecuted++;
-					boolean isExpressionASolution = createAndEvaluatePatch(operationsExecuted, parentVariant, iModifPoint,
-							aholeExpression, expression);
+					boolean isExpressionASolution = createAndEvaluatePatch(operationsExecuted, parentVariant,
+							iModifPoint, aholeExpression, expression);
 
 					if (isExpressionASolution) {
 						log.info(String.format(
