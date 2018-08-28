@@ -72,14 +72,10 @@ public class StatementOperatorInstance extends OperatorInstance {
 				return true;
 			}
 
+		} else {
+			log.error("Parent null or it is not a block");
 		}
 		return false;
-	}
-
-	public boolean isParentABlock(ModificationPoint genSusp) {
-		CtElement targetStmt = genSusp.getCodeElement();
-		CtElement cparent = targetStmt.getParent();
-		return ((cparent != null && (cparent instanceof CtBlock)));
 	}
 
 	/**
