@@ -41,4 +41,18 @@ public interface StatementLevelOperator {
 		}
 	}
 
+	public default boolean remove(CtBlock parentBlock, CtStatement fixStatement, int pos) {
+
+		CtStatement s = parentBlock.getStatement(pos);
+		// To be sure that the position has the element we
+		// want to remove
+		if (fixStatement.equals(s)) {
+			parentBlock.getStatements().remove(pos);
+			return true;
+		} else {
+			System.out.println("\n fx: " + fixStatement + "\n" + (s));
+			throw new IllegalStateException("Undo: Not valid fix position");
+		}
+	}
+
 }
