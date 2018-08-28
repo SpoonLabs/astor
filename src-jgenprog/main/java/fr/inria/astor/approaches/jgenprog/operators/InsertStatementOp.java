@@ -3,7 +3,6 @@ package fr.inria.astor.approaches.jgenprog.operators;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.solutionsearch.spaces.operators.IngredientBasedOperator;
 import spoon.reflect.code.CtStatement;
 
 /**
@@ -12,7 +11,7 @@ import spoon.reflect.code.CtStatement;
  * @author Matias Martinez
  *
  */
-public abstract class InsertStatementOp extends IngredientBasedOperator implements StatementLevelOperator {
+public abstract class InsertStatementOp extends StatatementIngredientOperator implements StatementLevelOperator {
 
 	@Override
 	public abstract boolean undoChangesInModel(OperatorInstance operation, ProgramVariant p);

@@ -61,7 +61,6 @@ public abstract class IngredientBasedOperator extends AstorOperator {
 		operation.setOriginal(mp.getCodeElement());
 		operation.setOperationApplied(this);
 		operation.setModificationPoint(mp);
-		operation.defineParentInformation(mp);
 		return operation;
 	}
 

@@ -17,6 +17,7 @@ import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.util.ProcessUtil;
@@ -172,7 +173,7 @@ public class CrossoverOperationTest {
 		CtElement fix = createFix1();
 		assertEquals(fix.toString(), "n += 2");
 
-		OperatorInstance operation = new OperatorInstance();
+		StatementOperatorInstance operation = new StatementOperatorInstance();
 
 		operation.setOperationApplied(new ReplaceOp());
 		operation.setModificationPoint(genSusp);

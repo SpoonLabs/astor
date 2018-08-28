@@ -3,6 +3,7 @@ package fr.inria.astor.core.manipulation.modelTransformer;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.OperatorInstance;
+import fr.inria.astor.core.entities.StatementOperatorInstance;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 
@@ -12,17 +13,18 @@ import spoon.reflect.code.CtStatement;
  * @author Matias Martinez
  *
  */
+@Deprecated
 public class StatamentTransformer {
-	
+
 	protected static Logger log = Logger.getLogger(StatamentTransformer.class.getName());
-	
-	
-	public static boolean doReplaceStatement(OperatorInstance operation){
+
+	public static boolean doReplaceStatement(OperatorInstance operation) {
+		StatementOperatorInstance stmtoperator = (StatementOperatorInstance) operation;
 		boolean successful = false;
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtStatement fix = (CtStatement) operation.getModified();
 
-		CtBlock parentBlock = operation.getParentBlock();
+		CtBlock parentBlock = stmtoperator.getParentBlock();
 
 		if (parentBlock != null) {
 
@@ -41,24 +43,25 @@ public class StatamentTransformer {
 		}
 		return successful;
 	}
-	
+
 	public static boolean undoReplaceStatement(OperatorInstance operation) {
+		StatementOperatorInstance stmtoperator = (StatementOperatorInstance) operation;
 		CtStatement ctst = (CtStatement) operation.getOriginal();
 		CtStatement fix = (CtStatement) operation.getModified();
-		CtBlock<?> parentBlock = operation.getParentBlock();
+		CtBlock<?> parentBlock = stmtoperator.getParentBlock();
 		if (parentBlock != null) {
-				fix.replace((CtStatement) ctst);
-				return true;
+			fix.replace((CtStatement) ctst);
+			return true;
 
 		}
 		return false;
 	}
-	
-	public static boolean doRemoveStatement(OperatorInstance operation){
+
+	public static boolean doRemoveStatement(OperatorInstance operation) {
 		boolean successful = false;
 		CtStatement ctst = (CtStatement) operation.getOriginal();
-	
-		CtBlock parentBlock = operation.getParentBlock();
+		StatementOperatorInstance stmtoperator = (StatementOperatorInstance) operation;
+		CtBlock parentBlock = stmtoperator.getParentBlock();
 
 		if (parentBlock != null) {
 
@@ -76,25 +79,26 @@ public class StatamentTransformer {
 		}
 		return successful;
 	}
-	
 
 	public static boolean undoRemoveStatement(OperatorInstance operation) {
+		StatementOperatorInstance stmtoperator = (StatementOperatorInstance) operation;
 		CtStatement ctst = (CtStatement) operation.getOriginal();
-		CtBlock<?> parentBlock = operation.getParentBlock();
+		CtBlock<?> parentBlock = stmtoperator.getParentBlock();
 		if (parentBlock != null) {
-			if ((parentBlock.getStatements().isEmpty() && operation.getLocationInParent() == 0)
-					|| (parentBlock.getStatements().size() >= operation.getLocationInParent())) {
-				
-				parentBlock.getStatements().add(operation.getLocationInParent(), ctst);
+			if ((parentBlock.getStatements().isEmpty() && stmtoperator.getLocationInParent() == 0)
+					|| (parentBlock.getStatements().size() >= stmtoperator.getLocationInParent())) {
+
+				parentBlock.getStatements().add(stmtoperator.getLocationInParent(), ctst);
 				return true;
 			} else {
-				log.error("Problems to recover, re-adding " + ctst + " at location " + operation.getLocationInParent()
-						+ " from parent size " + parentBlock.getStatements().size());
+				log.error(
+						"Problems to recover, re-adding " + ctst + " at location " + stmtoperator.getLocationInParent()
+								+ " from parent size " + parentBlock.getStatements().size());
 				throw new IllegalStateException("Undo:Not valid index");
 			}
 
 		}
 		return false;
 	}
-	
+
 }

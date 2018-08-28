@@ -32,7 +32,6 @@ public abstract class AutonomousOperator extends AstorOperator {
 		operation.setOriginal(mp.getCodeElement());
 		operation.setOperationApplied(this);
 		operation.setModificationPoint(mp);
-		operation.defineParentInformation(mp);
 		return operation;
 	}
 
