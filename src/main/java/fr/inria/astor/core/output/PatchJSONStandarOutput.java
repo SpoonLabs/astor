@@ -82,8 +82,13 @@ public class PatchJSONStandarOutput implements ReportResults {
 					}
 
 				} else {
-					if (stats.containsKey(statKey))
-						patchjson.put(statKey.name(), JSONObject.escape(stats.get(statKey).toString()));
+					try {
+						if (stats.containsKey(statKey))
+							patchjson.put(statKey.name(), JSONObject.escape(stats.get(statKey).toString()));
+					} catch (Exception e) {
+						log.error(e);
+						log.error("problems with key " + statKey.name());
+					}
 				}
 
 			}

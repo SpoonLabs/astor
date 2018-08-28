@@ -11,6 +11,7 @@ import fr.inria.astor.approaches.jgenprog.operators.StatementLevelOperator;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AutonomousOperator;
 import spoon.reflect.code.CtExpression;
@@ -36,7 +37,7 @@ public class ReplaceReturnOp extends AutonomousOperator implements StatementLeve
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
 		List<OperatorInstance> instances = new ArrayList<>();
 
-		OperatorInstance opInsertReturn = new OperatorInstance(modificationPoint, this,
+		OperatorInstance opInsertReturn = new StatementOperatorInstance(modificationPoint, this,
 				modificationPoint.getCodeElement(), createReturn(modificationPoint.getCodeElement()));
 		instances.add(opInsertReturn);
 		return instances;

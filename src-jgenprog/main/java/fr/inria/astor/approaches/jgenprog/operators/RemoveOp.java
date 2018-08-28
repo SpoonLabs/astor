@@ -1,5 +1,6 @@
 package fr.inria.astor.approaches.jgenprog.operators;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -101,4 +102,16 @@ public class RemoveOp extends StatatementIngredientOperator implements Statement
 		return true;
 	}
 
+	@Override
+	public final boolean needIngredient() {
+		return false;
+	}
+
+	@Override
+	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
+		List<OperatorInstance> operatorIntances = new ArrayList<>();
+		operatorIntances.add(this.createOperatorInstance(modificationPoint));
+
+		return operatorIntances;
+	}
 }
