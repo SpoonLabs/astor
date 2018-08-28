@@ -3,6 +3,7 @@ package fr.inria.astor.core.manipulation;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -100,7 +101,7 @@ public class MutationSupporter {
 	public void saveSourceCodeOnDiskProgramVariant(ProgramVariant instance, String srcOutput) throws Exception {
 		// Set up the dir where we save the generated output
 		this.output.updateOutput(srcOutput);
-		List<CtClass> _classes = new ArrayList<>();
+		Collection<CtClass> _classes = new ArrayList<>();
 		// We save only the classes affected by operations.
 		List<OperatorInstance> opin = instance.getAllOperations();
 		for (OperatorInstance operatorInstance : opin) {
@@ -108,7 +109,11 @@ public class MutationSupporter {
 			if (_classopin != null && !_classes.contains(_classopin))
 				_classes.add(_classopin);
 		}
-		for (CtClass ctclass : _classes) {
+		if (_classes.isEmpty()) {
+			_classes = instance.getBuiltClasses().values();
+		}
+
+		for (CtClass ctclass : instance.getBuiltClasses().values()) {
 			this.generateSourceCodeFromCtClass(ctclass);
 		}
 

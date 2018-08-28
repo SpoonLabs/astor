@@ -108,6 +108,7 @@ public class IngredientScopeTest extends BaseEvolutionaryTest {
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-maxgen", "500");
 		cs.command.put("-out", out.getAbsolutePath());
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());

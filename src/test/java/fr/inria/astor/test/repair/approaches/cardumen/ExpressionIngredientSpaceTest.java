@@ -21,12 +21,13 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.AstorCtIngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.InScopeVarsTransformation;
@@ -87,8 +88,8 @@ public class ExpressionIngredientSpaceTest {
 		assertEquals("i < (maximalIterationCount)", modificationPoint.getCodeElement().toString());
 
 		// Let's inspect the ingredient space:
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) engine.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) engine
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 		assertTrue(ExpressionTypeIngredientSpace.class.isInstance(ingredientSpace));
 
@@ -199,8 +200,8 @@ public class ExpressionIngredientSpaceTest {
 		assertEquals("i < (maximalIterationCount)", modificationPoint.getCodeElement().toString());
 
 		// Let's inspect the ingredient space:
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) engine.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) engine
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 		assertTrue(ExpressionTypeIngredientSpace.class.isInstance(ingredientSpace));
 
@@ -241,8 +242,8 @@ public class ExpressionIngredientSpaceTest {
 	}
 
 	/**
-	 * This test checks if it works fine a new operator that works at the
-	 * expression level.
+	 * This test checks if it works fine a new operator that works at the expression
+	 * level.
 	 * 
 	 * @throws Exception
 	 */
@@ -294,8 +295,8 @@ public class ExpressionIngredientSpaceTest {
 	}
 
 	/**
-	 * This test checks if astor is able to manipulate expression as element in
-	 * a modification point
+	 * This test checks if astor is able to manipulate expression as element in a
+	 * modification point
 	 * 
 	 * @throws Exception
 	 */
@@ -316,7 +317,8 @@ public class ExpressionIngredientSpaceTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy()
+				.getIngredientSpace();
 
 		int i = 0;
 		for (ModificationPoint modpoint : variantss.get(0).getModificationPoints()) {
@@ -340,8 +342,8 @@ public class ExpressionIngredientSpaceTest {
 		binOpExpr.setKind(BinaryOperatorKind.GT);
 
 		ExpressionReplaceOperator expOperator = new ExpressionReplaceOperator();
-		OperatorInstance expOperatorInstance = new OperatorInstance(modificationPoint, expOperator, originalExp,
-				clonedExp);
+		OperatorInstance expOperatorInstance = new StatementOperatorInstance(modificationPoint, expOperator,
+				originalExp, clonedExp);
 
 		boolean applied = expOperatorInstance.applyModification();
 		assertTrue(applied);
@@ -363,8 +365,7 @@ public class ExpressionIngredientSpaceTest {
 		assertEquals(parentClassString, revertedChangeClassString);
 
 	}
-	
-	
+
 	@Test
 	public void testM70InspectSpace() throws Exception {
 
@@ -386,14 +387,14 @@ public class ExpressionIngredientSpaceTest {
 
 		JGenProg engine = (JGenProg) main1.getEngine();
 		ModificationPoint modificationPoint = variantss.get(0).getModificationPoints().get(14);
-		
-		
+
 		IngredientPool space = engine.getIngredientSearchStrategy().getIngredientSpace();
 		ExpressionTypeIngredientSpace expressionSpace = (ExpressionTypeIngredientSpace) space;
 		assertNotNull(expressionSpace);
-		
-		//Here, the cuestion is if it return ingredients by scope, expression type, and element class. 
-		
+
+		// Here, the cuestion is if it return ingredients by scope, expression type, and
+		// element class.
+
 	}
 
 }
