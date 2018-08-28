@@ -19,7 +19,7 @@ public abstract class AutonomousOperator extends AstorOperator {
 	 * @param modificationPoint
 	 * @return
 	 */
-
+	@Override
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
 		List<OperatorInstance> instances = new ArrayList<>();
 		OperatorInstance modinst = this.createOperatorInstance(modificationPoint);
