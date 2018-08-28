@@ -503,7 +503,8 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		int total = 0;
 		for (int i = 0; i < max; i++) {
 
-			if (i < valuesofTestToCluster.size() && i < valuesofTestAlreadyClustered.size()) {
+			if (i < valuesofTestToCluster.size() && i < valuesofTestAlreadyClustered.size()
+					&& valuesofTestToCluster.get(i) != null && valuesofTestAlreadyClustered.get(i) != null) {
 				Object v1 = valuesofTestToCluster.get(i).getRealValue();
 				Object v2 = valuesofTestAlreadyClustered.get(i).getRealValue();
 				if (v1 != null && v2 != null && v1.equals(v2)) {
