@@ -75,8 +75,8 @@ public class DynamothCollector {
 	private final String[] tests;
 	private final int dataCollectionTimeoutInSeconds;
 	/**
-	 * key: test name, value: list of runtime contexts (if a statement is
-	 * executed several times in the same test
+	 * key: test name, value: list of runtime contexts (if a statement is executed
+	 * several times in the same test
 	 */
 	private final SortedMap<String, List<Candidates>> values;
 	private final NopolContext nopolContext;
@@ -104,17 +104,12 @@ public class DynamothCollector {
 	/**
 	 * Create a new DynaMoth synthesizer
 	 * 
-	 * @param projectRoots
-	 *            the root folders of the project
-	 * @param location
-	 *            the location of the code to synthesiz
-	 * @param classpath
-	 *            the classpath of the project
-	 * @param oracle
-	 *            the oracle of the project Map<testClass#testMethod, {value
-	 *            iteration 1, value iteration 2, ...}>
-	 * @param tests
-	 *            tests to execute
+	 * @param projectRoots the root folders of the project
+	 * @param location     the location of the code to synthesiz
+	 * @param classpath    the classpath of the project
+	 * @param oracle       the oracle of the project Map<testClass#testMethod,
+	 *                     {value iteration 1, value iteration 2, ...}>
+	 * @param tests        tests to execute
 	 */
 
 	public DynamothCollector(SuspiciousModificationPoint smp, File[] projectRoots, URL[] classpath, String[] tests,
@@ -224,7 +219,17 @@ public class DynamothCollector {
 	private void processClassPrepareEvent() throws AbsentInformationException {
 		EventRequestManager erm = vm.eventRequestManager();
 		List<ReferenceType> referenceTypes = vm.classesByName(this.location.getContainingClassName());
-		List listOfLocations = referenceTypes.get(0).locationsOfLine(this.location.getLineNumber());
+		// List listOfLocations =
+		// referenceTypes.get(0).locationsOfLine(this.location.getLineNumber());
+
+		int loc = this.location.getLineNumber();
+		List listOfLocations = null;
+
+		do {
+			listOfLocations = referenceTypes.get(0).locationsOfLine(loc);
+			loc--;
+		} while (loc > 0 && listOfLocations.isEmpty());
+
 		if (listOfLocations.size() == 0) {
 			throw new RuntimeException("Buggy class not found " + this.location);
 		}
@@ -392,7 +397,10 @@ public class DynamothCollector {
 			spoonElementsCollector = new SpoonElementsCollector(variablesInSuspiciousCollector.getVariables(),
 					nopolContext);
 		} catch (Exception e) {
-			logger.warn("Unable to collect used classes", e);
+			logger.error("Unable to collect used classes", e);
+			logger.error("--> Unable to collect used classes for mp: " + mp.identified + " " + mp);
+			e.printStackTrace();
+			// throw new RuntimeException("Unable to communicate with the project", e);
 		}
 	}
 

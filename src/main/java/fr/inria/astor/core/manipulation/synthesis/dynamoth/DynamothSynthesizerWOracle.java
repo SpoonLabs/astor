@@ -110,9 +110,9 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 						Value originaValue = expression.getValue();
 						Value valueFromEvaluation = expression.evaluate(i_eexps);
 
-						System.out.println("---> Patch from single expression: " + expression.asPatch() + ", test "
-								+ i_test_name + ", it " + i_execution + ", value at " + i_execution + ": "
-								+ valueFromEvaluation + " value from getValue " + originaValue);
+						log.debug("---> Patch from single expression: " + expression.asPatch() + ", test " + i_test_name
+								+ ", it " + i_execution + ", value at " + i_execution + ": " + valueFromEvaluation
+								+ " value from getValue " + originaValue);
 						valuePerIteration.add(valueFromEvaluation);
 					}
 				}
@@ -169,6 +169,8 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 			return resultAll;
 		} catch (Exception e) {
 			log.error("Problems when combining expressions: " + e);
+			e.printStackTrace();
+			log.error(e);
 			Candidates resultAll = new Candidates();
 			return resultAll;
 		}
