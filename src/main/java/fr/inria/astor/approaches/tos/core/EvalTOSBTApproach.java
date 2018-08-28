@@ -35,6 +35,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTypeAccess;
 
 /**
  * 
@@ -75,13 +76,16 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 					.getIngredientPool(getTargetElementProcessors());
 		}
 
-		String holeorder = ConfigurationProperties.properties.getProperty("holeorder");
-		if (holeorder == null) {
-			this.holeOrderEngine = new SimpleDiffOrderFromJSON();
+		if (!ConfigurationProperties.getPropertyBool("sortholes")) {
+			holeOrderEngine = new NoOrderHoles();
 		} else {
-			holeOrderEngine = (HoleOrder) PlugInLoader.loadPlugin(holeorder, HoleOrder.class);
+			String holeorder = ConfigurationProperties.properties.getProperty("holeorder");
+			if (holeorder == null) {
+				this.holeOrderEngine = new SimpleDiffOrderFromJSON();
+			} else {
+				holeOrderEngine = (HoleOrder) PlugInLoader.loadPlugin(holeorder, HoleOrder.class);
+			}
 		}
-
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -91,9 +95,6 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
 		generationsExecuted = 1;
-		// For each variant (one is enough)
-
-		getIngredientSpace().defineSpace(originalVariant);
 
 		int totalmodfpoints = variants.get(0).getModificationPoints().size();
 		for (ProgramVariant parentVariant : variants) {
@@ -156,6 +157,10 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		DynamothSynthesizerWOracle synthesizer = new DynamothSynthesizerWOracle(contextCollected);
 
 		Candidates candidatesnew = synthesizer.combineValuesEvaluated();
+
+		if (candidatesnew.isEmpty()) {
+			log.error("Error: not collected values for MP " + iModifPoint);
+		}
 
 		// Key: test name, value list of clusters, each cluster is a list of
 		// evaluated expressions
@@ -281,6 +286,12 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 					|| (iHole instanceof CtStatement)) {
 				continue;
 			}
+
+			if (iHole instanceof CtTypeAccess) {
+				log.debug("Discarting hole that is a CtTypeAccess:  " + iHole);
+				continue;
+			}
+
 			int maxsolutionsiHole = 0;
 
 			// The hole to replace:
