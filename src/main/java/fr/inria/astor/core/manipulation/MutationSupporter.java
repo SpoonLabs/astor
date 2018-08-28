@@ -1,10 +1,13 @@
 package fr.inria.astor.core.manipulation;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.bytecode.OutputWritter;
 import fr.inria.astor.core.manipulation.sourcecode.ROOTTYPE;
@@ -86,10 +89,10 @@ public class MutationSupporter {
 	}
 
 	/**
-	 * Saves Java File and Compiles it The Program Variant as well as the rest
-	 * of the project is saved on disk. Not any more: Additionally, the compiled
-	 * class are saved it on disk. Finally, the current Thread has a reference
-	 * to a class loader with the ProgramVariant
+	 * Saves Java File and Compiles it The Program Variant as well as the rest of
+	 * the project is saved on disk. Not any more: Additionally, the compiled class
+	 * are saved it on disk. Finally, the current Thread has a reference to a class
+	 * loader with the ProgramVariant
 	 * 
 	 * @param instance
 	 * @throws Exception
@@ -97,9 +100,15 @@ public class MutationSupporter {
 	public void saveSourceCodeOnDiskProgramVariant(ProgramVariant instance, String srcOutput) throws Exception {
 		// Set up the dir where we save the generated output
 		this.output.updateOutput(srcOutput);
-
-		// For each class contemplated for the program variant,
-		for (CtClass ctclass : instance.getBuiltClasses().values()) {
+		List<CtClass> _classes = new ArrayList<>();
+		// We save only the classes affected by operations.
+		List<OperatorInstance> opin = instance.getAllOperations();
+		for (OperatorInstance operatorInstance : opin) {
+			CtClass _classopin = operatorInstance.getModificationPoint().getCtClass();
+			if (_classopin != null && !_classes.contains(_classopin))
+				_classes.add(_classopin);
+		}
+		for (CtClass ctclass : _classes) {
 			this.generateSourceCodeFromCtClass(ctclass);
 		}
 
