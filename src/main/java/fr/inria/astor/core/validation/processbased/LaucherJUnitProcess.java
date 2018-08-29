@@ -118,7 +118,7 @@ public class LaucherJUnitProcess {
 
 			//
 			if (!p.waitFor(waitTime, TimeUnit.MILLISECONDS)) {
-				killProcess(p);
+				killProcess(p, waitTime);
 
 				return null;
 			}
@@ -141,7 +141,7 @@ public class LaucherJUnitProcess {
 			return tr;
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
 			log.info("The Process that runs JUnit test cases had problems: " + ex.getMessage());
-			killProcess(p);
+			killProcess(p, waitTime);
 		}
 		return null;
 	}
@@ -149,8 +149,10 @@ public class LaucherJUnitProcess {
 	/**
 	 * Workarrond. I will be solved when migrating to java 9.
 	 * https://docs.oracle.com/javase/9/docs/api/java/lang/Process.html#descendants--
+	 * 
+	 * @param waitTime
 	 */
-	private void killProcess(Process p) {
+	private void killProcess(Process p, int waitTime) {
 		if (p == null)
 			return;
 
@@ -166,7 +168,8 @@ public class LaucherJUnitProcess {
 		}
 		p.destroyForcibly();
 
-		log.info("The Process that runs JUnit test cases did not terminate within waitTime");
+		log.info("The Process that runs JUnit test cases did not terminate within waitTime of "
+				+ TimeUnit.MILLISECONDS.toSeconds(waitTime) + " seconds");
 		log.info("Killed the Process that runs JUnit test cases " + pid);
 
 		// workarrond!!
