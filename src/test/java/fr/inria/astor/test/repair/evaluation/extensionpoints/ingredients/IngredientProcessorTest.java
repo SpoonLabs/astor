@@ -47,12 +47,14 @@ public class IngredientProcessorTest {
 		ProgramVariant pv = solutions.get(0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy()
+				.getIngredientSpace();
 
 		List ingredients = ingSpace.getAllIngredients();
 		assertTrue(ingredients.size() > 0);
 
-		checkIngredientTypes(solutions, ingSpace, CtStatement.class);
+		checkModificationPointTypes(solutions, CtStatement.class);
+		checkIngredientTypes(ingSpace, CtStatement.class);
 	}
 
 	@Test
@@ -72,9 +74,10 @@ public class IngredientProcessorTest {
 		ProgramVariant pv = variantss.get(0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
-
-		checkIngredientTypes(variantss, ingSpace, CtInvocation.class);
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy()
+				.getIngredientSpace();
+		checkModificationPointTypes(variantss, CtInvocation.class);
+		checkIngredientTypes(ingSpace, CtInvocation.class);
 	}
 
 	@Test
@@ -92,19 +95,50 @@ public class IngredientProcessorTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy()
+				.getIngredientSpace();
 
-		checkIngredientTypes(variantss, ingSpace, CtExpression.class);
+		checkModificationPointTypes(variantss, CtExpression.class);
+		checkIngredientTypes(ingSpace, CtExpression.class);
 
 	}
 
-	public void checkIngredientTypes(List<ProgramVariant> variantss, IngredientPoolLocationType ingSpace,
-			Class classToProcess) {
+	@Test
+	public void testM70DifferentGranularities() throws Exception {
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+
+		command.command.put(ExtensionPoints.TARGET_CODE_PROCESSOR.argument(), "statements");
+		command.command.put(ExtensionPoints.TARGET_INGREDIENT_CODE_PROCESSOR.argument(),
+				ExpressionIngredientSpaceProcessor.class.getCanonicalName());
+
+		command.command.put("-maxgen", "0");// Avoid evolution
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		List<ProgramVariant> variantss = main1.getEngine().getVariants();
+		assertTrue(variantss.size() > 0);
+
+		JGenProg jgp = (JGenProg) main1.getEngine();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy()
+				.getIngredientSpace();
+
+		checkModificationPointTypes(variantss, CtStatement.class);
+		checkIngredientTypes(ingSpace, CtExpression.class);
+
+	}
+
+	public void checkModificationPointTypes(List<ProgramVariant> variantss, Class classToProcess) {
+
 		ProgramVariant pv = variantss.get(0);
 		for (ModificationPoint modificationPoint : pv.getModificationPoints()) {
 			CtElement elementFromPoint = modificationPoint.getCodeElement();
 			assertTrue(classToProcess.isInstance(elementFromPoint));
 		}
+	}
+
+	public void checkIngredientTypes(IngredientPoolLocationType ingSpace, Class classToProcess) {
 
 		List<Ingredient> ingredients = ingSpace.getAllIngredients();
 		assertTrue(ingredients.size() > 0);

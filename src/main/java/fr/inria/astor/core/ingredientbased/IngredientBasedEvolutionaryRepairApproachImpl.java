@@ -49,6 +49,8 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 	protected IngredientTransformationStrategy ingredientTransformationStrategy;
 	protected IngredientPool ingredientPool;
 
+	protected List<TargetElementProcessor<?>> targetIngredientProcessors = null;
+
 	public IngredientBasedEvolutionaryRepairApproachImpl(MutationSupporter mutatorExecutor,
 			ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -172,7 +174,7 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 
 	@SuppressWarnings("rawtypes")
 	protected void loadIngredientPool() throws JSAPException, Exception {
-		List<TargetElementProcessor<?>> ingredientProcessors = this.getTargetElementProcessors();
+		List<TargetElementProcessor<?>> ingredientProcessors = this.getTargetIngredientProcessors();
 		// The ingredients for build the patches
 		IngredientPool ingredientspace = getIngredientPool(ingredientProcessors);
 
@@ -232,7 +234,6 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 			}
 		} else {
 			ingStrategy = new SimpleRandomSelectionIngredientStrategy(ingredientspace);
-			// new RandomSelectionTransformedIngredientStrategy(ingredientspace);
 		}
 		return ingStrategy;
 	}
@@ -268,12 +269,36 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 		return ingredientTransformationStrategyLoaded;
 	}
 
+	public void loadTargetIngredientElement() throws Exception {
+
+		ExtensionPoints extensionPointpointTargetIngredient = null;
+		if (ConfigurationProperties.hasProperty(ExtensionPoints.TARGET_INGREDIENT_CODE_PROCESSOR.identifier))
+			extensionPointpointTargetIngredient = ExtensionPoints.TARGET_INGREDIENT_CODE_PROCESSOR;
+		else
+			extensionPointpointTargetIngredient = ExtensionPoints.TARGET_CODE_PROCESSOR;
+
+		List<TargetElementProcessor<?>> loadedTargetElementProcessors = super.loadTargetElements(
+				extensionPointpointTargetIngredient);
+		this.setTargetIngredientProcessors(loadedTargetElementProcessors);
+
+	}
+
 	@Override
 	public void loadExtensionPoints() throws Exception {
 		super.loadExtensionPoints();
+		this.loadTargetIngredientElement();
 		this.loadIngredientPool();
 		this.loadIngredientSearchStrategy();
 		this.loadIngredientTransformationStrategy();
+
+	}
+
+	public List<TargetElementProcessor<?>> getTargetIngredientProcessors() {
+		return targetIngredientProcessors;
+	}
+
+	public void setTargetIngredientProcessors(List<TargetElementProcessor<?>> targetIngredientProcessors) {
+		this.targetIngredientProcessors = targetIngredientProcessors;
 	}
 
 }
