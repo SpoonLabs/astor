@@ -202,6 +202,13 @@ public abstract class AbstractMain {
 						+ ExtensionPoints.TARGET_CODE_PROCESSOR._class.getName()
 						+ " The classes must be included in the classpath.");
 
+		for (ExtensionPoints epoint : ExtensionPoints.values()) {
+			if (!options.hasOption(epoint.identifier)) {
+				options.addOption(epoint.identifier, true, String
+						.format("Extension point %s. It must extend/implement from %s", epoint.name(), epoint._class));
+			}
+		}
+
 		options.addOption("excludeRegression", false, "Exclude test regression execution");
 
 		options.addOption("ignoredtestcases", true, "Test cases to ignore");
