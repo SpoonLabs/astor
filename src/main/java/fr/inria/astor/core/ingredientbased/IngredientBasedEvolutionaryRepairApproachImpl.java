@@ -84,23 +84,27 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 		}
 
 		List<OperatorInstance> operatorInstances = null;
+		if (operatorSelected.canBeAppliedToPoint(modificationPoint)) {
+			if (operatorSelected.needIngredient()) {
+				IngredientBasedOperator ingbasedapproach = (IngredientBasedOperator) operatorSelected;
 
-		if (operatorSelected.needIngredient()) {
-			IngredientBasedOperator ingbasedapproach = (IngredientBasedOperator) operatorSelected;
+				Ingredient ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint,
+						operatorSelected);
 
-			Ingredient ingredient = this.ingredientSearchStrategy.getFixIngredient(modificationPoint, operatorSelected);
+				if (ingredient == null) {
+					return null;
+				}
+				operatorInstances = ingbasedapproach.createOperatorInstances(modificationPoint, ingredient,
+						this.ingredientTransformationStrategy);
 
-			if (ingredient == null) {
-				return null;
+			} else {
+				operatorInstances = operatorSelected.createOperatorInstances(modificationPoint);
 			}
-			operatorInstances = ingbasedapproach.createOperatorInstances(modificationPoint, ingredient,
-					this.ingredientTransformationStrategy);
 
+			return selectRandomly(operatorInstances);
 		} else {
-			operatorInstances = operatorSelected.createOperatorInstances(modificationPoint);
+			return null;
 		}
-
-		return selectRandomly(operatorInstances);
 	}
 
 	@Override

@@ -37,8 +37,6 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 		out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 	}
 
-
-	
 	/**
 	 * We pass as custom operator one that was already included in astor (it is
 	 * included in the classpath).
@@ -76,40 +74,35 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), 
-				//Forced to not run 
-				"-scope", "local", "-seed", "10", "-maxgen", "0", 
-				"-stopfirst", "true",
-				"-maxtime", "100",
+				out.getAbsolutePath(),
+				// Forced to not run
+				"-scope", "local", "-seed", "10", "-maxgen", "0", "-stopfirst", "true", "-maxtime", "100",
 				"-opselectionstrategy", FakeOperatorSelectionStrategy.class.getName(),
-				
 
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 		List<ProgramVariant> variants = main1.getEngine().getVariants();
-	
-		OperatorSpace opSpace = ((JGenProg)main1.getEngine()).getOperatorSpace();
-		assertTrue(((JGenProg)main1.getEngine()).getOperatorSelectionStrategy() instanceof FakeOperatorSelectionStrategy);
-		
-		for(ModificationPoint mp : variants.get(0).getModificationPoints()){
-			
+
+		OperatorSpace opSpace = ((JGenProg) main1.getEngine()).getOperatorSpace();
+		assertTrue(
+				((JGenProg) main1.getEngine()).getOperatorSelectionStrategy() instanceof FakeOperatorSelectionStrategy);
+
+		for (ModificationPoint mp : variants.get(0).getModificationPoints()) {
+
 			SuspiciousModificationPoint smp = (SuspiciousModificationPoint) mp;
 			int line = smp.getSuspicious().getLineNumber();
-			if(line % 10 == 0){
-				assertEquals(opSpace.getOperators().get(0), 
-						((JGenProg)main1.getEngine()).getOperatorSelectionStrategy().getNextOperator(smp)					);
-			}else
-				assertEquals(opSpace.getOperators().get(1), 
-						((JGenProg)main1.getEngine()).getOperatorSelectionStrategy().getNextOperator(smp)					);
-			
+			if (line % 10 == 0) {
+				assertEquals(opSpace.getOperators().get(0),
+						((JGenProg) main1.getEngine()).getOperatorSelectionStrategy().getNextOperator(smp));
+			} else
+				assertEquals(opSpace.getOperators().get(1),
+						((JGenProg) main1.getEngine()).getOperatorSelectionStrategy().getNextOperator(smp));
+
 		}
-		
-		 
-		
+
 	}
-	
-	
+
 	/**
 	 * We pass as custom operator that it does not exist
 	 * 
@@ -172,8 +165,8 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", "-customop",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "true",
+				"-maxgen", "500", "-scope", "package", "-seed", "10", "-customop",
 				(InsertAfterOp.class.getCanonicalName() + File.pathSeparator + RemoveOp.class.getCanonicalName()) };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
@@ -198,18 +191,13 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10",
-				"-loglevel","INFO",
-				"-ingredientstrategy",
-				RandomSelectionTransformedIngredientStrategy.class.getCanonicalName()
-				};
+				"-maxgen", "100", "-scope", "package", "-seed", "10", "-loglevel", "INFO", "-ingredientstrategy",
+				RandomSelectionTransformedIngredientStrategy.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 
 	}
-	
-	
-	
+
 }

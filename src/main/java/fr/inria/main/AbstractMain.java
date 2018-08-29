@@ -197,6 +197,11 @@ public abstract class AbstractMain {
 				"(Optional) Indicates the class name of the execution mode. It must extend from "
 						+ AstorCoreEngine.class.getName());
 
+		options.addOption(ExtensionPoints.TARGET_CODE_PROCESSOR.identifier, true,
+				"(Optional) Indicates the class name of the process that selects target elements. They must extend from "
+						+ ExtensionPoints.TARGET_CODE_PROCESSOR._class.getName()
+						+ " The classes must be included in the classpath.");
+
 		options.addOption("excludeRegression", false, "Exclude test regression execution");
 
 		options.addOption("ignoredtestcases", true, "Test cases to ignore");
@@ -517,6 +522,12 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("opselectionstrategy"))
 			ConfigurationProperties.properties.setProperty(ExtensionPoints.OPERATOR_SELECTION_STRATEGY.identifier,
 					cmd.getOptionValue("opselectionstrategy"));
+
+		for (ExtensionPoints epoint : ExtensionPoints.values()) {
+			if (cmd.hasOption(epoint.identifier))
+				ConfigurationProperties.properties.setProperty(epoint.identifier,
+						cmd.getOptionValue(epoint.identifier));
+		}
 
 		if (cmd.hasOption("customengine"))
 			ConfigurationProperties.properties.setProperty("customengine", cmd.getOptionValue("customengine"));

@@ -22,7 +22,7 @@ public class MathCommandsTests {
 	public static CommandSummary getMath70Command() {
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		int generations = 50;
+		int generations = 500;
 
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
@@ -31,7 +31,6 @@ public class MathCommandsTests {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
 				"-stopfirst", "true", "-maxtime", "100",
-				// "-loglevel","DEBUG",
 
 		};
 		return new CommandSummary(args);
@@ -71,13 +70,22 @@ public class MathCommandsTests {
 	public static CommandSummary getMath63Command() {
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 
-		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",
-				// "-failing",
-				// "org.apache.commons.math.distribution.NormalDistributionTest",
-				"-location", new File("./examples/math_63").getAbsolutePath(), "-package", "org.apache.commons",
-				"-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder",
-				"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7",
-				"-flthreshold", "0.5", "-stopfirst", "false", "-maxgen", "200", "-scope", "package", "-seed", "10" };
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-location",
+				new File("./examples/math_63").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5",
+				"-stopfirst", "false", "-maxgen", "200", "-scope", "package", "-seed", "10" };
+		return new CommandSummary(args);
+	}
+
+	public static CommandSummary getMath32Command() {
+		String dep = new File("./examples/libs/junit-4.10.jar").getAbsolutePath();
+
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-location",
+				new File("./examples/math_32").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5",
+				"-stopfirst", "false", "-maxgen", "200", "-scope", "package", "-seed", "10" };
 		return new CommandSummary(args);
 	}
 

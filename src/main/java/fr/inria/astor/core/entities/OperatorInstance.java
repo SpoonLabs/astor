@@ -5,8 +5,6 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.util.StringUtil;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -36,16 +34,6 @@ public class OperatorInstance {
 	 * Kind of the mutation Operation applied
 	 */
 	private AstorOperator operator = null;
-	/**
-	 * Parent entity there the mut operation
-	 */
-	private CtBlock<?> parentBlock = null;
-
-	private boolean isParentBlockImplicit = false;
-	/**
-	 * Place where the operation is applied in parent
-	 */
-	private int locationInParent = -1;
 
 	/**
 	 * if an exception occurres where the operation is applied, we save it
@@ -73,7 +61,6 @@ public class OperatorInstance {
 		this.operator = operationApplied;
 		this.original = original;
 		this.modified = modified;
-		this.defineParentInformation(modificationPoint);
 	}
 
 	public CtElement getOriginal() {
@@ -90,15 +77,6 @@ public class OperatorInstance {
 
 	public void setModified(CtElement modified) {
 		this.modified = modified;
-	}
-
-	public CtBlock getParentBlock() {
-		return parentBlock;
-	}
-
-	public void setParentBlock(CtBlock parentBlock) {
-		this.parentBlock = parentBlock;
-		this.isParentBlockImplicit = parentBlock.isImplicit();
 	}
 
 	public AstorOperator getOperationApplied() {
@@ -124,11 +102,11 @@ public class OperatorInstance {
 				+ StringUtil.trunc(this.original) + " ` -topatch--> `" + StringUtil.trunc(modified);
 
 		repst += "` (" + ((this.modified != null) ? this.modified.getClass().getCanonicalName() : "null") + ") ";
-
-		if (this.original.getPosition() != null && this.original.getPosition().getFile() != null) {
-			repst += "at l: " + this.original.getPosition().getLine() + " on "
-					+ this.original.getPosition().getFile().getAbsolutePath();
-		}
+		// if (this.original.getPosition() != null &&
+		// this.original.getPosition().getFile() != null) {
+		// repst += "at l: " + this.original.getPosition().getLine() + " on "
+		// + this.original.getPosition().getFile().getAbsolutePath();
+		// }
 		return repst;
 	}
 
@@ -138,14 +116,6 @@ public class OperatorInstance {
 
 	public void setModificationPoint(ModificationPoint modificationPoint) {
 		this.modificationPoint = modificationPoint;
-	}
-
-	public int getLocationInParent() {
-		return locationInParent;
-	}
-
-	public void setLocationInParent(int locationInParent) {
-		this.locationInParent = locationInParent;
 	}
 
 	public boolean isSuccessfulyApplied() {
@@ -212,56 +182,7 @@ public class OperatorInstance {
 	}
 
 	public void updateProgramVariant() {
-		// todo opflex
 		operator.updateProgramVariant(this, this.getModificationPoint().getProgramVariant());
-	}
-
-	public boolean defineParentInformation(ModificationPoint genSusp) {
-		CtElement targetStmt = genSusp.getCodeElement();
-		CtElement cparent = targetStmt.getParent();
-		if ((cparent != null && (cparent instanceof CtBlock))) {
-			CtBlock parentBlock = (CtBlock) cparent;
-			int location = locationInParent(parentBlock, targetStmt);
-			if (location >= 0) {
-				this.setParentBlock(parentBlock);
-				this.setLocationInParent(location);
-				return true;
-			}
-
-		} else {
-			log.debug("Attention: parent different to block");
-		}
-		return false;
-	}
-
-	/**
-	 * Return the position of the element in the block. It searches the same
-	 * object instance
-	 * 
-	 * @param parentBlock
-	 * @param line
-	 * @param element
-	 * @return
-	 */
-	private int locationInParent(CtBlock parentBlock, CtElement element) {
-		int pos = 0;
-		for (CtStatement s : parentBlock.getStatements()) {
-			if (s == element)// the same object
-				return pos;
-			pos++;
-		}
-
-		log.error("Error: parent not found");
-		return -1;
-
-	}
-
-	public boolean isParentBlockImplicit() {
-		return isParentBlockImplicit;
-	}
-
-	public void setParentBlockImplicit(boolean isParentBlockImplicit) {
-		this.isParentBlockImplicit = isParentBlockImplicit;
 	}
 
 	public Ingredient getIngredient() {

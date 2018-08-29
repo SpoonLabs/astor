@@ -1,11 +1,12 @@
 package fr.inria.astor.approaches.jgenprog.operators;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.solutionsearch.spaces.operators.AutonomousOperator;
+import fr.inria.astor.core.entities.StatementOperatorInstance;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
@@ -19,21 +20,22 @@ import spoon.reflect.declaration.CtMethod;
  * @author Matias Martinez
  *
  */
-public class RemoveOp extends AutonomousOperator implements StatementLevelOperator {
+public class RemoveOp extends StatatementIngredientOperator implements StatementLevelOperator {
 
 	@Override
 	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {
+		StatementOperatorInstance stmtoperator = (StatementOperatorInstance) operation;
 		boolean successful = false;
 		CtStatement ctst = (CtStatement) operation.getOriginal();
-		CtBlock parentBlock = operation.getParentBlock();
+		CtBlock parentBlock = stmtoperator.getParentBlock();
 
 		if (parentBlock != null) {
 
 			try {
-				parentBlock.getStatements().remove(operation.getLocationInParent());
+				parentBlock.getStatements().remove(stmtoperator.getLocationInParent());
 				successful = true;
 				operation.setSuccessfulyApplied(successful);
-				this.updateBlockImplicitly(parentBlock, false);
+				StatementSupporter.updateBlockImplicitly(parentBlock, false);
 			} catch (Exception ex) {
 				log.error("Error applying an operation, exception: " + ex.getMessage());
 				operation.setExceptionAtApplied(ex);
@@ -52,17 +54,19 @@ public class RemoveOp extends AutonomousOperator implements StatementLevelOperat
 
 	@Override
 	public boolean undoChangesInModel(OperatorInstance operation, ProgramVariant p) {
+		StatementOperatorInstance stmtoperator = (StatementOperatorInstance) operation;
 		CtStatement ctst = (CtStatement) operation.getOriginal();
-		CtBlock<?> parentBlock = operation.getParentBlock();
+		CtBlock<?> parentBlock = stmtoperator.getParentBlock();
 		if (parentBlock != null) {
-			if ((parentBlock.getStatements().isEmpty() && operation.getLocationInParent() == 0)
-					|| (parentBlock.getStatements().size() >= operation.getLocationInParent())) {
-				parentBlock.getStatements().add(operation.getLocationInParent(), ctst);
-				parentBlock.setImplicit(operation.isParentBlockImplicit());
+			if ((parentBlock.getStatements().isEmpty() && stmtoperator.getLocationInParent() == 0)
+					|| (parentBlock.getStatements().size() >= stmtoperator.getLocationInParent())) {
+				parentBlock.getStatements().add(stmtoperator.getLocationInParent(), ctst);
+				parentBlock.setImplicit(stmtoperator.isParentBlockImplicit());
 				return true;
 			} else {
-				log.error("Problems to recover, re-adding " + ctst + " at location " + operation.getLocationInParent()
-						+ " from parent size " + parentBlock.getStatements().size());
+				log.error(
+						"Problems to recover, re-adding " + ctst + " at location " + stmtoperator.getLocationInParent()
+								+ " from parent size " + parentBlock.getStatements().size());
 				throw new IllegalStateException("Undo:Not valid index");
 			}
 
@@ -98,4 +102,16 @@ public class RemoveOp extends AutonomousOperator implements StatementLevelOperat
 		return true;
 	}
 
+	@Override
+	public final boolean needIngredient() {
+		return false;
+	}
+
+	@Override
+	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
+		List<OperatorInstance> operatorIntances = new ArrayList<>();
+		operatorIntances.add(this.createOperatorInstance(modificationPoint));
+
+		return operatorIntances;
+	}
 }

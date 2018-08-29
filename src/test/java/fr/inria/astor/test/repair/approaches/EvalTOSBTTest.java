@@ -602,12 +602,112 @@ public class EvalTOSBTTest {
 		command.command.put("-scope", "local");
 		command.command.put("-stopfirst", "true");
 		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "false");
 		command.command.put("-parameters",
 
 				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
 						+ EvalTOSBTApproach.class.getCanonicalName());
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertEquals(1, approach.getSolutions().size());
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
+
+	}
+
+	@Test
+	public void testBT_Math32_type_access() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath32Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "1000");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertEquals(1, approach.getSolutions().size());
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
+
+	}
+
+	@Test
+	public void testBT_Math42_connection_close() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath42Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "1000");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertEquals(1, approach.getSolutions().size());
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
+
+	}
+
+	@Test
+	public void testBT_Math20_connection_close() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath20Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "1000");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.5");
+		command.command.put("-saveall", "false");
+		command.command.put("-failing", "org.apache.commons.math3.optimization.direct.CMAESOptimizerTest");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:false"
+						// + ":pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
+						+ ":regressionforfaultlocalization:false");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());

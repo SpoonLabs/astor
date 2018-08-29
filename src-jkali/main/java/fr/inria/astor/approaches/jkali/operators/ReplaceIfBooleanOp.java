@@ -8,6 +8,7 @@ import fr.inria.astor.approaches.jgenprog.operators.StatementLevelOperator;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AutonomousOperator;
 import spoon.reflect.code.CtExpression;
@@ -36,12 +37,12 @@ public class ReplaceIfBooleanOp extends AutonomousOperator implements StatementL
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
 		List<OperatorInstance> instances = new ArrayList<>();
 
-		OperatorInstance opChangeIftrue = new OperatorInstance(modificationPoint, this,
+		OperatorInstance opChangeIftrue = new StatementOperatorInstance(modificationPoint, this,
 				modificationPoint.getCodeElement(), createIf((CtIf) modificationPoint.getCodeElement(), true));
 
 		instances.add(opChangeIftrue);
 
-		OperatorInstance opChangeIffalse = new OperatorInstance(modificationPoint, this,
+		OperatorInstance opChangeIffalse = new StatementOperatorInstance(modificationPoint, this,
 				modificationPoint.getCodeElement(), createIf((CtIf) modificationPoint.getCodeElement(), false));
 
 		instances.add(opChangeIffalse);

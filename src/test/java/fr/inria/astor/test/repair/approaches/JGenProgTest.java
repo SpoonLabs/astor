@@ -16,8 +16,8 @@ import org.junit.Test;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
-import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -161,7 +161,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		CtElement patch = patchOptional.get().getCode();
 		assertEquals(patch.toString(), "return solve(f, min, max)");
 
-		OperatorInstance operation = new OperatorInstance();
+		StatementOperatorInstance operation = new StatementOperatorInstance();
 		operation.setOriginal(elMP1);
 		operation.setOperationApplied(rop);
 		operation.setModificationPoint(variant.getModificationPoints().get(0));
@@ -439,9 +439,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		solutions = main1.getEngine().getSolutions();
 		assertEquals(1, solutions.size());
-		
-		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
 
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
 
 	}
 

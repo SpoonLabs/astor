@@ -17,6 +17,7 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -260,21 +261,22 @@ public class MultiPatchTest {
 
 	}
 
-	private OperatorInstance createSecondPatch(ProgramVariant variant, ModificationPoint genSusp, CtElement fix,
-			int currentGeneration) {
+	private OperatorInstance createSecondPatch(ProgramVariant variant, ModificationPoint modificationPoint,
+			CtElement fix, int currentGeneration) {
 
-		CtElement targetStmt = genSusp.getCodeElement();
+		CtElement targetStmt = modificationPoint.getCodeElement();
 
-		OperatorInstance operation = new OperatorInstance();
+		StatementOperatorInstance operation = new StatementOperatorInstance();
 
 		operation.setOperationApplied(new ReplaceOp());
-		operation.setModificationPoint(genSusp);
+		operation.setModificationPoint(modificationPoint);
 		operation.setParentBlock((CtBlock) targetStmt.getParent());
 		operation.setOriginal(targetStmt);
 		operation.setModified(fix);
+		operation.defineParentInformation(modificationPoint);
 
 		variant.putModificationInstance(currentGeneration, operation);
-		operation.setModificationPoint(genSusp);
+		operation.setModificationPoint(modificationPoint);
 
 		return operation;
 	}

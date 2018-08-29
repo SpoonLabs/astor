@@ -35,7 +35,6 @@ public class PatchDiffTest {
 
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
-		// cs.command.put("-savesolution", "false");
 		cs.command.put("-parameters", "savesolution:false:" + "preservelinenumbers:false");
 
 		System.out.println(Arrays.toString(cs.flat()));

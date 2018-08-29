@@ -101,7 +101,7 @@ public class OutputTest {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary cs = MathCommandsTests.getMath70Command();
-		cs.command.put("-stopfirst", "false");
+		cs.command.put("-stopfirst", "true");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -164,7 +164,7 @@ public class OutputTest {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary cs = MathCommandsTests.getMath70Command();
-		cs.command.put("-stopfirst", "false");
+		cs.command.put("-stopfirst", "true");
 		cs.command.put("-outputresult",
 				PatchJSONStandarOutput.class.getCanonicalName() + "|" + StandardOutputReport.class.getCanonicalName());
 

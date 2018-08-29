@@ -254,10 +254,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	/**
 	 * Check whether the program has passed the maximum time for operating
 	 * 
-	 * @param dateInit
-	 *            start date of execution
-	 * @param maxMinutes
-	 *            max minutes for operating
+	 * @param dateInit   start date of execution
+	 * @param maxMinutes max minutes for operating
 	 * @return
 	 */
 	protected boolean belowMaxTime(Date dateInit, int maxMinutes) {
@@ -346,7 +344,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				boolean idem = original.equals(st.toString());
 				if (!idem) {
 					log.error("Error variant :" + variant.getId()
-							+ "the model was not the same from the original after this generation");
+							+ " the model was not the same from the original after this generation");
 					// log.error("Undo Error: original: \n" + original);
 					// log.error("Undo Error: modified: \n" + st.toString());
 					try {
@@ -613,7 +611,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					}
 					line += "\ngeneration= " + Integer.toString(i);
 					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope() != null)
-							? genOperationInstance.getIngredientScope() : "-");
+							? genOperationInstance.getIngredientScope()
+							: "-");
 
 					if (genOperationInstance.getIngredient() != null
 							&& genOperationInstance.getIngredient().getDerivedFrom() != null)
@@ -679,8 +678,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	/**
-	 * By default, it initializes the spoon model. It should not be created
-	 * before. Otherwise, an exception occurs.
+	 * By default, it initializes the spoon model. It should not be created before.
+	 * Otherwise, an exception occurs.
 	 * 
 	 * @param suspicious
 	 * @throws Exception
@@ -822,13 +821,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	/**
-	 * This method updates modification point of a variant according to a
-	 * created GenOperationInstance
+	 * This method updates modification point of a variant according to a created
+	 * GenOperationInstance
 	 * 
-	 * @param variant
-	 *            variant to modify the modification point information
-	 * @param operationofGen
-	 *            operator to apply in the variant.
+	 * @param variant        variant to modify the modification point information
+	 * @param operationofGen operator to apply in the variant.
 	 */
 	protected void updateVariantGenList(ProgramVariant variant, OperatorInstance operation) {
 		operation.getOperationApplied().updateProgramVariant(operation, variant);
@@ -1243,7 +1240,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 					hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE,
 							((genOperationInstance.getIngredientScope() != null)
-									? genOperationInstance.getIngredientScope() : "-"));
+									? genOperationInstance.getIngredientScope()
+									: "-"));
 
 					if (genOperationInstance.getIngredient() != null
 							&& genOperationInstance.getIngredient().getDerivedFrom() != null)

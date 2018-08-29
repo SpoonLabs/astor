@@ -272,8 +272,9 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 					currentStat.getIngredientsStats().setAlreadyApplied(variant.getId());
 					continue;
 				}
-
-				log.debug("operation " + modificationInstance);
+				log.debug("location: " + modificationPoint.getCodeElement().getPosition().getFile().getName()
+						+ modificationPoint.getCodeElement().getPosition().getLine());
+				log.debug("operation: " + modificationInstance);
 				variant.putModificationInstance(generation, modificationInstance);
 
 				oneOperationCreated = true;
