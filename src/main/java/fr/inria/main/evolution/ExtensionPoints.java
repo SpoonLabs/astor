@@ -35,7 +35,7 @@ public enum ExtensionPoints {
 	INGREDIENT_STRATEGY_SCOPE("scope", IngredientPool.class), //
 	SOLUTION_SORT_CRITERION("patchprioritization", SolutionVariantSortCriterion.class), //
 	VALIDATION("validation", ProgramVariantValidator.class), //
-	CUSTOM_OPERATOR("customop", AstorOperator.class), //
+	REPAIR_OPERATORS("repairoperators", AstorOperator.class), //
 	OPERATORS_SPACE("operatorspace", OperatorSpace.class), //
 	OPERATOR_SELECTION_STRATEGY("opselectionstrategy", OperatorSelectionStrategy.class), //
 	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy", IngredientSearchStrategy.class), //
@@ -53,5 +53,9 @@ public enum ExtensionPoints {
 	ExtensionPoints(String id, Class<?> _class) {
 		this.identifier = id;
 		this._class = _class;
+	}
+
+	public String argument() {
+		return "-" + this.identifier;
 	}
 }

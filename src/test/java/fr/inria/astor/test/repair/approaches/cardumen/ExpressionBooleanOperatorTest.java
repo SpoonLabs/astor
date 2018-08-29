@@ -24,8 +24,8 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpaceProcessor;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.InScopeVarsTransformation;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
@@ -77,7 +77,8 @@ public class ExpressionBooleanOperatorTest {
 		assertTrue(variantss.size() > 0);
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
-		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy().getIngredientSpace();
+		IngredientPoolLocationType ingSpace = (IngredientPoolLocationType) jgp.getIngredientSearchStrategy()
+				.getIngredientSpace();
 
 		// Let's check the ingredient space
 		List allingredients = ingSpace.getAllIngredients();
@@ -144,7 +145,7 @@ public class ExpressionBooleanOperatorTest {
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator
 						+ "cleantemplates:false:disablelog:true");
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
@@ -166,7 +167,7 @@ public class ExpressionBooleanOperatorTest {
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates"
 						+ File.pathSeparator + "false");
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
@@ -178,8 +179,8 @@ public class ExpressionBooleanOperatorTest {
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 		int i = 0;
 		List allIng = ingredientSpace.getAllIngredients();
@@ -208,7 +209,7 @@ public class ExpressionBooleanOperatorTest {
 						+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 						+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates"
 						+ File.pathSeparator + "true");
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
@@ -220,8 +221,8 @@ public class ExpressionBooleanOperatorTest {
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		List allIng = ingredientSpace.getAllIngredients();
@@ -235,7 +236,6 @@ public class ExpressionBooleanOperatorTest {
 		}
 		;
 
-		
 		assertEquals(allIng.size(), ingredientSpace.allElementsFromSpace.size());
 
 		log.debug("\nLinked templates");
@@ -258,7 +258,7 @@ public class ExpressionBooleanOperatorTest {
 				+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates:false");
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
 		command.command.put("-flthreshold", "0.01");
 		command.command.put("-maxtime", "60");
@@ -271,8 +271,8 @@ public class ExpressionBooleanOperatorTest {
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		for (ModificationPoint modificationPoint : jgp.getVariants().get(0).getModificationPoints()) {
@@ -285,7 +285,7 @@ public class ExpressionBooleanOperatorTest {
 
 				assertEquals(((CtExpression) modificationPoint.getCodeElement()).getType().box().getQualifiedName(),
 						((CtExpression) code.getCode()).getType().box().getQualifiedName());
-			
+
 			}
 		}
 
@@ -299,7 +299,7 @@ public class ExpressionBooleanOperatorTest {
 				+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates:false");
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
@@ -312,8 +312,8 @@ public class ExpressionBooleanOperatorTest {
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		List allIng = ingredientSpace.getAllIngredients();
@@ -364,7 +364,7 @@ public class ExpressionBooleanOperatorTest {
 				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier + File.pathSeparator
 						+ ExpressionBooleanIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "cleantemplates:false");
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
@@ -377,8 +377,8 @@ public class ExpressionBooleanOperatorTest {
 
 		JGenProg jgp = (JGenProg) main1.getEngine();
 
-		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp.getIngredientSearchStrategy()
-				.getIngredientSpace();
+		ExpressionTypeIngredientSpace ingredientSpace = (ExpressionTypeIngredientSpace) jgp
+				.getIngredientSearchStrategy().getIngredientSpace();
 		assertNotNull(ingredientSpace);
 
 		List allIng = ingredientSpace.getAllIngredients();
@@ -428,7 +428,8 @@ public class ExpressionBooleanOperatorTest {
 				, "-maxgen", "100", "-seed", "10", "-maxtime", "120", "-stopfirst", "false", "-population", "1",
 				"-srcjavafolder", "src/main/java/", "-srctestfolder", "src/test/java/", "-binjavafolder",
 				"target/classes/", "-bintestfolder", "target/test-classes/", "-flthreshold", "0.1", "-loglevel",
-				"DEBUG", "-scope", ExpressionTypeIngredientSpace.class.getCanonicalName(), "-customop",
+				"DEBUG", "-scope", ExpressionTypeIngredientSpace.class.getCanonicalName(),
+				ExtensionPoints.REPAIR_OPERATORS.argument(),
 				"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator", "-parameters",
 				ExtensionPoints.TARGET_CODE_PROCESSOR.identifier
 						+ ":fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:"

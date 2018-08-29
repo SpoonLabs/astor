@@ -28,6 +28,7 @@ import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
+import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 
@@ -250,7 +251,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { "-dependencies", dep, "-mode", "custom", "-customengine",
-				DeepRepairExhausitiveCloneEngine.class.getCanonicalName(), "-customop",
+				DeepRepairExhausitiveCloneEngine.class.getCanonicalName(), ExtensionPoints.REPAIR_OPERATORS.argument(),
 				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
 
 				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",

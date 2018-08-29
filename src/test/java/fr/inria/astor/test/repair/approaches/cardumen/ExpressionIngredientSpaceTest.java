@@ -72,7 +72,7 @@ public class ExpressionIngredientSpaceTest {
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "cleantemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
 		command.command.put("-flthreshold", "0.1");
 
@@ -185,7 +185,7 @@ public class ExpressionIngredientSpaceTest {
 						+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "applytemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
 
 		AstorMain main1 = new AstorMain();
@@ -256,7 +256,7 @@ public class ExpressionIngredientSpaceTest {
 						+ ExpressionIngredientSpaceProcessor.class.getCanonicalName() + File.pathSeparator
 						+ "applytemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
@@ -375,7 +375,7 @@ public class ExpressionIngredientSpaceTest {
 				+ ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + File.pathSeparator
 				+ InScopeVarsTransformation.class.getCanonicalName() + File.pathSeparator + "applytemplates:false");
 		command.command.put("-maxgen", "0");// Avoid evolution
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", ExpressionTypeIngredientSpace.class.getName());
 		command.command.put("-flthreshold", "0.1");
 

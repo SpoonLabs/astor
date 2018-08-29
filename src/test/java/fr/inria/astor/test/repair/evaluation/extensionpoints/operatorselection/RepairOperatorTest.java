@@ -22,6 +22,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.Ra
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.main.evolution.AstorMain;
+import fr.inria.main.evolution.ExtensionPoints;
 
 /**
  * Test of operators plugged to Astor in mode jgenprog
@@ -52,7 +53,8 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", "-customop", RemoveOp.class.getCanonicalName() };
+				"-maxgen", "100", "-scope", "package", "-seed", "10", ExtensionPoints.REPAIR_OPERATORS.argument(),
+				RemoveOp.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 		// validatePatchExistence(out + File.separator + "AstorMain-math_85/");
@@ -117,7 +119,8 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", "-customop", "MyoPeratorInvented1" };
+				"-maxgen", "100", "-scope", "package", "-seed", "10", ExtensionPoints.REPAIR_OPERATORS.argument(),
+				"MyoPeratorInvented1" };
 		System.out.println(Arrays.toString(args));
 		try {
 			main1.execute(args);
@@ -141,7 +144,8 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "1", "-scope", "package", "-seed", "10", "-customop", ReplaceOp.class.getCanonicalName() };
+				"-maxgen", "1", "-scope", "package", "-seed", "10", ExtensionPoints.REPAIR_OPERATORS.argument(),
+				ReplaceOp.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
@@ -166,7 +170,7 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "true",
-				"-maxgen", "500", "-scope", "package", "-seed", "10", "-customop",
+				"-maxgen", "500", "-scope", "package", "-seed", "10", ExtensionPoints.REPAIR_OPERATORS.argument(),
 				(InsertAfterOp.class.getCanonicalName() + File.pathSeparator + RemoveOp.class.getCanonicalName()) };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);

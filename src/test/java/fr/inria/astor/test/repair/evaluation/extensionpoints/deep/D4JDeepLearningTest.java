@@ -15,7 +15,9 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.main.evolution.AstorMain;
+import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.declaration.CtExecutable;
+
 /**
  * 
  * @author Matias Martinez
@@ -26,14 +28,14 @@ public class D4JDeepLearningTest {
 
 	@Test
 	public void testChart1Learning() throws Exception {
-		
+
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningchart1").getFile());
 
 		File projectLocation = new File("./examples/chart_1");
 		AstorMain main1 = new AstorMain();
 		File dirLibs = new File(projectLocation.getAbsolutePath() + File.separator + "/lib/");
-		String dep = getDependencies( dirLibs);
+		String dep = getDependencies(dirLibs);
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { //
 				"-dependencies", dep, //
@@ -47,10 +49,9 @@ public class D4JDeepLearningTest {
 				"-flthreshold", "0.1", //
 				"-out", out.getAbsolutePath(), //
 				"-seed", "1", //
-				"-maxgen", "100", 
-				"-stopfirst", "false", //
-				"-maxtime", "10",//
-				"-package","org.jfree",//
+				"-maxgen", "100", "-stopfirst", "false", //
+				"-maxtime", "10", //
+				"-package", "org.jfree", //
 
 				// Learning Arguments
 				"-learningdir", learningDir.getAbsolutePath(),
@@ -65,9 +66,10 @@ public class D4JDeepLearningTest {
 				"-transformingredient",
 				//
 				"-loglevel", Level.INFO.toString(),
-				
+
 				//
-				"-customop","fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp"
+				ExtensionPoints.REPAIR_OPERATORS.argument(),
+				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp"
 				//
 		};
 		System.out.println(Arrays.toString(args));
@@ -75,7 +77,7 @@ public class D4JDeepLearningTest {
 		assertTrue(main1.getEngine().getSolutions().size() > 0);
 
 	}
-	
+
 	@Test
 	public void testMath1() throws Exception {
 
@@ -92,33 +94,30 @@ public class D4JDeepLearningTest {
 				"-srcjavafolder", "/src/main/java/ ", "-srctestfolder", "/src/test/java/", "-binjavafolder",
 				"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "5",
 				"-flthreshold", "0.1", "-out", out.getAbsolutePath(), //
-				"-seed", "11", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100",//
-				"-customop",
+				"-seed", "11", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100", //
+				ExtensionPoints.REPAIR_OPERATORS.argument(),
 				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
 				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope",
 				"-ingredientstrategy",
 				"fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy",
 				"-clonegranularity", "spoon.reflect.declaration.CtExecutable"//
-				, "-transformingredient",
-				 "-population","1",
-				"-learningdir",learningDir.getAbsolutePath()
-			,	"-loglevel",Level.INFO.toString()//
+				, "-transformingredient", "-population", "1", "-learningdir", learningDir.getAbsolutePath(),
+				"-loglevel", Level.INFO.toString()//
 		};
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
-		//assertTrue(solutions.size() > 0);
+		// assertTrue(solutions.size() > 0);
 	}
 
-
-	private String getDependencies( File dirLibs) {
+	private String getDependencies(File dirLibs) {
 		String dep = "";
 		System.out.println(dirLibs);
 		for (File depend : dirLibs.listFiles()) {
-			if(!depend.isDirectory())
-				dep+=depend.getAbsolutePath() + File.pathSeparator;
-			
+			if (!depend.isDirectory())
+				dep += depend.getAbsolutePath() + File.pathSeparator;
+
 		}
 		return dep;
 	}
