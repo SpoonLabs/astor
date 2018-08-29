@@ -41,6 +41,7 @@ public enum ExtensionPoints {
 	INGREDIENT_SEARCH_STRATEGY("ingredientstrategy", IngredientSearchStrategy.class), //
 	INGREDIENT_TRANSFORM_STRATEGY("ingredienttransformstrategy", IngredientTransformationStrategy.class), //
 	TARGET_CODE_PROCESSOR("targetelementprocessor", TargetElementProcessor.class), //
+	TARGET_INGREDIENT_CODE_PROCESSOR("targetingredientelementprocessor", TargetElementProcessor.class), //
 	CLONE_GRANULARITY("clonegranularity", Class.class), //
 	OUTPUT_RESULTS("outputresult", ReportResults.class), //
 	SUSPICIOUS_NAVIGATION("modificationpointnavigation", SuspiciousNavigationStrategy.class), //
