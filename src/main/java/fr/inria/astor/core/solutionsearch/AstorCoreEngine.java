@@ -978,22 +978,25 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		// We check if the user defines the operators to include in the operator
 		// space
 		OperatorSpace operatorSpace = null;
-		String customOp = ConfigurationProperties.getProperty("customop");
-		if (customOp != null && !customOp.isEmpty()) {
-			operatorSpace = createCustomOperatorSpace(customOp);
+		String repairOperatorsArgument = ConfigurationProperties
+				.getProperty(ExtensionPoints.REPAIR_OPERATORS.identifier);
+		if (repairOperatorsArgument != null && !repairOperatorsArgument.isEmpty()) {
+			operatorSpace = createOperatorSpaceFromArgument(repairOperatorsArgument);
 		} else {
-			customOp = ConfigurationProperties.getProperty("operatorspace");
-			if ("irr-statements".equals(customOp) || "jgenprogspace".equals(customOp)) {
+			repairOperatorsArgument = ConfigurationProperties.getProperty(ExtensionPoints.OPERATORS_SPACE.identifier);
+			if ("irr-statements".equals(repairOperatorsArgument) || "jgenprogspace".equals(repairOperatorsArgument)) {
 				operatorSpace = new jGenProgSpace();
-			} else if ("relational-Logical-op".equals(customOp) || "mutationspace".equals(customOp)) {
+			} else if ("relational-Logical-op".equals(repairOperatorsArgument)
+					|| "mutationspace".equals(repairOperatorsArgument)) {
 				operatorSpace = new MutRepairSpace();
-			} else if ("suppression".equals(customOp) || "jkalispace".equals(customOp)) {
+			} else if ("suppression".equals(repairOperatorsArgument) || "jkalispace".equals(repairOperatorsArgument)) {
 				operatorSpace = new JKaliSpace();
-			} else if ("r-expression".equals(customOp) || "cardumenspace".equals(customOp)) {
+			} else if ("r-expression".equals(repairOperatorsArgument)
+					|| "cardumenspace".equals(repairOperatorsArgument)) {
 				operatorSpace = new CardumenOperatorSpace();
 			} else
 			// Custom
-			if (customOp != null && !customOp.isEmpty())
+			if (repairOperatorsArgument != null && !repairOperatorsArgument.isEmpty())
 				operatorSpace = (OperatorSpace) PlugInLoader.loadPlugin(ExtensionPoints.OPERATORS_SPACE);
 		}
 
@@ -1001,19 +1004,20 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	}
 
-	protected static OperatorSpace createCustomOperatorSpace(String customOp) throws Exception {
-		OperatorSpace customSpace = new OperatorSpace();
-		String[] operators = customOp.split(File.pathSeparator);
+	protected static OperatorSpace createOperatorSpaceFromArgument(String repairOperatorsFromExtensionPoint)
+			throws Exception {
+		OperatorSpace operatorSpace = new OperatorSpace();
+		String[] operators = repairOperatorsFromExtensionPoint.split(File.pathSeparator);
 		for (String op : operators) {
-			AstorOperator aop = (AstorOperator) PlugInLoader.loadPlugin(op, ExtensionPoints.CUSTOM_OPERATOR._class);
+			AstorOperator aop = (AstorOperator) PlugInLoader.loadPlugin(op, ExtensionPoints.REPAIR_OPERATORS._class);
 			if (aop != null)
-				customSpace.register(aop);
+				operatorSpace.register(aop);
 		}
-		if (customSpace.getOperators().isEmpty()) {
+		if (operatorSpace.getOperators().isEmpty()) {
 
-			throw new Exception("Empty custom operator space");
+			throw new Exception("The repair operator space could not be created from the extension point");
 		}
-		return customSpace;
+		return operatorSpace;
 	}
 
 	protected void loadFitnessFunction() throws Exception {

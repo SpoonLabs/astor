@@ -11,6 +11,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
+import fr.inria.main.evolution.ExtensionPoints;
 
 /**
  * 
@@ -154,7 +155,7 @@ public class MathCommandsTests {
 				"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "5",
 				"-flthreshold", "0.1", "-out", out.getAbsolutePath(), //
 				"-seed", "11", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100", //
-				"-customop",
+				ExtensionPoints.REPAIR_OPERATORS.argument(),
 				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
 				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope",
 				"-ingredientstrategy",

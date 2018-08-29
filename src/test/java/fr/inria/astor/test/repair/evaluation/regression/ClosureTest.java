@@ -114,10 +114,10 @@ public class ClosureTest {
 				"-stopfirst", "true", //
 				"-maxtime", "100", //
 				"-parameters",
-				"logtestexecution:true"
-						+ ":tmax2:1960000:"
-						+ ExtensionPoints.TARGET_CODE_PROCESSOR.identifier+":fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation",
-				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace", "-customop",
+				"logtestexecution:true" + ":tmax2:1960000:" + ExtensionPoints.TARGET_CODE_PROCESSOR.identifier
+						+ ":fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation",
+				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace",
+				ExtensionPoints.REPAIR_OPERATORS.argument(),
 				"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator",
 
 		};
@@ -139,19 +139,18 @@ public class ClosureTest {
 		File learningDir = new File(classLoader.getResource("learningclosure1b").getFile());
 
 		/*
-		 * fr.inria.main.AbstractMain.processArguments(AbstractMain.java:275) -
-		 * command line arguments: [-out
+		 * fr.inria.main.AbstractMain.processArguments(AbstractMain.java:275) - command
+		 * line arguments: [-out
 		 * /local/scr/mtufano/Closure/1/b/similar-local-executables-embeddings/1
-		 * -jvm4testexecution /usr/local/jdk1.7.0_80/bin/ -maxgen 1000000
-		 * -population 1 -maxtime 180 -timezone America/New_York -customop
+		 * -jvm4testexecution /usr/local/jdk1.7.0_80/bin/ -maxgen 1000000 -population 1
+		 * -maxtime 180 -timezone America/New_York -customop
 		 * fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.
 		 * astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.
-		 * approaches.jgenprog.operators.ReplaceOp -seed 1 -javacompliancelevel
-		 * 6 -package com.google -binjavafolder build/classes/ -bintestfolder
-		 * build/test/ -srcjavafolder src/ -srctestfolder test -learningdir
-		 * ../../out/learningdir/Closure/1/b/ -location
-		 * ../../dat/defects4j/Closure/1/b/ -failing
-		 * com.google.javascript.jscomp.IntegrationTest:com.google.javascript.
+		 * approaches.jgenprog.operators.ReplaceOp -seed 1 -javacompliancelevel 6
+		 * -package com.google -binjavafolder build/classes/ -bintestfolder build/test/
+		 * -srcjavafolder src/ -srctestfolder test -learningdir
+		 * ../../out/learningdir/Closure/1/b/ -location ../../dat/defects4j/Closure/1/b/
+		 * -failing com.google.javascript.jscomp.IntegrationTest:com.google.javascript.
 		 * jscomp.RemoveUnusedVarsTest:com.google.javascript.jscomp.
 		 * CommandLineRunnerTest -dependencies
 		 * ../../dat/defects4j/Closure/1/b/lib/ant-launcher.jar:../../dat/
@@ -195,7 +194,7 @@ public class ClosureTest {
 				"-flthreshold", "0.1", //
 				"-failing",
 				"com.google.javascript.jscomp.IntegrationTest:com.google.javascript.jscomp.RemoveUnusedVarsTest:com.google.javascript.jscomp.CommandLineRunnerTest",
-				"-customop",
+				ExtensionPoints.REPAIR_OPERATORS.argument(),
 				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:"
 						+ "fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
 				"-ingredientstrategy",
@@ -259,7 +258,6 @@ public class ClosureTest {
 //		/home/mmartinez/defects4j-repair/src/python/core/../../../results/2016-june/Closure/seed/470/package/90/Genprog/result
 //		cd /tmp/closure_90_Genprog_local_s1;export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8;TZ="America/New_York"; export TZ;export PATH="/usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/:$PATH";time /home/mmartinez/jdk1.8.0_45/bin//java -Xmx4096m -cp /home/mmartinez/defects4j-repair/src/python/core/../../..//libs/astor.jar fr.inria.main.evolution.AstorMain -mode cardumen  -location . -id Closure -dependencies /tmp/closure_90_Genprog_local_s1/build/classes:/tmp/closure_90_Genprog_local_s1/build/test:/tmp/closure_90_Genprog_local_s1/lib/ant.jar:/tmp/closure_90_Genprog_local_s1/lib/ant_deploy.jar:/tmp/closure_90_Genprog_local_s1/lib/ant-launcher.jar:/tmp/closure_90_Genprog_local_s1/lib/args4j.jar:/tmp/closure_90_Genprog_local_s1/lib/args4j_deploy.jar:/tmp/closure_90_Genprog_local_s1/lib/guava.jar:/tmp/closure_90_Genprog_local_s1/lib/guava-r06.jar:/tmp/closure_90_Genprog_local_s1/lib/jarjar.jar:/tmp/closure_90_Genprog_local_s1/lib/json.jar:/tmp/closure_90_Genprog_local_s1/lib/jsr305.jar:/tmp/closure_90_Genprog_local_s1/lib/junit.jar:/tmp/closure_90_Genprog_local_s1/lib/caja-r4314.jar:/tmp/closure_90_Genprog_local_s1/lib/protobuf-java.jar:/tmp/closure_90_Genprog_local_s1/lib/protobuf-java-2.3.0.jar:/tmp/closure_90_Genprog_local_s1/lib/hamcrest-core-1.1.jar:/tmp/closure_90_Genprog_local_s1/lib/libtrunk_rhino_parser_jarjared.jar:/home/mmartinez/defects4j-repair/src/python/core/../../..//libs/astor.jar -failing com.google.javascript.jscomp.TypeCheckTest:com.google.javascript.jscomp.TypeCheckTest: -package com.google -jvm4testexecution /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -jvm4evosuitetestexecution /home/mmartinez/jdk1.8.0_45/bin/ -javacompliancelevel 7 -maxgen 1000000 -seed 470 -scope package -maxtime 180  -stopfirst FALSE  -population 1 -srcjavafolder src/ -srctestfolder test -binjavafolder build/classes/ -bintestfolder build/test/ -flthreshold 0.1  -excludeRegression  -maxgen 100000000  -loglevel INFO  -customengine  fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine  -parameters  limitbysuspicious:false:frequenttemplate:false:tmax2:1960000:disablelog:false:uniformreplacement:false;echo "
 
-		
 		File projectLocation = new File("./examples/closure_90");
 		AstorMain main1 = new AstorMain();
 		File dirLibs = new File(projectLocation.getAbsolutePath() + File.separator + "/lib/");
@@ -354,12 +352,11 @@ public class ClosureTest {
 	 */
 
 	/*
-	 * From script "ant.jar", "ant_deploy.jar", "ant-launcher.jar",
-	 * "args4j.jar", "args4j_deploy.jar", "guava.jar", "guava-r06.jar",
-	 * "jarjar.jar", "json.jar", "jsr305.jar", "junit.jar", "caja-r4314.jar",
-	 * "protobuf_deploy.jar", "protobuf-java.jar", "protobuf-java-2.3.0.jar",
-	 * "google_common_deploy.jar", "hamcrest-core-1.1.jar", "junit4-core.jar",
-	 * "junit4-legacy.jar", "libtrunk_rhino_parser_jarjared.jar",
-	 * "google_compiled_protos_deploy.jar"
+	 * From script "ant.jar", "ant_deploy.jar", "ant-launcher.jar", "args4j.jar",
+	 * "args4j_deploy.jar", "guava.jar", "guava-r06.jar", "jarjar.jar", "json.jar",
+	 * "jsr305.jar", "junit.jar", "caja-r4314.jar", "protobuf_deploy.jar",
+	 * "protobuf-java.jar", "protobuf-java-2.3.0.jar", "google_common_deploy.jar",
+	 * "hamcrest-core-1.1.jar", "junit4-core.jar", "junit4-legacy.jar",
+	 * "libtrunk_rhino_parser_jarjared.jar", "google_compiled_protos_deploy.jar"
 	 */
 }

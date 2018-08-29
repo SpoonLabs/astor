@@ -113,7 +113,7 @@ public class GramBasedRepairTest {
 
 	}
 
-	@Test 
+	@Test
 	@Ignore
 	public void testOneClassProbabilistic() throws Exception {
 
@@ -210,8 +210,8 @@ public class GramBasedRepairTest {
 		ProbabilisticTransformationStrategy probTransf = new ProbabilisticTransformationStrategy(
 				gramByClassBisectionSolver, null);
 		probTransf.calculateGramsProbs();
-		List<VarCombinationForIngredient> varsComb4Ingredients = probTransf
-				.findAllVarMappingCombinationUsingProbab(vmapping.getMappedVariables(), mpointCleanResult, new Ingredient(returnExpression));
+		List<VarCombinationForIngredient> varsComb4Ingredients = probTransf.findAllVarMappingCombinationUsingProbab(
+				vmapping.getMappedVariables(), mpointCleanResult, new Ingredient(returnExpression));
 		assertTrue(varsComb4Ingredients.size() > 0);
 
 		Double probability = varsComb4Ingredients.get(0).getProbality();
@@ -248,7 +248,7 @@ public class GramBasedRepairTest {
 
 	}
 
-	@Test  
+	@Test
 	@Ignore
 	public void testProbabilistiComplete() throws Exception {
 
@@ -263,7 +263,7 @@ public class GramBasedRepairTest {
 				+ ProbabilisticIngredientStrategy.class.getCanonicalName()
 				//
 				+ File.pathSeparator + "cleantemplates:false:disablelog:false");
-		command.command.put("-customop", ExpressionReplaceOperator.class.getName());
+		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), ExpressionReplaceOperator.class.getName());
 		command.command.put("-scope", "local");
 		command.command.put("-flthreshold", "0.1");
 		command.command.put("-maxtime", "60");
@@ -279,10 +279,9 @@ public class GramBasedRepairTest {
 	public void testProbabilistByStep() throws Exception {
 
 		CommandSummary command = MathCommandsTests.getMath70Command();
-	
+
 		command.command.put("-mode", "cardumen");
-		command.command.put("-scope",
-				"local"/* ExpressionTypeIngredientSpace.class.getName() */);
+		command.command.put("-scope", "local"/* ExpressionTypeIngredientSpace.class.getName() */);
 		command.command.put("-flthreshold", "0.00");
 		command.command.put("-maxtime", "60");
 		command.command.put("-seed", "1");

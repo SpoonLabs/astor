@@ -179,7 +179,7 @@ public abstract class AbstractMain {
 		options.addOption("maxdate", true,
 				"(Optional) Indicates the hour Astor has to stop processing. it must have the format: HH:mm");
 
-		options.addOption("customop", true,
+		options.addOption(ExtensionPoints.REPAIR_OPERATORS.identifier, true,
 				"(Optional) Indicates the class name of the operators used by the selected execution mode. They must extend from "
 						+ AstorOperator.class.getName() + ". Operator names must be separated by char "
 						+ File.pathSeparator + ". The classes must be included in the classpath.");
@@ -512,8 +512,9 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("scope"))
 			ConfigurationProperties.properties.setProperty("scope", cmd.getOptionValue("scope"));
 
-		if (cmd.hasOption("customop"))
-			ConfigurationProperties.properties.setProperty("customop", cmd.getOptionValue("customop"));
+		if (cmd.hasOption(ExtensionPoints.REPAIR_OPERATORS.identifier))
+			ConfigurationProperties.properties.setProperty(ExtensionPoints.REPAIR_OPERATORS.identifier,
+					cmd.getOptionValue(ExtensionPoints.REPAIR_OPERATORS.identifier));
 
 		if (cmd.hasOption("ingredientstrategy"))
 			ConfigurationProperties.properties.setProperty("ingredientstrategy",

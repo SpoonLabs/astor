@@ -36,6 +36,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtP
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
+import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
@@ -203,7 +204,7 @@ public class DeepRepairTest {
 				"fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope", "-learningdir",
 				"", "-timezone", "America/New_York", "-stopfirst", "true", "-maxtime", "5", (step) ? "-testbystep" : "",
 				// Operators to consider (we discard REMOVE)
-				"-customop",
+				ExtensionPoints.REPAIR_OPERATORS.argument(),
 				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
 				"-loglevel", "DEBUG", };
 		return args;
