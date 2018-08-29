@@ -13,10 +13,16 @@ import org.junit.Test;
 import fr.inria.astor.approaches.tos.core.EvalTOSBTApproach;
 import fr.inria.astor.approaches.tos.core.UpdateParentDiffOrderFromJSON;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.entities.OperatorInstance;
+import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesisContext;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesizerWOracle;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.EvaluatedExpression;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.stats.PatchHunkStats;
+import fr.inria.astor.core.stats.PatchStat;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
+import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.astor.util.MapList;
 import fr.inria.lille.repair.common.Candidates;
@@ -718,6 +724,103 @@ public class EvalTOSBTTest {
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
 
+	}
+
+	@Test
+	public void testBT_Math50_CtTypeAccess() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath50Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "1000");
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:false"
+						// + ":pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
+						+ ":regressionforfaultlocalization:true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertEquals(1, approach.getSolutions().size());
+		assertEquals(1, approach.getPatchInfo().size());
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
+
+		ProgramVariant pvariant = approach.getSolutions().get(0);
+		assertEquals(1, pvariant.getAllOperations().size());
+		OperatorInstance op1 = pvariant.getAllOperations().get(0);
+		assertEquals(187, op1.getModificationPoint().getCodeElement().getPosition().getLine());
+		assertEquals("BaseSecantSolver", op1.getModificationPoint().getCtClass().getSimpleName());
+
+		PatchStat patch = approach.getPatchInfo().get(0);
+		List<PatchHunkStats> hunks = (List<PatchHunkStats>) patch.getStats().get(PatchStatEnum.HUNKS);
+		assertEquals(1, hunks.size());
+
+		PatchHunkStats hunk1 = hunks.get(0);
+		assertEquals("rtol", hunk1.getStats().get(HunkStatEnum.ORIGINAL_CODE));
+		assertEquals("1 + ftol", hunk1.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
+
+	}
+
+	@Test
+	public void testBT_Math50_v2_CtTypeAccess() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath50Command();
+		// Let's try with the version 2 of this bug.
+		command.command.put("-location", new File("./examples/math_50v2").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "1000");
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:false"
+						// + ":pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
+						+ ":regressionforfaultlocalization:true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertEquals(1, approach.getSolutions().size());
+		assertEquals(1, approach.getPatchInfo().size());
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
+
+		ProgramVariant pvariant = approach.getSolutions().get(0);
+		assertEquals(1, pvariant.getAllOperations().size());
+		OperatorInstance op1 = pvariant.getAllOperations().get(0);
+		assertEquals(188, op1.getModificationPoint().getCodeElement().getPosition().getLine());
+		assertEquals("BaseSecantSolver", op1.getModificationPoint().getCtClass().getSimpleName());
+
+		PatchStat patch = approach.getPatchInfo().get(0);
+		List<PatchHunkStats> hunks = (List<PatchHunkStats>) patch.getStats().get(PatchStatEnum.HUNKS);
+		assertEquals(1, hunks.size());
+
+		PatchHunkStats hunk1 = hunks.get(0);
+		assertEquals("x0", hunk1.getStats().get(HunkStatEnum.ORIGINAL_CODE));
+		assertEquals("f0", hunk1.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
 	}
 
 }
