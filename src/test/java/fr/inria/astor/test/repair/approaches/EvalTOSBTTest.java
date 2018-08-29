@@ -2,6 +2,7 @@ package fr.inria.astor.test.repair.approaches;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -821,6 +822,58 @@ public class EvalTOSBTTest {
 		PatchHunkStats hunk1 = hunks.get(0);
 		assertEquals("x0", hunk1.getStats().get(HunkStatEnum.ORIGINAL_CODE));
 		assertEquals("f0", hunk1.getStats().get(HunkStatEnum.PATCH_HUNK_CODE));
+	}
+
+	@Test
+	public void testBT_Math50_v2_CtTypeAccess_CAST_Exception() throws Exception {
+
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath50Command();
+		// Let's try with the version 2 of this bug.
+		command.command.put("-location", new File("./examples/math_50v2").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:false" + ":maxsolutionsperhole:1:sortholes:false"
+				// + ":pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
+						+ ":regressionforfaultlocalization:true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		ModificationPoint mp22 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> ((e.getCodeElement().getPosition().getLine() == 116)
+						&& "this.allowed = allowedSolution".equals(e.getCodeElement().toString())))
+				.findFirst().get();
+
+		System.out.println("Mp 22: \n" + mp22.getCodeElement().toString());
+
+		assertEquals(116, mp22.getCodeElement().getPosition().getLine());
+		assertEquals("this.allowed = allowedSolution", mp22.getCodeElement().toString());
+		assertEquals("BaseSecantSolver", mp22.getCtClass().getSimpleName());
+
+		approach.getVariants().get(0).getModificationPoints().clear();
+		approach.getVariants().get(0).getModificationPoints().add(mp22);
+
+		approach.MAX_GENERATIONS = 1000;
+		approach.startEvolution();
+		approach.atEnd();
+		assertTrue(main.getEngine().getSolutions().isEmpty());
+		assertNotEquals(AstorOutputStatus.ERROR, approach.getOutputStatus());
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, approach.getOutputStatus());
+
 	}
 
 }

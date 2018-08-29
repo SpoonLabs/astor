@@ -179,6 +179,12 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 					|| (iHole instanceof CtStatement)) {
 				continue;
 			}
+
+			if (iHole instanceof CtTypeAccess) {
+				log.debug("Discarting hole that is a CtTypeAccess:  " + iHole);
+				continue;
+			}
+
 			// The hole to replace:
 			CtExpression aholeExpression = (CtExpression) iHole;
 			log.debug(
@@ -516,10 +522,14 @@ public class EvalTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 			if (i < valuesofTestToCluster.size() && i < valuesofTestAlreadyClustered.size()
 					&& valuesofTestToCluster.get(i) != null && valuesofTestAlreadyClustered.get(i) != null) {
-				Object v1 = valuesofTestToCluster.get(i).getRealValue();
-				Object v2 = valuesofTestAlreadyClustered.get(i).getRealValue();
-				if (v1 != null && v2 != null && v1.equals(v2)) {
-					total += 1;
+				try {
+					Object v1 = valuesofTestToCluster.get(i).getRealValue();
+					Object v2 = valuesofTestAlreadyClustered.get(i).getRealValue();
+					if (v1 != null && v2 != null && v1.equals(v2)) {
+						total += 1;
+					}
+				} catch (Exception e) {
+					log.equals(e);
 				}
 			}
 		}
