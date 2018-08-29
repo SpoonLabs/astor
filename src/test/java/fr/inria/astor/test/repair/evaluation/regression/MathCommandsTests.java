@@ -127,6 +127,20 @@ public class MathCommandsTests {
 
 	}
 
+	public static CommandSummary getMath50Command() {
+		String dep = new File("./examples/libs/junit-4.8.2.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
+
+				"org.apache.commons.math.analysis.solvers.RegulaFalsiSolverTest", "-location",
+				new File("./examples/math_50").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.1", "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
+				"-maxtime", "5", "-ignoredtestcases", "org.apache.commons.math.util.FastMathTest" };
+		return new CommandSummary(args);
+	}
+
 	@Test
 	public void testMath1() throws Exception {
 

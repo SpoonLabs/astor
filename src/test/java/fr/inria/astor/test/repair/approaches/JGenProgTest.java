@@ -269,15 +269,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.8.2.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
-				"org.apache.commons.math.analysis.solvers.RegulaFalsiSolverTest", "-location",
-				new File("./examples/math_50").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
-				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "5", "-flthreshold", "0.1", "-out",
-				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", "50", "-stopfirst", "true",
-				"-maxtime", "5", "-ignoredtestcases", "org.apache.commons.math.util.FastMathTest" };
-		System.out.println(Arrays.toString(args));
-		main1.execute(args);
+		CommandSummary commandsummath50 = MathCommandsTests.getMath50Command();
+		System.out.println(Arrays.toString(commandsummath50.flat()));
+		main1.execute(commandsummath50.flat());
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
