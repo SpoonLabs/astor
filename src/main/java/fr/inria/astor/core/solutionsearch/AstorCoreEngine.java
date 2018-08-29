@@ -115,7 +115,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected ProjectRepairFacade projectFacade = null;
 
-	//
 	protected FaultLocalizationStrategy faultLocalization = null;
 
 	protected SolutionVariantSortCriterion patchSortCriterion = null;
@@ -125,8 +124,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	protected VariantCompiler compiler = null;
 
 	protected List<TargetElementProcessor<?>> targetElementProcessors = null;
-
-	// protected PlugInVisitor pluginLoaded = null;
 
 	// Output
 	protected List<ReportResults> outputResults = null;
@@ -1090,35 +1087,42 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected void loadTargetElements() throws Exception {
 
-		List<TargetElementProcessor<?>> targetElementProcessors = new ArrayList<TargetElementProcessor<?>>();
+		ExtensionPoints extensionPointpoint = ExtensionPoints.TARGET_CODE_PROCESSOR;
 
-		this.setTargetElementProcessors(targetElementProcessors);
-		// Fix Space
-		ExtensionPoints epoint = ExtensionPoints.TARGET_CODE_PROCESSOR;
+		List<TargetElementProcessor<?>> loadedTargetElementProcessors = loadTargetElements(extensionPointpoint);
+
+		this.setTargetElementProcessors(loadedTargetElementProcessors);
+		this.setVariantFactory(new ProgramVariantFactory(this.getTargetElementProcessors()));
+	}
+
+	protected List<TargetElementProcessor<?>> loadTargetElements(ExtensionPoints epoint) throws Exception {
+
+		List<TargetElementProcessor<?>> loadedTargetElementProcessors = new ArrayList<TargetElementProcessor<?>>();
+
 		if (!ConfigurationProperties.hasProperty(epoint.identifier)) {
 			// By default, we use statements as granularity level.
-			this.getTargetElementProcessors().add(new SingleStatementFixSpaceProcessor());
+			loadedTargetElementProcessors.add(new SingleStatementFixSpaceProcessor());
 		} else {
 			// We load custom processors
 			String ingrProcessors = ConfigurationProperties.getProperty(epoint.identifier);
 			String[] in = ingrProcessors.split(File.pathSeparator);
 			for (String processor : in) {
 				if (processor.equals("statements")) {
-					this.getTargetElementProcessors().add(new SingleStatementFixSpaceProcessor());
+					loadedTargetElementProcessors.add(new SingleStatementFixSpaceProcessor());
 				} else if (processor.equals("expression")) {
-					this.getTargetElementProcessors().add(new ExpressionIngredientSpaceProcessor());
+					loadedTargetElementProcessors.add(new ExpressionIngredientSpaceProcessor());
 				} else if (processor.equals("logical-relationaloperators")) {
-					this.getTargetElementProcessors().add(new IFExpressionFixSpaceProcessor());
+					loadedTargetElementProcessors.add(new IFExpressionFixSpaceProcessor());
 				} else if (processor.equals("if-conditions")) {
-					this.getTargetElementProcessors().add(new IFConditionFixSpaceProcessor());
+					loadedTargetElementProcessors.add(new IFConditionFixSpaceProcessor());
 				} else {
 					TargetElementProcessor proc_i = (TargetElementProcessor) PlugInLoader.loadPlugin(processor,
 							epoint._class);
-					targetElementProcessors.add(proc_i);
+					loadedTargetElementProcessors.add(proc_i);
 				}
 			}
 		}
-		this.setVariantFactory(new ProgramVariantFactory(this.getTargetElementProcessors()));
+		return loadedTargetElementProcessors;
 	}
 
 	protected void loadSolutionPrioritization() throws Exception {
