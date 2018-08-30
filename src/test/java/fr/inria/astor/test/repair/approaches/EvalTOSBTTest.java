@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import fr.inria.astor.approaches.tos.core.EvalSimpleTOSBTApproach;
 import fr.inria.astor.approaches.tos.core.EvalTOSBTApproach;
 import fr.inria.astor.approaches.tos.core.UpdateParentDiffOrderFromJSON;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -46,7 +47,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalSimpleTOSBTApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -59,7 +60,7 @@ public class EvalTOSBTTest {
 		main.execute(command.flat());
 
 		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		EvalSimpleTOSBTApproach approach = (EvalSimpleTOSBTApproach) main.getEngine();
 		// Retrieve the buggy if condition.
 		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -71,7 +72,7 @@ public class EvalTOSBTTest {
 
 		// Let's indicate the number of candidate solutions we want to try
 		approach.MAX_GENERATIONS = 1000;
-		approach.analyzeModificationPointSingleValue(approach.getVariants().get(0), mp198);
+		approach.analyzeModificationPoint(approach.getVariants().get(0), mp198);
 
 		assertTrue(approach.getSolutions().size() > 0);
 		assertEquals(maxSolutions, approach.getSolutions().size());
@@ -185,7 +186,7 @@ public class EvalTOSBTTest {
 		approach.getSolutions().clear();
 		// Let's indicate the number of candidate solutions we want to try
 		approach.MAX_GENERATIONS = 1000;
-		approach.analyzeModificationPointMultipleExecutions(approach.getVariants().get(0), mp198);
+		approach.analyzeModificationPoint(approach.getVariants().get(0), mp198);
 		assertTrue(approach.getSolutions().size() > 0);
 		// assertEquals(maxSolutions, approach.getSolutions().size());
 		// Call atEnd to print the solutions.
@@ -196,13 +197,13 @@ public class EvalTOSBTTest {
 	public void testBT_Math_70_1() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalSimpleTOSBTApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "100");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
 		command.command.put("-stopfirst", "false");
 		command.command.put("-flthreshold", "0.5");
-		command.command.put("-parameters", "disablelog:true:clustercollectedvalues:false");
+		command.command.put("-parameters", "disablelog:true");// :clustercollectedvalues:false
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -270,20 +271,20 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalSimpleTOSBTApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
 		command.command.put("-stopfirst", "false");
 		command.command.put("-flthreshold", "0.24");
-		command.command.put("-parameters", "clustercollectedvalues:false:disablelog:true:maxnumbersolutions:"
-				+ maxSolutions + ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath());
+		command.command.put("-parameters", "disablelog:true:maxnumbersolutions:" + maxSolutions
+				+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath());// clustercollectedvalues:false:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
 		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		EvalSimpleTOSBTApproach approach = (EvalSimpleTOSBTApproach) main.getEngine();
 		// Retrieve the buggy if condition.
 		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -295,7 +296,7 @@ public class EvalTOSBTTest {
 
 		// Let's indicate the number of candidate solutions we want to try
 		approach.MAX_GENERATIONS = 1000;
-		approach.analyzeModificationPointSingleValue(approach.getVariants().get(0), mp198);
+		approach.analyzeModificationPoint(approach.getVariants().get(0), mp198);
 		// Call atEnd to print the solutions.
 		approach.atEnd();
 		assertTrue(approach.getSolutions().size() > 0);
@@ -312,22 +313,22 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalSimpleTOSBTApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
 		command.command.put("-stopfirst", "false");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-parameters",
-				"clustercollectedvalues:false:disablelog:true:maxnumbersolutions:" + maxSolutions
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
-						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName());
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName()); // clustercollectedvalues:false:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
 		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		EvalSimpleTOSBTApproach approach = (EvalSimpleTOSBTApproach) main.getEngine();
 
 		assertTrue(approach.getHoleOrderEngine() instanceof UpdateParentDiffOrderFromJSON);
 
@@ -347,7 +348,7 @@ public class EvalTOSBTTest {
 
 		// Let's indicate the number of candidate solutions we want to try
 		approach.MAX_GENERATIONS = 1000;
-		approach.analyzeModificationPointSingleValue(approach.getVariants().get(0), mp198);
+		approach.analyzeModificationPoint(approach.getVariants().get(0), mp198);
 		// Call atEnd to print the solutions.
 		approach.atEnd();
 		assertTrue(approach.getSolutions().size() > 0);
@@ -373,10 +374,10 @@ public class EvalTOSBTTest {
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());
+						+ EvalTOSBTApproach.class.getCanonicalName()); // clustercollectedvalues:true:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -402,7 +403,7 @@ public class EvalTOSBTTest {
 
 		// Let's indicate the number of candidate solutions we want to try
 		approach.MAX_GENERATIONS = 1000;
-		approach.analyzeModificationPointMultipleExecutions(approach.getVariants().get(0), mp198);
+		approach.analyzeModificationPoint(approach.getVariants().get(0), mp198);
 		// Call atEnd to print the solutions.
 		approach.atEnd();
 		assertTrue(approach.getSolutions().size() > 0);
@@ -425,10 +426,10 @@ public class EvalTOSBTTest {
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());
+						+ EvalTOSBTApproach.class.getCanonicalName()); // clustercollectedvalues:true:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -465,9 +466,9 @@ public class EvalTOSBTTest {
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:" + "disablelog:false:"
-				// + "disablelog:false:"
-						+ "tmax1:10000:"//
+				// "clustercollectedvalues:true:"
+				// +
+				"disablelog:false:" + "tmax1:10000:"//
 						+ "maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
@@ -488,7 +489,6 @@ public class EvalTOSBTTest {
 		approach.MAX_GENERATIONS = 100;
 		approach.startEvolution();
 		approach.atEnd();
-		// assertTrue(main.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -538,10 +538,10 @@ public class EvalTOSBTTest {
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
+				"disablelog:false:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":tmax1:5000:");
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":tmax1:5000:");// clustercollectedvalues:true:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -582,10 +582,10 @@ public class EvalTOSBTTest {
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
+				"disablelog:false:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());
+						+ EvalTOSBTApproach.class.getCanonicalName());// clustercollectedvalues:true:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -612,10 +612,10 @@ public class EvalTOSBTTest {
 		command.command.put("-saveall", "false");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());
+						+ EvalTOSBTApproach.class.getCanonicalName());// clustercollectedvalues:true:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -644,11 +644,11 @@ public class EvalTOSBTTest {
 		command.command.put("-saveall", "false");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
 						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
-
+		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
@@ -676,11 +676,11 @@ public class EvalTOSBTTest {
 		command.command.put("-saveall", "false");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:true:maxnumbersolutions:" + maxSolutions
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
 						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
-
+		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
@@ -709,13 +709,12 @@ public class EvalTOSBTTest {
 		command.command.put("-failing", "org.apache.commons.math3.optimization.direct.CMAESOptimizerTest");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
-						+ ":maxsolutionsperhole:1:sortholes:false"
-						// + ":pathjsonfrequency:" + filef.getAbsolutePath()
+				"disablelog:false:maxnumbersolutions:" + maxSolutions + ":maxsolutionsperhole:1:sortholes:false"
+				// + ":pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
 						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
 						+ ":regressionforfaultlocalization:false");
-
+		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
@@ -742,13 +741,12 @@ public class EvalTOSBTTest {
 		command.command.put("-saveall", "false");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
-						+ ":maxsolutionsperhole:1:sortholes:false"
-						// + ":pathjsonfrequency:" + filef.getAbsolutePath()
+				"disablelog:false:maxnumbersolutions:" + maxSolutions + ":maxsolutionsperhole:1:sortholes:false"
+				// + ":pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
 						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
 						+ ":regressionforfaultlocalization:true");
-
+		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
@@ -792,13 +790,12 @@ public class EvalTOSBTTest {
 		command.command.put("-saveall", "false");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
-						+ ":maxsolutionsperhole:1:sortholes:false"
-						// + ":pathjsonfrequency:" + filef.getAbsolutePath()
+				"disablelog:false:maxnumbersolutions:" + maxSolutions + ":maxsolutionsperhole:1:sortholes:false"
+				// + ":pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
 						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
 						+ ":regressionforfaultlocalization:true");
-
+		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
@@ -841,12 +838,12 @@ public class EvalTOSBTTest {
 		command.command.put("-saveall", "false");
 		command.command.put("-parameters",
 
-				"clustercollectedvalues:true:disablelog:false" + ":maxsolutionsperhole:1:sortholes:false"
+				"disablelog:false" + ":maxsolutionsperhole:1:sortholes:false"
 				// + ":pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
 						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
 						+ ":regressionforfaultlocalization:true");
-
+		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
