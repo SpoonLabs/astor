@@ -191,6 +191,5 @@ public class OperatorInstance {
 
 	public void setIngredient(Ingredient ingredient) {
 		this.ingredient = ingredient;
-		this.modified = ingredient.getCode();
 	}
 }
