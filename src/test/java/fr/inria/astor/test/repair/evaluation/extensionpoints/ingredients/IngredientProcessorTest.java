@@ -20,8 +20,6 @@ import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcess
 import fr.inria.astor.core.manipulation.filters.MethodInvocationFixSpaceProcessor;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPoolLocationType;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.AstorCtIngredientPool;
-import fr.inria.astor.core.solutionsearch.spaces.operators.demo.InvocationFixSpaceProcessor;
-import fr.inria.astor.core.solutionsearch.spaces.operators.demo.NullPreconditionOperatorMI;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
@@ -140,18 +138,16 @@ public class IngredientProcessorTest {
 	@Test
 	public void test1PreconditionWithExpressionIngredientOnMethodInvocation() throws Exception {
 
-		CommandSummary command = MathCommandsTests.getMath85Command();
+		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-mode", "jgenprog");
-		command.command.put("-maxgen", "10");
+		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
 		command.command.put("-stopfirst", "true");
-		command.command.put("-flthreshold", "0.5");
-		command.command.put(ExtensionPoints.REPAIR_OPERATORS.argument(), NullPreconditionOperatorMI.class.getName());
-		command.command.put("-out", new File("./output_astor/demo").getAbsolutePath());
+		command.command.put("-flthreshold", "0.0");
 		command.command.put("-saveall", "true");
 		command.command.put(ExtensionPoints.TARGET_CODE_PROCESSOR.argument(),
-				InvocationFixSpaceProcessor.class.getCanonicalName());
+				MethodInvocationFixSpaceProcessor.class.getName());
 		command.command.put(ExtensionPoints.TARGET_INGREDIENT_CODE_PROCESSOR.argument(),
 				ExpressionBooleanIngredientSpaceProcessor.class.getName());
 		AstorMain main = new AstorMain();
