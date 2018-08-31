@@ -23,6 +23,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtClass;
 
 /**
  * 
@@ -45,6 +46,8 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 			contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
 		} catch (Exception e) {
 			log.error("Error calling Dynamoth value recolection MP id: " + iModifPoint.identified);
+			log.error("Failing collecting values from class: "
+					+ iModifPoint.getCodeElement().getParent(CtClass.class).getQualifiedName());
 			log.error(e);
 			currentStat.increment(GeneralStatEnum.NR_ERRONEOUS_VARIANCES);
 			return false;
@@ -133,7 +136,7 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 						if (!(belowMaxTime(dateInitEvolution, maxMinutes))) {
 							log.debug("\n Max time reached " + generationsExecuted);
 							this.outputStatus = AstorOutputStatus.TIME_OUT;
-							break;
+							return stop;
 						}
 
 						boolean stopSearch = !this.solutions.isEmpty()
