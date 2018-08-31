@@ -21,7 +21,6 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  *
  */
-@Deprecated
 public class InScopeVarsTransformation extends ClusterIngredientTransformation
 		implements IngredientTransformationStrategy {
 
@@ -53,10 +52,10 @@ public class InScopeVarsTransformation extends ClusterIngredientTransformation
 						.findAllVarMappingCombination(mapping.getMappedVariables());
 
 				if (allCombinations.size() > 0) {
-								
+
 					for (Map<String, CtVariable> selectedTransformation : allCombinations) {
 
-						//logger.debug("Transformation proposed: " + selectedTransformation);
+						// logger.debug("Transformation proposed: " + selectedTransformation);
 						// The ingredient is cloned, so we can modify
 						// its variables
 						Map<VarAccessWrapper, CtVariableAccess> originalMap = VariableResolver
