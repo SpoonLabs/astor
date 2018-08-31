@@ -23,6 +23,8 @@ import fr.inria.astor.core.manipulation.synthesis.dynamoth.DynamothSynthesizerWO
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
+import fr.inria.astor.core.stats.PatchHunkStats;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.util.MapList;
 import fr.inria.lille.repair.common.Candidates;
@@ -266,7 +268,7 @@ public class EvalSimpleTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 					new FineGrainedExpressionReplaceOperator(), aholeExpression, ingredientSynthesized.getCode());
 			log.debug("-op (" + operatorExecuted + "): " + operatorInstance);
 
-			// operatorInstance.setIngredient(new Ingredient(aholeExpression));
+			operatorInstance.setIngredient(new Ingredient(aholeExpression));
 
 			ProgramVariant candidateVariant = variantFactory.createProgramVariantFromAnother(parentVariant,
 					generationsExecuted);
@@ -389,4 +391,15 @@ public class EvalSimpleTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 	public void setHoleOrderEngine(HoleOrder holeOrderEngine) {
 		this.holeOrderEngine = holeOrderEngine;
 	}
+
+	@Override
+	protected void setParticularStats(PatchHunkStats hunk, OperatorInstance genOperationInstance) {
+		super.setParticularStats(hunk, genOperationInstance);
+
+		if (genOperationInstance.getIngredient() != null)
+			hunk.getStats().put(HunkStatEnum.INGREDIENT_PARENT, genOperationInstance.getIngredient().getCode() + " -  "
+					+ genOperationInstance.getIngredient().getCode().getParent());
+
+	}
+
 }

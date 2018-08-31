@@ -1246,15 +1246,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 										+ genOperationInstance.getModified().getParent().getClass().getSimpleName());
 					}
 
-					hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE,
-							((genOperationInstance.getIngredientScope() != null)
-									? genOperationInstance.getIngredientScope()
-									: "-"));
-
-					if (genOperationInstance.getIngredient() != null
-							&& genOperationInstance.getIngredient().getDerivedFrom() != null)
-						hunk.getStats().put(HunkStatEnum.INGREDIENT_PARENT,
-								genOperationInstance.getIngredient().getDerivedFrom());
+					setParticularStats(hunk, genOperationInstance);
 
 				}
 			}
@@ -1265,6 +1257,16 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		}
 		return patches;
+	}
+
+	/**
+	 * Set the particularities of each approach
+	 * 
+	 * @param hunk
+	 * @param genOperationInstance
+	 */
+	protected void setParticularStats(PatchHunkStats hunk, OperatorInstance genOperationInstance) {
+		// Nothing by default
 	}
 
 	public void loadExtensionPoints() throws Exception {

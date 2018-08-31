@@ -32,6 +32,8 @@ import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.IngredientBasedOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSelectionStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
+import fr.inria.astor.core.stats.PatchHunkStats;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
@@ -299,6 +301,20 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 
 	public void setTargetIngredientProcessors(List<TargetElementProcessor<?>> targetIngredientProcessors) {
 		this.targetIngredientProcessors = targetIngredientProcessors;
+	}
+
+	@Override
+	protected void setParticularStats(PatchHunkStats hunk, OperatorInstance genOperationInstance) {
+		// TODO Auto-generated method stub
+		super.setParticularStats(hunk, genOperationInstance);
+		hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE,
+				((genOperationInstance.getIngredientScope() != null) ? genOperationInstance.getIngredientScope()
+						: "-"));
+
+		if (genOperationInstance.getIngredient() != null
+				&& genOperationInstance.getIngredient().getDerivedFrom() != null)
+			hunk.getStats().put(HunkStatEnum.INGREDIENT_PARENT, genOperationInstance.getIngredient().getDerivedFrom());
+
 	}
 
 }

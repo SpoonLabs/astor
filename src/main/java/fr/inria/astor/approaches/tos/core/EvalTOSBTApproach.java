@@ -22,6 +22,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.declaration.CtAnnotation;
 
 /**
  * 
@@ -81,8 +82,8 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 				continue;
 			}
 
-			if (iHole instanceof CtTypeAccess) {
-				log.debug("Discarting hole that is a CtTypeAccess:  " + iHole);
+			if (iHole instanceof CtTypeAccess || iHole instanceof CtAnnotation) {
+				log.debug("Discarting hole that is a CtTypeAccess/CTannotation:  " + iHole);
 				continue;
 			}
 

@@ -24,6 +24,8 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStr
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.IngredientBasedOperator;
+import fr.inria.astor.core.stats.PatchHunkStats;
+import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.ExtensionPoints;
 
@@ -52,7 +54,8 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	public void startEvolution() throws Exception {
 
 		if (this.ingredientSpace == null) {
-			this.ingredientSpace = IngredientBasedEvolutionaryRepairApproachImpl.getIngredientPool(getTargetElementProcessors());
+			this.ingredientSpace = IngredientBasedEvolutionaryRepairApproachImpl
+					.getIngredientPool(getTargetElementProcessors());
 		}
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
@@ -266,7 +269,8 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	protected void loadIngredientPool() throws JSAPException, Exception {
 		List<TargetElementProcessor<?>> ingredientProcessors = this.getTargetElementProcessors();
 		// The ingredients for build the patches
-		IngredientPool ingredientspace = IngredientBasedEvolutionaryRepairApproachImpl.getIngredientPool(ingredientProcessors);
+		IngredientPool ingredientspace = IngredientBasedEvolutionaryRepairApproachImpl
+				.getIngredientPool(ingredientProcessors);
 
 		this.setIngredientPool(ingredientspace);
 
@@ -283,6 +287,20 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = IngredientBasedEvolutionaryRepairApproachImpl
 				.retrieveIngredientTransformationStrategy();
 		this.setIngredientTransformationStrategy(ingredientTransformationStrategyLoaded);
+	}
+
+	@Override
+	protected void setParticularStats(PatchHunkStats hunk, OperatorInstance genOperationInstance) {
+		// TODO Auto-generated method stub
+		super.setParticularStats(hunk, genOperationInstance);
+		hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE,
+				((genOperationInstance.getIngredientScope() != null) ? genOperationInstance.getIngredientScope()
+						: "-"));
+
+		if (genOperationInstance.getIngredient() != null
+				&& genOperationInstance.getIngredient().getDerivedFrom() != null)
+			hunk.getStats().put(HunkStatEnum.INGREDIENT_PARENT, genOperationInstance.getIngredient().getDerivedFrom());
+
 	}
 
 	@Override
