@@ -716,13 +716,20 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		ConfigurationProperties.setProperty("forceExecuteRegression", Boolean.TRUE.toString());
 
 		// Initial validation and fitness
+		long inittime = System.currentTimeMillis();
 		VariantValidationResult validationResult = validateInstance(originalVariant);
+		long endtime = System.currentTimeMillis();
 
 		if (validationResult == null) {
 			log.error("Initial run of test suite fails");
 
 		} else if (validationResult.isSuccessful()) {
 			throw new IllegalStateException("The application under repair has not failling test cases");
+		}
+
+		if (ConfigurationProperties.getPropertyBool("overridemaxtime")) {
+			Long diff = (endtime - inittime) * 2;// in milliseconds
+			ConfigurationProperties.setProperty("tmax2", diff.toString());
 		}
 
 		double fitness = this.fitnessFunction.calculateFitnessValue(validationResult);
