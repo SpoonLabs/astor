@@ -629,6 +629,38 @@ public class EvalTOSBTTest {
 	}
 
 	@Test
+	public void testBT_Math63_evotest_maxtime() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath63Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "1000");
+		command.command.put("-maxtime", "1");
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
+
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName());// clustercollectedvalues:true:
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertEquals(AstorOutputStatus.TIME_OUT, approach.getOutputStatus());
+
+	}
+
+	@Test
 	public void testBT_Math32_type_access() throws Exception {
 		int maxSolutions = 4;
 		File filef = new File("src/test/resources/changes_analisis_frequency.json");
@@ -636,7 +668,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath32Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-maxgen", "1000");
+		command.command.put("-maxgen", "200");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
 		command.command.put("-stopfirst", "true");
@@ -657,6 +689,60 @@ public class EvalTOSBTTest {
 
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
+
+	}
+
+	@Test
+	public void testBT_Math32_notcollected_closed() throws Exception {
+		// a) Killed, b) not collected, and c) close
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath32Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
+
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
+		// clustercollectedvalues:true:
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+//MP (110/808) location to modify: MP=org.apache.commons.math3.geometry.partitioning.utilities.AVLTree line: 510, pointed element: CtLocalVariableImpl
+
+		//
+		ModificationPoint mp110 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> e.getCtClass().getSimpleName().equals("AVLTree")
+						&& e.getCodeElement().getPosition().getLine() == 510)
+				.findFirst().get();
+
+		System.out.println("Mp 110: \n" + mp110.getCodeElement().toString());
+
+		assertTrue(mp110.getCodeElement().toString().startsWith(
+				"final org.apache.commons.math3.geometry.partitioning.utilities.AVLTree.Skew s = right.left.skew"));
+
+		approach.getVariants().get(0).getModificationPoints().clear();
+		approach.getVariants().get(0).getModificationPoints().add(mp110);
+
+		assertEquals(1, approach.getVariants().get(0).getModificationPoints().size());
+
+		approach.MAX_GENERATIONS = 1000;
+		approach.startEvolution();
+		approach.atEnd();
+		assertTrue(main.getEngine().getSolutions().isEmpty());
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, approach.getOutputStatus());
 
 	}
 

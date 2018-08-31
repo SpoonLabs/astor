@@ -97,9 +97,16 @@ public class EvalSimpleTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.
 		generationsExecuted = 1;
+		modifPointsAnalyzed = 0;
 
 		int totalmodfpoints = variants.get(0).getModificationPoints().size();
 		for (ProgramVariant parentVariant : variants) {
+
+			if (MAX_GENERATIONS <= operationsExecuted) {
+
+				this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
+				return;
+			}
 
 			// Let's print the MPs
 			int i = 0;
@@ -113,7 +120,9 @@ public class EvalSimpleTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 				modifPointsAnalyzed++;
 				log.info("\n*************\n\n MP (" + modifPointsAnalyzed + "/"
-						+ parentVariant.getModificationPoints().size() + ") location to modify: " + iModifPoint);
+						+ parentVariant.getModificationPoints().size() + ") "
+						+ +Long.valueOf(((new Date().getTime() - this.dateEngineCreation.getTime()) / 60000))
+						+ " minutes passed,  location to modify: " + iModifPoint);
 
 				System.out.println("MP code: " + iModifPoint.getCodeElement());
 

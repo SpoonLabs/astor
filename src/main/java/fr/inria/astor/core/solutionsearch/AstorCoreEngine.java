@@ -136,6 +136,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	protected ProgramVariant originalVariant = null;
 
 	protected Date dateInitEvolution = new Date();
+	protected Date dateEngineCreation = new Date();
 
 	protected int generationsExecuted = 0;
 

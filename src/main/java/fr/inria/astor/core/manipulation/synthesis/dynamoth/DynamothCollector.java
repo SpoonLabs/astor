@@ -210,6 +210,7 @@ public class DynamothCollector {
 				eventSet.resume();
 			} // end while true
 		} catch (Exception e) {
+			System.err.println("Error processing VMEvents");
 			e.printStackTrace();
 		} finally {
 			DebugJUnitRunner.process.destroy();
