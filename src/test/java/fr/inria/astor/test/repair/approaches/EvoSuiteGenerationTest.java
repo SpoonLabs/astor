@@ -231,7 +231,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-stopfirst", "true", "-population", "1",
-				"-stopfirst", "true", "-maxtime", "100", "-validation", "evosuite", "-maxgen", "250"
+				"-stopfirst", "true", "-maxtime", "100", "-validation", "evosuite", "-maxgen", "250", "-parameters",
+				"overridemaxtime:false"
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -344,7 +345,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "2000", "-population", "1",
 				"-stopfirst", "true", "-maxtime", "20",
 				// PARAMETER TO TEST
-				"-validation", "evosuite"
+				"-validation", "evosuite", "-parameters", "overridemaxtime:false"
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -515,7 +516,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 					"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
 					"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5",
 					"-out", out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "250", "-population",
-					"1", "-stopfirst", "true", "-maxtime", "100", "-validation", "evosuite"
+					"1", "-stopfirst", "true", "-maxtime", "100", "-validation", "evosuite", "-parameters",
+					"overridemaxtime:false"
 
 			};
 			System.out.println(Arrays.toString(args));
