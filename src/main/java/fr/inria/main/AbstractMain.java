@@ -277,6 +277,8 @@ public abstract class AbstractMain {
 				+ ConfigurationProperties.getPropertyInt("maxVarCombination"));
 
 		options.addOption("parameters", true, "Parameters, divided by " + File.pathSeparator);
+		
+		options.addOption("autocompile", true, "wheteher auto compile");
 
 	}
 
@@ -629,6 +631,10 @@ public abstract class AbstractMain {
 
 			}
 		}
+		
+		if (cmd.hasOption("autocompile"))
+			ConfigurationProperties.properties.setProperty("autocompile",
+					cmd.getOptionValue("autocompile"));
 
 		log.info("command line arguments: " + Arrays.toString(args).replace(",", " "));
 

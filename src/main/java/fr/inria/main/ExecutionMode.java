@@ -16,6 +16,7 @@ public enum ExecutionMode {
 	jKali(Collections.singletonList("jkali")),
 	MutRepair(Arrays.asList("mutation","jmutrepair", "mutrepair")),
 	EXASTOR(Arrays.asList("exhaustive", "exastor")),
+	SCAFFOLD(Collections.singletonList("scaffold")),
 	custom(Collections.singletonList("custom"));
 
 	private List<String> acceptedNames;
