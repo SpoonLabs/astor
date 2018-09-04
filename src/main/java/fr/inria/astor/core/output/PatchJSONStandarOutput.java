@@ -46,7 +46,7 @@ public class PatchJSONStandarOutput implements ReportResults {
 			else {
 				try {
 					Object value = null;
-					if (vStat instanceof AstorOutputStatus)
+					if (vStat instanceof AstorOutputStatus || vStat instanceof String)
 						value = parser.parse("\"" + vStat + "\"");
 					else
 						value = parser.parse(vStat.toString());

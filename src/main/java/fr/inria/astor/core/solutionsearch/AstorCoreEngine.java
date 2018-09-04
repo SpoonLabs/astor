@@ -170,6 +170,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		log.info("generationsexecuted: " + this.generationsExecuted);
 
 		currentStat.getGeneralStats().put(GeneralStatEnum.OUTPUT_STATUS, this.getOutputStatus());
+		currentStat.getGeneralStats().put(GeneralStatEnum.EXECUTION_IDENTIFIER,
+				ConfigurationProperties.getProperty("projectIdentifier"));
 
 		try {
 			this.computePatchDiff(this.solutions);

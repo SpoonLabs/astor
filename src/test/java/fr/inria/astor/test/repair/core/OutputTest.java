@@ -17,16 +17,19 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.Test;
 
+import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.output.PatchJSONStandarOutput;
 import fr.inria.astor.core.output.StandardOutputReport;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
@@ -336,4 +339,51 @@ public class OutputTest {
 
 	}
 
+	@Test
+	public void testMath70Identifier() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 500;
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons",
+				// Abstracts (refering to another folder)
+				"-srcjavafolder", new File("./examples/math_70").getAbsolutePath() + "/src/main/java/", //
+				"-srctestfolder", new File("./examples/math_70").getAbsolutePath() + "/src/test/java/", //
+				"-binjavafolder", new File("./examples/math_70").getAbsolutePath() + "/target/classes",
+				"-bintestfolder", new File("./examples/math_70").getAbsolutePath() + "/target/test-classes", //
+				"-javacompliancelevel", "7", "-flthreshold", "0.5", "-out", out.getAbsolutePath(), "-scope", "local",
+				"-seed", "10", "-maxgen", Integer.toString(generations), "-stopfirst", "true", "-maxtime", "100",
+				"-loglevel", "INFO", "-parameters", "disablelog:false"
+
+		};
+
+		CommandSummary cs = new CommandSummary(args);
+		String id = "math-70";
+		cs.command.put("-id", id);
+		cs.command.put("-flthreshold", "1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.command.put("-binjavafolder", "/target/classes");
+		cs.command.put("-bintestfolder", "/target/test-classes");
+
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+		assertEquals(1, solutions.size());
+		ProgramVariant variant = solutions.get(0);
+
+		OperatorInstance mi = variant.getOperations().values().iterator().next().get(0);
+		assertNotNull(mi);
+		assertEquals(IngredientPoolScope.LOCAL, mi.getIngredientScope());
+
+		assertEquals("return solve(f, min, max)", mi.getModified().toString());
+		Object retrievedId = main1.getEngine().getCurrentStat().getGeneralStats()
+				.get(GeneralStatEnum.EXECUTION_IDENTIFIER);
+		assertNotNull(retrievedId);
+		assertEquals(id, retrievedId);
+
+	}
 }
