@@ -107,6 +107,8 @@ Astor in the literature
 
 * Ye, H., Martinez, M., & Monperrus, M. A Comprehensive Study of Automatic Program Repair on the QuixBugs Benchmark. arXiv preprint arXiv:1805.03454, 2018.
 
+* C. Trad, R. Abou Assi, W. Masri, F. Zaraket. CFAAR: Control Flow Alteration to Assist Repair. ArXiv preprint 	arXiv:1808.09229, 2018.
+
 * A. Tanikado, H. Yokoyama, M. Yamamoto, S. Sumi, Y. Higo, and S. Kusumoto. New strategies for selecting reuse candidates on automated program repair. In 2017 IEEE 41st Annual Computer Software and Appli- cations Conference (COMPSAC), volume 2, pages 266–267, July 2017.
 
 * Ming Wen, Junjie Chen, Rongxin Wu, Dan Hao, and Shing-Chi Cheung. An empirical analysis of the influence of fault space on search-based automated program repair.  Arxiv 1707.05172,  2017.
