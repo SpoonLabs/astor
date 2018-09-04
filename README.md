@@ -84,7 +84,7 @@ Usage
 ------
 
 * [Getting Started](https://github.com/SpoonLabs/astor/blob/master/docs/getting-starting.md)
-* [How to extend Astor?](https://github.com/SpoonLabs/astor/blob/master/docs/extending-astor.md)
+* [How to extend Astor?](https://github.com/SpoonLabs/astor/blob/master/docs/extending_astor.md)
 * [List of Extension points](https://github.com/SpoonLabs/astor/blob/master/docs/extension-points.md)
 
 
