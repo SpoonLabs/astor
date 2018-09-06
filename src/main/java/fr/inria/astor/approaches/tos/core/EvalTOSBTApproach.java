@@ -14,8 +14,10 @@ import fr.inria.astor.core.manipulation.synthesis.dynamoth.EvaluatedExpression;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
+import fr.inria.astor.util.MapCounter;
 import fr.inria.astor.util.MapList;
 import fr.inria.lille.repair.common.Candidates;
+import fr.inria.lille.repair.expression.Expression;
 import fr.inria.lille.repair.expression.value.Value;
 import fr.inria.main.AstorOutputStatus;
 import spoon.reflect.code.CtCodeElement;
@@ -54,18 +56,21 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 		}
 		// Collecting values:
 		// values are collected from all test.
-		log.debug("---> Collected Context size: " + contextCollected.getValues().size());
 
 		// Creating combinations (do not depend on the Holes because
 		// they are combination of variables in context of a
 		// modification point)
 		DynamothSynthesizerWOracle synthesizer = new DynamothSynthesizerWOracle(contextCollected);
 
-		Candidates candidatesnew = synthesizer.combineValuesEvaluated();
+		Candidates candidatesnew = synthesizer.combineValues();
 
 		if (candidatesnew.isEmpty()) {
 			log.error("Error: not collected values for MP " + iModifPoint);
 		}
+
+		MapCounter<String> typesOfCandidatesCombined = getTypesOfExpressions(candidatesnew);
+
+		log.debug("types Of Candidates: " + typesOfCandidatesCombined.sorted());
 
 		// Key: test name, value list of clusters, each cluster is a list of
 		// evaluated expressions
@@ -113,6 +118,9 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 						if (firstExpressionOfCluster.asPatch().toString().equals(iHole.toString())) {
 							continue;
 						}
+						String classforExpression = firstExpressionOfCluster.getValue().getType().getCanonicalName();
+
+						String holeclass = aholeExpression.getType().getQualifiedName();
 
 						log.debug(String.format("Analyzing value %d/%d of test %d from hole %d", valuefromtesti,
 								clustersOfTest.size(), nrtestfromholei, nrholefrommpi));
@@ -161,9 +169,24 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 		return !stop;
 	}
 
+	private MapCounter<String> getTypesOfExpressions(Candidates candidatesnew) {
+		MapCounter<String> typesOfCandidates = new MapCounter<>();
+		for (Expression expression : candidatesnew) {
+
+			String type = expression.getValue().getType().toString().replace("class ", "");
+
+			if ("com.sun.tools.jdi.ObjectReferenceImpl".equals(type)) {
+				type = expression.getValue().toString().replace("instance of ", "").split("\\(")[0];
+			}
+			typesOfCandidates.add(type);
+		}
+		return typesOfCandidates;
+	}
+
 	/**
 	 * Key: test name, value list of clusters, each cluster is a list of evaluated
-	 * expressions
+	 * expressions EACH cluster has a list of expressions that have the same value
+	 * (the expression evaluation) on a i-th evaluation of the variable.
 	 * 
 	 * @param candidates
 	 * @return

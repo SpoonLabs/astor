@@ -22,6 +22,37 @@ import fr.inria.lille.repair.expression.value.Value;
  */
 public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 
+	private final class DataCombinatorListener implements DataCombinerModified.CombineListener {
+		private final Candidates allCombinedNotEvaluatedExpressions;
+
+		private DataCombinatorListener(Candidates allCombinedNotEvaluatedExpressions) {
+			this.allCombinedNotEvaluatedExpressions = allCombinedNotEvaluatedExpressions;
+		}
+
+		@Override
+		public boolean check(Expression expression) {
+
+			if (!allCombinedNotEvaluatedExpressions.contains(expression)) {
+				allCombinedNotEvaluatedExpressions.add(expression);
+				return true;
+			}
+			return false;
+		}
+	}
+
+	private final class NumberExpressionsByTestComparator implements Comparator<String> {
+		@Override
+		public int compare(String s, String t1) {
+			if (values.get(t1).isEmpty()) {
+				return -1;
+			}
+			if (values.get(s).isEmpty()) {
+				return 1;
+			}
+			return values.get(t1).get(0).size() - values.get(s).get(0).size();
+		}
+	}
+
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	public DynamothSynthesizerWOracle(DynamothSynthesisContext data) {
@@ -32,25 +63,15 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 		this.oracle = null;
 	}
 
-	public Candidates combineValuesEvaluated() {
+	@Override
+	public Candidates combineValues() {
 
 		try {
 
 			final Candidates result = new Candidates();
 			List<String> collectedTests = new ArrayList<>(values.keySet());
 
-			Collections.sort(collectedTests, new Comparator<String>() {
-				@Override
-				public int compare(String s, String t1) {
-					if (values.get(t1).isEmpty()) {
-						return -1;
-					}
-					if (values.get(s).isEmpty()) {
-						return 1;
-					}
-					return values.get(t1).get(0).size() - values.get(s).get(0).size();
-				}
-			});
+			Collections.sort(collectedTests, new NumberExpressionsByTestComparator());
 			for (int i = 0; i < collectedTests.size(); i++) {
 				final String key = collectedTests.get(i);
 				List<Candidates> listValue = values.get(key);
@@ -60,11 +81,14 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 					}
 				}
 			}
+
+			// STEP 1:
+			// Recollection of Single values
 			Candidates lastCollectedValues = null;
 			// Key: test name
 			Map<String, EvaluatedExpression> singleEvalExpression = new HashMap<>();
 
-			// Here, we collect the single values and we create an evaluation fo
+			// Here, we collect the single values and we create an evaluation for
 			// each iteration.
 			for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
 				final String i_test_name = collectedTests.get(i_test);
@@ -120,6 +144,7 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 
 			result.addAll(singleEvalExpression.values());
 
+			// STEP 1: Evaluating single expression e.g., variables
 			Candidates allSingleExpressions = new Candidates();
 			for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
 				final String i_test_name = collectedTests.get(i_test);
@@ -128,25 +153,16 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 					allSingleExpressions.add(ev);
 				}
 			}
-			// allSingleExpressions.addAll(singleEvalExpression.values());
 
 			log.debug("All single expression: " + allSingleExpressions.size());
+
+			// STEP 2 : COMBINATION of Expressions
 
 			Candidates allCombinedNotEvaluatedExpressions = new Candidates();
 
 			DataCombinerModified combiner = new DataCombinerModified();
 
-			combiner.addCombineListener(new DataCombinerModified.CombineListener() {
-				@Override
-				public boolean check(Expression expression) {
-
-					if (!allCombinedNotEvaluatedExpressions.contains(expression)) {
-						allCombinedNotEvaluatedExpressions.add(expression);
-						return true;
-					}
-					return false;
-				}
-			});
+			combiner.addCombineListener(new DataCombinatorListener(allCombinedNotEvaluatedExpressions));
 
 			Candidates allCombinedEvaluatedExpressions = new Candidates();
 
@@ -176,8 +192,8 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 		}
 	}
 
-	@Override
-	public Candidates combineValues() {
+	@Deprecated
+	public Candidates combineValuesOld() {
 		final Candidates result = new Candidates();
 		List<String> collectedTests = new ArrayList<>(values.keySet());
 

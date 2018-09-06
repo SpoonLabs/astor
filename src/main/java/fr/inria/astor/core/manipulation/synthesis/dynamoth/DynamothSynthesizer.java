@@ -16,7 +16,7 @@ import fr.inria.lille.repair.expression.Expression;
 /**
  * Created by Thomas Durieux on 06/03/15.
  * 
- * @author Matias Martinez
+ * modified by Matias Martinez
  *
  */
 public class DynamothSynthesizer {
@@ -74,13 +74,11 @@ public class DynamothSynthesizer {
 		}
 		long currentTime = System.currentTimeMillis();
 		Candidates lastCollectedValues = null;
-		for (int k = 0; k < collectedTests
-				.size() /* && currentTime - startTime <= remainingTime */; k++) {
+		for (int k = 0; k < collectedTests.size() /* && currentTime - startTime <= remainingTime */; k++) {
 			final String key = collectedTests.get(k);
 			List<Candidates> listValue = values.get(key);
 			currentTime = System.currentTimeMillis();
-			for (int i = 0; i < listValue
-					.size() /* && currentTime - startTime <= remainingTime */; i++) {
+			for (int i = 0; i < listValue.size() /* && currentTime - startTime <= remainingTime */; i++) {
 				Candidates eexps = listValue.get(i);
 				if (eexps == null) {
 					continue;

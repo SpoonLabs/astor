@@ -76,12 +76,12 @@ public class DynamothSynthesisContext extends ExecutionContext {
 			out += ("Total nr executions done by test: " + executions.size()) + "\n";
 			int i = 0;
 			for (Candidates candidates2 : executions) {
-				out += ("--Total nr of vars " + (i++) + ": " + candidates2.size()) + "\n";
+				out += ("--Total nr of vars of execution " + (i++) + ": " + candidates2.size()) + "\n";
 				int j = 0;
 				for (fr.inria.lille.repair.expression.Expression expression : candidates2) {
 					try {
-						out += ("--*-->" + i + " " + (j++) + " " + expression.asPatch() + " " + expression.getValue())
-								+ "\n";
+						out += ("--*-->" + i + ": var  " + (j++) + " " + expression.asPatch() + " value: "
+								+ expression.getValue()) + "\n";
 					} catch (Exception e) {
 						System.out.println("error c:" + e);
 					}

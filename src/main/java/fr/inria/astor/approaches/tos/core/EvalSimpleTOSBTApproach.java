@@ -153,10 +153,7 @@ public class EvalSimpleTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 		// they are combination of variables in context of a
 		// modification point)
 		DynamothSynthesizerWOracle synthesizer = new DynamothSynthesizerWOracle(contextCollected);
-		//
-		Candidates candidatesnew = synthesizer.combineValuesEvaluated();
-		System.out.println(candidatesnew);
-		//
+		
 		Candidates candidates = synthesizer.combineValues();
 
 		// Store candidates in structures
