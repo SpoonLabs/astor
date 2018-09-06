@@ -68,7 +68,8 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 
 		try {
 
-			final Candidates result = new Candidates();
+			// final Candidates result1 = new Candidates();
+
 			List<String> collectedTests = new ArrayList<>(values.keySet());
 
 			Collections.sort(collectedTests, new NumberExpressionsByTestComparator());
@@ -142,43 +143,40 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 				}
 			}
 
-			result.addAll(singleEvalExpression.values());
-
-			// STEP 1: Evaluating single expression e.g., variables
+			// STEP 1B: Evaluating single expression e.g., variables
 			Candidates allSingleExpressions = new Candidates();
-			for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
-				final String i_test_name = collectedTests.get(i_test);
-				for (Expression combinedExpression : singleEvalExpression.values()) {
-					EvaluatedExpression ev = collectEvaluationForAllExecutions(i_test_name, combinedExpression);
-					allSingleExpressions.add(ev);
-				}
+
+			for (Expression combinedExpression : singleEvalExpression.values()) {
+				EvaluatedExpression ev = collectEvaluationForAllExecutions(combinedExpression);
+				allSingleExpressions.add(ev);
 			}
 
 			log.debug("All single expression: " + allSingleExpressions.size());
 
 			// STEP 2 : COMBINATION of Expressions
 
+			// We create a list where we put all combinations
+			// Note that the new combination has only one evaluation.
 			Candidates allCombinedNotEvaluatedExpressions = new Candidates();
 
 			DataCombinerModified combiner = new DataCombinerModified();
 
 			combiner.addCombineListener(new DataCombinatorListener(allCombinedNotEvaluatedExpressions));
 
-			Candidates allCombinedEvaluatedExpressions = new Candidates();
-
 			long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
 			combiner.combine(allSingleExpressions, null, maxCombinerTime, nopolContext);
 
-			log.debug("All combined expressions: " + allCombinedEvaluatedExpressions.size());
+			log.debug("All combined expressions: " + allCombinedNotEvaluatedExpressions.size());
 
-			for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
-				final String i_test_name = collectedTests.get(i_test);
-				for (Expression combinedExpression : allCombinedNotEvaluatedExpressions) {
-					EvaluatedExpression ev = collectEvaluationForAllExecutions(i_test_name, combinedExpression);
-					allCombinedEvaluatedExpressions.add(ev);
-				}
-
+			// Here, we will store the expression After evaluating it for each test and
+			// execution.
+			List<EvaluatedExpression> allCombinedEvaluatedExpressions = new ArrayList<EvaluatedExpression>();
+			for (Expression combinedExpression : allCombinedNotEvaluatedExpressions) {
+				EvaluatedExpression ev = collectEvaluationForAllExecutions(combinedExpression);
+				allCombinedEvaluatedExpressions.add(ev);
 			}
+
+			// resultAll is a list of Evaluated expression.
 			Candidates resultAll = new Candidates();
 			resultAll.addAll(allSingleExpressions);
 			resultAll.addAll(allCombinedEvaluatedExpressions);
@@ -190,109 +188,6 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 			Candidates resultAll = new Candidates();
 			return resultAll;
 		}
-	}
-
-	@Deprecated
-	public Candidates combineValuesOld() {
-		final Candidates result = new Candidates();
-		List<String> collectedTests = new ArrayList<>(values.keySet());
-
-		Collections.sort(collectedTests, new Comparator<String>() {
-			@Override
-			public int compare(String s, String t1) {
-				if (values.get(t1).isEmpty()) {
-					return -1;
-				}
-				if (values.get(s).isEmpty()) {
-					return 1;
-				}
-				return values.get(t1).get(0).size() - values.get(s).get(0).size();
-			}
-		});
-		for (int i = 0; i < collectedTests.size(); i++) {
-			final String key = collectedTests.get(i);
-			List<Candidates> listValue = values.get(key);
-			for (Candidates expressions : listValue) {
-				for (Expression expression : expressions) {
-					expression.getValue().setConstant(isConstant(expression));
-				}
-			}
-		}
-		Candidates lastCollectedValues = null;
-
-		//
-		for (int i_test = 0; i_test < collectedTests.size(); i_test++) {
-			final String key = collectedTests.get(i_test);
-			List<Candidates> listValue = values.get(key);
-			// Executions
-			for (int i_execution = 0; i_execution < listValue.size(); i_execution++) {
-				Candidates i_eexps = listValue.get(i_execution);
-				if (i_eexps == null) {
-					continue;
-				}
-				if (lastCollectedValues != null
-						&& lastCollectedValues.intersection(i_eexps, false).size() == i_eexps.size()) {
-					continue;
-				}
-				lastCollectedValues = i_eexps;
-				if (nopolContext.isSortExpressions()) {
-					Collections.sort(i_eexps, Collections.reverseOrder());
-				}
-
-				// check if one of the collected value can be a patch
-				for (int j = 0; j < i_eexps.size(); j++) {
-					Expression expression = i_eexps.get(j);
-					if (expression == null || expression.getValue() == null) {
-						continue;
-					}
-					// EvaluatedExpression expWrap =
-					// collectEvaluationForAllExecutions(key, i, expression);
-					// if (expWrap != null) {
-					// result.add(expWrap);
-					if (checkExpression(key, i_execution, expression)) {
-						// result.add(expression);
-
-						if (nopolContext.isOnlyOneSynthesisResult()) {
-							return result;
-						}
-					}
-				}
-				///
-				// TODO: I would group by expression and get the evaluation per
-				/// iteration
-				///
-
-				DataCombinerModified combiner = new DataCombinerModified();
-				final int iterationNumber = i_execution;
-
-				combiner.addCombineListener(new DataCombinerModified.CombineListener() {
-					@Override
-					public boolean check(Expression expression) {
-
-						// EvaluatedExpression expWrap =
-						// collectEvaluationForAllExecutions(key,
-						// iterationNumber,
-						// expression);
-						// if (expWrap != null) {
-						// result.add(expWrap);
-						if (checkExpression(key, iterationNumber, expression)) {
-
-							result.add(expression);// MM Not modify the
-							// result...
-							return true;
-						}
-						return false;
-					}
-				});
-
-				long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
-				// Combine for this iteration
-				combiner.combine(i_eexps, null, maxCombinerTime, nopolContext);
-			}
-		}
-
-		return result;
-
 	}
 
 	@Override
@@ -322,35 +217,79 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 	 * @param expression
 	 * @return
 	 */
-	protected EvaluatedExpression collectEvaluationForAllExecutions(String testName, Expression expression) {
+	protected EvaluatedExpression collectEvaluationForAllExecutions(Expression expression) {
 		nbExpressionEvaluated++;
-		if (checkedExpression.contains(expression.toString())) {
-			// todo
-			// return false;
-		}
+
+		// key is the test, value is a list of Values, each position is the evaluation
+		// of the expression in a given execution.
 		Map<String, List<Value>> valuesByTest = new HashMap<>();
 		checkedExpression.add(expression.toString());
-		for (String test : values.keySet()) {
-			List<Candidates> listCandidates = values.get(test);
-			List<Value> valuesTest = new ArrayList<>();
-			for (int i = 0; i < listCandidates.size(); i++) {
 
-				Candidates valueOtherTest = listCandidates.get(i);
+		// For each test
+		for (String i_test : values.keySet()) {
+			// Executions of the test
+			List<Candidates> listCandidates = values.get(i_test);
+
+			List<Value> valuesTest = new ArrayList<>();
+
+			for (int i = 0; i < listCandidates.size(); i++) {
+				// One execution
+				Candidates valuesExecution_i = listCandidates.get(i);
 				try {
-					fr.inria.lille.repair.expression.value.Value expressionValue = expression.evaluate(valueOtherTest);
+					// Evaluation of the expression given the variables values given in execution i.
+					fr.inria.lille.repair.expression.value.Value expressionValue = expression
+							.evaluate(valuesExecution_i);
 					valuesTest.add(i, expressionValue);
 
 				} catch (RuntimeException e) {
-					System.err.println("Failing eval  expression " + expression + " with values: " + valueOtherTest);
-					// return false;
+					System.err.println("Failing eval  expression " + expression + " with values: " + valuesExecution_i);
 				}
 			}
-			valuesByTest.put(testName, valuesTest);
+			valuesByTest.put(i_test, valuesTest);
 
 		}
 		EvaluatedExpression evalExpression = new EvaluatedExpression(expression, valuesByTest);
 
 		return evalExpression;
+	}
+
+	/**
+	 * New
+	 * 
+	 * @param testName
+	 * @param expression
+	 * @return
+	 */
+	protected EvaluatedExpression simpleEval(String testName, Expression expression) {
+		nbExpressionEvaluated++;
+
+		Map<String, List<Value>> valuesByTest = new HashMap<>();
+		checkedExpression.add(expression.toString());
+
+		// Executions of the test
+		List<Candidates> listCandidates = values.get(testName);
+
+		List<Value> valuesTest = new ArrayList<>();
+
+		for (int i = 0; i < listCandidates.size(); i++) {
+			// One execution
+			Candidates valueOtherTest = listCandidates.get(i);
+			try {
+				// The value of the expression (parameter) in test.
+				fr.inria.lille.repair.expression.value.Value expressionValue = expression.evaluate(valueOtherTest);
+				valuesTest.add(i, expressionValue);
+
+			} catch (RuntimeException e) {
+				System.err.println("Failing eval  expression " + expression + " with values: " + valueOtherTest);
+				// return false;
+			}
+		}
+		valuesByTest.put(testName, valuesTest);
+
+		// EvaluatedExpression evalExpression = new EvaluatedExpression(expression,
+		// valuesByTest);
+
+		return null;
 	}
 
 }
