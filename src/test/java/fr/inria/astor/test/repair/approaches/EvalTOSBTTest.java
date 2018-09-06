@@ -566,6 +566,49 @@ public class EvalTOSBTTest {
 	}
 
 	@Test
+	public void testBT_Math74_Cluster_UpdateParent_Repair() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath74Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName());
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		ModificationPoint mp42 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> ((e.getCodeElement().getPosition().getLine() == 239)
+						&& e.getCodeElement().toString().startsWith("double hNew")))
+				.findFirst().get();
+
+		System.out.println("Mp 42: \n" + mp42.getCodeElement().toString());
+
+		mp42.getProgramVariant().getModificationPoints().clear();
+		mp42.getProgramVariant().getModificationPoints().add(mp42);
+		approach.MAX_GENERATIONS = 1000;
+		approach.startEvolution();
+		assertEquals(1, approach.getSolutions().size());
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
+		approach.atEnd();
+		// double hNew = t;
+	}
+
+	@Test
 	public void testBT_Math85_Cluster_Evolve_bug_stuck() throws Exception {
 
 		// Testing why MP 24 get stuck.
