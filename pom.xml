@@ -261,7 +261,7 @@
 								<source>src-core/main/java</source>
 								<source>src-jgenprog/main/java</source>
 								<source>src-jkali/main/java</source>
-								<source>src-jmutationrepair/main/java</source>
+								<source>src-jmutrepair/main/java</source>
 								<source>src-cardumen/main/java</source>
 								<source>src-deeprepair/main/java</source>
 							</sources>
