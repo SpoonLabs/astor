@@ -19,6 +19,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.faultlocalization.gzoltar.TestCaseResult;
 import fr.inria.astor.core.manipulation.synthesis.ExecutionContextCollector;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.lille.repair.common.config.NopolContext;
@@ -64,6 +65,7 @@ public class DynamothCollectorFacade implements ExecutionContextCollector {
 		log.info("Astor-Dynamoth config: ");
 
 		NopolContext nopolContext = new NopolContext(sources, urls, testClasses);
+		nopolContext.setCollectOnlyUsedMethod(ConfigurationProperties.getPropertyBool("collectonlyusedmethod"));
 		nopolContext.setDataCollectionTimeoutInSecondForSynthesis(5);
 		nopolContext.setOnlyOneSynthesisResult(false);
 		log.info("-sources: " + Arrays.toString(sources));
