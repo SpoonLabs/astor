@@ -199,7 +199,6 @@ public class OutputTest {
 
 		ProgramVariant solution = main1.getEngine().getSolutions().get(0);
 		assertNotNull(solution.getPatchInfo());
-		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED));
 		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.PATCH_DIFF_ORIG));
 		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.HUNKS));
 		assertNotNull(solution.getPatchInfo().getStats().get(PatchStatEnum.FOLDER_SOLUTION_CODE));

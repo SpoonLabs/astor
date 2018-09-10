@@ -1188,8 +1188,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
 					solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
 
-			patch_i.addStat(PatchStatEnum.PATCH_DIFF_FORMATTED, solutionVariant.getPatchDiff().getFormattedDiff());
-
 			patch_i.addStat(PatchStatEnum.FOLDER_SOLUTION_CODE,
 					projectFacade.getOutDirWithPrefix(solutionVariant.currentMutatorIdentifier()));
 

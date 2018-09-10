@@ -154,11 +154,10 @@ public class Cardumen1HTest {
 
 		PatchStat patch = cardumenholes.getPatchInfo().get(0);
 
-		assertNotNull(patch.getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED));
-		assertFalse(patch.getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED).toString().isEmpty());
+		assertNotNull(patch.getStats().get(PatchStatEnum.PATCH_DIFF_ORIG));
+		assertFalse(patch.getStats().get(PatchStatEnum.PATCH_DIFF_ORIG).toString().isEmpty());
 	}
 
-	
 	@Test
 	public void testCardumenHolesRepairExha() throws Exception {
 
@@ -189,12 +188,10 @@ public class Cardumen1HTest {
 
 		PatchStat patch = cardumenholes.getPatchInfo().get(0);
 
-		assertNotNull(patch.getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED));
-		assertFalse(patch.getStats().get(PatchStatEnum.PATCH_DIFF_FORMATTED).toString().isEmpty());
-		
-		
+		assertNotNull(patch.getStats().get(PatchStatEnum.PATCH_DIFF_ORIG));
+		assertFalse(patch.getStats().get(PatchStatEnum.PATCH_DIFF_ORIG).toString().isEmpty());
+
 		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, cardumenholes.getOutputStatus());
 	}
-	
-	
+
 }
