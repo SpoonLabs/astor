@@ -305,16 +305,21 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 
 	@Override
 	protected void setParticularStats(PatchHunkStats hunk, OperatorInstance genOperationInstance) {
-		// TODO Auto-generated method stub
+
 		super.setParticularStats(hunk, genOperationInstance);
 		hunk.getStats().put(HunkStatEnum.INGREDIENT_SCOPE,
 				((genOperationInstance.getIngredientScope() != null) ? genOperationInstance.getIngredientScope()
 						: "-"));
 
-		if (genOperationInstance.getIngredient() != null
-				&& genOperationInstance.getIngredient().getDerivedFrom() != null)
-			hunk.getStats().put(HunkStatEnum.INGREDIENT_PARENT, genOperationInstance.getIngredient().getDerivedFrom());
+		if (genOperationInstance.getIngredient() != null) {
 
+			if (genOperationInstance.getIngredient().getDerivedFrom() != null)
+				hunk.getStats().put(HunkStatEnum.INGREDIENT_PARENT,
+						genOperationInstance.getIngredient().getDerivedFrom());
+			else {
+				hunk.getStats().put(HunkStatEnum.INGREDIENT_PARENT, genOperationInstance.getIngredient());
+			}
+		}
 	}
 
 }
