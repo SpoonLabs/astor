@@ -25,6 +25,8 @@ import fr.inria.lille.repair.expression.value.Value;
 
 /**
  * Created by Thomas Durieux on 12/03/15.
+ * 
+ * modified by Matias Martinez
  */
 public class DataCombinerModified {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -51,7 +53,7 @@ public class DataCombinerModified {
 		Candidates result = new Candidates();
 		result.addAll(candidates);
 		List<Expression> lastTurn = new ArrayList<>();
-		// puts al
+		// puts all
 		lastTurn.addAll(candidates);
 
 		executionTime = System.currentTimeMillis() - startTime;
@@ -60,8 +62,7 @@ public class DataCombinerModified {
 		operators.addAll(Arrays.asList(UnaryOperator.values()));
 		operators.addAll(Arrays.asList(BinaryOperator.values()));
 
-		for (int i = 0; i < maxDepth - 1
-				&& !stop /* && executionTime <= maxTime */; i++) {
+		for (int i = 0; i < maxDepth - 1 && !stop /* && executionTime <= maxTime */; i++) {
 			List<Expression> expr = newCombiner(lastTurn, operators, i == maxDepth - 2 ? angelicValue : null);
 			lastTurn.addAll(expr);
 			executionTime = System.currentTimeMillis() - startTime;
@@ -141,7 +142,7 @@ public class DataCombinerModified {
 		return new UnaryExpressionImpl(operator, first, nopolContext);
 	}
 
-	//////
+	////// No used, even in dynamoth
 	@Deprecated
 	private List<Expression> combinePrimitives(List<Expression> toCombine, int previousSize, Object value) {
 		logger.debug("[combine] primitive start on " + toCombine.size() + " elements");
@@ -222,6 +223,7 @@ public class DataCombinerModified {
 		return result;
 	}
 
+	////// No used, even in dynamoth
 	@Deprecated
 	private List<Expression> combineExpressionOperator(Expression expression, Expression expression1,
 			BinaryOperator operator, Object value, List<Expression> result) {
@@ -257,6 +259,7 @@ public class DataCombinerModified {
 		return null;
 	}
 
+	////// No used, even in dynamoth
 	@Deprecated
 	private List<Expression> combineComplex(List<Expression> toCombine, int previousSize, Object value) {
 		Expression nullExpression = AccessFactory.literal(null, nopolContext);

@@ -62,19 +62,19 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 		// modification point)
 		DynamothSynthesizerWOracle synthesizer = new DynamothSynthesizerWOracle(contextCollected);
 
-		Candidates candidatesnew = synthesizer.combineValues();
+		Candidates evaluatedExpressions = synthesizer.combineValues();
 
-		if (candidatesnew.isEmpty()) {
+		if (evaluatedExpressions.isEmpty()) {
 			log.error("Error: not collected values for MP " + iModifPoint);
 		}
 
-		MapCounter<String> typesOfCandidatesCombined = getTypesOfExpressions(candidatesnew);
+		MapCounter<String> typesOfCandidatesCombined = getTypesOfExpressions(evaluatedExpressions);
 
 		log.debug("types Of Candidates: " + typesOfCandidatesCombined.sorted());
 
 		// Key: test name, value list of clusters, each cluster is a list of
 		// evaluated expressions
-		MapList<String, List<EvaluatedExpression>> cluster = clusterCandidatesByValue(candidatesnew);
+		MapList<String, List<EvaluatedExpression>> cluster = clusterCandidatesByValue(evaluatedExpressions);
 
 		List<CtCodeElement> holesFromMP = calculateHolesSorted(iModifPoint);
 		log.debug("Total holes: " + holesFromMP.size());
@@ -84,8 +84,7 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 		for (CtCodeElement iHole : holesFromMP) {
 			nrholefrommpi++;
 			if (!(iHole instanceof CtExpression)
-					// New Workaround: the hole will not be a complete
-					// statement
+					// We ignore holes that are statements
 					|| (iHole instanceof CtStatement)) {
 				continue;
 			}
@@ -118,13 +117,22 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 						if (firstExpressionOfCluster.asPatch().toString().equals(iHole.toString())) {
 							continue;
 						}
-						String classforExpression = firstExpressionOfCluster.getValue().getType().getCanonicalName();
+						operationsExecuted++;
 
-						String holeclass = aholeExpression.getType().getQualifiedName();
+						// let's check the types
+						String classofExpression = returnExpressionType(firstExpressionOfCluster);// firstExpressionOfCluster.getValue().getType().getCanonicalName();
+
+						String classofiHole = aholeExpression.getType().box().getQualifiedName();
+
+						if (!ConfigurationProperties.getPropertyBool("avoidtypecomparison")// In case that we dont want
+																							// to compare hole types
+								&& !classofiHole.equals(classofExpression)) {
+							continue;
+						}
 
 						log.debug(String.format("Analyzing value %d/%d of test %d from hole %d", valuefromtesti,
 								clustersOfTest.size(), nrtestfromholei, nrholefrommpi));
-						operationsExecuted++;
+
 						currentStat.increment(GeneralStatEnum.NR_GENERATIONS);
 						boolean isExpressionASolution = createAndEvaluatePatch(operationsExecuted, parentVariant,
 								iModifPoint, aholeExpression, firstExpressionOfCluster);
@@ -173,14 +181,19 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 		MapCounter<String> typesOfCandidates = new MapCounter<>();
 		for (Expression expression : candidatesnew) {
 
-			String type = expression.getValue().getType().toString().replace("class ", "");
-
-			if ("com.sun.tools.jdi.ObjectReferenceImpl".equals(type)) {
-				type = expression.getValue().toString().replace("instance of ", "").split("\\(")[0];
-			}
+			String type = returnExpressionType(expression);
 			typesOfCandidates.add(type);
 		}
 		return typesOfCandidates;
+	}
+
+	private String returnExpressionType(Expression expression) {
+		String type = expression.getValue().getType().toString().replace("class ", "");
+
+		if ("com.sun.tools.jdi.ObjectReferenceImpl".equals(type)) {
+			type = expression.getValue().toString().replace("instance of ", "").split("\\(")[0];
+		}
+		return type;
 	}
 
 	/**

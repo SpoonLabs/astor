@@ -316,7 +316,7 @@ public class DynamothCollector {
 		}
 
 		Candidates allValues = new Candidates();
-
+		// MM to see:
 		Candidates expressionCollectedBySpoon = spoonElementsCollector.collect(threadRef);
 		Candidates expressionsCollectedAtRuntime = collectRuntimeValues(threadRef);
 

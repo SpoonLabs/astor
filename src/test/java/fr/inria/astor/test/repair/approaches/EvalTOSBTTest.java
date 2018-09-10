@@ -684,7 +684,7 @@ public class EvalTOSBTTest {
 	}
 
 	@Test
-	public void testBT_Math63_evotest() throws Exception {
+	public void testBT_Math63_repair_sametype() throws Exception {
 		int maxSolutions = 4;
 		File filef = new File("src/test/resources/changes_analisis_frequency.json");
 		assertTrue(filef.exists());
@@ -702,7 +702,9 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());// clustercollectedvalues:true:
+						+ EvalTOSBTApproach.class.getCanonicalName() +
+						// always type comparison
+						":avoidtypecomparison:false");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
@@ -713,6 +715,80 @@ public class EvalTOSBTTest {
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
 
+		assertEquals("1 == 0", approach.getSolutions().get(0).getAllOperations().get(0).getModified().toString());
+		// return 1 == 0 || (x == y);
+	}
+
+	@Test
+	public void testBT_Math70_repair_sametype() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath70Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "10000");
+		command.command.put("-loglevel", "debug");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
+
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() +
+						// always type comparison
+						":avoidtypecomparison:false");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertEquals(1, approach.getSolutions().size());
+		assertEquals(AstorOutputStatus.MAX_GENERATION, approach.getOutputStatus());
+
+	}
+
+	@Test
+	public void testBT_Math63_repair_different_type() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath63Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "100");
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
+
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":avoidtypecomparison:true");
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertEquals(1, approach.getSolutions().size());
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
+
+		// - return ((java.lang.Double.isNaN(x)) && (java.lang.Double.isNaN(y))) || (x
+		// == y);
+		// + return ((java.lang.Double.isNaN(0)) && (java.lang.Double.isNaN(y))) || (x
+		// == y);
+		assertEquals("x", approach.getSolutions().get(0).getAllOperations().get(0).getModified().toString());
+		// return 1 == 0 || (x == y);
 	}
 
 	@Test
