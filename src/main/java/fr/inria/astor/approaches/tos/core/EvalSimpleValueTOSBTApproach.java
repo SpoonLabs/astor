@@ -43,7 +43,7 @@ import spoon.reflect.code.CtTypeAccess;
  * @author Matias Martinez
  *
  */
-public class EvalSimpleTOSBTApproach extends ExhaustiveIngredientBasedEngine {
+public class EvalSimpleValueTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 	public int MAX_HOLES_PER_MODIFICATION_POINT;
 	public int MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
@@ -58,7 +58,7 @@ public class EvalSimpleTOSBTApproach extends ExhaustiveIngredientBasedEngine {
 
 	protected HoleOrder holeOrderEngine = null;
 
-	public EvalSimpleTOSBTApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+	public EvalSimpleValueTOSBTApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		targetElementProcessors.add(new CtExpressionIngredientSpaceProcessor());

@@ -12,7 +12,7 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.astor.approaches.tos.core.EvalSimpleTOSBTApproach;
+import fr.inria.astor.approaches.tos.core.EvalSimpleValueTOSBTApproach;
 import fr.inria.astor.approaches.tos.core.EvalTOSBTApproach;
 import fr.inria.astor.approaches.tos.core.UpdateParentDiffOrderFromJSON;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -48,7 +48,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalSimpleTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalSimpleValueTOSBTApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -60,8 +60,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalSimpleTOSBTApproach);
-		EvalSimpleTOSBTApproach approach = (EvalSimpleTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalSimpleValueTOSBTApproach);
+		EvalSimpleValueTOSBTApproach approach = (EvalSimpleValueTOSBTApproach) main.getEngine();
 		// Retrieve the buggy if condition.
 		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -198,7 +198,7 @@ public class EvalTOSBTTest {
 	public void testBT_Math_70_1() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalSimpleTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalSimpleValueTOSBTApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "100");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -272,7 +272,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalSimpleTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalSimpleValueTOSBTApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -284,8 +284,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalSimpleTOSBTApproach);
-		EvalSimpleTOSBTApproach approach = (EvalSimpleTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalSimpleValueTOSBTApproach);
+		EvalSimpleValueTOSBTApproach approach = (EvalSimpleValueTOSBTApproach) main.getEngine();
 		// Retrieve the buggy if condition.
 		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -314,7 +314,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalSimpleTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalSimpleValueTOSBTApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -328,8 +328,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalSimpleTOSBTApproach);
-		EvalSimpleTOSBTApproach approach = (EvalSimpleTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalSimpleValueTOSBTApproach);
+		EvalSimpleValueTOSBTApproach approach = (EvalSimpleValueTOSBTApproach) main.getEngine();
 
 		assertTrue(approach.getHoleOrderEngine() instanceof UpdateParentDiffOrderFromJSON);
 
@@ -606,6 +606,36 @@ public class EvalTOSBTTest {
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
 		approach.atEnd();
 		// double hNew = t;
+	}
+
+	@Test
+	public void testBT_Math74_Evolve() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath74Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "100000");
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-parameters",
+
+				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName());
+
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+
+		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
+
 	}
 
 	@Test
@@ -931,6 +961,57 @@ public class EvalTOSBTTest {
 
 		approach.getVariants().get(0).getModificationPoints().clear();
 		approach.getVariants().get(0).getModificationPoints().add(mp110);
+
+		assertEquals(1, approach.getVariants().get(0).getModificationPoints().size());
+
+		approach.MAX_GENERATIONS = 1000;
+		approach.startEvolution();
+		approach.atEnd();
+		assertTrue(main.getEngine().getSolutions().isEmpty());
+		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, approach.getOutputStatus());
+
+	}
+
+	@Test
+	public void testBT_Math32_NPE_returnExpressionType() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
+
+		CommandSummary command = MathCommandsTests.getMath32Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "0");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
+
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
+		// clustercollectedvalues:true:
+		AstorMain main = new AstorMain();
+		main.execute(command.flat());
+
+		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
+		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		//
+		ModificationPoint mp4 = approach.getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> e.getCtClass().getSimpleName().equals("PolygonsSet")
+						&& e.getCodeElement().getPosition().getLine() == 330)
+				.findFirst().get();
+
+		System.out.println("Mp 4: \n" + mp4.getCodeElement().toString());
+
+		assertEquals("return null", mp4.getCodeElement().toString());
+
+		assertEquals(3, mp4.identified);
+
+		approach.getVariants().get(0).getModificationPoints().clear();
+		approach.getVariants().get(0).getModificationPoints().add(mp4);
 
 		assertEquals(1, approach.getVariants().get(0).getModificationPoints().size());
 

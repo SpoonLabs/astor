@@ -1,6 +1,7 @@
 package fr.inria.astor.approaches.tos.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -32,7 +33,7 @@ import spoon.reflect.declaration.CtClass;
  * @author Matias Martinez
  *
  */
-public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
+public class EvalTOSBTApproach extends EvalSimpleValueTOSBTApproach {
 
 	public EvalTOSBTApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -70,14 +71,15 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 
 		MapCounter<String> typesOfCandidatesCombined = getTypesOfExpressions(evaluatedExpressions);
 
-		log.debug("types Of Candidates: " + typesOfCandidatesCombined.sorted());
+		log.info("types Of Candidates: " + typesOfCandidatesCombined.sorted());
 
+		log.info("Start clustering");
 		// Key: test name, value list of clusters, each cluster is a list of
 		// evaluated expressions
 		MapList<String, List<EvaluatedExpression>> cluster = clusterCandidatesByValue(evaluatedExpressions);
 
 		List<CtCodeElement> holesFromMP = calculateHolesSorted(iModifPoint);
-		log.debug("Total holes: " + holesFromMP.size());
+		log.info("For MP " + iModifPoint.identified + ",  total holes: " + holesFromMP.size());
 		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 
 		int nrholefrommpi = 0;
@@ -99,6 +101,10 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 			log.debug(
 					"\n\n---hole-> `" + iHole + "`,  return type " + aholeExpression.getType().box().getQualifiedName()
 							+ "--hole type: " + iHole.getClass().getCanonicalName());
+
+			int[] sizesofClusters = cluster.values().stream().mapToInt(i -> i.size()).toArray();
+
+			log.info("number of clusters " + Arrays.toString(sizesofClusters));
 
 			// Simplification
 			int nrtestfromholei = 0;
@@ -130,7 +136,7 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 							continue;
 						}
 
-						log.debug(String.format("Analyzing value %d/%d of test %d from hole %d", valuefromtesti,
+						log.info(String.format("--Analyzing value %d/%d of test %d from hole %d", valuefromtesti,
 								clustersOfTest.size(), nrtestfromholei, nrholefrommpi));
 
 						currentStat.increment(GeneralStatEnum.NR_GENERATIONS);
@@ -188,6 +194,17 @@ public class EvalTOSBTApproach extends EvalSimpleTOSBTApproach {
 	}
 
 	private String returnExpressionType(Expression expression) {
+
+		if (expression.getValue() == null) {
+			log.debug("Value of expression " + expression + "  is null");
+			return null;
+		}
+
+		if (expression.getValue().getType() == null) {
+			log.debug("Type of expression  value " + expression.getValue() + "  is null");
+			return null;
+		}
+
 		String type = expression.getValue().getType().toString().replace("class ", "");
 
 		if ("com.sun.tools.jdi.ObjectReferenceImpl".equals(type)) {
