@@ -80,8 +80,7 @@ public class ProbabilisticTransformationStrategy extends CacheTransformationStra
 			if (mapping.getMappedVariables().isEmpty()) {
 				// nothing to transform, accept the ingredient
 				logger.debug("Any transf sucessful: The var Mapping is empty, we keep the ingredient");
-				transformedIngredientsResults.add(new Ingredient(codeElementToModifyFromBase));
-
+				transformedIngredientsResults.add(baseIngredient);
 			} else {// We have mappings between variables
 				logger.debug("Ingredient before transformation: " + baseIngredient.getCode() + " mined from "
 						+ baseIngredient.getCode().getParent(CtType.class).getQualifiedName());
