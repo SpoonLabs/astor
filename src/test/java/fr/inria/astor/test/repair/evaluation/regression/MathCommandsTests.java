@@ -56,6 +56,23 @@ public class MathCommandsTests {
 
 	}
 
+	public static CommandSummary getMath28Command() {
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 500;
+
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",
+				"-location", new File("./examples/math_28").getAbsolutePath(), "-package", "org.apache.commons",
+				"-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder",
+				"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7",
+				"-flthreshold", "0.1", "-out", out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen",
+				Integer.toString(generations), "-stopfirst", "true", "-maxtime", "100",
+
+		};
+		return new CommandSummary(args);
+
+	}
+
 	public static CommandSummary getMath57Command() {
 		String dep = new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
