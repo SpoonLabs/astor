@@ -49,29 +49,7 @@ public class EvalTOSRegressionTest {
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
 						+ EvalTOSBTApproach.class.getCanonicalName());
 
-		AstorMain main = new AstorMain();
-		main.execute(command.flat());
-
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
-
-		ModificationPoint mp42 = approach.getVariants().get(0).getModificationPoints().stream()
-				.filter(e -> ((e.getCodeElement().getPosition().getLine() == 198)
-						&& e.getCodeElement().toString().startsWith("if ((fa * fb) >= 0.0) {")))
-				.findFirst().get();
-
-		System.out.println("Mp 42: \n" + mp42.getCodeElement().toString());
-
-		mp42.getProgramVariant().getModificationPoints().clear();
-		mp42.getProgramVariant().getModificationPoints().add(mp42);
-		approach.MAX_GENERATIONS = 1000;
-		approach.startEvolution();
-		assertEquals(1, approach.getSolutions().size());
-		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
-		approach.atEnd();
-		// if ((fa * fb) >= b) {
-
-		// approach.getCurrentStat().getGeneralStats().get(Stats.GeneralStatEnum.)
+		this.executeAndAssert(command, 198, "if ((fa * fb) >= 0.0) {", null);
 	}
 
 	@Test
@@ -94,27 +72,7 @@ public class EvalTOSRegressionTest {
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
 						+ EvalTOSBTApproach.class.getCanonicalName());
 
-		AstorMain main = new AstorMain();
-		main.execute(command.flat());
-
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
-
-		ModificationPoint mp42 = approach.getVariants().get(0).getModificationPoints().stream()
-				.filter(e -> ((e.getCodeElement().getPosition().getLine() == 239)
-						&& e.getCodeElement().toString().startsWith("double hNew")))
-				.findFirst().get();
-
-		System.out.println("Mp 42: \n" + mp42.getCodeElement().toString());
-
-		mp42.getProgramVariant().getModificationPoints().clear();
-		mp42.getProgramVariant().getModificationPoints().add(mp42);
-		approach.MAX_GENERATIONS = 1000;
-		approach.startEvolution();
-		assertEquals(1, approach.getSolutions().size());
-		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
-		approach.atEnd();
-		// + double hNew = t;
+		this.executeAndAssert(command, 239, "double hNew", null);
 	}
 
 	@Test
@@ -276,7 +234,10 @@ public class EvalTOSRegressionTest {
 	}
 
 	@Test
-	public void test_Repair_Math28() throws Exception {
+	// @Ignore
+	// Repaired by Dynamoth (Precondition) and Cardumen
+	// FL takes long..
+	public void test_Not_Repair_Math28() throws Exception {
 		int maxSolutions = 4;
 		File filef = new File("src/test/resources/changes_analisis_frequency.json");
 		assertTrue(filef.exists());
@@ -295,27 +256,33 @@ public class EvalTOSRegressionTest {
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
 						+ EvalTOSBTApproach.class.getCanonicalName());
 
-		AstorMain main = new AstorMain();
-		main.execute(command.flat());
+		this.executeAndAssert(command, 144, "if (i < minIndex)", null);
+	}
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+	@Test
+	// Repaired by Dynamoth (Precondition) and Cardumen
+	public void test_NotRepaired_Math32() throws Exception {
+		int maxSolutions = 4;
+		File filef = new File("src/test/resources/changes_analisis_frequency.json");
+		assertTrue(filef.exists());
 
-		ModificationPoint mp_buggy = approach.getVariants().get(0).getModificationPoints().stream()
-				.filter(e -> ((e.getCodeElement().getPosition().getLine() == 144)
-						&& e.getCodeElement().toString().startsWith("if (i < minIndex)")))
-				.findFirst().get();
+		CommandSummary command = MathCommandsTests.getMath32Command();
+		command.command.put("-mode", "custom");
+		command.command.put("-maxgen", "200");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-scope", "local");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-saveall", "false");
+		command.command.put("-parameters",
 
-		System.out.println("Mp : \n" + mp_buggy.getCodeElement().toString());
+				"disablelog:true:maxnumbersolutions:" + maxSolutions
+						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
+						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
+						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
 
-		mp_buggy.getProgramVariant().getModificationPoints().clear();
-		mp_buggy.getProgramVariant().getModificationPoints().add(mp_buggy);
-		approach.MAX_GENERATIONS = 1000;
-		approach.startEvolution();
-		assertEquals(1, approach.getSolutions().size());
-		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
-		approach.atEnd();
-		// + double hNew = t;
+		this.executeAndAssert(command, 330, "double inverse", null);
+
 	}
 
 	public static CommandSummary getQuixBugCommand4EvalTOS(String name) {
@@ -416,30 +383,81 @@ public class EvalTOSRegressionTest {
 
 	//////////// results from ex 1
 
-	@Test // ex 1
+	@Test // ex 3 Not Repaired
 	public void test_notrepair_QB_bucketsort() throws Exception {
 		this._base_QB("bucketsort", 22, "for (java.lang.Integer", "");
 	}
 
-	@Test // ex 1
+	@Test // ex 3 Not Repaired
 	public void test_notrepairQB_pascal() throws Exception {
 		this._base_QB("pascal", 22, "for (int c = 0", "");
 	}
 
-	@Test // ex 1
+	@Test // ex 3 Not Repaired
 	public void test_notrepairQB_shortest_path_lengths() throws Exception {
 		this._base_QB("shortest_path_lengths", 41, "return length_by_path", "");
 	}
 
-	@Test // ex 1
+	@Test // ex 3 Not Repaired
 	public void test_notrepairQB_kth() throws Exception {
 		this._base_QB("kth", 25, "return java_programs.KTH.kth", "");
 	}
 
+	////// Try to repair those not repaired in last execution
+
+	@Test // ex 1 Repaired
+	public void test_repairQB_kth_ex1_collectonlyusedmethod() throws Exception {
+
+		CommandSummary command = (getQuixBugCommand4EvalTOS("kth"));
+		String parameters = command.command.get("-parameters");
+		command.command.put("-parameters", parameters + ":collectonlyusedmethod:true");
+
+		executeAndAssert(command, 25, "return java_programs.KTH.kth", "");
+
+	}
+
+	@Test // ex 1 must be Repaired
+	public void test_repairQB_shortest_path_lengths_ex1_collectonlyusedmethod() throws Exception {
+
+		CommandSummary command = (getQuixBugCommand4EvalTOS("shortest_path_lengths"));
+		String parameters = command.command.get("-parameters");
+		command.command.put("-parameters", parameters + ":collectonlyusedmethod:true:avoidtypecomparison:true");
+
+		executeAndAssert(command, 41, "return length_by_path", "");
+
+	}
+
+	@Test // ex 3 Repaired
+	public void test_repairQB_pascal_lengths_ex1_collectonlyusedmethod() throws Exception {
+
+		CommandSummary command = (getQuixBugCommand4EvalTOS("pascal"));
+		String parameters = command.command.get("-parameters");
+		command.command.put("-parameters", parameters + ":collectonlyusedmethod:true");
+
+		executeAndAssert(command, 22, "for (int c = 0", "");
+
+	}
+
+	@Test // ex 3 Not Repaired
+	public void test_repair_QB_bucketsort_ex1_collectonlyusedmethod() throws Exception {
+
+		CommandSummary command = (getQuixBugCommand4EvalTOS("bucketsort"));
+		String parameters = command.command.get("-parameters");
+		command.command.put("-parameters", parameters + ":collectonlyusedmethod:true");
+
+		executeAndAssert(command, 22, "for (java.lang.Integer", "");
+	}
+
 	public void _base_QB(String subject, int linesusp, String suspBegin, String patch) throws Exception {
-		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getQuixBugCommand4EvalTOS(subject));
+		executeAndAssert(command, linesusp, suspBegin, patch);
+
+	}
+
+	private void executeAndAssert(CommandSummary command, int linesusp, String suspBegin, String patch)
+			throws Exception {
+		AstorMain main1 = new AstorMain();
 		command.command.put("-maxgen", "0");
 		main1.execute(command.flat());
 
@@ -455,6 +473,7 @@ public class EvalTOSRegressionTest {
 				.findFirst().get();
 
 		System.out.println("Mp buggy: \n" + mp_buggy.getCodeElement().toString());
+		System.out.println("Mp buggy possition: \n" + mp_buggy.identified);
 
 		mp_buggy.getProgramVariant().getModificationPoints().clear();
 		mp_buggy.getProgramVariant().getModificationPoints().add(mp_buggy);
@@ -463,7 +482,6 @@ public class EvalTOSRegressionTest {
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
 		approach.atEnd();
-
 	}
 
 }
