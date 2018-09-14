@@ -65,11 +65,19 @@ public class CntxResolverTest {
 		assertTrue(modif.size() > 0);
 
 		List docs = ((List) cntx.getInformation().get(CNTX_Property.METHOD_COMMENTS));
-		// assertTrue(docs.size() > 0); why is failing?
+		// assertTrue(docs.size() > 0); check why is failing? the method has doc.
 
 		JSONObject jsonroot = cntx.toJSON();
 		assertNotNull(jsonroot);
 		System.out.println(jsonroot);
+		assertEquals("[\"public\"]", ((JSONObject) jsonroot.get("context")).get("METHOD_MODIFIERS").toString());
+
+		cntx.save(jsonroot);
+
+		File fileOut = new File(out + File.separator
+				+ (Cntx.PREFIX + "_" + cntxResolver.determineKey(mp_buggy.getCodeElement()) + ".json"));
+		System.out.println("file out " + fileOut.getAbsolutePath());
+		assertTrue(fileOut.exists());
 
 	}
 

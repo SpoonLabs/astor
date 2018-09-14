@@ -19,12 +19,22 @@ public class CntxResolver {
 	}
 
 	public Cntx<?> retrieveCntx(CtElement element) {
-		Cntx<Object> context = new Cntx<>();
+		Cntx<Object> context = new Cntx<>(determineKey(element));
 		retrieveVarsInScope(element, context);
 		retrieveMethodInformation(element, context);
 		retrieveParentTypes(element, context);
 
 		return context;
+	}
+
+	public Object determineKey(CtElement element) {
+		String key = null;
+		if (element.getPosition() != null)
+			key = element.getPosition().getFile().getName() + "_" + element.getPosition().getLine();
+		else {
+			key = element.getShortRepresentation();// To see.
+		}
+		return key;
 	}
 
 	private void retrieveVarsInScope(CtElement element, Cntx<Object> context) {

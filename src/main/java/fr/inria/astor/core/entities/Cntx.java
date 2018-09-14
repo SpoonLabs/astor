@@ -16,14 +16,28 @@ import org.json.simple.parser.ParseException;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.AstorOutputStatus;
 
-/**
- * 
- * @author Matias Martinez
- *
- */
 public class Cntx<I> {
 
+	public final static String PREFIX = "CNTX";
+
+	private Object identifier = null;
+
 	private Map<CNTX_Property, I> information = new HashMap<>();
+
+	public Cntx() {
+		super();
+	}
+
+	public Cntx(Object identifier, Map<CNTX_Property, I> information) {
+		super();
+		this.identifier = identifier;
+		this.information = information;
+	}
+
+	public Cntx(Object identifier) {
+		super();
+		this.identifier = identifier;
+	}
 
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
@@ -45,7 +59,7 @@ public class Cntx<I> {
 
 		JSONObject statsjsonRoot = new JSONObject();
 		JSONObject generalStatsjson = new JSONObject();
-		statsjsonRoot.put("general", generalStatsjson);
+		statsjsonRoot.put("context", generalStatsjson);
 		JSONParser parser = new JSONParser();
 		for (CNTX_Property generalStat : CNTX_Property.values()) {
 			Object vStat = information.get(generalStat);
@@ -80,9 +94,13 @@ public class Cntx<I> {
 		return statsjsonRoot;
 	}
 
+	public void save() {
+		this.save(this.toJSON());
+	}
+
 	public void save(JSONObject statsjsonRoot) {
-		String output = "/tmp";
-		String filename = ConfigurationProperties.getProperty("jsonoutputname");
+		String output = ConfigurationProperties.getProperty("workingDirectory");
+		String filename = "CNTX_" + ((this.identifier != null) ? this.identifier.toString() : "0");
 		String absoluteFileName = output + "/" + filename + ".json";
 		try (FileWriter file = new FileWriter(absoluteFileName)) {
 
