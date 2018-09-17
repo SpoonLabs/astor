@@ -100,6 +100,8 @@ Usage of Astor in education
 Astor in the literature
 -----------------------
 
+* M. Wen, J. Chen, R. Wu, D. Hao, and S. Cheung. Context-aware patch generation for better automated program repair. In Proceedings of the 40th International Conference on Software Engineering (ICSE 2018).
+
 * X. Liu and H. Zhong, Mining stackoverflow for program repair, IEEE 25th International Conference on Software Analysis, Evolution and Reengineering (SANER), 2018.
 
 * Urli, S., Yu, Z., Seinturier, L., & Monperrus, M. How to design a program repair bot?: insights from the repairnator project. In Proceedings of the 40th International Conference on Software Engineering: Software Engineering in Practice (pp. 95-104). ACM. 2018.
