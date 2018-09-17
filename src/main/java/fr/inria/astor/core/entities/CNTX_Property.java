@@ -15,6 +15,8 @@ public enum CNTX_Property {
 	//
 	METHOD_COMMENTS,
 	//
-	;
+	FILE_LOCATION,
+	//
+	LINE_LOCATION,;
 
 }

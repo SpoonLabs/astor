@@ -20,11 +20,19 @@ public class CntxResolver {
 
 	public Cntx<?> retrieveCntx(CtElement element) {
 		Cntx<Object> context = new Cntx<>(determineKey(element));
+		retrievePosition(element, context);
 		retrieveVarsInScope(element, context);
 		retrieveMethodInformation(element, context);
 		retrieveParentTypes(element, context);
 
 		return context;
+	}
+
+	private void retrievePosition(CtElement element, Cntx<Object> context) {
+
+		context.getInformation().put(CNTX_Property.FILE_LOCATION, element.getPosition().getFile().getAbsolutePath());
+		context.getInformation().put(CNTX_Property.LINE_LOCATION, element.getPosition().getLine());
+
 	}
 
 	public Object determineKey(CtElement element) {

@@ -75,7 +75,8 @@ public class Cntx<I> {
 						Collection acollec = (Collection) vStat;
 						for (Iterator iterator = acollec.iterator(); iterator.hasNext();) {
 							Object anItemList = (Object) iterator.next();
-							sublistJSon.add(parser.parse("\"" + anItemList + "\""));
+							sublistJSon.add((JSONObject.escape(anItemList.toString())));
+
 						}
 						value = sublistJSon;
 					} else {
@@ -113,6 +114,14 @@ public class Cntx<I> {
 			e.printStackTrace();
 			log.error("Problem storing ing json file" + e.toString());
 		}
+	}
+
+	public Object getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(Object identifier) {
+		this.identifier = identifier;
 	}
 
 }
