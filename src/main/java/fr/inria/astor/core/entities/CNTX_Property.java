@@ -17,6 +17,10 @@ public enum CNTX_Property {
 	//
 	FILE_LOCATION,
 	//
-	LINE_LOCATION,;
+	LINE_LOCATION,
+	//
+	SPOON_PATH,
+	//
+	;
 
 }

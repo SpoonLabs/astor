@@ -1,6 +1,7 @@
 package fr.inria.astor.test.repair.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -17,10 +18,14 @@ import fr.inria.astor.core.entities.Cntx;
 import fr.inria.astor.core.entities.CntxResolver;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtPath;
 
 public class CntxResolverTest {
 
@@ -78,6 +83,51 @@ public class CntxResolverTest {
 				+ (Cntx.PREFIX + "_" + cntxResolver.determineKey(mp_buggy.getCodeElement()) + ".json"));
 		System.out.println("file out " + fileOut.getAbsolutePath());
 		assertTrue(fileOut.exists());
+
+		String spoonpath = (cntx.getInformation().get(CNTX_Property.SPOON_PATH).toString());
+		assertNotNull(spoonpath);
+		System.out.println(spoonpath);
+		assertFalse(spoonpath.isEmpty());
+	}
+
+	@Test
+	public void testPathMath70() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		cs.command.put("-maxgen", "0");
+		cs.command.put("-parameters", "skipfitnessinitialpopulation:true");
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+		//
+		Factory factory = MutationSupporter.getFactory();
+		List<CtType<?>> types = factory.Type().getAll();
+		for (CtType<?> ctType : types) {
+			CtPath path = ctType.getPath();
+			System.out
+					.println("Path of " + ctType.getSimpleName() + " " + ctType.getShortRepresentation() + " " + path);
+			assertNotNull(path);
+		}
+
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+		ProgramVariant variant = variants.get(0);
+		int exception = 0;
+		for (ModificationPoint mp : variant.getModificationPoints()) {
+
+			System.out.println(mp.getCtClass().getSimpleName() + " " + mp.getCtClass().getShortRepresentation());
+			System.out.println("Path of " + mp.getCtClass().getSimpleName() + " " + mp.getCtClass().getPath());
+
+			try {
+				CtPath path = mp.getCodeElement().getPath();
+				System.out.println(path);
+
+			} catch (Exception e) {
+				System.err.println("Error for :\n" + mp.getCodeElement());
+				e.printStackTrace();
+				exception++;
+			}
+			assertEquals(0, exception);
+		}
 
 	}
 
