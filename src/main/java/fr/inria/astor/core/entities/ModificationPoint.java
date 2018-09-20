@@ -50,7 +50,7 @@ public class ModificationPoint {
 		return ctClass;
 	}
 
-	public void setClonedClass(CtClass clonedClass) {
+	public void setCtClass(CtClass clonedClass) {
 		this.ctClass = clonedClass;
 	}
 

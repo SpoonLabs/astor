@@ -182,7 +182,7 @@ public class ProgramVariantFactory {
 				SuspiciousModificationPoint point = new SuspiciousModificationPoint();
 				point.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
 						suspiciousElement.getPosition().getLine(), 0d, null));
-				point.setClonedClass(ctclasspointed);
+				point.setCtClass(ctclasspointed);
 				point.setCodeElement(suspiciousElement);
 				point.setContextOfModificationPoint(contextOfGen);
 				suspGen.add(point);
@@ -198,8 +198,8 @@ public class ProgramVariantFactory {
 	}
 
 	/**
-	 * It receives a suspicious code (a line) and it create a list of Gens from
-	 * than suspicious line when it's possible.
+	 * It receives a suspicious code (a line) and it create a list of Gens from than
+	 * suspicious line when it's possible.
 	 * 
 	 * @param suspiciousCode
 	 * @param progInstance
@@ -249,7 +249,7 @@ public class ProgramVariantFactory {
 		for (CtElement ctElement : filteredTypeByLine) {
 			SuspiciousModificationPoint modifPoint = new SuspiciousModificationPoint();
 			modifPoint.setSuspicious(suspiciousCode);
-			modifPoint.setClonedClass(ctclasspointed);
+			modifPoint.setCtClass(ctclasspointed);
 			modifPoint.setCodeElement(ctElement);
 			modifPoint.setContextOfModificationPoint(contextOfPoint);
 			suspiciousModificationPoints.add(modifPoint);
@@ -262,8 +262,8 @@ public class ProgramVariantFactory {
 	}
 
 	/**
-	 * Retrieve the ct elements we want to consider in our model, for instance,
-	 * some approach are interested only in repair If conditions.
+	 * Retrieve the ct elements we want to consider in our model, for instance, some
+	 * approach are interested only in repair If conditions.
 	 * 
 	 * @param ctSuspects
 	 * @param processors
@@ -302,8 +302,8 @@ public class ProgramVariantFactory {
 
 	/**
 	 * This method revolve a CtClass from one suspicious statement. If it was
-	 * resolved before, it get it from a "cache" of CtClasses stored in the
-	 * Program Instance.
+	 * resolved before, it get it from a "cache" of CtClasses stored in the Program
+	 * Instance.
 	 * 
 	 * @param suspiciousCode
 	 * @param progInstance
@@ -316,7 +316,7 @@ public class ProgramVariantFactory {
 			return progInstance.getBuiltClasses().get(className);
 		}
 
-		CtClass ctclasspointed = getCtClassCloned(className);
+		CtClass ctclasspointed = getCtClassFromName(className);
 		if (ctclasspointed == null)
 			return null;
 		// Save the CtClass in cache
@@ -370,18 +370,15 @@ public class ProgramVariantFactory {
 		return susp;
 	}
 
-	public CtClass getCtClassCloned(String className) {
+	@SuppressWarnings({ "static-access", "rawtypes" })
+	public CtClass getCtClassFromName(String className) {
 
 		CtType ct = mutatorSupporter.getFactory().Type().get(className);
 		if (!(ct instanceof CtClass)) {
 			return null;
 		}
 
-		CtClass ctclass = (CtClass) ct;
-
-		CtClass cloned = mutatorSupporter.getFactory().Core().clone(ctclass);
-		cloned.setParent(ctclass.getParent());
-		return cloned;
+		return (CtClass) ct;
 	}
 
 	public MutationSupporter getMutatorExecutor() {
