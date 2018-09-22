@@ -35,6 +35,8 @@ public class CntxResolver {
 
 		context.getInformation().put(CNTX_Property.FILE_LOCATION, element.getPosition().getFile().getAbsolutePath());
 		context.getInformation().put(CNTX_Property.LINE_LOCATION, element.getPosition().getLine());
+		context.getInformation().put(CNTX_Property.PARENT_CLASS,
+				(element.getParent(spoon.reflect.declaration.CtType.class).getQualifiedName()));
 
 	}
 
