@@ -88,6 +88,11 @@ public class CntxResolverTest {
 		assertNotNull(spoonpath);
 		System.out.println(spoonpath);
 		assertFalse(spoonpath.isEmpty());
+
+		String paths = (cntx.getInformation().get(CNTX_Property.PATH_ELEMENTS).toString());
+		assertNotNull(paths);
+		System.out.println("Paths: \n" + paths);
+		assertFalse(paths.isEmpty());
 	}
 
 	@Test

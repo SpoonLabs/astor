@@ -21,6 +21,8 @@ public enum CNTX_Property {
 	//
 	SPOON_PATH,
 	//
+	PATH_ELEMENTS,
+	//
 	PARENT_CLASS,
 	//
 	;

@@ -2,6 +2,7 @@ package fr.inria.astor.core.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -9,7 +10,10 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtPath;
+import spoon.reflect.path.impl.CtPathElement;
+import spoon.reflect.path.impl.CtPathImpl;
 
 public class CntxResolver {
 
@@ -32,19 +36,28 @@ public class CntxResolver {
 	}
 
 	private void retrievePosition(CtElement element, Cntx<Object> context) {
+		if (element.getPosition() != null && element.getPosition().getFile() != null) {
+			context.getInformation().put(CNTX_Property.FILE_LOCATION,
+					element.getPosition().getFile().getAbsolutePath());
 
-		context.getInformation().put(CNTX_Property.FILE_LOCATION, element.getPosition().getFile().getAbsolutePath());
-		context.getInformation().put(CNTX_Property.LINE_LOCATION, element.getPosition().getLine());
+			context.getInformation().put(CNTX_Property.LINE_LOCATION, element.getPosition().getLine());
+		} else {
+			context.getInformation().put(CNTX_Property.FILE_LOCATION, "");
+			context.getInformation().put(CNTX_Property.LINE_LOCATION, "");
+
+		}
+		CtType parentClass = element.getParent(spoon.reflect.declaration.CtType.class);
+
 		context.getInformation().put(CNTX_Property.PARENT_CLASS,
-				(element.getParent(spoon.reflect.declaration.CtType.class).getQualifiedName()));
+				(parentClass != null) ? parentClass.getQualifiedName() : "");
 
 	}
 
 	public Object determineKey(CtElement element) {
 		String key = null;
-		if (element.getPosition() != null)
-			key = element.getPosition().getFile().getName() + "_" + element.getPosition().getLine();
-		else {
+		if (element.getPosition() != null && element.getPosition().getFile() != null) {
+			key = element.getPosition().getFile().getName().toString();
+		} else {
 			key = element.getShortRepresentation();// To see.
 		}
 		return key;
@@ -81,7 +94,15 @@ public class CntxResolver {
 
 	private void retrievePath(CtElement element, Cntx<Object> context) {
 		CtPath path = element.getPath();
+
 		context.getInformation().put(CNTX_Property.SPOON_PATH, path.toString());
+		if (path instanceof CtPathImpl) {
+			CtPathImpl pi = (CtPathImpl) path;
+			List<CtPathElement> elements = pi.getElements();
+			List<String> paths = elements.stream().map(e -> e.toString()).collect(Collectors.toList());
+			context.getInformation().put(CNTX_Property.PATH_ELEMENTS, paths);
+		}
+
 	}
 
 	private void retrieveParentTypes(CtElement element, Cntx<Object> context) {
