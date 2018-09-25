@@ -25,6 +25,16 @@ public enum CNTX_Property {
 	//
 	PARENT_CLASS,
 	//
+	VAR_NAME,
+	//
+	VARS,
+	//
+	VAR_TYPE,
+	//
+	VAR_VISIB,
+	//
+	VAR_MODIF,
+
 	;
 
 }

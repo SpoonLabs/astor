@@ -61,38 +61,52 @@ public class Cntx<I> {
 		JSONObject generalStatsjson = new JSONObject();
 		statsjsonRoot.put("context", generalStatsjson);
 		JSONParser parser = new JSONParser();
-		for (CNTX_Property generalStat : CNTX_Property.values()) {
+		for (CNTX_Property generalStat : information.keySet()) {
 			Object vStat = information.get(generalStat);
-			if (vStat == null)
-				generalStatsjson.put(generalStat.name(), null);
-			else {
-				try {
-					Object value = null;
-					if (vStat instanceof AstorOutputStatus || vStat instanceof String)
-						value = parser.parse("\"" + vStat + "\"");
-					else if (vStat instanceof Collection<?>) {
-						JSONArray sublistJSon = new JSONArray();
-						Collection acollec = (Collection) vStat;
-						for (Iterator iterator = acollec.iterator(); iterator.hasNext();) {
-							Object anItemList = (Object) iterator.next();
-							sublistJSon.add((JSONObject.escape(anItemList.toString())));
 
-						}
-						value = sublistJSon;
-					} else {
-
-						value = parser.parse(vStat.toString());
-					}
-					generalStatsjson.put(generalStat.name(), value);
-				} catch (ParseException e) {
-					log.error(e);
-					e.printStackTrace();
-				}
+			try {
+				Object value = calculateValue(parser, vStat);
+				generalStatsjson.put(generalStat.name(), value);
+			} catch (ParseException e) {
+				log.error(e);
+				e.printStackTrace();
 			}
 
 		}
 
 		return statsjsonRoot;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Object calculateValue(JSONParser parser, Object vStat) throws ParseException {
+		Object value = null;
+		if (vStat instanceof AstorOutputStatus || vStat instanceof String)
+			value = parser.parse("\"" + vStat + "\"");
+		else if (vStat instanceof Collection<?>) {
+			JSONArray sublistJSon = new JSONArray();
+			Collection acollec = (Collection) vStat;
+			for (Iterator iterator = acollec.iterator(); iterator.hasNext();) {
+				Object anItemList = (Object) iterator.next();
+				if (anItemList instanceof Cntx) {
+					Cntx<Object> cntx = (Cntx) anItemList;
+					JSONObject composed = new JSONObject();
+					for (CNTX_Property property : cntx.getInformation().keySet()) {
+						Object v = calculateValue(parser, cntx.getInformation().get(property));
+						composed.put(property.name(), v);
+					}
+					sublistJSon.add(composed);
+				} else
+					sublistJSon.add((JSONObject.escape(anItemList.toString())));
+			}
+			value = sublistJSon;
+		} else {
+			try {
+				value = parser.parse(vStat.toString());
+			} catch (Exception e) {
+				System.out.println();
+			}
+		}
+		return value;
 	}
 
 	public void save() {

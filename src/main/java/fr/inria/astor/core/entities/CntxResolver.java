@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.impl.CtPathElement;
 import spoon.reflect.path.impl.CtPathImpl;
@@ -63,9 +64,22 @@ public class CntxResolver {
 		return key;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void retrieveVarsInScope(CtElement element, Cntx<Object> context) {
 		// Vars in scope at the position of element
 		context.getInformation().put(CNTX_Property.VARS_IN_SCOPE, VariableResolver.searchVariablesInScope(element));
+		List<CtVariable> vars = VariableResolver.searchVariablesInScope(element);
+		List<Cntx> children = new ArrayList();
+		for (CtVariable ctVariable : vars) {
+			Cntx c = new Cntx<>();
+			c.getInformation().put(CNTX_Property.VAR_VISIB,
+					(ctVariable.getVisibility() == null) ? "" : (ctVariable.getVisibility()).toString());
+			c.getInformation().put(CNTX_Property.VAR_TYPE, ctVariable.getType().getQualifiedName());
+			c.getInformation().put(CNTX_Property.VAR_MODIF, ctVariable.getModifiers());
+			c.getInformation().put(CNTX_Property.VAR_NAME, ctVariable.getSimpleName());
+			children.add(c);
+		}
+		context.getInformation().put(CNTX_Property.VARS, children);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -74,7 +88,8 @@ public class CntxResolver {
 		CtMethod parentMethod = element.getParent(CtMethod.class);
 		if (parentMethod != null) {
 			// Return
-			context.getInformation().put(CNTX_Property.METHOD_RETURN_TYPE, parentMethod.getType().getQualifiedName());
+			context.getInformation().put(CNTX_Property.METHOD_RETURN_TYPE,
+					(parentMethod.getType() != null) ? parentMethod.getType().getQualifiedName() : null);
 			// Param
 			List<CtParameter> parameters = parentMethod.getParameters();
 			List<String> parametersTypes = new ArrayList<>();
