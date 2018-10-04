@@ -150,6 +150,43 @@ public class VariableResolver {
 		return collectVariableAccess(element, false);
 	}
 
+	public static List<CtVariableAccess> collectVariableRead(CtElement element) {
+		List<CtVariableAccess> varaccess = new ArrayList<>();
+		List<String> varaccessCacheNames = new ArrayList<>();
+		CtScanner sc = new CtScanner() {
+
+			public void add(CtVariableAccess e) {
+				if (!varaccessCacheNames.contains(e.getVariable().getSimpleName()))
+					varaccess.add(e);
+				varaccessCacheNames.add(e.getVariable().getSimpleName());
+			}
+
+			@Override
+			public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
+				super.visitCtVariableRead(variableRead);
+				add(variableRead);
+			}
+
+			@Override
+			public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
+				super.visitCtTypeAccess(typeAccess);
+				// varaccess.add(typeAccess);
+			}
+
+			@Override
+			public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+				super.visitCtFieldRead(fieldRead);
+				add(fieldRead);
+			}
+
+		};
+
+		sc.scan(element);
+
+		return varaccess;
+
+	}
+
 	/**
 	 * Return all variables related to the element passed as argument
 	 * 
@@ -158,12 +195,13 @@ public class VariableResolver {
 	 */
 	public static List<CtVariableAccess> collectVariableAccess(CtElement element, boolean duplicates) {
 		List<CtVariableAccess> varaccess = new ArrayList<>();
-
+		List<String> varaccessCacheNames = new ArrayList<>();
 		CtScanner sc = new CtScanner() {
 
 			public void add(CtVariableAccess e) {
-				if (duplicates || !varaccess.contains(e))
+				if (duplicates || !varaccessCacheNames.contains(e.getVariable().getSimpleName()))
 					varaccess.add(e);
+				varaccessCacheNames.add(e.getVariable().getSimpleName());
 			}
 
 			@Override
@@ -207,13 +245,11 @@ public class VariableResolver {
 	/**
 	 * 
 	 * This methods determines whether all the variable access contained in a
-	 * CtElement passes as parameter match with a variable from a set of
-	 * variables given as argument. Both variable Types and Names are compared,
+	 * CtElement passes as parameter match with a variable from a set of variables
+	 * given as argument. Both variable Types and Names are compared,
 	 * 
-	 * @param varContext
-	 *            List of variables to match
-	 * @param element
-	 *            element to extract the var access to match
+	 * @param varContext List of variables to match
+	 * @param element    element to extract the var access to match
 	 * @return
 	 */
 	public static boolean fitInPlace(List<CtVariable> varContext, CtElement element) {
@@ -222,15 +258,12 @@ public class VariableResolver {
 
 	/**
 	 * This methods determines whether all the variable access contained in a
-	 * CtElement passes as parameter match with a variable from a set of
-	 * variables given as argument. The argument <code>matchName </code>
-	 * indicates whether Type and Names are compared (value true), only type
-	 * (false).
+	 * CtElement passes as parameter match with a variable from a set of variables
+	 * given as argument. The argument <code>matchName </code> indicates whether
+	 * Type and Names are compared (value true), only type (false).
 	 * 
-	 * @param varContext
-	 *            List of variables to match
-	 * @param ingredientCtElement
-	 *            element to extract the var access to match
+	 * @param varContext          List of variables to match
+	 * @param ingredientCtElement element to extract the var access to match
 	 * @return
 	 */
 	public static boolean fitInContext(List<CtVariable> varContext, CtElement ingredientCtElement, boolean matchName) {
@@ -379,13 +412,13 @@ public class VariableResolver {
 			for (CtVariable varInScope : varContext) {
 
 				boolean sameNames = variableOutScope.getVariable().getSimpleName().equals(varInScope.getSimpleName());
-				//if (!sameNames) {
-					boolean compatibleVariables = areVarsCompatible(variableOutScope, varInScope);
-					if (compatibleVariables) {
-						addVarMappingAsResult(varsMaps, varOutWrapper, varInScope);
-						mapped = true;
-					}
-			//	}
+				// if (!sameNames) {
+				boolean compatibleVariables = areVarsCompatible(variableOutScope, varInScope);
+				if (compatibleVariables) {
+					addVarMappingAsResult(varsMaps, varOutWrapper, varInScope);
+					mapped = true;
+				}
+				// }
 			}
 			// if the var was not matched, we put in list of variables out of
 			// scope not mapped.
@@ -460,10 +493,8 @@ public class VariableResolver {
 	/**
 	 * Returns the variables that have as name the string passed as argument.
 	 * 
-	 * @param varContext
-	 *            variables
-	 * @param wordFromCluster
-	 *            name of a variable
+	 * @param varContext      variables
+	 * @param wordFromCluster name of a variable
 	 * @return
 	 */
 	public static List<CtVariable> existVariableWithName(List<CtVariable> varContext, String wordFromCluster) {
@@ -616,9 +647,7 @@ public class VariableResolver {
 		CtElement parent = var;
 		while (parent != null
 				&& !(parent instanceof CtPackage)/*
-													 * && !CtPackage.
-													 * TOP_LEVEL_PACKAGE_NAME.
-													 * equals(parent.toString())
+													 * && !CtPackage. TOP_LEVEL_PACKAGE_NAME. equals(parent.toString())
 													 */) {
 			if (parent.equals(rootElement))
 				return true;
@@ -733,13 +762,11 @@ public class VariableResolver {
 	}
 
 	/**
-	 * Return the local variables of a block from the beginning until the
-	 * element located at positionEl.
+	 * Return the local variables of a block from the beginning until the element
+	 * located at positionEl.
 	 * 
-	 * @param positionEl
-	 *            analyze variables from the block until that position.
-	 * @param pb
-	 *            a block to search the local variables
+	 * @param positionEl analyze variables from the block until that position.
+	 * @param pb         a block to search the local variables
 	 * @return
 	 */
 	protected static List<CtLocalVariable> retrieveLocalVariables(int positionEl, CtBlock pb) {
@@ -776,14 +803,12 @@ public class VariableResolver {
 	}
 
 	/**
-	 * Adapt the ingredient to the destination according to the mapping. We
-	 * directly manipulate the variables from the ingredient, which are stored
-	 * in VarMapping
+	 * Adapt the ingredient to the destination according to the mapping. We directly
+	 * manipulate the variables from the ingredient, which are stored in VarMapping
 	 * 
 	 * @param varMapping
 	 * @param destination
-	 * @return it returns the original variable reference of each converted
-	 *         variable
+	 * @return it returns the original variable reference of each converted variable
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map<VarAccessWrapper, CtVariableAccess> convertIngredient(VarMapping varMapping,
@@ -842,8 +867,8 @@ public class VariableResolver {
 	}
 
 	/**
-	 * For each modified variable, it resets the variables by putting their
-	 * original var reference
+	 * For each modified variable, it resets the variables by putting their original
+	 * var reference
 	 * 
 	 * @param varMapping
 	 * @param original
@@ -916,12 +941,12 @@ public class VariableResolver {
 
 	/**
 	 * 
-	 * Method that finds all combination of variables mappings Ex: if var 'a'
-	 * can be mapped to a1 and a2, and var 'b' to b1 and b2, the method return
-	 * all combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2)
+	 * Method that finds all combination of variables mappings Ex: if var 'a' can be
+	 * mapped to a1 and a2, and var 'b' to b1 and b2, the method return all
+	 * combinations (a1,b1), (a2,b1), (a1,b2), (a2,b2)
 	 * 
-	 * @param mappedVars
-	 *            map of variables (out-of-scope) and candidate replacements of
+	 * @param mappedVars map of variables (out-of-scope) and candidate replacements
+	 *                   of
 	 * @return
 	 */
 	public static List<Map<String, CtVariable>> findAllVarMappingCombination(
