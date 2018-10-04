@@ -13,6 +13,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.AstorOutputStatus;
 
@@ -119,7 +124,12 @@ public class Cntx<I> {
 		String absoluteFileName = output + "/" + filename + ".json";
 		try (FileWriter file = new FileWriter(absoluteFileName)) {
 
-			file.write(statsjsonRoot.toJSONString());
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			JsonParser p = new JsonParser();
+			JsonElement gsonelement = p.parse(statsjsonRoot.toJSONString());
+			file.write(gson.toJson(gsonelement));
+
+			// file.write(statsjsonRoot.toJSONString());
 			file.flush();
 			log.info("Storing ing JSON at " + absoluteFileName);
 			log.info(filename + ":\n" + statsjsonRoot.toJSONString());

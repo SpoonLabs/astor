@@ -15,6 +15,8 @@ public enum CNTX_Property {
 	//
 	METHOD_COMMENTS,
 	//
+	CODE_ELEMENT,
+	//
 	FILE_LOCATION,
 	//
 	LINE_LOCATION,
@@ -33,7 +35,35 @@ public enum CNTX_Property {
 	//
 	VAR_VISIB,
 	//
-	VAR_MODIF,
+	VAR_MODIF, TYPE,
+	// Binary ops
+	involved_relation_bin_operators, involve_GE_relation_operators, involve_AND_relation_operators,
+	involve_OR_relation_operators, involve_BITOR_relation_operators, involve_BITXOR_relation_operators,
+	involve_BITAND_relation_operators, involve_EQ_relation_operators, involve_LT_relation_operators,
+	involve_NE_relation_operators, involve_GT_relation_operators, involve_LE_relation_operators,
+	involve_SL_relation_operators, involve_SR_relation_operators, involve_USR_relation_operators,
+	involve_PLUS_relation_operators, involve_MINUS_relation_operators, involve_MUL_relation_operators,
+	involve_DIV_relation_operators, involve_MOD_relation_operators, involve_INSTANCEOF_relation_operators,
+	involved_relation_unary_operators, involve_POS_relation_operators, involve_NEG_relation_operators,
+	involve_NOT_relation_operators, involve_COMPL_relation_operators, involve_PREINC_relation_operators,
+	involve_PREDEC_relation_operators, involve_POSTINC_relation_operators, involve_POSTDEC_relation_operators,
+	//
+	NUMBER_PRIMITIVE_VARS_IN_STMT, NUMBER_OBJECT_REFERENCE_VARS_IN_STMT, NUMBER_TOTAL_VARS_IN_STMT,
+	//
+	IS_METHOD_RETURN_TYPE_VAR, IS_METHOD_PARAM_TYPE_VAR,
+	//
+	HAS_VAR_SIM_NAME,
+	//
+	HAS_VAR_IN_TRANSFORMATION,
+	//
+	USES_CONSTANT,
+	//
+	USES_ENUM,
+	//
+	NR_OBJECT_ASSIGNED, NR_OBJECT_NOT_ASSIGNED,
+
+	//
+	NR_OBJECT_USED, NR_OBJECT_NOT_USED,
 
 	;
 
