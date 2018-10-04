@@ -143,6 +143,13 @@
 			<name>tdurieux.github.io maven-repository</name>
 			<url>https://tdurieux.github.io/maven-repository/snapshots/</url>
 		</repository>
+
+		<repository>
+			<id>maven.inria.fr-snapshot</id>
+			<name>Maven Repository for Spoon Artifac Snapshot</name>
+			<url>http://maven.inria.fr/artifactory/spoon-public-snapshot/</url>
+			<snapshots />
+		</repository>
 	</repositories>
 
 	<build>
