@@ -131,6 +131,7 @@ public class CntxResolver {
 		retrieveAffectedVariablesUsed(varsAffected, element, context);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void retrieveAffectedVariablesInTransformation(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 
@@ -162,7 +163,7 @@ public class CntxResolver {
 			// For each assignment in the methid
 			for (CtExpression assignment : assignments) {
 
-				if (isBefore(variableAffected, assignment))
+				if (!isElementBeforeVariable(variableAffected, assignment))
 					continue;
 
 				// let's collect the var access in the right part
@@ -184,15 +185,26 @@ public class CntxResolver {
 
 	}
 
-	private boolean isBefore(CtVariableAccess variableAffected, CtElement assignment) {
+	/**
+	 * Return if one element is before the variable
+	 * 
+	 * @param variableAffected
+	 * @param element
+	 * @return
+	 */
+	private boolean isElementBeforeVariable(CtVariableAccess variableAffected, CtElement element) {
 
 		try {
-			CtStatement stst = (assignment instanceof CtStatement) ? (CtStatement) assignment
+			CtStatement stst = (element instanceof CtStatement) ? (CtStatement) element
+					: element.getParent(CtStatement.class);
+
+			CtStatement target = (variableAffected instanceof CtStatement) ? (CtStatement) variableAffected
 					: variableAffected.getParent(CtStatement.class);
-			return assignment.getPosition() != null && stst.getParent() != null
-					&& assignment.getPosition().getSourceStart() >= stst.getPosition().getSourceStart();
+
+			return target.getPosition() != null && stst.getParent() != null
+					&& target.getPosition().getSourceStart() > stst.getPosition().getSourceStart();
 		} catch (Exception e) {
-			// e.printStackTrace();
+			e.printStackTrace();
 		}
 		return false;
 
@@ -231,7 +243,7 @@ public class CntxResolver {
 			// For each assignment in the methid
 			for (CtStatement assignment : statements) {
 
-				if (isBefore(variableAffected, assignment))
+				if (!isElementBeforeVariable(variableAffected, assignment))
 					continue;
 
 				// let's collect the var access in the right part
@@ -288,7 +300,7 @@ public class CntxResolver {
 			// For each assignment in the methid
 			for (CtAssignment assignment : assignments) {
 
-				if (isBefore(variableAffected, assignment))
+				if (!isElementBeforeVariable(variableAffected, assignment))
 					continue;
 
 				if (assignment.getAssigned().toString().equals(variableAffected.getVariable().getSimpleName())) {
