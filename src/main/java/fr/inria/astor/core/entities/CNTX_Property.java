@@ -92,6 +92,8 @@ public enum CNTX_Property {
 	// object type has other fields which are not initialized since the definition
 	// of the object
 	NR_FIELD_INCOMPLETE_INIT,
+	// whether has other variables in scope that are type compatible
+	HAS_VAR_SIM_TYPE,
 
 	;
 

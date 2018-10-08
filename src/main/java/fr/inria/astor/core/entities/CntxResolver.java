@@ -135,6 +135,28 @@ public class CntxResolver {
 		retrieveAffectedDistance(varsAffected, varsInScope, element, context);
 		retrieveAffectedAssigned(varsAffected, element, context);
 		retrieveAffectedVariablesUsed(varsAffected, element, context);
+		retrieveAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
+
+	}
+
+	private void retrieveAffectedWithCompatibleTypes(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,
+			CtElement element, Cntx<Object> context) {
+
+		boolean hasSimType = false;
+		for (CtVariableAccess ctVariableAccess : varsAffected) {
+			for (CtVariable ctVariable : varsInScope) {
+				if (!ctVariable.getSimpleName().equals(ctVariableAccess.getVariable().getSimpleName())) {
+
+					if (ctVariable.getType().equals(ctVariableAccess.getType())) {
+						hasSimType = true;
+						context.getInformation().put(CNTX_Property.HAS_VAR_SIM_TYPE, hasSimType);
+						return;
+					}
+				}
+			}
+		}
+		context.getInformation().put(CNTX_Property.HAS_VAR_SIM_TYPE, hasSimType);
+
 	}
 
 	@SuppressWarnings("rawtypes")

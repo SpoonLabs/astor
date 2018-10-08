@@ -441,6 +441,49 @@ public class CntxResolverTest {
 
 	}
 
+	@Test
+	public void testProperty_HAS_VAR_SIM_TYPE() {
+
+		String content = "" + "class X {" + "public Object foo() {" //
+				+ " int mysimilar = 1;"//
+				+ "int myzimilar = 2;"//
+				+ "float fiii = (float)myzimilar; " + "double dother = 0;" + "return fiii;" + "}"
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
+				.findFirst().get();
+		System.out.println(element);
+		CntxResolver cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_TYPE));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_TYPE));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_TYPE));
+
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void testProperty_HAS_VAR_IN_TRANSFORMATION() {
