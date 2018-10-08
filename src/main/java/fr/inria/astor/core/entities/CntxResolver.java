@@ -86,8 +86,15 @@ public class CntxResolver {
 		context.getInformation().put(CNTX_Property.CODE_ELEMENT, element.toString());
 		//
 		retrieveType(element, context);
-		retrieveBinaryInvolved(element, context);
-		retrieveUnaryInvolved(element, context);
+
+		Cntx<Object> binCntx = new Cntx<>();
+		context.getInformation().put(CNTX_Property.BIN_PROPERTIES, binCntx);
+		retrieveBinaryInvolved(element, binCntx);
+
+		Cntx<Object> unaryCntx = new Cntx<>();
+		context.getInformation().put(CNTX_Property.UNARY_PROPERTIES, unaryCntx);
+		retrieveUnaryInvolved(element, unaryCntx);
+
 		retrieveUseEnumAndConstants(element, context);
 
 		return context;
@@ -232,7 +239,7 @@ public class CntxResolver {
 			return target.getPosition() != null && stst.getParent() != null
 					&& target.getPosition().getSourceStart() > stst.getPosition().getSourceStart();
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 		return false;
 
@@ -360,18 +367,17 @@ public class CntxResolver {
 		String varAffected = null;
 		if (variableAffected instanceof CtFieldRead) {
 			CtFieldRead fr = (CtFieldRead) ((CtFieldRead) variableAffected);
-			varAffected = fr.getVariable().getDeclaration().getSimpleName();
-			if (fr.getVariable().getType().isPrimitive()) {
+
+			if (fr.getVariable().getType() == null || fr.getVariable().getType().isPrimitive()
+					|| fr.getVariable().getDeclaration() == null) {
 
 				return false;
 			}
-
+			varAffected = fr.getVariable().getDeclaration().getSimpleName();
 		} else {
 			return false;
 		}
 
-		System.out.println("\n----******");
-		System.out.println("var access " + variableAffected);
 		// let's part of the assignment that we want to check if it's a field assignment
 		CtExpression leftPAssignment = assignment.getAssigned();
 
@@ -382,24 +388,17 @@ public class CntxResolver {
 			// here lets take fX
 			if (fieldW.getTarget() instanceof CtFieldRead) {
 
-				System.out.println("Assignment fields " + assignment);
-
 				// The object where the assignment is done.
 				CtVariableRead targetField = (CtVariableRead) fieldW.getTarget();
 				// check if the variable is the same than the affected
 				if (targetField.getVariable().getSimpleName().toString().equals(varAffected)) {
 
-					System.out.println("Same var affected " + assignment);
-
 					Collection<CtFieldReference<?>> fields = targetField.getVariable().getType().getAllFields();
 					String initialVar = targetField.getVariable().getSimpleName();
 					for (CtFieldReference<?> otherFieldsFromVar : fields) {
 
-						System.out.println("Field: " + otherFieldsFromVar.getSimpleName());
-
 						if (!otherFieldsFromVar.getFieldDeclaration().getVisibility().equals(ModifierKind.PRIVATE)
 								&& otherFieldsFromVar.getSimpleName() != initialVar) {
-							System.out.println("--Other field " + otherFieldsFromVar.getSimpleName());
 							boolean fieldAssigned = false;
 							for (CtAssignment otherAssignment : assignments) {
 
@@ -428,9 +427,7 @@ public class CntxResolver {
 								}
 
 							}
-							System.out.println("field assigned? " + otherFieldsFromVar + " " + fieldAssigned);
 							if (!fieldAssigned) {
-								System.out.println("field not assigned " + otherFieldsFromVar);
 								return true;
 							}
 						}
@@ -472,38 +469,39 @@ public class CntxResolver {
 	 */
 	private void retrieveAffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
+		try {
+			boolean returnCompatible = false;
+			boolean paramCompatible = false;
+			CtClass parentMethod = element.getParent(CtClass.class);
+			for (CtVariableAccess var : varsAffected) {
 
-		boolean returnCompatible = false;
-		boolean paramCompatible = false;
-		CtClass parentMethod = element.getParent(CtClass.class);
-		for (CtVariableAccess var : varsAffected) {
+				for (Object omethod : parentMethod.getAllMethods()) {
+					CtMethod method = (CtMethod) omethod;
+					if (!returnCompatible && method.getType() != null) {
+						if (isSubtype(var, method)) {
+							returnCompatible = true;
+							break;
+						}
 
-			for (Object omethod : parentMethod.getAllMethods()) {
-				CtMethod method = (CtMethod) omethod;
-				if (!returnCompatible && method.getType() != null) {
-					if (isSubtype(var, method)) {
-						returnCompatible = true;
-						break;
 					}
+					for (Object oparameter : method.getParameters()) {
+						CtParameter parameter = (CtParameter) oparameter;
 
-				}
-				for (Object oparameter : method.getParameters()) {
-					CtParameter parameter = (CtParameter) oparameter;
-
-					if (var.getType() != null && parameter.getType() != null && !paramCompatible
-							&& parameter.getType().isSubtypeOf(var.getType())) {
-						paramCompatible = true;
-						break;
+						if (var.getType() != null && parameter.getType() != null && !paramCompatible
+								&& parameter.getType().isSubtypeOf(var.getType())) {
+							paramCompatible = true;
+							break;
+						}
 					}
+					if (paramCompatible && returnCompatible)
+						break;
 				}
-				if (paramCompatible && returnCompatible)
-					break;
+
 			}
-
+			context.getInformation().put(CNTX_Property.IS_METHOD_RETURN_TYPE_VAR, returnCompatible);
+			context.getInformation().put(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR, paramCompatible);
+		} catch (Exception e) {
 		}
-		context.getInformation().put(CNTX_Property.IS_METHOD_RETURN_TYPE_VAR, returnCompatible);
-		context.getInformation().put(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR, paramCompatible);
-
 	}
 
 	private boolean isSubtype(CtVariableAccess var, CtMethod method) {
@@ -734,14 +732,17 @@ public class CntxResolver {
 	}
 
 	private void retrievePath(CtElement element, Cntx<Object> context) {
-		CtPath path = element.getPath();
+		try {
+			CtPath path = element.getPath();
 
-		context.getInformation().put(CNTX_Property.SPOON_PATH, path.toString());
-		if (path instanceof CtPathImpl) {
-			CtPathImpl pi = (CtPathImpl) path;
-			List<CtPathElement> elements = pi.getElements();
-			List<String> paths = elements.stream().map(e -> e.toString()).collect(Collectors.toList());
-			context.getInformation().put(CNTX_Property.PATH_ELEMENTS, paths);
+			context.getInformation().put(CNTX_Property.SPOON_PATH, path.toString());
+			if (path instanceof CtPathImpl) {
+				CtPathImpl pi = (CtPathImpl) path;
+				List<CtPathElement> elements = pi.getElements();
+				List<String> paths = elements.stream().map(e -> e.toString()).collect(Collectors.toList());
+				context.getInformation().put(CNTX_Property.PATH_ELEMENTS, paths);
+			}
+		} catch (Throwable e) {
 		}
 
 	}
@@ -749,14 +750,16 @@ public class CntxResolver {
 	private void retrieveParentTypes(CtElement element, Cntx<Object> context) {
 		CtElement parent = element.getParent();
 		List<String> parentNames = new ArrayList<>();
-		do {
-			parentNames.add(parent.getClass().getSimpleName());
-			parent = parent.getParent();
-		} while (parent != null);
-
-		if (!parentNames.isEmpty()) {
-			context.getInformation().put(CNTX_Property.PARENTS_TYPE, parentNames);
+		try {
+			do {
+				parentNames.add(parent.getClass().getSimpleName());
+				parent = parent.getParent();
+			} while (parent != null);
+		} catch (Exception e) {
 		}
+
+		context.getInformation().put(CNTX_Property.PARENTS_TYPE, parentNames);
+
 	}
 
 }

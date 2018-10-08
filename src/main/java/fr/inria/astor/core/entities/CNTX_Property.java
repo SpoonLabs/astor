@@ -17,6 +17,8 @@ public enum CNTX_Property {
 	//
 	CODE_ELEMENT,
 	//
+	CODE_TREE,
+	//
 	FILE_LOCATION,
 	//
 	LINE_LOCATION,
@@ -40,6 +42,8 @@ public enum CNTX_Property {
 	TYPE,
 	// Involved relational/arithmetic operato
 	involved_relation_bin_operators,
+	//
+	BIN_PROPERTIES,
 	// whether involves
 	involve_GE_relation_operators, involve_AND_relation_operators, involve_OR_relation_operators,
 	involve_BITOR_relation_operators, involve_BITXOR_relation_operators, involve_BITAND_relation_operators,
@@ -49,7 +53,7 @@ public enum CNTX_Property {
 	involve_MINUS_relation_operators, involve_MUL_relation_operators, involve_DIV_relation_operators,
 	involve_MOD_relation_operators, involve_INSTANCEOF_relation_operators,
 	// involved unary
-	involved_relation_unary_operators,
+	involved_relation_unary_operators, UNARY_PROPERTIES,
 	//// whether involves
 	involve_POS_relation_operators, involve_NEG_relation_operators, involve_NOT_relation_operators,
 	involve_COMPL_relation_operators, involve_PREINC_relation_operators, involve_PREDEC_relation_operators,

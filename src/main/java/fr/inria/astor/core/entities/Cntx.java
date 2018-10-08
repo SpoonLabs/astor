@@ -68,6 +68,7 @@ public class Cntx<I> {
 				Object value = calculateValue(parser, vStat);
 				generalStatsjson.put(generalStat.name(), value);
 			} catch (ParseException e) {
+				System.out.println("Error property: " + generalStat);
 				log.error(e);
 				e.printStackTrace();
 			}
@@ -80,30 +81,30 @@ public class Cntx<I> {
 	@SuppressWarnings("unchecked")
 	public Object calculateValue(JSONParser parser, Object vStat) throws ParseException {
 		Object value = null;
-		if (vStat instanceof AstorOutputStatus || vStat instanceof String)
-			value = parser.parse("\"" + vStat + "\"");
+		if (vStat instanceof Cntx) {
+			Cntx<Object> cntx = (Cntx) vStat;
+			JSONObject composed = new JSONObject();
+			for (CNTX_Property property : cntx.getInformation().keySet()) {
+				Object v = calculateValue(parser, cntx.getInformation().get(property));
+				composed.put(property.name(), v);
+			}
+			return composed;
+		} else if (vStat instanceof AstorOutputStatus || vStat instanceof String)
+			// value = parser.parse("\"" + vStat + "\"");
+			value = JSONObject.escape(vStat.toString());
 		else if (vStat instanceof Collection<?>) {
 			JSONArray sublistJSon = new JSONArray();
 			Collection acollec = (Collection) vStat;
 			for (Iterator iterator = acollec.iterator(); iterator.hasNext();) {
 				Object anItemList = (Object) iterator.next();
-				if (anItemList instanceof Cntx) {
-					Cntx<Object> cntx = (Cntx) anItemList;
-					JSONObject composed = new JSONObject();
-					for (CNTX_Property property : cntx.getInformation().keySet()) {
-						Object v = calculateValue(parser, cntx.getInformation().get(property));
-						composed.put(property.name(), v);
-					}
-					sublistJSon.add(composed);
-				} else
-					sublistJSon.add((JSONObject.escape(anItemList.toString())));
+				sublistJSon.add(calculateValue(parser, anItemList));
 			}
 			value = sublistJSon;
 		} else {
 			try {
 				value = parser.parse(vStat.toString());
 			} catch (Exception e) {
-				System.out.println();
+				// System.out.println("Error");
 			}
 		}
 		return value;
