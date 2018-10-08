@@ -1,6 +1,7 @@
 package fr.inria.astor.core.entities;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,8 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
@@ -21,6 +24,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtClass;
@@ -31,9 +35,11 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.impl.CtPathElement;
 import spoon.reflect.path.impl.CtPathImpl;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtScanner;
 
 public class CntxResolver {
@@ -272,6 +278,7 @@ public class CntxResolver {
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void retrieveAffectedAssigned(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 
@@ -290,7 +297,8 @@ public class CntxResolver {
 		};
 
 		assignmentScanner.scan(methodParent);
-
+		boolean hasIncomplete = false;
+		int nrFieldsWithIncompleteInit = 0;
 		int nrOfVarWithAssignment = 0;
 		int nrOfVarWithoutAssignment = 0;
 		// For each variable affected
@@ -306,7 +314,10 @@ public class CntxResolver {
 				if (assignment.getAssigned().toString().equals(variableAffected.getVariable().getSimpleName())) {
 					hasassig = true;
 				}
-
+				boolean incomplete = retrieveNotAllInitialized(variableAffected, assignment, assignments);
+				if (incomplete) {
+					hasIncomplete = true;
+				}
 			}
 			if (hasassig)
 				nrOfVarWithAssignment++;
@@ -316,7 +327,97 @@ public class CntxResolver {
 		}
 		context.getInformation().put(CNTX_Property.NR_OBJECT_ASSIGNED, nrOfVarWithAssignment);
 		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_ASSIGNED, nrOfVarWithoutAssignment);
+		context.getInformation().put(CNTX_Property.NR_FIELD_INCOMPLETE_INIT, hasIncomplete);
+	}
 
+	@SuppressWarnings("rawtypes")
+	private boolean retrieveNotAllInitialized(CtVariableAccess variableAffected, CtAssignment assignment,
+			List<CtAssignment> assignments) {
+
+		// Let's check if the var is a field reader to an Object
+		String varAffected = null;
+		if (variableAffected instanceof CtFieldRead) {
+			CtFieldRead fr = (CtFieldRead) ((CtFieldRead) variableAffected);
+			varAffected = fr.getVariable().getDeclaration().getSimpleName();
+			if (fr.getVariable().getType().isPrimitive()) {
+
+				return false;
+			}
+
+		} else {
+			return false;
+		}
+
+		System.out.println("\n----******");
+		System.out.println("var access " + variableAffected);
+		// let's part of the assignment that we want to check if it's a field assignment
+		CtExpression leftPAssignment = assignment.getAssigned();
+
+		if (leftPAssignment instanceof CtFieldWrite) {
+			// Field assignment
+			CtFieldWrite fieldW = (CtFieldWrite) leftPAssignment;
+
+			// here lets take fX
+			if (fieldW.getTarget() instanceof CtFieldRead) {
+
+				System.out.println("Assignment fields " + assignment);
+
+				// The object where the assignment is done.
+				CtVariableRead targetField = (CtVariableRead) fieldW.getTarget();
+				// check if the variable is the same than the affected
+				if (targetField.getVariable().getSimpleName().toString().equals(varAffected)) {
+
+					System.out.println("Same var affected " + assignment);
+
+					Collection<CtFieldReference<?>> fields = targetField.getVariable().getType().getAllFields();
+					String initialVar = targetField.getVariable().getSimpleName();
+					for (CtFieldReference<?> otherFieldsFromVar : fields) {
+
+						System.out.println("Field: " + otherFieldsFromVar.getSimpleName());
+
+						if (!otherFieldsFromVar.getFieldDeclaration().getVisibility().equals(ModifierKind.PRIVATE)
+								&& otherFieldsFromVar.getSimpleName() != initialVar) {
+							System.out.println("--Other field " + otherFieldsFromVar.getSimpleName());
+							boolean fieldAssigned = false;
+							for (CtAssignment otherAssignment : assignments) {
+
+								// if (otherAssignment != assignment) {
+
+								CtExpression leftOther = otherAssignment.getAssigned();
+
+								if (leftOther instanceof CtFieldWrite) {
+									CtFieldWrite fwriteOther = (CtFieldWrite) leftOther;
+									// Let's check the
+									if (// isElementBeforeVariable(fwriteOther, element)
+										// &&
+									fwriteOther.getVariable().getSimpleName()
+											.equals(otherFieldsFromVar.getSimpleName())) {
+										if (fwriteOther.getTarget() instanceof CtVariableRead) {
+											CtVariableRead otherVar = (CtVariableRead) fwriteOther.getTarget();
+
+											if (otherVar.getVariable().getSimpleName().equals(varAffected)) {
+
+												fieldAssigned = true;
+												break;
+											}
+										}
+									}
+
+								}
+
+							}
+							System.out.println("field assigned? " + otherFieldsFromVar + " " + fieldAssigned);
+							if (!fieldAssigned) {
+								System.out.println("field not assigned " + otherFieldsFromVar);
+								return true;
+							}
+						}
+					}
+
+				}
+			}
+		}
+		return false;
 	}
 
 	private void retrieveAffectedDistance(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,

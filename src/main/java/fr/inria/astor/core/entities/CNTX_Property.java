@@ -35,35 +35,63 @@ public enum CNTX_Property {
 	//
 	VAR_VISIB,
 	//
-	VAR_MODIF, TYPE,
-	// Binary ops
-	involved_relation_bin_operators, involve_GE_relation_operators, involve_AND_relation_operators,
-	involve_OR_relation_operators, involve_BITOR_relation_operators, involve_BITXOR_relation_operators,
-	involve_BITAND_relation_operators, involve_EQ_relation_operators, involve_LT_relation_operators,
-	involve_NE_relation_operators, involve_GT_relation_operators, involve_LE_relation_operators,
-	involve_SL_relation_operators, involve_SR_relation_operators, involve_USR_relation_operators,
-	involve_PLUS_relation_operators, involve_MINUS_relation_operators, involve_MUL_relation_operators,
-	involve_DIV_relation_operators, involve_MOD_relation_operators, involve_INSTANCEOF_relation_operators,
-	involved_relation_unary_operators, involve_POS_relation_operators, involve_NEG_relation_operators,
-	involve_NOT_relation_operators, involve_COMPL_relation_operators, involve_PREINC_relation_operators,
-	involve_PREDEC_relation_operators, involve_POSTINC_relation_operators, involve_POSTDEC_relation_operators,
-	//
-	NUMBER_PRIMITIVE_VARS_IN_STMT, NUMBER_OBJECT_REFERENCE_VARS_IN_STMT, NUMBER_TOTAL_VARS_IN_STMT,
-	//
-	IS_METHOD_RETURN_TYPE_VAR, IS_METHOD_PARAM_TYPE_VAR,
-	//
-	HAS_VAR_SIM_NAME,
-	//
-	HAS_VAR_IN_TRANSFORMATION,
-	//
-	USES_CONSTANT,
-	//
-	USES_ENUM,
-	//
-	NR_OBJECT_ASSIGNED, NR_OBJECT_NOT_ASSIGNED,
+	VAR_MODIF,
+	// Statement type:
+	TYPE,
+	// Involved relational/arithmetic operato
+	involved_relation_bin_operators,
+	// whether involves
+	involve_GE_relation_operators, involve_AND_relation_operators, involve_OR_relation_operators,
+	involve_BITOR_relation_operators, involve_BITXOR_relation_operators, involve_BITAND_relation_operators,
+	involve_EQ_relation_operators, involve_LT_relation_operators, involve_NE_relation_operators,
+	involve_GT_relation_operators, involve_LE_relation_operators, involve_SL_relation_operators,
+	involve_SR_relation_operators, involve_USR_relation_operators, involve_PLUS_relation_operators,
+	involve_MINUS_relation_operators, involve_MUL_relation_operators, involve_DIV_relation_operators,
+	involve_MOD_relation_operators, involve_INSTANCEOF_relation_operators,
+	// involved unary
+	involved_relation_unary_operators,
+	//// whether involves
+	involve_POS_relation_operators, involve_NEG_relation_operators, involve_NOT_relation_operators,
+	involve_COMPL_relation_operators, involve_PREINC_relation_operators, involve_PREDEC_relation_operators,
+	involve_POSTINC_relation_operators, involve_POSTDEC_relation_operators,
+	// Involves primitive type
+	NUMBER_PRIMITIVE_VARS_IN_STMT,
+	// Involves object reference,
+	NUMBER_OBJECT_REFERENCE_VARS_IN_STMT,
+//	If statement involves variables, whether has methods in scope that return the type of the involved variable	
+	IS_METHOD_RETURN_TYPE_VAR,
+//
 
-	//
+	NUMBER_TOTAL_VARS_IN_STMT,
+
+	// If statement involves variables, whether has methods in scope that take the
+	// type of the involved variable as parameter
+
+	IS_METHOD_PARAM_TYPE_VAR,
+	// is there any other variable in scope that is similar in name We can have
+	// based on Levenstein distance
+	HAS_VAR_SIM_NAME,
+	// For an involved variable, is there any other variable in scope that is
+	// assigned to a certain function transformation of the involved variable
+	HAS_VAR_IN_TRANSFORMATION,
+	// Whether uses constants we can have
+	USES_CONSTANT,
+	// Whether uses enum we can have
+	USES_ENUM,
+	// If involves object reference, whether the variable has been assigned in other
+	// statements after its initial introduction
+	NR_OBJECT_ASSIGNED,
+
+	NR_OBJECT_NOT_ASSIGNED,
+
+	// If involves object reference, whether the variable has been used in other
+	// statements after its initial introduction.
 	NR_OBJECT_USED, NR_OBJECT_NOT_USED,
+
+	// Is field (of an object type) initialization statement? If so, whether the
+	// object type has other fields which are not initialized since the definition
+	// of the object
+	NR_FIELD_INCOMPLETE_INIT,
 
 	;
 

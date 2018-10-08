@@ -647,6 +647,160 @@ public class CntxResolverTest {
 
 	}
 
+	@Test
+	public void testProperty_NR_FIElD_INIT_INCOMPLETE_1() {
+		// Case: fx from fx (recursive reference)
+		String content = "" + "class X {" //
+				+ "public X fX = null;" + //
+				"public int f1 = 0;" + //
+				"private int f2 = 0;" + //
+
+				"public Object foo() {" + //
+				" fX = new X();"//
+				+ "fX.f1 = 0;" //
+				+ "f2 = fX.f2;" + //
+				"};};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+
+		CntxResolver cntxResolver = new CntxResolver();
+		CtElement element = null;
+		Cntx cntx = null;
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("f2 = ")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+		// field not assigned fX
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testProperty_NR_FIElD_INIT_INCOMPLETE_2() {
+		/// Case 2: all init (f2 is private so we dont initialize it)
+
+		String content = "" + "class X {" //
+				+ "public X fX = null;" + //
+				"public int f1 = 0;" + //
+				"private int f2 = 0;" + //
+
+				"public Object foo() {" + //
+				" fX = new X();"// init the field
+				+ "fX.fX = null;"//
+				+ "fX.f1 = 0;"//
+				+ "int mv ;" + //
+				"mv = fX.f2;" + //
+				"};};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+
+		CntxResolver cntxResolver = new CntxResolver();
+		CtElement element = null;
+		Cntx cntx = null;
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testProperty_NR_FIElD_INIT_INCOMPLETE_3() {
+		/// Case : missing init of f2
+
+		String content = "" + "class X {" //
+				+ "public X fX = null;" + //
+				"public int f1 = 0;" + //
+				"public int f2 = 0;" + //
+
+				"public Object foo() {" + //
+				" fX = new X();"// init the field
+				+ "fX.fX = null;"//
+				+ "fX.f1 = 0;"//
+				+ "int mv ;" + //
+				"mv = fX.f2;" + //
+				"};};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+
+		CntxResolver cntxResolver = new CntxResolver();
+		CtElement element = null;
+		Cntx cntx = null;
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testProperty_NR_FIElD_INIT_INCOMPLETE_4() {
+		/// Case all initialized
+
+		String content = "" + "class X {" //
+				+ "public X fX = null;" + //
+				"public int f1 = 0;" + //
+				"public int f2 = 0;" + //
+
+				"public Object foo() {" + //
+				" fX = new X();"// init the field
+				+ "fX.fX = null;"//
+				+ "fX.f1 = 0;"//
+				+ "int mv ;" //
+				+ "fX.f2 = 0;"//
+				+ "mv = fX.f2;" + //
+				"};};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+
+		CntxResolver cntxResolver = new CntxResolver();
+		CtElement element = null;
+		Cntx cntx = null;
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+
+	}
+
 	protected CtType getCtType(File file) throws Exception {
 
 		SpoonResource resource = SpoonResourceHelper.createResource(file);
