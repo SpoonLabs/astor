@@ -22,24 +22,6 @@ import fr.inria.lille.repair.expression.value.Value;
  */
 public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 
-	private final class DataCombinatorListener implements DataCombinerModified.CombineListener {
-		private final Candidates allCombinedNotEvaluatedExpressions;
-
-		private DataCombinatorListener(Candidates allCombinedNotEvaluatedExpressions) {
-			this.allCombinedNotEvaluatedExpressions = allCombinedNotEvaluatedExpressions;
-		}
-
-		@Override
-		public boolean check(Expression expression) {
-
-			if (!allCombinedNotEvaluatedExpressions.contains(expression)) {
-				allCombinedNotEvaluatedExpressions.add(expression);
-				return true;
-			}
-			return false;
-		}
-	}
-
 	private final class NumberExpressionsByTestComparator implements Comparator<String> {
 		@Override
 		public int compare(String s, String t1) {

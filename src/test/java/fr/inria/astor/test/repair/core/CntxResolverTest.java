@@ -37,6 +37,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtPath;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -842,6 +843,89 @@ public class CntxResolverTest {
 		cntx = cntxResolver.retrieveCntx(element);
 		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testProperty_VAR_CNT() {
+		/// Case all initialized
+
+		String content = "" + "class X {" //
+				+ "public X fX = null;" + //
+				"public int f1 = 0;" + //
+				"public int f2 = 0;" + //
+
+				"public Object foo() {" + //
+				" fX = new X();"// init the field
+				+ "fX.fX = null;"//
+				+ "fX.f1 = 0;"//
+				+ "int mv ;" //
+				+ "fX.f2 = 0;"//
+				+ "mv = fX.f2;" + //
+				"};};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+
+		CntxResolver cntxResolver = new CntxResolver();
+		CtElement element = null;
+		Cntx cntx = null;
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+		// assertEquals(Boolean.FALSE,
+		// cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testProperty_VAR_CNT_2_small() {
+		/// Case all initialized
+
+		String content = "" + "class X {" + //
+
+				"public int f1 = 0;" + //
+				"public boolean b2 = 0;" + //
+
+				"public Object foo() {" + //
+				"return null;"// init the field
+				+ "};};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+
+		CntxResolver cntxResolver = new CntxResolver();
+		CtElement element = null;
+		Cntx cntx = null;
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+		// assertEquals(Boolean.FALSE,
+		// cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+
+	}
+
+	@Test
+	public void testSpoon1() {
+		CtType s = new TypeFactory().get(Integer.class);
+		System.out.println(s.getSimpleName());
 	}
 
 	protected CtType getCtType(File file) throws Exception {

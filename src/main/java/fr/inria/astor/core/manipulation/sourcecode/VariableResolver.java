@@ -253,7 +253,8 @@ public class VariableResolver {
 			public <T> void visitCtLiteral(CtLiteral<T> literal) {
 
 				super.visitCtLiteral(literal);
-				literalsValues.add(literal);
+				if (!literalsValues.contains(literal))
+					literalsValues.add(literal);
 			}
 
 		};

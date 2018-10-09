@@ -87,7 +87,7 @@ public class DataCombinerModified {
 
 		for (Operator operator : operators) {
 			if (angelicValue != null && !operator.getReturnType().isAssignableFrom(angelicValue.getClass())) {
-				// continue;
+				//continue;
 			}
 			int nbExpression = operator.getTypeParameters().size();
 			Combination combination = new Combination(toCombine, operator, nbExpression);
@@ -348,7 +348,4 @@ public class DataCombinerModified {
 		return false;
 	}
 
-	public interface CombineListener {
-		boolean check(Expression expression);
-	}
 }

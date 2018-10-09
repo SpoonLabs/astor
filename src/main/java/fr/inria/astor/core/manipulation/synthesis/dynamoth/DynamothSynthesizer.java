@@ -116,7 +116,7 @@ public class DynamothSynthesizer {
 				DataCombinerModified combiner = new DataCombinerModified();
 				final int iterationNumber = i;
 
-				combiner.addCombineListener(new DataCombinerModified.CombineListener() {
+				combiner.addCombineListener(new CombineListener() {
 					@Override
 					public boolean check(Expression expression) {
 						if (!angelicValue.equals(expression.getValue().getRealValue())) {

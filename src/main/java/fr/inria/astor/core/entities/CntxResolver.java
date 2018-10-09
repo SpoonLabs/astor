@@ -3,12 +3,19 @@ package fr.inria.astor.core.entities;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
+import fr.inria.astor.core.manipulation.synthesis.dynamoth.spoon.DataCombinatorListenerSpoon;
+import fr.inria.astor.core.manipulation.synthesis.dynamoth.spoon.DataCombinerSpoon;
 import fr.inria.astor.util.StringDistance;
+import fr.inria.lille.repair.common.Candidates;
+import fr.inria.lille.repair.common.config.NopolContext;
+import fr.inria.lille.repair.expression.Expression;
+import fr.inria.lille.repair.expression.factory.AccessFactory;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -36,11 +43,13 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.impl.CtPathElement;
 import spoon.reflect.path.impl.CtPathImpl;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtScanner;
+import spoon.support.reflect.code.CtVariableReadImpl;
 
 public class CntxResolver {
 
@@ -98,6 +107,91 @@ public class CntxResolver {
 		retrieveUseEnumAndConstants(element, context);
 
 		return context;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void retrieveDM(CtElement element, Cntx<Object> context, List<CtVariable> varsInScope) {
+		NopolContext fakeContext = fakeContext();
+
+		List<CtLiteral> literals = VariableResolver.collectLiterals(element.getParent(CtClass.class));
+
+		List<Expression> expressions = new ArrayList<>();
+		List<CtExpression> ctexpressions = new ArrayList<>();
+		CtType s = new TypeFactory().get(Number.class);
+		System.out.println(s.getSimpleName());
+		try {
+			for (CtVariable ctVariable : varsInScope) {
+
+				System.out.println(ctVariable + " type-> " + ctVariable.getType() + ": "
+						+ ctVariable.getType().box().isSubtypeOf(s.getReference()));
+				Object value = null;
+				Expression expression = AccessFactory.variable(ctVariable.getSimpleName(), value, fakeContext);
+				expressions.add(expression);
+				CtVariableReadImpl vr = new CtVariableReadImpl<>();
+				vr.setVariable(ctVariable.getReference());
+				vr.setType(ctVariable.getType());
+				ctexpressions.add(vr);
+			}
+
+			for (CtLiteral ctLiteral : literals) {
+				System.out.println(ctLiteral + " type-> " + ctLiteral.getType());
+				Expression expression = AccessFactory.literal(ctLiteral, fakeContext);
+				expressions.add(expression);
+				ctexpressions.add(ctLiteral);
+			}
+
+			System.out.println("Expression collected:\n " + expressions);
+
+			Candidates singleCandidates = new Candidates();
+			singleCandidates.addAll(expressions);
+
+			Candidates allCombinedNotEvaluatedExpressions = new Candidates();
+
+			DataCombinerSpoon combiner = new DataCombinerSpoon();
+
+			List<CtExpression> allCombinedNotEvaluatedExpressions2 = new ArrayList<>();
+			combiner.addCombineListener(new DataCombinatorListenerSpoon(allCombinedNotEvaluatedExpressions2));
+
+			long maxCombinerTime = TimeUnit.SECONDS.toMillis(10);
+			// Passing expression from Collection to Candidates...
+			Candidates allSingleExpressionsCandidates = new Candidates();
+			allSingleExpressionsCandidates.addAll(singleCandidates);
+
+			combiner.combine(ctexpressions, maxCombinerTime, fakeContext);
+
+			log.debug("All combined expressions: " + allCombinedNotEvaluatedExpressions.size());
+
+			for (Expression expression : allSingleExpressionsCandidates) {
+				System.out.println("Single: " + expression);
+			}
+
+			for (CtExpression expression : allCombinedNotEvaluatedExpressions2) {
+				System.out.println("comb: " + expression + " type" + expression.getType());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private NopolContext fakeContext() {
+		NopolContext nopolContext = new NopolContext();
+		// nopolContext.setCollectOnlyUsedMethod(ConfigurationProperties.getPropertyBool("collectonlyusedmethod"));
+		nopolContext.setCollectOnlyUsedMethod(false);
+
+		nopolContext.setDataCollectionTimeoutInSecondForSynthesis(5);
+		nopolContext.setOnlyOneSynthesisResult(false);
+		return nopolContext;
+	}
+
+	// DynamothSynthesizerWOracle
+
+//	@Override
+	public Candidates combineValues() {
+
+		// for (CtVariable varInScope : varsInScope) {
+
+		// }
+		return null;
 	}
 
 	private void retrieveUseEnumAndConstants(CtElement element, Cntx<Object> context) {
@@ -673,6 +767,8 @@ public class CntxResolver {
 		context.getInformation().put(CNTX_Property.VARS, children);
 
 		retrieveAffectedVars(element, context, varsInScope);
+
+		retrieveDM(element, context, varsInScope);
 
 	}
 
