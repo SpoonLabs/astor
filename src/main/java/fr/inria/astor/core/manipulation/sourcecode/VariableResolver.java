@@ -26,6 +26,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
@@ -240,6 +241,26 @@ public class VariableResolver {
 
 		return varaccess;
 
+	}
+
+	public static List<CtLiteral> collectLiterals(CtElement element) {
+
+		List<CtLiteral> literalsValues = new ArrayList<>();
+
+		CtScanner scanner = new CtScanner() {
+
+			@Override
+			public <T> void visitCtLiteral(CtLiteral<T> literal) {
+
+				super.visitCtLiteral(literal);
+				literalsValues.add(literal);
+			}
+
+		};
+
+		scanner.scan(element);
+
+		return literalsValues;
 	}
 
 	/**
