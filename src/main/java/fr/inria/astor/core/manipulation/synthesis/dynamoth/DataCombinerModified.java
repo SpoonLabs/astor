@@ -43,6 +43,15 @@ public class DataCombinerModified {
 	protected int max_number_combinations;
 
 	public Candidates combine(Candidates candidates, Object angelicValue, long maxTime, NopolContext nopolContext) {
+		List<Operator> operators = new ArrayList<>();
+		operators.addAll(Arrays.asList(UnaryOperator.values()));
+		operators.addAll(Arrays.asList(BinaryOperator.values()));
+
+		return combine(candidates, angelicValue, maxTime, nopolContext, operators);
+	}
+
+	public Candidates combine(Candidates candidates, Object angelicValue, long maxTime, NopolContext nopolContext,
+			List<Operator> operators) {
 		this.nopolContext = nopolContext;
 		max_number_combinations = ConfigurationProperties.getPropertyInt("max_synthesis_step");
 		maxDepth = nopolContext.getSynthesisDepth();
@@ -57,10 +66,6 @@ public class DataCombinerModified {
 		lastTurn.addAll(candidates);
 
 		executionTime = System.currentTimeMillis() - startTime;
-
-		List<Operator> operators = new ArrayList<>();
-		operators.addAll(Arrays.asList(UnaryOperator.values()));
-		operators.addAll(Arrays.asList(BinaryOperator.values()));
 
 		for (int i = 0; i < maxDepth - 1 && !stop /* && executionTime <= maxTime */; i++) {
 			List<Expression> expr = newCombiner(lastTurn, operators, i == maxDepth - 2 ? angelicValue : null);
@@ -82,7 +87,7 @@ public class DataCombinerModified {
 
 		for (Operator operator : operators) {
 			if (angelicValue != null && !operator.getReturnType().isAssignableFrom(angelicValue.getClass())) {
-				continue;
+				// continue;
 			}
 			int nbExpression = operator.getTypeParameters().size();
 			Combination combination = new Combination(toCombine, operator, nbExpression);
