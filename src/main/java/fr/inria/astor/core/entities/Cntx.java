@@ -102,7 +102,7 @@ public class Cntx<I> {
 			value = sublistJSon;
 		} else {
 			try {
-				value = parser.parse(vStat.toString());
+				value = JSONObject.escape(vStat.toString());
 			} catch (Exception e) {
 				// System.out.println("Error");
 			}
