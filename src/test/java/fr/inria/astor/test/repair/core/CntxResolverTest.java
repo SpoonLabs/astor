@@ -854,15 +854,15 @@ public class CntxResolverTest {
 				+ "public X fX = null;" + //
 				"public int f1 = 0;" + //
 				"public int f2 = 0;" + //
-
-				"public Object foo() {" + //
+				"public String s2;" //
+				+ "public Object foo() {" + //
 				" fX = new X();"// init the field
 				+ "fX.fX = null;"//
 				+ "fX.f1 = 0;"//
 				+ "int mv ;" //
 				+ "fX.f2 = 0;"//
 				+ "mv = fX.f2;" + //
-				"};};";
+				"};" + "public X copy(X mx){return mx;}" + "};";
 
 		CtType type = getCtType(content);
 
@@ -880,9 +880,22 @@ public class CntxResolverTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("mv = ")).findFirst()
 				.get();
 		System.out.println(element);
+		ConfigurationProperties.setProperty("max_synthesis_step", "100");
 		cntx = cntxResolver.retrieveCntx(element);
+
+		List<?> space = (List<?>) cntx.getInformation().get(CNTX_Property.PSPACE);
+		int i = 0;
+		for (Object spaceeleemnt : space) {
+			System.out.println((i++) + "--> " + spaceeleemnt);
+		}
+
 		// assertEquals(Boolean.FALSE,
 		// cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+
+	}
+
+	@Test
+	public void test() {
 
 	}
 
@@ -920,6 +933,12 @@ public class CntxResolverTest {
 		// assertEquals(Boolean.FALSE,
 		// cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
 
+		JSONObject json = cntx.toJSON();
+		List<?> space = (List<?>) cntx.getInformation().get(CNTX_Property.PSPACE);
+		int i = 0;
+		for (Object spaceeleemnt : space) {
+			System.out.println((i++) + "--> " + spaceeleemnt);
+		}
 	}
 
 	@Test
