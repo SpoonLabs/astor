@@ -103,6 +103,10 @@ public class StaSynthBuilder {
 
 		for (CtVariableRead aVar : variables) {
 
+			if (aVar.getVariable().getModifiers().contains(ModifierKind.STATIC))
+				// BUGFIX: in ds1 it fails when getting executables of static fields
+				continue;
+
 			for (CtExecutableReference<?> executable : aVar.getType().getAllExecutables()) {
 
 				if (executable.getExecutableDeclaration() instanceof CtMethod) {
