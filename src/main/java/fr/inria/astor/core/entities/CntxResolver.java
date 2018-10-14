@@ -44,6 +44,11 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.reflect.code.CtVariableReadImpl;
 
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class CntxResolver {
 
 	private final class ExpressionCapturerScanner extends CtScanner {
@@ -76,18 +81,53 @@ public class CntxResolver {
 		return retrieveCntx(modificationPoint.getCodeElement());
 	}
 
+	public Cntx<?> retrievePatchCntx(CtElement element) {
+		Cntx<Object> patchcontext = new Cntx<>(determineKey(element));
+
+		patchcontext.getInformation().put(CNTX_Property.PATCH_CODE_ELEMENT, element.toString());
+
+		CtElement stmt = element.getParent(CtStatement.class);
+		if (stmt == null)
+			stmt = element.getParent(CtMethod.class);
+		patchcontext.getInformation().put(CNTX_Property.PATCH_CODE_STATEMENT,
+				(stmt != null) ? element.toString() : null);
+
+		retrieveType(element, patchcontext);
+		retrievePath(element, patchcontext);
+
+		return patchcontext;
+	}
+
+	@SuppressWarnings("unused")
+	public Cntx<?> retrieveBuggy(CtElement element) {
+		Cntx<Object> context = new Cntx<>(determineKey(element));
+
+		retrievePath(element, context);
+		retrieveType(element, context);
+
+		//
+		context.getInformation().put(CNTX_Property.BUGGY_CODE, element.toString());
+
+		CtElement stmt = element.getParent(CtStatement.class);
+		if (stmt == null)
+			stmt = element.getParent(CtMethod.class);
+		context.getInformation().put(CNTX_Property.BUGGY_STATEMENT, (stmt != null) ? element.toString() : null);
+
+		//
+		Cntx<Object> buggyPositionCntx = new Cntx<>();
+		retrievePosition(element, buggyPositionCntx);
+		context.getInformation().put(CNTX_Property.BUGGY_POSSITION, buggyPositionCntx);
+
+		return context;
+	}
+
 	@SuppressWarnings("unused")
 	public Cntx<?> retrieveCntx(CtElement element) {
 		Cntx<Object> context = new Cntx<>(determineKey(element));
-		retrievePosition(element, context);
 		retrieveVarsInScope(element, context);
 		retrieveMethodInformation(element, context);
 		retrieveParentTypes(element, context);
-		retrievePath(element, context);
 		//
-		context.getInformation().put(CNTX_Property.CODE_ELEMENT, element.toString());
-		//
-		retrieveType(element, context);
 
 		Cntx<Object> binCntx = new Cntx<>();
 		context.getInformation().put(CNTX_Property.BIN_PROPERTIES, binCntx);
@@ -123,10 +163,14 @@ public class CntxResolver {
 		}
 
 		StaSynthBuilder ib = new StaSynthBuilder();
-		List<CtExpression> result = ib.synthesizer(ctexpressions, cteVarReadList);
-		List<String> resultstring = result.stream().map(e -> e.toString()).collect(Collectors.toList());
-		context.getInformation().put(CNTX_Property.PSPACE, resultstring);
-
+		try {
+			List<CtExpression> result = ib.synthesizer(ctexpressions, cteVarReadList);
+			List<String> resultstring = result.stream().map(e -> e.toString()).collect(Collectors.toList());
+			context.getInformation().put(CNTX_Property.PSPACE, resultstring);
+		} catch (Exception e) {
+			e.printStackTrace();
+			context.getInformation().put(CNTX_Property.PSPACE, null);
+		}
 	}
 
 	private void retrieveUseEnumAndConstants(CtElement element, Cntx<Object> context) {
@@ -507,6 +551,7 @@ public class CntxResolver {
 				for (Object omethod : parentMethod.getAllMethods()) {
 					CtMethod method = (CtMethod) omethod;
 					if (!returnCompatible && method.getType() != null) {
+						// System.out.println(var + " -1- " + method);
 						if (isSubtype(var, method)) {
 							returnCompatible = true;
 							break;
@@ -515,8 +560,16 @@ public class CntxResolver {
 					}
 					for (Object oparameter : method.getParameters()) {
 						CtParameter parameter = (CtParameter) oparameter;
+						// System.out.println(parameter.getType() + " -2- " + var.getType());
+						// if (var.getType().toString() ==
+						// "org.apache.lucene.index.TestTypePromotion.TestType") {
+						// System.out.println("here");
+						// }
 
 						if (var.getType() != null && parameter.getType() != null && !paramCompatible
+
+						// && !(parameter.getType().getParent(CtType.class).equals(var.getType())
+						//
 								&& parameter.getType().isSubtypeOf(var.getType())) {
 							paramCompatible = true;
 							break;
@@ -529,7 +582,8 @@ public class CntxResolver {
 			}
 			context.getInformation().put(CNTX_Property.IS_METHOD_RETURN_TYPE_VAR, returnCompatible);
 			context.getInformation().put(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR, paramCompatible);
-		} catch (Exception e) {
+		} catch (Error e) {
+			e.printStackTrace();
 		}
 	}
 

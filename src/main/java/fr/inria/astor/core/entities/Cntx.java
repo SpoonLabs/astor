@@ -57,9 +57,7 @@ public class Cntx<I> {
 	@SuppressWarnings("unchecked")
 	public JSONObject toJSON() {
 
-		JSONObject statsjsonRoot = new JSONObject();
 		JSONObject generalStatsjson = new JSONObject();
-		statsjsonRoot.put("context", generalStatsjson);
 		JSONParser parser = new JSONParser();
 		for (CNTX_Property generalStat : information.keySet()) {
 			Object vStat = information.get(generalStat);
@@ -75,7 +73,7 @@ public class Cntx<I> {
 
 		}
 
-		return statsjsonRoot;
+		return generalStatsjson;
 	}
 
 	@SuppressWarnings("unchecked")

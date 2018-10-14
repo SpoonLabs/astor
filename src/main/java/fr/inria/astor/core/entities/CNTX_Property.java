@@ -15,7 +15,9 @@ public enum CNTX_Property {
 	//
 	METHOD_COMMENTS,
 	//
-	CODE_ELEMENT,
+	BUGGY_CODE,
+	//
+	BUGGY_STATEMENT,
 	//
 	CODE_TREE,
 	//
@@ -99,6 +101,13 @@ public enum CNTX_Property {
 	// whether has other variables in scope that are type compatible
 	HAS_VAR_SIM_TYPE,
 	//
-	PSPACE;
+	PSPACE,
+	//
+	BUG_INFO,
+	//
+	PATCH_INFO,
+
+	// The element corresponding to the patch
+	PATCH_CODE_ELEMENT, PATCH_CODE_STATEMENT, BUGGY_POSSITION;
 
 }
