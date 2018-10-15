@@ -29,7 +29,7 @@ public class StaSynthBuilder {
 	public List synthesizer(List<CtExpression> singleExpressions, List<CtVariableRead> cteVarReadList) {
 		NopolContext fakeContext = fakeContext();
 
-		List<CtInvocation> invocations = this.createtinvocations(cteVarReadList);
+		List<CtInvocation> invocations = this.createtinvocations(cteVarReadList, singleExpressions);
 
 		List<CtExpression> notnull = createNotNullExpr(cteVarReadList);
 
@@ -55,6 +55,8 @@ public class StaSynthBuilder {
 
 		List<CtExpression> result = new ArrayList<>();
 
+		System.out.println("Space: expressions: " + singleExpressions.size() + " not null " + notnull.size()
+				+ " all combined " + allCombinedExpression.size());
 		result.addAll(singleExpressions);
 		result.addAll(notnull);
 		result.addAll(allCombinedExpression);
@@ -98,17 +100,17 @@ public class StaSynthBuilder {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public List<CtInvocation> createtinvocations(List<CtVariableRead> variables) {
+	public List<CtInvocation> createtinvocations(List<CtVariableRead> variables, List<CtExpression> possibleArguments) {
 		int max_number_combinations = ConfigurationProperties.getPropertyInt("max_synthesis_step");
 		List<CtInvocation> invocations = new ArrayList();
 
 		for (CtVariableRead aVar : variables) {
 // BUGFIX: in ds1 it fails when getting executables of static fields
-			if (aVar.getVariable().getModifiers().contains(ModifierKind.STATIC)
-					|| !"String".equals(aVar.getVariable().getType().getSimpleName()))
+			String simpleNameVar = aVar.getVariable().getType().getSimpleName();
+			if (aVar.getVariable().getModifiers().contains(ModifierKind.STATIC) || "String".equals(simpleNameVar))
 
 				continue;
-
+			int maxMethodPerClass = 0;
 			for (CtExecutableReference<?> executable : aVar.getType().getAllExecutables()) {
 
 				if (executable.getExecutableDeclaration() instanceof CtMethod) {
@@ -118,6 +120,10 @@ public class StaSynthBuilder {
 					if ((method.getVisibility() == null || method.getVisibility().equals(ModifierKind.PUBLIC))
 							&& !"Object".equals(method.getDeclaringType().getSimpleName())// Ignoring objects
 					) {
+						maxMethodPerClass++;
+						if (maxMethodPerClass > 0) {
+							break;
+						}
 
 						if (method.getParameters().size() == 0) {
 							CtInvocationImpl inv = new CtInvocationImpl<>();
@@ -127,13 +133,14 @@ public class StaSynthBuilder {
 							// System.out.println("--izeroarg->" + inv);
 						} else {
 							try {
-								List<List<CtExpression>> args = createAllPossibleArgsListForMethod(method, variables);
+								List<List<CtExpression>> args = createAllPossibleArgsListForMethod(method,
+										possibleArguments);
 
 								if (args != null && args.size() > 0) {
 
 									List<List<CtExpression>> allComb = combine(args);
 									// System.out.println("--comb--args->" + allComb);
-
+									int nrCombPerMethod = 0;
 									for (List<CtExpression> list : allComb) {
 										CtInvocationImpl inv = new CtInvocationImpl<>();
 										inv.setTarget(aVar);
@@ -141,6 +148,10 @@ public class StaSynthBuilder {
 										inv.setArguments(list);
 										// System.out.println("--iplusarg->" + inv);
 										invocations.add(inv);
+										nrCombPerMethod++;
+										if (nrCombPerMethod > 500) {
+											break;
+										}
 									}
 								}
 							} catch (Exception e) {
@@ -160,8 +171,7 @@ public class StaSynthBuilder {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unused" })
-	private List<List<CtExpression>> createAllPossibleArgsListForMethod(CtMethod method,
-			List<CtVariableRead> variables) {
+	private List<List<CtExpression>> createAllPossibleArgsListForMethod(CtMethod method, List<CtExpression> variables) {
 		try {
 
 			List<CtParameter> argumentTypes = method.getParameters();
@@ -171,7 +181,7 @@ public class StaSynthBuilder {
 
 				List<CtExpression> compatiblePar = new ArrayList<>();
 
-				for (CtVariableRead ctVariableRead : variables) {
+				for (CtExpression ctVariableRead : variables) {
 
 					if (ctVariableRead.getType().isSubtypeOf(par.getType())) {
 						compatiblePar.add(ctVariableRead);

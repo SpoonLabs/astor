@@ -8,10 +8,16 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.AstorOutputStatus;
@@ -55,16 +61,16 @@ public class Cntx<I> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public JSONObject toJSON() {
+	public JsonObject toJSON() {
 
-		JSONObject generalStatsjson = new JSONObject();
+		JsonObject generalStatsjson = new JsonObject();
 		JSONParser parser = new JSONParser();
 		for (CNTX_Property generalStat : information.keySet()) {
 			Object vStat = information.get(generalStat);
 
 			try {
-				Object value = calculateValue(parser, vStat);
-				generalStatsjson.put(generalStat.name(), value);
+				JsonElement value = calculateValue(parser, vStat);
+				generalStatsjson.add(generalStat.name(), value);
 			} catch (ParseException e) {
 				System.out.println("Error property: " + generalStat);
 				log.error(e);
@@ -77,21 +83,21 @@ public class Cntx<I> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object calculateValue(JSONParser parser, Object vStat) throws ParseException {
-		Object value = null;
+	public JsonElement calculateValue(JSONParser parser, Object vStat) throws ParseException {
+		JsonElement value = null;
 		if (vStat instanceof Cntx) {
 			Cntx<Object> cntx = (Cntx) vStat;
-			JSONObject composed = new JSONObject();
+			JsonObject composed = new JsonObject();
 			for (CNTX_Property property : cntx.getInformation().keySet()) {
-				Object v = calculateValue(parser, cntx.getInformation().get(property));
-				composed.put(property.name(), v);
+				JsonElement v = calculateValue(parser, cntx.getInformation().get(property));
+				composed.add(property.name(), v);
 			}
 			return composed;
-		} else if (vStat instanceof AstorOutputStatus || vStat instanceof String)
-			// value = parser.parse("\"" + vStat + "\"");
-			value = JSONObject.escape(vStat.toString());
-		else if (vStat instanceof Collection<?>) {
-			JSONArray sublistJSon = new JSONArray();
+		} else if (vStat instanceof AstorOutputStatus || vStat instanceof String) {
+			JsonPrimitive p = new JsonPrimitive(JSONObject.escape(vStat.toString()));
+			value = p;
+		} else if (vStat instanceof Collection<?>) {
+			JsonArray sublistJSon = new JsonArray();
 			Collection acollec = (Collection) vStat;
 			for (Iterator iterator = acollec.iterator(); iterator.hasNext();) {
 				Object anItemList = (Object) iterator.next();
@@ -100,7 +106,9 @@ public class Cntx<I> {
 			value = sublistJSon;
 		} else {
 			try {
-				value = JSONObject.escape(vStat.toString());
+
+				JsonPrimitive p = new JsonPrimitive(JSONObject.escape(vStat.toString()));
+				value = p;
 			} catch (Exception e) {
 				// System.out.println("Error");
 			}
@@ -112,22 +120,20 @@ public class Cntx<I> {
 		this.save(this.toJSON());
 	}
 
-	public void save(JSONObject statsjsonRoot) {
+	public void save(JsonObject statsjsonRoot) {
 		String output = ConfigurationProperties.getProperty("workingDirectory");
 		String filename = "CNTX_" + ((this.identifier != null) ? this.identifier.toString() : "0");
 		String absoluteFileName = output + "/" + filename + ".json";
 		try (FileWriter file = new FileWriter(absoluteFileName)) {
 
-			/*
-			 * Gson gson = new GsonBuilder().setPrettyPrinting().create(); JsonParser p =
-			 * new JsonParser(); JsonElement gsonelement =
-			 * p.parse(statsjsonRoot.toJSONString()); file.write(gson.toJson(gsonelement));
-			 */
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String jsonstr = gson.toJson(statsjsonRoot);
+			file.write(jsonstr);
 
-			file.write(statsjsonRoot.toJSONString());
+			// file.write(statsjsonRoot.toJSONString());
 			file.flush();
 			log.info("Storing ing JSON at " + absoluteFileName);
-			log.info(filename + ":\n" + statsjsonRoot.toJSONString());
+			log.info(filename + ":\n" + jsonstr);
 
 		} catch (IOException e) {
 			e.printStackTrace();

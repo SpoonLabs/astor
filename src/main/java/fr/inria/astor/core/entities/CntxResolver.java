@@ -145,7 +145,7 @@ public class CntxResolver {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void retrieveDM(CtElement element, Cntx<Object> context, List<CtVariable> varsInScope) {
 
-		List<CtLiteral> literals = VariableResolver.collectLiterals(element.getParent(CtClass.class));
+		List<CtLiteral> literals = VariableResolver.collectLiteralsNoString(element.getParent(CtClass.class));
 
 		List<CtExpression> ctexpressions = new ArrayList<>();
 		List<CtVariableRead> cteVarReadList = new ArrayList<>();
@@ -582,7 +582,7 @@ public class CntxResolver {
 			}
 			context.getInformation().put(CNTX_Property.IS_METHOD_RETURN_TYPE_VAR, returnCompatible);
 			context.getInformation().put(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR, paramCompatible);
-		} catch (Error e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
