@@ -106,6 +106,7 @@ public class DataCombinerSpoon {
 				}
 
 				if (nopolContext.isOnlyOneSynthesisResult() || result.size() > max_number_combinations) {
+					System.out.println("Arriving max number of combinations done.");
 					return result;
 				}
 			}

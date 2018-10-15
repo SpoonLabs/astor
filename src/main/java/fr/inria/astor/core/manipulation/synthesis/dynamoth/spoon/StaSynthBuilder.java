@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.lille.repair.common.config.NopolContext;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;
@@ -98,13 +99,14 @@ public class StaSynthBuilder {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<CtInvocation> createtinvocations(List<CtVariableRead> variables) {
-
+		int max_number_combinations = ConfigurationProperties.getPropertyInt("max_synthesis_step");
 		List<CtInvocation> invocations = new ArrayList();
 
 		for (CtVariableRead aVar : variables) {
+// BUGFIX: in ds1 it fails when getting executables of static fields
+			if (aVar.getVariable().getModifiers().contains(ModifierKind.STATIC)
+					|| !"String".equals(aVar.getVariable().getType().getSimpleName()))
 
-			if (aVar.getVariable().getModifiers().contains(ModifierKind.STATIC))
-				// BUGFIX: in ds1 it fails when getting executables of static fields
 				continue;
 
 			for (CtExecutableReference<?> executable : aVar.getType().getAllExecutables()) {
@@ -114,7 +116,8 @@ public class StaSynthBuilder {
 					CtMethod method = (CtMethod) executable.getExecutableDeclaration();
 					// FOR the moment, only public
 					if ((method.getVisibility() == null || method.getVisibility().equals(ModifierKind.PUBLIC))
-							&& !"Object".equals(method.getDeclaringType().getSimpleName())) {
+							&& !"Object".equals(method.getDeclaringType().getSimpleName())// Ignoring objects
+					) {
 
 						if (method.getParameters().size() == 0) {
 							CtInvocationImpl inv = new CtInvocationImpl<>();
@@ -145,7 +148,10 @@ public class StaSynthBuilder {
 							}
 						}
 					}
-
+					if (invocations.size() >= max_number_combinations) {
+						System.out.println("Arriving max number of invocations done.");
+						return invocations;
+					}
 				}
 			}
 		}
