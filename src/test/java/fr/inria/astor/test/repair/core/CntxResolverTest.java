@@ -10,9 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.json.simple.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.google.gson.JsonObject;
 
 import fr.inria.astor.core.entities.CNTX_Property;
 import fr.inria.astor.core.entities.Cntx;
@@ -98,10 +99,10 @@ public class CntxResolverTest {
 		List docs = ((List) bugcntx.getInformation().get(CNTX_Property.METHOD_COMMENTS));
 		// assertTrue(docs.size() > 0); check why is failing? the method has doc.
 
-		JSONObject jsonroot = cntx.toJSON();
+		JsonObject jsonroot = cntx.toJSON();
 		assertNotNull(jsonroot);
 		System.out.println(jsonroot);
-		assertEquals("[\"public\"]", ((JSONObject) jsonroot.get("context")).get("METHOD_MODIFIERS").toString());
+		assertEquals("[\"public\"]", ((JsonObject) jsonroot.get("context")).get("METHOD_MODIFIERS").toString());
 
 		cntx.save(jsonroot);
 
@@ -952,7 +953,6 @@ public class CntxResolverTest {
 		// assertEquals(Boolean.FALSE,
 		// cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
 
-		JSONObject json = cntx.toJSON();
 		List<?> space = (List<?>) cntx.getInformation().get(CNTX_Property.PSPACE);
 		int i = 0;
 		for (Object spaceeleemnt : space) {
