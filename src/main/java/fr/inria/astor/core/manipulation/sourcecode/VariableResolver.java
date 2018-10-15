@@ -264,6 +264,27 @@ public class VariableResolver {
 		return literalsValues;
 	}
 
+	public static List<CtLiteral> collectLiteralsNoString(CtElement element) {
+
+		List<CtLiteral> literalsValues = new ArrayList<>();
+
+		CtScanner scanner = new CtScanner() {
+
+			@Override
+			public <T> void visitCtLiteral(CtLiteral<T> literal) {
+
+				super.visitCtLiteral(literal);
+				if (!literalsValues.contains(literal) && !"String".equals(literal.getType().getSimpleName()))
+					literalsValues.add(literal);
+			}
+
+		};
+
+		scanner.scan(element);
+
+		return literalsValues;
+	}
+
 	/**
 	 * 
 	 * This methods determines whether all the variable access contained in a

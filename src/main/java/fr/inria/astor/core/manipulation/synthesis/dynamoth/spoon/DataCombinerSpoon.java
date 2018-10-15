@@ -18,6 +18,7 @@ import fr.inria.lille.repair.expression.combination.unary.UnaryExpressionImpl;
 import fr.inria.lille.repair.expression.combination.unary.UnaryOperator;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
@@ -93,8 +94,8 @@ public class DataCombinerSpoon {
 			while (!combination.isEnd(this.stop)) {
 				List<CtExpression> expressions = combination.perform(this.stop);
 				CtExpression binaryExpression = create(operator, expressions, nopolContext);
-
-				add(result, binaryExpression);
+				if (binaryExpression != null)
+					add(result, binaryExpression);
 
 				if (operator instanceof BinaryOperatorSpoon && !((BinaryOperatorSpoon) operator).isCommutative()) {
 
@@ -102,11 +103,13 @@ public class DataCombinerSpoon {
 
 					binaryExpression = create(operator, Arrays.asList(expressions.get(1), expressions.get(0)),
 							nopolContext);
-					add(result, binaryExpression);
+					if (binaryExpression != null)
+						add(result, binaryExpression);
 				}
 
 				if (nopolContext.isOnlyOneSynthesisResult() || result.size() > max_number_combinations) {
 					System.out.println("Arriving max number of combinations done.");
+					this.stop = true;
 					return result;
 				}
 			}
@@ -154,6 +157,9 @@ public class DataCombinerSpoon {
 			}
 			return unaryOp;
 		case 2:
+
+			if (expressions.get(0) instanceof CtLiteral && expressions.get(1) instanceof CtLiteral)
+				return null;
 			// return create((BinaryOperator) operator, expressions.get(0),
 			// expressions.get(1), nopolContext);
 
