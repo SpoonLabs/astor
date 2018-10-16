@@ -100,13 +100,14 @@ public class CntxResolver {
 
 	@SuppressWarnings("unused")
 	public Cntx<?> retrieveBuggy(CtElement element) {
+
 		Cntx<Object> context = new Cntx<>(determineKey(element));
 
 		retrievePath(element, context);
 		retrieveType(element, context);
 
 		//
-		context.getInformation().put(CNTX_Property.BUGGY_CODE, element.toString());
+		context.getInformation().put(CNTX_Property.CODE, element.toString());
 
 		CtElement stmt = element.getParent(CtStatement.class);
 		if (stmt == null)
@@ -116,7 +117,26 @@ public class CntxResolver {
 		//
 		Cntx<Object> buggyPositionCntx = new Cntx<>();
 		retrievePosition(element, buggyPositionCntx);
-		context.getInformation().put(CNTX_Property.BUGGY_POSSITION, buggyPositionCntx);
+		context.getInformation().put(CNTX_Property.POSITION, buggyPositionCntx);
+
+		return context;
+	}
+
+	@SuppressWarnings("unused")
+	public Cntx<?> retrieveBuggyInfo(CtElement element) {
+
+		Cntx<Object> context = new Cntx<>(determineKey(element));
+
+		retrievePath(element, context);
+		retrieveType(element, context);
+
+		//
+		context.getInformation().put(CNTX_Property.CODE, element.toString());
+
+		//
+		Cntx<Object> buggyPositionCntx = new Cntx<>();
+		retrievePosition(element, buggyPositionCntx);
+		context.getInformation().put(CNTX_Property.POSITION, buggyPositionCntx);
 
 		return context;
 	}
@@ -757,7 +777,7 @@ public class CntxResolver {
 
 		retrieveAffectedVars(element, context, varsInScope);
 
-		retrieveDM(element, context, varsInScope);
+		// retrieveDM(element, context, varsInScope);
 
 	}
 
