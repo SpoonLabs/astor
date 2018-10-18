@@ -108,6 +108,8 @@ Astor in the literature
 
 * K. Naitou, A. Tanikado, S. Matsumoto, Y. Higo, S. Kusumoto, H.  Kirinuki, T. Kurabayashi, H. Tanno, Haruto. Toward introducing automated program repair techniques to industrial software development. ICPC, 2018.
 
+* L. Azevedo, A. Dantas, C. Camilo-Junior. DroidBugs: An Android Benchmark for Automated Program Repair. arXiv preprint arXiv:1809.07353, 2018.
+
 * Ye, H., Martinez, M., & Monperrus, M. A Comprehensive Study of Automatic Program Repair on the QuixBugs Benchmark. arXiv preprint arXiv:1805.03454, 2018.
 
 * C. Trad, R. Abou Assi, W. Masri, F. Zaraket. CFAAR: Control Flow Alteration to Assist Repair. ArXiv preprint 	arXiv:1808.09229, 2018.
