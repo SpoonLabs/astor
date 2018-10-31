@@ -785,11 +785,11 @@ public abstract class AbstractMain {
 		if (!ConfigurationProperties.getPropertyBool("autocompile")) {
 			// compileProject(properties);
 			// } else {
-			String originalBin = determineBinFolder(originalProjectRoot,
+			List<String> originalBin = determineBinFolder(originalProjectRoot,
 					ConfigurationProperties.getProperty("binjavafolder"));
 			properties.setOriginalAppBinDir(originalBin);
 
-			String originalBinTest = determineBinFolder(originalProjectRoot,
+			List<String> originalBinTest = determineBinFolder(originalProjectRoot,
 					ConfigurationProperties.getProperty("bintestfolder"));
 			properties.setOriginalTestBinDir(originalBinTest);
 		}
@@ -805,14 +805,18 @@ public abstract class AbstractMain {
 		return ce;
 	}
 
-	private String determineBinFolder(String originalProjectRoot, String paramBinFolder) {
+	private List<String> determineBinFolder(String originalProjectRoot, String paramBinFolder) {
 
-		File fBin = new File(originalProjectRoot + File.separator + paramBinFolder).getAbsoluteFile();
-		if (Files.exists(fBin.toPath())) {
-			return fBin.getAbsolutePath();
+		List<String> bins = new ArrayList();
+		String[] singleFolders = paramBinFolder.split(File.pathSeparator);
+		for (String folder : singleFolders) {
+			File fBin = new File(originalProjectRoot + File.separator + folder).getAbsoluteFile();
+			if (Files.exists(fBin.toPath())) {
+				bins.add(fBin.getAbsolutePath());
+			} else
+				throw new IllegalArgumentException("The bin folder  " + fBin + " does not exist.");
 		}
-
-		throw new IllegalArgumentException("The bin folder  " + fBin + " does not exist.");
+		return bins;
 	}
 
 	private List<String> determineSourceFolders(ProjectConfiguration properties, boolean srcWithMain,

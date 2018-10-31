@@ -56,17 +56,12 @@ public class ProjectRepairFacade {
 			copyOriginalSourceCode(srcApp, mutIdentifier);
 
 		}
-		// 
-		//List<String> dirsTest = getProperties().getTestDirSrc();
-		//for (String srctest : dirsTest) {
-			// copyOriginalSourceCode(srctest, mutIdentifier);
-		//}
 
 	}
 
 	/**
-	 * Copy the original code -from the path passed by parameter- to the
-	 * mutation folder
+	 * Copy the original code -from the path passed by parameter- to the mutation
+	 * folder
 	 * 
 	 * @param pathOriginalCode
 	 * @throws IOException
@@ -105,14 +100,14 @@ public class ProjectRepairFacade {
 		dirin.mkdir();
 	}
 
-	public boolean copyOriginalBin(String inDirs, String mutatorIdentifier) throws IOException {
-		if(inDirs == null){
+	public boolean copyOriginalBin(List<String> inDirs, String mutatorIdentifier) throws IOException {
+		if (inDirs == null) {
 			logger.debug("Original Bin folder does not exist");
 			return false;
 		}
-		
+
 		boolean copied = false;
-		for (String inDir : inDirs.split(File.pathSeparator)) {
+		for (String inDir : inDirs) {
 			if (inDir != null) {
 				File original = new File(inDir);
 				File dest = new File(getOutDirWithPrefix(mutatorIdentifier));
@@ -169,7 +164,6 @@ public class ProjectRepairFacade {
 		URL[] cp = classpath.toArray(new URL[0]);
 		return cp;
 	}
-
 
 	public ProjectConfiguration getProperties() {
 		return setUpProperties;
