@@ -112,9 +112,9 @@ public class ProjectConfiguration {
 	}
 
 	/**
-	 * Add the location given as parameters as project dependency. If the
-	 * location is a folder it adds all jar contained, if it's a file the method
-	 * directly add it.
+	 * Add the location given as parameters as project dependency. If the location
+	 * is a folder it adds all jar contained, if it's a file the method directly add
+	 * it.
 	 * 
 	 * @param path
 	 */
@@ -152,20 +152,20 @@ public class ProjectConfiguration {
 
 	}
 
-	public String getOriginalAppBinDir() {
-		return (String) this.internalProperties.get(ProjectPropertiesEnum.originalAppBinDir);
+	public List<String> getOriginalAppBinDir() {
+		return (List<String>) this.internalProperties.get(ProjectPropertiesEnum.originalAppBinDir);
 	}
 
-	public void setOriginalAppBinDir(String originalDirBin) {
+	public void setOriginalAppBinDir(List<String> originalDirBin) {
 		this.internalProperties.put(ProjectPropertiesEnum.originalAppBinDir, originalDirBin);
 	}
 
-	public String getOriginalTestBinDir() {
-		return (String) this.internalProperties.get(ProjectPropertiesEnum.originalTestBinDir);
+	public List<String> getOriginalTestBinDir() {
+		return (List<String>) this.internalProperties.get(ProjectPropertiesEnum.originalTestBinDir);
 	}
 
-	public void setOriginalTestBinDir(String dir) {
-		this.internalProperties.put(ProjectPropertiesEnum.originalTestBinDir, dir);
+	public void setOriginalTestBinDir(List<String> dirs) {
+		this.internalProperties.put(ProjectPropertiesEnum.originalTestBinDir, dirs);
 	}
 
 	public void setDependencies(String libPath) {
