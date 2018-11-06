@@ -239,6 +239,47 @@ public class CntxResolver {
 		retrieveAffectedAssigned(varsAffected, element, context);
 		retrieveAffectedVariablesUsed(varsAffected, element, context);
 		retrieveAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
+		retrievePrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
+
+	}
+
+	private void retrievePrimitiveWithCompatibleNotUsed(List<CtVariableAccess> varsAffected,
+			List<CtVariable> varsInScope, CtElement element, Cntx<Object> context) {
+
+		boolean hasVarNoPresent = false;
+		for (CtVariableAccess aVarFromAffected : varsAffected) {
+
+			if (!aVarFromAffected.getType().isPrimitive()
+					// parent is binary operator
+					|| aVarFromAffected.getParent(CtBinaryOperator.class) == null)
+				continue;
+
+			for (CtVariable aVarFromScope : varsInScope) {
+				if (!aVarFromScope.getSimpleName().equals(aVarFromAffected.getVariable().getSimpleName())) {
+
+					try {
+						if (aVarFromScope.getType().toString().equals(aVarFromAffected.getType().toString())
+								|| aVarFromScope.getType().equals(aVarFromAffected.getType())
+								|| aVarFromScope.getType().isSubtypeOf(aVarFromAffected.getType())
+								|| aVarFromAffected.getType().isSubtypeOf(aVarFromScope.getType())) {
+
+							boolean presentInExpression = varsAffected.stream()
+									.filter(e -> e.getVariable().getSimpleName().equals(aVarFromScope.getSimpleName()))
+									.findFirst().isPresent();
+							if (!presentInExpression) {
+								hasVarNoPresent = true;
+								context.getInformation().put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED,
+										hasVarNoPresent);
+								return;
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		context.getInformation().put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, hasVarNoPresent);
 
 	}
 
@@ -250,10 +291,17 @@ public class CntxResolver {
 			for (CtVariable ctVariable : varsInScope) {
 				if (!ctVariable.getSimpleName().equals(ctVariableAccess.getVariable().getSimpleName())) {
 
-					if (ctVariable.getType().equals(ctVariableAccess.getType())) {
-						hasSimType = true;
-						context.getInformation().put(CNTX_Property.HAS_VAR_SIM_TYPE, hasSimType);
-						return;
+					try {
+						if (ctVariable.getType().toString().equals(ctVariableAccess.getType().toString())
+								|| ctVariable.getType().equals(ctVariableAccess.getType())
+								|| ctVariable.getType().isSubtypeOf(ctVariableAccess.getType())
+								|| ctVariableAccess.getType().isSubtypeOf(ctVariable.getType())) {
+							hasSimType = true;
+							context.getInformation().put(CNTX_Property.HAS_VAR_SIM_TYPE, hasSimType);
+							return;
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			}

@@ -129,7 +129,10 @@ public enum CNTX_Property {
 	// sincewe do not assume full program) that take variablewhose type is same
 	// withvas one of its parametersand return boolean
 	LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
-	//
-	LE3, LE4, LE5, V1, V2, M1, M2,;
+	// LE3: For a logical expression, if the logical expression involves comparison
+	// over primitive type variables (that is, some boolean expressions are
+	// comparing the primitive values), is there any other visible local primitive
+	// type variables that are not included in the logica
+	LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, LE4, LE5, V1, V2, M1, M2,;
 
 }
