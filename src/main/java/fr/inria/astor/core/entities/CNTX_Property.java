@@ -112,6 +112,6 @@ public enum CNTX_Property {
 	// The element corresponding to the patch
 	PATCH_CODE_ELEMENT, PATCH_CODE_STATEMENT, POSITION, AFFECTED_PARENT, AFFECTED, OPERATION, AST_PARENT, AST,
 	//
-	S1, S2, S3, LE1, LE2, LE3, LE4, LE5, V1, V2, M1, M2,;
+	S1_NOT_ASSIGNED, S2, S3, LE1, LE2, LE3, LE4, LE5, V1, V2, M1, M2,;
 
 }

@@ -726,7 +726,7 @@ public class CntxResolverTest {
 				+ " float mysimilar = 1;"//
 				+ "Object ob = null;" //
 				+ "ob = new String();"//
-				+ "String t= ob.toString();" //
+				+ "String t= null;" // Not initialized (default expression == null)
 				+ "boolean com = (ob == t);" //
 				+ "com = (t==true);"//
 				+ "return ob;" + //
@@ -755,6 +755,11 @@ public class CntxResolverTest {
 		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
 		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
 
+		//
+		boolean existsNotAssigned = Boolean
+				.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_NOT_ASSIGNED).toString());
+		assertTrue(existsNotAssigned);
+
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
@@ -763,12 +768,88 @@ public class CntxResolverTest {
 		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
 		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
+
+		boolean existsAssigned = Boolean
+				.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_NOT_ASSIGNED).toString());
+		assertFalse(existsAssigned);
+
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
 		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
+
+	}
+
+	@Test
+	public void testProperty_NR_LocalVariable_ASSIGNED_withGlobalVars() {
+
+		String content = "" + "class X {"
+		//
+				+ " String tconst = null;"//
+
+				+ "public enum MYEN  {ENU1, ENU2;}" + //
+				"public Object foo() {" //
+				+ " float mysimilar = 1;"//
+				+ "Object ob = null;" //
+				+ "ob = new String();"//
+				+ "String t= null;" // Not initialized (default expression == null)
+				+ "boolean com = (ob == t);" //
+				+ "com = (t==tconst);" // the tconst never assigned
+				+ "tconst = t;" // assigning
+				+ "t = ctconst+tconst;" //
+				+ "return ob;" + //
+				"};};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+
+		CntxResolver cntxResolver = new CntxResolver();
+		CtElement element = null;
+		Cntx cntx = null;
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("com =")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		// All are local
+		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
+				.findFirst().get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
+				.findFirst().get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
 
 	}
 

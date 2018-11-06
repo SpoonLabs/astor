@@ -473,7 +473,7 @@ public class CntxResolver {
 			else
 				nrOfVarWithoutAssignment++;
 
-			if (variableAffected.getVariable() instanceof CtLocalVariable) {
+			if (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable) {
 				if (hasassig)
 					nrOfLocalVarWithAssignment++;
 				else
@@ -486,7 +486,12 @@ public class CntxResolver {
 		context.getInformation().put(CNTX_Property.NR_FIELD_INCOMPLETE_INIT, hasIncomplete);
 		context.getInformation().put(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL, nrOfLocalVarWithAssignment);
 		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL, nrOfLocalVarWithoutAssignment);
-		context.getInformation().put(CNTX_Property.S1, 0);
+
+		// S1 is if NR_OBJECT_ASSIGNED_LOCAL > 0 then
+		// if NR_VARIABLE_NOT_ASSIGNED = 0 then S1 = false else S1 = true
+		// Else S1= false
+
+		context.getInformation().put(CNTX_Property.S1_NOT_ASSIGNED, (nrOfLocalVarWithoutAssignment > 0));
 	}
 
 	@SuppressWarnings("rawtypes")
