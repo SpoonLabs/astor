@@ -757,7 +757,7 @@ public class CntxResolverTest {
 
 		//
 		boolean existsNotAssigned = Boolean
-				.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_NOT_ASSIGNED).toString());
+				.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_ASSIGNED).toString());
 		assertTrue(existsNotAssigned);
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
@@ -772,7 +772,7 @@ public class CntxResolverTest {
 		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
 
 		boolean existsAssigned = Boolean
-				.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_NOT_ASSIGNED).toString());
+				.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_ASSIGNED).toString());
 		assertFalse(existsAssigned);
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
@@ -893,6 +893,96 @@ public class CntxResolverTest {
 
 		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
 		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+
+	}
+
+	@Test
+	public void testProperty_NR_OBJECT_USED_LOCAL_VARS() {
+
+		String content = "" + "class X {" +
+		//
+				"String tdef = \"hello\";" + // defined
+				"String tco = null;" + //
+				"public enum MYEN  {ENU1, ENU2;}" + "public Object foo() {" //
+				+ " float mysimilar = 1;"//
+				+ "Object ob = null;" //
+				+ "ob = new String();"//
+				+ "String t= ob.toString();" //
+				+ "String t2 = null;" //
+				+ "boolean com = (ob == t) && (t2 == t);" //
+				+ "String t4 = null;" // Never used
+				+ "t2 = tco + t4 ;"// tco is not used, but it's not local, t4 never used but is local
+				+ "t = tco + t4 + tdef + t2;"// one global used not
+				+ "return ob;" + //
+				"};};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+
+		CntxResolver cntxResolver = new CntxResolver();
+		CtElement element = null;
+		Cntx cntx = null;
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
+				.findFirst().get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
+		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR));
+		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR));
+
+		boolean existsNotUsed = Boolean
+				.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
+		assertTrue(existsNotUsed);
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
+				.findFirst().get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
+		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+
+		existsNotUsed = Boolean.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
+		assertFalse(existsNotUsed);
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("t2 =")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
+		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+
+		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR));
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR));
+
+		existsNotUsed = Boolean.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
+		assertTrue(existsNotUsed);
+
+		/////
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("t =")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(3, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
+		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+
+		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR));
+		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR));
+
+		existsNotUsed = Boolean.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
+		assertFalse(existsNotUsed);
 
 	}
 

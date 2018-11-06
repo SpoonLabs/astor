@@ -360,6 +360,10 @@ public class CntxResolver {
 		assignmentScanner.scan(methodParent);
 		int usedObjects = 0;
 		int notUsedObjects = 0;
+
+		int usedObjectsLocal = 0;
+		int notUsedObjectsLocal = 0;
+
 		// For each variable affected
 		for (CtVariableAccess variableAffected : varsAffected) {
 
@@ -394,9 +398,21 @@ public class CntxResolver {
 			else
 				notUsedObjects++;
 
+			if (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable) {
+				if (used)
+					usedObjectsLocal++;
+				else
+					notUsedObjectsLocal++;
+			}
+
 		}
 		context.getInformation().put(CNTX_Property.NR_OBJECT_USED, usedObjects);
 		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_USED, notUsedObjects);
+
+		context.getInformation().put(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR, usedObjectsLocal);
+		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR, notUsedObjectsLocal);
+
+		context.getInformation().put(CNTX_Property.S1_LOCAL_VAR_NOT_USED, (notUsedObjectsLocal) > 0);
 
 	}
 
@@ -491,7 +507,7 @@ public class CntxResolver {
 		// if NR_VARIABLE_NOT_ASSIGNED = 0 then S1 = false else S1 = true
 		// Else S1= false
 
-		context.getInformation().put(CNTX_Property.S1_NOT_ASSIGNED, (nrOfLocalVarWithoutAssignment > 0));
+		context.getInformation().put(CNTX_Property.S1_LOCAL_VAR_NOT_ASSIGNED, (nrOfLocalVarWithoutAssignment > 0));
 	}
 
 	@SuppressWarnings("rawtypes")

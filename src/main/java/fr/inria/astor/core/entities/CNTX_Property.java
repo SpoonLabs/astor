@@ -96,6 +96,11 @@ public enum CNTX_Property {
 	// statements after its initial introduction.
 	NR_OBJECT_USED, NR_OBJECT_NOT_USED,
 
+	// If involves object reference (which is a local variable), whether the
+	// variable has been used in other
+	// statements after its initial introduction.
+	NR_OBJECT_USED_LOCAL_VAR, NR_OBJECT_NOT_USED_LOCAL_VAR,
+
 	// Is field (of an object type) initialization statement? If so, whether the
 	// object type has other fields which are not initialized since the definition
 	// of the object
@@ -112,6 +117,6 @@ public enum CNTX_Property {
 	// The element corresponding to the patch
 	PATCH_CODE_ELEMENT, PATCH_CODE_STATEMENT, POSITION, AFFECTED_PARENT, AFFECTED, OPERATION, AST_PARENT, AST,
 	//
-	S1_NOT_ASSIGNED, S2, S3, LE1, LE2, LE3, LE4, LE5, V1, V2, M1, M2,;
+	S1_LOCAL_VAR_NOT_ASSIGNED, S1_LOCAL_VAR_NOT_USED, S2, S3, LE1, LE2, LE3, LE4, LE5, V1, V2, M1, M2,;
 
 }
