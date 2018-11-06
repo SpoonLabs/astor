@@ -897,6 +897,60 @@ public class CntxResolverTest {
 	}
 
 	@Test
+	public void testProperty_S3_TYPE_OF_FAULTY_STATEMENT() {
+
+		String content = "" + "class X {" +
+		//
+				"String tdef = \"hello\";" + // defined
+				"String tco = null;" + //
+				"public enum MYEN  {ENU1, ENU2;}" + "public Object foo() {" //
+				+ " float mysimilar = 1;"//
+				+ "Object ob = null;" //
+				+ "ob = new String();"//
+				+ "String t= ob.toString();" //
+				+ "String t2 = null;" //
+				+ "boolean com = (ob == t) && (t2 == t);" //
+				+ "String t4 = null;" // Never used
+				+ "t2 = tco + t4 ;"// tco is not used, but it's not local, t4 never used but is local
+				+ "t = tco + t4 + tdef + t2;"// one global used not
+				+ "while (t != null){}" + "return ob;" + //
+				"};};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+
+		CntxResolver cntxResolver = new CntxResolver();
+		CtElement element = null;
+		Cntx cntx = null;
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
+				.findFirst().get();
+		cntx = cntxResolver.retrieveCntx(element);
+		assertEquals("LocalVariable", cntx.getInformation().get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
+				.findFirst().get();
+		cntx = cntxResolver.retrieveCntx(element);
+		assertEquals("Return", cntx.getInformation().get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("t2 =")).findFirst()
+				.get();
+		cntx = cntxResolver.retrieveCntx(element);
+		assertEquals("Assignment", cntx.getInformation().get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("while")).findFirst()
+				.get();
+		cntx = cntxResolver.retrieveCntx(element);
+		assertEquals("While", cntx.getInformation().get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
+
+	}
+
+	@Test
 	public void testProperty_NR_OBJECT_USED_LOCAL_VARS() {
 
 		String content = "" + "class X {" +

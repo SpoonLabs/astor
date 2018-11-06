@@ -147,6 +147,9 @@ public class CntxResolver {
 		retrieveVarsInScope(element, context);
 		retrieveMethodInformation(element, context);
 		retrieveParentTypes(element, context);
+
+		context.getInformation().put(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT,
+				element.getClass().getSimpleName().replaceAll("Ct", "").replaceAll("Impl", ""));
 		//
 
 		Cntx<Object> binCntx = new Cntx<>();
