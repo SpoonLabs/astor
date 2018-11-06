@@ -688,6 +688,7 @@ public class CntxResolver {
 		try {
 			boolean returnCompatible = false;
 			boolean paramCompatible = false;
+			boolean paramCompatibleWithBooleanReturn = false;
 			CtClass parentMethod = element.getParent(CtClass.class);
 			for (CtVariableAccess var : varsAffected) {
 
@@ -697,34 +698,35 @@ public class CntxResolver {
 						// System.out.println(var + " -1- " + method);
 						if (isSubtype(var, method)) {
 							returnCompatible = true;
-							break;
+							// break;
 						}
 
 					}
 					for (Object oparameter : method.getParameters()) {
 						CtParameter parameter = (CtParameter) oparameter;
-						// System.out.println(parameter.getType() + " -2- " + var.getType());
-						// if (var.getType().toString() ==
-						// "org.apache.lucene.index.TestTypePromotion.TestType") {
-						// System.out.println("here");
-						// }
 
-						if (var.getType() != null && parameter.getType() != null && !paramCompatible
-
-						// && !(parameter.getType().getParent(CtType.class).equals(var.getType())
-						//
-								&& parameter.getType().isSubtypeOf(var.getType())) {
+						if (var.getType() != null && parameter.getType() != null /* && !paramCompatible */
+								&& (parameter.getType().toString().equals(var.getType().toString())
+										|| parameter.getType().isSubtypeOf(var.getType()))) {
 							paramCompatible = true;
-							break;
+
+							if (method.getType().unbox().toString().equals("boolean")) {
+								paramCompatibleWithBooleanReturn = true;
+								break;
+							}
+
 						}
 					}
-					if (paramCompatible && returnCompatible)
+					if (paramCompatible && returnCompatible && paramCompatibleWithBooleanReturn)
 						break;
 				}
 
 			}
 			context.getInformation().put(CNTX_Property.IS_METHOD_RETURN_TYPE_VAR, returnCompatible);
 			context.getInformation().put(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR, paramCompatible);
+			context.getInformation().put(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
+					(paramCompatibleWithBooleanReturn));
+
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

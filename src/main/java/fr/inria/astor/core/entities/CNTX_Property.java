@@ -124,7 +124,12 @@ public enum CNTX_Property {
 	// whether exist other boolean expressions in the faulty class
 	// that involve using variable whose type is same wit
 	LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION,
+	// For any variable involved in a logical expression,whether exist methods
+	// (method declaration or methodcall) in scope (that is in the same faulty class
+	// sincewe do not assume full program) that take variablewhose type is same
+	// withvas one of its parametersand return boolean
+	LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
 	//
-	LE2, LE3, LE4, LE5, V1, V2, M1, M2,;
+	LE3, LE4, LE5, V1, V2, M1, M2,;
 
 }

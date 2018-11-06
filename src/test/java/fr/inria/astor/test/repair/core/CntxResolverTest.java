@@ -327,11 +327,16 @@ public class CntxResolverTest {
 	@Test
 	public void testProperty_IS_METHOD_PARAM_TYPE_VAR() {
 
-		String content = "" + "class X {" + "public Object foo() {" //
+		String content = "" + "class X {" + //
+				"public Object foo() {" //
 				+ " int a = 1;"//
-				+ "int b = a;" + "float f = 0; double d = 0;" + "return f;" + "}"
+				+ "int b = a;" //
+				+ "float f = 0; "//
+				+ "double d = 0;" //
+				+ "return f;" + "}"//
 				+ "public float getFloat(){return 1.0;}"//
 				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "public boolean getBoolConvertFloat(float f){return false;}"//
 				+ "};";
 
 		CtType type = getCtType(content);
@@ -342,24 +347,29 @@ public class CntxResolverTest {
 
 		assertNotNull(method);
 		System.out.println(method);
-		CtElement element = method.getBody().getStatement(4);
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return f"))
+				.findFirst().get();
 		System.out.println(element);
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
 		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 
+		///
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
 
 		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double d")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
 
 		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 
 	}
 
