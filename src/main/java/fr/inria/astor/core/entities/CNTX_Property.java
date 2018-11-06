@@ -86,9 +86,11 @@ public enum CNTX_Property {
 	USES_ENUM,
 	// If involves object reference, whether the variable has been assigned in other
 	// statements after its initial introduction
-	NR_OBJECT_ASSIGNED,
+	NR_VARIABLE_ASSIGNED,
 
-	NR_OBJECT_NOT_ASSIGNED,
+	NR_VARIABLE_NOT_ASSIGNED,
+
+	NR_OBJECT_ASSIGNED_LOCAL, NR_OBJECT_NOT_ASSIGNED_LOCAL,
 
 	// If involves object reference, whether the variable has been used in other
 	// statements after its initial introduction.
@@ -108,6 +110,8 @@ public enum CNTX_Property {
 	PATCH_INFO,
 
 	// The element corresponding to the patch
-	PATCH_CODE_ELEMENT, PATCH_CODE_STATEMENT, POSITION, AFFECTED_PARENT, AFFECTED, OPERATION, AST_PARENT, AST;
+	PATCH_CODE_ELEMENT, PATCH_CODE_STATEMENT, POSITION, AFFECTED_PARENT, AFFECTED, OPERATION, AST_PARENT, AST,
+	//
+	S1, S2, S3, LE1, LE2, LE3, LE4, LE5, V1, V2, M1, M2,;
 
 }

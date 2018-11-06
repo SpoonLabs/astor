@@ -407,6 +407,7 @@ public class CntxResolver {
 		CtMethod methodParent = element.getParent(CtMethod.class);
 
 		List<CtAssignment> assignments = new ArrayList<>();
+		List<CtLocalVariable> locals = new ArrayList<>();
 
 		CtScanner assignmentScanner = new CtScanner() {
 
@@ -416,18 +417,27 @@ public class CntxResolver {
 				assignments.add(assignement);
 			}
 
+			@Override
+			public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
+
+				locals.add(localVariable);
+			}
+
 		};
 
 		assignmentScanner.scan(methodParent);
 		boolean hasIncomplete = false;
-		int nrFieldsWithIncompleteInit = 0;
 		int nrOfVarWithAssignment = 0;
 		int nrOfVarWithoutAssignment = 0;
+
+		int nrOfLocalVarWithAssignment = 0;
+		int nrOfLocalVarWithoutAssignment = 0;
+
 		// For each variable affected
 		for (CtVariableAccess variableAffected : varsAffected) {
 
 			boolean hasassig = false;
-			// For each assignment in the methid
+			// For each assignment in the meth0d
 			for (CtAssignment assignment : assignments) {
 
 				if (!isElementBeforeVariable(variableAffected, assignment))
@@ -441,15 +451,42 @@ public class CntxResolver {
 					hasIncomplete = true;
 				}
 			}
+			// Let's find in local declaration
+			if (!hasassig) {
+
+				for (CtLocalVariable ctLocalVariable : locals) {
+
+					if (!isElementBeforeVariable(variableAffected, ctLocalVariable))
+						continue;
+
+					if (ctLocalVariable.getReference().getSimpleName()
+							.equals(variableAffected.getVariable().getSimpleName())
+							&& ctLocalVariable.getDefaultExpression() != null
+							&& !"null".equals(ctLocalVariable.getDefaultExpression().toString()))
+						hasassig = true;
+				}
+
+			}
+
 			if (hasassig)
 				nrOfVarWithAssignment++;
 			else
 				nrOfVarWithoutAssignment++;
 
+			if (variableAffected.getVariable() instanceof CtLocalVariable) {
+				if (hasassig)
+					nrOfLocalVarWithAssignment++;
+				else
+					nrOfLocalVarWithoutAssignment++;
+			}
+
 		}
-		context.getInformation().put(CNTX_Property.NR_OBJECT_ASSIGNED, nrOfVarWithAssignment);
-		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_ASSIGNED, nrOfVarWithoutAssignment);
+		context.getInformation().put(CNTX_Property.NR_VARIABLE_ASSIGNED, nrOfVarWithAssignment);
+		context.getInformation().put(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED, nrOfVarWithoutAssignment);
 		context.getInformation().put(CNTX_Property.NR_FIELD_INCOMPLETE_INIT, hasIncomplete);
+		context.getInformation().put(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL, nrOfLocalVarWithAssignment);
+		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL, nrOfLocalVarWithoutAssignment);
+		context.getInformation().put(CNTX_Property.S1, 0);
 	}
 
 	@SuppressWarnings("rawtypes")
