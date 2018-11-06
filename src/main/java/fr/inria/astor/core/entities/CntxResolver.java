@@ -302,8 +302,7 @@ public class CntxResolver {
 
 				// if the var access in the right is the same that the affected
 				for (CtVariableAccess varInAssign : varsInRightPart) {
-					if (varInAssign.getVariable().getSimpleName().equals(variableAffected.getVariable().getSimpleName())
-							|| varInAssign.equals(variableAffected)) {
+					if (hasSameName(variableAffected, varInAssign)) {
 
 						context.getInformation().put(CNTX_Property.HAS_VAR_IN_TRANSFORMATION, true);
 						return;
@@ -349,7 +348,7 @@ public class CntxResolver {
 
 		List<CtStatement> statements = new ArrayList<>();
 
-		CtScanner assignmentScanner = new CtScanner() {
+		CtScanner statementScanner = new CtScanner() {
 
 			@Override
 			public void scan(CtElement element) {
@@ -360,54 +359,88 @@ public class CntxResolver {
 			}
 		};
 
-		assignmentScanner.scan(methodParent);
+		statementScanner.scan(methodParent);
 		int usedObjects = 0;
 		int notUsedObjects = 0;
 
 		int usedObjectsLocal = 0;
 		int notUsedObjectsLocal = 0;
 
+		int similarUsedBefore = 0;
+		int notSimilarUsedBefore = 0;
+
 		// For each variable affected
 		for (CtVariableAccess variableAffected : varsAffected) {
 
-			if (variableAffected.getVariable().getType() != null
-					&& variableAffected.getVariable().getType().isPrimitive())
-				continue;
+			// if (variableAffected.getVariable().getType() != null
+			// && variableAffected.getVariable().getType().isPrimitive()
+			// )
+			// continue;
 
 			boolean used = false;
-			// For each assignment in the methid
-			for (CtStatement assignment : statements) {
+			boolean foundSimilarVarUsedBefore = false;
 
-				if (!isElementBeforeVariable(variableAffected, assignment))
+			boolean isInBinaryExpression = variableAffected.getParent(CtBinaryOperator.class) != null;
+
+			// For each assignment in the methid
+			for (CtStatement aStatement : statements) {
+
+				if (!isElementBeforeVariable(variableAffected, aStatement))
 					continue;
 
 				// let's collect the var access in the right part
-				List<CtVariableAccess> varsInRightPart = VariableResolver.collectVariableRead(assignment);
+				List<CtVariableAccess> varsInRightPart = VariableResolver.collectVariableRead(aStatement);
 				// if the var access in the right is the same that the affected
-				for (CtVariableAccess varInAssign : varsInRightPart) {
-					if (varInAssign.getVariable().getSimpleName().equals(variableAffected.getVariable().getSimpleName())
-							|| varInAssign.equals(variableAffected)) {
-
+				for (CtVariableAccess varInStatement : varsInRightPart) {
+					if (hasSameName(variableAffected, varInStatement)) {
 						used = true;
-						break;
-					}
+					} else {
+						// Different name, so it's another variable
 
+						// For any variable involved in a logical expression,
+						if (!isInBinaryExpression)
+							continue;
+
+						try {
+							// whether exist other boolean expressions
+							boolean hasBooleanExpressionParent = isParentBooleanExpression(varInStatement);
+							if (!hasBooleanExpressionParent)
+								continue;
+							// involve using variable whose type is same with v
+							if (varInStatement.getType().toString().equals(variableAffected.getType().toString())
+									|| varInStatement.getType().isSubtypeOf(variableAffected.getType())
+									|| variableAffected.getType().isSubtypeOf(varInStatement.getType())) {
+								foundSimilarVarUsedBefore = true;
+							}
+						} catch (Exception e) {
+							System.out.println("Problems with type");
+							e.printStackTrace();
+						}
+					}
 				}
-				if (used)
+				if (used && foundSimilarVarUsedBefore)
 					break;
 			}
-			if (used)
-				usedObjects++;
-			else
-				notUsedObjects++;
-
-			if (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable) {
+			// Not sure if include this restriction
+			if (variableAffected.getVariable().getType() != null
+					&& !variableAffected.getVariable().getType().isPrimitive()) {
 				if (used)
-					usedObjectsLocal++;
+					usedObjects++;
 				else
-					notUsedObjectsLocal++;
-			}
+					notUsedObjects++;
 
+				if (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable) {
+					if (used)
+						usedObjectsLocal++;
+					else
+						notUsedObjectsLocal++;
+				}
+			}
+			///
+			if (foundSimilarVarUsedBefore)
+				similarUsedBefore++;
+			else
+				notSimilarUsedBefore++;
 		}
 		context.getInformation().put(CNTX_Property.NR_OBJECT_USED, usedObjects);
 		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_USED, notUsedObjects);
@@ -416,6 +449,35 @@ public class CntxResolver {
 		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR, notUsedObjectsLocal);
 
 		context.getInformation().put(CNTX_Property.S1_LOCAL_VAR_NOT_USED, (notUsedObjectsLocal) > 0);
+
+		context.getInformation().put(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION, (similarUsedBefore) > 0);
+
+	}
+
+	public boolean hasSameName(CtVariableAccess variableAffected, CtVariableAccess varInStatement) {
+		return varInStatement.getVariable().getSimpleName().equals(variableAffected.getVariable().getSimpleName())
+				|| varInStatement.equals(variableAffected);
+	}
+
+	public boolean isParentBooleanExpression(CtVariableAccess varInStatement) {
+
+		CtExpression currentElement = varInStatement;
+		CtExpression expressionsParent = null;
+		do {
+			expressionsParent = currentElement.getParent(CtExpression.class);
+			if (expressionsParent != null) {
+				currentElement = expressionsParent;
+				if (currentElement.getType() != null && currentElement.getType().unbox().toString().equals("boolean")) {
+					return true;
+				}
+			}
+		} while (expressionsParent != null);
+
+		// boolean hasBooleanExpressionParent = currentElement.stream()
+		/// .filter(e ->
+		// e.getType().unbox().toString().equals("boolean")).findAny().isPresent();
+		// return hasBooleanExpressionParent;
+		return false;
 
 	}
 
@@ -837,8 +899,6 @@ public class CntxResolver {
 		context.getInformation().put(CNTX_Property.VARS, children);
 
 		retrieveAffectedVars(element, context, varsInScope);
-
-		// retrieveDM(element, context, varsInScope);
 
 	}
 

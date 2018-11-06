@@ -1041,6 +1041,76 @@ public class CntxResolverTest {
 	}
 
 	@Test
+	public void testProperty_L3() {
+
+		String content = "" + "class X {" +
+		//
+				"String tdef = \"hello\";" + // defined
+				"String tco = null;" + //
+				"public enum MYEN  {ENU1, ENU2;}"//
+				+ "public Object foo() {" //
+				+ " float mysimilar = 1;"//
+				+ "if (mysimilar > 0){};" //
+				+ "float f2 = 2;" //
+				+ "boolean s1 = (mysimilar > 2);" //
+				+ "boolean s2 = (f2 > 2);" //
+				+ "double d1 = 0;"//
+				+ "double d2=0;"//
+				+ "float f3 = (float) d1;" + // using d1 in not a binary
+				"if(true && (true && true && (f3))){}" + //
+				"boolean s3 = (d1 > 0)   ;"//
+				+ "boolean s4 = (d2 > 0)   ;"//
+				+ "return null;" + //
+				"};};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+
+		CntxResolver cntxResolver = new CntxResolver();
+		CtElement element = null;
+		Cntx cntx = null;
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s2"))
+				.findFirst().get();
+		cntx = cntxResolver.retrieveCntx(element);
+		boolean existsNotUsed = Boolean.parseBoolean(
+				cntx.getInformation().get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
+		assertTrue(existsNotUsed); // f2 and mysimilar
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s1"))
+				.findFirst().get();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		existsNotUsed = Boolean.parseBoolean(
+				cntx.getInformation().get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
+		assertFalse(existsNotUsed);
+
+		///
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s3"))
+				.findFirst().get();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		existsNotUsed = Boolean.parseBoolean(
+				cntx.getInformation().get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
+		assertFalse(existsNotUsed);
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s4"))
+				.findFirst().get();
+		cntx = cntxResolver.retrieveCntx(element);
+		// Now d1 is used in binary ()
+		existsNotUsed = Boolean.parseBoolean(
+				cntx.getInformation().get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
+		assertTrue(existsNotUsed);
+
+	}
+
+	@Test
 	public void testProperty_NR_FIElD_INIT_INCOMPLETE_1() {
 		// Case: fx from fx (recursive reference)
 		String content = "" + "class X {" //

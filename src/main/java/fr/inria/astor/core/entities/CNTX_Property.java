@@ -117,7 +117,14 @@ public enum CNTX_Property {
 	// The element corresponding to the patch
 	PATCH_CODE_ELEMENT, PATCH_CODE_STATEMENT, POSITION, AFFECTED_PARENT, AFFECTED, OPERATION, AST_PARENT, AST,
 	//
-	S1_LOCAL_VAR_NOT_ASSIGNED, S1_LOCAL_VAR_NOT_USED, S2, S3_TYPE_OF_FAULTY_STATEMENT, LE1, LE2, LE3, LE4, LE5, V1, V2,
-	M1, M2,;
+	S1_LOCAL_VAR_NOT_ASSIGNED, S1_LOCAL_VAR_NOT_USED, S2,
+	// Spoon class of the fault statement.
+	S3_TYPE_OF_FAULTY_STATEMENT,
+	// For any variable involved in a logical expression,
+	// whether exist other boolean expressions in the faulty class
+	// that involve using variable whose type is same wit
+	LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION,
+	//
+	LE2, LE3, LE4, LE5, V1, V2, M1, M2,;
 
 }
