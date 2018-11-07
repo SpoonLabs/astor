@@ -213,7 +213,8 @@ public class CntxResolverTest {
 	public void testPropertyBinop() {
 
 		String content = "" + "class X {" + "public Object foo() {" + " Integer.toString(10);"
-				+ " int a = 1,b = 1,c = 1,d = 1;" + " a = a + b / c +d  ; " + " return null;" + "}};";
+				+ " int a = 1,b = 1,c = 1,d = 1;" + " a = a + b / c +d  ; " //
+				+ " return (a == b && b == c)? null: null;" + "}};";
 
 		CtType type = getCtType(content);
 
@@ -239,9 +240,17 @@ public class CntxResolverTest {
 		assertEquals(Boolean.TRUE, binop.getInformation().get(CNTX_Property.involve_DIV_relation_operators));
 		assertEquals(Boolean.FALSE, binop.getInformation().get(CNTX_Property.involve_MUL_relation_operators));
 
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
+
 		List<String> ops = (List<String>) binop.getInformation().get(CNTX_Property.involved_relation_bin_operators);
 		assertTrue(ops.contains(BinaryOperatorKind.PLUS.toString()));
 		assertFalse(ops.contains(BinaryOperatorKind.MINUS.toString()));
+
+		CtElement returnStmt = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return"))
+				.findFirst().get();
+		cntx = cntxResolver.retrieveCntx(returnStmt);
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
+
 	}
 
 	@Test

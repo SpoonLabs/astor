@@ -136,6 +136,9 @@ public enum CNTX_Property {
 	LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED,
 	// Besides the variables involved in a logical expression, whether there exist
 	// other local boolean variables that are not involved in the faulty statement
-	LE4_EXISTS_LOCAL_UNUSED_VARIABLES, LE5, V1, V2, M1, M2,;
+	LE4_EXISTS_LOCAL_UNUSED_VARIABLES,
+	// Whether the number of boolean expressions in the logical expression is larger
+	// than 1
+	LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY, V1, V2, M1, M2,;
 
 }

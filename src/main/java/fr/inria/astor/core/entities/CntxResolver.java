@@ -154,7 +154,7 @@ public class CntxResolver {
 
 		Cntx<Object> binCntx = new Cntx<>();
 		context.getInformation().put(CNTX_Property.BIN_PROPERTIES, binCntx);
-		retrieveBinaryInvolved(element, binCntx);
+		retrieveBinaryInvolved(element, binCntx, context);
 
 		Cntx<Object> unaryCntx = new Cntx<>();
 		context.getInformation().put(CNTX_Property.UNARY_PROPERTIES, unaryCntx);
@@ -855,7 +855,7 @@ public class CntxResolver {
 				binOps.contains(UnaryOperatorKind.POSTDEC.toString()));
 	}
 
-	private void retrieveBinaryInvolved(CtElement element, Cntx<Object> context) {
+	private void retrieveBinaryInvolved(CtElement element, Cntx<Object> context, Cntx<Object> parentContext) {
 
 		List<String> binOps = new ArrayList();
 		CtScanner scanner = new CtScanner() {
@@ -879,16 +879,16 @@ public class CntxResolver {
 
 		context.getInformation().put(CNTX_Property.involve_GE_relation_operators,
 				binOps.contains(BinaryOperatorKind.GE.toString()));
-		context.getInformation().put(CNTX_Property.involve_AND_relation_operators,
-				binOps.contains(BinaryOperatorKind.AND.toString()));
-		context.getInformation().put(CNTX_Property.involve_OR_relation_operators,
-				binOps.contains(BinaryOperatorKind.OR.toString()));
-		context.getInformation().put(CNTX_Property.involve_BITOR_relation_operators,
-				binOps.contains(BinaryOperatorKind.BITOR.toString()));
-		context.getInformation().put(CNTX_Property.involve_BITXOR_relation_operators,
-				binOps.contains(BinaryOperatorKind.BITXOR.toString()));
-		context.getInformation().put(CNTX_Property.involve_BITAND_relation_operators,
-				binOps.contains(BinaryOperatorKind.BITAND.toString()));
+		boolean containsAnd = binOps.contains(BinaryOperatorKind.AND.toString());
+		context.getInformation().put(CNTX_Property.involve_AND_relation_operators, containsAnd);
+		boolean containsOr = binOps.contains(BinaryOperatorKind.OR.toString());
+		context.getInformation().put(CNTX_Property.involve_OR_relation_operators, containsOr);
+		boolean containsBitor = binOps.contains(BinaryOperatorKind.BITOR.toString());
+		context.getInformation().put(CNTX_Property.involve_BITOR_relation_operators, containsBitor);
+		boolean containsBitxor = binOps.contains(BinaryOperatorKind.BITXOR.toString());
+		context.getInformation().put(CNTX_Property.involve_BITXOR_relation_operators, containsBitxor);
+		boolean containsBitand = binOps.contains(BinaryOperatorKind.BITAND.toString());
+		context.getInformation().put(CNTX_Property.involve_BITAND_relation_operators, containsBitand);
 		context.getInformation().put(CNTX_Property.involve_EQ_relation_operators,
 				binOps.contains(BinaryOperatorKind.EQ.toString()));
 		context.getInformation().put(CNTX_Property.involve_NE_relation_operators,
@@ -918,6 +918,9 @@ public class CntxResolver {
 
 		context.getInformation().put(CNTX_Property.involve_INSTANCEOF_relation_operators,
 				binOps.contains(BinaryOperatorKind.INSTANCEOF.toString()));
+
+		parentContext.getInformation().put(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY,
+				(containsAnd || containsBitand || containsBitor || containsBitxor || containsOr));
 
 	}
 
