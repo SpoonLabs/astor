@@ -64,22 +64,15 @@ public enum CNTX_Property {
 	NUMBER_PRIMITIVE_VARS_IN_STMT,
 	// Involves object reference,
 	NUMBER_OBJECT_REFERENCE_VARS_IN_STMT,
-//	If statement involves variables, whether has methods in scope that return the type of the involved variable	
-	IS_METHOD_RETURN_TYPE_VAR,
+
 //
 
 	NUMBER_TOTAL_VARS_IN_STMT,
 
-	// If statement involves variables, whether has methods in scope that take the
-	// type of the involved variable as parameter
-
-	IS_METHOD_PARAM_TYPE_VAR,
 	// is there any other variable in scope that is similar in name We can have
 	// based on Levenstein distance
 	HAS_VAR_SIM_NAME,
-	// For an involved variable, is there any other variable in scope that is
-	// assigned to a certain function transformation of the involved variable
-	HAS_VAR_IN_TRANSFORMATION,
+
 	// Whether uses constants we can have
 	USES_CONSTANT,
 	// Whether uses enum we can have
@@ -152,11 +145,26 @@ public enum CNTX_Property {
 	// identifier names are majorlycapital letters are constant variables
 	V3_HAS_CONSTANT,
 
+	// If statement involves variables, whether has methods in scope that take the
+	// type of the involved variable as parameter
+
+	V4_BIS_IS_METHOD_PARAM_TYPE_VAR,
+
+	// For an involved variable, is there any other variable in scope that is
+	// assigned to a certain function transformation of the involved variable
+	V5_HAS_VAR_IN_TRANSFORMATION,
+
+//	If statement involves variables, whether has methods in scope that return 
+	// the type of the involved variable
+	V6_IS_METHOD_RETURN_TYPE_VAR,
+
 	M1,
 	// For each method invocation, whether there exist methods that return the same
 	// type (or type compatible) and are similar in identifier name with the called
 	// method (again, we limit the search to the faulty class, search both method
 	// definition and method invocations in the faulty class
-	M2_SIMILAR_METHOD_WITH_SAME_RETURN,;
+	M2_SIMILAR_METHOD_WITH_SAME_RETURN,
+
+	;
 
 }

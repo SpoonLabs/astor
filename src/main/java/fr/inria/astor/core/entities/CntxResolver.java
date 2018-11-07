@@ -382,14 +382,14 @@ public class CntxResolver {
 				for (CtVariableAccess varInAssign : varsInRightPart) {
 					if (hasSameName(variableAffected, varInAssign)) {
 
-						context.getInformation().put(CNTX_Property.HAS_VAR_IN_TRANSFORMATION, true);
+						context.getInformation().put(CNTX_Property.V5_HAS_VAR_IN_TRANSFORMATION, true);
 						return;
 					}
 				}
 			}
 
 		}
-		context.getInformation().put(CNTX_Property.HAS_VAR_IN_TRANSFORMATION, false);
+		context.getInformation().put(CNTX_Property.V5_HAS_VAR_IN_TRANSFORMATION, false);
 
 	}
 
@@ -839,8 +839,8 @@ public class CntxResolver {
 				}
 
 			}
-			context.getInformation().put(CNTX_Property.IS_METHOD_RETURN_TYPE_VAR, returnCompatible);
-			context.getInformation().put(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR, paramCompatible);
+			context.getInformation().put(CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR, returnCompatible);
+			context.getInformation().put(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR, paramCompatible);
 			context.getInformation().put(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
 					(paramCompatibleWithBooleanReturn));
 
