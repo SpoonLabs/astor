@@ -133,6 +133,9 @@ public enum CNTX_Property {
 	// over primitive type variables (that is, some boolean expressions are
 	// comparing the primitive values), is there any other visible local primitive
 	// type variables that are not included in the logica
-	LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, LE4, LE5, V1, V2, M1, M2,;
+	LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED,
+	// Besides the variables involved in a logical expression, whether there exist
+	// other local boolean variables that are not involved in the faulty statement
+	LE4_EXISTS_LOCAL_UNUSED_VARIABLES, LE5, V1, V2, M1, M2,;
 
 }

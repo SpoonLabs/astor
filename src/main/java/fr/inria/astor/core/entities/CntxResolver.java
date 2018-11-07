@@ -240,14 +240,39 @@ public class CntxResolver {
 		retrieveAffectedVariablesUsed(varsAffected, element, context);
 		retrieveAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
 		retrievePrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
+		retrieveBooleanVarNotUsed(varsAffected, varsInScope, element, context);
 
 	}
 
-	private void retrievePrimitiveWithCompatibleNotUsed(List<CtVariableAccess> varsAffected,
+	private void retrieveBooleanVarNotUsed(List<CtVariableAccess> varsAffectedInStatement, List<CtVariable> varsInScope,
+			CtElement element, Cntx<Object> context) {
+
+		boolean hasBooleanVarNotPresent = false;
+
+		for (CtVariable aVarInScope : varsInScope) {
+
+			if (aVarInScope.getType() != null && aVarInScope.getType().unbox().toString().equals("boolean")) {
+
+				boolean isPresentVar = varsAffectedInStatement.stream()
+						.filter(e -> e.getVariable().getSimpleName().equals(aVarInScope.getSimpleName())).findFirst()
+						.isPresent();
+				if (!isPresentVar) {
+					hasBooleanVarNotPresent = true;
+					break;
+				}
+			}
+		}
+		context.getInformation().put(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES, hasBooleanVarNotPresent);
+
+	}
+
+	private void retrievePrimitiveWithCompatibleNotUsed(List<CtVariableAccess> varsAffectedInStatement,
 			List<CtVariable> varsInScope, CtElement element, Cntx<Object> context) {
 
-		boolean hasVarNoPresent = false;
-		for (CtVariableAccess aVarFromAffected : varsAffected) {
+		boolean hasCompatibleVarNoPresent = false;
+		boolean hasBooleanVarNotPresent = false;
+
+		for (CtVariableAccess aVarFromAffected : varsAffectedInStatement) {
 
 			if (!aVarFromAffected.getType().isPrimitive()
 					// parent is binary operator
@@ -263,13 +288,13 @@ public class CntxResolver {
 								|| aVarFromScope.getType().isSubtypeOf(aVarFromAffected.getType())
 								|| aVarFromAffected.getType().isSubtypeOf(aVarFromScope.getType())) {
 
-							boolean presentInExpression = varsAffected.stream()
+							boolean presentInExpression = varsAffectedInStatement.stream()
 									.filter(e -> e.getVariable().getSimpleName().equals(aVarFromScope.getSimpleName()))
 									.findFirst().isPresent();
 							if (!presentInExpression) {
-								hasVarNoPresent = true;
+								hasCompatibleVarNoPresent = true;
 								context.getInformation().put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED,
-										hasVarNoPresent);
+										hasCompatibleVarNoPresent);
 								return;
 							}
 						}
@@ -279,7 +304,7 @@ public class CntxResolver {
 				}
 			}
 		}
-		context.getInformation().put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, hasVarNoPresent);
+		context.getInformation().put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, hasCompatibleVarNoPresent);
 
 	}
 
@@ -287,15 +312,17 @@ public class CntxResolver {
 			CtElement element, Cntx<Object> context) {
 
 		boolean hasSimType = false;
-		for (CtVariableAccess ctVariableAccess : varsAffected) {
-			for (CtVariable ctVariable : varsInScope) {
-				if (!ctVariable.getSimpleName().equals(ctVariableAccess.getVariable().getSimpleName())) {
+		for (CtVariableAccess aVariableAccessInStatement : varsAffected) {
+			for (CtVariable aVariableInScope : varsInScope) {
+				if (!aVariableInScope.getSimpleName()
+						.equals(aVariableAccessInStatement.getVariable().getSimpleName())) {
 
 					try {
-						if (ctVariable.getType().toString().equals(ctVariableAccess.getType().toString())
-								|| ctVariable.getType().equals(ctVariableAccess.getType())
-								|| ctVariable.getType().isSubtypeOf(ctVariableAccess.getType())
-								|| ctVariableAccess.getType().isSubtypeOf(ctVariable.getType())) {
+						if (aVariableInScope.getType().toString()
+								.equals(aVariableAccessInStatement.getType().toString())
+								|| aVariableInScope.getType().equals(aVariableAccessInStatement.getType())
+								|| aVariableInScope.getType().isSubtypeOf(aVariableAccessInStatement.getType())
+								|| aVariableAccessInStatement.getType().isSubtypeOf(aVariableInScope.getType())) {
 							hasSimType = true;
 							context.getInformation().put(CNTX_Property.HAS_VAR_SIM_TYPE, hasSimType);
 							return;

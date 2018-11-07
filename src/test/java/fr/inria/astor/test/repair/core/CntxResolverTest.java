@@ -554,6 +554,62 @@ public class CntxResolverTest {
 
 	}
 
+	@Test
+	public void testProperty_LE4_EXISTS_LOCAL_UNUSED_VARIABLES() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" //
+				+ "public Object foo() {" //
+				+ "boolean avarb =false;" //
+				+ "boolean bvarb =false;" //
+				+ "int mysimilar = 1;"//
+				+ "int myzimilar = (gvarb && avarb && bvarb)? 2:1;"// Use of two booleans
+				+ "float fiii = (float)myzimilar; "//
+				+ "double dother = 0;" //
+				+ "int f1 =  mysimilar + 1;" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(avarb && gvarb){};" //
+				+ "return (avarb && bvarb)? 2: 1;" + "}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
+		System.out.println(element);
+		CntxResolver cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// all variables used
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
+
+		// a local not used
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if (avarb"))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
+
+		// without the global
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
+				.get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
+
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void testProperty_HAS_VAR_IN_TRANSFORMATION() {
