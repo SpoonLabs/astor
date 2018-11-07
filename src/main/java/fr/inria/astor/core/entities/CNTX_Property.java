@@ -164,6 +164,11 @@ public enum CNTX_Property {
 	// method (again, we limit the search to the faulty class, search both method
 	// definition and method invocations in the faulty class
 	M2_SIMILAR_METHOD_WITH_SAME_RETURN,
+	// For each method invocation, whether has methoddefinitions or method calls (in
+	// the fault class) that takethe return type of the method invocation as one
+	// ofits parameters and the return type of the method istype compatible with the
+	// return type of the methodinvocation.
+	M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
 
 	;
 

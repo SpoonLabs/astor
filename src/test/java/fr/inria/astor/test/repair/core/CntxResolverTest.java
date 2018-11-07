@@ -698,6 +698,54 @@ public class CntxResolverTest {
 	}
 
 	@Test
+	public void testProperty_M3() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" //
+				+ "public Object foo() {" //
+				+ "boolean avarb =false;" //
+				+ "boolean bvarb =false;" //
+				+ "int mysimilar = 1;"//
+				+ "int myzimilar = (gvarb && avarb && bvarb)? 2:1;"// Use of two booleans
+				+ "float fiii =  getFloat(); "//
+				+ "double dother = 0;" //
+				+ "int f1 =  getConvertFloat(fiii);" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(avarb && gvarb){};" //
+				+ "return (avarb && bvarb)? 2: 1;" + "}"//
+				+ "public float getMFloat(){return 1.0;}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public int fint(int i){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1"))
+				.findFirst().get();
+		System.out.println(element);
+		CntxResolver cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// not method involve
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii ="))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+		// statement with a similar method
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP));
+
+	}
+
+	@Test
 	public void testProperty_M2_SIMILAR_METHOD_WITH_SAME_RETURN() {
 
 		String content = "" + "class X {" //
