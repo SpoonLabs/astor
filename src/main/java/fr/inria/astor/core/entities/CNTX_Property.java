@@ -149,6 +149,11 @@ public enum CNTX_Property {
 	// compatible.
 	V2_HAS_VAR_SIM_NAME_COMP_TYPE,
 
-	M1, M2,;
+	M1,
+	// For each method invocation, whether there exist methods that return the same
+	// type (or type compatible) and are similar in identifier name with the called
+	// method (again, we limit the search to the faulty class, search both method
+	// definition and method invocations in the faulty class
+	M2_SIMILAR_METHOD_WITH_SAME_RETURN,;
 
 }

@@ -408,9 +408,11 @@ public class CntxResolverTest {
 	@Test
 	public void testProperty_NUMBER_PRIMITIVE_VARS_IN_STMT() {
 
-		String content = "" + "class X {" + "public Object foo() {" + " String s=null;"//
+		String content = "" + "class X {" + "public Object foo() {" //
+				+ " String s=null;"//
 				+ " int a = 1;"//
-				+ "int b = a;" + "b = b+a;" + "s.toString();" + "String d=s;" + "return d.equals(s) || a>b ;" + "}};";
+				+ "int b = a;" + "b = b+a;" + "s.toString();" //
+				+ "String d=s;" + "return d.equals(s) || a>b ;" + "}};";
 
 		CtType type = getCtType(content);
 
@@ -448,8 +450,7 @@ public class CntxResolverTest {
 		assertEquals(0, cntx.getInformation().get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
 		assertEquals(2, cntx.getInformation().get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
 
-		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("s.toString()")).findFirst()
-				.get();
+		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("s.to")).findFirst().get();
 
 		cntx = cntxResolver.retrieveCntx(stm);
 
@@ -652,6 +653,61 @@ public class CntxResolverTest {
 		cntx = cntxResolver.retrieveCntx(element);
 
 		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
+
+	}
+
+	@Test
+	public void testProperty_M2_SIMILAR_METHOD_WITH_SAME_RETURN() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" //
+				+ "public Object foo() {" //
+				+ "boolean avarb =false;" //
+				+ "boolean bvarb =false;" //
+				+ "int mysimilar = 1;"//
+				+ "int myzimilar = (gvarb && avarb && bvarb)? 2:1;"// Use of two booleans
+				+ "float fiii =  getFloat(); "//
+				+ "double dother = 0;" //
+				+ "int f1 =  getConvertFloat(fiii);" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(avarb && gvarb){};" //
+				+ "return (avarb && bvarb)? 2: 1;" + "}"//
+				+ "public float getMFloat(){return 1.0;}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
+		System.out.println(element);
+		CntxResolver cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// not method involve
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii ="))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+		// statement with a similar method
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1")).findFirst()
+				.get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+		// all variables used
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
 
 	}
 
@@ -1454,11 +1510,11 @@ public class CntxResolverTest {
 		ConfigurationProperties.setProperty("max_synthesis_step", "100");
 		cntx = cntxResolver.retrieveCntx(element);
 
-		List<?> space = (List<?>) cntx.getInformation().get(CNTX_Property.PSPACE);
+		// List<?> space = (List<?>) cntx.getInformation().get(CNTX_Property.PSPACE);
 		int i = 0;
-		for (Object spaceeleemnt : space) {
-			System.out.println((i++) + "--> " + spaceeleemnt);
-		}
+		// for (Object spaceeleemnt : space) {
+		// System.out.println((i++) + "--> " + spaceeleemnt);
+		// }
 
 		// assertEquals(Boolean.FALSE,
 		// cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
@@ -1506,9 +1562,9 @@ public class CntxResolverTest {
 
 		List<?> space = (List<?>) cntx.getInformation().get(CNTX_Property.PSPACE);
 		int i = 0;
-		for (Object spaceeleemnt : space) {
-			System.out.println((i++) + "--> " + spaceeleemnt);
-		}
+		// for (Object spaceeleemnt : space) {
+		// System.out.println((i++) + "--> " + spaceeleemnt);
+		// }
 	}
 
 	@Test

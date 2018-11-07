@@ -20,6 +20,7 @@ import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
@@ -32,6 +33,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -145,7 +147,7 @@ public class CntxResolver {
 	@SuppressWarnings("unused")
 	public Cntx<?> retrieveCntx(CtElement element) {
 		Cntx<Object> context = new Cntx<>(determineKey(element));
-		retrieveVarsInScope(element, context);
+		analyzeVarsInScope(element, context);
 		retrieveMethodInformation(element, context);
 		retrieveParentTypes(element, context);
 
@@ -231,21 +233,21 @@ public class CntxResolver {
 		context.getInformation().put(CNTX_Property.USES_CONSTANT, literalsValues.size() > 0);
 	}
 
-	private void retrieveAffectedVars(CtElement element, Cntx<Object> context, List<CtVariable> varsInScope) {
+	private void analyzeBasedOnAffectedVars(CtElement element, Cntx<Object> context, List<CtVariable> varsInScope) {
 		List<CtVariableAccess> varsAffected = VariableResolver.collectVariableRead(element);
-		retrieveTypesVarsAffected(varsAffected, element, context);
-		retrieveAffectedVariablesInTransformation(varsAffected, element, context);
-		retrieveAffectedVariablesInMethod(varsAffected, element, context);
-		retrieveAffectedDistance(varsAffected, varsInScope, element, context);
-		retrieveAffectedAssigned(varsAffected, element, context);
-		retrieveAffectedVariablesUsed(varsAffected, element, context);
-		retrieveAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
-		retrievePrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
-		retrieveBooleanVarNotUsed(varsAffected, varsInScope, element, context);
+		analyzeTypesVarsAffected(varsAffected, element, context);
+		analyzeAffectedVariablesInTransformation(varsAffected, element, context);
+		analyzeAffectedVariablesInMethod(varsAffected, element, context);
+		analyzeAffectedDistanceVarName(varsAffected, varsInScope, element, context);
+		analyzeAffectedAssigned(varsAffected, element, context);
+		analyzeAffectedVariablesUsed(varsAffected, element, context);
+		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
+		analyzePrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
+		analyzeBooleanVarNotUsed(varsAffected, varsInScope, element, context);
 
 	}
 
-	private void retrieveBooleanVarNotUsed(List<CtVariableAccess> varsAffectedInStatement, List<CtVariable> varsInScope,
+	private void analyzeBooleanVarNotUsed(List<CtVariableAccess> varsAffectedInStatement, List<CtVariable> varsInScope,
 			CtElement element, Cntx<Object> context) {
 
 		boolean hasBooleanVarNotPresent = false;
@@ -267,11 +269,10 @@ public class CntxResolver {
 
 	}
 
-	private void retrievePrimitiveWithCompatibleNotUsed(List<CtVariableAccess> varsAffectedInStatement,
+	private void analyzePrimitiveWithCompatibleNotUsed(List<CtVariableAccess> varsAffectedInStatement,
 			List<CtVariable> varsInScope, CtElement element, Cntx<Object> context) {
 
 		boolean hasCompatibleVarNoPresent = false;
-		boolean hasBooleanVarNotPresent = false;
 
 		for (CtVariableAccess aVarFromAffected : varsAffectedInStatement) {
 
@@ -309,7 +310,7 @@ public class CntxResolver {
 
 	}
 
-	private void retrieveAffectedWithCompatibleTypes(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,
+	private void analyzeAffectedWithCompatibleTypes(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,
 			CtElement element, Cntx<Object> context) {
 
 		boolean hasSimType = false;
@@ -339,7 +340,7 @@ public class CntxResolver {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void retrieveAffectedVariablesInTransformation(List<CtVariableAccess> varsAffected, CtElement element,
+	private void analyzeAffectedVariablesInTransformation(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 
 		CtMethod methodParent = element.getParent(CtMethod.class);
@@ -417,7 +418,7 @@ public class CntxResolver {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void retrieveAffectedVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
+	private void analyzeAffectedVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 
 		CtMethod methodParent = element.getParent(CtMethod.class);
@@ -556,8 +557,7 @@ public class CntxResolver {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void retrieveAffectedAssigned(List<CtVariableAccess> varsAffected, CtElement element,
-			Cntx<Object> context) {
+	private void analyzeAffectedAssigned(List<CtVariableAccess> varsAffected, CtElement element, Cntx<Object> context) {
 
 		CtMethod methodParent = element.getParent(CtMethod.class);
 
@@ -729,7 +729,7 @@ public class CntxResolver {
 		return false;
 	}
 
-	private void retrieveAffectedDistance(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,
+	private void analyzeAffectedDistanceVarName(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,
 			CtElement element, Cntx<Object> context) {
 
 		boolean hasMinDist = false;
@@ -768,19 +768,22 @@ public class CntxResolver {
 	 * @param element
 	 * @param context
 	 */
-	private void retrieveAffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
+	private void analyzeAffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 		try {
 			boolean returnCompatible = false;
 			boolean paramCompatible = false;
 			boolean paramCompatibleWithBooleanReturn = false;
 			boolean compatibleReturnAndParameterTypes = false;
-			CtClass parentMethod = element.getParent(CtClass.class);
+			CtClass parentClass = element.getParent(CtClass.class);
 			for (CtVariableAccess var : varsAffected) {
 
-				for (Object omethod : parentMethod.getAllMethods()) {
+				for (Object omethod : parentClass.getAllMethods()) {
 					boolean matchInmethodType = false;
 					boolean matchInmethodReturn = false;
+
+					if (!(omethod instanceof CtMethod))
+						continue;
 
 					CtMethod method = (CtMethod) omethod;
 					if (/* !returnCompatible && */ method.getType() != null) {
@@ -993,7 +996,7 @@ public class CntxResolver {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void retrieveVarsInScope(CtElement element, Cntx<Object> context) {
+	private void analyzeVarsInScope(CtElement element, Cntx<Object> context) {
 		// Vars in scope at the position of element
 
 		List<CtVariable> varsInScope = VariableResolver.searchVariablesInScope(element);
@@ -1013,12 +1016,49 @@ public class CntxResolver {
 		}
 		context.getInformation().put(CNTX_Property.VARS, children);
 
-		retrieveAffectedVars(element, context, varsInScope);
+		analyzeBasedOnAffectedVars(element, context, varsInScope);
+
+		analyzeSimilarMethod(element, context);
+
+	}
+
+	private void analyzeSimilarMethod(CtElement element, Cntx<Object> context) {
+
+		CtClass parentClass = element.getParent(CtClass.class);
+		boolean hasMinDist = false;
+		List invocations = element.getElements(e -> (e instanceof CtInvocation));
+		for (Object object : invocations) {
+			CtInvocation invocation = (CtInvocation) object;
+			CtExecutable minvoked = invocation.getExecutable().getDeclaration();
+
+			for (Object omethod : parentClass.getAllMethods()) {
+
+				if (!(omethod instanceof CtMethod) || minvoked == null)
+					continue;
+
+				CtMethod method = (CtMethod) omethod;
+				if (method.getType() != null && minvoked.getType() != null) {
+					if (compareTypes(method.getType(), minvoked.getType())) {
+						// break;
+						int dist = StringDistance.calculate(method.getSimpleName(), minvoked.getSimpleName());
+						if (dist > 0 && dist < 3) {
+							hasMinDist = true;
+							context.getInformation().put(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, hasMinDist);
+							return;
+						}
+					}
+
+				}
+
+			}
+
+		}
+		context.getInformation().put(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, hasMinDist);
 
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void retrieveTypesVarsAffected(List<CtVariableAccess> varsAffected, CtElement element,
+	private void analyzeTypesVarsAffected(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 		// Vars in scope at the position of element
 
