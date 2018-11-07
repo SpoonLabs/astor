@@ -471,10 +471,13 @@ public class CntxResolverTest {
 	@Test
 	public void testProperty_HAS_VAR_SIM_NAME() {
 
-		String content = "" + "class X {" + "public Object foo() {" //
+		String content = "" + "class X {" + " int ffii = 1;"//
+				+ "public Object foo() {" //
 				+ " int mysimilar = 1;"//
-				+ "int myzimilar = 2;" + "float fiii = (float)myzimilar; double dother = 0;" + "return fiii;" + "}"
-				+ "public float getFloat(){return 1.0;}"//
+				+ "int myzimilar = 2;"//
+				+ "float fiii = (float)myzimilar;"//
+				+ " double dother = 0;" //
+				+ "return fiii;" + "}" + "public float getFloat(){return 1.0;}"//
 				+ "public int getConvertFloat(float f){return 1;}"//
 				+ "};";
 
@@ -491,8 +494,9 @@ public class CntxResolverTest {
 		System.out.println(element);
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
-
+		// affected myzimilar
 		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_NAME));
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double dother"))
 				.findFirst().get();
@@ -500,6 +504,15 @@ public class CntxResolverTest {
 		cntx = cntxResolver.retrieveCntx(element);
 
 		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_NAME));
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return f")).findFirst()
+				.get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_NAME));
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
 
 	}
 

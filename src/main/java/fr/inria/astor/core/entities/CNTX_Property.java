@@ -145,7 +145,10 @@ public enum CNTX_Property {
 	// its parameters and the return type of the method is type compatible with the
 	// type of the involved variable
 	V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
-	//
-	V2, M1, M2,;
+	// has any other variables in scope that are similar in identifier name and type
+	// compatible.
+	V2_HAS_VAR_SIM_NAME_COMP_TYPE,
+
+	M1, M2,;
 
 }

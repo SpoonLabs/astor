@@ -41,6 +41,7 @@ import spoon.reflect.path.CtPath;
 import spoon.reflect.path.impl.CtPathElement;
 import spoon.reflect.path.impl.CtPathImpl;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.reflect.code.CtVariableReadImpl;
 
@@ -482,9 +483,7 @@ public class CntxResolver {
 							if (!hasBooleanExpressionParent)
 								continue;
 							// involve using variable whose type is same with v
-							if (varInStatement.getType().toString().equals(variableAffected.getType().toString())
-									|| varInStatement.getType().isSubtypeOf(variableAffected.getType())
-									|| variableAffected.getType().isSubtypeOf(varInStatement.getType())) {
+							if (compareTypes(variableAffected.getType(), varInStatement.getType())) {
 								foundSimilarVarUsedBefore = true;
 							}
 						} catch (Exception e) {
@@ -734,20 +733,31 @@ public class CntxResolver {
 			CtElement element, Cntx<Object> context) {
 
 		boolean hasMinDist = false;
-		for (CtVariableAccess ctVariableAccess : varsAffected) {
-			for (CtVariable ctVariable : varsInScope) {
-				if (!ctVariable.getSimpleName().equals(ctVariableAccess.getVariable().getSimpleName())) {
-					int dist = StringDistance.calculate(ctVariable.getSimpleName(),
-							ctVariableAccess.getVariable().getSimpleName());
+		boolean SimilarNameCompatibleType = false;
+		for (CtVariableAccess aVarAffected : varsAffected) {
+			for (CtVariable aVarInScope : varsInScope) {
+				if (!aVarInScope.getSimpleName().equals(aVarAffected.getVariable().getSimpleName())) {
+					int dist = StringDistance.calculate(aVarInScope.getSimpleName(),
+							aVarAffected.getVariable().getSimpleName());
 					if (dist > 0 && dist < 3) {
 						hasMinDist = true;
 						context.getInformation().put(CNTX_Property.HAS_VAR_SIM_NAME, hasMinDist);
-						return;
+
+						if (compareTypes(aVarAffected.getType(), aVarInScope.getType())) {
+							SimilarNameCompatibleType = true;
+							context.getInformation().put(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE,
+									SimilarNameCompatibleType);
+
+							// to save computation
+							return;
+						}
 					}
+
 				}
 			}
 		}
 		context.getInformation().put(CNTX_Property.HAS_VAR_SIM_NAME, hasMinDist);
+		context.getInformation().put(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE, SimilarNameCompatibleType);
 
 	}
 
@@ -825,6 +835,17 @@ public class CntxResolver {
 		try {
 			return method.getType().isSubtypeOf(var.getType());
 		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public boolean compareTypes(CtTypeReference t1, CtTypeReference t2) {
+		try {
+			return t1 != null && t2 != null && (t1.toString().equals(t2.toString()) || t1.equals(t2)
+					|| t1.isSubtypeOf(t2) || t2.isSubtypeOf(t1));
+		} catch (Exception e) {
+			System.out.println("Error comparing types");
+			e.printStackTrace();
 			return false;
 		}
 	}
