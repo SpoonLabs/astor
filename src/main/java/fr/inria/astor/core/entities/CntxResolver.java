@@ -764,15 +764,20 @@ public class CntxResolver {
 			boolean returnCompatible = false;
 			boolean paramCompatible = false;
 			boolean paramCompatibleWithBooleanReturn = false;
+			boolean compatibleReturnAndParameterTypes = false;
 			CtClass parentMethod = element.getParent(CtClass.class);
 			for (CtVariableAccess var : varsAffected) {
 
 				for (Object omethod : parentMethod.getAllMethods()) {
+					boolean matchInmethodType = false;
+					boolean matchInmethodReturn = false;
+
 					CtMethod method = (CtMethod) omethod;
-					if (!returnCompatible && method.getType() != null) {
+					if (/* !returnCompatible && */ method.getType() != null) {
 						// System.out.println(var + " -1- " + method);
 						if (isSubtype(var, method)) {
 							returnCompatible = true;
+							matchInmethodReturn = true;
 							// break;
 						}
 
@@ -784,7 +789,7 @@ public class CntxResolver {
 								&& (parameter.getType().toString().equals(var.getType().toString())
 										|| parameter.getType().isSubtypeOf(var.getType()))) {
 							paramCompatible = true;
-
+							matchInmethodType = true;
 							if (method.getType().unbox().toString().equals("boolean")) {
 								paramCompatibleWithBooleanReturn = true;
 								break;
@@ -792,6 +797,11 @@ public class CntxResolver {
 
 						}
 					}
+
+					if (matchInmethodType && matchInmethodReturn) {
+						compatibleReturnAndParameterTypes = true;
+					}
+
 					if (paramCompatible && returnCompatible && paramCompatibleWithBooleanReturn)
 						break;
 				}
@@ -801,6 +811,10 @@ public class CntxResolver {
 			context.getInformation().put(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR, paramCompatible);
 			context.getInformation().put(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
 					(paramCompatibleWithBooleanReturn));
+
+			context.getInformation().put(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
+
+					(compatibleReturnAndParameterTypes));
 
 		} catch (Throwable e) {
 			e.printStackTrace();

@@ -326,11 +326,17 @@ public class CntxResolverTest {
 		Cntx cntx = cntxResolver.retrieveCntx(stassig);
 
 		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.IS_METHOD_RETURN_TYPE_VAR));
+		assertEquals(Boolean.FALSE,
+				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+
 		stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(stassig);
 
 		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.IS_METHOD_RETURN_TYPE_VAR));
+		assertEquals(Boolean.FALSE,
+				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+
 	}
 
 	@Test
@@ -345,6 +351,7 @@ public class CntxResolverTest {
 				+ "return f;" + "}"//
 				+ "public float getFloat(){return 1.0;}"//
 				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "public float getSameFloat(float f){return 1;}"//
 				+ "public boolean getBoolConvertFloat(float f){return false;}"//
 				+ "};";
 
@@ -364,6 +371,8 @@ public class CntxResolverTest {
 
 		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.TRUE,
+				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 		///
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f")).findFirst()
@@ -372,6 +381,8 @@ public class CntxResolverTest {
 
 		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE,
+				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double d")).findFirst()
 				.get();
@@ -379,6 +390,18 @@ public class CntxResolverTest {
 
 		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE,
+				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b")).findFirst()
+				.get();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		// int matches with Object.wait(int, int)
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE,
+				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 	}
 

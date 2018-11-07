@@ -139,6 +139,13 @@ public enum CNTX_Property {
 	LE4_EXISTS_LOCAL_UNUSED_VARIABLES,
 	// Whether the number of boolean expressions in the logical expression is larger
 	// than 1
-	LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY, V1, V2, M1, M2,;
+	LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY,
+	// For each involved variable, whether has method definitions or method calls
+	// (in the fault class) that take the type of the involved variable as one of
+	// its parameters and the return type of the method is type compatible with the
+	// type of the involved variable
+	V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
+	//
+	V2, M1, M2,;
 
 }
