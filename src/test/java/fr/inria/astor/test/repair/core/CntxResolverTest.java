@@ -518,6 +518,47 @@ public class CntxResolverTest {
 	}
 
 	@Test
+	public void testProperty_V3() {
+
+		String content = "" + "class X {" + //
+				"public String SC = null;"//
+				+ "public Object foo() {" //
+				+ " int mysimilar = 1;"//
+				+ "int myzimilar = 2;"//
+				+ "float fiii = (float)myzimilar; " //
+				+ "String s1 = SC;"//
+				+ "String s2 = s1;"//
+				+ "double dother = 0;" + "return fiii;" + "}" + "public float getFloat(){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().startsWith("java.lang.String s1")).findFirst().get();
+		System.out.println(element);
+		CntxResolver cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.V3_HAS_CONSTANT));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("java.lang.String s2"))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.V3_HAS_CONSTANT));
+
+	}
+
+	@Test
 	public void testProperty_HAS_VAR_SIM_TYPE() {
 
 		String content = "" + "class X {" + "public Object foo() {" //

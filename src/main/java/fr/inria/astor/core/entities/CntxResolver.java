@@ -244,6 +244,7 @@ public class CntxResolver {
 		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
 		analyzePrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
 		analyzeBooleanVarNotUsed(varsAffected, varsInScope, element, context);
+		analyzeAffectedHasConstant(varsAffected, varsInScope, element, context);
 
 	}
 
@@ -734,6 +735,7 @@ public class CntxResolver {
 
 		boolean hasMinDist = false;
 		boolean SimilarNameCompatibleType = false;
+
 		for (CtVariableAccess aVarAffected : varsAffected) {
 			for (CtVariable aVarInScope : varsInScope) {
 				if (!aVarInScope.getSimpleName().equals(aVarAffected.getVariable().getSimpleName())) {
@@ -755,9 +757,26 @@ public class CntxResolver {
 
 				}
 			}
+
 		}
 		context.getInformation().put(CNTX_Property.HAS_VAR_SIM_NAME, hasMinDist);
 		context.getInformation().put(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE, SimilarNameCompatibleType);
+
+	}
+
+	private void analyzeAffectedHasConstant(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,
+			CtElement element, Cntx<Object> context) {
+
+		boolean hasConstant = false;
+		for (CtVariableAccess aVarAffected : varsAffected) {
+			if (aVarAffected.getVariable() instanceof CtFieldReference && aVarAffected.getVariable().getSimpleName()
+					.toUpperCase().equals(aVarAffected.getVariable().getSimpleName())) {
+				hasConstant = true;
+				break;
+			}
+
+		}
+		context.getInformation().put(CNTX_Property.V3_HAS_CONSTANT, hasConstant);
 
 	}
 

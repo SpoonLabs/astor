@@ -148,6 +148,9 @@ public enum CNTX_Property {
 	// has any other variables in scope that are similar in identifier name and type
 	// compatible.
 	V2_HAS_VAR_SIM_NAME_COMP_TYPE,
+	// For each involved variable, is it constant?–canassume variables whose
+	// identifier names are majorlycapital letters are constant variables
+	V3_HAS_CONSTANT,
 
 	M1,
 	// For each method invocation, whether there exist methods that return the same
