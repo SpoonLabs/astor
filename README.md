@@ -59,18 +59,8 @@ jMutRepair
 jMutRepair is an implementation of mutation-based repair. The experiments about jMutRepair are described in
 
 * [ASTOR: A Program Repair Library for Java](https://hal.archives-ouvertes.fr/hal-01321615/document) (Matias Martinez, Martin Monperrus), in Proceedings of ISSTA, Demonstration Track, 2016.
-https://github.com/SpoonLabs/astor-experiments
+
 * Open-science repository with jMutRepair patches: <https://github.com/SpoonLabs/astor-experiments/>
-
-Cardumen
-----------
-
-Cardumen is a repair approach based on mined templates. The experiments about Cardumen are described in
-
-* [Ultra-Large Repair Search Space with Automatically Mined Templates: the Cardumen Mode of Astor ](https://arxiv.org/pdf/1712.03854v2), Proceedings of the 10th International Symposium on Search-Based Software Engineering, 2018
-* [Open-ended Exploration of the Program Repair Search Space with Mined Templates: the Next 8935 Patches for Defects4J](https://arxiv.org/pdf/1712.03854v1) (Martin Monperrus, Matias Martinez), Arxiv 1712.03854, 2017
-* Open-science repository with Cardumen patches: <https://github.com/SpoonLabs/astor-experiments/>
-
 
 DeepRepair
 ----------
@@ -80,6 +70,14 @@ DeepRepair is an extension of jGenProg leveraging code similarity. The experimen
 * [Sorting and Transforming Program Repair Ingredients via Deep Learning Code Similarities](https://arxiv.org/pdf/1707.04742.pdf) (Martin White, Michele Tufano, Matias Martinez, Martin Monperrus and Denys Poshyvanyk), Arxiv 1707.04742, 2017.
 * Open-science repository with DeepRepair patches: <https://github.com/SpoonLabs/astor-experiments/>
 
+Cardumen
+----------
+
+Cardumen is a repair approach based on mined templates. The experiments about Cardumen are described in
+
+* [Ultra-Large Repair Search Space with Automatically Mined Templates: the Cardumen Mode of Astor ](https://arxiv.org/pdf/1712.03854v2), Proceedings of the 10th International Symposium on Search-Based Software Engineering, 2018
+* [Open-ended Exploration of the Program Repair Search Space with Mined Templates: the Next 8935 Patches for Defects4J](https://arxiv.org/pdf/1712.03854v1) (Martin Monperrus, Matias Martinez), Arxiv 1712.03854, 2017
+* Open-science repository with Cardumen patches: <https://github.com/SpoonLabs/astor-experiments/>
 
 Usage
 ------
