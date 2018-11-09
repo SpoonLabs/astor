@@ -277,8 +277,8 @@ public class CntxResolver {
 
 		for (CtVariableAccess aVarFromAffected : varsAffectedInStatement) {
 
-			if (!aVarFromAffected.getType().isPrimitive()
-					// parent is binary operator
+			if (aVarFromAffected.getType() == null || !aVarFromAffected.getType().isPrimitive()
+			// parent is binary operator
 					|| aVarFromAffected.getParent(CtBinaryOperator.class) == null)
 				continue;
 
@@ -1043,20 +1043,38 @@ public class CntxResolver {
 
 		CtClass parentClass = element.getParent(CtClass.class);
 		boolean hasMinDist = false;
-		boolean hasCompatibleParameter = false;
+		boolean hasCompatibleParameterAndReturnWithOtherMethod = false;
+		boolean hasCompatibleParameterAndReturnSameMethod = false;
 		List invocations = element.getElements(e -> (e instanceof CtInvocation));
 		for (Object object : invocations) {
 			CtInvocation invocation = (CtInvocation) object;
 			CtExecutable minvokedInAffected = invocation.getExecutable().getDeclaration();
 
+			if (minvokedInAffected == null || !(minvokedInAffected instanceof CtMethod))
+				continue;
+
+			CtMethod affectedMethod = (CtMethod) minvokedInAffected;
+			for (Object oparameter : affectedMethod.getParameters()) {
+				CtParameter parameter = (CtParameter) oparameter;
+
+				if (affectedMethod != null && compareTypes(affectedMethod.getType(), parameter.getType())) {
+					hasCompatibleParameterAndReturnSameMethod = true;
+
+				}
+			}
+
+			// Check
+
+			// Check similar methods
 			for (Object omethod : parentClass.getAllMethods()) {
 
-				if (!(omethod instanceof CtMethod) || minvokedInAffected == null)
+				if (!(omethod instanceof CtMethod))
 					continue;
 
 				CtMethod anotherMethod = (CtMethod) omethod;
 				if (anotherMethod.getType() != null && minvokedInAffected.getType() != null) {
-					if (compareTypes(anotherMethod.getType(), minvokedInAffected.getType())) {
+					boolean compatibleTypes = compareTypes(anotherMethod.getType(), minvokedInAffected.getType());
+					if (compatibleTypes) {
 						int dist = StringDistance.calculate(anotherMethod.getSimpleName(),
 								minvokedInAffected.getSimpleName());
 						if (dist > 0 && dist < 3) {
@@ -1064,16 +1082,15 @@ public class CntxResolver {
 							context.getInformation().put(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, hasMinDist);
 						}
 
-						//
-						for (Object oparameter : anotherMethod.getParameters()) {
-							CtParameter parameter = (CtParameter) oparameter;
+					}
 
-							if (compareTypes(minvokedInAffected.getType(), parameter.getType())) {
-								hasCompatibleParameter = true;
-								break;
-							}
+					for (Object oparameter : anotherMethod.getParameters()) {
+						CtParameter parameter = (CtParameter) oparameter;
+
+						if (compareTypes(minvokedInAffected.getType(), parameter.getType())) {
+							hasCompatibleParameterAndReturnWithOtherMethod = compatibleTypes;
+
 						}
-
 					}
 
 				}
@@ -1082,7 +1099,10 @@ public class CntxResolver {
 
 		}
 		context.getInformation().put(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, hasMinDist);
-		context.getInformation().put(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP, hasCompatibleParameter);
+		context.getInformation().put(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
+				hasCompatibleParameterAndReturnWithOtherMethod);
+		context.getInformation().put(CNTX_Property.M4_PARAMETER_RETURN_COMPABILITY,
+				hasCompatibleParameterAndReturnSameMethod);
 
 	}
 

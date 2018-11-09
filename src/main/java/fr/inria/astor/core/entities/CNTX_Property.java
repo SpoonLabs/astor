@@ -170,6 +170,10 @@ public enum CNTX_Property {
 	// return type of the methodinvocation.
 	M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
 
+	// For each method invocation, whether the types ofsome of its parameters are
+	// same or compatible withthe return type of the method.
+	M4_PARAMETER_RETURN_COMPABILITY,
+
 	;
 
 }
