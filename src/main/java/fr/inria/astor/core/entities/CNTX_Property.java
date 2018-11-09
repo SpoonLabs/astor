@@ -110,7 +110,8 @@ public enum CNTX_Property {
 	// The element corresponding to the patch
 	PATCH_CODE_ELEMENT, PATCH_CODE_STATEMENT, POSITION, AFFECTED_PARENT, AFFECTED, OPERATION, AST_PARENT, AST,
 	//
-	S1_LOCAL_VAR_NOT_ASSIGNED, S1_LOCAL_VAR_NOT_USED, S2,
+	S1_LOCAL_VAR_NOT_ASSIGNED, //
+	S1_LOCAL_VAR_NOT_USED, S2, //
 	// Spoon class of the fault statement.
 	S3_TYPE_OF_FAULTY_STATEMENT,
 	// For any variable involved in a logical expression,
@@ -157,8 +158,8 @@ public enum CNTX_Property {
 //	If statement involves variables, whether has methods in scope that return 
 	// the type of the involved variable
 	V6_IS_METHOD_RETURN_TYPE_VAR,
-
-	M1,
+	// For each method invocation, whether the methodhas overloaded method
+	M1_OVERLOADED_METHOD,
 	// For each method invocation, whether there exist methods that return the same
 	// type (or type compatible) and are similar in identifier name with the called
 	// method (again, we limit the search to the faulty class, search both method

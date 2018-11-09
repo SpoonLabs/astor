@@ -82,21 +82,21 @@ public class CntxResolverTest {
 		Cntx cntx = cntxResolver.retrieveCntx(mp_buggy);
 
 		Cntx bugcntx = cntxResolver.retrieveBuggy(mp_buggy.getCodeElement());// (Cntx)
-																				// cntx.getInformation().get(CNTX_Property.BUG_INFO);
+																				// cntx.get(CNTX_Property.BUG_INFO);
 		// assertNotNull(cntx);
 		// System.out.println("Cntx:" + cntx);
 		// let's check the method return
-		assertEquals("double", (bugcntx.getInformation().get(CNTX_Property.METHOD_RETURN_TYPE)));
-		assertEquals(12, ((List) bugcntx.getInformation().get(CNTX_Property.PARENTS_TYPE)).size());
-		List parents = ((List) bugcntx.getInformation().get(CNTX_Property.PARENTS_TYPE));
+		assertEquals("double", (bugcntx.get(CNTX_Property.METHOD_RETURN_TYPE)));
+		assertEquals(12, ((List) bugcntx.get(CNTX_Property.PARENTS_TYPE)).size());
+		List parents = ((List) bugcntx.get(CNTX_Property.PARENTS_TYPE));
 		assertTrue(parents.size() > 0);
 		assertEquals("CtBlockImpl", parents.get(0));
 		assertEquals("CtMethodImpl", parents.get(1));
 
-		Set modif = ((Set) bugcntx.getInformation().get(CNTX_Property.METHOD_MODIFIERS));
+		Set modif = ((Set) bugcntx.get(CNTX_Property.METHOD_MODIFIERS));
 		assertTrue(modif.size() > 0);
 
-		List docs = ((List) bugcntx.getInformation().get(CNTX_Property.METHOD_COMMENTS));
+		List docs = ((List) bugcntx.get(CNTX_Property.METHOD_COMMENTS));
 		// assertTrue(docs.size() > 0); check why is failing? the method has doc.
 
 		JsonObject jsonroot = cntx.toJSON();
@@ -111,12 +111,12 @@ public class CntxResolverTest {
 		System.out.println("file out " + fileOut.getAbsolutePath());
 		assertTrue(fileOut.exists());
 
-		String spoonpath = (bugcntx.getInformation().get(CNTX_Property.SPOON_PATH).toString());
+		String spoonpath = (bugcntx.get(CNTX_Property.SPOON_PATH).toString());
 		assertNotNull(spoonpath);
 		System.out.println(spoonpath);
 		assertFalse(spoonpath.isEmpty());
 
-		String paths = (bugcntx.getInformation().get(CNTX_Property.PATH_ELEMENTS).toString());
+		String paths = (bugcntx.get(CNTX_Property.PATH_ELEMENTS).toString());
 		assertNotNull(paths);
 		System.out.println("Paths: \n" + paths);
 		assertFalse(paths.isEmpty());
@@ -155,16 +155,13 @@ public class CntxResolverTest {
 		assertNotNull(cntx);
 		System.out.println("Cntx:" + cntx);
 		// let's check the method return
-		assertEquals("CtWhileImpl", (((Cntx) (cntx.getInformation().get(CNTX_Property.BUG_INFO))).getInformation()
-				.get(CNTX_Property.TYPE)));
-		List opsBin = ((List) cntx.getInformation().get(CNTX_Property.involved_relation_bin_operators));
+		assertEquals("CtWhileImpl", (((Cntx) (cntx.get(CNTX_Property.BUG_INFO))).get(CNTX_Property.TYPE)));
+		List opsBin = ((List) cntx.get(CNTX_Property.involved_relation_bin_operators));
 		assertTrue(opsBin.size() > 0);
 		assertTrue(opsBin.size() == 1);
 
-		assertTrue(Boolean
-				.parseBoolean(cntx.getInformation().get(CNTX_Property.involve_LT_relation_operators).toString()));
-		assertFalse(Boolean
-				.parseBoolean(cntx.getInformation().get(CNTX_Property.involve_LE_relation_operators).toString()));
+		assertTrue(Boolean.parseBoolean(cntx.get(CNTX_Property.involve_LT_relation_operators).toString()));
+		assertFalse(Boolean.parseBoolean(cntx.get(CNTX_Property.involve_LE_relation_operators).toString()));
 
 	}
 
@@ -233,23 +230,23 @@ public class CntxResolverTest {
 
 		Cntx cntx = cntxResolver.retrieveCntx(stassig);
 
-		Cntx binop = (Cntx) cntx.getInformation().get(CNTX_Property.BIN_PROPERTIES);
+		Cntx binop = (Cntx) cntx.get(CNTX_Property.BIN_PROPERTIES);
 
-		assertEquals(Boolean.TRUE, binop.getInformation().get(CNTX_Property.involve_PLUS_relation_operators));
-		assertEquals(Boolean.FALSE, binop.getInformation().get(CNTX_Property.involve_MINUS_relation_operators));
-		assertEquals(Boolean.TRUE, binop.getInformation().get(CNTX_Property.involve_DIV_relation_operators));
-		assertEquals(Boolean.FALSE, binop.getInformation().get(CNTX_Property.involve_MUL_relation_operators));
+		assertEquals(Boolean.TRUE, binop.get(CNTX_Property.involve_PLUS_relation_operators));
+		assertEquals(Boolean.FALSE, binop.get(CNTX_Property.involve_MINUS_relation_operators));
+		assertEquals(Boolean.TRUE, binop.get(CNTX_Property.involve_DIV_relation_operators));
+		assertEquals(Boolean.FALSE, binop.get(CNTX_Property.involve_MUL_relation_operators));
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
 
-		List<String> ops = (List<String>) binop.getInformation().get(CNTX_Property.involved_relation_bin_operators);
+		List<String> ops = (List<String>) binop.get(CNTX_Property.involved_relation_bin_operators);
 		assertTrue(ops.contains(BinaryOperatorKind.PLUS.toString()));
 		assertFalse(ops.contains(BinaryOperatorKind.MINUS.toString()));
 
 		CtElement returnStmt = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return"))
 				.findFirst().get();
 		cntx = cntxResolver.retrieveCntx(returnStmt);
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
 
 	}
 
@@ -276,33 +273,31 @@ public class CntxResolverTest {
 
 		Cntx cntx = cntxResolver.retrieveCntx(stassig);
 
-		Cntx unopctxt = (Cntx) cntx.getInformation().get(CNTX_Property.UNARY_PROPERTIES);
+		Cntx unopctxt = (Cntx) cntx.get(CNTX_Property.UNARY_PROPERTIES);
 
-		List<String> ops = (List<String>) unopctxt.getInformation()
-				.get(CNTX_Property.involved_relation_unary_operators);
+		List<String> ops = (List<String>) unopctxt.get(CNTX_Property.involved_relation_unary_operators);
 
 		assertTrue(ops.contains(UnaryOperatorKind.NOT.toString()));
 		assertFalse(ops.contains(UnaryOperatorKind.POSTDEC.toString()));
 
-		assertEquals(Boolean.TRUE, unopctxt.getInformation().get(CNTX_Property.involve_NOT_relation_operators));
+		assertEquals(Boolean.TRUE, unopctxt.get(CNTX_Property.involve_NOT_relation_operators));
 		// assertEquals(Boolean.FALSE,
-		// unopctxt.getInformation().get(CNTX_Property.involve_INSTANCEOF_relation_operators));
-		assertEquals(Boolean.FALSE, unopctxt.getInformation().get(CNTX_Property.involve_POSTINC_relation_operators));
+		// unopctxt.get(CNTX_Property.involve_INSTANCEOF_relation_operators));
+		assertEquals(Boolean.FALSE, unopctxt.get(CNTX_Property.involve_POSTINC_relation_operators));
 
 		CtElement postin = ((CtIf) stassig).getThenStatement();
 		Cntx cntxposting = cntxResolver.retrieveCntx((CtElement) ((CtBlock) postin).getStatement(0));
-		Cntx unopctxtposting = (Cntx) cntxposting.getInformation().get(CNTX_Property.UNARY_PROPERTIES);
+		Cntx unopctxtposting = (Cntx) cntxposting.get(CNTX_Property.UNARY_PROPERTIES);
 
-		assertEquals(Boolean.FALSE, unopctxtposting.getInformation().get(CNTX_Property.involve_NOT_relation_operators));
+		assertEquals(Boolean.FALSE, unopctxtposting.get(CNTX_Property.involve_NOT_relation_operators));
 		// assertEquals(Boolean.FALSE,
-		// cntxposting.getInformation().get(CNTX_Property.involve_INSTANCEOF_relation_operators));
-		assertEquals(Boolean.TRUE,
-				unopctxtposting.getInformation().get(CNTX_Property.involve_POSTINC_relation_operators));
+		// cntxposting.get(CNTX_Property.involve_INSTANCEOF_relation_operators));
+		assertEquals(Boolean.TRUE, unopctxtposting.get(CNTX_Property.involve_POSTINC_relation_operators));
 
 	}
 
 	@Test
-	public void testProperty_IS_METHOD_RETURN_TYPE_VAR() {
+	public void testProperty_V1_IS_METHOD_RETURN_TYPE_VAR() {
 
 		String content = "" + "class X {" + "public Object foo() {" //
 				+ " int a = 1;"//
@@ -325,17 +320,15 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(stassig);
 
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR));
-		assertEquals(Boolean.FALSE,
-				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 		stassig = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(stassig);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR));
-		assertEquals(Boolean.FALSE,
-				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 	}
 
@@ -369,39 +362,35 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
-		assertEquals(Boolean.TRUE,
-				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 		///
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
-		assertEquals(Boolean.FALSE,
-				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double d")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
-		assertEquals(Boolean.FALSE,
-				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
 
 		// int matches with Object.wait(int, int)
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
-		assertEquals(Boolean.FALSE,
-				cntx.getInformation().get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
 	}
 
@@ -428,9 +417,9 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(stassig);
 
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
+		assertEquals(0, cntx.get(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT));
+		assertEquals(0, cntx.get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
+		assertEquals(0, cntx.get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
 
 		//
 		CtElement stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int b"))
@@ -438,34 +427,34 @@ public class CntxResolverTest {
 
 		cntx = cntxResolver.retrieveCntx(stm);
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
+		assertEquals(1, cntx.get(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT));
+		assertEquals(0, cntx.get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
+		assertEquals(1, cntx.get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
 
 		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("b =")).findFirst().get();
 
 		cntx = cntxResolver.retrieveCntx(stm);
 
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
+		assertEquals(2, cntx.get(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT));
+		assertEquals(0, cntx.get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
+		assertEquals(2, cntx.get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
 
 		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("s.to")).findFirst().get();
 
 		cntx = cntxResolver.retrieveCntx(stm);
 
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
+		assertEquals(0, cntx.get(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT));
+		assertEquals(1, cntx.get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
+		assertEquals(1, cntx.get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
 
 		stm = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ")).findFirst()
 				.get();
 
 		cntx = cntxResolver.retrieveCntx(stm);
 
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT));
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
-		assertEquals(4, cntx.getInformation().get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
+		assertEquals(2, cntx.get(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT));
+		assertEquals(2, cntx.get(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT));
+		assertEquals(4, cntx.get(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT));
 
 	}
 
@@ -496,24 +485,24 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 		// affected myzimilar
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_NAME));
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.HAS_VAR_SIM_NAME));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double dother"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_NAME));
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.HAS_VAR_SIM_NAME));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return f")).findFirst()
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_NAME));
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.HAS_VAR_SIM_NAME));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
 
 	}
 
@@ -546,7 +535,7 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.V3_HAS_CONSTANT));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V3_HAS_CONSTANT));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("java.lang.String s2"))
 				.findFirst().get();
@@ -554,7 +543,7 @@ public class CntxResolverTest {
 		cntxResolver = new CntxResolver();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.V3_HAS_CONSTANT));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V3_HAS_CONSTANT));
 
 	}
 
@@ -583,21 +572,21 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_TYPE));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.HAS_VAR_SIM_TYPE));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_TYPE));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.HAS_VAR_SIM_TYPE));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double")).findFirst()
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_TYPE));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.HAS_VAR_SIM_TYPE));
 
 	}
 
@@ -630,14 +619,14 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f2")).findFirst()
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED));
 
 	}
 
@@ -675,7 +664,7 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 		// all variables used
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
 
 		// a local not used
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if (avarb"))
@@ -684,7 +673,7 @@ public class CntxResolverTest {
 		cntxResolver = new CntxResolver();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
 
 		// without the global
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
@@ -693,7 +682,7 @@ public class CntxResolverTest {
 		cntxResolver = new CntxResolver();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES));
 
 	}
 
@@ -733,7 +722,7 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 		// not method involve
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii ="))
 				.findFirst().get();
@@ -741,7 +730,7 @@ public class CntxResolverTest {
 		cntxResolver = new CntxResolver();
 		cntx = cntxResolver.retrieveCntx(element);
 		// statement with a similar method
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP));
 
 	}
 
@@ -780,7 +769,7 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 		// not method involve
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii ="))
 				.findFirst().get();
@@ -788,7 +777,7 @@ public class CntxResolverTest {
 		cntxResolver = new CntxResolver();
 		cntx = cntxResolver.retrieveCntx(element);
 		// statement with a similar method
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1")).findFirst()
 				.get();
@@ -796,7 +785,7 @@ public class CntxResolverTest {
 		cntxResolver = new CntxResolver();
 		cntx = cntxResolver.retrieveCntx(element);
 		// all variables used
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN));
 
 	}
 
@@ -826,14 +815,14 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.V5_HAS_VAR_IN_TRANSFORMATION));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V5_HAS_VAR_IN_TRANSFORMATION));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double ddother"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.HAS_VAR_SIM_NAME));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.HAS_VAR_SIM_NAME));
 
 	}
 
@@ -865,14 +854,14 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.USES_CONSTANT));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.USES_CONSTANT));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.USES_CONSTANT));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.USES_CONSTANT));
 
 	}
 
@@ -903,14 +892,14 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.USES_ENUM));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.USES_ENUM));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float fiii"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 		// TODO: Failing:
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.USES_ENUM));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.USES_ENUM));
 
 	}
 
@@ -943,23 +932,23 @@ public class CntxResolverTest {
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(2, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
 	}
 
@@ -992,23 +981,23 @@ public class CntxResolverTest {
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
 	}
 
@@ -1045,15 +1034,14 @@ public class CntxResolverTest {
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 		// All are local
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
+		assertEquals(0, cntx.get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
 
 		//
-		boolean existsNotAssigned = Boolean
-				.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_ASSIGNED).toString());
+		boolean existsNotAssigned = Boolean.parseBoolean(cntx.get(CNTX_Property.S1_LOCAL_VAR_NOT_ASSIGNED).toString());
 		assertTrue(existsNotAssigned);
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
@@ -1061,25 +1049,24 @@ public class CntxResolverTest {
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(0, cntx.get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
 
-		boolean existsAssigned = Boolean
-				.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_ASSIGNED).toString());
+		boolean existsAssigned = Boolean.parseBoolean(cntx.get(CNTX_Property.S1_LOCAL_VAR_NOT_ASSIGNED).toString());
 		assertFalse(existsAssigned);
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
 
 	}
 
@@ -1120,32 +1107,32 @@ public class CntxResolverTest {
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(2, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 		// All are local
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
+		assertEquals(0, cntx.get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(0, cntx.get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_ASSIGNED));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_ASSIGNED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED));
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL));
 
 	}
 
@@ -1179,16 +1166,16 @@ public class CntxResolverTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_USED));
+		assertEquals(2, cntx.get(CNTX_Property.NR_OBJECT_NOT_USED));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_USED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_OBJECT_NOT_USED));
 
 	}
 
@@ -1228,21 +1215,21 @@ public class CntxResolverTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean com"))
 				.findFirst().get();
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals("LocalVariable", cntx.getInformation().get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
+		assertEquals("LocalVariable", cntx.get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
 				.findFirst().get();
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals("Return", cntx.getInformation().get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
+		assertEquals("Return", cntx.get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("t2 =")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals("Assignment", cntx.getInformation().get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
+		assertEquals("Assignment", cntx.get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("while")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals("While", cntx.getInformation().get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
+		assertEquals("While", cntx.get(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT));
 
 	}
 
@@ -1283,14 +1270,13 @@ public class CntxResolverTest {
 				.findFirst().get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_USED));
+		assertEquals(2, cntx.get(CNTX_Property.NR_OBJECT_NOT_USED));
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR));
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR));
+		assertEquals(2, cntx.get(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR));
 
-		boolean existsNotUsed = Boolean
-				.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
+		boolean existsNotUsed = Boolean.parseBoolean(cntx.get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
 		assertTrue(existsNotUsed);
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return ob"))
@@ -1298,10 +1284,10 @@ public class CntxResolverTest {
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_USED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_OBJECT_NOT_USED));
 
-		existsNotUsed = Boolean.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
+		existsNotUsed = Boolean.parseBoolean(cntx.get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
 		assertFalse(existsNotUsed);
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("t2 =")).findFirst()
@@ -1309,13 +1295,13 @@ public class CntxResolverTest {
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+		assertEquals(0, cntx.get(CNTX_Property.NR_OBJECT_USED));
+		assertEquals(2, cntx.get(CNTX_Property.NR_OBJECT_NOT_USED));
 
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR));
+		assertEquals(0, cntx.get(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR));
 
-		existsNotUsed = Boolean.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
+		existsNotUsed = Boolean.parseBoolean(cntx.get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
 		assertTrue(existsNotUsed);
 
 		/////
@@ -1325,13 +1311,13 @@ public class CntxResolverTest {
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(3, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED));
-		assertEquals(1, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED));
+		assertEquals(3, cntx.get(CNTX_Property.NR_OBJECT_USED));
+		assertEquals(1, cntx.get(CNTX_Property.NR_OBJECT_NOT_USED));
 
-		assertEquals(2, cntx.getInformation().get(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR));
-		assertEquals(0, cntx.getInformation().get(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR));
+		assertEquals(2, cntx.get(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR));
+		assertEquals(0, cntx.get(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR));
 
-		existsNotUsed = Boolean.parseBoolean(cntx.getInformation().get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
+		existsNotUsed = Boolean.parseBoolean(cntx.get(CNTX_Property.S1_LOCAL_VAR_NOT_USED).toString());
 		assertFalse(existsNotUsed);
 
 	}
@@ -1375,16 +1361,15 @@ public class CntxResolverTest {
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s2"))
 				.findFirst().get();
 		cntx = cntxResolver.retrieveCntx(element);
-		boolean existsNotUsed = Boolean.parseBoolean(
-				cntx.getInformation().get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
+		boolean existsNotUsed = Boolean
+				.parseBoolean(cntx.get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertTrue(existsNotUsed); // f2 and mysimilar
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s1"))
 				.findFirst().get();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		existsNotUsed = Boolean.parseBoolean(
-				cntx.getInformation().get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
+		existsNotUsed = Boolean.parseBoolean(cntx.get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertFalse(existsNotUsed);
 
 		///
@@ -1392,16 +1377,14 @@ public class CntxResolverTest {
 				.findFirst().get();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		existsNotUsed = Boolean.parseBoolean(
-				cntx.getInformation().get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
+		existsNotUsed = Boolean.parseBoolean(cntx.get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertFalse(existsNotUsed);
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s4"))
 				.findFirst().get();
 		cntx = cntxResolver.retrieveCntx(element);
 		// Now d1 is used in binary ()
-		existsNotUsed = Boolean.parseBoolean(
-				cntx.getInformation().get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
+		existsNotUsed = Boolean.parseBoolean(cntx.get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
 		assertTrue(existsNotUsed);
 
 	}
@@ -1439,7 +1422,7 @@ public class CntxResolverTest {
 		cntx = cntxResolver.retrieveCntx(element);
 		// field not assigned fX
 		// Strange behaviour: fails when running, works when debbuging
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+		// assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
 
 	}
 
@@ -1478,7 +1461,7 @@ public class CntxResolverTest {
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
 
 	}
 
@@ -1517,7 +1500,7 @@ public class CntxResolverTest {
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(Boolean.TRUE, cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
 
 	}
 
@@ -1557,7 +1540,7 @@ public class CntxResolverTest {
 				.get();
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
-		assertEquals(Boolean.FALSE, cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
 
 	}
 
@@ -1599,14 +1582,14 @@ public class CntxResolverTest {
 		ConfigurationProperties.setProperty("max_synthesis_step", "100");
 		cntx = cntxResolver.retrieveCntx(element);
 
-		// List<?> space = (List<?>) cntx.getInformation().get(CNTX_Property.PSPACE);
+		// List<?> space = (List<?>) cntx.get(CNTX_Property.PSPACE);
 		int i = 0;
 		// for (Object spaceeleemnt : space) {
 		// System.out.println((i++) + "--> " + spaceeleemnt);
 		// }
 
 		// assertEquals(Boolean.FALSE,
-		// cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+		// cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
 
 	}
 
@@ -1647,9 +1630,9 @@ public class CntxResolverTest {
 		System.out.println(element);
 		cntx = cntxResolver.retrieveCntx(element);
 		// assertEquals(Boolean.FALSE,
-		// cntx.getInformation().get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
+		// cntx.get(CNTX_Property.NR_FIELD_INCOMPLETE_INIT));
 
-		List<?> space = (List<?>) cntx.getInformation().get(CNTX_Property.PSPACE);
+		List<?> space = (List<?>) cntx.get(CNTX_Property.PSPACE);
 		int i = 0;
 		// for (Object spaceeleemnt : space) {
 		// System.out.println((i++) + "--> " + spaceeleemnt);

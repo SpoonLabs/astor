@@ -87,13 +87,12 @@ public class CntxResolver {
 	public Cntx<?> retrievePatchCntx(CtElement element) {
 		Cntx<Object> patchcontext = new Cntx<>(determineKey(element));
 
-		patchcontext.getInformation().put(CNTX_Property.PATCH_CODE_ELEMENT, element.toString());
+		patchcontext.put(CNTX_Property.PATCH_CODE_ELEMENT, element.toString());
 
 		CtElement stmt = element.getParent(CtStatement.class);
 		if (stmt == null)
 			stmt = element.getParent(CtMethod.class);
-		patchcontext.getInformation().put(CNTX_Property.PATCH_CODE_STATEMENT,
-				(stmt != null) ? element.toString() : null);
+		patchcontext.put(CNTX_Property.PATCH_CODE_STATEMENT, (stmt != null) ? element.toString() : null);
 
 		retrieveType(element, patchcontext);
 		retrievePath(element, patchcontext);
@@ -110,17 +109,17 @@ public class CntxResolver {
 		retrieveType(element, context);
 
 		//
-		context.getInformation().put(CNTX_Property.CODE, element.toString());
+		context.put(CNTX_Property.CODE, element.toString());
 
 		CtElement stmt = element.getParent(CtStatement.class);
 		if (stmt == null)
 			stmt = element.getParent(CtMethod.class);
-		context.getInformation().put(CNTX_Property.BUGGY_STATEMENT, (stmt != null) ? element.toString() : null);
+		context.put(CNTX_Property.BUGGY_STATEMENT, (stmt != null) ? element.toString() : null);
 
 		//
 		Cntx<Object> buggyPositionCntx = new Cntx<>();
 		retrievePosition(element, buggyPositionCntx);
-		context.getInformation().put(CNTX_Property.POSITION, buggyPositionCntx);
+		context.put(CNTX_Property.POSITION, buggyPositionCntx);
 
 		return context;
 	}
@@ -134,12 +133,12 @@ public class CntxResolver {
 		retrieveType(element, context);
 
 		//
-		context.getInformation().put(CNTX_Property.CODE, element.toString());
+		context.put(CNTX_Property.CODE, element.toString());
 
 		//
 		Cntx<Object> buggyPositionCntx = new Cntx<>();
 		retrievePosition(element, buggyPositionCntx);
-		context.getInformation().put(CNTX_Property.POSITION, buggyPositionCntx);
+		context.put(CNTX_Property.POSITION, buggyPositionCntx);
 
 		return context;
 	}
@@ -150,17 +149,17 @@ public class CntxResolver {
 		analyzeVarsInScope(element, context);
 		retrieveMethodInformation(element, context);
 		retrieveParentTypes(element, context);
-
-		context.getInformation().put(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT,
+		// TODO: a write per type (we have the list in coming)
+		context.put(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT,
 				element.getClass().getSimpleName().replaceAll("Ct", "").replaceAll("Impl", ""));
 		//
 
 		Cntx<Object> binCntx = new Cntx<>();
-		context.getInformation().put(CNTX_Property.BIN_PROPERTIES, binCntx);
+		context.put(CNTX_Property.BIN_PROPERTIES, binCntx);
 		retrieveBinaryInvolved(element, binCntx, context);
 
 		Cntx<Object> unaryCntx = new Cntx<>();
-		context.getInformation().put(CNTX_Property.UNARY_PROPERTIES, unaryCntx);
+		context.put(CNTX_Property.UNARY_PROPERTIES, unaryCntx);
 		retrieveUnaryInvolved(element, unaryCntx);
 
 		retrieveUseEnumAndConstants(element, context);
@@ -192,10 +191,10 @@ public class CntxResolver {
 		try {
 			List<CtExpression> result = ib.synthesizer(ctexpressions, cteVarReadList);
 			List<String> resultstring = result.stream().map(e -> e.toString()).collect(Collectors.toList());
-			context.getInformation().put(CNTX_Property.PSPACE, resultstring);
+			context.put(CNTX_Property.PSPACE, resultstring);
 		} catch (Exception e) {
 			e.printStackTrace();
-			context.getInformation().put(CNTX_Property.PSPACE, null);
+			context.put(CNTX_Property.PSPACE, null);
 		}
 	}
 
@@ -229,8 +228,8 @@ public class CntxResolver {
 		};
 
 		assignmentScanner.scan(element);
-		context.getInformation().put(CNTX_Property.USES_ENUM, enumsValues.size() > 0);
-		context.getInformation().put(CNTX_Property.USES_CONSTANT, literalsValues.size() > 0);
+		context.put(CNTX_Property.USES_ENUM, enumsValues.size() > 0);
+		context.put(CNTX_Property.USES_CONSTANT, literalsValues.size() > 0);
 	}
 
 	private void analyzeBasedOnAffectedVars(CtElement element, Cntx<Object> context, List<CtVariable> varsInScope) {
@@ -266,7 +265,7 @@ public class CntxResolver {
 				}
 			}
 		}
-		context.getInformation().put(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES, hasBooleanVarNotPresent);
+		context.put(CNTX_Property.LE4_EXISTS_LOCAL_UNUSED_VARIABLES, hasBooleanVarNotPresent);
 
 	}
 
@@ -296,7 +295,7 @@ public class CntxResolver {
 									.findFirst().isPresent();
 							if (!presentInExpression) {
 								hasCompatibleVarNoPresent = true;
-								context.getInformation().put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED,
+								context.put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED,
 										hasCompatibleVarNoPresent);
 								return;
 							}
@@ -307,7 +306,7 @@ public class CntxResolver {
 				}
 			}
 		}
-		context.getInformation().put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, hasCompatibleVarNoPresent);
+		context.put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, hasCompatibleVarNoPresent);
 
 	}
 
@@ -327,7 +326,7 @@ public class CntxResolver {
 								|| aVariableInScope.getType().isSubtypeOf(aVariableAccessInStatement.getType())
 								|| aVariableAccessInStatement.getType().isSubtypeOf(aVariableInScope.getType())) {
 							hasSimType = true;
-							context.getInformation().put(CNTX_Property.HAS_VAR_SIM_TYPE, hasSimType);
+							context.put(CNTX_Property.HAS_VAR_SIM_TYPE, hasSimType);
 							return;
 						}
 					} catch (Exception e) {
@@ -336,7 +335,7 @@ public class CntxResolver {
 				}
 			}
 		}
-		context.getInformation().put(CNTX_Property.HAS_VAR_SIM_TYPE, hasSimType);
+		context.put(CNTX_Property.HAS_VAR_SIM_TYPE, hasSimType);
 
 	}
 
@@ -366,8 +365,11 @@ public class CntxResolver {
 
 		assignmentScanner.scan(methodParent);
 
+		boolean v5_anyhasvar = false;
 		// For each variable affected
 		for (CtVariableAccess variableAffected : varsAffected) {
+
+			boolean v5_VarHasvar = false;
 
 			// For each assignment in the methid
 			for (CtExpression assignment : assignments) {
@@ -382,14 +384,17 @@ public class CntxResolver {
 				for (CtVariableAccess varInAssign : varsInRightPart) {
 					if (hasSameName(variableAffected, varInAssign)) {
 
-						context.getInformation().put(CNTX_Property.V5_HAS_VAR_IN_TRANSFORMATION, true);
-						return;
+						v5_anyhasvar = true;
+						v5_VarHasvar = true;
+						break;
 					}
 				}
 			}
+			writeDetailedInformation(context, variableAffected.getVariable().getSimpleName(),
+					CNTX_Property.V5_HAS_VAR_IN_TRANSFORMATION, (v5_VarHasvar));
 
 		}
-		context.getInformation().put(CNTX_Property.V5_HAS_VAR_IN_TRANSFORMATION, false);
+		context.put(CNTX_Property.V5_HAS_VAR_IN_TRANSFORMATION, v5_anyhasvar);
 
 	}
 
@@ -518,15 +523,15 @@ public class CntxResolver {
 			else
 				notSimilarUsedBefore++;
 		}
-		context.getInformation().put(CNTX_Property.NR_OBJECT_USED, usedObjects);
-		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_USED, notUsedObjects);
+		context.put(CNTX_Property.NR_OBJECT_USED, usedObjects);
+		context.put(CNTX_Property.NR_OBJECT_NOT_USED, notUsedObjects);
 
-		context.getInformation().put(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR, usedObjectsLocal);
-		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR, notUsedObjectsLocal);
+		context.put(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR, usedObjectsLocal);
+		context.put(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR, notUsedObjectsLocal);
 
-		context.getInformation().put(CNTX_Property.S1_LOCAL_VAR_NOT_USED, (notUsedObjectsLocal) > 0);
+		context.put(CNTX_Property.S1_LOCAL_VAR_NOT_USED, (notUsedObjectsLocal) > 0);
 
-		context.getInformation().put(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION, (similarUsedBefore) > 0);
+		context.put(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION, (similarUsedBefore) > 0);
 
 	}
 
@@ -637,17 +642,17 @@ public class CntxResolver {
 			}
 
 		}
-		context.getInformation().put(CNTX_Property.NR_VARIABLE_ASSIGNED, nrOfVarWithAssignment);
-		context.getInformation().put(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED, nrOfVarWithoutAssignment);
-		context.getInformation().put(CNTX_Property.NR_FIELD_INCOMPLETE_INIT, hasIncomplete);
-		context.getInformation().put(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL, nrOfLocalVarWithAssignment);
-		context.getInformation().put(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL, nrOfLocalVarWithoutAssignment);
+		context.put(CNTX_Property.NR_VARIABLE_ASSIGNED, nrOfVarWithAssignment);
+		context.put(CNTX_Property.NR_VARIABLE_NOT_ASSIGNED, nrOfVarWithoutAssignment);
+		context.put(CNTX_Property.NR_FIELD_INCOMPLETE_INIT, hasIncomplete);
+		context.put(CNTX_Property.NR_OBJECT_ASSIGNED_LOCAL, nrOfLocalVarWithAssignment);
+		context.put(CNTX_Property.NR_OBJECT_NOT_ASSIGNED_LOCAL, nrOfLocalVarWithoutAssignment);
 
 		// S1 is if NR_OBJECT_ASSIGNED_LOCAL > 0 then
 		// if NR_VARIABLE_NOT_ASSIGNED = 0 then S1 = false else S1 = true
 		// Else S1= false
 
-		context.getInformation().put(CNTX_Property.S1_LOCAL_VAR_NOT_ASSIGNED, (nrOfLocalVarWithoutAssignment > 0));
+		context.put(CNTX_Property.S1_LOCAL_VAR_NOT_ASSIGNED, (nrOfLocalVarWithoutAssignment > 0));
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -733,34 +738,36 @@ public class CntxResolver {
 	private void analyzeAffectedDistanceVarName(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,
 			CtElement element, Cntx<Object> context) {
 
-		boolean hasMinDist = false;
-		boolean SimilarNameCompatibleType = false;
+		boolean anyhasMinDist = false;
+		boolean v2SimilarNameCompatibleType = false;
 
 		for (CtVariableAccess aVarAffected : varsAffected) {
+
+			boolean v2VarSimilarNameCompatibleType = false;
+
 			for (CtVariable aVarInScope : varsInScope) {
 				if (!aVarInScope.getSimpleName().equals(aVarAffected.getVariable().getSimpleName())) {
 					int dist = StringDistance.calculate(aVarInScope.getSimpleName(),
 							aVarAffected.getVariable().getSimpleName());
 					if (dist > 0 && dist < 3) {
-						hasMinDist = true;
-						context.getInformation().put(CNTX_Property.HAS_VAR_SIM_NAME, hasMinDist);
+						anyhasMinDist = true;
 
 						if (compareTypes(aVarAffected.getType(), aVarInScope.getType())) {
-							SimilarNameCompatibleType = true;
-							context.getInformation().put(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE,
-									SimilarNameCompatibleType);
-
+							v2SimilarNameCompatibleType = true;
+							v2VarSimilarNameCompatibleType = true;
 							// to save computation
-							return;
+							break;
 						}
 					}
 
 				}
 			}
+			writeDetailedInformation(context, aVarAffected.getVariable().getSimpleName(),
+					CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE, (v2VarSimilarNameCompatibleType));
 
 		}
-		context.getInformation().put(CNTX_Property.HAS_VAR_SIM_NAME, hasMinDist);
-		context.getInformation().put(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE, SimilarNameCompatibleType);
+		context.put(CNTX_Property.HAS_VAR_SIM_NAME, anyhasMinDist);
+		context.put(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE, v2SimilarNameCompatibleType);
 
 	}
 
@@ -776,7 +783,7 @@ public class CntxResolver {
 			}
 
 		}
-		context.getInformation().put(CNTX_Property.V3_HAS_CONSTANT, hasConstant);
+		context.put(CNTX_Property.V3_HAS_CONSTANT, hasConstant);
 
 	}
 
@@ -790,14 +797,21 @@ public class CntxResolver {
 	private void analyzeAffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 		try {
-			boolean returnCompatible = false;
-			boolean paramCompatible = false;
-			boolean paramCompatibleWithBooleanReturn = false;
-			boolean compatibleReturnAndParameterTypes = false;
+			boolean v6returnCompatible = false;
+			boolean v4paramCompatible = false;
+			boolean les2paramCompatibleWithBooleanReturn = false;
+			boolean v1compatibleReturnAndParameterTypes = false;
 			CtClass parentClass = element.getParent(CtClass.class);
 			for (CtVariableAccess var : varsAffected) {
 
-				for (Object omethod : parentClass.getAllMethods()) {
+				boolean v6InvReturnCompatible = false;
+				boolean v4InvparamCompatible = false;
+				boolean les2InvparamCompatibleWithBooleanReturn = false;
+				boolean v1InvcompatibleReturnAndParameterTypes = false;
+
+				List allMethods = getAllMethodsFromClass(parentClass);
+
+				for (Object omethod : allMethods) {
 					boolean matchInmethodType = false;
 					boolean matchInmethodReturn = false;
 
@@ -805,12 +819,14 @@ public class CntxResolver {
 						continue;
 
 					CtMethod method = (CtMethod) omethod;
-					if (/* !returnCompatible && */ method.getType() != null) {
-						// System.out.println(var + " -1- " + method);
+
+					if (method.getType() != null) {
+
 						if (isSubtype(var, method)) {
-							returnCompatible = true;
+							v6returnCompatible = true;
 							matchInmethodReturn = true;
-							// break;
+							v6InvReturnCompatible = true;
+
 						}
 
 					}
@@ -818,33 +834,51 @@ public class CntxResolver {
 						CtParameter parameter = (CtParameter) oparameter;
 
 						if (compareTypes(var.getType(), parameter.getType())) {
-							paramCompatible = true;
+							v4paramCompatible = true;
+							v4InvparamCompatible = true;
 							matchInmethodType = true;
 							if (method.getType().unbox().toString().equals("boolean")) {
-								paramCompatibleWithBooleanReturn = true;
-								break;
+								les2paramCompatibleWithBooleanReturn = true;
+								les2InvparamCompatibleWithBooleanReturn = true;
 							}
 
 						}
 					}
 
 					if (matchInmethodType && matchInmethodReturn) {
-						compatibleReturnAndParameterTypes = true;
+						v1compatibleReturnAndParameterTypes = true;
+						v1InvcompatibleReturnAndParameterTypes = true;
 					}
 
-					if (paramCompatible && returnCompatible && paramCompatibleWithBooleanReturn)
+					if (v4paramCompatible && v6returnCompatible && les2paramCompatibleWithBooleanReturn
+							&& v1compatibleReturnAndParameterTypes) {
 						break;
+					}
+
 				}
 
+				writeDetailedInformation(context, var.getVariable().getSimpleName(),
+						CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
+						(v1InvcompatibleReturnAndParameterTypes));
+
+				writeDetailedInformation(context, var.getVariable().getSimpleName(),
+						CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR, v6InvReturnCompatible);
+
+				writeDetailedInformation(context, var.getVariable().getSimpleName(),
+						CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR, v4InvparamCompatible);
+
+				writeDetailedInformation(context, var.getVariable().getSimpleName(),
+						CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2InvparamCompatibleWithBooleanReturn));
+
 			}
-			context.getInformation().put(CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR, returnCompatible);
-			context.getInformation().put(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR, paramCompatible);
-			context.getInformation().put(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
-					(paramCompatibleWithBooleanReturn));
 
-			context.getInformation().put(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
+			context.put(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
+					(v1compatibleReturnAndParameterTypes));
 
-					(compatibleReturnAndParameterTypes));
+			context.put(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR, v4paramCompatible);
+			context.put(CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR, v6returnCompatible);
+
+			context.put(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2paramCompatibleWithBooleanReturn));
 
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -890,23 +924,20 @@ public class CntxResolver {
 		} else {
 			scanner.scan(element);
 		}
-		context.getInformation().put(CNTX_Property.involved_relation_unary_operators, binOps);
+		context.put(CNTX_Property.involved_relation_unary_operators, binOps);
 
-		context.getInformation().put(CNTX_Property.involve_POS_relation_operators,
-				binOps.contains(UnaryOperatorKind.POS.toString()));
-		context.getInformation().put(CNTX_Property.involve_NEG_relation_operators,
-				binOps.contains(UnaryOperatorKind.NEG.toString()));
-		context.getInformation().put(CNTX_Property.involve_NOT_relation_operators,
-				binOps.contains(UnaryOperatorKind.NOT.toString()));
-		context.getInformation().put(CNTX_Property.involve_COMPL_relation_operators,
+		context.put(CNTX_Property.involve_POS_relation_operators, binOps.contains(UnaryOperatorKind.POS.toString()));
+		context.put(CNTX_Property.involve_NEG_relation_operators, binOps.contains(UnaryOperatorKind.NEG.toString()));
+		context.put(CNTX_Property.involve_NOT_relation_operators, binOps.contains(UnaryOperatorKind.NOT.toString()));
+		context.put(CNTX_Property.involve_COMPL_relation_operators,
 				binOps.contains(UnaryOperatorKind.COMPL.toString()));
-		context.getInformation().put(CNTX_Property.involve_PREINC_relation_operators,
+		context.put(CNTX_Property.involve_PREINC_relation_operators,
 				binOps.contains(UnaryOperatorKind.PREINC.toString()));
-		context.getInformation().put(CNTX_Property.involve_PREDEC_relation_operators,
+		context.put(CNTX_Property.involve_PREDEC_relation_operators,
 				binOps.contains(UnaryOperatorKind.PREDEC.toString()));
-		context.getInformation().put(CNTX_Property.involve_POSTINC_relation_operators,
+		context.put(CNTX_Property.involve_POSTINC_relation_operators,
 				binOps.contains(UnaryOperatorKind.POSTINC.toString()));
-		context.getInformation().put(CNTX_Property.involve_POSTDEC_relation_operators,
+		context.put(CNTX_Property.involve_POSTDEC_relation_operators,
 				binOps.contains(UnaryOperatorKind.POSTDEC.toString()));
 	}
 
@@ -930,75 +961,60 @@ public class CntxResolver {
 		} else {
 			scanner.scan(element);
 		}
-		context.getInformation().put(CNTX_Property.involved_relation_bin_operators, binOps);
+		context.put(CNTX_Property.involved_relation_bin_operators, binOps);
 
-		context.getInformation().put(CNTX_Property.involve_GE_relation_operators,
-				binOps.contains(BinaryOperatorKind.GE.toString()));
+		context.put(CNTX_Property.involve_GE_relation_operators, binOps.contains(BinaryOperatorKind.GE.toString()));
 		boolean containsAnd = binOps.contains(BinaryOperatorKind.AND.toString());
-		context.getInformation().put(CNTX_Property.involve_AND_relation_operators, containsAnd);
+		context.put(CNTX_Property.involve_AND_relation_operators, containsAnd);
 		boolean containsOr = binOps.contains(BinaryOperatorKind.OR.toString());
-		context.getInformation().put(CNTX_Property.involve_OR_relation_operators, containsOr);
+		context.put(CNTX_Property.involve_OR_relation_operators, containsOr);
 		boolean containsBitor = binOps.contains(BinaryOperatorKind.BITOR.toString());
-		context.getInformation().put(CNTX_Property.involve_BITOR_relation_operators, containsBitor);
+		context.put(CNTX_Property.involve_BITOR_relation_operators, containsBitor);
 		boolean containsBitxor = binOps.contains(BinaryOperatorKind.BITXOR.toString());
-		context.getInformation().put(CNTX_Property.involve_BITXOR_relation_operators, containsBitxor);
+		context.put(CNTX_Property.involve_BITXOR_relation_operators, containsBitxor);
 		boolean containsBitand = binOps.contains(BinaryOperatorKind.BITAND.toString());
-		context.getInformation().put(CNTX_Property.involve_BITAND_relation_operators, containsBitand);
-		context.getInformation().put(CNTX_Property.involve_EQ_relation_operators,
-				binOps.contains(BinaryOperatorKind.EQ.toString()));
-		context.getInformation().put(CNTX_Property.involve_NE_relation_operators,
-				binOps.contains(BinaryOperatorKind.NE.toString()));
-		context.getInformation().put(CNTX_Property.involve_LT_relation_operators,
-				binOps.contains(BinaryOperatorKind.LT.toString()));
-		context.getInformation().put(CNTX_Property.involve_GT_relation_operators,
-				binOps.contains(BinaryOperatorKind.GT.toString()));
-		context.getInformation().put(CNTX_Property.involve_LE_relation_operators,
-				binOps.contains(BinaryOperatorKind.LE.toString()));
-		context.getInformation().put(CNTX_Property.involve_SL_relation_operators,
-				binOps.contains(BinaryOperatorKind.SL.toString()));
-		context.getInformation().put(CNTX_Property.involve_SR_relation_operators,
-				binOps.contains(BinaryOperatorKind.SR.toString()));
-		context.getInformation().put(CNTX_Property.involve_USR_relation_operators,
-				binOps.contains(BinaryOperatorKind.USR.toString()));
-		context.getInformation().put(CNTX_Property.involve_PLUS_relation_operators,
-				binOps.contains(BinaryOperatorKind.PLUS.toString()));
-		context.getInformation().put(CNTX_Property.involve_MINUS_relation_operators,
+		context.put(CNTX_Property.involve_BITAND_relation_operators, containsBitand);
+		context.put(CNTX_Property.involve_EQ_relation_operators, binOps.contains(BinaryOperatorKind.EQ.toString()));
+		context.put(CNTX_Property.involve_NE_relation_operators, binOps.contains(BinaryOperatorKind.NE.toString()));
+		context.put(CNTX_Property.involve_LT_relation_operators, binOps.contains(BinaryOperatorKind.LT.toString()));
+		context.put(CNTX_Property.involve_GT_relation_operators, binOps.contains(BinaryOperatorKind.GT.toString()));
+		context.put(CNTX_Property.involve_LE_relation_operators, binOps.contains(BinaryOperatorKind.LE.toString()));
+		context.put(CNTX_Property.involve_SL_relation_operators, binOps.contains(BinaryOperatorKind.SL.toString()));
+		context.put(CNTX_Property.involve_SR_relation_operators, binOps.contains(BinaryOperatorKind.SR.toString()));
+		context.put(CNTX_Property.involve_USR_relation_operators, binOps.contains(BinaryOperatorKind.USR.toString()));
+		context.put(CNTX_Property.involve_PLUS_relation_operators, binOps.contains(BinaryOperatorKind.PLUS.toString()));
+		context.put(CNTX_Property.involve_MINUS_relation_operators,
 				binOps.contains(BinaryOperatorKind.MINUS.toString()));
-		context.getInformation().put(CNTX_Property.involve_MUL_relation_operators,
-				binOps.contains(BinaryOperatorKind.MUL.toString()));
-		context.getInformation().put(CNTX_Property.involve_DIV_relation_operators,
-				binOps.contains(BinaryOperatorKind.DIV.toString()));
-		context.getInformation().put(CNTX_Property.involve_MOD_relation_operators,
-				binOps.contains(BinaryOperatorKind.MOD.toString()));
+		context.put(CNTX_Property.involve_MUL_relation_operators, binOps.contains(BinaryOperatorKind.MUL.toString()));
+		context.put(CNTX_Property.involve_DIV_relation_operators, binOps.contains(BinaryOperatorKind.DIV.toString()));
+		context.put(CNTX_Property.involve_MOD_relation_operators, binOps.contains(BinaryOperatorKind.MOD.toString()));
 
-		context.getInformation().put(CNTX_Property.involve_INSTANCEOF_relation_operators,
+		context.put(CNTX_Property.involve_INSTANCEOF_relation_operators,
 				binOps.contains(BinaryOperatorKind.INSTANCEOF.toString()));
 
-		parentContext.getInformation().put(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY,
+		parentContext.put(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY,
 				(containsAnd || containsBitand || containsBitor || containsBitxor || containsOr));
 
 	}
 
 	private void retrieveType(CtElement element, Cntx<Object> context) {
-		context.getInformation().put(CNTX_Property.TYPE, element.getClass().getSimpleName());
+		context.put(CNTX_Property.TYPE, element.getClass().getSimpleName());
 
 	}
 
 	private void retrievePosition(CtElement element, Cntx<Object> context) {
 		if (element.getPosition() != null && element.getPosition().getFile() != null) {
-			context.getInformation().put(CNTX_Property.FILE_LOCATION,
-					element.getPosition().getFile().getAbsolutePath());
+			context.put(CNTX_Property.FILE_LOCATION, element.getPosition().getFile().getAbsolutePath());
 
-			context.getInformation().put(CNTX_Property.LINE_LOCATION, element.getPosition().getLine());
+			context.put(CNTX_Property.LINE_LOCATION, element.getPosition().getLine());
 		} else {
-			context.getInformation().put(CNTX_Property.FILE_LOCATION, "");
-			context.getInformation().put(CNTX_Property.LINE_LOCATION, "");
+			context.put(CNTX_Property.FILE_LOCATION, "");
+			context.put(CNTX_Property.LINE_LOCATION, "");
 
 		}
 		CtType parentClass = element.getParent(spoon.reflect.declaration.CtType.class);
 
-		context.getInformation().put(CNTX_Property.PARENT_CLASS,
-				(parentClass != null) ? parentClass.getQualifiedName() : "");
+		context.put(CNTX_Property.PARENT_CLASS, (parentClass != null) ? parentClass.getQualifiedName() : "");
 
 	}
 
@@ -1017,21 +1033,21 @@ public class CntxResolver {
 		// Vars in scope at the position of element
 
 		List<CtVariable> varsInScope = VariableResolver.searchVariablesInScope(element);
-		context.getInformation().put(CNTX_Property.VARS_IN_SCOPE, varsInScope);
+		context.put(CNTX_Property.VARS_IN_SCOPE, varsInScope);
 		List<Cntx> children = new ArrayList();
 		int nrPrimitives = 0;
 		int nrObjectRef = 0;
 		for (CtVariable ctVariable : varsInScope) {
 			Cntx c = new Cntx<>();
-			c.getInformation().put(CNTX_Property.VAR_VISIB,
+			c.put(CNTX_Property.VAR_VISIB,
 					(ctVariable.getVisibility() == null) ? "" : (ctVariable.getVisibility()).toString());
-			c.getInformation().put(CNTX_Property.VAR_TYPE, ctVariable.getType().getQualifiedName());
-			c.getInformation().put(CNTX_Property.VAR_MODIF, ctVariable.getModifiers());
-			c.getInformation().put(CNTX_Property.VAR_NAME, ctVariable.getSimpleName());
+			c.put(CNTX_Property.VAR_TYPE, ctVariable.getType().getQualifiedName());
+			c.put(CNTX_Property.VAR_MODIF, ctVariable.getModifiers());
+			c.put(CNTX_Property.VAR_NAME, ctVariable.getSimpleName());
 			children.add(c);
 
 		}
-		context.getInformation().put(CNTX_Property.VARS, children);
+		context.put(CNTX_Property.VARS, children);
 
 		analyzeBasedOnAffectedVars(element, context, varsInScope);
 
@@ -1042,9 +1058,11 @@ public class CntxResolver {
 	private void analyzeSimilarMethod(CtElement element, Cntx<Object> context) {
 
 		CtClass parentClass = element.getParent(CtClass.class);
-		boolean hasMinDist = false;
-		boolean hasCompatibleParameterAndReturnWithOtherMethod = false;
-		boolean hasCompatibleParameterAndReturnSameMethod = false;
+		boolean m1anyhasSameName = false;
+		boolean m2anyhasMinDist = false;
+		boolean m3anyhasCompatibleParameterAndReturnWithOtherMethod = false;
+		boolean m4anyhasCompatibleParameterAndReturnSameMethod = false;
+
 		List invocations = element.getElements(e -> (e instanceof CtInvocation));
 		for (Object object : invocations) {
 			CtInvocation invocation = (CtInvocation) object;
@@ -1053,33 +1071,52 @@ public class CntxResolver {
 			if (minvokedInAffected == null || !(minvokedInAffected instanceof CtMethod))
 				continue;
 
+			boolean m1methodHasSameName = false;
+			boolean m2methodhasMinDist = false;
+			boolean m3methodhasCompatibleParameterAndReturnWithOtherMethod = false;
+			boolean m4methodHasCompatibleParameterAndReturnSameMethod = false;
+
 			CtMethod affectedMethod = (CtMethod) minvokedInAffected;
+
 			for (Object oparameter : affectedMethod.getParameters()) {
 				CtParameter parameter = (CtParameter) oparameter;
 
 				if (affectedMethod != null && compareTypes(affectedMethod.getType(), parameter.getType())) {
-					hasCompatibleParameterAndReturnSameMethod = true;
-
+					m4anyhasCompatibleParameterAndReturnSameMethod = true;
+					m4methodHasCompatibleParameterAndReturnSameMethod = true;
 				}
 			}
 
-			// Check
+			List allMethods = getAllMethodsFromClass(parentClass);
 
-			// Check similar methods
-			for (Object omethod : parentClass.getAllMethods()) {
+			for (Object omethod : allMethods) {
 
 				if (!(omethod instanceof CtMethod))
 					continue;
 
 				CtMethod anotherMethod = (CtMethod) omethod;
+
+				if (anotherMethod.getSignature().equals(affectedMethod.getSignature()))
+					continue;
+
+				// System.out.println("--" + anotherMethod.getSimpleName());
+
+				if (anotherMethod.getSimpleName().equals(affectedMethod.getSimpleName())) {
+					// It's overide
+					m1methodHasSameName = true;
+					m1anyhasSameName = true;
+				}
+
 				if (anotherMethod.getType() != null && minvokedInAffected.getType() != null) {
-					boolean compatibleTypes = compareTypes(anotherMethod.getType(), minvokedInAffected.getType());
-					if (compatibleTypes) {
+
+					boolean compatibleReturnTypes = compareTypes(anotherMethod.getType(), minvokedInAffected.getType());
+					if (compatibleReturnTypes) {
 						int dist = StringDistance.calculate(anotherMethod.getSimpleName(),
 								minvokedInAffected.getSimpleName());
 						if (dist > 0 && dist < 3) {
-							hasMinDist = true;
-							context.getInformation().put(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, hasMinDist);
+							m2anyhasMinDist = true;
+							context.put(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2anyhasMinDist);
+							m2methodhasMinDist = true;
 						}
 
 					}
@@ -1088,21 +1125,57 @@ public class CntxResolver {
 						CtParameter parameter = (CtParameter) oparameter;
 
 						if (compareTypes(minvokedInAffected.getType(), parameter.getType())) {
-							hasCompatibleParameterAndReturnWithOtherMethod = compatibleTypes;
-
+							m3anyhasCompatibleParameterAndReturnWithOtherMethod = true;
+							m3methodhasCompatibleParameterAndReturnWithOtherMethod = true;
 						}
 					}
 
 				}
 
+				writeDetailedInformation(context, affectedMethod, CNTX_Property.M4_PARAMETER_RETURN_COMPABILITY,
+						m4methodHasCompatibleParameterAndReturnSameMethod);
+
+				writeDetailedInformation(context, affectedMethod, CNTX_Property.M1_OVERLOADED_METHOD,
+						m1methodHasSameName);
+
+				writeDetailedInformation(context, affectedMethod, CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN,
+						m2methodhasMinDist);
+
+				writeDetailedInformation(context, affectedMethod, CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
+						m3methodhasCompatibleParameterAndReturnWithOtherMethod);
+
 			}
 
 		}
-		context.getInformation().put(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, hasMinDist);
-		context.getInformation().put(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
-				hasCompatibleParameterAndReturnWithOtherMethod);
-		context.getInformation().put(CNTX_Property.M4_PARAMETER_RETURN_COMPABILITY,
-				hasCompatibleParameterAndReturnSameMethod);
+		context.put(CNTX_Property.M1_OVERLOADED_METHOD, m1anyhasSameName);
+		context.put(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2anyhasMinDist);
+		context.put(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
+				m3anyhasCompatibleParameterAndReturnWithOtherMethod);
+		context.put(CNTX_Property.M4_PARAMETER_RETURN_COMPABILITY, m4anyhasCompatibleParameterAndReturnSameMethod);
+
+	}
+
+	public List getAllMethodsFromClass(CtClass parentClass) {
+		List allMethods = new ArrayList(parentClass.getAllMethods());
+
+		if (parentClass != null && parentClass.getParent() instanceof CtClass) {
+			CtClass parentParentClass = (CtClass) parentClass.getParent();
+			allMethods.addAll(parentParentClass.getAllMethods());
+
+		}
+		return allMethods;
+	}
+
+	private void writeDetailedInformation(Cntx<Object> context, CtMethod affectedMethod, CNTX_Property property,
+			Boolean value) {
+
+		context.getInformation().put(property.name() + "_" + affectedMethod.getSignature(), value);
+
+	}
+
+	private void writeDetailedInformation(Cntx<Object> context, String key, CNTX_Property property, Boolean value) {
+
+		context.getInformation().put(property.name() + "_" + key, value);
 
 	}
 
@@ -1130,9 +1203,9 @@ public class CntxResolver {
 				}
 			}
 		}
-		context.getInformation().put(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT, nrPrimitives);
-		context.getInformation().put(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT, nrObjectRef);
-		context.getInformation().put(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT, nrPrimitives + nrObjectRef);
+		context.put(CNTX_Property.NUMBER_PRIMITIVE_VARS_IN_STMT, nrPrimitives);
+		context.put(CNTX_Property.NUMBER_OBJECT_REFERENCE_VARS_IN_STMT, nrObjectRef);
+		context.put(CNTX_Property.NUMBER_TOTAL_VARS_IN_STMT, nrPrimitives + nrObjectRef);
 
 	}
 
@@ -1142,7 +1215,7 @@ public class CntxResolver {
 		CtMethod parentMethod = element.getParent(CtMethod.class);
 		if (parentMethod != null) {
 			// Return
-			context.getInformation().put(CNTX_Property.METHOD_RETURN_TYPE,
+			context.put(CNTX_Property.METHOD_RETURN_TYPE,
 					(parentMethod.getType() != null) ? parentMethod.getType().getQualifiedName() : null);
 			// Param
 			List<CtParameter> parameters = parentMethod.getParameters();
@@ -1150,13 +1223,13 @@ public class CntxResolver {
 			for (CtParameter ctParameter : parameters) {
 				parametersTypes.add(ctParameter.getType().getSimpleName());
 			}
-			context.getInformation().put(CNTX_Property.METHOD_PARAMETERS, parametersTypes);
+			context.put(CNTX_Property.METHOD_PARAMETERS, parametersTypes);
 
 			// Modif
-			context.getInformation().put(CNTX_Property.METHOD_MODIFIERS, parentMethod.getModifiers());
+			context.put(CNTX_Property.METHOD_MODIFIERS, parentMethod.getModifiers());
 
 			// Comments
-			context.getInformation().put(CNTX_Property.METHOD_COMMENTS, parentMethod.getComments());
+			context.put(CNTX_Property.METHOD_COMMENTS, parentMethod.getComments());
 
 		}
 	}
@@ -1165,12 +1238,12 @@ public class CntxResolver {
 		try {
 			CtPath path = element.getPath();
 
-			context.getInformation().put(CNTX_Property.SPOON_PATH, path.toString());
+			context.put(CNTX_Property.SPOON_PATH, path.toString());
 			if (path instanceof CtPathImpl) {
 				CtPathImpl pi = (CtPathImpl) path;
 				List<CtPathElement> elements = pi.getElements();
 				List<String> paths = elements.stream().map(e -> e.toString()).collect(Collectors.toList());
-				context.getInformation().put(CNTX_Property.PATH_ELEMENTS, paths);
+				context.put(CNTX_Property.PATH_ELEMENTS, paths);
 			}
 		} catch (Throwable e) {
 		}
@@ -1188,7 +1261,7 @@ public class CntxResolver {
 		} catch (Exception e) {
 		}
 
-		context.getInformation().put(CNTX_Property.PARENTS_TYPE, parentNames);
+		context.put(CNTX_Property.PARENTS_TYPE, parentNames);
 
 	}
 

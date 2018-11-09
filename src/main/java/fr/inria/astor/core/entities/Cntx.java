@@ -28,13 +28,23 @@ public class Cntx<I> {
 
 	private Object identifier = null;
 
-	private Map<CNTX_Property, I> information = new HashMap<>();
+	private Map<String, I> information = new HashMap<>();
 
 	public Cntx() {
 		super();
 	}
 
-	public Cntx(Object identifier, Map<CNTX_Property, I> information) {
+	public void put(CNTX_Property cntx, I a) {
+		this.getInformation().put(cntx.name(), a);
+
+	}
+
+	public I get(CNTX_Property cntx) {
+		return this.getInformation().get(cntx.name());
+
+	}
+
+	public Cntx(Object identifier, Map<String, I> information) {
 		super();
 		this.identifier = identifier;
 		this.information = information;
@@ -47,11 +57,11 @@ public class Cntx<I> {
 
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
-	public Map<CNTX_Property, I> getInformation() {
+	public Map<String, I> getInformation() {
 		return information;
 	}
 
-	public void setInformation(Map<CNTX_Property, I> information) {
+	public void setInformation(Map<String, I> information) {
 		this.information = information;
 	}
 
@@ -65,12 +75,12 @@ public class Cntx<I> {
 
 		JsonObject generalStatsjson = new JsonObject();
 		JSONParser parser = new JSONParser();
-		for (CNTX_Property generalStat : information.keySet()) {
+		for (String generalStat : information.keySet()) {
 			Object vStat = information.get(generalStat);
 
 			try {
 				JsonElement value = calculateValue(parser, vStat);
-				generalStatsjson.add(generalStat.name(), value);
+				generalStatsjson.add(generalStat, value);
 			} catch (ParseException e) {
 				System.out.println("Error property: " + generalStat);
 				log.error(e);
@@ -88,9 +98,9 @@ public class Cntx<I> {
 		if (vStat instanceof Cntx) {
 			Cntx<Object> cntx = (Cntx) vStat;
 			JsonObject composed = new JsonObject();
-			for (CNTX_Property property : cntx.getInformation().keySet()) {
+			for (String property : cntx.getInformation().keySet()) {
 				JsonElement v = calculateValue(parser, cntx.getInformation().get(property));
-				composed.add(property.name(), v);
+				composed.add(property, v);
 			}
 			return composed;
 		} else if (vStat instanceof AstorOutputStatus || vStat instanceof String) {
