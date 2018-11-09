@@ -140,6 +140,10 @@ As conclusion, using a java VM 8+ could produce that Astor does not find patches
 
 As solution, Astor provides an argument (`-jvm4testexecution`) to specify the location of the virtual machine that will be used to run the test cases. In the case of trying to repair Defects4J bugs it must be a JVM 7, otherwise the result of test cases could not be the expected (i.e., having more failing test cases) and, consequently, patches could not be found.
 
+# Commond problem running Java 7 apps: `UnsupportedClassVersionError (unsupported major.minor version 52.0`
+
+If after doing the previous steps Astor produces the exception  `UnsupportedClassVersionError (unsupported major.minor version 52.0)`, a possible workaround is to  add  the jar `<astor_location>/lib/jtestex7.jar` in the java classplath (attention: add it *before* the astor jar).
+
 
 
 
