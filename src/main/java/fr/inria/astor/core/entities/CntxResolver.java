@@ -150,8 +150,13 @@ public class CntxResolver {
 		retrieveMethodInformation(element, context);
 		retrieveParentTypes(element, context);
 		// TODO: a write per type (we have the list in coming)
-		context.put(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT,
-				element.getClass().getSimpleName().replaceAll("Ct", "").replaceAll("Impl", ""));
+
+		String type = element.getClass().getSimpleName().replaceAll("Ct", "").replaceAll("Impl", "");
+		context.put(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT, type);
+		for (CntxEntity entity : CntxEntity.values()) {
+			boolean equals = type.equals(entity.name());
+			writeDetailedInformation(context, entity.name(), CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT, equals);
+		}
 		//
 
 		Cntx<Object> binCntx = new Cntx<>();
