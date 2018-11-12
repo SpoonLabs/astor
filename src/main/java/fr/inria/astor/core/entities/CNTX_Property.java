@@ -116,7 +116,7 @@ public enum CNTX_Property {
 	S3_TYPE_OF_FAULTY_STATEMENT,
 	// For any variable involved in a logical expression,
 	// whether exist other boolean expressions in the faulty class
-	// that involve using variable whose type is same wit
+	// that involve using variable whose type is same with v
 	LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION,
 	// For any variable involved in a logical expression,whether exist methods
 	// (method declaration or methodcall) in scope (that is in the same faulty class

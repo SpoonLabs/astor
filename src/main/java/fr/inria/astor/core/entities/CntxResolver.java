@@ -13,7 +13,6 @@ import fr.inria.astor.util.StringDistance;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
@@ -45,6 +44,7 @@ import spoon.reflect.path.impl.CtPathImpl;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.filter.LineFilter;
 import spoon.support.reflect.code.CtVariableReadImpl;
 
 /**
@@ -149,7 +149,6 @@ public class CntxResolver {
 		analyzeVarsInScope(element, context);
 		retrieveMethodInformation(element, context);
 		retrieveParentTypes(element, context);
-		// TODO: a write per type (we have the list in coming)
 
 		String type = element.getClass().getSimpleName().replaceAll("Ct", "").replaceAll("Impl", "");
 		context.put(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT, type);
@@ -434,20 +433,8 @@ public class CntxResolver {
 
 		CtMethod methodParent = element.getParent(CtMethod.class);
 
-		List<CtStatement> statements = new ArrayList<>();
+		List<CtStatement> statements = methodParent.getElements(new LineFilter());
 
-		CtScanner statementScanner = new CtScanner() {
-
-			@Override
-			public void scan(CtElement element) {
-				super.scan(element);
-				if (element instanceof CtStatement && !(element instanceof CtBlock)) {
-					statements.add((CtStatement) element);
-				}
-			}
-		};
-
-		statementScanner.scan(methodParent);
 		int usedObjects = 0;
 		int notUsedObjects = 0;
 
@@ -553,16 +540,22 @@ public class CntxResolver {
 			expressionsParent = currentElement.getParent(CtExpression.class);
 			if (expressionsParent != null) {
 				currentElement = expressionsParent;
-				if (currentElement.getType() != null && currentElement.getType().unbox().toString().equals("boolean")) {
+
+				// If it's binary, the result is Boolean
+				if ((currentElement instanceof CtBinaryOperator)) {
+					CtBinaryOperator binop = (CtBinaryOperator) currentElement;
+					if (binop.getKind().equals(BinaryOperatorKind.AND) || binop.getKind().equals(BinaryOperatorKind.OR))
+						return true;
+
+				}
+				// If we have the type, check if it's boolean
+				if ((currentElement.getType() != null
+						&& currentElement.getType().unbox().toString().equals("boolean"))) {
 					return true;
 				}
 			}
 		} while (expressionsParent != null);
 
-		// boolean hasBooleanExpressionParent = currentElement.stream()
-		/// .filter(e ->
-		// e.getType().unbox().toString().equals("boolean")).findAny().isPresent();
-		// return hasBooleanExpressionParent;
 		return false;
 
 	}
