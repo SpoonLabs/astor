@@ -94,6 +94,8 @@ public enum CNTX_Property {
 	// statements after its initial introduction.
 	NR_OBJECT_USED_LOCAL_VAR, NR_OBJECT_NOT_USED_LOCAL_VAR,
 
+	NR_PRIMITIVE_USED_LOCAL_VAR, NR_PRIMITIVE_NOT_USED_LOCAL_VAR,
+
 	// Is field (of an object type) initialization statement? If so, whether the
 	// object type has other fields which are not initialized since the definition
 	// of the object
@@ -109,18 +111,30 @@ public enum CNTX_Property {
 
 	// The element corresponding to the patch
 	PATCH_CODE_ELEMENT, PATCH_CODE_STATEMENT, POSITION, AFFECTED_PARENT, AFFECTED, OPERATION, AST_PARENT, AST,
-	//
+	// If the faulty statement involves object reference to local variables (i.e.,
+	// use object type local variables), do there exist certain referenced local
+	// variable(s) that havenever been referenced in other statements
+	// (excludestatements inside control flow structure) before thefaulty statement
+	// since its introduction (declaration)(chart-4)
 	S1_LOCAL_VAR_NOT_ASSIGNED, //
-	S1_LOCAL_VAR_NOT_USED, S2, //
+	S1_LOCAL_VAR_NOT_USED,
+
+	//
+	S2, //
 	// Spoon class of the fault statement.
 	S3_TYPE_OF_FAULTY_STATEMENT,
+
+	// If the faulty statement involves object referenceto field (i.e., use object
+	// type class field), do there existcertain field(s) that have never been
+	// referenced in othermethods of the faulty class.
+	S4_USED_FIELD,
 	// For any variable involved in a logical expression,
 	// whether exist other boolean expressions in the faulty class
 	// that involve using variable whose type is same with v
 	LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION,
 	// For any variable involved in a logical expression,whether exist methods
 	// (method declaration or methodcall) in scope (that is in the same faulty class
-	// sincewe do not assume full program) that take variablewhose type is same
+	// sincewe do not assume full program) that take variable whose type is same
 	// withvas one of its parametersand return boolean
 	LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
 	// LE3: For a logical expression, if the logical expression involves comparison
@@ -134,6 +148,17 @@ public enum CNTX_Property {
 	// Whether the number of boolean expressions in the logical expression is larger
 	// than 1
 	LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY,
+	// For the logical expression, whether there exists a boolean expression that
+	// starts with the "not" operator! (an exclamation mark) (
+	LE6_HAS_NEGATION,
+	// For the logical expression, whether there exists a boolean expression which
+	// is
+	// simply a boolean variable
+	LE7_SIMPLE_VAR_IN_LOGIC,
+	// If the logical expression only uses local variables,whether all of the local
+	// variables have been used inother statements (exclude statements inside
+	// controlflow structure) since the introduction
+	LE_8_LOGICAL_WITH_USED_LOCAL_VARS,
 	// For each involved variable, whether has method definitions or method calls
 	// (in the fault class) that take the type of the involved variable as one of
 	// its parameters and the return type of the method is type compatible with the
@@ -174,6 +199,7 @@ public enum CNTX_Property {
 	// For each method invocation, whether the types ofsome of its parameters are
 	// same or compatible withthe return type of the method.
 	M4_PARAMETER_RETURN_COMPABILITY,
+	//
 
 	;
 

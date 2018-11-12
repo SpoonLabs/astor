@@ -687,6 +687,211 @@ public class CntxResolverTest {
 	}
 
 	@Test
+	public void testProperty_LE6_HAS_NEGATION() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" //
+				+ "public Object foo() {" //
+				+ "boolean avarb =false;" //
+				+ "boolean bvarb =false;" //
+				+ "int mysimilar = 1;"//
+				+ "int myzimilar = (gvarb && avarb && bvarb)? 2:1;"// Use of two booleans
+				+ "float fiii = (float)myzimilar; "//
+				+ "double dother = 0;" //
+				+ "int f1 =  mysimilar + 1;" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(avarb && !gvarb){};" //
+				+ "return (avarb && bvarb)? 2: 1;" + "}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if (avarb"))
+				.findFirst().get();
+		System.out.println(element);
+		CntxResolver cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// all variables used
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE6_HAS_NEGATION));
+
+		// without the global
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
+				.get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE6_HAS_NEGATION));
+
+	}
+
+	@Test
+	public void testProperty_S4_field() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" + "public boolean ddd =false;"//
+				+ "public Object foo() {" //
+				+ "boolean avarb =false;" //
+				+ "boolean bvarb =false;" //
+				+ "int mysimilar = 1;"//
+				+ "int myzimilar = (gvarb && avarb && bvarb)? 2:1;"// Use the field
+				+ "float fiii = (float)myzimilar; "//
+				+ "double dother = 0;" //
+				+ "int f1 =  mysimilar + 1;" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(ddd){};" //
+				+ "return (avarb && bvarb)? 2: 1;" + "}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return gvarb?1:0;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
+		System.out.println(element);
+		CntxResolver cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// all variables used
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.S4_USED_FIELD));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
+				.get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.S4_USED_FIELD));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if")).findFirst()
+				.get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.S4_USED_FIELD));
+
+	}
+
+	@Test
+	public void testProperty_LE5() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" //
+				+ "public Object foo() {" //
+				+ "boolean avarb =false;" //
+				+ "boolean bvarb =false;" //
+				+ "int mysimilar = 1;"//
+				+ "int myzimilar = (gvarb && avarb && bvarb)? 2:1;"// Use of two booleans
+				+ "float fiii = (float)myzimilar; "//
+				+ "double dother = 0;" //
+				+ "int f1 =  mysimilar + 1;" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(avarb && !gvarb){};" //
+				+ "return (avarb && bvarb)? 2: 1;" + "}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream()
+				.filter(e -> e.toString().startsWith("int myzimilar")).findFirst().get();
+		System.out.println(element);
+		CntxResolver cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// all variables used
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
+				.get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int f1")).findFirst()
+				.get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE5_BOOLEAN_EXPRESSIONS_IN_FAULTY));
+
+	}
+
+	@Test
+	public void testProperty_L7() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" //
+				+ "public Object foo() {" //
+				+ "boolean avarb =false;" //
+				+ "boolean bvarb =false;" //
+				+ "int mysimilar = 1;"//
+				+ "int myzimilar = (gvarb && avarb && bvarb)? 2:1;"// Use of two booleans
+				+ "float fiii =  getFloat(); "//
+				+ "double dother = 0;" //
+				+ "int f1 =  getConvertFloat(fiii);" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(getB(bvarb) && f1 > 0){};" //
+				+ "if(avarb && f1> 0){};" //
+				+ "return (avarb && bvarb)? 2: 1;" + "}"//
+				+ "public float getMFloat(){return 1.0;}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public int fint(int i){return 1.0;}"//
+				+ "public int getB(boolean i){return 1.0;}"//
+				+ "public int getConvertFloat(float f){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if ((get"))
+				.findFirst().get();
+		System.out.println(element);
+		CntxResolver cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// not method involve
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE7_SIMPLE_VAR_IN_LOGIC));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if (avarb"))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+		// statement with a similar method
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE7_SIMPLE_VAR_IN_LOGIC));
+
+	}
+
+	@Test
 	public void testProperty_M3() {
 
 		String content = "" + "class X {" //
@@ -1323,7 +1528,7 @@ public class CntxResolverTest {
 	}
 
 	@Test
-	public void testProperty_L3() {
+	public void testProperty_L1() {
 
 		String content = "" + "class X {" +
 		//
@@ -1335,13 +1540,13 @@ public class CntxResolverTest {
 				+ "if (mysimilar > 0){};" //
 				+ "float f2 = 2;" //
 				+ "boolean s1 = (mysimilar > 2);" //
-				+ "boolean s2 = (f2 > 2);" //
+				+ "boolean s2 = (f2 > 2) && s1;" //
 				+ "double d1 = 0;"//
 				+ "double d2=0;"//
 				+ "float f3 = (float) d1;" + // using d1 in not a binary
 				"if(true && (true && true && (f3))){}" + //
 				"boolean s3 = (d1 > 0)   ;"//
-				+ "boolean s4 = (d2 > 0)   ;"//
+				+ "boolean s4 = (d2 > 0) && s3 ;"//
 				+ "return null;" + //
 				"};};";
 
@@ -1363,7 +1568,7 @@ public class CntxResolverTest {
 		cntx = cntxResolver.retrieveCntx(element);
 		boolean existsNotUsed = Boolean
 				.parseBoolean(cntx.get(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION).toString());
-		assertTrue(existsNotUsed); // f2 and mysimilar
+		assertTrue(existsNotUsed);
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("boolean s1"))
 				.findFirst().get();
