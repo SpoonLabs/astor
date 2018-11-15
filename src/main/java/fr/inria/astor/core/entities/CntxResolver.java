@@ -455,12 +455,12 @@ public class CntxResolver {
 	private void analyzeAffectedVariablesUsedLE1(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 
-		CtMethod methodParent = element.getParent(CtMethod.class);
+		CtExecutable methodParent = element.getParent(CtExecutable.class);
 
 		List<CtStatement> statements = methodParent.getElements(new LineFilter());
 
 		int similarUsedBefore = 0;
-		int notSimilarUsedBefore = 0;
+		// int notSimilarUsedBefore = 0;
 
 		// For each variable affected
 		for (CtVariableAccess variableAffected : varsAffected) {
@@ -511,8 +511,8 @@ public class CntxResolver {
 			///
 			if (foundSimilarVarUsedBefore)
 				similarUsedBefore++;
-			else
-				notSimilarUsedBefore++;
+			// else
+			// notSimilarUsedBefore++;
 		}
 
 		context.put(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION, (similarUsedBefore) > 0);
@@ -528,7 +528,7 @@ public class CntxResolver {
 	private void analyzeAffectedVariablesUsedS1(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 
-		CtMethod methodParent = element.getParent(CtMethod.class);
+		/* CtMethod */ CtExecutable methodParent = element.getParent(CtExecutable.class);
 
 		List<CtStatement> statements = methodParent.getElements(new LineFilter());
 
