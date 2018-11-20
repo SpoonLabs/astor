@@ -279,7 +279,7 @@ public class ProjectConfiguration {
 			while ((line = br.readLine()) != null) {
 				if (line.contains("\"")) {
 					String version = line.split("\"")[1];
-					logger.debug("Version of the JVM used: " + version);
+					logger.info("Version of the JVM used: " + version);
 					return version;
 				}
 				processOutput += line;
@@ -293,15 +293,29 @@ public class ProjectConfiguration {
 	}
 
 	public static boolean isJDKLowerThan8() {
-		String jvmversion = ConfigurationProperties.properties.getProperty("jvmversion");
-		if (jvmversion == null || jvmversion.isEmpty())
+		Integer currentVersion = getJavaVersionOfJVM4Validation();
+		if (currentVersion == null)
 			return false;
+
+		return (currentVersion <= 7);
+	}
+
+	public static Integer getJavaVersionOfJVM4Validation() {
+		String jvmversion = ConfigurationProperties.properties.getProperty("jvmversion");
+		if (jvmversion == null || jvmversion.isEmpty()) {
+			logger.info("The property jvmversion is null or empty");
+			return null;
+		}
 
 		String[] versioncomponents = jvmversion.split("\\.");
 		if (versioncomponents.length < 3) {
-			return false;
+			logger.info("The property jvmversion has a format we cannot recognize: " + versioncomponents);
+			return null;
 		}
 		String sec = versioncomponents[1];
-		return (Integer.valueOf(sec) <= 7);
+		int currentVersion = Integer.valueOf(sec);
+		logger.info("The JVM used for running tests is version:  " + versioncomponents);
+
+		return currentVersion;
 	}
 }

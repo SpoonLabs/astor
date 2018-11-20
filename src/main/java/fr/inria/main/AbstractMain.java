@@ -280,6 +280,8 @@ public abstract class AbstractMain {
 
 		options.addOption("autocompile", true, "wheteher auto compile");
 
+		options.addOption("runjava7code", false, "Validates on Java 7");
+
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -363,9 +365,11 @@ public abstract class AbstractMain {
 		} else {
 			String jvmhome = ConfigurationProperties.properties.getProperty("jvm4testexecution");
 			String jdkVersion = ProjectConfiguration.getVersionJDK(jvmhome);
-			if (jdkVersion != null)
+			if (jdkVersion != null) {
 				ConfigurationProperties.properties.setProperty("jvmversion", jdkVersion);
-			else
+				log.info("Java version of the JDK used to run tests: " + jdkVersion);
+				log.info("The compliance of the JVM is:  " + ProjectConfiguration.getJavaVersionOfJVM4Validation());
+			} else
 				log.equals("Error: problems to determine the version of the JDK located at path: " + jvmhome);
 		}
 
@@ -454,6 +458,9 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("testbystep"))
 			ConfigurationProperties.properties.setProperty("testbystep", "true");
+
+		if (cmd.hasOption("runjava7code"))
+			ConfigurationProperties.properties.setProperty("runjava7code", "true");
 
 		if (cmd.hasOption("modificationpointnavigation"))
 			ConfigurationProperties.properties.setProperty("modificationpointnavigation",

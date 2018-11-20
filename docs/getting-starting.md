@@ -129,6 +129,10 @@ However, note that the folders that specify the structure of the project under r
 
 # Notes about running Astor over [Defects4J](https://github.com/rjust/defects4j) bugs.
 
+
+## Common problem running Java 7 apps: `UnsupportedClassVersionError (unsupported major.minor version 52.0` 
+
+
 Astor needs to be executed over a JVM 8+. By default, Astor uses the JVM specified on the `JAVA_HOME` variable to run the test cases for validating candidate patches. However, Defects4J subjects needs to be executed using a JMV 7 (according to the official documentation).
 For example, running bug Math-70 from Defects4J on a JVM 8 could produce two failing/errored test cases:
 
@@ -140,9 +144,19 @@ As conclusion, using a java VM 8+ could produce that Astor does not find patches
 
 As solution, Astor provides an argument (`-jvm4testexecution`) to specify the location of the virtual machine that will be used to run the test cases. In the case of trying to repair Defects4J bugs it must be a JVM 7, otherwise the result of test cases could not be the expected (i.e., having more failing test cases) and, consequently, patches could not be found.
 
-# Commond problem running Java 7 apps: `UnsupportedClassVersionError (unsupported major.minor version 52.0`
+Astor tries to automatically obtain the version of the JDK used to running the tests (e.g., `-jvm4testexecution`).
+Astor will log (INFO level) the version obtained: 
+`Java version of the JDK used to run tests: 1.8.0_101`.
 
-If after doing the previous steps Astor produces the exception  `UnsupportedClassVersionError (unsupported major.minor version 52.0)`, a possible workaround is to  add  the jar `<astor_location>/lib/jtestex7.jar` in the java classplath (attention: add it *before* the astor jar).
+Then, Astor determines whether the JVM version is lower or equals than 7 and will log (INFO level) the result `The compliance of the JVM is:  8`.
+
+In case that the JVM is version 7 and Astor is not able to determine the version (i.e., the previous logs do not show any information), you can force Astor to run Java7 code by using the command line argument  `runjava7code`.
+
+## Important configuration when running Astor Jar:
+
+
+If after doing the previous steps Astor produces the exception  `UnsupportedClassVersionError (unsupported major.minor version 52.0)` and you are running Astor using the jar (`astor-0.X.X-jar-with-dependencies.jar`), 
+you will need to add  the jar `<astor_location>/lib/jtestex7.jar` in the java classplath (attention: add it *before* the astor jar).
 
 
 
