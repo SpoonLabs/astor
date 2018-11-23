@@ -44,6 +44,8 @@ public class PatchDiffCalculator {
 
 		String diffResults = "";
 
+		String difftype = ConfigurationProperties.getProperty("diff_type");
+
 		final String suffix = format ? DIFF_SUFFIX : "";
 
 		// Get the path where the Default variant is located:
@@ -54,7 +56,7 @@ public class PatchDiffCalculator {
 		// save the default variant according to the format
 		mutsupporter.saveSourceCodeOnDiskProgramVariant(originalVariant, srcOutputfDefaultOriginal);
 
-		// get tge path of a Particular variant
+		// get the path of a Particular variant
 		String srcOutputSolutionVariant = projectFacade
 				.getInDirWithPrefix(programVariant.currentMutatorIdentifier() + suffix);
 
@@ -71,7 +73,10 @@ public class PatchDiffCalculator {
 				return null;
 			}
 
-			String diff = getDiff(foriginal, ffixed, fileName);
+			String fileLeft = getPrefixOriginal(difftype, t, fileName);
+			String fileRight = getPrefixPatched(difftype, t, fileName);
+
+			String diff = getDiff(foriginal, ffixed, fileLeft, fileRight);
 			diffResults += diff + '\n';
 		}
 
@@ -83,7 +88,40 @@ public class PatchDiffCalculator {
 		return diffResults;
 	}
 
+	public String getPrefixOriginal(String difftype, CtType<?> t, String fileName) {
+		return getPrefix(difftype, t, fileName, true);
+	}
+
+	public String getPrefixPatched(String difftype, CtType<?> t, String fileName) {
+		return getPrefix(difftype, t, fileName, false);
+
+	}
+
+	private String getPrefix(String difftype, CtType<?> t, String fileName, boolean pre) {
+		if ("default".equals(difftype))
+			return fileName;
+		if ("git".equals(difftype)) {
+			if (pre)
+				return "a" + File.separator + fileName;
+			else
+				return "b" + File.separator + fileName;
+		}
+		if ("relative".equals(difftype)) {
+
+			String location = ConfigurationProperties.getProperty("location").replace("/./", "/");
+
+			String typePath = t.getPosition().getFile().getAbsolutePath().replace(location, "");
+			return typePath;
+		}
+
+		return fileName;
+	}
+
 	public String getDiff(File original, File newvariant, String fileName) {
+		return getDiff(original, newvariant, fileName, fileName);
+	}
+
+	public String getDiff(File original, File newvariant, String fileNameLeft, String fileNameRight) {
 
 		try {
 			String line = "";
@@ -96,7 +134,7 @@ public class PatchDiffCalculator {
 
 			try {
 				// Set up the timezone
-				String command = "diff -w -b -u " + " --label=" + fileName + " --label=" + fileName + " "
+				String command = "diff -w -b -u " + " --label=" + fileNameLeft + " --label=" + fileNameRight + " "
 						+ original.getAbsolutePath() + " " + newvariant.getAbsolutePath();
 				log.debug("diff command : " + command);
 				p_stdin.write(command);
