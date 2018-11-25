@@ -20,14 +20,14 @@ docker pull tdurieux/astor
 
 ### Basic command
 
-The shortest command to run Astor on a particular defects from Defects4J is: 
+The shortest command to run Astor on a particular defect from Defects4J is: 
 ```
 docker run -it --rm tdurieux/astor --id Chart_5 
 
 ```
 
 The parameter `--id` (or `-i`) indicates the buggy version from Defects4J. 
-In this case, we command triggers Astor on defect `Chart 5`. 
+In this example, the command triggers Astor on defect `Chart 5`. 
 Other values can be, for instance, `Math_70`.
 
 The result is printed on the screen:
@@ -82,7 +82,7 @@ PATCH_DIFF_ORIG=--- org/apache/commons/math/analysis/solvers/BisectionSolver.jav
 ```
 
 
-### Astor arguments
+### Arguments
 
 #### Output
 
@@ -90,10 +90,13 @@ Astor writes on disk the solution, if any.
 It stores the patched classes, the diff corresponding to the patch and meta-data.
 Please, see in [this document](https://github.com/SpoonLabs/astor/blob/master/docs/getting-starting.md) to get more information about the output.
 
-Now, replace `<path_to_store_results>` with the folder you want to store the results.
+Now, to store the output obtained from Docker in your disk, add the command `-v`. For instance, the command is now as follows:
+
 ```
 docker run -it --rm -v <path_to_store_results>:/results tdurieux/astor -i chart-5 --scope package
 ```
+
+Replace the `<path_to_store_results>` with the folder you want to store the results.
 Note that the folder must be previously created and included in the list of Shared Files of Docker (go to `Preferences... -> File Sharing`).
 
 #### Scope
@@ -118,7 +121,7 @@ The value of `--parameters` has a following format:
 For example, in the previous command `--parameters stopfirst:true:maxGeneration:100`, we have that `stopfirst`is the first parameter which value is `true`, and `maxGeneration` is the second parameter with value `100`.
 
 
-The list with the most important  arguments can be found [here]().
+The list with the most important arguments can be found [here](https://github.com/SpoonLabs/astor/blob/master/docs/arguments.md).
 
 
 
