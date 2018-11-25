@@ -1,0 +1,215 @@
+
+##
+
+It is also possible to change any configuration parameter of Astor using the  command line argument named --parameters.
+
+The value of -parameters has a following format: <property_name_1>:<property_value_1>:<property_name_2>:<property_value_2>:...<property_name_n>:<property_value_n>
+
+For example, in the previous command -parameters stopfirst:true:maxGeneration:100, we have that stopfirstis the first parameter which value is true, and maxGeneration is the second parameter with value 100.
+
+
+## Arguments
+
+
+#Project identifier (optional)
+projectIdentifier=
+# mode:
+mode=jgenprog
+# Dir for the output from Mutation and evolution
+workingDirectory=./output_astor/
+# Java compliance Level
+javacompliancelevel=8
+alternativecompliancelevel=4
+#
+regressionforfaultlocalization=true
+#
+#Evolutionary Parameters
+#
+#Package that gZoltar instruments, that means, It only considers suspicious statements from classes included in that package.
+packageToInstrument=
+#Max number of generation executed
+maxGeneration=200
+# Size of the population (number of variants for generation )
+population=1
+#Mechanism to validate a program variant i.e., execute the test cases. It can be 1) process (Astor launches a process for the test)|2)thread (Astor launches a thread for the test) |3) local (Astor executes the test in the current thread)
+validation=process
+#applyCrossover
+applyCrossover=false
+#Execute regression
+forceExecuteRegression=false
+#Fault localization threshold.  
+flthreshold=0.1
+#
+#Max number of suspicious analyzed 
+maxsuspcandidates=1000
+#Max Number of modification points
+maxmodificationpoints=1000
+#
+considerzerovaluesusp=false
+##PopulationConformation
+reintroduce=PARENTS:ORIGINAL
+###
+overridemaxtime=true
+#Time for evaluation the failing test cases (in milliseconds):
+tmax1=10000
+#Time for evaluation the test suite i.e., regression testing (in milliseconds):
+tmax2=600000
+#
+stopfirst=false
+#
+maxnumbersolutions=1000000
+#
+allpoints=false
+#
+savesolution=true
+#
+saveall=false
+#
+multipointmodification=false
+#
+maxtime=60
+#
+testbystep=false
+#
+scope=package
+#
+resetoperations=false
+#inorder, random, weight,sequence
+modificationpointnavigation=weight
+#
+mutationrate=1 
+#
+probagenmutation=false
+#
+uniqueoptogen=false
+#
+srcjavafolder=src/main/java
+srctestfolder=src/test/java
+#
+binjavafolder=/target/classes
+bintestfolder=/target/test-classes
+#
+resourcesfolder=/src/main/resources:/src/test/resources:
+#
+# Gzoltar configuration
+## working directory for Gzoltar 
+location=/tmp
+#Faul localization class
+faultlocalization=gzoltar
+#
+fitnessfunction=fr.inria.astor.core.solutionsearch.population.TestCaseFitnessFunction
+#
+populationcontroller=fr.inria.astor.core.solutionsearch.population.TestCaseBasedFitnessPopulationController
+#
+compiler=fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler
+#Evosuite jar
+evosuitejar=./lib/evosuite-master-1.0.4-SNAPSHOT.jar
+#./lib/evosuite-1.0.3.jar
+evosuiteresultfolder=evosuite
+
+###Properties for automatic execution of 
+bugId=280
+numberExecutions=1
+###Properties for mutation testing
+elementsToMutate=10
+###test cases to Ignore (separated using File.pathSeparator (': in Unix/Linux/Solaris), please, replace it by ';' if you use Windows)
+ignoredTestCases=
+###org.apache.commons.math.ode.nonstiff:org.apache.commons.math.ode2.nonstiff:org.apache.commons.lang.LocaleUtilsTest
+###prefix of program variant folder name
+pvariantfoldername=variant-
+
+##CONFIGURATION FILE#
+#Folders with version of programs:
+version-location=./math-version/
+#Maven Repo location
+pathToMVNRepository=
+#Trunk Process command: print the first 'commandTrunk'. Put 0 to not trunk the command
+commandTrunk=50000
+#Use fault localization to reduce the number or suspicious, or all statement are uniformly suspicious
+skipfaultlocalization=false
+ignoreflakyinfl=false
+#EvoSuite in seconds
+evosuitetimeout=120
+#
+evo_buggy_class=true
+#
+evo_affected_by_op=true
+#Default Version of jUnit used as default by astor.
+lastJUnitVersion=./examples/libs/junit-4.11.jar
+#Apply DSE to evosuite
+evoDSE=false
+#True ES is computed over the original (i.e., not modified) class or over the patched
+evoRunOnBuggyClass=true
+#
+learningdir=
+#
+clusteringfilename=clustering.csv
+#
+transformingredient=false
+#
+duplicateingredientsinspace=false
+#Timezone
+timezone=America/Los_Angeles
+#Filter FL
+filterfaultlocalization=true
+#
+manipulatesuper=false
+#
+maxVarCombination=1000
+#
+maxCombinationVariableLimit=false
+#
+skipfitnessinitialpopulation=false
+#
+processoutputinfile=false
+#"JUnitNologExternalExecutor"/* "JUnitExternalExecutor" */
+#testexecutorclass=JUnitNologExternalExecutor
+logtestexecution=false
+#
+nomodificationconvergence=100
+#
+cleantemplates=true
+#
+disablelog=false
+#
+loglevel=INFO
+#
+logpatternlayout=[%-5p] %l - %m%n
+#
+limitbysuspicious=true
+#
+jsonoutputname=astor_output
+#
+probabilistictransformation=true
+#
+logsattemps=true
+#
+maxnumvariablesperingredient=10
+#
+preservelinenumbers=true
+#After build a model, Spoon can save the source and bin on disk
+savespoonmodelondisk=false
+#
+gzoltartestpackagetoexclude=junit.framework
+#
+gzoltarpackagetonotinstrument=junit.framework
+#
+executorjar=./lib/jtestex7.jar
+#
+runjava7code=false
+#
+nrPlaceholders=1
+#
+savecompletepatched=true
+#
+resetmodel=true
+#
+parsesourcefromoriginal=false
+#
+max_synthesis_step=10000
+#
+synthesis_depth=3
+#
+forcesubprocesskilling=true
+#
+collectonlyusedmethod=false
