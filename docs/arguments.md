@@ -1,5 +1,5 @@
 
-# Passing parameters to Astor
+# Astor parameters
 
 It is possible to change any configuration parameter of Astor using the command line argument named `-parameters`.
 
