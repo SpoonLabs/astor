@@ -303,18 +303,17 @@ public class ProjectConfiguration {
 	public static Integer getJavaVersionOfJVM4Validation() {
 		String jvmversion = ConfigurationProperties.properties.getProperty("jvmversion");
 		if (jvmversion == null || jvmversion.isEmpty()) {
-			logger.info("The property jvmversion is null or empty");
+			logger.error("The property jvmversion is null or empty");
 			return null;
 		}
 
 		String[] versioncomponents = jvmversion.split("\\.");
 		if (versioncomponents.length < 3) {
-			logger.info("The property jvmversion has a format we cannot recognize: " + versioncomponents);
+			logger.error("The property jvmversion has a format we cannot recognize: " + versioncomponents);
 			return null;
 		}
 		String sec = versioncomponents[1];
 		int currentVersion = Integer.valueOf(sec);
-		logger.info("The JVM used for running tests is version:  " + versioncomponents);
 
 		return currentVersion;
 	}
