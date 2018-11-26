@@ -96,6 +96,7 @@ For executing Astor in jMutRepair mode:
     
     -bintestfolder "test class folder" 
     
+  
     
 ### Command line arguments example Math-70 from Defects4J: 
 	
@@ -125,6 +126,9 @@ For executing Astor in jMutRepair mode:
 
 Note that `-location` argument has a absolute path to the project to repair, and -dependency has the absolute path to the libraries or to the folder that contains them.
 However, note that the folders that specify the structure of the project under repair (`-srcjavafolder`, `-srctestfolder`, `-binjavafolder` and `-bintestfolder`) are relative.
+
+
+More information about parameters can be found in [this](https://github.com/SpoonLabs/astor/blob/master/docs/arguments.md) document.
 
 
 # Notes about running Astor over [Defects4J](https://github.com/rjust/defects4j) bugs.
