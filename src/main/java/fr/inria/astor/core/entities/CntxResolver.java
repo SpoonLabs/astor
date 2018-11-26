@@ -293,10 +293,7 @@ public class CntxResolver {
 				if (!aVarFromScope.getSimpleName().equals(aVarFromAffected.getVariable().getSimpleName())) {
 
 					try {
-						if (aVarFromScope.getType().toString().equals(aVarFromAffected.getType().toString())
-								|| aVarFromScope.getType().equals(aVarFromAffected.getType())
-								|| aVarFromScope.getType().isSubtypeOf(aVarFromAffected.getType())
-								|| aVarFromAffected.getType().isSubtypeOf(aVarFromScope.getType())) {
+						if (compareTypes(aVarFromScope.getType(), aVarFromAffected.getType())) {
 
 							boolean presentInExpression = varsAffectedInStatement.stream()
 									.filter(e -> e.getVariable().getSimpleName().equals(aVarFromScope.getSimpleName()))
@@ -348,11 +345,7 @@ public class CntxResolver {
 						.equals(aVariableAccessInStatement.getVariable().getSimpleName())) {
 
 					try {
-						if (aVariableInScope.getType().toString()
-								.equals(aVariableAccessInStatement.getType().toString())
-								|| aVariableInScope.getType().equals(aVariableAccessInStatement.getType())
-								|| aVariableInScope.getType().isSubtypeOf(aVariableAccessInStatement.getType())
-								|| aVariableAccessInStatement.getType().isSubtypeOf(aVariableInScope.getType())) {
+						if (compareTypes(aVariableInScope.getType(), aVariableAccessInStatement.getType())) {
 							hasSimType = true;
 							context.put(CNTX_Property.HAS_VAR_SIM_TYPE, hasSimType);
 							return;
@@ -528,7 +521,11 @@ public class CntxResolver {
 	private void analyzeAffectedVariablesUsedS1(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 
-		/* CtMethod */ CtExecutable methodParent = element.getParent(CtExecutable.class);
+		CtExecutable methodParent = element.getParent(CtExecutable.class);
+
+		if (methodParent == null)
+			// the element is not in a method.
+			return;
 
 		List<CtStatement> statements = methodParent.getElements(new LineFilter());
 
