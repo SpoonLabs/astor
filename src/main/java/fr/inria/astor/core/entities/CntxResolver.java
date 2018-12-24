@@ -450,6 +450,9 @@ public class CntxResolver {
 
 		CtExecutable methodParent = element.getParent(CtExecutable.class);
 
+		if (methodParent == null)
+			return;
+
 		List<CtStatement> statements = methodParent.getElements(new LineFilter());
 
 		int similarUsedBefore = 0;
