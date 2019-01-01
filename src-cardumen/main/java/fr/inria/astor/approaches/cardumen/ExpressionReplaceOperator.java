@@ -71,4 +71,11 @@ public class ExpressionReplaceOperator extends ReplaceOp {
 
 		return (point.getCodeElement() instanceof CtExpression);
 	}
+
+	@Override
+	protected OperatorInstance createOperatorInstance(ModificationPoint mp) {
+		OperatorInstance operation = new OperatorInstance(mp, this, mp.getCodeElement(), null);
+		return operation;
+	}
+
 }
