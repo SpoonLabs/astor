@@ -127,9 +127,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 
 		List<PatchStat> patches = main1.getEngine().getPatchInfo();
 
-		Assert.assertTrue(patches.size() > 0);
-
-		Assert.assertEquals(2, patches.size());
+		Assert.assertTrue(patches.size() >= 2);
 
 		PatchHunkStats hunkSolution = getHunkSolution(patches, "this.f = f", "CtAssignmentImpl|CtBlockImpl");
 		Assert.assertNotNull(hunkSolution);
