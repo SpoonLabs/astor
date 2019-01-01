@@ -73,8 +73,9 @@ public class RandomSelectionTransformedIngredientStrategy extends IngredientSear
 
 		if (baseElements == null || baseElements.isEmpty()) {
 			log.debug("Any template available for mp " + modificationPoint);
-			log.debug("#templates already used: "
-					+ this.exhaustTemplates.get(getKey(modificationPoint, operationType)).size());
+			List usedElements = this.exhaustTemplates.get(getKey(modificationPoint, operationType));
+			if (usedElements != null)
+				log.debug("#templates already used: " + usedElements.size());
 			return null;
 		}
 
@@ -261,8 +262,8 @@ public class RandomSelectionTransformedIngredientStrategy extends IngredientSear
 	}
 
 	/**
-	 * Return the number of ingredients according to: the location and the
-	 * operator to apply.
+	 * Return the number of ingredients according to: the location and the operator
+	 * to apply.
 	 * 
 	 * @param modificationPoint
 	 * @param operationType
@@ -299,8 +300,7 @@ public class RandomSelectionTransformedIngredientStrategy extends IngredientSear
 	/**
 	 * Check if the ingredient was already used
 	 * 
-	 * @param id
-	 *            program instance id.
+	 * @param id       program instance id.
 	 * @param fix
 	 * @param location
 	 * @return
