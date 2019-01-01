@@ -1043,11 +1043,11 @@ public class VariableResolver {
 							}
 
 							if (p1 == null) {
-								logger.error("Var not found in global ngram: " + s1);
+								logger.debug("Var not found in global ngram: " + s1);
 								return 1;
 							}
 							if (p2 == null) {
-								logger.error("Var not found in global ngram: " + s2);
+								logger.debug("Var not found in global ngram: " + s2);
 								return -1;
 							}
 							return Double.compare(p2, p1);
