@@ -49,8 +49,7 @@ public class JUnitExternalExecutor {
 			// We do not care about this exception,
 		}
 		out = out + "]";
-		return (OUTSEP + r.getRunCount() + OUTSEP
-				+ failures/* r.getFailureCount() */ + OUTSEP + out + OUTSEP);
+		return (OUTSEP + r.getRunCount() + OUTSEP + failures + OUTSEP + out + OUTSEP);
 	}
 
 	protected String failureMessage(Failure f) {

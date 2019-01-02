@@ -69,6 +69,7 @@ public class LaucherJUnitProcess {
 
 			command.add(jvmPath);
 			command.add("-Xmx2048m");
+			command.add("-Dmutnumber=" + ConfigurationProperties.getProperty("metid"));
 			command.add("-cp");
 			command.add(newClasspath);
 			command.add(laucherClassName().getCanonicalName());
