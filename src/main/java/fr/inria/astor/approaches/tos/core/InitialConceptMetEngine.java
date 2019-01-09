@@ -1,13 +1,16 @@
 package fr.inria.astor.approaches.tos.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -24,6 +27,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -33,16 +37,17 @@ import spoon.support.reflect.code.CtBlockImpl;
 import spoon.support.reflect.code.CtReturnImpl;
 
 /**
+ * Initial concept of met engine. Only for test.
  * 
  * @author Matias Martinez
  *
  */
-public class MetEngine {
+public class InitialConceptMetEngine {
 
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	public List<OperatorInstance> transform(ProgramVariant variant, ModificationPoint modificationPoint,
-			CtExpression expToChange, List<CtExpression> candidates) {
+			CtExpression expToChange, List<Ingredient> candidates) {
 
 		log.debug("nr candidates " + candidates + " of variant " + variant.getId());
 
@@ -99,11 +104,14 @@ public class MetEngine {
 		// let's start with one, and let's keep the Zero for the default (all ifs are
 		// false)
 		int candidateNumber = 1;
-		for (CtExpression expressionCandidate : candidates) {
+		Map<Integer, Ingredient> nrCandidate = new HashMap<>();
+		for (Ingredient ingredientCandidate : candidates) {
+
+			CtExpression expressionCandidate = (CtExpression) ingredientCandidate.getCode();
 			CtCodeSnippetExpression caseCondition = MutationSupporter.getFactory().createCodeSnippetExpression(
 					"\"" + candidateNumber + "\".equals(System.getProperty(\"mutnumber\")) ");
 
-			candidateNumber++;
+			nrCandidate.put(candidateNumber, ingredientCandidate);
 
 			CtIf particularIf = MutationSupporter.getFactory().createIf();
 			particularIf.setCondition(caseCondition);
@@ -122,6 +130,7 @@ public class MetEngine {
 			// Add the if tho the methodBlock
 			// methodBodyBlock
 			tryBoddy.addStatement(particularIf);
+			candidateNumber++;
 
 		}
 		// By default, return the original
@@ -169,10 +178,11 @@ public class MetEngine {
 	 * @param candidates
 	 * @return
 	 */
-	private List<CtVariableAccess> collectAllVars(CtExpression exptochange, List<CtExpression> candidates) {
+	private List<CtVariableAccess> collectAllVars(CtExpression exptochange, List<Ingredient> candidates) {
 		List<CtVariableAccess> varAccess = VariableResolver.collectVariableAccess(exptochange);
 
-		for (CtExpression candidate : candidates) {
+		for (Ingredient candidateIngr : candidates) {
+			CtElement candidate = candidateIngr.getCode();
 			List<CtVariableAccess> varAccessCandidate = VariableResolver.collectVariableAccess(candidate);
 			for (CtVariableAccess varX : varAccessCandidate) {
 				if (!varAccess.contains(varX)) {

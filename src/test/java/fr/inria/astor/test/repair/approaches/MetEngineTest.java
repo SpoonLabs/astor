@@ -5,13 +5,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import fr.inria.astor.approaches.tos.core.EvalTOSBTApproach;
-import fr.inria.astor.approaches.tos.core.MetEngine;
+import fr.inria.astor.approaches.tos.core.InitialConceptMetEngine;
+import fr.inria.astor.approaches.tos.core.evalTos.EvalTOSClusterApproach;
+import fr.inria.astor.approaches.tos.core.evalTos.MetaEvalTOSApproach;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -39,7 +42,7 @@ public class MetEngineTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalTOSClusterApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -52,8 +55,8 @@ public class MetEngineTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 		// Retrieve the buggy if condition.
 		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -69,16 +72,16 @@ public class MetEngineTest {
 		ConfigurationProperties.setProperty("sortholes", "false");
 		List<CtCodeElement> holes = approach.calculateAllHoles(mp198);
 
-		MetEngine met = new MetEngine();
+		InitialConceptMetEngine met = new InitialConceptMetEngine();
 
-		List<CtExpression> candidates = new ArrayList();
+		List<Ingredient> candidates = new ArrayList();
 		// for test
 		CtExpression expNull = MutationSupporter.getFactory().createCodeSnippetExpression("true");
 
-		candidates.add(expNull);
+		candidates.add(new Ingredient(expNull));
 
 		CtExpression expReturnPatch = MutationSupporter.getFactory().createCodeSnippetExpression("(fa * fb) > 0.0");
-		candidates.add(expReturnPatch);
+		candidates.add(new Ingredient(expReturnPatch));
 
 		ProgramVariant variant = main.getEngine().getVariants().get(0);
 		List<OperatorInstance> newOperations = met.transform(variant, mp198, pointedIf198.getCondition(), candidates);
@@ -146,6 +149,103 @@ public class MetEngineTest {
 
 		assertFalse(variant.getValidationResult().isSuccessful());
 		assertFalse(resultValidation);
+
+	}
+
+	@Test
+	public void test_doomyTry_1() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testTrySimple1").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-try");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-flthreshold", "0.24");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		ProgramVariant solution1 = main1.getEngine().getSolutions().get(0);
+
+		assertTrue(solution1.getAllOperations().stream().filter(e -> e.getModified().toString().startsWith("try {"))
+				.findFirst().isPresent());
+
+		assertTrue(solution1.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+			try {"));
+		assertTrue(solution1.getPatchDiff().getOriginalStatementAlignmentDiff()
+				.contains("catch (java.lang.Exception e) {}"));
+
+	}
+
+	@Test
+	public void test_doomyIf_1() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testIfSimple1").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-if1");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-flthreshold", "0.24");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		assertEquals(2, main1.getEngine().getSolutions().size());
+
+		// Solution 1
+		ProgramVariant solution1 = main1.getEngine().getSolutions().get(0);
+
+		assertTrue(solution1.getAllOperations().stream()
+				.filter(e -> e.getModified().toString().startsWith("if (1 == 0")).findFirst().isPresent());
+
+		assertTrue(solution1.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+			if (1 == 0)"));
+
+		// Solution 2
+		ProgramVariant solution2 = main1.getEngine().getSolutions().get(1);
+
+		assertTrue(solution2.getAllOperations().stream()
+				.filter(e -> e.getModified().toString().startsWith("if (i2 == 1)")).findFirst().isPresent());
+
+		assertTrue(solution2.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+			if (i2 == 1)"));
 
 	}
 

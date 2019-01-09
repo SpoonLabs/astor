@@ -1,4 +1,4 @@
-package fr.inria.astor.approaches.tos.core;
+package fr.inria.astor.approaches.tos.ingredients.processors;
 
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import spoon.reflect.code.CtBlock;

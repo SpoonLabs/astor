@@ -12,9 +12,10 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.astor.approaches.tos.core.EvalSimpleValueTOSBTApproach;
-import fr.inria.astor.approaches.tos.core.EvalTOSBTApproach;
-import fr.inria.astor.approaches.tos.core.UpdateParentDiffOrderFromJSON;
+import fr.inria.astor.approaches.tos.core.evalTos.EvalTOSClusterApproach;
+import fr.inria.astor.approaches.tos.core.evalTos.EvalTOSCoreApproach;
+import fr.inria.astor.approaches.tos.core.evalTos.ingredients.ClusterExpressions;
+import fr.inria.astor.approaches.tos.core.evalTos.navigation.UpdateParentDiffOrderFromJSON;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -48,7 +49,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalSimpleValueTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalTOSCoreApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -60,8 +61,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalSimpleValueTOSBTApproach);
-		EvalSimpleValueTOSBTApproach approach = (EvalSimpleValueTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSCoreApproach);
+		EvalTOSCoreApproach approach = (EvalTOSCoreApproach) main.getEngine();
 		// Retrieve the buggy if condition.
 		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -89,7 +90,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalTOSClusterApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -100,8 +101,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 		// Retrieve the buggy if condition.
 		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -129,14 +130,14 @@ public class EvalTOSBTTest {
 
 		// System.out.println(candidatesnew);
 
-		MapList<String, List<EvaluatedExpression>> cluster = approach.clusterCandidatesByValue(candidatesnew);
+		MapList<String, ClusterExpressions> cluster = approach.clusterCandidatesByValue(candidatesnew);
 
 		///
 		System.out.println("END clustering: Visualization cluster: ");
 
 		for (String i_testName : cluster.keySet()) {
 
-			List<List<EvaluatedExpression>> clusterOfTest = cluster.get(i_testName);
+			List<ClusterExpressions> clusterOfTest = cluster.get(i_testName);
 
 			System.out.println("--Test " + i_testName + " # clustersL " + clusterOfTest.size());
 			int i = 0;
@@ -163,7 +164,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalTOSClusterApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -174,8 +175,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 		// Retrieve the buggy if condition.
 		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -198,7 +199,7 @@ public class EvalTOSBTTest {
 	public void testBT_Math_70_1() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalSimpleValueTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalTOSCoreApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "100");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -209,8 +210,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 		assertTrue(approach.getSolutions().isEmpty());
 	}
 
@@ -223,7 +224,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalTOSClusterApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -236,8 +237,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 		// Retrieve the buggy if condition.
 		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -272,7 +273,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalSimpleValueTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalTOSCoreApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -284,8 +285,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalSimpleValueTOSBTApproach);
-		EvalSimpleValueTOSBTApproach approach = (EvalSimpleValueTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSCoreApproach);
+		EvalTOSCoreApproach approach = (EvalTOSCoreApproach) main.getEngine();
 		// Retrieve the buggy if condition.
 		ModificationPoint mp198 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -314,7 +315,7 @@ public class EvalTOSBTTest {
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalSimpleValueTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalTOSCoreApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -328,8 +329,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalSimpleValueTOSBTApproach);
-		EvalSimpleValueTOSBTApproach approach = (EvalSimpleValueTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSCoreApproach);
+		EvalTOSCoreApproach approach = (EvalTOSCoreApproach) main.getEngine();
 
 		assertTrue(approach.getHoleOrderEngine() instanceof UpdateParentDiffOrderFromJSON);
 
@@ -378,13 +379,13 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName()); // clustercollectedvalues:true:
+						+ EvalTOSClusterApproach.class.getCanonicalName()); // clustercollectedvalues:true:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertTrue(approach.getHoleOrderEngine() instanceof UpdateParentDiffOrderFromJSON);
 
@@ -430,13 +431,13 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName()); // clustercollectedvalues:true:
+						+ EvalTOSClusterApproach.class.getCanonicalName()); // clustercollectedvalues:true:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		approach.getVariants().get(0).getModificationPoints()
 				.removeIf(e -> !(e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
@@ -473,13 +474,13 @@ public class EvalTOSBTTest {
 						+ "maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());
+						+ EvalTOSClusterApproach.class.getCanonicalName());
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		ModificationPoint mp21 = approach.getVariants().get(0).getModificationPoints().get(20);
 
@@ -512,13 +513,13 @@ public class EvalTOSBTTest {
 				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());
+						+ EvalTOSClusterApproach.class.getCanonicalName());
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
 	}
@@ -541,13 +542,13 @@ public class EvalTOSBTTest {
 				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());
+						+ EvalTOSClusterApproach.class.getCanonicalName());
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		ModificationPoint mp42 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> ((e.getCodeElement().getPosition().getLine() == 198)
@@ -583,13 +584,13 @@ public class EvalTOSBTTest {
 				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());
+						+ EvalTOSClusterApproach.class.getCanonicalName());
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		ModificationPoint mp42 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> ((e.getCodeElement().getPosition().getLine() == 239)
@@ -626,13 +627,13 @@ public class EvalTOSBTTest {
 				"clustercollectedvalues:true:disablelog:false:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());
+						+ EvalTOSClusterApproach.class.getCanonicalName());
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
 
@@ -658,13 +659,13 @@ public class EvalTOSBTTest {
 				"disablelog:false:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":tmax1:5000:");// clustercollectedvalues:true:
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":tmax1:5000:");// clustercollectedvalues:true:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		ModificationPoint mp24 = approach.getVariants().get(0).getModificationPoints().get(22);
 
@@ -702,13 +703,13 @@ public class EvalTOSBTTest {
 				"disablelog:false:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());// clustercollectedvalues:true:
+						+ EvalTOSClusterApproach.class.getCanonicalName());// clustercollectedvalues:true:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, approach.getOutputStatus());
 	}
@@ -732,15 +733,15 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() +
+						+ EvalTOSClusterApproach.class.getCanonicalName() +
 						// always type comparison
 						":avoidtypecomparison:false");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
@@ -768,15 +769,15 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() +
+						+ EvalTOSClusterApproach.class.getCanonicalName() +
 						// always type comparison
 						":avoidtypecomparison:false");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.MAX_GENERATION, approach.getOutputStatus());
@@ -802,13 +803,13 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":avoidtypecomparison:true");
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":avoidtypecomparison:true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
@@ -841,13 +842,13 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName());// clustercollectedvalues:true:
+						+ EvalTOSClusterApproach.class.getCanonicalName());// clustercollectedvalues:true:
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(AstorOutputStatus.TIME_OUT, approach.getOutputStatus());
 
@@ -874,13 +875,13 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":autocompile:true");
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":autocompile:true");
 
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(AstorOutputStatus.TIME_OUT, approach.getOutputStatus());
 
@@ -905,13 +906,13 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
 		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
@@ -938,13 +939,13 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
 		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 //MP (110/808) location to modify: MP=org.apache.commons.math3.geometry.partitioning.utilities.AVLTree line: 510, pointed element: CtLocalVariableImpl
 
@@ -991,13 +992,13 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
 		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 		//
 		ModificationPoint mp4 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> e.getCtClass().getSimpleName().equals("PolygonsSet")
@@ -1042,13 +1043,13 @@ public class EvalTOSBTTest {
 				"disablelog:true:maxnumbersolutions:" + maxSolutions
 						+ ":maxsolutionsperhole:1:sortholes:true:pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true");
 		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
@@ -1075,14 +1076,14 @@ public class EvalTOSBTTest {
 				"disablelog:false:maxnumbersolutions:" + maxSolutions + ":maxsolutionsperhole:1:sortholes:false"
 				// + ":pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
 						+ ":regressionforfaultlocalization:false");
 		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, approach.getOutputStatus());
@@ -1107,14 +1108,14 @@ public class EvalTOSBTTest {
 				"disablelog:false:maxnumbersolutions:" + maxSolutions + ":maxsolutionsperhole:1:sortholes:false"
 				// + ":pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
 						+ ":regressionforfaultlocalization:true");
 		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(1, approach.getPatchInfo().size());
@@ -1156,14 +1157,14 @@ public class EvalTOSBTTest {
 				"disablelog:false:maxnumbersolutions:" + maxSolutions + ":maxsolutionsperhole:1:sortholes:false"
 				// + ":pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
 						+ ":regressionforfaultlocalization:true");
 		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		assertEquals(1, approach.getSolutions().size());
 		assertEquals(1, approach.getPatchInfo().size());
@@ -1204,14 +1205,14 @@ public class EvalTOSBTTest {
 				"disablelog:false" + ":maxsolutionsperhole:1:sortholes:false"
 				// + ":pathjsonfrequency:" + filef.getAbsolutePath()
 						+ ":holeorder:" + UpdateParentDiffOrderFromJSON.class.getName() + ":customengine:"
-						+ EvalTOSBTApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
+						+ EvalTOSClusterApproach.class.getCanonicalName() + ":skipfitnessinitialpopulation:true"
 						+ ":regressionforfaultlocalization:true");
 		// clustercollectedvalues:true:
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 
 		ModificationPoint mp22 = approach.getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> ((e.getCodeElement().getPosition().getLine() == 116)
@@ -1240,7 +1241,7 @@ public class EvalTOSBTTest {
 	public void testBT_Math_70_Types_Evaluation() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", EvalTOSBTApproach.class.getCanonicalName());
+		command.command.put("-customengine", EvalTOSClusterApproach.class.getCanonicalName());
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-scope", "local");
@@ -1251,8 +1252,8 @@ public class EvalTOSBTTest {
 		AstorMain main = new AstorMain();
 		main.execute(command.flat());
 
-		assertTrue(main.getEngine() instanceof EvalTOSBTApproach);
-		EvalTOSBTApproach approach = (EvalTOSBTApproach) main.getEngine();
+		assertTrue(main.getEngine() instanceof EvalTOSClusterApproach);
+		EvalTOSClusterApproach approach = (EvalTOSClusterApproach) main.getEngine();
 		assertTrue(approach.getSolutions().isEmpty());
 
 		ModificationPoint mp72 = approach.getVariants().get(0).getModificationPoints().stream()

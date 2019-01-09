@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.spoon.StaSynthBuilder;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.StringDistance;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
@@ -155,7 +156,8 @@ public class CntxResolver {
 		context.put(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT, type);
 		for (CntxEntity entity : CntxEntity.values()) {
 			boolean equals = type.equals(entity.name());
-			writeDetailedInformation(context, entity.name(), CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT, equals);
+			// writeDetailedInformation(context, entity.name(),
+			// CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT, equals);
 		}
 		//
 
@@ -411,7 +413,7 @@ public class CntxResolver {
 					}
 				}
 			}
-			writeDetailedInformation(context, variableAffected.getVariable().getSimpleName(),
+			writeDetailedInformationFromVariables(context, variableAffected.getVariable().getSimpleName(),
 					CNTX_Property.V5_HAS_VAR_IN_TRANSFORMATION, (v5_VarHasvar));
 
 		}
@@ -1018,7 +1020,7 @@ public class CntxResolver {
 
 				}
 			}
-			writeDetailedInformation(context, aVarAffected.getVariable().getSimpleName(),
+			writeDetailedInformationFromVariables(context, aVarAffected.getVariable().getSimpleName(),
 					CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE, (v2VarSimilarNameCompatibleType));
 
 		}
@@ -1113,17 +1115,17 @@ public class CntxResolver {
 
 				}
 
-				writeDetailedInformation(context, var.getVariable().getSimpleName(),
+				writeDetailedInformationFromVariables(context, var.getVariable().getSimpleName(),
 						CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
 						(v1InvcompatibleReturnAndParameterTypes));
 
-				writeDetailedInformation(context, var.getVariable().getSimpleName(),
+				writeDetailedInformationFromVariables(context, var.getVariable().getSimpleName(),
 						CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR, v6InvReturnCompatible);
 
-				writeDetailedInformation(context, var.getVariable().getSimpleName(),
+				writeDetailedInformationFromVariables(context, var.getVariable().getSimpleName(),
 						CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR, v4InvparamCompatible);
 
-				writeDetailedInformation(context, var.getVariable().getSimpleName(),
+				writeDetailedInformationFromVariables(context, var.getVariable().getSimpleName(),
 						CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2InvparamCompatibleWithBooleanReturn));
 
 			}
@@ -1392,16 +1394,18 @@ public class CntxResolver {
 
 				}
 
-				writeDetailedInformation(context, affectedMethod, CNTX_Property.M4_PARAMETER_RETURN_COMPABILITY,
+				writeDetailedInformationFromMethod(context, affectedMethod,
+						CNTX_Property.M4_PARAMETER_RETURN_COMPABILITY,
 						m4methodHasCompatibleParameterAndReturnSameMethod);
 
-				writeDetailedInformation(context, affectedMethod, CNTX_Property.M1_OVERLOADED_METHOD,
+				writeDetailedInformationFromMethod(context, affectedMethod, CNTX_Property.M1_OVERLOADED_METHOD,
 						m1methodHasSameName);
 
-				writeDetailedInformation(context, affectedMethod, CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN,
-						m2methodhasMinDist);
+				writeDetailedInformationFromMethod(context, affectedMethod,
+						CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2methodhasMinDist);
 
-				writeDetailedInformation(context, affectedMethod, CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
+				writeDetailedInformationFromMethod(context, affectedMethod,
+						CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
 						m3methodhasCompatibleParameterAndReturnWithOtherMethod);
 
 			}
@@ -1426,16 +1430,38 @@ public class CntxResolver {
 		return allMethods;
 	}
 
-	private void writeDetailedInformation(Cntx<Object> context, CtMethod affectedMethod, CNTX_Property property,
-			Boolean value) {
+	private void writeDetailedInformationFromMethod(Cntx<Object> context, CtMethod affectedMethod,
+			CNTX_Property property, Boolean value) {
 
-		context.getInformation().put(property.name() + "_" + affectedMethod.getSignature(), value);
+		if (ConfigurationProperties.getPropertyBool("write_composed_feature"))
+			context.getInformation().put(property.name() + "_" + affectedMethod.getSignature(), value);
+		writeGroupedByVar(context, affectedMethod.getSignature(), property, value, "FEATURES_METHODS");
 
 	}
 
-	private void writeDetailedInformation(Cntx<Object> context, String key, CNTX_Property property, Boolean value) {
+	private void writeDetailedInformationFromVariables(Cntx<Object> context, String key, CNTX_Property property,
+			Boolean value) {
 
-		context.getInformation().put(property.name() + "_" + key, value);
+		if (ConfigurationProperties.getPropertyBool("write_composed_feature"))
+			context.getInformation().put(property.name() + "_" + key, value);
+		writeGroupedByVar(context, key, property, value, "FEATURES_VARS");
+
+	}
+
+	private void writeGroupedByVar(Cntx<Object> context, String key, CNTX_Property property, Boolean value,
+			String type) {
+
+		Cntx<Object> featuresVar = (Cntx<Object>) context.getInformation().get(type);
+		if (featuresVar == null) {
+			featuresVar = new Cntx<>();
+			context.getInformation().put(type, featuresVar);
+		}
+		Cntx<Object> particularVar = (Cntx<Object>) featuresVar.getInformation().get(key);
+		if (particularVar == null) {
+			particularVar = new Cntx<>();
+			featuresVar.getInformation().put(key, particularVar);
+		}
+		particularVar.getInformation().put(property.name(), value);
 
 	}
 
