@@ -1,11 +1,12 @@
-package fr.inria.astor.approaches.tos.core;
+package fr.inria.astor.approaches.tos.core.evalTos;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.tos.core.evalTos.ingredients.ClusterExpressions;
+import fr.inria.astor.approaches.tos.core.evalTos.ingredients.DynaIngredientPool;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -29,13 +30,15 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 
 /**
+ * An extension of EvalTOS, based on cluster
  * 
  * @author Matias Martinez
  *
  */
-public class EvalTOSBTApproach extends EvalSimpleValueTOSBTApproach {
+public class EvalTOSClusterApproach extends EvalTOSCoreApproach {
 
-	public EvalTOSBTApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
+	public EvalTOSClusterApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 	}
 
@@ -44,39 +47,9 @@ public class EvalTOSBTApproach extends EvalSimpleValueTOSBTApproach {
 			throws IllegalAccessException, Exception, IllegalAccessError {
 
 		final boolean stop = true;
-		DynamothSynthesisContext contextCollected = null;
-		try {
-			contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
-		} catch (Exception e) {
-			log.error("Error calling Dynamoth value recolection MP id: " + iModifPoint.identified);
-			log.error("Failing collecting values from class: "
-					+ iModifPoint.getCodeElement().getParent(CtClass.class).getQualifiedName());
-			log.error(e);
-			currentStat.increment(GeneralStatEnum.NR_ERRONEOUS_VARIANCES);
+		MapList<String, ClusterExpressions> clusterEvaluatedExpressions = getEvaluatedExpression(iModifPoint);
+		if (clusterEvaluatedExpressions == null)
 			return false;
-		}
-		// Collecting values:
-		// values are collected from all test.
-
-		// Creating combinations (do not depend on the Holes because
-		// they are combination of variables in context of a
-		// modification point)
-		DynamothSynthesizerWOracle synthesizer = new DynamothSynthesizerWOracle(contextCollected);
-
-		Candidates evaluatedExpressions = synthesizer.combineValues();
-
-		if (evaluatedExpressions.isEmpty()) {
-			log.error("Error: not collected values for MP " + iModifPoint);
-		}
-
-		MapCounter<String> typesOfCandidatesCombined = getTypesOfExpressions(evaluatedExpressions);
-
-		log.info("types Of Candidates: " + typesOfCandidatesCombined.sorted());
-
-		log.info("Start clustering");
-		// Key: test name, value list of clusters, each cluster is a list of
-		// evaluated expressions
-		MapList<String, List<EvaluatedExpression>> cluster = clusterCandidatesByValue(evaluatedExpressions);
 
 		List<CtCodeElement> holesFromMP = calculateHolesSorted(iModifPoint);
 		log.info("For MP " + iModifPoint.identified + ",  total holes: " + holesFromMP.size());
@@ -102,20 +75,20 @@ public class EvalTOSBTApproach extends EvalSimpleValueTOSBTApproach {
 					"\n\n---hole-> `" + iHole + "`,  return type " + aholeExpression.getType().box().getQualifiedName()
 							+ "--hole type: " + iHole.getClass().getCanonicalName());
 
-			int[] sizesofClusters = cluster.values().stream().mapToInt(i -> i.size()).toArray();
+			int[] sizesofClusters = clusterEvaluatedExpressions.values().stream().mapToInt(i -> i.size()).toArray();
 
 			log.info("number of clusters " + Arrays.toString(sizesofClusters));
 
 			// Simplification
 			int nrtestfromholei = 0;
-			for (String i_testName : cluster.keySet()) {
-				List<List<EvaluatedExpression>> clustersOfTest = cluster.get(i_testName);
+			for (String i_testName : clusterEvaluatedExpressions.keySet()) {
+				List<ClusterExpressions> clustersOfTest = clusterEvaluatedExpressions.get(i_testName);
 				nrtestfromholei++;
 				log.debug(String.format("Nr clusters of test %s: %d/%d", i_testName, nrtestfromholei,
 						clustersOfTest.size()));
 
 				int valuefromtesti = 0;
-				for (List<EvaluatedExpression> i_cluster : clustersOfTest) {
+				for (ClusterExpressions i_cluster : clustersOfTest) {
 					valuefromtesti++;
 					if (i_cluster.size() > 0) {
 						EvaluatedExpression firstExpressionOfCluster = i_cluster.get(0);
@@ -126,7 +99,8 @@ public class EvalTOSBTApproach extends EvalSimpleValueTOSBTApproach {
 						operationsExecuted++;
 
 						// let's check the types
-						String classofExpression = returnExpressionType(firstExpressionOfCluster);// firstExpressionOfCluster.getValue().getType().getCanonicalName();
+						String classofExpression = i_cluster.getClusterType();// returnExpressionType(firstExpressionOfCluster);//
+																				// firstExpressionOfCluster.getValue().getType().getCanonicalName();
 
 						String classofiHole = aholeExpression.getType().box().getQualifiedName();
 
@@ -183,6 +157,48 @@ public class EvalTOSBTApproach extends EvalSimpleValueTOSBTApproach {
 		return !stop;
 	}
 
+	public MapList<String, ClusterExpressions> getEvaluatedExpression(ModificationPoint iModifPoint) {
+		DynamothSynthesisContext contextCollected = null;
+		try {
+			contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
+		} catch (Exception e) {
+			log.error("Error calling Dynamoth value recolection MP id: " + iModifPoint.identified);
+			log.error("Failing collecting values from class: "
+					+ iModifPoint.getCodeElement().getParent(CtClass.class).getQualifiedName());
+			log.error(e);
+			currentStat.increment(GeneralStatEnum.NR_ERRONEOUS_VARIANCES);
+			return null;
+		}
+		// Collecting values:
+		// values are collected from all test.
+
+		// Creating combinations (do not depend on the Holes because
+		// they are combination of variables in context of a
+		// modification point)
+		DynamothSynthesizerWOracle synthesizer = new DynamothSynthesizerWOracle(contextCollected);
+
+		Candidates evaluatedExpressions = synthesizer.combineValues();
+
+		if (evaluatedExpressions.isEmpty()) {
+			log.error("Error: not collected values for MP " + iModifPoint);
+		}
+		// This is only for logging info...
+		MapCounter<String> typesOfCandidatesCombined = getTypesOfExpressions(evaluatedExpressions);
+
+		log.info("types Of Candidates: " + typesOfCandidatesCombined.sorted());
+
+		log.info("Start clustering");
+		// Key: test name, value list of clusters, each cluster is a list of
+		// evaluated expressions
+		MapList<String, ClusterExpressions> cluster = clusterCandidatesByValue(evaluatedExpressions);
+		return cluster;
+	}
+
+	public DynaIngredientPool getClusteredEvaluatedExpression(ModificationPoint iModifPoint) {
+		MapList<String, ClusterExpressions> cluster = this.getEvaluatedExpression(iModifPoint);
+		return new DynaIngredientPool(cluster);
+	}
+
 	private MapCounter<String> getTypesOfExpressions(Candidates candidatesnew) {
 		MapCounter<String> typesOfCandidates = new MapCounter<>();
 		for (Expression expression : candidatesnew) {
@@ -193,7 +209,7 @@ public class EvalTOSBTApproach extends EvalSimpleValueTOSBTApproach {
 		return typesOfCandidates;
 	}
 
-	private String returnExpressionType(Expression expression) {
+	protected String returnExpressionType(Expression expression) {
 
 		if (expression.getValue() == null) {
 			log.debug("Value of expression " + expression + "  is null");
@@ -221,13 +237,13 @@ public class EvalTOSBTApproach extends EvalSimpleValueTOSBTApproach {
 	 * @param candidates
 	 * @return
 	 */
-	public MapList<String, List<EvaluatedExpression>> clusterCandidatesByValue(Candidates candidates) {
+	public MapList<String, ClusterExpressions> clusterCandidatesByValue(Candidates candidates) {
 
 		log.debug("number candidates " + candidates.size());
 
 		// For each test:
 		// test name, cluster of expressions
-		MapList<String, List<EvaluatedExpression>> cluster = new MapList<>();
+		MapList<String, ClusterExpressions> cluster = new MapList<>();
 
 		for (int i = 0; i < candidates.size(); i++) {
 			EvaluatedExpression i_expression = (EvaluatedExpression) candidates.get(i);
@@ -235,12 +251,14 @@ public class EvalTOSBTApproach extends EvalSimpleValueTOSBTApproach {
 			for (String i_testName : i_expression.getEvaluations().keySet()) {
 
 				if (!cluster.containsKey(i_testName)) {
-					List<EvaluatedExpression> evacluster = new ArrayList<>();
+
+					String expressionType = returnExpressionType(i_expression);
+					ClusterExpressions evacluster = new ClusterExpressions(expressionType);
 					evacluster.add(i_expression);
 					cluster.add(i_testName, evacluster);
 				} else {
 
-					List<List<EvaluatedExpression>> clusterOfTest = cluster.get(i_testName);
+					List<ClusterExpressions> clusterOfTest = cluster.get(i_testName);
 					boolean notClustered = true;
 					for (List<EvaluatedExpression> elementsFromCluster : clusterOfTest) {
 
@@ -259,7 +277,9 @@ public class EvalTOSBTApproach extends EvalSimpleValueTOSBTApproach {
 
 					}
 					if (notClustered) {
-						List<EvaluatedExpression> evacluster = new ArrayList<>();
+						// List<EvaluatedExpression> evacluster = new ArrayList<>();
+						String expressionType = returnExpressionType(i_expression);
+						ClusterExpressions evacluster = new ClusterExpressions(expressionType);
 						evacluster.add(i_expression);
 						clusterOfTest.add(evacluster);
 					}

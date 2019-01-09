@@ -1,4 +1,4 @@
-package fr.inria.astor.approaches.tos.core;
+package fr.inria.astor.approaches.tos.core.evalTos;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +9,12 @@ import java.util.stream.Collectors;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
+import fr.inria.astor.approaches.tos.core.evalTos.ingredients.CtExpressionIngredientSpaceProcessor;
+import fr.inria.astor.approaches.tos.core.evalTos.navigation.HoleOrder;
+import fr.inria.astor.approaches.tos.core.evalTos.navigation.NoOrderHoles;
+import fr.inria.astor.approaches.tos.core.evalTos.navigation.SimpleDiffOrderFromJSON;
 import fr.inria.astor.core.entities.Ingredient;
+import fr.inria.astor.core.entities.IngredientFromDyna;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -39,11 +44,12 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTypeAccess;
 
 /**
- * 
+ * Core of EvalTOS. 
+ * Works in a simple mode: single evaluation (not cluster)
  * @author Matias Martinez
  *
  */
-public class EvalSimpleValueTOSBTApproach extends ExhaustiveIngredientBasedEngine {
+public class EvalTOSCoreApproach extends ExhaustiveIngredientBasedEngine {
 
 	public int MAX_HOLES_PER_MODIFICATION_POINT;
 	public int MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
@@ -58,7 +64,7 @@ public class EvalSimpleValueTOSBTApproach extends ExhaustiveIngredientBasedEngin
 
 	protected HoleOrder holeOrderEngine = null;
 
-	public EvalSimpleValueTOSBTApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+	public EvalTOSCoreApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		targetElementProcessors.add(new CtExpressionIngredientSpaceProcessor());
@@ -67,7 +73,6 @@ public class EvalSimpleValueTOSBTApproach extends ExhaustiveIngredientBasedEngin
 		MAX_HOLES_PER_MODIFICATION_POINT = (ConfigurationProperties.hasProperty("maxholespermp"))
 				? ConfigurationProperties.getPropertyInt("maxholespermp")
 				: 10;
-
 	}
 
 	@Override
@@ -153,7 +158,7 @@ public class EvalSimpleValueTOSBTApproach extends ExhaustiveIngredientBasedEngin
 		// they are combination of variables in context of a
 		// modification point)
 		DynamothSynthesizerWOracle synthesizer = new DynamothSynthesizerWOracle(contextCollected);
-		
+
 		Candidates candidates = synthesizer.combineValues();
 
 		// Store candidates in structures
@@ -307,11 +312,11 @@ public class EvalSimpleValueTOSBTApproach extends ExhaustiveIngredientBasedEngin
 		return isSolution;
 	}
 
-	private Ingredient createIngredient(Expression expression) {
+	protected IngredientFromDyna createIngredient(Expression expression) {
 		String candidateCode = expression.asPatch();
 		CtCodeSnippetExpression<Boolean> snippet = MutationSupporter.getFactory().Core().createCodeSnippetExpression();
 		snippet.setValue(candidateCode);
-		Ingredient ingredient = new Ingredient(snippet);
+		IngredientFromDyna ingredient = new IngredientFromDyna(snippet, expression);
 		// take one form the cluster by type
 		log.debug("Creating ingredient from Dynamoth expression: " + expression + " --result--> Spoon Ingredient: "
 				+ ingredient + "| value: " + expression.getValue().getRealValue());

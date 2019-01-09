@@ -7,6 +7,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientRandomSearchStrategy;
+import fr.inria.astor.approaches.tos.ingredients.processors.StatementFixSpaceProcessor;
 import fr.inria.astor.approaches.tos.ingredients.TOSIngredientPool;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;

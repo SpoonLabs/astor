@@ -349,6 +349,8 @@ public class ProgramVariantFactory {
 		childVariant.setLastModificationPointAnalyzed(parentVariant.getLastModificationPointAnalyzed());
 		childVariant.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
 		childVariant.setFitness(parentVariant.getFitness());
+		childVariant.setValidationResult(parentVariant.getValidationResult());
+		childVariant.setPatchDiff(parentVariant.getPatchDiff());
 		return childVariant;
 
 	}

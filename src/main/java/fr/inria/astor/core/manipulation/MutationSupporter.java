@@ -18,6 +18,7 @@ import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -197,4 +198,10 @@ public class MutationSupporter {
 	public void setOutput(OutputWritter output) {
 		this.output = output;
 	}
+
+	public static void clearPosition(CtElement expCloned) {
+		expCloned.setPosition(new NoSourcePosition());
+		expCloned.getElements(e -> true).stream().forEach(e -> e.setPosition(new NoSourcePosition()));
+	}
+
 }

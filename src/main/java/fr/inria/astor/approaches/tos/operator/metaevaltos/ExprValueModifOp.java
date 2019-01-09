@@ -1,59 +1,49 @@
-package fr.inria.astor.approaches.tos.core;
+package fr.inria.astor.approaches.tos.operator.metaevaltos;
 
 import java.util.List;
 
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.entities.meta.MetaOperator;
+import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
 
-/**
- * 
- * @author Matias Martinez
- *
- */
-public class InsertMethodOperator extends AstorOperator {
-
-	CtMethod newMethod = null;
-	CtClass parentClass = null;
+public class ExprValueModifOp extends AstorOperator implements MetaOperator {
 
 	@Override
 	public boolean applyChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
-		CtMethod newMethod = (CtMethod) opInstance.getModified();
-		parentClass = opInstance.getOriginal().getParent(CtClass.class);
-		if (parentClass != null) {
-			this.newMethod = newMethod;
-			parentClass.addMethod(newMethod);
-			return true;
-		}
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean undoChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
-		if (parentClass != null && this.newMethod != null) {
-			parentClass.removeMethod(newMethod);
-			return true;
-		}
-
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean updateProgramVariant(OperatorInstance opInstance, ProgramVariant p) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
-
-		return true;
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public OperatorInstance getConcreteOperatorInstance(MetaOperatorInstance operatorInstance, int metaIdentifier) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

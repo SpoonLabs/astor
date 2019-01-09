@@ -48,9 +48,8 @@ public class ProgramVariant {
 	 */
 	protected List<ModificationPoint> modificationPoints = null;
 	/**
-	 * Reference to the loaded classes from the spoon model. The classes are
-	 * shared by all variants, a s consequence, it does not have changes of any
-	 * variant.
+	 * Reference to the loaded classes from the spoon model. The classes are shared
+	 * by all variants, a s consequence, it does not have changes of any variant.
 	 */
 	protected Map<String, CtClass> loadClasses = new HashMap<String, CtClass>();
 
@@ -76,8 +75,8 @@ public class ProgramVariant {
 
 	protected boolean isSolution = false;
 	/**
-	 * When we want to analyze one gen per generation, we need to track the last
-	 * gen analyzed
+	 * When we want to analyze one gen per generation, we need to track the last gen
+	 * analyzed
 	 */
 	protected int lastModificationPointAnalyzed = 0;
 
@@ -88,9 +87,9 @@ public class ProgramVariant {
 
 	/**
 	 * List that contains the classes affected by the variant, with the
-	 * corresponding changes that the variant proposes. Note that these classes
-	 * are cloned from the share model, and only belong to this variant. That
-	 * means the children of this variant do not refer to those instances.
+	 * corresponding changes that the variant proposes. Note that these classes are
+	 * cloned from the share model, and only belong to this variant. That means the
+	 * children of this variant do not refer to those instances.
 	 */
 	protected List<CtClass> modifiedClasses = new ArrayList<CtClass>();
 
@@ -162,6 +161,8 @@ public class ProgramVariant {
 	}
 
 	public List<OperatorInstance> getOperations(int generation) {
+		if (!operations.containsKey(generation))
+			operations.put(generation, new ArrayList<>());
 		return operations.get(generation);
 	}
 
@@ -202,8 +203,8 @@ public class ProgramVariant {
 
 	/**
 	 * Return the classes affected by the variant. Note that those classes are
-	 * shared between all variant, so, they do not have applied the changes
-	 * proposed by the variant after the variant is validated.
+	 * shared between all variant, so, they do not have applied the changes proposed
+	 * by the variant after the variant is validated.
 	 * 
 	 * @return
 	 */

@@ -1,4 +1,4 @@
-package fr.inria.astor.approaches.tos.core;
+package fr.inria.astor.approaches.tos.core.evalTos.ingredients;
 
 import org.apache.log4j.Logger;
 
