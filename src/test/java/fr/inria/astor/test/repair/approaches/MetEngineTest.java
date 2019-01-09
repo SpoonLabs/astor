@@ -8,12 +8,16 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
 import fr.inria.astor.approaches.tos.core.InitialConceptMetEngine;
 import fr.inria.astor.approaches.tos.core.evalTos.EvalTOSClusterApproach;
 import fr.inria.astor.approaches.tos.core.evalTos.MetaEvalTOSApproach;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithTrySingleStatementOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
@@ -182,10 +186,15 @@ public class MetEngineTest {
 
 		AstorMain main1 = new AstorMain();
 		main1.execute(command.flat());
-
 		assertTrue(main1.getEngine().getSolutions().size() > 0);
 
-		ProgramVariant solution1 = main1.getEngine().getSolutions().get(0);
+		List<ProgramVariant> solutionTry = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof WrapwithTrySingleStatementOp).findAny()
+						.isPresent())
+				.collect(Collectors.toList());
+
+		ProgramVariant solution1 = solutionTry.get(0);
 
 		assertTrue(solution1.getAllOperations().stream().filter(e -> e.getModified().toString().startsWith("try {"))
 				.findFirst().isPresent());
@@ -229,10 +238,15 @@ public class MetEngineTest {
 
 		assertTrue(main1.getEngine().getSolutions().size() > 0);
 
+		List<ProgramVariant> solutionsIfCheck = main1
+				.getEngine().getSolutions().stream().filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof WrapwithIfOp).findAny().isPresent())
+				.collect(Collectors.toList());
+
 		assertEquals(2, main1.getEngine().getSolutions().size());
 
 		// Solution 1
-		ProgramVariant solution1 = main1.getEngine().getSolutions().get(0);
+		ProgramVariant solution1 = solutionsIfCheck.get(0);
 
 		assertTrue(solution1.getAllOperations().stream()
 				.filter(e -> e.getModified().toString().startsWith("if (1 == 0")).findFirst().isPresent());
@@ -240,12 +254,90 @@ public class MetEngineTest {
 		assertTrue(solution1.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+			if (1 == 0)"));
 
 		// Solution 2
-		ProgramVariant solution2 = main1.getEngine().getSolutions().get(1);
+		ProgramVariant solution2 = solutionsIfCheck.get(1);
 
 		assertTrue(solution2.getAllOperations().stream()
 				.filter(e -> e.getModified().toString().startsWith("if (i2 == 1)")).findFirst().isPresent());
 
 		assertTrue(solution2.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+			if (i2 == 1)"));
+
+	}
+
+	@Test
+	public void test_doomy_if_NullCheck_NE_1() throws Exception {
+		test_NullCheck_NE_cases("./examples/testMet/testIfNullCheck1");
+	}
+
+	@Test
+	public void test_doomy_if_NullCheck_NE_2() throws Exception {
+		test_NullCheck_NE_cases("./examples/testMet/testIfNullCheck2");
+	}
+
+	private void test_NullCheck_NE_cases(String path) throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File(path).getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-try");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-flthreshold", "0.24");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		assertEquals(4, main1.getEngine().getSolutions().size());
+
+		List<ProgramVariant> solutionsIfCheck = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof WrapwithIfNullCheck).findAny().isPresent())
+				.collect(Collectors.toList());
+
+		assertNotNull(solutionsIfCheck);
+		assertFalse(solutionsIfCheck.isEmpty());
+
+		ProgramVariant solution1 = solutionsIfCheck.get(0);
+
+		assertTrue(solution1.getAllOperations().stream()
+				.filter(e -> e.getModified().toString().startsWith("if (type != null)")).findFirst().isPresent());
+
+		assertTrue(solution1.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+		if (type != null)"));
+
+		List<ProgramVariant> solutionTry = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof WrapwithTrySingleStatementOp).findAny()
+						.isPresent())
+				.collect(Collectors.toList());
+
+		assertNotNull(solutionTry);
+		assertFalse(solutionTry.isEmpty());
+
+		List<ProgramVariant> solutionIfPrec = main1
+				.getEngine().getSolutions().stream().filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof WrapwithIfOp).findAny().isPresent())
+				.collect(Collectors.toList());
+
+		assertNotNull(solutionIfPrec);
+		assertFalse(solutionIfPrec.isEmpty());
 
 	}
 
