@@ -380,7 +380,7 @@ public class CardumenApproachTest {
 	}
 
 	@Test
-	
+	@Ignore
 	public void testCardumentLang7NPE() throws Exception {
 		String dep = new File("./examples/libs/junit-4.11.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
@@ -391,7 +391,7 @@ public class CardumenApproachTest {
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
 		command.command.put("-stopfirst", "true");
-		command.command.put("-maxgen", "0");//Update here
+		command.command.put("-maxgen", "0");// Update here
 		command.command.put("-population", "1");
 		command.command.put("-scope", "local");
 		command.command.put("-srcjavafolder", "src/main/java/");
