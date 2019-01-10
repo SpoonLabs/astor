@@ -108,6 +108,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		DynaIngredientPool poolFromModifPoint = this.getClusteredEvaluatedExpression(iModifPoint);
 
+
 		// Call to the extension point to get the order
 		// We take each operator, in the order given by the EP
 		for (AstorOperator operator : this.operatorSpace.getOperators()) {
@@ -116,6 +117,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			List<OperatorInstance> instancesOfOperatorForModificationPoint = null;
 
 			// Decide if merge interfaces DyIng and MetaOp
+
 			if (operator instanceof DynaIngredientOperator) {
 				//
 				DynaIngredientOperator dynaop = (DynaIngredientOperator) operator;
@@ -186,6 +188,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 					// Each program variant is a patch
 					boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
 					if (resultValidation) {
+
 						this.solutions.add(iProgramVariant);
 					}
 
@@ -194,6 +197,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 					if (resultValidation) {
 						this.solutions.add(iProgramVariant);
 					}
+
 				}
 
 				// Undo the code transformations
@@ -264,6 +268,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		this.operatorSpace.register(new WrapwithIfOp());
 		this.operatorSpace.register(new WrapwithIfNullCheck());
 		this.operatorSpace.register(new VarReplacementByAnotherVarOp());
+
 	}
 
 	@Override
@@ -337,6 +342,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			}
 
 		}
+
 		// We proceed with the analysis results
 		super.atEnd();
 	}

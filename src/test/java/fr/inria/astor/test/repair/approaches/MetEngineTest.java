@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
 import fr.inria.astor.approaches.tos.core.InitialConceptMetEngine;
 import fr.inria.astor.approaches.tos.core.evalTos.EvalTOSClusterApproach;
@@ -263,7 +262,7 @@ public class MetEngineTest {
 		assertTrue(solution2.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+			if (i2 == 1)"));
 
 	}
-
+  
 	@Test
 	public void test_doomy_if_NullCheck_NE_1() throws Exception {
 		test_NullCheck_NE_cases("./examples/testMet/testIfNullCheck1");

@@ -33,6 +33,7 @@ import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtBlockImpl;
@@ -232,6 +233,7 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
 		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, statementPointed, ifNew);
+
 		opsOfVariant.add(opInstace);
 
 		return opInstace;
