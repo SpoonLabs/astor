@@ -380,6 +380,40 @@ public class CardumenApproachTest {
 	}
 
 	@Test
+	@Ignore
+	public void testCardumentLang7NPE() throws Exception {
+		String dep = new File("./examples/libs/junit-4.11.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
+		command.command.put("-javacompliancelevel", "6");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "0");// Update here
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/tests/");
+		command.command.put("-failing", "org.apache.commons.lang3.math.NumberUtilsTest");
+		command.command.put("-id", "Lang-7");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-location", new File("./examples/lang_7").getAbsolutePath());
+		command.command.put("-parameters", "maxCombinationVariableLimit:true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		CardumenApproach cardumen = (CardumenApproach) main1.getEngine();
+
+	}
+
+	@Test
 	public void testCardumentM70bugHEAP() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 

@@ -9,6 +9,8 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.ClusterExpressions;
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.DynaIngredientPool;
 import fr.inria.astor.approaches.tos.operator.DynaIngredientOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithTrySingleStatementOp;
 import fr.inria.astor.core.entities.IngredientFromDyna;
@@ -16,6 +18,7 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.VariantValidationResult;
+import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -97,16 +100,14 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	int nrVariant = 1;
 
-	// TODO: to move from here.
-	EvalTOSClusterApproach approachEvalTos = new EvalTOSClusterApproach(mutatorSupporter, projectFacade);
-
 	@SuppressWarnings("unused")
 	public boolean analyzeModificationPoint(ProgramVariant parentVariant, ModificationPoint iModifPoint)
 			throws Exception {
 		// TODO:
 		int generation = 1;
 
-		DynaIngredientPool poolFromModifPoint = approachEvalTos.getClusteredEvaluatedExpression(iModifPoint);
+		DynaIngredientPool poolFromModifPoint = this.getClusteredEvaluatedExpression(iModifPoint);
+
 
 		// Call to the extension point to get the order
 		// We take each operator, in the order given by the EP
@@ -114,6 +115,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 			List<ProgramVariant> candidateProgramVariants = new ArrayList<>();
 			List<OperatorInstance> instancesOfOperatorForModificationPoint = null;
+
+			// Decide if merge interfaces DyIng and MetaOp
 
 			if (operator instanceof DynaIngredientOperator) {
 				//
@@ -137,16 +140,31 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 				candidateProgramVariants.add(metai);
 
 				//
+			} else if (operator instanceof MetaOperator) {
+
+				instancesOfOperatorForModificationPoint = new ArrayList<>();
+				// Get Candidate expressions:
+				List<OperatorInstance> opInstancesMetha = operator.createOperatorInstances(iModifPoint);
+
+				MetaProgramVariant metai = new MetaProgramVariant(nrVariant++);
+				metai.setParent(parentVariant);
+				metai.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
+				for (OperatorInstance operatorInstance : opInstancesMetha) {
+					metai.putModificationInstance(generation, operatorInstance);
+				}
+
+				candidateProgramVariants.add(metai);
+
 			} else {
-				//
+				// It's a "conventional" operator
 				instancesOfOperatorForModificationPoint = operator.createOperatorInstances(iModifPoint);
 
 				for (OperatorInstance operatorInstance : instancesOfOperatorForModificationPoint) {
-					ProgramVariant pvariant = new ProgramVariant(nrVariant++);
-					pvariant.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
-					pvariant.putModificationInstance(generation, operatorInstance);
+					ProgramVariant newProgramVariant = new ProgramVariant(nrVariant++);
+					newProgramVariant.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
+					newProgramVariant.putModificationInstance(generation, operatorInstance);
 
-					candidateProgramVariants.add(pvariant);
+					candidateProgramVariants.add(newProgramVariant);
 				}
 			}
 
@@ -166,10 +184,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 				int generationEval = 0;
 
 				if (iProgramVariant instanceof MetaProgramVariant) {
-
 					// For the list of operator instance, we create a mutant program
-
-					// Each progran variant is a patch
+					// Each program variant is a patch
 					boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
 					if (resultValidation) {
 
@@ -177,11 +193,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 					}
 
 				} else {
-
-					// Each progran variant is a patch
 					boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
 					if (resultValidation) {
-
 						this.solutions.add(iProgramVariant);
 					}
 
@@ -229,9 +242,9 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 				operationsExecuted++;
 
 				// let's check the types
-				String classofExpression = i_cluster.getClusterType();// returnExpressionType(firstExpressionOfCluster);
+				String classofExpression = i_cluster.getClusterType();
 
-				String classofiHole = targetType.box().getQualifiedName(); // aholeExpression.getType().box().getQualifiedName();
+				String classofiHole = targetType.box().getQualifiedName();
 
 				if (!ConfigurationProperties.getPropertyBool("avoidtypecomparison")// In case that we dont want
 																					// to compare hole types
@@ -253,6 +266,9 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		this.operatorSpace = new OperatorSpace();
 		this.operatorSpace.register(new WrapwithTrySingleStatementOp());
 		this.operatorSpace.register(new WrapwithIfOp());
+		this.operatorSpace.register(new WrapwithIfNullCheck());
+		this.operatorSpace.register(new VarReplacementByAnotherVarOp());
+
 	}
 
 	@Override
@@ -326,7 +342,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			}
 
 		}
-		System.out.println(this.originalVariant.getAffectedClasses());
+
 		// We proceed with the analysis results
 		super.atEnd();
 	}

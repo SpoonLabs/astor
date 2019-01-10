@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -25,11 +24,12 @@ import spoon.reflect.factory.Factory;
  * @author Matias Martinez
  *
  */
-@Ignore
+
 public class ClosureTest {
 
 	public static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
+	@Test
 	public void testClosure1() throws Exception {
 		File projectLocation = new File("./examples/closure_1");
 		AstorMain main1 = new AstorMain();
@@ -43,8 +43,8 @@ public class ClosureTest {
 				// "-package", "com.google",
 				"-srcjavafolder", "/src/:/test/", //
 				"-srctestfolder", "/test/", //
-				"-binjavafolder", "/build/classes/", //
-				"-bintestfolder", "/build/test/", //
+				"-binjavafolder", "build/classes/", //
+				"-bintestfolder", "build/test/", //
 				"-javacompliancelevel", "6", //
 				"-flthreshold", "0.5", //
 				"-out", out.getAbsolutePath(), //
@@ -336,27 +336,4 @@ public class ClosureTest {
 		}
 	}
 
-	/*
-	 * From thomas'experiment
-	 * /tmp/closure_1_NopolC/build/classes:/tmp/closure_1_NopolC/build/test
-	 * :/tmp/closure_1_NopolC/build/lib/rhino.jar[NO]:/tmp/closure_1_NopolC/lib/
-	 * ant.jar[OK]:
-	 * /tmp/closure_1_NopolC/lib/ant-launcher.jar[ok]:/tmp/closure_1_NopolC/lib/
-	 * args4j.jar[OK]:
-	 * /tmp/closure_1_NopolC/lib/guava.jar[OK]:/tmp/closure_1_NopolC/lib/jarjar.
-	 * ja[OK]r:
-	 * /tmp/closure_1_NopolC/lib/json.jar[OK]:/tmp/closure_1_NopolC/lib/jsr305.
-	 * jar[ok]: /tmp/closure_1_NopolC/lib/junit.jar:[OK]
-	 * /tmp/closure_1_NopolC/lib/caja-r4314.jar[OK]:/tmp/closure_1_NopolC/lib/
-	 * protobuf-java.jar [OK]
-	 */
-
-	/*
-	 * From script "ant.jar", "ant_deploy.jar", "ant-launcher.jar", "args4j.jar",
-	 * "args4j_deploy.jar", "guava.jar", "guava-r06.jar", "jarjar.jar", "json.jar",
-	 * "jsr305.jar", "junit.jar", "caja-r4314.jar", "protobuf_deploy.jar",
-	 * "protobuf-java.jar", "protobuf-java-2.3.0.jar", "google_common_deploy.jar",
-	 * "hamcrest-core-1.1.jar", "junit4-core.jar", "junit4-legacy.jar",
-	 * "libtrunk_rhino_parser_jarjared.jar", "google_compiled_protos_deploy.jar"
-	 */
 }

@@ -19,7 +19,6 @@ import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.lille.repair.expression.access.VariableImpl;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -78,7 +77,8 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 		String name = "_meta_" + id;
 
 		// The parameters to be included in the new method
-		List<CtVariableAccess> varsToBeParameters = collectAllVars(ingredients, modificationPoint);
+		List<CtVariableAccess> varsToBeParameters = SupportOperators.collectAllVarsFromDynaIngredients(ingredients,
+				modificationPoint);
 
 		// List of parameters
 		List<CtParameter<?>> parameters = new ArrayList<>();
@@ -208,48 +208,6 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 		return MutationSupporter.getFactory().createCodeSnippetExpression("true");
 	}
 
-	/**
-	 * Add all variables from the expression and candidates in a list
-	 * 
-	 * @param exptochange
-	 * @param candidates
-	 * @param modificationPoint
-	 * @return
-	 */
-	private List<CtVariableAccess> collectAllVars(List<IngredientFromDyna> candidates,
-			ModificationPoint modificationPoint) {
-
-		List<VariableImpl> dynaVars = new ArrayList<>();
-		List<CtVariableAccess> varAccessList = new ArrayList();
-
-		for (IngredientFromDyna candidateIngr : candidates) {
-			dynaVars.addAll(candidateIngr.getVariable());
-		}
-
-		if (dynaVars.isEmpty()) {
-			return varAccessList;
-		}
-
-		List<CtVariable> varAccessCandidate = modificationPoint.getContextOfModificationPoint();
-
-		for (VariableImpl aDynaVariable : dynaVars) {
-
-			for (CtVariable aVariableSinScope : varAccessCandidate) {
-
-				if (aVariableSinScope.getSimpleName().equals(aDynaVariable.getVariableName())) {
-
-					CtVariableAccess aVariableRead = MutationSupporter.getFactory()
-							.createVariableRead(aVariableSinScope.getReference(), false);
-					if (!varAccessList.contains(aVariableRead))
-						varAccessList.add(aVariableRead);
-				}
-			}
-
-		}
-
-		return varAccessList;
-	}
-
 	@Override
 	public OperatorInstance getConcreteOperatorInstance(MetaOperatorInstance operatorInstance, int metaIdentifier) {
 
@@ -274,8 +232,8 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 		// Let's create the operations
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
-		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, new ReplaceOp(), statementPointed,
-				ifNew);
+		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, statementPointed, ifNew);
+
 		opsOfVariant.add(opInstace);
 
 		return opInstace;
