@@ -31,11 +31,18 @@ public class TestRunnerTest {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary cs = MathCommandsTests.getMath70Command();
+		String jdkSeven = "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/bin/";
+		cs.command.put("-jvm4testexecution", jdkSeven);
 		cs.command.put("-flthreshold", "1");
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-loglevel", "INFO");
+		cs.command.put("-loglevel", "DEBUG");
 		cs.command.put("-saveall", "true");
-		cs.append("-parameters", ("logtestexecution:true:runjava7code:true"));
+		cs.command.put("-javacompliancelevel", "7");
+		cs.append("-parameters", ("logtestexecution:true"
+		// ---
+		// + ":runjava7code:true"
+		// ==
+		));
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());

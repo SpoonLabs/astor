@@ -9,6 +9,7 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.ClusterExpressions;
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.DynaIngredientPool;
 import fr.inria.astor.approaches.tos.operator.DynaIngredientOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithTrySingleStatementOp;
@@ -262,6 +263,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		this.operatorSpace.register(new WrapwithTrySingleStatementOp());
 		this.operatorSpace.register(new WrapwithIfOp());
 		this.operatorSpace.register(new WrapwithIfNullCheck());
+		this.operatorSpace.register(new VarReplacementByAnotherVarOp());
 	}
 
 	@Override
