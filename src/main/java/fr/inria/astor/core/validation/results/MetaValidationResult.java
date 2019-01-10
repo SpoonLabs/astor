@@ -41,10 +41,10 @@ public class MetaValidationResult extends TestCasesProgramValidationResult imple
 	};
 
 	public String toString() {
-		String r = "";
+		String r = "\nMeta-evaluation";
 		for (Integer mode : this.validations.keySet()) {
 
-			r += "\n" + mode + ": " + this.getValidation(mode).toString();
+			r += "\n mutant-id " + mode + ": " + this.getValidation(mode).toString();
 		}
 		return r;
 	}

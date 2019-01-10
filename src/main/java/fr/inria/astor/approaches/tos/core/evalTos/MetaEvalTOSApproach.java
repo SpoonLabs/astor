@@ -9,6 +9,7 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.ClusterExpressions;
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.DynaIngredientPool;
 import fr.inria.astor.approaches.tos.operator.DynaIngredientOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfOp;
@@ -107,7 +108,6 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		int generation = 1;
 
 		DynaIngredientPool poolFromModifPoint = this.getClusteredEvaluatedExpression(iModifPoint);
-
 
 		// Call to the extension point to get the order
 		// We take each operator, in the order given by the EP
@@ -268,7 +268,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		this.operatorSpace.register(new WrapwithIfOp());
 		this.operatorSpace.register(new WrapwithIfNullCheck());
 		this.operatorSpace.register(new VarReplacementByAnotherVarOp());
-
+		this.operatorSpace.register(new LogicExpOperator());
 	}
 
 	@Override

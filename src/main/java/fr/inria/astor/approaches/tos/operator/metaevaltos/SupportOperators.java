@@ -30,7 +30,7 @@ public class SupportOperators {
 	 */
 	public static List<CtVariableAccess> collectAllVarsFromDynaIngredients(List<IngredientFromDyna> candidates,
 			ModificationPoint modificationPoint) {
-
+		// First collect variables from dynamoth
 		List<VariableImpl> dynaVars = new ArrayList<>();
 		List<CtVariableAccess> varAccessList = new ArrayList();
 
@@ -41,7 +41,8 @@ public class SupportOperators {
 		if (dynaVars.isEmpty()) {
 			return varAccessList;
 		}
-
+		// Second, for each var from dynamoth, find the CtVariable access (by parsing
+		// the context of the modification point)
 		List<CtVariable> varAccessCandidate = modificationPoint.getContextOfModificationPoint();
 
 		for (VariableImpl aDynaVariable : dynaVars) {
