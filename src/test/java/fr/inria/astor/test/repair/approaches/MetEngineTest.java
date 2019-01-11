@@ -18,6 +18,7 @@ import fr.inria.astor.approaches.tos.core.InitialConceptMetEngine;
 import fr.inria.astor.approaches.tos.core.evalTos.EvalTOSClusterApproach;
 import fr.inria.astor.approaches.tos.core.evalTos.MetaEvalTOSApproach;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodCallReplacementByAnotherMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithTrySingleStatementOp;
@@ -460,6 +461,58 @@ public class MetEngineTest {
 
 		assertTrue(solution1.get().getPatchDiff().getOriginalStatementAlignmentDiff()
 				.contains("+			if ((i1 > i2) || i1 == i2) "));
+
+	}
+
+	@Test
+	public void test_doomy_testWMRcase2a_1() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testWMRcase2a").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-expr_exp1");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof MethodCallReplacementByAnotherMethodCallOp)
+						.findAny().isPresent())
+				.collect(Collectors.toList());
+
+		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream()
+				.filter(soli -> soli.getAllOperations().stream()
+						.filter(e -> e.getModified().toString().equals("(toPositive(i2))")
+								&& e.getOriginal().toString().equals("(toNegative(i2))"))
+						.findFirst().isPresent())
+				.findFirst();
+		assertTrue(solution0.isPresent());
+
+		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
+				.contains("+			return (toPositive(i1)) * (toPositive(i2));"));
 
 	}
 

@@ -10,6 +10,7 @@ import fr.inria.astor.approaches.tos.core.evalTos.ingredients.ClusterExpressions
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.DynaIngredientPool;
 import fr.inria.astor.approaches.tos.operator.DynaIngredientOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodCallReplacementByAnotherMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfOp;
@@ -269,6 +270,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		this.operatorSpace.register(new WrapwithIfNullCheck());
 		this.operatorSpace.register(new VarReplacementByAnotherVarOp());
 		this.operatorSpace.register(new LogicExpOperator());
+		this.operatorSpace.register(new MethodCallReplacementByAnotherMethodCallOp());
 	}
 
 	@Override

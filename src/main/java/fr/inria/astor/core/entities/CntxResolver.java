@@ -1151,7 +1151,7 @@ public class CntxResolver {
 		}
 	}
 
-	public boolean compareTypes(CtTypeReference t1, CtTypeReference t2) {
+	public static boolean compareTypes(CtTypeReference t1, CtTypeReference t2) {
 		try {
 			return t1 != null && t2 != null && (t1.toString().equals(t2.toString()) || t1.equals(t2)
 					|| t1.isSubtypeOf(t2) || t2.isSubtypeOf(t1));
@@ -1419,7 +1419,7 @@ public class CntxResolver {
 
 	}
 
-	public List getAllMethodsFromClass(CtClass parentClass) {
+	public static List getAllMethodsFromClass(CtClass parentClass) {
 		List allMethods = new ArrayList(parentClass.getAllMethods());
 
 		if (parentClass != null && parentClass.getParent() instanceof CtClass) {
