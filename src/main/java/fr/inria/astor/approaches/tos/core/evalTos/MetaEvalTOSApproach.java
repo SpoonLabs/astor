@@ -11,7 +11,9 @@ import fr.inria.astor.approaches.tos.core.evalTos.ingredients.DynaIngredientPool
 import fr.inria.astor.approaches.tos.operator.DynaIngredientOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodCallReplacementByAnotherMethodCallOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromMethodCallOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromTryOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfOp;
@@ -117,6 +119,9 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 			List<ProgramVariant> candidateProgramVariants = new ArrayList<>();
 			List<OperatorInstance> instancesOfOperatorForModificationPoint = null;
+
+			if (!operator.canBeAppliedToPoint(iModifPoint))
+				continue;
 
 			// Decide if merge interfaces DyIng and MetaOp
 
@@ -273,6 +278,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		this.operatorSpace.register(new LogicExpOperator());
 		this.operatorSpace.register(new MethodCallReplacementByAnotherMethodCallOp());
 		this.operatorSpace.register(new UnwrapfromMethodCallOp());
+		this.operatorSpace.register(new UnwrapfromTryOp());
+		this.operatorSpace.register(new UnwrapfromIfOp());
 	}
 
 	@Override

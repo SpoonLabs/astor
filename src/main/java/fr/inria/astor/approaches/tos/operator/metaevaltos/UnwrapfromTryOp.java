@@ -1,42 +1,49 @@
 package fr.inria.astor.approaches.tos.operator.metaevaltos;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
+import fr.inria.astor.core.entities.StatementOperatorInstance;
+import fr.inria.astor.core.manipulation.MutationSupporter;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtTry;
 
-public class UnwrapfromTryOp extends AstorOperator {
-
-	@Override
-	public boolean applyChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean undoChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean updateProgramVariant(OperatorInstance opInstance, ProgramVariant p) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
+public class UnwrapfromTryOp extends ReplaceOp {
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
-		// TODO Auto-generated method stub
-		return false;
+
+		return point.getCodeElement() instanceof CtTry;
 	}
 
 	@Override
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
-		// TODO Auto-generated method stub
-		return null;
+
+		log.debug("Unwrap Try:");
+
+		CtTry trytoremove = (CtTry) modificationPoint.getCodeElement();
+
+		CtBlock blockOfTry = trytoremove.getBody().clone();
+		MutationSupporter.clearPosition(blockOfTry);
+
+		List<OperatorInstance> opInstances = new ArrayList<>();
+
+		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, trytoremove, blockOfTry);
+		opInstances.add(opInstace);
+
+		return opInstances;
+	}
+
+	@Override
+	public boolean needIngredient() {
+		return false;
 	}
 
 }

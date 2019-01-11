@@ -318,4 +318,11 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 		return opInstace;
 	}
 
+	@Override
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
+
+		// See that the modification points are statements
+		return (point.getCodeElement() instanceof CtStatement);
+	}
+
 }

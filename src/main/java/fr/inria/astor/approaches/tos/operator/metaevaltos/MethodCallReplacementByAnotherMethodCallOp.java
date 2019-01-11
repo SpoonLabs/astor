@@ -335,4 +335,10 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 
 	}
 
+	@Override
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
+
+		// See that the modification points are statements
+		return (point.getCodeElement() instanceof CtStatement);
+	}
 }

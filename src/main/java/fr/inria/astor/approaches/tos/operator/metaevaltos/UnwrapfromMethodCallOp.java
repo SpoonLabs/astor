@@ -14,6 +14,7 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -83,4 +84,10 @@ public class UnwrapfromMethodCallOp extends FineGrainedExpressionReplaceOperator
 		return result;
 	}
 
+	@Override
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
+
+		// See that the modification points are statements
+		return (point.getCodeElement() instanceof CtStatement);
+	}
 }
