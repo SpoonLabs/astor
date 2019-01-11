@@ -170,7 +170,7 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 				casereturn.setReturnedExpression(expressionCandidate);
 				particularIfBlock.addStatement(casereturn);
 
-				// Add the if tho the methodBlock
+				// Add the if to the methodBlock
 				// methodBodyBlock
 				tryBoddy.addStatement(particularIf);
 
@@ -247,8 +247,6 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 
 		CtExpression expressionSource = (CtExpression) ingredient.getDerivedFrom();
 		CtExpression expressionTarget = (CtExpression) ingredient.getCode();
-
-		System.out.println("Target element to clean " + expressionTarget);
 
 		MutationSupporter.clearPosition(expressionTarget);
 
