@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.manipulation.synthesis.dynamoth.spoon.StaSynthBuilder;
-import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.StringDistance;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
@@ -607,127 +606,6 @@ public class CntxResolver {
 
 	}
 
-	@SuppressWarnings("rawtypes")
-	private void analyzeAffectedVariablesUsedOLD(List<CtVariableAccess> varsAffected, CtElement element,
-			Cntx<Object> context) {
-
-		CtMethod methodParent = element.getParent(CtMethod.class);
-
-		List<CtStatement> statements = methodParent.getElements(new LineFilter());
-
-		int usedObjects = 0;
-		int notUsedObjects = 0;
-
-		int usedObjectsLocal = 0;
-		int usedPrimitiveLocal = 0;
-		int notUsedObjectsLocal = 0;
-		int notUsedPrimitiveLocal = 0;
-
-		int similarUsedBefore = 0;
-		int notSimilarUsedBefore = 0;
-
-		// For each variable affected
-		for (CtVariableAccess variableAffected : varsAffected) {
-
-			// if (variableAffected.getVariable().getType() != null
-			// && variableAffected.getVariable().getType().isPrimitive()
-			// )
-			// continue;
-
-			boolean used = false;
-			boolean foundSimilarVarUsedBefore = false;
-
-			boolean isInBinaryExpression = isLogicalExpression(variableAffected.getParent(CtExpression.class));
-			// variableAffected.getParent(CtBinaryOperator.class)
-			// != null;
-
-			// For each assignment in the methid
-			for (CtStatement aStatement : statements) {
-
-				if (!isElementBeforeVariable(variableAffected, aStatement))
-					continue;
-
-				// let's collect the var access in the right part
-				List<CtVariableAccess> varsInRightPart = VariableResolver.collectVariableRead(aStatement);
-				// if the var access in the right is the same that the affected
-				for (CtVariableAccess varInStatement : varsInRightPart) {
-					if (hasSameName(variableAffected, varInStatement)) {
-						used = true;
-					} else {
-						// Different name, so it's another variable
-
-						// // For any variable involved in a logical expression,
-						// if (!isInBinaryExpression)
-						// continue;
-
-						try {
-							// whether exist other boolean expressions
-							boolean hasBooleanExpressionParent = isParentBooleanExpression(varInStatement);
-							if (!hasBooleanExpressionParent)
-								continue;
-							// involve using variable whose type is same with v
-							if (compareTypes(variableAffected.getType(), varInStatement.getType())) {
-								foundSimilarVarUsedBefore = true;
-							}
-						} catch (Exception e) {
-							System.out.println("Problems with type");
-							e.printStackTrace();
-						}
-					}
-				}
-				if (used && foundSimilarVarUsedBefore)
-					break;
-			}
-			// Not sure if include this restriction
-			if (variableAffected.getVariable().getType() != null
-					&& !variableAffected.getVariable().getType().isPrimitive()) {
-				if (used)
-					usedObjects++;
-				else
-					notUsedObjects++;
-
-				if (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable) {
-					if (used)
-						usedObjectsLocal++;
-					else
-						notUsedObjectsLocal++;
-				}
-			} else {
-
-				if (variableAffected.getVariable().getType().isPrimitive()
-						&& (variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable))
-					if (used)
-						usedPrimitiveLocal++;
-					else
-						notUsedPrimitiveLocal++;
-			}
-
-			///
-			if (foundSimilarVarUsedBefore)
-				similarUsedBefore++;
-			else
-				notSimilarUsedBefore++;
-		}
-		context.put(CNTX_Property.NR_OBJECT_USED, usedObjects);
-		context.put(CNTX_Property.NR_OBJECT_NOT_USED, notUsedObjects);
-
-		context.put(CNTX_Property.NR_OBJECT_USED_LOCAL_VAR, usedObjectsLocal);
-		context.put(CNTX_Property.NR_OBJECT_NOT_USED_LOCAL_VAR, notUsedObjectsLocal);
-
-		// // For any variable involved in a logical expression,
-		// if (!isInBinaryExpression)
-		// continue;
-		context.put(CNTX_Property.S1_LOCAL_VAR_NOT_USED, (notUsedObjectsLocal) > 0);
-
-		context.put(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION, (similarUsedBefore) > 0);
-
-		// context.put(CNTX_Property.LE_8_LOGICAL_WITH_USED_LOCAL_VARS,
-		// isParentBooleanExpression(varInStatement)&& (notUsedObjectsLocal == 0
-		// && notUsedPrimitiveLocal == 0 && (usedPrimitiveLocal > 0 || usedObjectsLocal
-		// > 0)));
-
-	}
-
 	public boolean hasSameName(CtVariableAccess variableAffected, CtVariableAccess varInStatement) {
 		return varInStatement.getVariable().getSimpleName().equals(variableAffected.getVariable().getSimpleName())
 				|| varInStatement.equals(variableAffected);
@@ -762,21 +640,21 @@ public class CntxResolver {
 	public boolean isLogicalExpressionInParent(CtElement currentElement) {
 		if (currentElement == null)
 			return false;
-		if ((currentElement instanceof CtBinaryOperator)) {
-			CtBinaryOperator binop = (CtBinaryOperator) currentElement;
-			if (binop.getKind().equals(BinaryOperatorKind.AND) || binop.getKind().equals(BinaryOperatorKind.OR))
-				return true;
+		if (isLogicalExpression(currentElement)) {
+			return true;
 
 		}
 		return isLogicalExpressionInParent(currentElement.getParent(CtBinaryOperator.class));
 	}
 
-	public boolean isLogicalExpression(CtExpression currentElement) {
+	public boolean isLogicalExpression(CtElement currentElement) {
 		if (currentElement == null)
 			return false;
 		if ((currentElement instanceof CtBinaryOperator)) {
 			CtBinaryOperator binop = (CtBinaryOperator) currentElement;
-			if (binop.getKind().equals(BinaryOperatorKind.AND) || binop.getKind().equals(BinaryOperatorKind.OR))
+			if (binop.getKind().equals(BinaryOperatorKind.AND) || binop.getKind().equals(BinaryOperatorKind.OR)
+					|| binop.getKind().equals(BinaryOperatorKind.EQ) || binop.getKind().equals(BinaryOperatorKind.NE)
+					|| (binop.getType() != null && binop.getType().unbox().getSimpleName().equals("boolean")))
 				return true;
 
 		}
@@ -1433,8 +1311,9 @@ public class CntxResolver {
 	private void writeDetailedInformationFromMethod(Cntx<Object> context, CtMethod affectedMethod,
 			CNTX_Property property, Boolean value) {
 
-		if (ConfigurationProperties.getPropertyBool("write_composed_feature"))
-			context.getInformation().put(property.name() + "_" + affectedMethod.getSignature(), value);
+		// if (ConfigurationProperties.getPropertyBool("write_composed_feature"))
+		// context.getInformation().put(property.name() + "_" +
+		// affectedMethod.getSignature(), value);
 		writeGroupedByVar(context, affectedMethod.getSignature(), property, value, "FEATURES_METHODS");
 
 	}
@@ -1442,8 +1321,8 @@ public class CntxResolver {
 	private void writeDetailedInformationFromVariables(Cntx<Object> context, String key, CNTX_Property property,
 			Boolean value) {
 
-		if (ConfigurationProperties.getPropertyBool("write_composed_feature"))
-			context.getInformation().put(property.name() + "_" + key, value);
+		// if (ConfigurationProperties.getPropertyBool("write_composed_feature"))
+		// context.getInformation().put(property.name() + "_" + key, value);
 		writeGroupedByVar(context, key, property, value, "FEATURES_VARS");
 
 	}
@@ -1516,6 +1395,9 @@ public class CntxResolver {
 
 			// Comments
 			context.put(CNTX_Property.METHOD_COMMENTS, parentMethod.getComments());
+
+			// Exception
+			context.put(CNTX_Property.S6_METHOD_THROWS_EXCEPTION, parentMethod.getThrownTypes().size() > 0);
 
 		}
 	}
