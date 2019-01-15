@@ -193,7 +193,11 @@ public enum CNTX_Property {
 	// If statement involves variables, whether has methods in scope that take the
 	// type of the involved variable as parameter
 
-	V4_BIS_IS_METHOD_PARAM_TYPE_VAR,
+	V_X_BIS_IS_METHOD_PARAM_TYPE_VAR,
+
+	// V4: For each involved variable, if it is used as parameter inmethod call, for
+	// this method call, is it the first time that it isused as parameter
+	V4_FIRST_TIME_PARAMETER,
 
 	// For an involved variable, is there any other variable in scope that is
 	// assigned to a certain function transformation of the involved variable

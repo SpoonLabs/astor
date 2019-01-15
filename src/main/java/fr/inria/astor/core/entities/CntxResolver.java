@@ -248,17 +248,45 @@ public class CntxResolver {
 		analyzeS2_S5_SametypewithGuard(varsAffected, element, context);
 		analyzeS4_AffectedFielfs(varsAffected, element, context);
 
-		analyzeV5_AffectedVariablesInTransformation(varsAffected, element, context);
-		analyzeV1_V4_V6_LE2_AffectedVariablesInMethod(varsAffected, element, context);
+		analyzeV1_VX_V6_LE2_AffectedVariablesInMethod(varsAffected, element, context);
 		analyzeV2_AffectedDistanceVarName(varsAffected, varsInScope, element, context);
+		analyzeV3_AffectedHasConstant(varsAffected, element, context);
+		analyzeV4(varsAffected, element, context);
+		analyzeV5_AffectedVariablesInTransformation(varsAffected, element, context);
 
 		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context);
 		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
 		analyzeLE7_VarDirectlyUsed(varsAffected, varsInScope, element, context);
 		analyzeLE3_PrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
 		analyzeLE4_BooleanVarNotUsed(varsAffected, varsInScope, element, context);
-		analyzeV3_AffectedHasConstant(varsAffected, varsInScope, element, context);
 
+	}
+
+	private void analyzeV4(List<CtVariableAccess> varsAffected, CtElement element, Cntx<Object> context) {
+
+		boolean hasOneVarAppearsMultiple = false;
+		for (CtVariableAccess varInFaulty : varsAffected) {
+
+			CtInvocation parentInvocation = varInFaulty.getParent(CtInvocation.class);
+			int appearsInParams = 0;
+			if (parentInvocation != null) {
+				List<CtElement> arguments = parentInvocation.getArguments();
+				for (CtElement i_Argument : arguments) {
+					List<CtVariableAccess> varsAccessInParameter = VariableResolver.collectVariableRead(i_Argument);
+					if (varsAccessInParameter.contains(varInFaulty)) {
+						appearsInParams++;
+					}
+
+				}
+			}
+			if (appearsInParams > 1) {
+				hasOneVarAppearsMultiple = true;
+			}
+			writeDetailedInformationFromVariables(context, varInFaulty.getVariable().getSimpleName(),
+					CNTX_Property.V4_FIRST_TIME_PARAMETER, (appearsInParams > 1));
+
+		}
+		context.put(CNTX_Property.V4_FIRST_TIME_PARAMETER, hasOneVarAppearsMultiple);
 	}
 
 	/**
@@ -1282,16 +1310,22 @@ public class CntxResolver {
 	 * @param element
 	 * @param context
 	 */
-	private void analyzeV3_AffectedHasConstant(List<CtVariableAccess> varsAffected, List<CtVariable> varsInScope,
-			CtElement element, Cntx<Object> context) {
+	private void analyzeV3_AffectedHasConstant(List<CtVariableAccess> varsAffected, CtElement element,
+			Cntx<Object> context) {
 
 		boolean hasConstant = false;
 		for (CtVariableAccess aVarAffected : varsAffected) {
-			if (aVarAffected.getVariable() instanceof CtFieldReference && aVarAffected.getVariable().getSimpleName()
-					.toUpperCase().equals(aVarAffected.getVariable().getSimpleName())) {
+			boolean currentIsConstant = false;
+			if (aVarAffected.getVariable() instanceof CtFieldReference &&
+			// Check if it's uppercase
+					aVarAffected.getVariable().getSimpleName().toUpperCase()
+							.equals(aVarAffected.getVariable().getSimpleName())) {
 				hasConstant = true;
-				break;
+				currentIsConstant = true;
+
 			}
+			writeDetailedInformationFromVariables(context, aVarAffected.getVariable().getSimpleName(),
+					CNTX_Property.V3_HAS_CONSTANT, (currentIsConstant));
 
 		}
 		context.put(CNTX_Property.V3_HAS_CONSTANT, hasConstant);
@@ -1305,14 +1339,14 @@ public class CntxResolver {
 	 * @param element
 	 * @param context
 	 */
-	private void analyzeV1_V4_V6_LE2_AffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
+	private void analyzeV1_VX_V6_LE2_AffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 		try {
 			// For each involved variable, whether has method definitions or method calls
 			// (in the fault class) that take the type of the involved variable as one of
 			// its parameters and the return type of the method is type compatible with the
 			// type of the involved variable
-			boolean v1compatibleReturnAndParameterTypes = false;
+			boolean v1CompatibleReturnAndParameterTypes = false;
 			// If statement involves variables, whether has methods in scope that take the
 			// type of the involved variable as parameter
 			boolean v4paramCompatible = false;
@@ -1326,12 +1360,12 @@ public class CntxResolver {
 			// with vas one of its parameters and return boolean
 			boolean les2paramCompatibleWithBooleanReturn = false;
 			CtClass parentClass = element.getParent(CtClass.class);
-			for (CtVariableAccess var : varsAffected) {
+			for (CtVariableAccess varAffected : varsAffected) {
 
 				boolean v6InvReturnCompatible = false;
 				boolean v4InvparamCompatible = false;
 				boolean les2InvparamCompatibleWithBooleanReturn = false;
-				boolean v1InvcompatibleReturnAndParameterTypes = false;
+				boolean v1CurrentCompatibleReturnAndParameterTypes = false;
 
 				List allMethods = getAllMethodsFromClass(parentClass);
 
@@ -1342,11 +1376,12 @@ public class CntxResolver {
 					if (!(omethod instanceof CtMethod))
 						continue;
 
-					CtMethod method = (CtMethod) omethod;
+					CtMethod anotherMethodInBuggyClass = (CtMethod) omethod;
 
-					if (method.getType() != null) {
+					// Get the return type
+					if (anotherMethodInBuggyClass.getType() != null) {
 
-						if (isSubtype(var, method)) {
+						if (isSubtype(varAffected, anotherMethodInBuggyClass)) {
 							v6returnCompatible = true;
 							matchInmethodReturn = true;
 							v6InvReturnCompatible = true;
@@ -1354,52 +1389,53 @@ public class CntxResolver {
 						}
 
 					}
-					for (Object oparameter : method.getParameters()) {
+					// Check the parameters
+					for (Object oparameter : anotherMethodInBuggyClass.getParameters()) {
 						CtParameter parameter = (CtParameter) oparameter;
 
-						if (compareTypes(var.getType(), parameter.getType())) {
+						if (compareTypes(varAffected.getType(), parameter.getType())) {
 							v4paramCompatible = true;
 							v4InvparamCompatible = true;
 							matchInmethodType = true;
-							if (method.getType().unbox().toString().equals("boolean")) {
+							if (anotherMethodInBuggyClass.getType().unbox().toString().equals("boolean")) {
 								les2paramCompatibleWithBooleanReturn = true;
 								les2InvparamCompatibleWithBooleanReturn = true;
 							}
 
 						}
 					}
-
+					// check both return type and parameter
 					if (matchInmethodType && matchInmethodReturn) {
-						v1compatibleReturnAndParameterTypes = true;
-						v1InvcompatibleReturnAndParameterTypes = true;
+						v1CompatibleReturnAndParameterTypes = true;
+						v1CurrentCompatibleReturnAndParameterTypes = true;
 					}
 
 					if (v4paramCompatible && v6returnCompatible && les2paramCompatibleWithBooleanReturn
-							&& v1compatibleReturnAndParameterTypes) {
+							&& v1CompatibleReturnAndParameterTypes) {
 						break;
 					}
 
 				}
 
-				writeDetailedInformationFromVariables(context, var.getVariable().getSimpleName(),
+				writeDetailedInformationFromVariables(context, varAffected.getVariable().getSimpleName(),
 						CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
-						(v1InvcompatibleReturnAndParameterTypes));
+						(v1CurrentCompatibleReturnAndParameterTypes));
 
-				writeDetailedInformationFromVariables(context, var.getVariable().getSimpleName(),
+				writeDetailedInformationFromVariables(context, varAffected.getVariable().getSimpleName(),
+						CNTX_Property.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR, v4InvparamCompatible);
+
+				writeDetailedInformationFromVariables(context, varAffected.getVariable().getSimpleName(),
 						CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR, v6InvReturnCompatible);
 
-				writeDetailedInformationFromVariables(context, var.getVariable().getSimpleName(),
-						CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR, v4InvparamCompatible);
-
-				writeDetailedInformationFromVariables(context, var.getVariable().getSimpleName(),
+				writeDetailedInformationFromVariables(context, varAffected.getVariable().getSimpleName(),
 						CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2InvparamCompatibleWithBooleanReturn));
 
 			}
 
 			context.put(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN,
-					(v1compatibleReturnAndParameterTypes));
+					(v1CompatibleReturnAndParameterTypes));
 
-			context.put(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR, v4paramCompatible);
+			context.put(CNTX_Property.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR, v4paramCompatible);
 			context.put(CNTX_Property.V6_IS_METHOD_RETURN_TYPE_VAR, v6returnCompatible);
 
 			context.put(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2paramCompatibleWithBooleanReturn));

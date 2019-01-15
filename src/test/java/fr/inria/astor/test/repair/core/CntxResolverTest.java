@@ -362,16 +362,18 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+		assertEquals(Boolean.TRUE,
+				retrieveFeatureVarProperty(cntx, CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN, "f"));
 
 		///
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("float f")).findFirst()
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
@@ -379,7 +381,7 @@ public class CntxResolverTest {
 				.get();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
 
@@ -388,9 +390,13 @@ public class CntxResolverTest {
 		cntx = cntxResolver.retrieveCntx(element);
 
 		// int matches with Object.wait(int, int)
-		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V4_BIS_IS_METHOD_PARAM_TYPE_VAR));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V_X_BIS_IS_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR));
 		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN));
+		assertEquals(Boolean.FALSE,
+				retrieveFeatureVarProperty(cntx, CNTX_Property.V1_IS_TYPE_COMPATIBLE_METHOD_CALL_PARAM_RETURN, "a"));
+
+		System.out.println(cntx.toJSON());
 
 	}
 
@@ -459,7 +465,7 @@ public class CntxResolverTest {
 	}
 
 	@Test
-	public void testProperty_HAS_VAR_SIM_NAME() {
+	public void testProperty_V2_HAS_VAR_SIM_NAME() {
 
 		String content = "" + "class X {" + " int ffii = 1;"//
 				+ "public Object foo() {" //
@@ -487,6 +493,8 @@ public class CntxResolverTest {
 		// affected myzimilar
 		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.HAS_VAR_SIM_NAME));
 		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
+		assertEquals(Boolean.TRUE,
+				retrieveFeatureVarProperty(cntx, CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE, "myzimilar"));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("double dother"))
 				.findFirst().get();
@@ -503,6 +511,52 @@ public class CntxResolverTest {
 
 		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.HAS_VAR_SIM_NAME));
 		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE));
+		assertEquals(Boolean.FALSE,
+				retrieveFeatureVarProperty(cntx, CNTX_Property.V2_HAS_VAR_SIM_NAME_COMP_TYPE, "fiii"));
+		System.out.println(cntx.toJSON());
+
+	}
+
+	@Test
+	public void testProperty_V4_() {
+
+		String content = "" + "class X {" + " int ffii = 1;"//
+				+ "public Object foo() {" //
+				+ " int mysimilar = 1;"//
+				+ "int myzimilar = 2;"//
+				+ "float fiii = (float)myzimilar;"//
+				+ "int dother = max(mysimilar, myzimilar);" //
+				+ "return max(mysimilar, mysimilar);" + "}" + "public float getFloat(){return 1.0;}"//
+				+ "public int max(int m, int n){return 1;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("int dother"))
+				.findFirst().get();
+		System.out.println(element);
+		CntxResolver cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+		// affected myzimilar
+		System.out.println(cntx.toJSON());
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V4_FIRST_TIME_PARAMETER));
+		assertEquals(Boolean.FALSE,
+				retrieveFeatureVarProperty(cntx, CNTX_Property.V4_FIRST_TIME_PARAMETER, "mysimilar"));
+
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return max"))
+				.findFirst().get();
+		System.out.println(element);
+		cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V4_FIRST_TIME_PARAMETER));
+		assertEquals(Boolean.TRUE,
+				retrieveFeatureVarProperty(cntx, CNTX_Property.V4_FIRST_TIME_PARAMETER, "mysimilar"));
 
 	}
 
@@ -536,6 +590,7 @@ public class CntxResolverTest {
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 
 		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.V3_HAS_CONSTANT));
+		assertEquals(Boolean.TRUE, retrieveFeatureVarProperty(cntx, CNTX_Property.V3_HAS_CONSTANT, "SC"));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("java.lang.String s2"))
 				.findFirst().get();
@@ -545,6 +600,11 @@ public class CntxResolverTest {
 
 		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.V3_HAS_CONSTANT));
 
+	}
+
+	public Object retrieveFeatureVarProperty(Cntx cntx, CNTX_Property property, String varName) {
+		return ((Cntx) ((Cntx) cntx.getInformation().get("FEATURES_VARS")).getInformation().get(varName))
+				.getInformation().get(property.toString());
 	}
 
 	@Test
