@@ -113,38 +113,54 @@ public enum CNTX_Property {
 	PATCH_CODE_ELEMENT, PATCH_CODE_STATEMENT, POSITION, AFFECTED_PARENT, AFFECTED, OPERATION, AST_PARENT, AST,
 	// If the faulty statement involves object reference to local variables (i.e.,
 	// use object type local variables), do there exist certain referenced local
-	// variable(s) that havenever been referenced in other statements
-	// (excludestatements inside control flow structure) before thefaulty statement
+	// variable(s) that have never been referenced in other statements
+	// (exclude statements inside control flow structure) before the faulty
+	// statement
 	// since its introduction (declaration)(chart-4)
 	S1_LOCAL_VAR_NOT_ASSIGNED, //
 	S1_LOCAL_VAR_NOT_USED,
 
-	//
-	S2, //
+	// If the faulty statement involves using object type variables (either local or
+	// global), whether exist other statements in the faulty class that use some
+	// same type object variables (with same of the object type variables used in
+	// the faulty statement), but add guard check (wrap with if or if-else, and not
+	// null or non- null related check) (for closure-111, the faulty statement uses
+	// variable topType, whose type is JSType, and there are many other statements
+	// in the faulty class which uses JSType variables, but have gurand checks, like
+	// statement in 61, in 72. also see for example closure 60.)
+	S2_SIMILAR_OBJECT_TYPE_WITH_GUARD, //
 	// Spoon class of the fault statement.
 	S3_TYPE_OF_FAULTY_STATEMENT,
 
-	// If the faulty statement involves object referenceto field (i.e., use object
-	// type class field), do there existcertain field(s) that have never been
-	// referenced in othermethods of the faulty class.
+	// If the faulty statement involves object reference to field (i.e., use object
+	// type class field), do there exist certain field(s) that have never been
+	// referenced in other methods of the faulty class.
 	S4_USED_FIELD,
+
+	// If the faulty statement involves using primitive type variables (either local
+	// or global),
+	// whether exist other statements in the faulty class that use some same
+	// primitive type variables (with some of the primitive type variables used in
+	// the faulty statement), but add guard check (for global variables
+	S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD,
+
 	// For any variable involved in a logical expression,
 	// whether exist other boolean expressions in the faulty class
 	// that involve using variable whose type is same with v
-
-	// whether the associated method or class for the faulty linethrows exception
+	// whether the associated method or class for the faulty line throws exception
 	S6_METHOD_THROWS_EXCEPTION,
 
 	LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION,
 	// For any variable involved in a logical expression,whether exist methods
-	// (method declaration or methodcall) in scope (that is in the same faulty class
-	// sincewe do not assume full program) that take variable whose type is same
-	// withvas one of its parametersand return boolean
+	// (method declaration or method call) in scope (that is in the same faulty
+	// class
+	// since we do not assume full program) that take variable whose type is same
+	// with vas one of its parameters and return boolean
 	LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR,
 	// LE3: For a logical expression, if the logical expression involves comparison
 	// over primitive type variables (that is, some boolean expressions are
 	// comparing the primitive values), is there any other visible local primitive
-	// type variables that are not included in the logica
+	// type variables that are not included in the logical
 	LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED,
 	// Besides the variables involved in a logical expression, whether there exist
 	// other local boolean variables that are not involved in the faulty statement
@@ -156,12 +172,11 @@ public enum CNTX_Property {
 	// starts with the "not" operator! (an exclamation mark) (
 	LE6_HAS_NEGATION,
 	// For the logical expression, whether there exists a boolean expression which
-	// is
-	// simply a boolean variable
+	// is simply a boolean variable
 	LE7_SIMPLE_VAR_IN_LOGIC,
 	// If the logical expression only uses local variables,whether all of the local
-	// variables have been used inother statements (exclude statements inside
-	// controlflow structure) since the introduction
+	// variables have been used in other statements (exclude statements inside
+	// control flow structure) since the introduction
 	LE_8_LOGICAL_WITH_USED_LOCAL_VARS,
 	// For each involved variable, whether has method definitions or method calls
 	// (in the fault class) that take the type of the involved variable as one of
@@ -171,8 +186,8 @@ public enum CNTX_Property {
 	// has any other variables in scope that are similar in identifier name and type
 	// compatible.
 	V2_HAS_VAR_SIM_NAME_COMP_TYPE,
-	// For each involved variable, is it constant?–canassume variables whose
-	// identifier names are majorlycapital letters are constant variables
+	// For each involved variable, is it constant? –can assume variables whose
+	// identifier names are majorly capital letters are constant variables
 	V3_HAS_CONSTANT,
 
 	// If statement involves variables, whether has methods in scope that take the
@@ -187,21 +202,23 @@ public enum CNTX_Property {
 //	If statement involves variables, whether has methods in scope that return 
 	// the type of the involved variable
 	V6_IS_METHOD_RETURN_TYPE_VAR,
-	// For each method invocation, whether the methodhas overloaded method
+	// For each method invocation, whether the method has overloaded method
 	M1_OVERLOADED_METHOD,
 	// For each method invocation, whether there exist methods that return the same
 	// type (or type compatible) and are similar in identifier name with the called
 	// method (again, we limit the search to the faulty class, search both method
 	// definition and method invocations in the faulty class
 	M2_SIMILAR_METHOD_WITH_SAME_RETURN,
-	// For each method invocation, whether has methoddefinitions or method calls (in
-	// the fault class) that takethe return type of the method invocation as one
-	// ofits parameters and the return type of the method istype compatible with the
-	// return type of the methodinvocation.
+	// For each method invocation, whether has method definitions or method calls
+	// (in
+	// the fault class) that take the return type of the method invocation as one
+	// ofits parameters and the return type of the method is type compatible with
+	// the
+	// return type of the method invocation.
 	M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
 
-	// For each method invocation, whether the types ofsome of its parameters are
-	// same or compatible withthe return type of the method.
+	// For each method invocation, whether the types of some of its parameters are
+	// same or compatible with the return type of the method.
 	M4_PARAMETER_RETURN_COMPABILITY,
 	//
 

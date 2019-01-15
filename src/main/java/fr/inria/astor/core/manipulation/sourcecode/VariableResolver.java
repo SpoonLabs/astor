@@ -26,12 +26,15 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -188,6 +191,23 @@ public class VariableResolver {
 
 	}
 
+	public static List<CtVariableAccess> collectVariableReadIgnoringBlocks(CtElement element) {
+
+		if (element instanceof CtIf) {
+			return collectVariableRead(((CtIf) element).getCondition());
+		}
+		if (element instanceof CtWhile) {
+			return collectVariableRead(((CtWhile) element).getLoopingExpression());
+		}
+
+		if (element instanceof CtFor) {
+			return collectVariableRead(((CtFor) element).getExpression());
+		}
+
+		return collectVariableRead(element);
+
+	}
+
 	/**
 	 * Return all variables related to the element passed as argument
 	 * 
@@ -240,6 +260,23 @@ public class VariableResolver {
 		sc.scan(element);
 
 		return varaccess;
+
+	}
+
+	public static List<CtVariableAccess> collectVariableAccessIgnoringBlocks(CtElement element) {
+
+		if (element instanceof CtIf) {
+			return collectVariableAccess(((CtIf) element).getCondition());
+		}
+		if (element instanceof CtWhile) {
+			return collectVariableAccess(((CtWhile) element).getLoopingExpression());
+		}
+
+		if (element instanceof CtFor) {
+			return collectVariableAccess(((CtFor) element).getExpression());
+		}
+
+		return collectVariableAccess(element);
 
 	}
 

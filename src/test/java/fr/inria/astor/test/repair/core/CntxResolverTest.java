@@ -734,6 +734,112 @@ public class CntxResolverTest {
 	}
 
 	@Test
+	public void testProperty_S2_if_condition() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" + "public boolean ddd =false;"//
+				+ "public Object foo() {" //
+				+ "int f1 =  mysimilar + 1;" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "if(isGuard()){f2 = f2;};" //
+				+ "return f1;" + "}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public boolean isGuard(){return false;}"//
+				+ "public int getConvertFloat(float f){return gvarb?1:0;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CntxResolver cntxResolver = new CntxResolver();
+
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return"))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.S2_SIMILAR_OBJECT_TYPE_WITH_GUARD));
+	}
+
+	@Test
+	public void testProperty_S2_conditional_1line() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" + "public boolean ddd =false;"//
+				+ "public Object foo() {" //
+				+ "int f1 =  mysimilar + 1;" //
+				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
+				+ "f2 = (isGuard())? f2: 1;" //
+				+ "return f1;" + "}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public boolean isGuard(){return false;}"//
+				+ "public int getConvertFloat(float f){return gvarb?1:0;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CntxResolver cntxResolver = new CntxResolver();
+
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return"))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.S2_SIMILAR_OBJECT_TYPE_WITH_GUARD));
+	}
+
+	@Test
+	public void testProperty_S5() {
+
+		String content = "" + "class X {" //
+				+ "public boolean gvarb =false;" + "public boolean ddd =false;"//
+				+ "public Object foo() {" //
+				+ "X f1 =  new X();" //
+				+ "X f2 =  new X();" //
+				+ "if(isGuard()){f2 = f2;};" //
+				+ "return f1;" + "}"//
+				+ "public float getFloat(){return 1.0;}"//
+				+ "public boolean isGuard(){return false;}"//
+				+ "public int getConvertFloat(float f){return gvarb?1:0;}"//
+				+ "};";
+
+		CtType type = getCtType(content);
+
+		assertNotNull(type);
+		CtMethod method = (CtMethod) type.getMethods().stream()
+				.filter(e -> ((CtMethod) e).getSimpleName().equals("foo")).findFirst().get();
+
+		assertNotNull(method);
+		System.out.println(method);
+		CntxResolver cntxResolver = new CntxResolver();
+
+		CtElement element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return"))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		Cntx cntx = cntxResolver.retrieveCntx(element);
+
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.S5_SIMILAR_PRIMITIVE_TYPE_WITH_GUARD));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.S2_SIMILAR_OBJECT_TYPE_WITH_GUARD));
+
+	}
+
+	@Test
 	public void testProperty_S4_field() {
 
 		String content = "" + "class X {" //
@@ -767,7 +873,7 @@ public class CntxResolverTest {
 		CntxResolver cntxResolver = new CntxResolver();
 		Cntx cntx = cntxResolver.retrieveCntx(element);
 		// all variables used
-		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.S4_USED_FIELD));
+		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.S4_USED_FIELD));
 
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("return")).findFirst()
 				.get();
@@ -783,7 +889,7 @@ public class CntxResolverTest {
 		cntxResolver = new CntxResolver();
 		cntx = cntxResolver.retrieveCntx(element);
 
-		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.S4_USED_FIELD));
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.S4_USED_FIELD));
 
 	}
 
