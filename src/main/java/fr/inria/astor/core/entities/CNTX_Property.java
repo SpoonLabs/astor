@@ -149,7 +149,15 @@ public enum CNTX_Property {
 	// that involve using variable whose type is same with v
 	// whether the associated method or class for the faulty line throws exception
 	S6_METHOD_THROWS_EXCEPTION,
-
+	// For any variable v involved in a logical expression, whether exist other
+	// boolean
+	// expressions that involve using variable whose type is same with v —note it is
+	// OK
+	// for the boolean expression to also use some other variable types, we just
+	// require variable of type v is involved (as we do not assume the availability
+	// of
+	// the whole program, we confine the search of boolean expression in the same
+	// class)
 	LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION,
 	// For any variable involved in a logical expression,whether exist methods
 	// (method declaration or method call) in scope (that is in the same faulty
@@ -214,12 +222,12 @@ public enum CNTX_Property {
 	// definition and method invocations in the faulty class
 	M2_SIMILAR_METHOD_WITH_SAME_RETURN,
 	// For each method invocation, whether has method definitions or method calls
-	// (in
-	// the fault class) that take the return type of the method invocation as one
-	// ofits parameters and the return type of the method is type compatible with
+	// (in the fault class) that take the return type of the method invocation as
+	// one of its parameters and the return type of the method is type compatible
+	// with
 	// the
 	// return type of the method invocation.
-	M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
+	M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP,
 
 	// For each method invocation, whether the types of some of its parameters are
 	// same or compatible with the return type of the method.

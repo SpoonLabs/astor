@@ -149,28 +149,8 @@ public class CntxResolver {
 	@SuppressWarnings("unused")
 	public Cntx<?> retrieveCntx(CtElement element) {
 		Cntx<Object> context = new Cntx<>(determineKey(element));
-		analyzeVarsInScope(element, context);
-		retrieveS6_Method_ExceptionAndInformation(element, context);
-		retrieveParentTypes(element, context);
 
-		String type = element.getClass().getSimpleName().replaceAll("Ct", "").replaceAll("Impl", "");
-		context.put(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT, type);
-		for (CntxEntity entity : CntxEntity.values()) {
-			boolean equals = type.equals(entity.name());
-			// writeDetailedInformation(context, entity.name(),
-			// CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT, equals);
-		}
-		//
-
-		Cntx<Object> binCntx = new Cntx<>();
-		context.put(CNTX_Property.BIN_PROPERTIES, binCntx);
-		analyzeLE5_BinaryInvolved(element, binCntx, context);
-
-		Cntx<Object> unaryCntx = new Cntx<>();
-		context.put(CNTX_Property.UNARY_PROPERTIES, unaryCntx);
-		analyzeLE6_UnaryInvolved(element, unaryCntx, context);
-
-		retrieveUseEnumAndConstants(element, context);
+		analyzeFeatures(element, context);
 
 		return context;
 	}
@@ -206,7 +186,7 @@ public class CntxResolver {
 		}
 	}
 
-	private void retrieveUseEnumAndConstants(CtElement element, Cntx<Object> context) {
+	private void analyzeUseEnumAndConstants(CtElement element, Cntx<Object> context) {
 
 		List enumsValues = new ArrayList();
 		List literalsValues = new ArrayList();
@@ -238,28 +218,6 @@ public class CntxResolver {
 		assignmentScanner.scan(element);
 		context.put(CNTX_Property.USES_ENUM, enumsValues.size() > 0);
 		context.put(CNTX_Property.USES_CONSTANT, literalsValues.size() > 0);
-	}
-
-	private void analyzeBasedOnAffectedVars(CtElement element, Cntx<Object> context, List<CtVariable> varsInScope) {
-		List<CtVariableAccess> varsAffected = VariableResolver.collectVariableRead(element);
-		analyzeTypesVarsAffected(varsAffected, element, context);
-		analyzeS1_AffectedAssigned(varsAffected, element, context);
-		analyzeS1_AffectedVariablesUsed(varsAffected, element, context);
-		analyzeS2_S5_SametypewithGuard(varsAffected, element, context);
-		analyzeS4_AffectedFielfs(varsAffected, element, context);
-
-		analyzeV1_VX_V6_LE2_AffectedVariablesInMethod(varsAffected, element, context);
-		analyzeV2_AffectedDistanceVarName(varsAffected, varsInScope, element, context);
-		analyzeV3_AffectedHasConstant(varsAffected, element, context);
-		analyzeV4(varsAffected, element, context);
-		analyzeV5_AffectedVariablesInTransformation(varsAffected, element, context);
-
-		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context);
-		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
-		analyzeLE7_VarDirectlyUsed(varsAffected, varsInScope, element, context);
-		analyzeLE3_PrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
-		analyzeLE4_BooleanVarNotUsed(varsAffected, varsInScope, element, context);
-
 	}
 
 	private void analyzeV4(List<CtVariableAccess> varsAffected, CtElement element, Cntx<Object> context) {
@@ -302,11 +260,14 @@ public class CntxResolver {
 			List<CtVariable> varsInScope, CtElement element, Cntx<Object> context) {
 
 		boolean hasBooleanVarNotPresent = false;
-
+		/**
+		 * For each var in scope
+		 */
 		for (CtVariable aVarInScope : varsInScope) {
 
 			if (aVarInScope.getType() != null && aVarInScope.getType().unbox().toString().equals("boolean")) {
 
+				// Check if the var in scope is present in the list of var from the expression.
 				boolean isPresentVar = varsAffectedInStatement.stream()
 						.filter(e -> e.getVariable().getSimpleName().equals(aVarInScope.getSimpleName())).findFirst()
 						.isPresent();
@@ -341,28 +302,28 @@ public class CntxResolver {
 
 			if (aVarFromAffected.getType() == null || !aVarFromAffected.getType().isPrimitive()
 			// parent is binary operator
-					|| aVarFromAffected.getParent(CtBinaryOperator.class) == null)
+					|| // !isparentBinaryComparison(aVarFromAffected))
+					aVarFromAffected.getParent(CtBinaryOperator.class) == null)
 				continue;
 
+			// For each var in scope
 			for (CtVariable aVarFromScope : varsInScope) {
+				// If the var name are different
 				if (!aVarFromScope.getSimpleName().equals(aVarFromAffected.getVariable().getSimpleName())) {
 
-					try {
-						if (compareTypes(aVarFromScope.getType(), aVarFromAffected.getType())) {
+					// Let's check if the type are compatible (i.e., the same primitive type)
+					if (compareTypes(aVarFromScope.getType(), aVarFromAffected.getType())) {
 
-							boolean presentInExpression = varsAffectedInStatement.stream()
-									.filter(e -> e.getVariable().getSimpleName().equals(aVarFromScope.getSimpleName()))
-									.findFirst().isPresent();
-							if (!presentInExpression) {
-								hasCompatibleVarNoPresent = true;
-								context.put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED,
-										hasCompatibleVarNoPresent);
-								return;
-							}
+						boolean presentInExpression = varsAffectedInStatement.stream()
+								.filter(e -> e.getVariable().getSimpleName().equals(aVarFromScope.getSimpleName()))
+								.findFirst().isPresent();
+						if (!presentInExpression) {
+							hasCompatibleVarNoPresent = true;
+							context.put(CNTX_Property.LE3_IS_COMPATIBLE_VAR_NOT_INCLUDED, hasCompatibleVarNoPresent);
+							return;
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
 					}
+
 				}
 			}
 
@@ -371,9 +332,27 @@ public class CntxResolver {
 
 	}
 
+	@Deprecated
+	private boolean isparentBinaryComparison(CtElement element) {
+
+		CtBinaryOperator binParent = element.getParent(CtBinaryOperator.class);
+
+		if (binParent == null)
+			return false;
+		CtBinaryOperator binop = (CtBinaryOperator) binParent;
+		if (binop.getKind().equals(BinaryOperatorKind.AND) || binop.getKind().equals(BinaryOperatorKind.OR)
+				|| binop.getKind().equals(BinaryOperatorKind.EQ) || binop.getKind().equals(BinaryOperatorKind.NE)
+				|| (binop.getType() != null && binop.getType().unbox().getSimpleName().equals("boolean")))
+			return true;
+
+//			return isLogicalExpressionInParent(currentElement.getParent(CtBinaryOperator.class));
+//		}
+		return false;
+	}
+
 	/**
 	 * For the logical expression, whether there exists a boolean expression which
-	 * is simply a boolean variable (i.e., not func- tion call, equality comparison,
+	 * is simply a boolean variable (i.e., not function call, equality comparison,
 	 * etc.
 	 * 
 	 * @param varsAffectedInStatement
@@ -385,7 +364,7 @@ public class CntxResolver {
 			List<CtVariable> varsInScope, CtElement element, Cntx<Object> context) {
 
 		boolean hasVarDirectlyUsed = false;
-		// TODO:
+
 		for (CtVariableAccess aVarFromAffected : varsAffectedInStatement) {
 
 			CtElement parent = aVarFromAffected.getParent();
@@ -536,66 +515,59 @@ public class CntxResolver {
 	private void analyzeLE1_AffectedVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 
-		CtExecutable methodParent = element.getParent(CtExecutable.class);
+		CtClass classParent = element.getParent(CtClass.class);
 
-		if (methodParent == null)
+		if (classParent == null)
 			return;
 
-		List<CtStatement> statements = methodParent.getElements(new LineFilter());
+		List<CtStatement> statements = classParent.getElements(new LineFilter());
 
 		int similarUsedBefore = 0;
 
 		// For each variable affected
 		for (CtVariableAccess variableAffected : varsAffected) {
 
-			boolean used = false;
-			boolean foundSimilarVarUsedBefore = false;
+			// boolean used = false;
+			boolean foundSimilarVarUsed = false;
 
 			boolean isInBinaryExpression = isLogicalExpressionInParent(variableAffected);
 
-			// For any variable involved in a logical expression,
 			if (!isInBinaryExpression)
 				continue;
 
-			// For each assignment in the methid
+			// let's find other boolean expressions in the statements
 			for (CtStatement aStatement : statements) {
 
-				if (!isElementBeforeVariable(variableAffected, aStatement))
-					continue;
+				// let's find all binary expressions in the statement
+				List<CtBinaryOperator> binaryOps = aStatement.getElements(e -> isLogicalExpression(e)).stream()
+						.map(CtBinaryOperator.class::cast).collect(Collectors.toList());
 
-				// let's collect the var access in the right part
-				List<CtVariableAccess> varsInRightPart = VariableResolver.collectVariableRead(aStatement);
-				// if the var access in the right is the same that the affected
-				for (CtVariableAccess varInStatement : varsInRightPart) {
-					if (hasSameName(variableAffected, varInStatement)) {
-						used = true;
-					} else {
-						// Different name, so it's another variable
+				for (CtBinaryOperator ctBinaryOperator : binaryOps) {
 
-						try {
-							// whether exist other boolean expressions
-							boolean hasBooleanExpressionParent = isParentBooleanExpression(varInStatement);
-							if (!hasBooleanExpressionParent)
-								continue;
+					// retrieve all variables
+					List<CtVariableAccess> varsInOtherExpressions = VariableResolver
+							.collectVariableRead(ctBinaryOperator);
+					for (CtVariableAccess varInAnotherExpression : varsInOtherExpressions) {
+						if (!hasSameName(variableAffected, varInAnotherExpression)) {
+							// Different name, so it's another variable
+
 							// involve using variable whose type is same with v
-							if (compareTypes(variableAffected.getType(), varInStatement.getType())) {
-								foundSimilarVarUsedBefore = true;
+							if (compareTypes(variableAffected.getVariable().getType(),
+									varInAnotherExpression.getVariable().getType())) {
+								foundSimilarVarUsed = true;
 							}
-						} catch (Exception e) {
-							System.out.println("Problems with type");
-							e.printStackTrace();
+
 						}
+
 					}
+
 				}
-				if (used && foundSimilarVarUsedBefore)
-					break;
+
 			}
 
-			///
-			if (foundSimilarVarUsedBefore)
+			if (foundSimilarVarUsed)
 				similarUsedBefore++;
-			// else
-			// notSimilarUsedBefore++;
+
 		}
 
 		context.put(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION, (similarUsedBefore) > 0);
@@ -1339,7 +1311,7 @@ public class CntxResolver {
 	 * @param element
 	 * @param context
 	 */
-	private void analyzeV1_VX_V6_LE2_AffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
+	private void analyzeV1_VX_V6_AffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 		try {
 			// For each involved variable, whether has method definitions or method calls
@@ -1359,15 +1331,17 @@ public class CntxResolver {
 			// since we do not assume full program) that take variable whose type is same
 			// with vas one of its parameters and return boolean
 			boolean les2paramCompatibleWithBooleanReturn = false;
+
 			CtClass parentClass = element.getParent(CtClass.class);
+
+			List allMethods = getAllMethodsFromClass(parentClass);
+
 			for (CtVariableAccess varAffected : varsAffected) {
 
 				boolean v6InvReturnCompatible = false;
 				boolean v4InvparamCompatible = false;
 				boolean les2InvparamCompatibleWithBooleanReturn = false;
 				boolean v1CurrentCompatibleReturnAndParameterTypes = false;
-
-				List allMethods = getAllMethodsFromClass(parentClass);
 
 				for (Object omethod : allMethods) {
 					boolean matchInmethodType = false;
@@ -1445,6 +1419,137 @@ public class CntxResolver {
 		}
 	}
 
+	/**
+	 * // For any variable involved in a logical expression,whether exist methods //
+	 * (method declaration or method call) in scope (that is in the same faulty //
+	 * class // since we do not assume full program) that take variable whose type
+	 * is same // with vas one of its parameters and return boolean
+	 * 
+	 * @param varsAffected
+	 * @param element
+	 * @param context
+	 */
+	private void analyzeLE2_AffectedVariablesInMethod(List<CtVariableAccess> varsAffected, CtElement element,
+			Cntx<Object> context) {
+		try {
+
+			boolean les2paramCompatibleWithBooleanReturn = false;
+			CtClass parentClass = element.getParent(CtClass.class);
+
+			// First check method declarations
+
+			List<CtInvocation> invocationsFromClass = parentClass.getElements(e -> (e instanceof CtInvocation)).stream()
+					.map(CtInvocation.class::cast).collect(Collectors.toList());
+
+			List allMethods = getAllMethodsFromClass(parentClass);
+
+			for (CtVariableAccess varAffected : varsAffected) {
+
+				if (!isParentBooleanExpression(varAffected))
+					continue;
+
+				boolean les2InvparamCompatibleWithBooleanReturn = false;
+				// First, Let's analyze the method declaration
+
+				if (checkMethodDeclarationWithTypeInParameter(allMethods, varAffected) != null) {
+					les2paramCompatibleWithBooleanReturn = true;
+					les2InvparamCompatibleWithBooleanReturn = true;
+				}
+				// Second, let's inspect invocations
+				else {
+
+					if (checkInvocationWithTypeInParameter(invocationsFromClass, varAffected) != null) {
+						les2paramCompatibleWithBooleanReturn = true;
+						les2InvparamCompatibleWithBooleanReturn = true;
+					}
+
+				}
+
+				writeDetailedInformationFromVariables(context, varAffected.getVariable().getSimpleName(),
+						CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2InvparamCompatibleWithBooleanReturn));
+
+			}
+
+			context.put(CNTX_Property.LE2_IS_BOOLEAN_METHOD_PARAM_TYPE_VAR, (les2paramCompatibleWithBooleanReturn));
+
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Check if a method declaration has a parameter compatible with that one from
+	 * the var affected
+	 * 
+	 * @param allMethods
+	 * @param varAffected
+	 * @return
+	 */
+	public CtMethod checkMethodDeclarationWithTypeInParameter(List allMethods, CtVariableAccess varAffected) {
+		for (Object omethod : allMethods) {
+
+			if (!(omethod instanceof CtMethod))
+				continue;
+
+			CtMethod anotherMethodInBuggyClass = (CtMethod) omethod;
+
+			// Check the parameters
+			for (Object oparameter : anotherMethodInBuggyClass.getParameters()) {
+				CtParameter parameter = (CtParameter) oparameter;
+
+				if (compareTypes(varAffected.getType(), parameter.getType())) {
+					if (anotherMethodInBuggyClass.getType().unbox().toString().equals("boolean")) {
+
+						return anotherMethodInBuggyClass;
+					}
+
+				}
+			}
+
+		}
+		return null;
+	}
+
+	/**
+	 * Return if there is an invocation with an argument of the same type of the Var
+	 * Access
+	 * 
+	 * @param invocationsFromClass
+	 * @param varAffected
+	 * @return
+	 */
+	public CtInvocation checkInvocationWithTypeInParameter(List<CtInvocation> invocationsFromClass,
+			CtVariableAccess varAffected) {
+		// For each invocation found in the class
+		for (CtInvocation anInvocation : invocationsFromClass) {
+
+			// For each argument in the invocation
+			for (Object anObjArgument : anInvocation.getArguments()) {
+				CtExpression anArgument = (CtExpression) anObjArgument;
+
+				// retrieve Var access
+
+				List<CtVariableAccess> varReadFromArguments = VariableResolver.collectVariableRead(anArgument);
+
+				for (CtVariableAccess aVarReadFrmArgument : varReadFromArguments) {
+
+					//
+					if (compareTypes(varAffected.getType(), aVarReadFrmArgument.getType())) {
+						if (anInvocation.getType() == null
+								|| anInvocation.getType().unbox().toString().equals("boolean")) {
+							return anInvocation;
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+		return null;
+	}
+
 	private boolean isSubtype(CtVariableAccess var, CtMethod method) {
 		try {
 			return method.getType().isSubtypeOf(var.getType());
@@ -1472,7 +1577,11 @@ public class CntxResolver {
 	 * @param context
 	 * @param parentContext
 	 */
-	private void analyzeLE6_UnaryInvolved(CtElement element, Cntx<Object> context, Cntx<Object> parentContext) {
+	private void analyzeLE6_UnaryInvolved(CtElement element, Cntx<Object> parentContext) {
+
+		Cntx<Object> context = new Cntx<>();
+		parentContext.put(CNTX_Property.UNARY_PROPERTIES, context);
+
 		List<String> binOps = new ArrayList();
 		CtScanner scanner = new CtScanner() {
 
@@ -1521,7 +1630,10 @@ public class CntxResolver {
 	 * @param context
 	 * @param parentContext
 	 */
-	private void analyzeLE5_BinaryInvolved(CtElement element, Cntx<Object> context, Cntx<Object> parentContext) {
+	private void analyzeLE5_BinaryInvolved(CtElement element, Cntx<Object> parentContext) {
+
+		Cntx<Object> context = new Cntx<>();
+		parentContext.put(CNTX_Property.BIN_PROPERTIES, context);
 
 		List<String> binOps = new ArrayList();
 		CtScanner scanner = new CtScanner() {
@@ -1609,14 +1721,58 @@ public class CntxResolver {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void analyzeVarsInScope(CtElement element, Cntx<Object> context) {
+	private void analyzeFeatures(CtElement element, Cntx<Object> context) {
 		// Vars in scope at the position of element
-
 		List<CtVariable> varsInScope = VariableResolver.searchVariablesInScope(element);
+		putVarInContextInformation(context, varsInScope);
+
+		List<CtVariableAccess> varsAffected = VariableResolver.collectVariableRead(element);
+		analyzeTypesVarsAffected(varsAffected, element, context);
+		analyzeS1_AffectedAssigned(varsAffected, element, context);
+		analyzeS1_AffectedVariablesUsed(varsAffected, element, context);
+		analyzeS3_TypeOfFaulty(element, context);
+
+		analyzeS2_S5_SametypewithGuard(varsAffected, element, context);
+		analyzeS4_AffectedFielfs(varsAffected, element, context);
+		analyzeS6_Method_ExceptionAndInformation(element, context);
+
+		analyzeV1_VX_V6_AffectedVariablesInMethod(varsAffected, element, context);
+		analyzeV2_AffectedDistanceVarName(varsAffected, varsInScope, element, context);
+		analyzeV3_AffectedHasConstant(varsAffected, element, context);
+		analyzeV4(varsAffected, element, context);
+		analyzeV5_AffectedVariablesInTransformation(varsAffected, element, context);
+
+		analyzeM1_eM2_M3_M4_SimilarMethod(element, context);
+
+		analyzeLE1_AffectedVariablesUsed(varsAffected, element, context);
+		analyzeLE2_AffectedVariablesInMethod(varsAffected, element, context);
+		analyzeLE3_PrimitiveWithCompatibleNotUsed(varsAffected, varsInScope, element, context);
+		analyzeLE4_BooleanVarNotUsed(varsAffected, varsInScope, element, context);
+		analyzeLE5_BinaryInvolved(element, context);
+		analyzeLE6_UnaryInvolved(element, context);
+		analyzeLE7_VarDirectlyUsed(varsAffected, varsInScope, element, context);
+
+		// Other features not enumerated
+		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
+		analyzeParentTypes(element, context);
+		analyzeUseEnumAndConstants(element, context);
+
+	}
+
+	public void analyzeS3_TypeOfFaulty(CtElement element, Cntx<Object> context) {
+		String type = element.getClass().getSimpleName().replaceAll("Ct", "").replaceAll("Impl", "");
+		context.put(CNTX_Property.S3_TYPE_OF_FAULTY_STATEMENT, type);
+	}
+
+	/**
+	 * Puts in the context's object the information of each var in scope
+	 * 
+	 * @param context
+	 * @param varsInScope
+	 */
+	public void putVarInContextInformation(Cntx<Object> context, List<CtVariable> varsInScope) {
 		context.put(CNTX_Property.VARS_IN_SCOPE, varsInScope);
 		List<Cntx> children = new ArrayList();
-		int nrPrimitives = 0;
-		int nrObjectRef = 0;
 		for (CtVariable ctVariable : varsInScope) {
 			Cntx c = new Cntx<>();
 			c.put(CNTX_Property.VAR_VISIB,
@@ -1628,11 +1784,6 @@ public class CntxResolver {
 
 		}
 		context.put(CNTX_Property.VARS, children);
-
-		analyzeBasedOnAffectedVars(element, context, varsInScope);
-
-		analyzeM1_eM2_M3_M4_SimilarMethod(element, context);
-
 	}
 
 	/**
@@ -1652,19 +1803,20 @@ public class CntxResolver {
 		// definition and method invocations in the faulty class
 		boolean m2anyhasMinDist = false;
 		// For each method invocation, whether has method definitions or method calls
-		// (in
-		// the fault class) that take the return type of the method invocation as one
+		// (in the fault class) that take the return type of the method invocation as
+		// one
 		// of its parameters and the return type of the method is type compatible with
-		// the
-		// return type of the method invocation.
+		// the return type of the method invocation.
 		boolean m3anyhasCompatibleParameterAndReturnWithOtherMethod = false;
 		// For each method invocation, whether the types of some of its parameters are
 		// same or compatible with the return type of the method.
 		boolean m4anyhasCompatibleParameterAndReturnSameMethod = false;
 
-		List invocations = element.getElements(e -> (e instanceof CtInvocation));
-		for (Object object : invocations) {
-			CtInvocation invocation = (CtInvocation) object;
+		// Get all invocations inside the faulty element
+		List<CtInvocation> invocations = element.getElements(e -> (e instanceof CtInvocation)).stream()
+				.map(CtInvocation.class::cast).collect(Collectors.toList());
+
+		for (CtInvocation invocation : invocations) {
 			CtExecutable minvokedInAffected = invocation.getExecutable().getDeclaration();
 
 			if (minvokedInAffected == null || !(minvokedInAffected instanceof CtMethod))
@@ -1675,8 +1827,10 @@ public class CntxResolver {
 			boolean m3methodhasCompatibleParameterAndReturnWithOtherMethod = false;
 			boolean m4methodHasCompatibleParameterAndReturnSameMethod = false;
 
+			// Get the method that is invoked
 			CtMethod affectedMethod = (CtMethod) minvokedInAffected;
 
+			// Check parameters
 			for (Object oparameter : affectedMethod.getParameters()) {
 				CtParameter parameter = (CtParameter) oparameter;
 
@@ -1686,28 +1840,32 @@ public class CntxResolver {
 				}
 			}
 
-			List allMethods = getAllMethodsFromClass(parentClass);
+			List allMethodsFromClass = getAllMethodsFromClass(parentClass);
 
-			for (Object omethod : allMethods) {
+			// For each method in the class
+			for (Object omethod : allMethodsFromClass) {
 
 				if (!(omethod instanceof CtMethod))
 					continue;
 
 				CtMethod anotherMethod = (CtMethod) omethod;
-
-				if (anotherMethod.getSignature().equals(affectedMethod.getSignature()))
+				// Ignoring if it's the same
+				if (anotherMethod == null || anotherMethod.getSignature().equals(affectedMethod.getSignature()))
 					continue;
 
 				if (anotherMethod.getSimpleName().equals(affectedMethod.getSimpleName())) {
-					// It's overide
+					// It's override
 					m1methodHasSameName = true;
 					m1anyhasSameName = true;
 				}
-
+				// If the return types are compatibles
 				if (anotherMethod.getType() != null && minvokedInAffected.getType() != null) {
 
+					// Check if the method has the return type compatible with the affected
+					// invocation
 					boolean compatibleReturnTypes = compareTypes(anotherMethod.getType(), minvokedInAffected.getType());
 					if (compatibleReturnTypes) {
+						// Check name similarity:
 						int dist = StringDistance.calculate(anotherMethod.getSimpleName(),
 								minvokedInAffected.getSimpleName());
 						if (dist > 0 && dist < 3) {
@@ -1716,42 +1874,70 @@ public class CntxResolver {
 							m2methodhasMinDist = true;
 						}
 
-					}
-
-					for (Object oparameter : anotherMethod.getParameters()) {
-						CtParameter parameter = (CtParameter) oparameter;
-
-						if (compareTypes(minvokedInAffected.getType(), parameter.getType())) {
+						// Check if the method has a parameter compatible with the affected invocation
+						boolean hasSameParam = checkTypeInParameter(anotherMethod, minvokedInAffected);
+						if (hasSameParam) {
 							m3anyhasCompatibleParameterAndReturnWithOtherMethod = true;
 							m3methodhasCompatibleParameterAndReturnWithOtherMethod = true;
 						}
 					}
+				}
+				// if the other method is not similar method for M3, let's find in the
+				// invocation inside the .
+				if (!m3methodhasCompatibleParameterAndReturnWithOtherMethod) {
+
+					List<CtInvocation> invocationsFromAnotherMethod = anotherMethod
+							.getElements(e -> (e instanceof CtInvocation)).stream().map(CtInvocation.class::cast)
+							.collect(Collectors.toList());
+					for (CtInvocation ctInvocation : invocationsFromAnotherMethod) {
+						CtExecutable methodInvokedInAnotherMethod = ctInvocation.getExecutable().getDeclaration();
+
+						if (methodInvokedInAnotherMethod != null) {
+
+							if (compareTypes(anotherMethod.getType(), minvokedInAffected.getType())
+									&& checkTypeInParameter(anotherMethod, minvokedInAffected)) {
+								m3anyhasCompatibleParameterAndReturnWithOtherMethod = true;
+								m3methodhasCompatibleParameterAndReturnWithOtherMethod = true;
+							}
+
+						}
+
+					}
 
 				}
 
-				writeDetailedInformationFromMethod(context, affectedMethod,
-						CNTX_Property.M4_PARAMETER_RETURN_COMPABILITY,
-						m4methodHasCompatibleParameterAndReturnSameMethod);
-
-				writeDetailedInformationFromMethod(context, affectedMethod, CNTX_Property.M1_OVERLOADED_METHOD,
-						m1methodHasSameName);
-
-				writeDetailedInformationFromMethod(context, affectedMethod,
-						CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2methodhasMinDist);
-
-				writeDetailedInformationFromMethod(context, affectedMethod,
-						CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
-						m3methodhasCompatibleParameterAndReturnWithOtherMethod);
-
 			}
+			writeDetailedInformationFromMethod(context, affectedMethod, CNTX_Property.M4_PARAMETER_RETURN_COMPABILITY,
+					m4methodHasCompatibleParameterAndReturnSameMethod);
 
-		}
+			writeDetailedInformationFromMethod(context, affectedMethod, CNTX_Property.M1_OVERLOADED_METHOD,
+					m1methodHasSameName);
+
+			writeDetailedInformationFromMethod(context, affectedMethod,
+					CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2methodhasMinDist);
+
+			writeDetailedInformationFromMethod(context, affectedMethod,
+					CNTX_Property.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP,
+					m3methodhasCompatibleParameterAndReturnWithOtherMethod);
+
+		} // end invocation
 		context.put(CNTX_Property.M1_OVERLOADED_METHOD, m1anyhasSameName);
 		context.put(CNTX_Property.M2_SIMILAR_METHOD_WITH_SAME_RETURN, m2anyhasMinDist);
-		context.put(CNTX_Property.M3_SIMILAR_METHOD_WITH_PARAMETER_COMP,
+		context.put(CNTX_Property.M3_ANOTHER_METHOD_WITH_PARAMETER_RETURN_COMP,
 				m3anyhasCompatibleParameterAndReturnWithOtherMethod);
 		context.put(CNTX_Property.M4_PARAMETER_RETURN_COMPABILITY, m4anyhasCompatibleParameterAndReturnSameMethod);
 
+	}
+
+	private boolean checkTypeInParameter(CtMethod anotherMethod, CtExecutable minvokedInAffected) {
+		for (Object oparameter : anotherMethod.getParameters()) {
+			CtParameter parameter = (CtParameter) oparameter;
+
+			if (compareTypes(minvokedInAffected.getType(), parameter.getType())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static List getAllMethodsFromClass(CtClass parentClass) {
@@ -1837,7 +2023,7 @@ public class CntxResolver {
 	 * @param context
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void retrieveS6_Method_ExceptionAndInformation(CtElement element, Cntx<Object> context) {
+	private void analyzeS6_Method_ExceptionAndInformation(CtElement element, Cntx<Object> context) {
 		//
 		CtMethod parentMethod = element.getParent(CtMethod.class);
 		if (parentMethod != null) {
@@ -1880,7 +2066,7 @@ public class CntxResolver {
 
 	}
 
-	private void retrieveParentTypes(CtElement element, Cntx<Object> context) {
+	private void analyzeParentTypes(CtElement element, Cntx<Object> context) {
 		CtElement parent = element.getParent();
 		List<String> parentNames = new ArrayList<>();
 		try {
