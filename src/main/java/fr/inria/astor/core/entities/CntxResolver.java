@@ -26,6 +26,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
@@ -368,12 +369,25 @@ public class CntxResolver {
 		for (CtVariableAccess aVarFromAffected : varsAffectedInStatement) {
 
 			CtElement parent = aVarFromAffected.getParent();
-			if (parent instanceof CtExpression)
+			if (parent instanceof CtExpression) {
+				// First case: the parent is a binary
 				if (isLogicalExpression((CtExpression) parent)) {
 					hasVarDirectlyUsed = true;
 					break;
-				}
 
+				} else {
+
+					// Second case: the parent is a negation
+					if (parent instanceof CtUnaryOperator) {
+						if (isLogicalExpression(((CtUnaryOperator) parent).getParent())) {
+							hasVarDirectlyUsed = true;
+							break;
+						}
+
+					}
+
+				}
+			}
 		}
 		context.put(CNTX_Property.LE7_SIMPLE_VAR_IN_LOGIC, hasVarDirectlyUsed);
 
@@ -572,16 +586,19 @@ public class CntxResolver {
 
 		context.put(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION, (similarUsedBefore) > 0);
 
-		// context.put(CNTX_Property.LE_8_LOGICAL_WITH_USED_LOCAL_VARS,
-		// isParentBooleanExpression(varInStatement)&& (notUsedObjectsLocal == 0
-		// && notUsedPrimitiveLocal == 0 && (usedPrimitiveLocal > 0 || usedObjectsLocal
-		// > 0))
-		// );
-
 	}
 
+	/**
+	 * // If the logical expression only uses local variables,whether all of the
+	 * local variables have been used in other statements (exclude statements inside
+	 * control flow structure) since the introduction
+	 * 
+	 * @param varsAffected
+	 * @param element
+	 * @param context
+	 */
 	@SuppressWarnings("rawtypes")
-	private void analyzeLE8_AffectedPrimitiveVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
+	private void analyzeLE8_LocalVariablesVariablesUsed(List<CtVariableAccess> varsAffected, CtElement element,
 			Cntx<Object> context) {
 
 		CtExecutable methodParent = element.getParent(CtExecutable.class);
@@ -589,18 +606,18 @@ public class CntxResolver {
 		if (methodParent == null)
 			return;
 
-		List<CtStatement> statements = methodParent.getElements(new LineFilter());
+		List<CtStatement> statements = methodParent.getBody().getStatements();// methodParent.getElements(new
+																				// LineFilter());
 
-		int similarUsedBefore = 0;
-
+		// int similarUsedBefore = 0;
+		boolean allLocalVariableUsed = true;
 		// For each variable affected
 		for (CtVariableAccess variableAffected : varsAffected) {
 
-			boolean used = false;
-			boolean foundSimilarVarUsedBefore = false;
+			boolean aVarUsed = false;
 
 			if (variableAffected.getVariable().getType() != null
-					&& !variableAffected.getVariable().getType().isPrimitive()) {
+					&& !(variableAffected.getVariable().getDeclaration() instanceof CtLocalVariable)) {
 				continue;
 			}
 
@@ -613,52 +630,32 @@ public class CntxResolver {
 			// For each assignment in the methid
 			for (CtStatement aStatement : statements) {
 
+				// ignoring control flow
+				if (aStatement instanceof CtIf || aStatement instanceof CtLoop)
+					continue;
+
+				// ignoring statements after the faulty
 				if (!isElementBeforeVariable(variableAffected, aStatement))
 					continue;
 
-				// let's collect the var access in the right part
-				List<CtVariableAccess> varsInRightPart = VariableResolver.collectVariableRead(aStatement);
+				// let's collect the var access in the statement
+				List<CtVariableAccess> varsReadInStatement = VariableResolver.collectVariableRead(aStatement);
 				// if the var access in the right is the same that the affected
-				for (CtVariableAccess varInStatement : varsInRightPart) {
+				for (CtVariableAccess varInStatement : varsReadInStatement) {
 					if (hasSameName(variableAffected, varInStatement)) {
-						used = true;
-					} else {
-						// Different name, so it's another variable
-
-						try {
-							// whether exist other boolean expressions
-							boolean hasBooleanExpressionParent = isParentBooleanExpression(varInStatement);
-							if (!hasBooleanExpressionParent)
-								continue;
-							// involve using variable whose type is same with v
-							if (compareTypes(variableAffected.getType(), varInStatement.getType())) {
-								foundSimilarVarUsedBefore = true;
-							}
-						} catch (Exception e) {
-							System.out.println("Problems with type");
-							e.printStackTrace();
-						}
+						aVarUsed = true;
 					}
 				}
-				if (used && foundSimilarVarUsedBefore)
-					break;
-			}
 
-			///
-			if (foundSimilarVarUsedBefore)
-				similarUsedBefore++;
-			// else
-			// notSimilarUsedBefore++;
+			}
+			// one variable is not used before the faulty
+			if (!aVarUsed) {
+				allLocalVariableUsed = false;
+				break;
+			}
 		}
 
-		// context.put(CNTX_Property.LE1_EXISTS_RELATED_BOOLEAN_EXPRESSION,
-		// (similarUsedBefore) > 0);
-
-		// context.put(CNTX_Property.LE_8_LOGICAL_WITH_USED_LOCAL_VARS,
-		// isParentBooleanExpression(varInStatement)&& (notUsedObjectsLocal == 0
-		// && notUsedPrimitiveLocal == 0 && (usedPrimitiveLocal > 0 || usedObjectsLocal
-		// > 0))
-		// );
+		context.put(CNTX_Property.LE_8_LOGICAL_WITH_USED_LOCAL_VARS, allLocalVariableUsed);
 
 	}
 
@@ -980,7 +977,9 @@ public class CntxResolver {
 			CtBinaryOperator binop = (CtBinaryOperator) currentElement;
 			if (binop.getKind().equals(BinaryOperatorKind.AND) || binop.getKind().equals(BinaryOperatorKind.OR)
 					|| binop.getKind().equals(BinaryOperatorKind.EQ) || binop.getKind().equals(BinaryOperatorKind.NE)
-					|| (binop.getType() != null && binop.getType().unbox().getSimpleName().equals("boolean")))
+			// || (binop.getType() != null &&
+			// binop.getType().unbox().getSimpleName().equals("boolean"))
+			)
 				return true;
 
 		}
@@ -1730,9 +1729,8 @@ public class CntxResolver {
 		analyzeTypesVarsAffected(varsAffected, element, context);
 		analyzeS1_AffectedAssigned(varsAffected, element, context);
 		analyzeS1_AffectedVariablesUsed(varsAffected, element, context);
-		analyzeS3_TypeOfFaulty(element, context);
-
 		analyzeS2_S5_SametypewithGuard(varsAffected, element, context);
+		analyzeS3_TypeOfFaulty(element, context);
 		analyzeS4_AffectedFielfs(varsAffected, element, context);
 		analyzeS6_Method_ExceptionAndInformation(element, context);
 
@@ -1751,7 +1749,7 @@ public class CntxResolver {
 		analyzeLE5_BinaryInvolved(element, context);
 		analyzeLE6_UnaryInvolved(element, context);
 		analyzeLE7_VarDirectlyUsed(varsAffected, varsInScope, element, context);
-
+		analyzeLE8_LocalVariablesVariablesUsed(varsAffected, element, context);
 		// Other features not enumerated
 		analyzeAffectedWithCompatibleTypes(varsAffected, varsInScope, element, context);
 		analyzeParentTypes(element, context);

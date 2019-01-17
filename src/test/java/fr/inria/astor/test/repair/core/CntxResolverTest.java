@@ -166,6 +166,7 @@ public class CntxResolverTest {
 	}
 
 	@Test
+	@Ignore
 	public void testPathMath70() throws Exception {
 		AstorMain main1 = new AstorMain();
 
@@ -1087,6 +1088,7 @@ public class CntxResolverTest {
 				+ "int f2 =  mysimilar + myzimilar + f1 ;" //
 				+ "if(getB(bvarb) && f1 > 0){};" //
 				+ "if(avarb && f1> 0){};" //
+				+ "if(!avarb && f1> 0){};" //
 				+ "return (avarb && bvarb)? 2: 1;" + "}"//
 				+ "public float getMFloat(){return 1.0;}"//
 				+ "public float getFloat(){return 1.0;}"//
@@ -1111,6 +1113,7 @@ public class CntxResolverTest {
 		// not method involve
 		assertEquals(Boolean.FALSE, cntx.get(CNTX_Property.LE7_SIMPLE_VAR_IN_LOGIC));
 
+		//
 		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if (avarb"))
 				.findFirst().get();
 		System.out.println(element);
@@ -1119,6 +1122,14 @@ public class CntxResolverTest {
 		// statement with a similar method
 		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE7_SIMPLE_VAR_IN_LOGIC));
 
+		//
+		element = method.getBody().getStatements().stream().filter(e -> e.toString().startsWith("if ((!avarb"))
+				.findFirst().get();
+		System.out.println(element);
+		cntxResolver = new CntxResolver();
+		cntx = cntxResolver.retrieveCntx(element);
+		// statement with a similar method
+		assertEquals(Boolean.TRUE, cntx.get(CNTX_Property.LE7_SIMPLE_VAR_IN_LOGIC));
 	}
 
 	@Test
@@ -1920,7 +1931,7 @@ public class CntxResolverTest {
 				+ " float mysimilar = 1;"//
 				+ "if (mysimilar > 0){};" //
 				+ "float f2 = 2;" //
-				+ "boolean s1 = (mysimilar > 2);" //
+				+ "boolean s1 = (mysimilar > 2) && true;" //
 				+ "boolean s2 = (f2 > 2) && s1;" //
 				+ "double d1 = 0;"//
 				// + "double d2=0;"//
