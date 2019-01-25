@@ -10,9 +10,9 @@ import org.apache.log4j.Level;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.deeprepair.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.evolution.ExtensionPoints;

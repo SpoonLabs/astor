@@ -1,4 +1,4 @@
-package fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch;
+package fr.inria.astor.approaches.deeprepair;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,6 +29,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionTransformedIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;

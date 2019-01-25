@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import fr.inria.astor.approaches.deeprepair.CloneIngredientSearchStrategy;
 import fr.inria.astor.approaches.deeprepair.DeepRepairEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp;
@@ -28,7 +29,6 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.CtLocationIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope;
