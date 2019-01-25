@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
-import fr.inria.astor.core.entities.CntxResolver;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
@@ -70,7 +69,7 @@ public class UnwrapfromMethodCallOp extends FineGrainedExpressionReplaceOperator
 			for (Object oparameter : invocation.getArguments()) {
 				CtExpression argument = (CtExpression) oparameter;
 
-				if (CntxResolver.compareTypes(invocation.getType(), argument.getType())) {
+				if (SupportOperators.compareTypes(invocation.getType(), argument.getType())) {
 
 					CtExpression clonedExpressionArgument = argument.clone();
 					MutationSupporter.clearPosition(clonedExpressionArgument);

@@ -9,7 +9,6 @@ import java.util.Set;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
 import fr.inria.astor.approaches.tos.core.InsertMethodOperator;
-import fr.inria.astor.core.entities.CntxResolver;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
@@ -282,7 +281,7 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 
 			CtMethod affectedMethod = (CtMethod) minvokedInAffected;
 
-			List allMethods = CntxResolver.getAllMethodsFromClass(classUnderAnalysis);
+			List allMethods = SupportOperators.getAllMethodsFromClass(classUnderAnalysis);
 
 			for (Object omethod : allMethods) {
 
@@ -304,7 +303,7 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 
 				if (anotherMethod.getType() != null && minvokedInAffected.getType() != null) {
 
-					boolean compatibleReturnTypes = CntxResolver.compareTypes(anotherMethod.getType(),
+					boolean compatibleReturnTypes = SupportOperators.compareTypes(anotherMethod.getType(),
 							minvokedInAffected.getType());
 					if (compatibleReturnTypes) {
 						// int dist = StringDistance.calculate(anotherMethod.getSimpleName(),

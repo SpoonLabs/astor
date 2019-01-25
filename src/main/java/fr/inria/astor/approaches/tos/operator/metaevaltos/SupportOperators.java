@@ -10,8 +10,10 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.lille.repair.expression.access.VariableImpl;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  * 
@@ -86,4 +88,25 @@ public class SupportOperators {
 		return varAccess;
 	}
 
+	public static boolean compareTypes(CtTypeReference t1, CtTypeReference t2) {
+		try {
+			return t1 != null && t2 != null && (t1.toString().equals(t2.toString()) || t1.equals(t2)
+					|| t1.isSubtypeOf(t2) || t2.isSubtypeOf(t1));
+		} catch (Exception e) {
+			System.out.println("Error comparing types");
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static List getAllMethodsFromClass(CtClass parentClass) {
+		List allMethods = new ArrayList(parentClass.getAllMethods());
+
+		if (parentClass != null && parentClass.getParent() instanceof CtClass) {
+			CtClass parentParentClass = (CtClass) parentClass.getParent();
+			allMethods.addAll(parentParentClass.getAllMethods());
+
+		}
+		return allMethods;
+	}
 }
