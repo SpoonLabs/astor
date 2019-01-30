@@ -42,10 +42,11 @@ public abstract class IngredientBasedOperator extends AstorOperator {
 
 			for (Ingredient ingredientTransformed : ingredientsAfterTransformation) {
 
-				OperatorInstance operatorInstance = this.createOperatorInstance(modificationPoint);
-				operatorInstance.setModified(ingredientTransformed.getCode());
-				operatorInstance.setIngredient(ingredientTransformed);
-				operatorIntances.add(operatorInstance);
+				OperatorInstance operatorInstance = this.createOperatorInstance(modificationPoint,
+						ingredientTransformed);
+				if (operatorInstance != null) {
+					operatorIntances.add(operatorInstance);
+				}
 
 			}
 		} else {// No transformation
@@ -54,6 +55,14 @@ public abstract class IngredientBasedOperator extends AstorOperator {
 			opInstance.setIngredient(ingredient);
 		}
 		return operatorIntances;
+	}
+
+	protected OperatorInstance createOperatorInstance(ModificationPoint modificationPoint, Ingredient ingredient) {
+		OperatorInstance operatorInstance = this.createOperatorInstance(modificationPoint);
+		operatorInstance.setModified(ingredient.getCode());
+		operatorInstance.setIngredient(ingredient);
+		return operatorInstance;
+
 	}
 
 	protected OperatorInstance createOperatorInstance(ModificationPoint mp) {

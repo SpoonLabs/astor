@@ -1,11 +1,13 @@
 package fr.inria.astor.approaches.cardumen;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -76,6 +78,18 @@ public class ExpressionReplaceOperator extends ReplaceOp {
 	protected OperatorInstance createOperatorInstance(ModificationPoint mp) {
 		OperatorInstance operation = new OperatorInstance(mp, this, mp.getCodeElement(), null);
 		return operation;
+	}
+
+	@Override
+	protected OperatorInstance createOperatorInstance(ModificationPoint mp, Ingredient ingredient) {
+		CtElement toModif = mp.getCodeElement();
+		CtElement ingredCOde = ingredient.getCode();
+
+		// Or both statement or both not statement
+		if (toModif instanceof CtStatement ^ ingredCOde instanceof CtStatement)
+			return null;
+
+		return super.createOperatorInstance(mp, ingredient);
 	}
 
 }
