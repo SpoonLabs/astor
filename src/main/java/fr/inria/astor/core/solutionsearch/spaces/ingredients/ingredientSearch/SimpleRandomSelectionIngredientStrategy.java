@@ -73,10 +73,13 @@ public class SimpleRandomSelectionIngredientStrategy extends IngredientSearchStr
 
 			if (baseIngredient != null && baseIngredient.getCode() != null) {
 
+				// check if the element was already used
 				if (!this.cache.containsKey(newingredientkey)
-						|| !this.cache.get(newingredientkey).contains(baseElements))
+						|| !this.cache.get(newingredientkey).contains(baseIngredient)) {
 					this.cache.add(newingredientkey, baseIngredient);
-				return baseIngredient;
+					return baseIngredient;
+				}
+
 			}
 
 		} // End while
