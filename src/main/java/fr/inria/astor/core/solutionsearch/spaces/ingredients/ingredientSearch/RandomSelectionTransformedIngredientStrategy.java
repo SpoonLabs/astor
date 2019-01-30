@@ -80,7 +80,7 @@ public class RandomSelectionTransformedIngredientStrategy extends IngredientSear
 		}
 
 		int elementsFromFixSpace = baseElements.size();
-		log.debug("Templates availables" + elementsFromFixSpace);
+		log.debug("Templates availables: " + elementsFromFixSpace);
 
 		Stats.currentStat.getIngredientsStats().addSize(Stats.currentStat.getIngredientsStats().ingredientSpaceSize,
 				baseElements.size());

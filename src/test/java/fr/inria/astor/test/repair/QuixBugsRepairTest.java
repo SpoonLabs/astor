@@ -85,7 +85,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-maxgen", "500");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -102,7 +102,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-maxgen", "500");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -120,7 +120,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-mode", "cardumen");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -138,7 +138,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-mode", "jkali");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -156,7 +156,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-mode", "mutation");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -174,7 +174,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-mode", "mutation");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -192,7 +192,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-mode", "mutation");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -210,7 +210,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-mode", "jkali");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -228,7 +228,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-mode", "cardumen");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -246,7 +246,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-mode", "cardumen");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -265,7 +265,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-saveall", "true");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -284,7 +284,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-customengine", CardumenExhaustiveApproach.class.getName());
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -304,7 +304,7 @@ public class QuixBugsRepairTest {
 		assertNotNull(mpl20);
 		System.out.println("MP 20 " + mpl20 + " code " + mpl20.getCodeElement());
 
-		// assertTrue(main1.getEngine().getSolutions().size() > 0);
+		// assertTrue("No solution",main1.getEngine().getSolutions().size() > 0);
 
 		CardumenApproach cardumentapproach = (CardumenApproach) main1.getEngine();
 		// cardumentapproach.createOperatorInstanceForPoint(mpl20);
@@ -313,7 +313,7 @@ public class QuixBugsRepairTest {
 
 		ConfigurationProperties.setProperty("maxGeneration", "100");
 		cardumentapproach.startEvolution();
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -323,16 +323,53 @@ public class QuixBugsRepairTest {
 	 * @throws Exception
 	 */
 	@Test
+	public void test_mergesortRepair_cardumen_debug() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary command = (getQuixBugsCommand("mergesort"));
+		command.command.put("-maxgen", "0");// do not evolve right now
+		command.command.put("-mode", "cardumen");
+		command.command.put("-saveall", "true");
+		main1.execute(command.flat());
+
+		// - if ((arr.size()) == 0) {
+		// + if (((arr.size()) / 2) == 0) {
+
+		String susp = "(arr.size())";
+
+		ModificationPoint buggyModifPoint = main1.getEngine().getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> e.getCodeElement().toString().equals(susp)
+						&& e.getCodeElement().getPosition().getLine() == 38)
+				.findFirst().get();
+		assertNotNull(buggyModifPoint);
+		System.out.println("MP 27 " + buggyModifPoint + " code " + buggyModifPoint.getCodeElement());
+
+		// Remove other modification points
+		AstorCoreEngine approach = (AstorCoreEngine) main1.getEngine();
+		approach.getVariants().get(0).getModificationPoints().clear();
+		approach.getVariants().get(0).getModificationPoints().add(buggyModifPoint);
+
+		ConfigurationProperties.setProperty("maxGeneration", "1000");
+		approach.startEvolution();
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
+		approach.atEnd();
+
+	}
+
+	@Test
 	public void test_mergesortRepair_cardumen() throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getQuixBugsCommand("mergesort"));
-		command.command.put("-maxgen", "500");
+		command.command.put("-maxgen", "1500");
 		command.command.put("-mode", "cardumen");
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
-
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
+		// - if ((arr.size()) == 0) {
+		// + if (((arr.size()) / 2) == 0) {
+		String susp = "(arr.size())";
+		assertTrue(checkPatch(main1.getEngine(), susp, "((arr.size()) / 2)"));
 	}
 
 	/**
@@ -351,7 +388,7 @@ public class QuixBugsRepairTest {
 
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -371,7 +408,7 @@ public class QuixBugsRepairTest {
 
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
 
@@ -393,7 +430,7 @@ public class QuixBugsRepairTest {
 				+ NoIngredientTransformation.class.getName());
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 		assertTrue(checkPatch(main1.getEngine(),
 				"int length = (!(prefix_lengths.isEmpty())) ? java.util.Collections.max(prefix_lengths) : 0",
@@ -433,7 +470,7 @@ public class QuixBugsRepairTest {
 
 		ConfigurationProperties.setProperty("maxGeneration", "1000");
 		approach.startEvolution();
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 		approach.atEnd();
 
 		assertTrue(checkPatch(approach,
@@ -531,7 +568,7 @@ public class QuixBugsRepairTest {
 		command.command.put("-customengine", Cardumen1HApproach.class.getCanonicalName());
 		main1.execute(command.flat());
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 		assertEquals(AstorOutputStatus.EXHAUSTIVE_NAVIGATED, main1.getEngine().getOutputStatus());
 	}
 

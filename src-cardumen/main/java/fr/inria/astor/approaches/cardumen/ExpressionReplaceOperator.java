@@ -6,9 +6,11 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
 /**
  * 
@@ -86,10 +88,28 @@ public class ExpressionReplaceOperator extends ReplaceOp {
 		CtElement ingredCOde = ingredient.getCode();
 
 		// Or both statement or both not statement
-		if (toModif instanceof CtStatement ^ ingredCOde instanceof CtStatement)
+		boolean isStmtToModif = isStatement(toModif);
+		boolean isStmtnIngr = isStatement(ingredCOde);
+		if (isStmtToModif ^ isStmtnIngr)
 			return null;
 
 		return super.createOperatorInstance(mp, ingredient);
+	}
+
+	public boolean isStatement(CtElement toModif) {
+
+		if (!(toModif instanceof CtStatement))
+			return false;
+
+		if (toModif.getParent() instanceof CtBlock)
+			return true;
+
+		CtRole roleInParent = toModif.getRoleInParent();
+
+		if (CtRole.BODY.equals(roleInParent) || CtRole.THEN.equals(roleInParent) || CtRole.ELSE.equals(roleInParent))
+			return true;
+
+		return false;
 	}
 
 }
