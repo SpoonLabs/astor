@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.RandomManager;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientSearchStrategy;
@@ -24,6 +25,9 @@ import fr.inria.astor.util.StringUtil;
  */
 public class SimpleRandomSelectionIngredientStrategy extends IngredientSearchStrategy {
 
+	private static final Boolean DESACTIVATE_CACHE = ConfigurationProperties
+			.getPropertyBool("desactivateingredientcache");
+
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 
 	public SimpleRandomSelectionIngredientStrategy(IngredientPool space) {
@@ -31,7 +35,7 @@ public class SimpleRandomSelectionIngredientStrategy extends IngredientSearchStr
 
 	}
 
-	public MapList<String, Ingredient> cache = new MapList<>();
+	public MapList<String, String> cache = new MapList<>();
 
 	/**
 	 * Return an ingredient. As it has a cache, it never returns twice the same
@@ -74,9 +78,9 @@ public class SimpleRandomSelectionIngredientStrategy extends IngredientSearchStr
 			if (baseIngredient != null && baseIngredient.getCode() != null) {
 
 				// check if the element was already used
-				if (!this.cache.containsKey(newingredientkey)
-						|| !this.cache.get(newingredientkey).contains(baseIngredient)) {
-					this.cache.add(newingredientkey, baseIngredient);
+				if (DESACTIVATE_CACHE || !this.cache.containsKey(newingredientkey)
+						|| !this.cache.get(newingredientkey).contains(baseIngredient.getChacheCodeString())) {
+					this.cache.add(newingredientkey, baseIngredient.getChacheCodeString());
 					return baseIngredient;
 				}
 

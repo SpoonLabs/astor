@@ -33,7 +33,9 @@ public class TibraApproachTest {
 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-flthreshold", "1");
 		cs.command.put("-mode", "custom");
+		cs.command.put("-saveall", "true");
 		cs.command.put("-customengine", TibraApproach.class.getCanonicalName());
+		cs.command.put("-parameters", "desactivateingredientcache:true");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
