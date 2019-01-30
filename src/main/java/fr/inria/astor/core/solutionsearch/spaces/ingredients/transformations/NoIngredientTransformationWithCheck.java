@@ -13,14 +13,14 @@ import spoon.reflect.declaration.CtElement;
 
 /**
  * Represents the default strategy: it does not apply any code transformation.
- * It only return the ingredient as is.
+ * It only return the ingredient as is in case it fix.
  * 
  * @author Matias Martinez
  *
  */
-public class DefaultIngredientTransformation implements IngredientTransformationStrategy {
+public class NoIngredientTransformationWithCheck implements IngredientTransformationStrategy {
 
-	protected static Logger log = Logger.getLogger(DefaultIngredientTransformation.class.getName());
+	protected static Logger log = Logger.getLogger(NoIngredientTransformationWithCheck.class.getName());
 
 	@Override
 	public List<Ingredient> transform(ModificationPoint modificationPoint, Ingredient ingredient) {

@@ -24,8 +24,8 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.GlobalBasicI
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.LocalIngredientSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.PackageBasicFixSpace;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.ClusterIngredientTransformation;
-import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.DefaultIngredientTransformation;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.IngredientTransformationStrategy;
+import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.NoIngredientTransformationWithCheck;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.ProbabilisticTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
@@ -236,6 +236,7 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 			}
 		} else {
 			ingStrategy = new SimpleRandomSelectionIngredientStrategy(ingredientspace);
+			// new RandomSelectionTransformedIngredientStrategy(ingredientspace);
 		}
 		return ingStrategy;
 	}
@@ -253,10 +254,10 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 				.getProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier);
 
 		if (ingredientTransformationStrategy == null) {
-			ingredientTransformationStrategyLoaded = (new DefaultIngredientTransformation());
+			ingredientTransformationStrategyLoaded = (new NoIngredientTransformationWithCheck());
 		} else {// there is a value
 			if (ingredientTransformationStrategy.equals("no-transformation")) {
-				ingredientTransformationStrategyLoaded = (new DefaultIngredientTransformation());
+				ingredientTransformationStrategyLoaded = (new NoIngredientTransformationWithCheck());
 			} else if (ingredientTransformationStrategy.equals("random-variable-replacement")) {
 				ingredientTransformationStrategyLoaded = (new RandomTransformationStrategy());
 			} else if (ingredientTransformationStrategy.equals("name-cluster-based")) {
