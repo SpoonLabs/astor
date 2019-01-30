@@ -35,6 +35,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
  */
 public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
+	public static final String PACKAGE_SEPARATOR = "-";
 	Logger logger = Logger.getLogger(GZoltarFaultLocalization.class.getName());
 
 	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade project) throws Exception {
@@ -119,8 +120,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 	}
 
 	/**
-	 * It adds to the ignore list all failing TC that were not passed as
-	 * argument. \ They are probably flaky test.
+	 * It adds to the ignore list all failing TC that were not passed as argument. \
+	 * They are probably flaky test.
 	 * 
 	 * @param failingTestCases
 	 */
@@ -176,7 +177,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		String testToAvoid = ConfigurationProperties.getProperty("gzoltartestpackagetoexclude");
 		if (testToAvoid != null) {
-			String[] testtoavoidarray = testToAvoid.split("_");
+			String[] testtoavoidarray = testToAvoid.split(PACKAGE_SEPARATOR);
 			for (String test : testtoavoidarray) {
 				gz.addTestPackageNotToExecute(test);
 			}
@@ -185,7 +186,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		String packagetonotinstrument = ConfigurationProperties.getProperty("gzoltarpackagetonotinstrument");
 
 		if (packagetonotinstrument != null) {
-			String[] packages = packagetonotinstrument.split("_");
+			String[] packages = packagetonotinstrument.split(PACKAGE_SEPARATOR);
 			for (String p : packages) {
 				gz.addPackageNotToInstrument(p);
 
