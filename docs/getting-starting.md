@@ -2,7 +2,7 @@
 
 ## jGenProg
 
-We present an command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help are listed below. They arguments can also be changed  in "configuration.properties".
+We present a command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help are listed below. They arguments can also be changed  in "configuration.properties".
 
 Getting started: 
 
