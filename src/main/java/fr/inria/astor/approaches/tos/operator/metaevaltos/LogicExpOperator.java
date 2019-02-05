@@ -82,7 +82,7 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 		CtType<?> target = modificationPoint.getCodeElement().getParent(CtType.class);
 		Set<ModifierKind> modifiers = new HashSet<>();
 		modifiers.add(ModifierKind.PRIVATE);
-		modifiers.add(ModifierKind.STATIC);
+		// modifiers.add(ModifierKind.STATIC);
 		CtTypeReference returnTypeBoolean = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
 		// get all boolean expressions
@@ -143,7 +143,10 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 			CtMethod<?> megaMethod = MutationSupporter.getFactory().createMethod(target, modifiers, returnTypeBoolean,
 					name, parameters, thrownTypes);
 
-			CtInvocation newInvocationToMega = MutationSupporter.getFactory().createInvocation(thisTarget,
+			CtInvocation newInvocationToMega = MutationSupporter.getFactory().createInvocation(
+					MutationSupporter.getFactory().createThisAccess(MutationSupporter.getFactory().Type().objectType(),
+							true),
+					// thisTarget,
 					megaMethod.getReference(), realParameters);
 
 			/// Let's start creating the body of the new method.

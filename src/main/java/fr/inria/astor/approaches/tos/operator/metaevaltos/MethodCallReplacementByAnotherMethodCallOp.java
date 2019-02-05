@@ -306,11 +306,7 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 					boolean compatibleReturnTypes = SupportOperators.compareTypes(anotherMethod.getType(),
 							minvokedInAffected.getType());
 					if (compatibleReturnTypes) {
-						// int dist = StringDistance.calculate(anotherMethod.getSimpleName(),
-						// minvokedInAffected.getSimpleName());
-						// if (dist > 0 && dist < 3) {
 
-						// }
 						// CASE 2: Different method name
 						if (anotherMethod.getParameters().size() == affectedMethod.getParameters().size()
 								&& anotherMethod.getParameters().equals(affectedMethod.getParameters())) {

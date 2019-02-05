@@ -49,7 +49,7 @@ public class VarReplacementByAnotherVarOp extends FineGrainedExpressionReplaceOp
 		CtType<?> target = modificationPoint.getCodeElement().getParent(CtType.class);
 		Set<ModifierKind> modifiers = new HashSet<>();
 		modifiers.add(ModifierKind.PRIVATE);
-		modifiers.add(ModifierKind.STATIC);
+		// modifiers.add(ModifierKind.STATIC);
 
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
@@ -106,7 +106,10 @@ public class VarReplacementByAnotherVarOp extends FineGrainedExpressionReplaceOp
 			CtMethod<?> megaMethod = MutationSupporter.getFactory().createMethod(target, modifiers, returnType, name,
 					parameters, thrownTypes);
 
-			CtInvocation newInvocationToMega = MutationSupporter.getFactory().createInvocation(thisTarget,
+			CtInvocation newInvocationToMega = MutationSupporter.getFactory().createInvocation(
+					MutationSupporter.getFactory().createThisAccess(MutationSupporter.getFactory().Type().objectType(),
+							true),
+					// thisTarget,
 					megaMethod.getReference(), realParameters);
 
 			/// Let's start creating the body of the new method.

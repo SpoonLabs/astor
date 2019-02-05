@@ -74,7 +74,7 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 		CtType<?> target = modificationPoint.getCodeElement().getParent(CtType.class);
 		Set<ModifierKind> modifiers = new HashSet<>();
 		modifiers.add(ModifierKind.PRIVATE);
-		modifiers.add(ModifierKind.STATIC);
+		// modifiers.add(ModifierKind.STATIC);
 
 		// The return type of the new method correspond to the type of the expression to
 		// change
@@ -103,7 +103,10 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 		CtMethod<?> megaMethod = MutationSupporter.getFactory().createMethod(target, modifiers, returnType, name,
 				parameters, thrownTypes);
 
-		CtInvocation newInvocationToMega = MutationSupporter.getFactory().createInvocation(thisTarget,
+		CtInvocation newInvocationToMega = MutationSupporter.getFactory().createInvocation(
+				MutationSupporter.getFactory().createThisAccess(MutationSupporter.getFactory().Type().objectType(),
+						true),
+				// thisTarget,
 				megaMethod.getReference(), realParameters);
 
 		/// Let's start creating the body of the new method.
