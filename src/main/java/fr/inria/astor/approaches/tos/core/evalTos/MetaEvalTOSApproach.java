@@ -53,6 +53,20 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	}
 
+	@Override
+	protected void loadOperatorSpaceDefinition() throws Exception {
+		this.operatorSpace = new OperatorSpace();
+		this.operatorSpace.register(new WrapwithTrySingleStatementOp());
+		this.operatorSpace.register(new WrapwithIfOp());
+		this.operatorSpace.register(new WrapwithIfNullCheck());
+		this.operatorSpace.register(new VarReplacementByAnotherVarOp());
+		this.operatorSpace.register(new LogicExpOperator());
+		this.operatorSpace.register(new MethodCallReplacementByAnotherMethodCallOp());
+		this.operatorSpace.register(new UnwrapfromMethodCallOp());
+		this.operatorSpace.register(new UnwrapfromTryOp());
+		this.operatorSpace.register(new UnwrapfromIfOp());
+	}
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void startEvolution() throws Exception {
@@ -110,6 +124,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			throws Exception {
 		// TODO:
 		int generation = 1;
+
+		boolean existSolution = false;
 
 		DynaIngredientPool poolFromModifPoint = this.getClusteredEvaluatedExpression(iModifPoint);
 
@@ -185,26 +201,16 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 				// Apply the code transformations
 				for (OperatorInstance operatorInstance : iProgramVariant.getAllOperations()) {
 					operatorInstance.applyModification();
-
 				}
 
 				int generationEval = 0;
 
-				if (iProgramVariant instanceof MetaProgramVariant) {
-					// For the list of operator instance, we create a mutant program
-					// Each program variant is a patch
-					boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
-					if (resultValidation) {
-
-						this.solutions.add(iProgramVariant);
-					}
-
-				} else {
-					boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
-					if (resultValidation) {
-						this.solutions.add(iProgramVariant);
-					}
-
+				// For the list of operator instance, we create a mutant program
+				// Each program variant is a patch
+				boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
+				if (resultValidation) {
+					this.solutions.add(iProgramVariant);
+					existSolution = true;
 				}
 
 				// Undo the code transformations
@@ -214,7 +220,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 				}
 			}
 		}
-		return false;
+		return existSolution;
 	}
 
 	/**
@@ -266,20 +272,6 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			// }
 		}
 		return newIngredientsResult;
-	}
-
-	@Override
-	protected void loadOperatorSpaceDefinition() throws Exception {
-		this.operatorSpace = new OperatorSpace();
-		this.operatorSpace.register(new WrapwithTrySingleStatementOp());
-		this.operatorSpace.register(new WrapwithIfOp());
-		this.operatorSpace.register(new WrapwithIfNullCheck());
-		this.operatorSpace.register(new VarReplacementByAnotherVarOp());
-		this.operatorSpace.register(new LogicExpOperator());
-		this.operatorSpace.register(new MethodCallReplacementByAnotherMethodCallOp());
-		this.operatorSpace.register(new UnwrapfromMethodCallOp());
-		this.operatorSpace.register(new UnwrapfromTryOp());
-		this.operatorSpace.register(new UnwrapfromIfOp());
 	}
 
 	@Override
