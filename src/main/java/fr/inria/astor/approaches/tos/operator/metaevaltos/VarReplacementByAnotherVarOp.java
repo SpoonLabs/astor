@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
-import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
 import fr.inria.astor.approaches.tos.core.InsertMethodOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
@@ -40,7 +39,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtBlockImpl;
 import spoon.support.reflect.code.CtReturnImpl;
 
-public class VarReplacementByAnotherVarOp extends ReplaceOp implements MetaOperator {
+public class VarReplacementByAnotherVarOp extends FineGrainedExpressionReplaceOperator implements MetaOperator {
 
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
@@ -249,11 +248,18 @@ public class VarReplacementByAnotherVarOp extends ReplaceOp implements MetaOpera
 
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
-		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint,
-				new FineGrainedExpressionReplaceOperator(), expressionSource, expressionTarget);
+		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, expressionSource,
+				expressionTarget);
 		opsOfVariant.add(opInstace);
 
 		return opInstace;
+	}
+
+	@Override
+	public boolean canBeAppliedToPoint(ModificationPoint point) {
+
+		// See that the modification points are statements
+		return (point.getCodeElement() instanceof CtStatement);
 	}
 
 }

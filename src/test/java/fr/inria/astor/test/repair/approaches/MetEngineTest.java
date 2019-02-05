@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
 import fr.inria.astor.approaches.tos.core.InitialConceptMetEngine;
 import fr.inria.astor.approaches.tos.core.evalTos.EvalTOSClusterApproach;
 import fr.inria.astor.approaches.tos.core.evalTos.MetaEvalTOSApproach;
@@ -22,6 +21,7 @@ import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodCallReplacementByAnotherMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromMethodCallOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithTrySingleStatementOp;
@@ -383,7 +383,7 @@ public class MetEngineTest {
 
 		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
 				.filter(e -> e.getAllOperations().stream()
-						.filter(o -> o.getOperationApplied() instanceof FineGrainedExpressionReplaceOperator).findAny()
+						.filter(o -> o.getOperationApplied() instanceof VarReplacementByAnotherVarOp).findAny()
 						.isPresent())
 				.collect(Collectors.toList());
 
