@@ -43,7 +43,7 @@ import spoon.support.reflect.code.CtReturnImpl;
 public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator {
 
 	@Override
-	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
+	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
 		ProgramVariant variant = modificationPoint.getProgramVariant();
 
@@ -184,7 +184,7 @@ public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator {
 		opMega.setOriginal(modificationPoint.getCodeElement());
 		opMega.setModificationPoint(modificationPoint);
 
-		List<OperatorInstance> opsMega = new ArrayList();
+		List<MetaOperatorInstance> opsMega = new ArrayList();
 		opsMega.add(opMega);
 
 		return opsMega;

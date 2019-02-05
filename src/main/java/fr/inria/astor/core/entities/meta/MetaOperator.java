@@ -1,5 +1,8 @@
 package fr.inria.astor.core.entities.meta;
 
+import java.util.List;
+
+import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 
 /**
@@ -10,5 +13,7 @@ import fr.inria.astor.core.entities.OperatorInstance;
 public interface MetaOperator {
 
 	public OperatorInstance getConcreteOperatorInstance(MetaOperatorInstance operatorInstance, int metaIdentifier);
+
+	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint);
 
 }

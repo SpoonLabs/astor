@@ -58,7 +58,13 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 	}
 
 	@Override
-	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint,
+	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
+		log.error("This op needs ingredients");
+		return null;
+	}
+
+	@Override
+	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint,
 			List<IngredientFromDyna> ingredients) {
 
 		ProgramVariant variant = modificationPoint.getProgramVariant();
@@ -194,7 +200,7 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 		opMega.setOriginal(modificationPoint.getCodeElement());
 		opMega.setModificationPoint(modificationPoint);
 
-		List<OperatorInstance> opsMega = new ArrayList();
+		List<MetaOperatorInstance> opsMega = new ArrayList();
 		opsMega.add(opMega);
 
 		return opsMega;

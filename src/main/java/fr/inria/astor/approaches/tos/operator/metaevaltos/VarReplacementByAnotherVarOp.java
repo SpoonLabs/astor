@@ -1,6 +1,5 @@
 package fr.inria.astor.approaches.tos.operator.metaevaltos;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,7 +43,7 @@ import spoon.support.reflect.code.CtReturnImpl;
 public class VarReplacementByAnotherVarOp extends ReplaceOp implements MetaOperator {
 
 	@Override
-	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
+	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
@@ -204,7 +203,7 @@ public class VarReplacementByAnotherVarOp extends ReplaceOp implements MetaOpera
 		opMega.setOriginal(modificationPoint.getCodeElement());
 		opMega.setModificationPoint(modificationPoint);
 
-		List<OperatorInstance> opsMega = new ArrayList();
+		List<MetaOperatorInstance> opsMega = new ArrayList();
 		opsMega.add(opMega);
 
 		return opsMega;

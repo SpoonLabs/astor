@@ -50,11 +50,9 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 		implements MetaOperator {
 
 	@Override
-	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
+	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
-		List<OperatorInstance> opsOfVariant = new ArrayList();
-
-		List<OperatorInstance> opsMega = new ArrayList();
+		List<MetaOperatorInstance> opsMega = new ArrayList();
 
 		MapList<CtInvocation, Ingredient> ingredientsPerInvocation = this
 				.retrieveInvocationIngredient(modificationPoint.getCodeElement());
@@ -89,10 +87,12 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 		// TODO: we only can activate one mutant
 		int candidateNumber = 0;
 
-		// As difference with var replacement, a metamutant for each expression
+		// As difference with var replacement, a metamutant for each invocation
 		for (CtInvocation invocationToReplace : ingredientsPerInvocation.keySet()) {
 
-			int variableCounter = 0;
+			List<OperatorInstance> opsOfVariant = new ArrayList();
+
+			int invocationCounter = 0;
 			Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
 			List<Ingredient> ingredients = ingredientsPerInvocation.get(invocationToReplace);
@@ -121,8 +121,8 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 				realParameters.add(ctVariableAccess.clone().setPositions(new NoSourcePosition()));
 			}
 
-			variableCounter++;
-			String name = "_meta_" + variableCounter;
+			invocationCounter++;
+			String name = "_meta_" + invocationCounter;
 
 			Set<CtTypeReference<? extends Throwable>> thrownTypes = new HashSet<>();
 
@@ -223,7 +223,7 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 
 			opsMega.add(opMega);
 
-		} // End variable
+		} // End invocation
 
 		return opsMega;
 	}

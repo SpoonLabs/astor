@@ -4,7 +4,8 @@ import java.util.List;
 
 import fr.inria.astor.core.entities.IngredientFromDyna;
 import fr.inria.astor.core.entities.ModificationPoint;
-import fr.inria.astor.core.entities.OperatorInstance;
+import fr.inria.astor.core.entities.meta.MetaOperator;
+import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -13,11 +14,11 @@ import spoon.reflect.reference.CtTypeReference;
  * @author Matias Martinez
  *
  */
-public interface DynaIngredientOperator {
+public interface DynaIngredientOperator extends MetaOperator {
 
 	public CtTypeReference retrieveTargetTypeReference();
 
-	public abstract List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint,
+	public abstract List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint,
 			List<IngredientFromDyna> ingredients);
 
 }

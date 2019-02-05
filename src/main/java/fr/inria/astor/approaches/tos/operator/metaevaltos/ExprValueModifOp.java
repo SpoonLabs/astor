@@ -47,4 +47,10 @@ public class ExprValueModifOp extends AstorOperator implements MetaOperator {
 		return null;
 	}
 
+	@Override
+	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

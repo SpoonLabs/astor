@@ -10,6 +10,7 @@ import fr.inria.astor.approaches.tos.core.evalTos.ingredients.ClusterExpressions
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.DynaIngredientPool;
 import fr.inria.astor.approaches.tos.operator.DynaIngredientOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodCallReplacementByAnotherMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromMethodCallOp;
@@ -65,6 +66,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		this.operatorSpace.register(new UnwrapfromMethodCallOp());
 		this.operatorSpace.register(new UnwrapfromTryOp());
 		this.operatorSpace.register(new UnwrapfromIfOp());
+		this.operatorSpace.register(new LogicRedOperator());
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -122,7 +124,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 	@SuppressWarnings("unused")
 	public boolean analyzeModificationPoint(ProgramVariant parentVariant, ModificationPoint iModifPoint)
 			throws Exception {
-		// TODO:
+
 		int generation = 1;
 
 		boolean existSolution = false;
@@ -141,42 +143,35 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 			// Decide if merge interfaces DyIng and MetaOp
 
-			if (operator instanceof DynaIngredientOperator) {
-				//
-				DynaIngredientOperator dynaop = (DynaIngredientOperator) operator;
+			if (operator instanceof MetaOperator) {
 
 				instancesOfOperatorForModificationPoint = new ArrayList<>();
 				// Get Candidate expressions:
 
-				List<IngredientFromDyna> newIngredients = synthesizeCandidatesIngredientsFromType(parentVariant,
-						iModifPoint, poolFromModifPoint, dynaop.retrieveTargetTypeReference());
+				List<MetaOperatorInstance> opInstancesMeta = null;
 
-				List<OperatorInstance> opInstancesMetha = dynaop.createOperatorInstances(iModifPoint, newIngredients);
+				// if the operator needs ingredients
+				if (operator instanceof DynaIngredientOperator) {
+					DynaIngredientOperator dynaop = (DynaIngredientOperator) operator;
 
-				MetaProgramVariant metai = new MetaProgramVariant(nrVariant++);
-				metai.setParent(parentVariant);
-				metai.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
-				for (OperatorInstance operatorInstance : opInstancesMetha) {
-					metai.putModificationInstance(generation, operatorInstance);
+					List<IngredientFromDyna> newIngredients = synthesizeCandidatesIngredientsFromType(parentVariant,
+							iModifPoint, poolFromModifPoint, dynaop.retrieveTargetTypeReference());
+
+					opInstancesMeta = dynaop.createMetaOperatorInstances(iModifPoint, newIngredients);
+
+				} else {
+					// no ingredient needed
+					opInstancesMeta = ((MetaOperator) operator).createMetaOperatorInstances(iModifPoint);
 				}
+				// We create one MetaProgram Variant per metaOperator
+				for (MetaOperatorInstance metaPperatorInstance : opInstancesMeta) {
 
-				candidateProgramVariants.add(metai);
-
-				//
-			} else if (operator instanceof MetaOperator) {
-
-				instancesOfOperatorForModificationPoint = new ArrayList<>();
-				// Get Candidate expressions:
-				List<OperatorInstance> opInstancesMetha = operator.createOperatorInstances(iModifPoint);
-
-				MetaProgramVariant metai = new MetaProgramVariant(nrVariant++);
-				metai.setParent(parentVariant);
-				metai.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
-				for (OperatorInstance operatorInstance : opInstancesMetha) {
-					metai.putModificationInstance(generation, operatorInstance);
+					MetaProgramVariant metai = new MetaProgramVariant(nrVariant++);
+					metai.setParent(parentVariant);
+					metai.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
+					metai.putModificationInstance(generation, metaPperatorInstance);
+					candidateProgramVariants.add(metai);
 				}
-
-				candidateProgramVariants.add(metai);
 
 			} else {
 				// It's a "conventional" operator
@@ -190,8 +185,6 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 					candidateProgramVariants.add(newProgramVariant);
 				}
 			}
-
-			//
 
 			// For each candidate variant
 			for (ProgramVariant iProgramVariant : candidateProgramVariants) {

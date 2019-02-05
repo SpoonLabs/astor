@@ -18,7 +18,6 @@ import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
@@ -36,7 +35,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtBinaryOperatorImpl;
@@ -60,17 +58,21 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 	}
 
 	@Override
+	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
+		log.error("This op needs ingredients");
+		return null;
+	}
+
+	@Override
 	public CtTypeReference retrieveTargetTypeReference() {
 		return MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 	}
 
 	@Override
-	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint,
+	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint,
 			List<IngredientFromDyna> ingredientsDynamoth) {
 
-		List<OperatorInstance> opsOfVariant = new ArrayList();
-
-		List<OperatorInstance> opsMega = new ArrayList();
+		List<MetaOperatorInstance> opsMega = new ArrayList();
 
 		if (ingredientsDynamoth.isEmpty()) {
 			// Nothing to replace
@@ -81,8 +83,9 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 		Set<ModifierKind> modifiers = new HashSet<>();
 		modifiers.add(ModifierKind.PRIVATE);
 		modifiers.add(ModifierKind.STATIC);
+		CtTypeReference returnTypeBoolean = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
-		// get all binary expressions
+		// get all boolean expressions
 		List<CtExpression<Boolean>> booleanExpressionsInModificationPoints = modificationPoint.getCodeElement()
 				.getElements(e -> e.getType() != null && e.getType().unbox().getSimpleName().equals("boolean"));
 
@@ -95,13 +98,13 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 
 		// As difference with var replacement, a metamutant for each expression
 		for (CtExpression<Boolean> expressionToExpand : booleanExpressionsInModificationPoints) {
+			List<OperatorInstance> opsOfVariant = new ArrayList();
 
 			int variableCounter = 0;
 			Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
 			// The return type of the new method correspond to the type of variable to
 			// change
-			CtTypeReference returnTypeBoolean = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
 			List<Ingredient> ingredients = this.computeIngredientsFromExpressionExplansion(modificationPoint,
 					expressionToExpand, ingredientsDynamoth, this.operatorKind);
@@ -269,32 +272,6 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 		return ingredientsNewBinaryExpressions;
 	}
 
-	protected List<Ingredient> computeIngredientsFromVarToReplace(ModificationPoint modificationPoint,
-			CtVariableAccess variableAccessToReplace) {
-
-		List<Ingredient> ingredients = new ArrayList<>();
-		List<CtVariable> varsInContext = modificationPoint.getContextOfModificationPoint();
-
-		for (CtVariable iVarInContext : varsInContext) {
-
-			boolean compatibleVariables = VariableResolver.areVarsCompatible(variableAccessToReplace, iVarInContext);
-			if (!compatibleVariables
-					|| iVarInContext.getSimpleName().equals(variableAccessToReplace.getVariable().getSimpleName())) {
-				continue;
-			}
-
-			CtVariableAccess iVarAccessFromContext = MutationSupporter.getFactory()
-					.createVariableRead(iVarInContext.getReference(), false);
-			Ingredient ingredient = new Ingredient(iVarAccessFromContext);
-			// we use this property to indicate the old variable to replace
-			ingredient.setDerivedFrom(variableAccessToReplace);
-			ingredients.add(ingredient);
-
-		}
-
-		return ingredients;
-	}
-
 	@Override
 	public OperatorInstance getConcreteOperatorInstance(MetaOperatorInstance operatorInstance, int metaIdentifier) {
 
@@ -305,7 +282,7 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 		CtExpression expressionSource = (CtExpression) ingredient.getDerivedFrom();
 		CtExpression expressionTarget = (CtExpression) ingredient.getCode();
 
-		System.out.println("Target element to clean " + expressionTarget);
+		log.debug("Target element to clean " + expressionTarget);
 
 		MutationSupporter.clearPosition(expressionTarget);
 
@@ -323,6 +300,7 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 
 		// See that the modification points are statements
 		return (point.getCodeElement() instanceof CtStatement);
+
 	}
 
 }
