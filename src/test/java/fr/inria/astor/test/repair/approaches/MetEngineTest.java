@@ -389,6 +389,16 @@ public class MetEngineTest {
 				.collect(Collectors.toList());
 
 		assertTrue(solutionVarByVar1.size() > 0);
+
+		Optional<ProgramVariant> solution1 = solutionVarByVar1
+				.stream().filter(
+						soli -> soli.getAllOperations().stream()
+								.filter(e -> e.getModified().toString().equals("(getMinusOne())")
+										&& e.getOriginal().toString().equals("(ONE)"))
+								.findFirst().isPresent())
+				.findFirst();
+		assertTrue(solution1.isPresent());
+
 	}
 
 	@Test

@@ -294,6 +294,10 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 					// It's the same, we discard it.
 					continue;
 
+				if (anotherMethod.getSimpleName().startsWith(VarReplacementByMethodCallOp.META_METHOD_LABEL))
+					// It's a meta-method, discard
+					continue;
+
 				if (anotherMethod.getSimpleName().equals(affectedMethod.getSimpleName())) {
 					// It's override
 					// TODO:

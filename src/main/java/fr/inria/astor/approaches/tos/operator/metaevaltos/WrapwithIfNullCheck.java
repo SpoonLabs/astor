@@ -82,8 +82,7 @@ public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator {
 
 		Set<CtTypeReference<? extends Throwable>> thrownTypes = new HashSet<>();
 
-		CtExpression thisTarget = MutationSupporter.getFactory().createTypeAccess(target.getReference());
-
+		
 		CtMethod<?> megaMethod = MutationSupporter.getFactory().createMethod(target, modifiers, returnType, name,
 				parameters, thrownTypes);
 
@@ -246,8 +245,7 @@ public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator {
 		// Let's create the operations
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
-		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this/* new ReplaceOp() */,
-				statementPointed, ifNew);
+		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, statementPointed, ifNew);
 		opsOfVariant.add(opInstace);
 
 		return opInstace;

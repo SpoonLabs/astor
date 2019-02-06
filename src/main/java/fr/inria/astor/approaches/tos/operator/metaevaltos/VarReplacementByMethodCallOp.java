@@ -18,6 +18,7 @@ import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
+import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -47,6 +48,8 @@ import spoon.support.reflect.code.CtReturnImpl;
  */
 public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOperator implements MetaOperator {
 
+	public static final String META_METHOD_LABEL = "_meta_";
+
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
@@ -62,37 +65,55 @@ public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOp
 		modifiers.add(ModifierKind.PRIVATE);
 		// modifiers.add(ModifierKind.STATIC);
 
+		// Map that allows to trace the mutant id with the ingredient used
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
 		//
 		List<CtVariableAccess> varAccessInModificationPoints = VariableResolver
-				.collectVariableAccess(modificationPoint.getCodeElement(), true);
+				.collectVariableAccess(modificationPoint.getCodeElement(), false);
 
 		log.debug("\nModifcationPoint: \n" + modificationPoint);
 
-		// let's start with one, and let's keep the Zero for the default (all ifs are
-		// false)
-		// TODO: we only can activate one mutant
 		int candidateNumber = 0;
+
+		MapList<CtTypeReference, CtInvocation> cacheIngredientsPerType = new MapList<>();
 
 		int variableCounter = 0;
 		for (CtVariableAccess variableAccessToReplace : varAccessInModificationPoints) {
 
 			List<Ingredient> ingredients = this.computeIngredientsFromVarToReplace(modificationPoint,
-					variableAccessToReplace);
+					variableAccessToReplace, cacheIngredientsPerType);
 
 			if (ingredients.isEmpty()) {
 				continue;
 			}
 
 			// The parameters to be included in the new method
-			List<CtVariableAccess> varsToBeParameters = ingredients.stream()
+			List<CtVariableAccess> varsToBeParametersTemp = ingredients.stream()
 					.map(e -> e.getCode().getElements(new TypeFilter<>(CtVariableAccess.class))).flatMap(List::stream)
-					.map(CtVariableAccess.class::cast).collect(Collectors.toList());
+					.map(CtVariableAccess.class::cast).distinct().collect(Collectors.toList());
 
 			// The variable to be replaced must also be a parameter
 
-			varsToBeParameters.add(variableAccessToReplace);
+			varsToBeParametersTemp.add(variableAccessToReplace);
+			// Let's check the names (the previous filter does not filter all duplicates, so
+			// to avoid problems we do it manually):
+
+			List<CtVariableAccess> varsToBeParameters = new ArrayList();
+			for (CtVariableAccess parameterFound : varsToBeParametersTemp) {
+				boolean hasname = false;
+				for (CtVariableAccess parameterConsiderer : varsToBeParameters) {
+					if (parameterConsiderer.getVariable().getSimpleName()
+							.equals(parameterFound.getVariable().getSimpleName())) {
+						hasname = true;
+						break;
+					}
+				}
+				// any variable with that name, so we add in parameters
+				if (!hasname) {
+					varsToBeParameters.add(parameterFound);
+				}
+			}
 
 			// List of parameters
 			List<CtParameter<?>> parameters = new ArrayList<>();
@@ -106,22 +127,24 @@ public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOp
 			}
 
 			variableCounter++;
-			String name = "_meta_" + variableCounter;
+			String name = META_METHOD_LABEL + variableCounter;
 
 			Set<CtTypeReference<? extends Throwable>> thrownTypes = new HashSet<>();
-
-			CtExpression thisTarget = MutationSupporter.getFactory().createTypeAccess(target.getReference());
 
 			// The return type of the new method correspond to the type of variable to
 			// change
 			CtTypeReference returnType = variableAccessToReplace.getType();
 
+			// TODO:Create the method manually, now it adds to the target (which we dont
+			// want now)
 			CtMethod<?> megaMethod = MutationSupporter.getFactory().createMethod(target, modifiers, returnType, name,
 					parameters, thrownTypes);
 
-			;
-			CtInvocation newInvocationToMega = MutationSupporter.getFactory().createInvocation(// MutationSupporter.getFactory().createThisAccess()
-					thisTarget, megaMethod.getReference(), realParameters);
+			CtInvocation newInvocationToMega = MutationSupporter.getFactory().createInvocation(
+					// thisTarget,
+					MutationSupporter.getFactory().createThisAccess(MutationSupporter.getFactory().Type().objectType(),
+							true),
+					megaMethod.getReference(), realParameters);
 
 			/// Let's start creating the body of the new method.
 			// first the main try
@@ -160,7 +183,7 @@ public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOp
 				casereturn.setReturnedExpression(expressionCandidate);
 				particularIfBlock.addStatement(casereturn);
 
-				// Add the if tho the methodBlock
+				// Add the if to the methodBlock
 				// methodBodyBlock
 				tryBoddy.addStatement(particularIf);
 
@@ -219,39 +242,41 @@ public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOp
 	}
 
 	protected List<Ingredient> computeIngredientsFromVarToReplace(ModificationPoint modificationPoint,
-			CtVariableAccess variableAccessToReplace) {
-
-		// TODO:cache of types -> ingredients.
+			CtVariableAccess variableAccessToReplace, MapList<CtTypeReference, CtInvocation> cacheIngredientsPerType) {
 
 		List<Ingredient> ingredients = new ArrayList<>();
 
 		// All the methods in scope
 
-		// All methods for a given target that
 		CtTypeReference variableType = variableAccessToReplace.getType();
 
-		CtClass classUnderAnalysis = modificationPoint.getCodeElement().getParent(CtClass.class);
+		List<CtInvocation> varAll = null;
+		if (cacheIngredientsPerType.containsKey(variableType))
+			varAll = cacheIngredientsPerType.get(variableType);
+		else {
 
-		// List<CtVariable> varsInContext =
-		// modificationPoint.getContextOfModificationPoint();
+			CtClass classUnderAnalysis = modificationPoint.getCodeElement().getParent(CtClass.class);
 
-		// Ingredient ingredient = new Ingredient(iVarAccessFromContext);
-		// // we use this property to indicate the old variable to replace
-		// ingredient.setDerivedFrom(variableAccessToReplace);
-		// ingredients.add(ingredient);
+			List<CtInvocation> varOb = SupportOperators.retrieveInvocationsFromMethod(variableType, classUnderAnalysis,
+					modificationPoint);
 
-		List<CtInvocation> varM = SupportOperators.retrieveInvocationsFromVar(variableType, classUnderAnalysis,
-				modificationPoint);
+			List<CtInvocation> varM = SupportOperators.retrieveInvocationsFromVar(variableType, classUnderAnalysis,
+					modificationPoint);
 
-		for (CtInvocation invocationTomethod : varM) {
-			Ingredient ingredient = new Ingredient(invocationTomethod);
-			// // we use this property to indicate the old variable to replace
+			varAll = new ArrayList();
+			varAll.addAll(varOb);
+			varAll.addAll(varM);
+
+			// Add into cache
+
+			cacheIngredientsPerType.put(variableType, varAll);
+		}
+
+		for (CtInvocation invocationTomethod : varAll) {
+			Ingredient ingredient = new Ingredient(invocationTomethod.clone());
 			ingredient.setDerivedFrom(variableAccessToReplace);
 			ingredients.add(ingredient);
 		}
-
-		// List<CtInvocation> varOb =
-		// SupportOperators.retrieveInvocationsFromVar(variableType,classUnderAnalysis,modificationPoint)
 
 		return ingredients;
 	}

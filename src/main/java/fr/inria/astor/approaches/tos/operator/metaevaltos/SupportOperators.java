@@ -9,12 +9,18 @@ import fr.inria.astor.core.entities.IngredientFromDyna;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
+import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.RandomManager;
+import fr.inria.astor.util.MapList;
 import fr.inria.lille.repair.expression.access.VariableImpl;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -121,6 +127,8 @@ public class SupportOperators {
 
 		List allMethods = SupportOperators.getAllMethodsFromClass(classUnderAnalysis);
 
+		CtThisAccess<Object> createThisAccess = MutationSupporter.getFactory()
+				.createThisAccess(MutationSupporter.getFactory().Type().objectType(), true);
 		for (Object omethod : allMethods) {
 
 			if (!(omethod instanceof CtMethod))
@@ -128,17 +136,17 @@ public class SupportOperators {
 
 			CtMethod anotherMethod = (CtMethod) omethod;
 
+			if (anotherMethod.getSimpleName().startsWith(VarReplacementByMethodCallOp.META_METHOD_LABEL))
+				// It's a meta-method, discard
+				continue;
+
 			boolean compatibleReturnTypes = SupportOperators.compareTypes(anotherMethod.getType(),
 					variableToReplaceType);
 
 			if (compatibleReturnTypes) {
 
-				CtInvocation newInvocation = MutationSupporter.getFactory().createInvocation();
-				newInvocation.setLabel(anotherMethod.getSimpleName());
-				newInvocation.setExecutable(anotherMethod.getReference());
-				// TODO:
-				newInvocation.setArguments(computeParameters(point));
-				newInvocations.add(newInvocation);
+				List<CtInvocation> newInvToMethods = createRealInvocations(point, anotherMethod, createThisAccess);
+				newInvocations.addAll(newInvToMethods);
 			}
 		}
 
@@ -155,31 +163,113 @@ public class SupportOperators {
 
 		for (CtVariable varInScope : variablesInScope) {
 
+			if (varInScope.getType() == null || varInScope.getType().isPrimitive()) {
+				continue;
+			}
 			List<CtMethod> allMethods = varInScope.getType().getAllExecutables().stream()
 					.filter(e -> e.getExecutableDeclaration() instanceof CtMethod)
 					.map(e -> e.getExecutableDeclaration()).map(CtMethod.class::cast).collect(Collectors.toList());
 
 			for (CtMethod anotherMethod : allMethods) {
 
+				if (anotherMethod.getSimpleName().startsWith(VarReplacementByMethodCallOp.META_METHOD_LABEL))
+					// It's a meta-method, discard
+					continue;
+
 				boolean compatibleReturnTypes = SupportOperators.compareTypes(anotherMethod.getType(),
 						variableToReplaceType);
 
 				if (compatibleReturnTypes) {
 
-					CtInvocation newInvocation = MutationSupporter.getFactory().createInvocation();
-					newInvocation.setLabel(anotherMethod.getSimpleName());
-					newInvocation.setExecutable(anotherMethod.getReference());
-					// TODO:
-					newInvocation.setArguments(computeParameters(point));
-					newInvocations.add(newInvocation);
+					List<CtInvocation> newInvToMethods = createRealInvocations(point, anotherMethod, MutationSupporter
+							.getFactory().createVariableRead(varInScope.getReference(), varInScope.isStatic()));
+					newInvocations.addAll(newInvToMethods);
+
 				}
 			}
 		}
 		return newInvocations;
 	}
 
-	public static List computeParameters(ModificationPoint point) {
-		// TODO Auto-generated method stub
-		return null;
+	public static List<CtInvocation> createRealInvocations(ModificationPoint point, CtMethod anotherMethod,
+			CtExpression target) {
+		List<CtInvocation> newInvocations = new ArrayList<>();
+		// All the possibles variables
+		List<List<CtExpression<?>>> possibleArguments = computeParameters(anotherMethod, point);
+		for (List<CtExpression<?>> arguments : possibleArguments) {
+			CtInvocation newInvocation = MutationSupporter.getFactory().createInvocation(target,
+					anotherMethod.getReference(), arguments);
+			// newInvocation.setLabel(anotherMethod.getSimpleName());
+			newInvocation.setExecutable(anotherMethod.getReference());
+			newInvocation.setArguments(arguments);
+			newInvocation.setTarget(target);
+
+			newInvocations.add(newInvocation);
+
+			// newInvocation.setT
+		}
+		return newInvocations;
+	}
+
+	public static List<List<CtExpression<?>>> computeParameters(CtMethod anotherMethod, ModificationPoint point) {
+
+		List<List<CtExpression<?>>> possibleArguments = new ArrayList();
+
+		List<CtVariable> variablesInScope = point.getContextOfModificationPoint();
+
+		List<CtParameter> parameterType = anotherMethod.getParameters();
+
+		MapList<CtTypeReference, CtVariable> types = new MapList<>();
+		// Groups vars according to types
+		for (CtParameter ctTypeParameter : parameterType) {
+			CtTypeReference parType = ctTypeParameter.getType();
+
+			if (!types.containsKey(parType)) {
+				List compatible = variablesInScope.stream().filter(e -> e.getType().isSubtypeOf(parType))
+						.collect(Collectors.toList());
+				// A par without a var
+				if (compatible.isEmpty())
+					return null;
+
+				types.put(parType, compatible);
+
+			}
+
+		}
+		long maxCombinations = getMaxCombinations(parameterType, types);
+		// number of arguments
+		for (int i = 0; i < maxCombinations; i++) {
+			List<CtExpression<?>> possibleArgument = new ArrayList();
+			for (CtParameter ctTypeParameter : parameterType) {
+
+				List<CtVariable> compVar = types.get(ctTypeParameter.getType());
+				CtVariable varSelected = compVar.get(RandomManager.nextInt(compVar.size()));
+				possibleArgument.add(MutationSupporter.getFactory().createVariableRead(varSelected.getReference(),
+						varSelected.isStatic()));
+
+			}
+			possibleArguments.add(possibleArgument);
+		}
+
+		// let's create realParameters
+
+		return possibleArguments;
+	}
+
+	private static long getMaxCombinations(List<CtParameter> parameterType,
+			MapList<CtTypeReference, CtVariable> types) {
+
+		long max = 1;
+		for (CtParameter ctTypeParameter : parameterType) {
+
+			max *= types.get(ctTypeParameter.getType()).size();
+
+		}
+		int maxComb = ConfigurationProperties.getPropertyInt("maxVarCombination");
+		if (max > maxComb || max < 0) {
+			return (int) maxComb;
+		}
+
+		return max;
 	}
 }

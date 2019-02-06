@@ -138,8 +138,7 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 
 			Set<CtTypeReference<? extends Throwable>> thrownTypes = new HashSet<>();
 
-			CtExpression thisTarget = MutationSupporter.getFactory().createTypeAccess(target.getReference());
-
+		
 			CtMethod<?> megaMethod = MutationSupporter.getFactory().createMethod(target, modifiers, returnTypeBoolean,
 					name, parameters, thrownTypes);
 
