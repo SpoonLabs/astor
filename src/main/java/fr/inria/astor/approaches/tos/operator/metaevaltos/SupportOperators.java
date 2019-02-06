@@ -157,8 +157,6 @@ public class SupportOperators {
 			CtClass classUnderAnalysis, ModificationPoint point) {
 		List<CtInvocation> newInvocations = new ArrayList<>();
 
-		// CtClass classUnderAnalysis = point.getCodeElement().getParent(CtClass.class);
-
 		List<CtVariable> variablesInScope = point.getContextOfModificationPoint();
 
 		for (CtVariable varInScope : variablesInScope) {
@@ -176,6 +174,9 @@ public class SupportOperators {
 					// It's a meta-method, discard
 					continue;
 
+				if (anotherMethod.isPrivate())
+					continue;
+
 				boolean compatibleReturnTypes = SupportOperators.compareTypes(anotherMethod.getType(),
 						variableToReplaceType);
 
@@ -191,11 +192,18 @@ public class SupportOperators {
 		return newInvocations;
 	}
 
+	public static boolean isBooleanType(CtExpression e) {
+		return e.getType().unbox().getSimpleName().equals("boolean");
+	}
+
 	public static List<CtInvocation> createRealInvocations(ModificationPoint point, CtMethod anotherMethod,
 			CtExpression target) {
 		List<CtInvocation> newInvocations = new ArrayList<>();
 		// All the possibles variables
 		List<List<CtExpression<?>>> possibleArguments = computeParameters(anotherMethod, point);
+		if (possibleArguments == null || possibleArguments.isEmpty())
+			return newInvocations;
+
 		for (List<CtExpression<?>> arguments : possibleArguments) {
 			CtInvocation newInvocation = MutationSupporter.getFactory().createInvocation(target,
 					anotherMethod.getReference(), arguments);

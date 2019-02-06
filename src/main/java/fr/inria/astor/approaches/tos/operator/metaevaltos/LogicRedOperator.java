@@ -47,10 +47,6 @@ import spoon.support.reflect.code.CtReturnImpl;
  */
 public class LogicRedOperator extends FineGrainedExpressionReplaceOperator implements MetaOperator {
 
-	public boolean isBooleanType(CtExpression e) {
-		return e.getType().unbox().getSimpleName().equals("boolean");
-	}
-
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
@@ -67,7 +63,7 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator imple
 		List<CtExpression<Boolean>> booleanExpressionsInModificationPoints = modificationPoint.getCodeElement()
 				.getElements(e -> e.getType() != null
 						// we need the target is a binary
-						&& e instanceof CtBinaryOperator && isBooleanType(e));
+						&& e instanceof CtBinaryOperator && SupportOperators.isBooleanType(e));
 
 		// Let's transform it
 		List<CtBinaryOperator> binOperators = booleanExpressionsInModificationPoints.stream()

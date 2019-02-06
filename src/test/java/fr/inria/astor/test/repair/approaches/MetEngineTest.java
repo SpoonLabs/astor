@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.tos.core.InitialConceptMetEngine;
@@ -19,6 +20,7 @@ import fr.inria.astor.approaches.tos.core.evalTos.MetaEvalTOSApproach;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodCallReplacementByAnotherMethodCallOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
@@ -577,6 +579,115 @@ public class MetEngineTest {
 
 		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
 				.contains("+			return (toPositive(i1)) * (toPositive(i2));"));
+
+	}
+
+	@Test
+	public void test_doomy_testOperatorBinary1() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testOperatorBinary1").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-wmr1c2");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof OperatorReplacementOp).findAny().isPresent())
+				.collect(Collectors.toList());
+
+		assertTrue(solutionVarByVar1.size() > 0);
+
+		Optional<ProgramVariant> solution0 = solutionVarByVar1
+				.stream().filter(
+						soli -> soli.getAllOperations().stream()
+								.filter(e -> e.getModified().toString().equals("i2 >= i1")
+										&& e.getOriginal().toString().equals("i2 > i1"))
+								.findFirst().isPresent())
+				.findFirst();
+		assertTrue(solution0.isPresent());
+
+		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
+				.contains("+			if (i2 >= i1)"));
+
+	}
+
+	@Test
+	@Ignore // we dont try to repair arithmetics
+	public void test_doomy_testOperatorBinary2() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testOperatorBinary2").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-wmr1c2");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof OperatorReplacementOp).findAny().isPresent())
+				.collect(Collectors.toList());
+
+		assertTrue(solutionVarByVar1.size() > 0);
+
+		Optional<ProgramVariant> solution0 = solutionVarByVar1
+				.stream().filter(
+						soli -> soli.getAllOperations().stream()
+								.filter(e -> e.getModified().toString().equals("i1 * i2")
+										&& e.getOriginal().toString().equals("i1 + i2"))
+								.findFirst().isPresent())
+				.findFirst();
+		assertTrue(solution0.isPresent());
+
+		// assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
+		// .contains("+ if (i2 >= i1)"));
 
 	}
 

@@ -24,31 +24,30 @@ public class LogicalBinaryOperatorMutator extends BinaryOperatorMutator {
 		operators1 = Arrays.asList(BinaryOperatorKind.AND, BinaryOperatorKind.OR);
 
 	}
+
 	double[][] probs = {
-			//AND
-			{0,0.25}
-			,//OR
-			{0.25,0}}; 
+			// AND
+			{ 0, 0.25 }, // OR
+			{ 0.25, 0 } };
+
 	public List<MutantCtElement> execute(CtElement toMutate) {
 
-		// List<CtExpression> result = new ArrayList<CtExpression>();
 		List<MutantCtElement> result = new ArrayList<MutantCtElement>();
 
 		if (toMutate instanceof CtBinaryOperator<?>) {
 			CtBinaryOperator<?> op = (CtBinaryOperator<?>) toMutate;
-			BinaryOperatorKind kind = op.getKind();
 
 			addRemainingsAndFoward(result, op, operators1);
 
 		}
 		return result;
 	}
+
 	@Override
 	public double getProbabilityChange(BinaryOperatorKind oldKind, BinaryOperatorKind modifiedKind) {
-		int oldI= operators1.indexOf(oldKind);
-		int newI= operators1.indexOf(modifiedKind);
+		int oldI = operators1.indexOf(oldKind);
+		int newI = operators1.indexOf(modifiedKind);
 		return probs[oldI][newI];
 	}
 
-	
 }
