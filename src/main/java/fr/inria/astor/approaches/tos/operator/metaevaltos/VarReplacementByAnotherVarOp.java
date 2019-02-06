@@ -101,8 +101,6 @@ public class VarReplacementByAnotherVarOp extends FineGrainedExpressionReplaceOp
 
 			Set<CtTypeReference<? extends Throwable>> thrownTypes = new HashSet<>();
 
-			CtExpression thisTarget = MutationSupporter.getFactory().createTypeAccess(target.getReference());
-
 			CtMethod<?> megaMethod = MutationSupporter.getFactory().createMethod(target, modifiers, returnType, name,
 					parameters, thrownTypes);
 

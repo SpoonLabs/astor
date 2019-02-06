@@ -519,19 +519,23 @@ public class VariableResolver {
 	 * @return
 	 */
 	public static boolean areVarsCompatible(CtVariableAccess varOutScope, CtVariable varInScope) {
+		CtTypeReference refCluster = varInScope.getType();
+		CtTypeReference refOut = varOutScope.getType();
 
+		return areTypesCompatible(refCluster, refOut);
+	}
+
+	public static boolean areTypesCompatible(CtTypeReference type1, CtTypeReference type2) {
 		try {// Check if an existing variable (name taken from
 				// cluster)
 				// is compatible with with that one out of scope
-			CtTypeReference refCluster = varInScope.getType();
-			CtTypeReference refOut = varOutScope.getType();
 
 			boolean bothArray = false;
 			boolean notCompatible = false;
 			do {
 				// We check if types are arrays.
-				boolean clusterIsArray = refCluster instanceof CtArrayTypeReference;
-				boolean ourIsArray = refOut instanceof CtArrayTypeReference;
+				boolean clusterIsArray = type1 instanceof CtArrayTypeReference;
+				boolean ourIsArray = type2 instanceof CtArrayTypeReference;
 
 				if (clusterIsArray ^ ourIsArray) {
 					notCompatible = true;
@@ -541,8 +545,8 @@ public class VariableResolver {
 				// type, and we compare it again
 				bothArray = clusterIsArray && ourIsArray;
 				if (bothArray) {
-					refCluster = ((CtArrayTypeReference) refCluster).getComponentType();
-					refOut = ((CtArrayTypeReference) refOut).getComponentType();
+					type1 = ((CtArrayTypeReference) type1).getComponentType();
+					type2 = ((CtArrayTypeReference) type2).getComponentType();
 				}
 
 			} while (bothArray);
@@ -550,7 +554,7 @@ public class VariableResolver {
 			if (notCompatible)
 				return false;
 
-			if (refCluster.isSubtypeOf(refOut)) {
+			if (type1.isSubtypeOf(type2)) {
 				return true;
 			}
 		} catch (Exception e) {
