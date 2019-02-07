@@ -295,4 +295,20 @@ public class SupportOperators {
 
 		return max;
 	}
+
+	public static boolean checkOcurrenceOfOtherParameters(CtMethod anotherMethod, CtMethod affectedMethod) {
+		// anotherMethod.getParameters().stream().map(CtParameter.class::cast)
+		// .collect(Collectors.toList()
+
+		for (Object parameterFromAnotherM : anotherMethod.getParameters()) {
+			CtParameter parAnother = (CtParameter) parameterFromAnotherM;
+
+			// The parameter does not exist in the previous version
+			if (!affectedMethod.getParameters().contains(parAnother)) {
+				return false;
+			}
+		}
+		// all parameters exist
+		return true;
+	}
 }

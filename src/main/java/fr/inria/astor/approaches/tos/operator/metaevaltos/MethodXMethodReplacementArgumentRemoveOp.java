@@ -20,10 +20,10 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez
  *
  */
-public class MethodXMethodReplacementDiffNameOp extends MethodXMethodReplacementOp {
+public class MethodXMethodReplacementArgumentRemoveOp extends MethodXMethodReplacementOp {
 
 	/**
-	 * For case 2
+	 * Case 1: Argument removement
 	 * 
 	 * @param suspiciousElement
 	 * @param context
@@ -31,8 +31,8 @@ public class MethodXMethodReplacementDiffNameOp extends MethodXMethodReplacement
 	 */
 	@Override
 	public MapList<CtInvocation, Ingredient> retrieveInvocationIngredient(ModificationPoint point) {
-		CtElement suspiciousElement = point.getCodeElement();
 
+		CtElement suspiciousElement = point.getCodeElement();
 		CtClass classUnderAnalysis = suspiciousElement.getParent(CtClass.class);
 
 		MapList<CtInvocation, Ingredient> similarInvocationResult = new MapList<>();
@@ -52,9 +52,9 @@ public class MethodXMethodReplacementDiffNameOp extends MethodXMethodReplacement
 			if (!(typeOfTarget instanceof CtClass))
 				continue;
 
-			CtClass targeClasstOfInvocation = (CtClass) typeOfTarget;
+			CtClass targetOfInvocation = (CtClass) typeOfTarget;
 
-			List allMethods = SupportOperators.getAllMethodsFromClass(targeClasstOfInvocation);
+			List allMethods = SupportOperators.getAllMethodsFromClass(targetOfInvocation);
 
 			for (Object omethod : allMethods) {
 
@@ -63,53 +63,45 @@ public class MethodXMethodReplacementDiffNameOp extends MethodXMethodReplacement
 
 				CtMethod anotherMethod = (CtMethod) omethod;
 
-				if (anotherMethod.getSignature().equals(affectedMethod.getSignature()))
-					// It's the same, we discard it.
-					continue;
-
 				if (anotherMethod.getSimpleName().startsWith(VarReplacementByMethodCallOp.META_METHOD_LABEL))
 					// It's a meta-method, discard
 					continue;
 
-				// Only if the target is the class we can call to non public methods
-				if (!targeClasstOfInvocation.equals(classUnderAnalysis) && !anotherMethod.isPublic())
+				if (anotherMethod.getSignature().equals(affectedMethod.getSignature()))
+					// It's the same, we discard it.
 					continue;
 
+				// Only if the target is the class we can call to non public methods
+				if (!targetOfInvocation.equals(classUnderAnalysis) && !anotherMethod.isPublic())
+					continue;
+
+				// The name must be the same
 				if (anotherMethod.getSimpleName().equals(affectedMethod.getSimpleName())) {
-					// It's override
-					// TODO:
-					// similarInvocationResult.add(affectedMethod, anotherMethod);
 
-				}
+					if (anotherMethod.getType() != null && minvokedInAffected.getType() != null) {
 
-				if (anotherMethod.getType() != null && minvokedInAffected.getType() != null) {
+						boolean compatibleReturnTypes = SupportOperators.checkIsSubtype(anotherMethod.getType(),
+								minvokedInAffected.getType());
+						// must return the same object
+						if (compatibleReturnTypes) {
 
-					boolean compatibleReturnTypes = SupportOperators.checkIsSubtype(anotherMethod.getType(),
-							minvokedInAffected.getType());
-					if (compatibleReturnTypes) {
+							// CASE 1: Different method name
+							if (anotherMethod.getParameters().size() < affectedMethod.getParameters().size()
+									&& SupportOperators.checkOcurrenceOfOtherParameters(anotherMethod,
+											affectedMethod)) {
 
-						// CASE 2: Different method name
-						if (anotherMethod.getParameters().size() == affectedMethod.getParameters().size()
-								&& anotherMethod.getParameters().equals(affectedMethod.getParameters())) {
-
-							List<CtInvocation> newInvToMethods = SupportOperators.createRealInvocations(point,
-									anotherMethod, invocationToReplace.getTarget());
-
-							for (CtInvocation ctInvocation : newInvToMethods) {
-								CtInvocation newInvocation = ctInvocation.clone();
+								CtInvocation newInvocation = invocationToReplace.clone();
 								// newInvocation.setLabel(anotherMethod.getSimpleName());
 								newInvocation.setExecutable(anotherMethod.getReference());
 								Ingredient newIngredient = new Ingredient(newInvocation);
 								newIngredient.setDerivedFrom(invocationToReplace);
 
 								similarInvocationResult.add(invocationToReplace, newIngredient);
-
 							}
 						}
+
 					}
-
 				}
-
 			}
 
 		}

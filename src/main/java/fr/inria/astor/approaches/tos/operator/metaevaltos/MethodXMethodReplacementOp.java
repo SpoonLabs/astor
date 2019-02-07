@@ -52,7 +52,7 @@ public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionRe
 		List<MetaOperatorInstance> opsMega = new ArrayList();
 
 		MapList<CtInvocation, Ingredient> ingredientsPerInvocation = this
-				.retrieveInvocationIngredient(modificationPoint.getCodeElement());
+				.retrieveInvocationIngredient(modificationPoint);
 		if (ingredientsPerInvocation.isEmpty()) {
 			// Nothing to replace
 			return opsMega;
@@ -262,7 +262,7 @@ public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionRe
 	 * @param context
 	 * @return
 	 */
-	public abstract MapList<CtInvocation, Ingredient> retrieveInvocationIngredient(CtElement suspiciousElement);
+	public abstract MapList<CtInvocation, Ingredient> retrieveInvocationIngredient(ModificationPoint point);
 
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
