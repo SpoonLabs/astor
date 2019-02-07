@@ -108,6 +108,20 @@ public class SupportOperators {
 		}
 	}
 
+	public static boolean checkCompatibily(CtTypeReference typeReturnMethod, CtTypeReference typeToBeReturned) {
+		try {
+			return typeReturnMethod != null && typeToBeReturned != null
+					&& (typeReturnMethod.toString().equals(typeToBeReturned.toString())
+							|| typeReturnMethod.equals(typeToBeReturned) || // typeReturnMethod.isSubtypeOf(typeToBeReturned)
+																			// ||
+							typeReturnMethod.isSubtypeOf(typeToBeReturned));
+		} catch (Exception e) {
+			System.out.println("Error comparing types");
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	public static List getAllMethodsFromClass(CtClass parentClass) {
 		List allMethods = new ArrayList(parentClass.getAllMethods());
 
@@ -140,7 +154,7 @@ public class SupportOperators {
 				// It's a meta-method, discard
 				continue;
 
-			boolean compatibleReturnTypes = SupportOperators.compareTypes(anotherMethod.getType(),
+			boolean compatibleReturnTypes = SupportOperators.checkCompatibily(anotherMethod.getType(),
 					variableToReplaceType);
 
 			if (compatibleReturnTypes) {
@@ -174,10 +188,10 @@ public class SupportOperators {
 					// It's a meta-method, discard
 					continue;
 
-				if (anotherMethod.isPrivate())
+				if (!anotherMethod.isPublic())
 					continue;
 
-				boolean compatibleReturnTypes = SupportOperators.compareTypes(anotherMethod.getType(),
+				boolean compatibleReturnTypes = SupportOperators.checkCompatibily(anotherMethod.getType(),
 						variableToReplaceType);
 
 				if (compatibleReturnTypes) {
@@ -221,7 +235,7 @@ public class SupportOperators {
 
 	public static List<List<CtExpression<?>>> computeParameters(CtMethod anotherMethod, ModificationPoint point) {
 
-		List<List<CtExpression<?>>> possibleArguments = new ArrayList();
+		List<List<CtExpression<?>>> candidateArguments = new ArrayList();
 
 		List<CtVariable> variablesInScope = point.getContextOfModificationPoint();
 
@@ -247,21 +261,24 @@ public class SupportOperators {
 		long maxCombinations = getMaxCombinations(parameterType, types);
 		// number of arguments
 		for (int i = 0; i < maxCombinations; i++) {
-			List<CtExpression<?>> possibleArgument = new ArrayList();
+			List<CtExpression<?>> callArguments = new ArrayList();
 			for (CtParameter ctTypeParameter : parameterType) {
 
 				List<CtVariable> compVar = types.get(ctTypeParameter.getType());
 				CtVariable varSelected = compVar.get(RandomManager.nextInt(compVar.size()));
-				possibleArgument.add(MutationSupporter.getFactory().createVariableRead(varSelected.getReference(),
+				callArguments.add(MutationSupporter.getFactory().createVariableRead(varSelected.getReference(),
 						varSelected.isStatic()));
 
 			}
-			possibleArguments.add(possibleArgument);
+			// check if the arguments are not already considered
+			if (!candidateArguments.contains(callArguments)) {
+				candidateArguments.add(callArguments);
+			}
 		}
 
 		// let's create realParameters
 
-		return possibleArguments;
+		return candidateArguments;
 	}
 
 	private static long getMaxCombinations(List<CtParameter> parameterType,

@@ -271,9 +271,9 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 
 		MapList<CtInvocation, Ingredient> similarInvocationResult = new MapList<>();
 
-		List invocations = suspiciousElement.getElements(e -> (e instanceof CtInvocation));
-		for (Object invocationInSuspicious : invocations) {
-			CtInvocation invocationToReplace = (CtInvocation) invocationInSuspicious;
+		List<CtInvocation> invocations = suspiciousElement.getElements(e -> (e instanceof CtInvocation));
+		for (CtInvocation invocationToReplace : invocations) {
+
 			CtExecutable minvokedInAffected = invocationToReplace.getExecutable().getDeclaration();
 
 			if (minvokedInAffected == null || !(minvokedInAffected instanceof CtMethod))
@@ -281,7 +281,14 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 
 			CtMethod affectedMethod = (CtMethod) minvokedInAffected;
 
-			List allMethods = SupportOperators.getAllMethodsFromClass(classUnderAnalysis);
+			CtType typeOfTarget = invocationToReplace.getTarget().getType().getTypeDeclaration();
+
+			if (!(typeOfTarget instanceof CtClass))
+				continue;
+
+			CtClass targetOfInvocation = (CtClass) typeOfTarget;
+
+			List allMethods = SupportOperators.getAllMethodsFromClass(targetOfInvocation);
 
 			for (Object omethod : allMethods) {
 
@@ -298,6 +305,10 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 					// It's a meta-method, discard
 					continue;
 
+				// Only if the target is the class we can call to non public methods
+				if (!targetOfInvocation.equals(classUnderAnalysis) && !anotherMethod.isPublic())
+					continue;
+
 				if (anotherMethod.getSimpleName().equals(affectedMethod.getSimpleName())) {
 					// It's override
 					// TODO:
@@ -307,7 +318,7 @@ public class MethodCallReplacementByAnotherMethodCallOp extends FineGrainedExpre
 
 				if (anotherMethod.getType() != null && minvokedInAffected.getType() != null) {
 
-					boolean compatibleReturnTypes = SupportOperators.compareTypes(anotherMethod.getType(),
+					boolean compatibleReturnTypes = SupportOperators.checkCompatibily(anotherMethod.getType(),
 							minvokedInAffected.getType());
 					if (compatibleReturnTypes) {
 

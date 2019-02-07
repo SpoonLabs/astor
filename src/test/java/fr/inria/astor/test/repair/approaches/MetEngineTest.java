@@ -442,6 +442,7 @@ public class MetEngineTest {
 						.filter(o -> o.getOperationApplied() instanceof VarReplacementByAnotherVarOp).findAny()
 						.isPresent())
 				.collect(Collectors.toList());
+		assertTrue("No solution with the target operator", solutionVarByVar1.size() > 0);
 
 		ProgramVariant solution0 = solutionVarByVar1.get(0);
 		assertTrue(solution0.getAllOperations().stream()
@@ -570,6 +571,8 @@ public class MetEngineTest {
 						.findAny().isPresent())
 				.collect(Collectors.toList());
 
+		assertTrue("No solution with the target operator", solutionVarByVar1.size() > 0);
+
 		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream()
 				.filter(soli -> soli.getAllOperations().stream()
 						.filter(e -> e.getModified().toString().equals("(toPositive(i2))")
@@ -580,6 +583,111 @@ public class MetEngineTest {
 
 		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
 				.contains("+			return (toPositive(i1)) * (toPositive(i2));"));
+
+	}
+
+	@Test
+	public void test_doomy_testWMRcase2b_1() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testWMRcase2b").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-wmr1c2");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof MethodCallReplacementByAnotherMethodCallOp)
+						.findAny().isPresent())
+				.collect(Collectors.toList());
+
+		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream()
+				.filter(soli -> soli.getAllOperations().stream()
+						.filter(e -> e.getModified().toString().equals("(myinst.toPositive(i2))")
+								&& e.getOriginal().toString().equals("(myinst.toNegative(i2))"))
+						.findFirst().isPresent())
+				.findFirst();
+		assertTrue(solution0.isPresent());
+
+		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
+				.contains("+			return (myinst.toPositive(i1)) * (myinst.toPositive(i2));"));
+
+	}
+
+	@Test
+	public void test_doomy_testWMRcase2c_1() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testWMRcase2c").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-wmr1c2");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof VarReplacementByMethodCallOp).findAny()
+						.isPresent())
+				.collect(Collectors.toList());
+
+		Optional<ProgramVariant> solution0 = solutionVarByVar1
+				.stream().filter(
+						soli -> soli.getAllOperations().stream()
+								.filter(e -> e.getModified().toString().equals("type.toUpperCase()")
+										&& e.getOriginal().toString().equals("type"))
+								.findFirst().isPresent())
+				.findFirst();
+		assertTrue(solution0.isPresent());
+
+		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
+				.contains("+		if (\"gr\".toUpperCase().equals(type.toUpperCase())) {"));
 
 	}
 
@@ -883,6 +991,8 @@ public class MetEngineTest {
 				.filter(e -> e.getAllOperations().stream()
 						.filter(o -> o.getOperationApplied() instanceof UnwrapfromIfOp).findAny().isPresent())
 				.collect(Collectors.toList());
+
+		assertTrue("No solution with the target operator", solutionVarByVar1.size() > 0);
 
 		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream()
 				.filter(soli -> soli.getAllOperations().stream()
