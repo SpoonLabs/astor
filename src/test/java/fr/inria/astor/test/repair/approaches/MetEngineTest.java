@@ -20,7 +20,7 @@ import fr.inria.astor.approaches.tos.core.evalTos.MetaEvalTOSApproach;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.ConstReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
-import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodCallReplacementByAnotherMethodCallOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffNameOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromMethodCallOp;
@@ -567,8 +567,8 @@ public class MetEngineTest {
 
 		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
 				.filter(e -> e.getAllOperations().stream()
-						.filter(o -> o.getOperationApplied() instanceof MethodCallReplacementByAnotherMethodCallOp)
-						.findAny().isPresent())
+						.filter(o -> o.getOperationApplied() instanceof MethodXMethodReplacementDiffNameOp).findAny()
+						.isPresent())
 				.collect(Collectors.toList());
 
 		assertTrue("No solution with the target operator", solutionVarByVar1.size() > 0);
@@ -621,8 +621,8 @@ public class MetEngineTest {
 
 		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
 				.filter(e -> e.getAllOperations().stream()
-						.filter(o -> o.getOperationApplied() instanceof MethodCallReplacementByAnotherMethodCallOp)
-						.findAny().isPresent())
+						.filter(o -> o.getOperationApplied() instanceof MethodXMethodReplacementDiffNameOp).findAny()
+						.isPresent())
 				.collect(Collectors.toList());
 
 		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream()

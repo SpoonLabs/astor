@@ -69,7 +69,7 @@ public class UnwrapfromMethodCallOp extends FineGrainedExpressionReplaceOperator
 			for (Object oparameter : invocation.getArguments()) {
 				CtExpression argument = (CtExpression) oparameter;
 
-				if (SupportOperators.compareTypes(invocation.getType(), argument.getType())) {
+				if (SupportOperators.checkIsSubtype(argument.getType(), invocation.getType())) {
 
 					CtExpression clonedExpressionArgument = argument.clone();
 					MutationSupporter.clearPosition(clonedExpressionArgument);

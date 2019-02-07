@@ -108,13 +108,11 @@ public class SupportOperators {
 		}
 	}
 
-	public static boolean checkCompatibily(CtTypeReference typeReturnMethod, CtTypeReference typeToBeReturned) {
+	public static boolean checkIsSubtype(CtTypeReference typeCurrent, CtTypeReference typeToBeReturned) {
 		try {
-			return typeReturnMethod != null && typeToBeReturned != null
-					&& (typeReturnMethod.toString().equals(typeToBeReturned.toString())
-							|| typeReturnMethod.equals(typeToBeReturned) || // typeReturnMethod.isSubtypeOf(typeToBeReturned)
-																			// ||
-							typeReturnMethod.isSubtypeOf(typeToBeReturned));
+			return typeCurrent != null && typeToBeReturned != null
+					&& (typeCurrent.toString().equals(typeToBeReturned.toString())
+							|| typeCurrent.equals(typeToBeReturned) || typeCurrent.isSubtypeOf(typeToBeReturned));
 		} catch (Exception e) {
 			System.out.println("Error comparing types");
 			e.printStackTrace();
@@ -154,7 +152,7 @@ public class SupportOperators {
 				// It's a meta-method, discard
 				continue;
 
-			boolean compatibleReturnTypes = SupportOperators.checkCompatibily(anotherMethod.getType(),
+			boolean compatibleReturnTypes = SupportOperators.checkIsSubtype(anotherMethod.getType(),
 					variableToReplaceType);
 
 			if (compatibleReturnTypes) {
@@ -191,7 +189,7 @@ public class SupportOperators {
 				if (!anotherMethod.isPublic())
 					continue;
 
-				boolean compatibleReturnTypes = SupportOperators.checkCompatibily(anotherMethod.getType(),
+				boolean compatibleReturnTypes = SupportOperators.checkIsSubtype(anotherMethod.getType(),
 						variableToReplaceType);
 
 				if (compatibleReturnTypes) {
