@@ -14,8 +14,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 
 /**
- * Methor wrong reference Case 1: Argument removement. Case 2: Different method
- * name. Case 3: Different number arguments.
+ * 
+ * Case 3: Different number arguments.
  * 
  * @author Matias Martinez
  *
@@ -23,7 +23,7 @@ import spoon.reflect.declaration.CtType;
 public class MethodXMethodReplacementDiffArgumentsOp extends MethodXMethodReplacementOp {
 
 	/**
-	 * Case 1: Argument removement
+	 *
 	 * 
 	 * @param suspiciousElement
 	 * @param context
@@ -85,18 +85,25 @@ public class MethodXMethodReplacementDiffArgumentsOp extends MethodXMethodReplac
 						// must return the same object
 						if (compatibleReturnTypes) {
 
-							// CASE 1: Different method name
+							// Case 3: Different number argument
 							if (anotherMethod.getParameters().size() != affectedMethod.getParameters().size()
-									&& !SupportOperators.checkOcurrenceOfOtherParameters(anotherMethod,
-											affectedMethod)) {
+									// check the types
+									|| (!anotherMethod.getParameters().isEmpty()
+											&& !affectedMethod.getParameters().isEmpty()
+											&& !anotherMethod.getParameters().equals(affectedMethod.getParameters()))) {
 
-								CtInvocation newInvocation = invocationToReplace.clone();
-								// newInvocation.setLabel(anotherMethod.getSimpleName());
-								newInvocation.setExecutable(anotherMethod.getReference());
-								Ingredient newIngredient = new Ingredient(newInvocation);
-								newIngredient.setDerivedFrom(invocationToReplace);
+								List<CtInvocation> newInvToMethods = SupportOperators.createRealInvocations(point,
+										anotherMethod, invocationToReplace.getTarget());
 
-								similarInvocationResult.add(invocationToReplace, newIngredient);
+								for (CtInvocation ctInvocation : newInvToMethods) {
+									CtInvocation newInvocation = ctInvocation.clone();
+									newInvocation.setExecutable(anotherMethod.getReference());
+									Ingredient newIngredient = new Ingredient(newInvocation);
+									newIngredient.setDerivedFrom(invocationToReplace);
+									similarInvocationResult.add(invocationToReplace, newIngredient);
+
+								}
+
 							}
 						}
 

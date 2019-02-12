@@ -14,8 +14,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 
 /**
- * Methor wrong reference Case 1: Argument removement. Case 2: Different method
- * name. Case 3: Different number arguments.
+ * Case 2: Different method name.
  * 
  * @author Matias Martinez
  *

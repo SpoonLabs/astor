@@ -311,4 +311,26 @@ public class SupportOperators {
 		// all parameters exist
 		return true;
 	}
+
+	public static List<CtExpression> checkOcurrenceOfOtherParameters(CtMethod anotherMethod, CtMethod affectedMethod,
+			List realParameters) {
+
+		List newRealParameters = new ArrayList();
+
+		for (Object parameterFromAnotherM : anotherMethod.getParameters()) {
+			CtParameter parAnother = (CtParameter) parameterFromAnotherM;
+
+			int indexOfParameter = affectedMethod.getParameters().indexOf(parAnother);
+			// The parameter does not exist in the previous version
+			if (indexOfParameter < 0) {
+				return null;
+			} else {
+				CtExpression parameterAtI = (CtExpression) realParameters.get(indexOfParameter);
+				newRealParameters.add(parameterAtI);
+			}
+
+		}
+		// all parameters exist
+		return newRealParameters;
+	}
 }
