@@ -18,7 +18,10 @@ Matias Martinez, Martin Monperrus, "[ASTOR: A Program Repair Library for Java](h
      doi = {10.1145/2931037.2948705},
     }
 
-The very first paper about Astor is [ASTOR: Evolutionary Automatic Software Repair for Java (Arxiv 1410.6651, 2014)](https://arxiv.org/abs/1410.6651).
+See also:
+
+* [ASTOR: Exploring the Design Space of Generate-and-Validate Program Repair beyond GenProg](https://arxiv.org/abs/1802.03365) (Matias Martinez, Martin Monperrus), Journal of Systems and Software, 2019.
+* [ASTOR: Evolutionary Automatic Software Repair for Java](https://arxiv.org/abs/1410.6651), Arxiv 1410.6651, 2014.
 
 Contributing
 ------------
@@ -67,7 +70,7 @@ DeepRepair
 
 DeepRepair is an extension of jGenProg leveraging code similarity. The experiments about DeepRepair are described in
 
-* [Sorting and Transforming Program Repair Ingredients via Deep Learning Code Similarities](https://arxiv.org/pdf/1707.04742.pdf) (Martin White, Michele Tufano, Matias Martinez, Martin Monperrus and Denys Poshyvanyk), Arxiv 1707.04742, 2017.
+* [Sorting and Transforming Program Repair Ingredients via Deep Learning Code Similarities](https://arxiv.org/pdf/1707.04742.pdf) (Martin White, Michele Tufano, Matias Martinez, Martin Monperrus and Denys Poshyvanyk), Proceedings of SANER, 2019.
 * Open-science repository with DeepRepair patches: <https://github.com/SpoonLabs/astor-experiments/>
 
 Cardumen
@@ -83,10 +86,7 @@ Usage
 ------
 
 * [Getting Started](https://github.com/SpoonLabs/astor/blob/master/docs/getting-starting.md)
-* [How to extend Astor?](https://github.com/SpoonLabs/astor/blob/master/docs/extending_astor.md)
-* [List of Extension points](https://github.com/SpoonLabs/astor/blob/master/docs/extension-points.md)
-
-
+* [How to extend Astor?](https://github.com/SpoonLabs/astor/blob/master/docs/extension_points.md)
 
 Usage of Astor in education
 -------------------------------
