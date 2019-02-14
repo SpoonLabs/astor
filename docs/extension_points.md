@@ -1,12 +1,8 @@
-#List of extension points of Astor repair framework.
-
-
+# List of extension points of Astor
 
 The architecture and extension points provided by Astor framework are described in:
 
-* [Astor: Exploring the Design Space of Generate-and-Validate Program Repair beyond GenProg](https://arxiv.org/abs/1802.03365) (Matias Martinez, Martin Monperrus) Arxiv 1802.03365, 2018.
-
-
+* [Astor: Exploring the Design Space of Generate-and-Validate Program Repair beyond GenProg](https://arxiv.org/abs/1802.03365) (Matias Martinez, Martin Monperrus), Journal of Systems and Software, 2019.
 
 
 Fault Localization (EP\_FL) 
