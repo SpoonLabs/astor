@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.extension.TibraApproach;
@@ -23,6 +24,7 @@ public class TibraApproachTest {
 
 	@SuppressWarnings("rawtypes")
 	@Test
+	@Ignore
 	public void testTimbraMath70() throws Exception {
 		AstorMain main1 = new AstorMain();
 
