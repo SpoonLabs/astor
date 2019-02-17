@@ -15,6 +15,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtG
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 
 /**
@@ -38,13 +39,28 @@ public class DeepRepairEngine extends IngredientBasedEvolutionaryRepairApproachI
 			throw new IllegalArgumentException("Missing argument -learningdir");
 		}
 
+		loadCloneGranularity();
+
+	}
+
+	public void loadCloneGranularity() throws Exception {
 		ExtensionPoints cloneGranularityEP = ExtensionPoints.CLONE_GRANULARITY;
-		Class cloneGranularity = PlugInLoader.loadClassFromProperty(cloneGranularityEP);
-		if (cloneGranularity == null) {
+
+		String property = ConfigurationProperties.getProperty(cloneGranularityEP.identifier);
+
+		Class cloneGranularity = null;
+		if (property == null || property.trim().isEmpty() || property.equals("type")) {
 			cloneGranularity = CtType.class;
+
+		} else if (property.equals("executable")) {
+			cloneGranularity = CtExecutable.class;
+		} else {
+			cloneGranularity = PlugInLoader.loadClassFromProperty(cloneGranularityEP);
+			if (cloneGranularity == null) {
+				cloneGranularity = CtType.class;
+			}
 		}
 		ConfigurationProperties.setProperty("clonegranularity", cloneGranularity.getName());
-
 	}
 
 	@Override
