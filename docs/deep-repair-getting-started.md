@@ -10,7 +10,7 @@ DeepRepair is an extension of jGenProg leveraging code similarity. The experimen
 DeepRepair can be executed in the same manner than the others repair approaches from Astor.
 We explain the command line in the [getting started](getting-starting) page.
 
-To run DeepRepair, the execution mode argument must be `-mode deeprepair'.
+To run DeepRepair, the execution mode argument must be `-mode deeprepair`.
 Then, DeepRepair needs two additional arguments.
 First, the argument `-clonegranularity` with two possible values: `type` or `executable`.
 This argument will indicate the granularity of the clone detection (i.e., if DeepRepair search for ingredients from similar `types` or from similar `executables` (methods)). 
