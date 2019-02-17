@@ -16,6 +16,7 @@ import java.util.Queue;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.deeprepair.CloneIngredientSearchStrategy;
@@ -77,7 +78,7 @@ public class DeepRepairTest {
 
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 
-		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "deeprepair",
 				//
 				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest",
 				//
@@ -108,9 +109,9 @@ public class DeepRepairTest {
 				//
 				"-clonegranularity", cloneGranularityClass.getCanonicalName(),
 				//
-				"-ingredientstrategy", CloneIngredientSearchStrategy.class.getName(),
+				// "-ingredientstrategy", CloneIngredientSearchStrategy.class.getName(),
 				//
-				"-transformingredient",
+				// "-transformingredient",
 				//
 				"-loglevel", Level.DEBUG.toString() };
 		return args;
@@ -211,6 +212,7 @@ public class DeepRepairTest {
 	}
 
 	@Test
+	@Ignore
 	public void testExecutableMath70() throws Exception {
 
 		// let's test at Executanble granularity
@@ -219,8 +221,8 @@ public class DeepRepairTest {
 
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+		assertTrue(learningDir.exists());
 
-		Class typeCloneGranularityClass = CtExecutable.class;
 		String[] args = createCommandM70ForNotEvolve(learningDir, executableCloneGranularity);
 
 		log.debug(Arrays.toString(args));
@@ -262,6 +264,7 @@ public class DeepRepairTest {
 	}
 
 	@Test
+	@Ignore
 	public void testExecutableGranularityMath70TransformationStrategy() throws Exception {
 
 		// Now, let's test at Executable granularity
@@ -270,9 +273,9 @@ public class DeepRepairTest {
 
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+		assertTrue(learningDir.exists());
 
-		Class typeCloneGranularityClass = CtExecutable.class;
-		int generations = 100;
+		int generations = 1000;
 		boolean transformIngredient = true;
 		String[] args = createDeepRepairCommandM70(learningDir, executableCloneGranularity, generations,
 				transformIngredient);
@@ -291,6 +294,7 @@ public class DeepRepairTest {
 	}
 
 	@Test
+	@Ignore
 	public void testCloneLang1RegressionFailing() throws Exception {
 		AstorMain main1 = new AstorMain();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
@@ -309,6 +313,7 @@ public class DeepRepairTest {
 		AstorMain main1 = new AstorMain();
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+		assertTrue(learningDir.exists());
 
 		Class typeCloneGranularityClass = CtType.class;
 
@@ -319,7 +324,7 @@ public class DeepRepairTest {
 		log.debug(Arrays.toString(args));
 
 		main1.execute(args);
-		JGenProg engine = (JGenProg) main1.getEngine();
+		DeepRepairEngine engine = (DeepRepairEngine) main1.getEngine();
 
 		IngredientPool ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
 
@@ -404,6 +409,7 @@ public class DeepRepairTest {
 		AstorMain main1 = new AstorMain();
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+		assertTrue(learningDir.exists());
 
 		Class typeCloneGranularityClass = CtType.class;
 
@@ -413,7 +419,7 @@ public class DeepRepairTest {
 		log.debug(Arrays.toString(args));
 
 		main1.execute(args);
-		JGenProg engine = (JGenProg) main1.getEngine();
+		DeepRepairEngine engine = (DeepRepairEngine) main1.getEngine();
 
 		IngredientPool ingredientSpace = engine.getIngredientSearchStrategy().getIngredientSpace();
 
@@ -491,8 +497,7 @@ public class DeepRepairTest {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
 
-		Class typeCloneGranularityClass = CtType.class;
-
+		assertTrue(learningDir.exists());
 		String scope = CtClassIngredientSpace.class.getCanonicalName();
 
 		CommandSummary args = createDeepRepairModeCommandM70(learningDir, 10, false, scope, 0.5);
@@ -526,6 +531,7 @@ public class DeepRepairTest {
 		AstorMain main1 = new AstorMain();
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
+		assertTrue(learningDir.exists());
 
 		String scope = CtClassIngredientSpace.class.getCanonicalName();
 
@@ -581,7 +587,7 @@ public class DeepRepairTest {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File learningDir = new File(classLoader.getResource("learningm70").getFile());
 
-		Class typeCloneGranularityClass = CtType.class;
+		assertTrue(learningDir.exists());
 
 		String scope = CtClassIngredientSpace.class.getCanonicalName();
 
