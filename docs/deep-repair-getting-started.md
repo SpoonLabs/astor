@@ -13,11 +13,11 @@ We explain the command line in the [getting started](getting-starting) page.
 To run DeepRepair, the execution mode argument must be `-mode deeprepair`.
 Then, DeepRepair needs two additional arguments.
 First, the argument `-clonegranularity` with two possible values: `type` or `executable`.
-This argument will indicate the granularity of the clone detection (i.e., if DeepRepair search for ingredients from similar `types` or from similar `executables` (methods)). 
+This argument will indicate the granularity of the clone detection (i.e., if DeepRepair searches for ingredients from similar `types` or from similar `executables` (methods)). 
 
 Second, the learning directory `-learningdir <path>`, which must store the following files:
 
-### Cluster of variable names `clustering.csv`
+### Cluster of variable names file: `clustering.csv`
 
 The file has a line per cluster.
 For example `maxIterations,109,MAX_VALUE;epsilon;tableau`
@@ -27,9 +27,7 @@ The first word is an identifier `k`  (followed by a `,`),  then it appears the c
 You can create your clusters of variables using the cluster algorithm you prefer.
 
 
-### Code Similarity
-
-We need two files: `<granularity>.distances.cvs`  and `<granularity.key>`. 
+### Code Similarity files: `<granularity>.distances.cvs`  and `<granularity.key>`
 
 The file `executables.distances.csv` (or `types.distances.csv` according to the desired granularity) which contains a Matrix with the distances of two executables (of types, resp.)
 The code element (executable or type) corresponding to column or row `i` can be found in the `i`-row of file `executables.key` (or `types.key`).
