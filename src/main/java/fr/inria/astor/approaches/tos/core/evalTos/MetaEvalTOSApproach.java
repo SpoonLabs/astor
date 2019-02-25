@@ -3,6 +3,7 @@ package fr.inria.astor.approaches.tos.core.evalTos;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -144,83 +145,88 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		// Call to the extension point to get the order
 		// We take each operator, in the order given by the EP
 		for (AstorOperator operator : this.operatorSpace.getOperators()) {
+			try {
+				List<ProgramVariant> candidateProgramVariants = new ArrayList<>();
+				List<OperatorInstance> instancesOfOperatorForModificationPoint = null;
 
-			List<ProgramVariant> candidateProgramVariants = new ArrayList<>();
-			List<OperatorInstance> instancesOfOperatorForModificationPoint = null;
+				if (!operator.canBeAppliedToPoint(iModifPoint))
+					continue;
 
-			if (!operator.canBeAppliedToPoint(iModifPoint))
-				continue;
+				// Decide if merge interfaces DyIng and MetaOp
 
-			// Decide if merge interfaces DyIng and MetaOp
+				if (operator instanceof MetaOperator) {
 
-			if (operator instanceof MetaOperator) {
+					instancesOfOperatorForModificationPoint = new ArrayList<>();
+					// Get Candidate expressions:
 
-				instancesOfOperatorForModificationPoint = new ArrayList<>();
-				// Get Candidate expressions:
+					List<MetaOperatorInstance> opInstancesMeta = null;
 
-				List<MetaOperatorInstance> opInstancesMeta = null;
+					// if the operator needs ingredients
+					if (operator instanceof DynaIngredientOperator) {
+						DynaIngredientOperator dynaop = (DynaIngredientOperator) operator;
 
-				// if the operator needs ingredients
-				if (operator instanceof DynaIngredientOperator) {
-					DynaIngredientOperator dynaop = (DynaIngredientOperator) operator;
+						List<IngredientFromDyna> newIngredients = synthesizeCandidatesIngredientsFromType(parentVariant,
+								iModifPoint, poolFromModifPoint, dynaop.retrieveTargetTypeReference());
 
-					List<IngredientFromDyna> newIngredients = synthesizeCandidatesIngredientsFromType(parentVariant,
-							iModifPoint, poolFromModifPoint, dynaop.retrieveTargetTypeReference());
+						opInstancesMeta = dynaop.createMetaOperatorInstances(iModifPoint, newIngredients);
 
-					opInstancesMeta = dynaop.createMetaOperatorInstances(iModifPoint, newIngredients);
+					} else {
+						// no ingredient needed
+						opInstancesMeta = ((MetaOperator) operator).createMetaOperatorInstances(iModifPoint);
+					}
+					// We create one MetaProgram Variant per metaOperator
+					for (MetaOperatorInstance metaPperatorInstance : opInstancesMeta) {
+
+						MetaProgramVariant metai = new MetaProgramVariant(nrVariant++);
+						metai.setParent(parentVariant);
+						metai.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
+						metai.putModificationInstance(generation, metaPperatorInstance);
+						candidateProgramVariants.add(metai);
+					}
 
 				} else {
-					// no ingredient needed
-					opInstancesMeta = ((MetaOperator) operator).createMetaOperatorInstances(iModifPoint);
-				}
-				// We create one MetaProgram Variant per metaOperator
-				for (MetaOperatorInstance metaPperatorInstance : opInstancesMeta) {
+					// It's a "conventional" operator
+					instancesOfOperatorForModificationPoint = operator.createOperatorInstances(iModifPoint);
 
-					MetaProgramVariant metai = new MetaProgramVariant(nrVariant++);
-					metai.setParent(parentVariant);
-					metai.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
-					metai.putModificationInstance(generation, metaPperatorInstance);
-					candidateProgramVariants.add(metai);
-				}
+					for (OperatorInstance operatorInstance : instancesOfOperatorForModificationPoint) {
+						ProgramVariant newProgramVariant = new ProgramVariant(nrVariant++);
+						newProgramVariant.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
+						newProgramVariant.putModificationInstance(generation, operatorInstance);
 
-			} else {
-				// It's a "conventional" operator
-				instancesOfOperatorForModificationPoint = operator.createOperatorInstances(iModifPoint);
-
-				for (OperatorInstance operatorInstance : instancesOfOperatorForModificationPoint) {
-					ProgramVariant newProgramVariant = new ProgramVariant(nrVariant++);
-					newProgramVariant.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
-					newProgramVariant.putModificationInstance(generation, operatorInstance);
-
-					candidateProgramVariants.add(newProgramVariant);
-				}
-			}
-
-			// For each candidate variant
-			for (ProgramVariant iProgramVariant : candidateProgramVariants) {
-
-				this.generationsExecuted++;
-
-				// Apply the code transformations
-				for (OperatorInstance operatorInstance : iProgramVariant.getAllOperations()) {
-					operatorInstance.applyModification();
+						candidateProgramVariants.add(newProgramVariant);
+					}
 				}
 
-				int generationEval = 0;
+				// For each candidate variant
+				for (ProgramVariant iProgramVariant : candidateProgramVariants) {
 
-				// For the list of operator instance, we create a mutant program
-				// Each program variant is a patch
-				boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
-				if (resultValidation) {
-					this.solutions.add(iProgramVariant);
-					existSolution = true;
+					this.generationsExecuted++;
+
+					// Apply the code transformations
+					for (OperatorInstance operatorInstance : iProgramVariant.getAllOperations()) {
+						operatorInstance.applyModification();
+					}
+
+					int generationEval = 0;
+
+					// For the list of operator instance, we create a mutant program
+					// Each program variant is a patch
+					boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
+					if (resultValidation) {
+						this.solutions.add(iProgramVariant);
+						existSolution = true;
+					}
+
+					// Undo the code transformations
+					for (OperatorInstance operatorInstance : iProgramVariant.getAllOperations()) {
+						operatorInstance.undoModification();
+
+					}
 				}
-
-				// Undo the code transformations
-				for (OperatorInstance operatorInstance : iProgramVariant.getAllOperations()) {
-					operatorInstance.undoModification();
-
-				}
+			} catch (Exception e) {
+				log.error("Error with operator " + operator.getClass().getSimpleName());
+				log.error(e);
+				e.printStackTrace();
 			}
 		}
 		return existSolution;
@@ -244,8 +250,18 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		// for (String i_testName : clusterEvaluatedExpressions.keySet()) {
 		// TODO: see how to modify this
-		String i_testName = clusterEvaluatedExpressions.getClusterEvaluatedExpressions().keySet().stream().findFirst()
-				.get();
+
+		if (clusterEvaluatedExpressions == null
+				|| clusterEvaluatedExpressions.getClusterEvaluatedExpressions() == null) {
+			return newIngredientsResult;
+		}
+
+		Optional<String> findFirst = clusterEvaluatedExpressions.getClusterEvaluatedExpressions().keySet().stream()
+				.findFirst();
+		if (!findFirst.isPresent())
+			return newIngredientsResult;
+
+		String i_testName = findFirst.get();
 
 		List<ClusterExpressions> clustersOfTest = clusterEvaluatedExpressions.getClusterEvaluatedExpressions()
 				.get(i_testName);
@@ -289,9 +305,13 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 				for (Integer idMutant : moi.getAllIngredients().keySet()) {
 					ConfigurationProperties.setProperty("metid", idMutant.toString());
 					VariantValidationResult validation_single = super.validateInstance(variant);
-					megavalidation.addValidation(idMutant, validation_single);
-					if (validation_single.isSuccessful())
-						log.debug("Solution " + idMutant.toString());
+					if (validation_single != null) {
+						megavalidation.addValidation(idMutant, validation_single);
+						if (validation_single.isSuccessful())
+							log.debug("Solution found " + idMutant.toString());
+					} else {
+						log.error("Validation Null for metaid " + idMutant.toString());
+					}
 				}
 			}
 
