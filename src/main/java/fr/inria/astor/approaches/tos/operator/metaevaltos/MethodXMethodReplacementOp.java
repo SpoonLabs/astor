@@ -16,6 +16,7 @@ import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
@@ -154,10 +155,14 @@ public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionRe
 
 				CtIf particularIf = MutationSupporter.getFactory().createIf();
 				particularIf.setCondition(caseCondition);
-				CtStatement stPrint = MutationSupporter.getFactory().createCodeSnippetStatement(
-						"System.out.println(" + "\"\\nPROPERTY met:\" +System.getProperty(\"mutnumber\"))");
 				CtBlock particularIfBlock = new CtBlockImpl<>();
-				particularIfBlock.addStatement(stPrint);
+
+				if (ConfigurationProperties.getPropertyBool("meta_add_syso")) {
+
+					CtStatement stPrint = MutationSupporter.getFactory().createCodeSnippetStatement(
+							"System.out.println(" + "\"\\nPROPERTY met:\" +System.getProperty(\"mutnumber\"))");
+					particularIfBlock.addStatement(stPrint);
+				}
 				particularIf.setThenStatement(particularIfBlock);
 
 				// The return inside the if
