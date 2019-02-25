@@ -205,6 +205,9 @@ public class SupportOperators {
 	}
 
 	public static boolean isBooleanType(CtExpression e) {
+		if (e.getType() == null || e.getType().unbox() == null)
+			return false;
+
 		return e.getType().unbox().getSimpleName().equals("boolean");
 	}
 
