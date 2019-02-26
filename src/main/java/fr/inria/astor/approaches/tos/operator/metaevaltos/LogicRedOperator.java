@@ -1,11 +1,7 @@
 package fr.inria.astor.approaches.tos.operator.metaevaltos;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
@@ -23,8 +19,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -39,13 +33,6 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator imple
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
 		List<MetaOperatorInstance> opsMega = new ArrayList();
-
-		CtType<?> target = modificationPoint.getCodeElement().getParent(CtType.class);
-		Set<ModifierKind> modifiers = new HashSet<>();
-		modifiers.add(ModifierKind.PRIVATE);
-//		modifiers.add(ModifierKind.STATIC);
-
-		CtTypeReference returnTypeBoolean = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
 		// get all binary expressions
 		List<CtExpression<Boolean>> booleanExpressionsInModificationPoints = modificationPoint.getCodeElement()
@@ -63,16 +50,11 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator imple
 
 		// let's start with one, and let's keep the Zero for the default (all ifs are
 		// false)
-		// TODO: we only can activate one mutant
-		int candidateNumber = 0;
 
 		// As difference with var replacement, a metamutant for each expression
 		for (CtBinaryOperator binaryToReduce : binOperators) {
 
-			List<OperatorInstance> opsOfVariant = new ArrayList();
-
 			int variableCounter = 0;
-			Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
 			List<Ingredient> ingredients = this.computeIngredientsFromOperatorToReduce(modificationPoint,
 					binaryToReduce);
@@ -103,8 +85,8 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator imple
 			variableCounter++;
 			CtTypeReference returnType = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
-			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint, binaryToReduce, variableCounter,
-					ingredients, parameters, realParameters, this, returnType);
+			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint,
+					binaryToReduce, variableCounter, ingredients, parameters, realParameters, this, returnType);
 			opsMega.add(megaOp);
 
 		} // End variable

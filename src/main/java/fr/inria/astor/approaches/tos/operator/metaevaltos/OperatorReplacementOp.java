@@ -26,6 +26,11 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator implements MetaOperator {
 
 	public BinaryOperatorKind operatorKind = BinaryOperatorKind.OR;
@@ -85,8 +90,8 @@ public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator 
 			CtTypeReference returnType = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
 			// let's create the meta
-			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint, expressionToExpand,
-					variableCounter, ingredients, parameters, realParameters, this, returnType);
+			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint,
+					expressionToExpand, variableCounter, ingredients, parameters, realParameters, this, returnType);
 
 			opsMega.add(megaOp);
 

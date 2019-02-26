@@ -23,6 +23,11 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtBinaryOperatorImpl;
 
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator {
 
 	@Override
@@ -88,13 +93,6 @@ public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator {
 		}
 
 		return ingredients;
-	}
-
-	private CtExpression createBooleanTrue() {
-
-		// By default returns true, which is, in the context of this operator, to
-		// executed the wrapped statement
-		return MutationSupporter.getFactory().createCodeSnippetExpression("true");
 	}
 
 	@Override
