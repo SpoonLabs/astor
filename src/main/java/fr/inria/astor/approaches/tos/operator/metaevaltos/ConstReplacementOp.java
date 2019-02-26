@@ -54,6 +54,8 @@ public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator imp
 
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
+		List<MetaOperatorInstance> opsMega = new ArrayList();
+
 		CtType<?> target = modificationPoint.getCodeElement().getParent(CtType.class);
 		Set<ModifierKind> modifiers = new HashSet<>();
 		modifiers.add(ModifierKind.PRIVATE);
@@ -103,6 +105,7 @@ public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator imp
 			}
 
 			variableCounter++;
+
 			String name = "_meta_" + variableCounter;
 
 			Set<CtTypeReference<? extends Throwable>> thrownTypes = new HashSet<>();
@@ -212,7 +215,6 @@ public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator imp
 		opMega.setOriginal(modificationPoint.getCodeElement());
 		opMega.setModificationPoint(modificationPoint);
 
-		List<MetaOperatorInstance> opsMega = new ArrayList();
 		opsMega.add(opMega);
 
 		return opsMega;

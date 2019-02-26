@@ -50,9 +50,8 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
-	public int MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
+	public static int MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
 	public int modifPointsAnalyzed = 0;
-	public int operationsExecuted = 0;
 
 	public MetaEvalTOSApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -92,7 +91,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		int totalmodfpoints = variants.get(0).getModificationPoints().size();
 		for (ProgramVariant parentVariant : variants) {
 
-			if (MAX_GENERATIONS <= operationsExecuted) {
+			if (MAX_GENERATIONS <= generationsExecuted) {
 
 				this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
 				return;

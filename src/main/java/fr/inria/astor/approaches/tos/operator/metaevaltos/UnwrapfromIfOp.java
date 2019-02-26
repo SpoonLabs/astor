@@ -56,7 +56,6 @@ public class UnwrapfromIfOp extends ReplaceOp {
 	@Override
 	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {
 		StatementOperatorInstance stmtoperator = (StatementOperatorInstance) operation;
-		boolean successful = false;
 		CtStatement statementToRemove = (CtStatement) operation.getOriginal();
 		CtStatement movedElement = (CtStatement) operation.getModified();
 
@@ -78,21 +77,7 @@ public class UnwrapfromIfOp extends ReplaceOp {
 			}
 		}
 		return true;
-//		try {
-//			statementToRemove.replace((CtStatement) fix);
-//			fix.setParent(parentBlock);
-//			successful = true;
-//			operation.setSuccessfulyApplied(successful);
-//		} catch (Exception ex) {
-//			log.error("Error applying an operation, exception: " + ex.getMessage());
-//			operation.setExceptionAtApplied(ex);
-//			operation.setSuccessfulyApplied(false);
-//		}
-//	}else
-//
-//	{
-//		log.error("Operation not applied. Parent null ");
-//	}return successful;
+
 	}
 
 	@Override

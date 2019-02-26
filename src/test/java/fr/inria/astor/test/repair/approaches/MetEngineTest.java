@@ -37,6 +37,7 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.CommandSummary;
@@ -166,6 +167,133 @@ public class MetEngineTest {
 
 		assertFalse(variant.getValidationResult().isSuccessful());
 		assertFalse(resultValidation);
+
+	}
+
+	@Test
+	public void testBT_Math28_1_Met_all() throws Exception {
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = MathCommandsTests.getMath28Command();
+
+	}
+
+	@Test
+	public void testBT_Math85_1_Met_all() throws Exception {
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = MathCommandsTests.getMath85Command();
+		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+
+		command.command.put("-id", "test-math85");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-flthreshold", "0.24");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		List<ProgramVariant> solutionTry = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof WrapwithTrySingleStatementOp).findAny()
+						.isPresent())
+				.collect(Collectors.toList());
+
+		assertTrue(solutionTry.size() > 0);
+
+		// Retrieve the buggy if condition.
+		ModificationPoint mp198 = main1.getEngine().getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
+						.getFile().getName().equals("UnivariateRealSolverUtils.java")))
+				.findAny().get();
+		assertNotNull(mp198);
+
+		assertTrue(mp198.getCodeElement() instanceof CtIf);
+
+		main1.getEngine().getVariants().get(0).getModificationPoints().clear();
+		main1.getEngine().getVariants().get(0).getModificationPoints().add(mp198);
+
+		main1.getEngine().getSolutions().clear();
+
+		command.command.put("-stopfirst", "false");
+		command.command.put("-loglevel", "DEBUG");
+		main1.getEngine().startEvolution();
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+		main1.getEngine().atEnd();
+
+		List<ProgramVariant> solutionOperatorReplacement = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof OperatorReplacementOp).findAny().isPresent())
+				.collect(Collectors.toList());
+
+		assertTrue(solutionOperatorReplacement.size() > 0);
+
+	}
+
+	@Test
+	public void testBT_Math85_CheckVarReplacement() throws Exception {
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = MathCommandsTests.getMath85Command();
+		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "1000");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+
+		command.command.put("-id", "test-math85");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-flthreshold", "0.24");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		// Retrieve the buggy if condition.
+		ModificationPoint mp198 = main1.getEngine().getVariants().get(0).getModificationPoints().stream()
+				.filter(e -> (e.getCodeElement().getPosition().getLine() == 198 && e.getCodeElement().getPosition()
+						.getFile().getName().equals("UnivariateRealSolverUtils.java")))
+				.findAny().get();
+		assertNotNull(mp198);
+
+		assertTrue(mp198.getCodeElement() instanceof CtIf);
+
+		AstorOperator op = main1.getEngine().getOperatorSpace().getOperators().stream()
+				.filter(e -> e instanceof VarReplacementByAnotherVarOp).findFirst().get();
+
+		main1.getEngine().getOperatorSpace().getOperators().clear();
+		main1.getEngine().getOperatorSpace().getOperators().add(op);
+		main1.getEngine().getVariants().get(0).getModificationPoints().clear();
+		main1.getEngine().getVariants().get(0).getModificationPoints().add(mp198);
+
+		main1.getEngine().getSolutions().clear();
+
+		command.command.put("-stopfirst", "false");
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-maxgen", "1000");
+		MetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+		main1.getEngine().startEvolution();
+		// assertTrue(main1.getEngine().getSolutions().size() > 0);
+		main1.getEngine().atEnd();
 
 	}
 
