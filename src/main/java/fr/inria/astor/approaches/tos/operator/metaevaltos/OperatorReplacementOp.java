@@ -85,7 +85,7 @@ public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator 
 			CtTypeReference returnType = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
 			// let's create the meta
-			MetaOperatorInstance megaOp = MetaGenerator.createMeta(modificationPoint, expressionToExpand,
+			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint, expressionToExpand,
 					variableCounter, ingredients, parameters, realParameters, this, returnType);
 
 			opsMega.add(megaOp);

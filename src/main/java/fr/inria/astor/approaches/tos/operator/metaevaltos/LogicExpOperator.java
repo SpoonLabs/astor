@@ -109,7 +109,7 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 			variableCounter++;
 			CtTypeReference returnType = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
-			MetaOperatorInstance megaOp = MetaGenerator.createMeta(modificationPoint, expressionToExpand,
+			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint, expressionToExpand,
 					variableCounter, ingredients, parameters, realParameters, this, returnType);
 			opsMega.add(megaOp);
 

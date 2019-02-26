@@ -82,7 +82,7 @@ public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionRe
 			// first the main try
 			CtTypeReference returnTypeOfInvocation = invocationToReplace.getType();
 
-			MetaOperatorInstance megaOp = MetaGenerator.createMeta(modificationPoint, invocationToReplace,
+			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint, invocationToReplace,
 					invocationCounter, ingredients, parameters, realParameters, this, returnTypeOfInvocation);
 			opsMega.add(megaOp);
 

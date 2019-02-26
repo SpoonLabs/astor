@@ -103,7 +103,7 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator imple
 			variableCounter++;
 			CtTypeReference returnType = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
-			MetaOperatorInstance megaOp = MetaGenerator.createMeta(modificationPoint, binaryToReduce, variableCounter,
+			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint, binaryToReduce, variableCounter,
 					ingredients, parameters, realParameters, this, returnType);
 			opsMega.add(megaOp);
 

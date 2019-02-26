@@ -47,14 +47,31 @@ public class MetaGenerator {
 
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
-	public static MetaOperatorInstance createMeta(ModificationPoint modificationPoint, CtExpression elementSource,
-			int variableCounter, List<Ingredient> ingredients, List<CtParameter<?>> parameters,
-			List<CtExpression<?>> realParameters, AstorOperator parentOperator, CtTypeReference returnType) {
-
-		CtExpression defaultReturnElement = elementSource;
+	public static MetaOperatorInstance createMetaFineGrainedReplacement(ModificationPoint modificationPoint,
+			CtExpression elementSource, int variableCounter, List<Ingredient> ingredients,
+			List<CtParameter<?>> parameters, List<CtExpression<?>> realParameters, AstorOperator parentOperator,
+			CtTypeReference returnType) {
 
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
+
+		createMetaForSingleElement(modificationPoint, elementSource, variableCounter, ingredients, parameters,
+				realParameters, returnType, opsOfVariant, ingredientOfMapped);
+
+		MetaOperatorInstance opMega = new MetaOperatorInstance(opsOfVariant);
+		opMega.setAllIngredients(ingredientOfMapped);
+		opMega.setOperationApplied(parentOperator);
+		opMega.setOriginal(modificationPoint.getCodeElement());
+		opMega.setModificationPoint(modificationPoint);
+
+		return opMega;
+	}
+
+	public static void createMetaForSingleElement(ModificationPoint modificationPoint, CtExpression elementSource,
+			int variableCounter, List<Ingredient> ingredients, List<CtParameter<?>> parameters,
+			List<CtExpression<?>> realParameters, CtTypeReference returnType, List<OperatorInstance> opsOfVariant,
+			Map<Integer, Ingredient> ingredientOfMapped) {
+		CtExpression defaultReturnElement = elementSource;
 
 		// Creation of mega method
 		CtMethod<?> megaMethod = createMegaMethod(modificationPoint, defaultReturnElement, variableCounter, ingredients,
@@ -89,14 +106,6 @@ public class MetaGenerator {
 		log.debug("method: \n" + megaMethod);
 
 		log.debug("invocation: \n" + newInvocationToMega);
-
-		MetaOperatorInstance opMega = new MetaOperatorInstance(opsOfVariant);
-		opMega.setAllIngredients(ingredientOfMapped);
-		opMega.setOperationApplied(parentOperator);
-		opMega.setOriginal(modificationPoint.getCodeElement());
-		opMega.setModificationPoint(modificationPoint);
-
-		return opMega;
 	}
 
 	public static MetaOperatorInstance createMetaStatementReplacement(ModificationPoint modificationPoint,
@@ -177,13 +186,11 @@ public class MetaGenerator {
 	public static CtMethod<?> createMegaMethod(ModificationPoint modificationPoint, CtExpression defaultReturnElement,
 			int variableCounter, List<Ingredient> ingredients, List<CtParameter<?>> parameters,
 			Map<Integer, Ingredient> ingredientOfMapped, CtTypeReference returnType) {
+
 		String name = "_meta_" + variableCounter;
 		CtType<?> target = modificationPoint.getCodeElement().getParent(CtType.class);
 		Set<ModifierKind> modifiers = new HashSet<>();
 		modifiers.add(ModifierKind.PRIVATE);
-
-		// CtTypeReference returnTypeBoolean =
-		// MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
 		Set<CtTypeReference<? extends Throwable>> thrownTypes = new HashSet<>();
 
@@ -203,8 +210,6 @@ public class MetaGenerator {
 				thrownTypes.add(typeEx);
 
 			}
-			// thrownTypes.addAll(parentMethod.getThrownTypes().stream().map(CtTypeReference.class::cast).map(e->e.)
-
 		}
 
 		parameters.stream().forEach(e -> e.setPositions(new NoSourcePosition()));
@@ -225,7 +230,9 @@ public class MetaGenerator {
 		CtBlock methodBodyBlock = new CtBlockImpl();
 		megaMethod.setBody(methodBodyBlock);
 		methodBodyBlock.addStatement(tryMethodMain);
-		int candidateNumber = 0;
+		// Let's start the counter according to the number of operation mutants we
+		// already have
+		int candidateNumber = ingredientOfMapped.keySet().size();
 		for (Ingredient ingredientCandidate : ingredients) {
 
 			candidateNumber++;
