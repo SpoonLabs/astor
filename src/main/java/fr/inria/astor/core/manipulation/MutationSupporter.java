@@ -76,9 +76,10 @@ public class MutationSupporter {
 			if (!src.trim().isEmpty())
 				jdtSpoonModelBuilder.addInputSource(new File(src));
 		}
-		logger.info("Classpath for building SpoonModel " + Arrays.toString(classpath));
-		jdtSpoonModelBuilder.setSourceClasspath(classpath);
-
+		logger.info("Classpath (Dependencies) for building SpoonModel: " + Arrays.toString(classpath));
+		if (classpath != null && classpath.length > 0) {
+			jdtSpoonModelBuilder.setSourceClasspath(classpath);
+		}
 		jdtSpoonModelBuilder.build();
 
 		if (ConfigurationProperties.getPropertyBool("savespoonmodelondisk")) {

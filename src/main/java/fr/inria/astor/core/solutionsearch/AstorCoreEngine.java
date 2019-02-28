@@ -776,7 +776,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		String bytecodeLocation = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String classpath = projectFacade.getProperties().getDependenciesString();
-		String[] cpArray = classpath.split(File.pathSeparator);
+		String[] cpArray = (classpath != null && !classpath.trim().isEmpty()) ? classpath.split(File.pathSeparator)
+				: null;
 
 		log.info("Creating model,  Code location from working folder: " + codeLocation);
 
