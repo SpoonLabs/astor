@@ -237,6 +237,9 @@ public class MetaGenerator {
 
 			candidateNumber++;
 			CtExpression expressionCandidate = (CtExpression) ingredientCandidate.getCode();
+			CtExpression expCloned = expressionCandidate.clone();
+			expCloned.setPosition(new NoSourcePosition());
+			MutationSupporter.clearPosition(expCloned);
 			CtCodeSnippetExpression caseCondition = MutationSupporter.getFactory().createCodeSnippetExpression(
 					"\"" + candidateNumber + "\".equals(System.getProperty(\"mutnumber\")) ");
 
@@ -257,7 +260,7 @@ public class MetaGenerator {
 			// The return inside the if
 			// add a return with the expression
 			CtReturn casereturn = new CtReturnImpl<>();
-			casereturn.setReturnedExpression(expressionCandidate);
+			casereturn.setReturnedExpression(expCloned);
 			particularIfBlock.addStatement(casereturn);
 
 			// Add the if to the methodBlock
