@@ -53,6 +53,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 	public static int MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
 	public int modifPointsAnalyzed = 0;
 
+	public List<ProgramVariant> evaluatedProgramVariants = new ArrayList<>();
+
 	public MetaEvalTOSApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		this.operatorSpace = new OperatorSpace();
@@ -87,6 +89,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		// We don't evolve variants, so the generation is always one.
 		generationsExecuted = 1;
 		modifPointsAnalyzed = 0;
+		evaluatedProgramVariants.clear();
 
 		int totalmodfpoints = variants.get(0).getModificationPoints().size();
 		for (ProgramVariant parentVariant : variants) {
@@ -147,6 +150,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			try {
 				List<ProgramVariant> candidateProgramVariants = new ArrayList<>();
 				List<OperatorInstance> instancesOfOperatorForModificationPoint = null;
+
+				log.debug("***MP " + iModifPoint.identified + " operator " + operator);
 
 				if (!operator.canBeAppliedToPoint(iModifPoint))
 					continue;
@@ -214,6 +219,9 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 					if (resultValidation) {
 						this.solutions.add(iProgramVariant);
 						existSolution = true;
+					}
+					if (ConfigurationProperties.getPropertyBool("saveallevaluatedvariants")) {
+						this.evaluatedProgramVariants.add(iProgramVariant);
 					}
 
 					// Undo the code transformations
@@ -370,6 +378,10 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		// We proceed with the analysis results
 		super.atEnd();
+	}
+
+	public List<ProgramVariant> getEvaluatedProgramVariants() {
+		return evaluatedProgramVariants;
 	}
 
 }
