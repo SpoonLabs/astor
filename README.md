@@ -72,6 +72,7 @@ DeepRepair is an extension of jGenProg leveraging code similarity. The experimen
 
 * [Sorting and Transforming Program Repair Ingredients via Deep Learning Code Similarities](https://arxiv.org/pdf/1707.04742.pdf) (Martin White, Michele Tufano, Matias Martinez, Martin Monperrus and Denys Poshyvanyk), Proceedings of SANER, 2019.
 * Open-science repository with DeepRepair patches: <https://github.com/SpoonLabs/astor-experiments/>
+* Open-science package at Zenodo: <https://zenodo.org/record/2578775>
 
 Cardumen
 ----------
