@@ -1,5 +1,13 @@
 # Getting started Astor
 
+## Compilation and installation
+
+     git clone https://github.com/SpoonLabs/astor.git
+     cd astor
+     mvn install
+
+Warning: Windows is only partially supported.
+
 ## jGenProg
 
 We present a command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help are listed below. They arguments can also be changed  in "configuration.properties".
