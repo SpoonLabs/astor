@@ -27,7 +27,7 @@ Getting started:
      cd examples/Math-issue-280
      mvn clean compile test  # compiling and running bug example
      cd ../../
-     mvn dependency:build-classpath | egrep -v "(^\[INFO\]|^\[WARNING\])" | tee /tmp/astor-classpath.txt
+     mvn dependency:build-classpath -B | egrep -v "(^\[INFO\]|^\[WARNING\])" | tee /tmp/astor-classpath.txt
      cat /tmp/astor-classpath.txt
      
 Then the main command (note that the "location" argument is mandatory, and must be an absolute path):
