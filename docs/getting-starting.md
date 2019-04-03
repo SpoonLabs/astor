@@ -8,6 +8,13 @@
 
 Warning: Windows is only partially supported.
 
+## Creating astor.jar
+
+     mvn package -DskipTests=true
+     
+The following JAR will be created: `target/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar`  
+This will referenced as `astor.jar` for the rest of this guide.
+
 ## jGenProg
 
 We present a command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help are listed below. They arguments can also be changed  in "configuration.properties".
