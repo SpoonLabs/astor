@@ -10,13 +10,17 @@ import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * 
  * @author Matias Martinez
  *
  */
-public class UnwrapfromTryOp extends ReplaceOp {
+public class UnwrapfromTryOp extends ReplaceOp implements IOperatorWithTargetElement {
+
+	private CtElement targetElement = null;
+
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
 
@@ -28,7 +32,8 @@ public class UnwrapfromTryOp extends ReplaceOp {
 
 		log.debug("Unwrap Try:");
 
-		CtTry trytoremove = (CtTry) modificationPoint.getCodeElement();
+		CtTry trytoremove = (targetElement == null) ? (CtTry) modificationPoint.getCodeElement()
+				: (CtTry) targetElement;
 
 		CtBlock blockOfTry = trytoremove.getBody().clone();
 		MutationSupporter.clearPosition(blockOfTry);
@@ -46,4 +51,15 @@ public class UnwrapfromTryOp extends ReplaceOp {
 		return false;
 	}
 
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement target) {
+
+		return target instanceof CtTry;
+	}
 }

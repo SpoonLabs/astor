@@ -10,7 +10,6 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.IngredientFromDyna;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
@@ -20,6 +19,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -28,7 +28,9 @@ import spoon.reflect.reference.CtTypeReference;
  * @author Matias Martinez
  *
  */
-public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredientOperator {
+public class WrapwithIfOp extends ReplaceOp
+		implements MetaOperator, DynaIngredientOperator, IOperatorWithTargetElement {
+	private CtElement targetElement = null;
 
 	@Override
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
@@ -52,8 +54,6 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint,
 			List<IngredientFromDyna> ingredients) {
 
-		ProgramVariant variant = modificationPoint.getProgramVariant();
-
 		// The parameters to be included in the new method
 		List<CtVariableAccess> varsToBeParameters = SupportOperators.collectAllVarsFromDynaIngredients(ingredients,
 				modificationPoint);
@@ -74,10 +74,13 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 		int candidateNumber = 0;
 		CtTypeReference returnType = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
+		CtElement codeElement = (targetElement == null) ? modificationPoint.getCodeElement() : targetElement;
+
 		// let's create the meta
-		MetaOperatorInstance megaOp = MetaGenerator.createMetaStatementReplacement(modificationPoint,
-				modificationPoint.getCodeElement(), MutationSupporter.getFactory().createCodeSnippetExpression("true"),
-				candidateNumber, ingredients.stream().map(Ingredient.class::cast).collect(Collectors.toList())//
+
+		MetaOperatorInstance megaOp = MetaGenerator.createMetaStatementReplacement(modificationPoint, codeElement,
+				MutationSupporter.getFactory().createCodeSnippetExpression("true"), candidateNumber,
+				ingredients.stream().map(Ingredient.class::cast).collect(Collectors.toList())//
 				, parameters, realParameters, this, returnType);
 		List<MetaOperatorInstance> opsMega = new ArrayList();
 		opsMega.add(megaOp);
@@ -116,4 +119,15 @@ public class WrapwithIfOp extends ReplaceOp implements MetaOperator, DynaIngredi
 		return opInstace;
 	}
 
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement target) {
+
+		return true;
+	}
 }

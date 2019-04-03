@@ -18,6 +18,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -27,7 +28,9 @@ import spoon.reflect.visitor.filter.TypeFilter;
  * @author Matias Martinez
  *
  */
-public class LogicRedOperator extends FineGrainedExpressionReplaceOperator implements MetaOperator {
+public class LogicRedOperator extends FineGrainedExpressionReplaceOperator
+		implements MetaOperator, IOperatorWithTargetElement {
+	private CtElement targetElement = null;
 
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
@@ -35,11 +38,17 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator imple
 		List<MetaOperatorInstance> opsMega = new ArrayList();
 
 		// get all binary expressions
-		List<CtExpression<Boolean>> booleanExpressionsInModificationPoints = modificationPoint.getCodeElement()
-				.getElements(e -> e.getType() != null
-						// we need the target is a binary
-						&& e instanceof CtBinaryOperator && SupportOperators.isBooleanType(e));
+		List<CtExpression<Boolean>> booleanExpressionsInModificationPoints = null;
 
+		if (targetElement == null) {
+			booleanExpressionsInModificationPoints = modificationPoint.getCodeElement()
+					.getElements(e -> e.getType() != null
+							// we need the target is a binary
+							&& e instanceof CtBinaryOperator && SupportOperators.isBooleanType(e));
+		} else {
+			booleanExpressionsInModificationPoints = new ArrayList<>();
+			booleanExpressionsInModificationPoints.add((CtExpression<Boolean>) targetElement);
+		}
 		// Let's transform it
 		List<CtBinaryOperator> binOperators = booleanExpressionsInModificationPoints.stream()
 				.map(CtBinaryOperator.class::cast)
@@ -150,4 +159,15 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator imple
 						|| point.getCodeElement().getElements(new TypeFilter<>(CtBinaryOperator.class)).size() > 0));
 	}
 
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement e) {
+
+		return e instanceof CtBinaryOperator && SupportOperators.isBooleanType((CtBinaryOperator) e);
+	}
 }

@@ -1,7 +1,10 @@
 package fr.inria.astor.approaches.tos.operator.metaevaltos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
 import fr.inria.astor.core.entities.Ingredient;
@@ -11,7 +14,6 @@ import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
-import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
@@ -19,51 +21,53 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
- * Methor wrong reference Case 1: Argument removement. Case 2: Different method
- * name. Case 3: Different number arguments.
  * 
  * @author Matias Martinez
  *
  */
-public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionReplaceOperator
+public class MethodXVariableReplacementOp extends FineGrainedExpressionReplaceOperator
 		implements MetaOperator, IOperatorWithTargetElement {
-	protected CtElement targetElement = null;
+
+	private CtElement targetElement = null;
 
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
-		List<MetaOperatorInstance> opsMega = new ArrayList();
+		List<OperatorInstance> opsOfVariant = new ArrayList();
 
-		MapList<CtInvocation, Ingredient> ingredientsPerInvocation = this
-				.retrieveInvocationIngredient(modificationPoint);
-		if (ingredientsPerInvocation.isEmpty()) {
-			// Nothing to replace
-			return opsMega;
-		}
+		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
-		log.debug("\nMethodInvoReplacement: \n" + modificationPoint);
+		//
+		List<CtInvocation> invocationsFromModifPoints = getInvocations(modificationPoint.getCodeElement());
+
+		log.debug("\nModifcationPoint: \n" + modificationPoint);
 
 		// let's start with one, and let's keep the Zero for the default (all ifs are
 		// false)
+		// TODO: we only can activate one mutant
 
-		// As difference with var replacement, a metamutant for each invocation
-		for (CtInvocation invocationToReplace : ingredientsPerInvocation.keySet()) {
+		int variableCounter = 0;
+		for (CtInvocation invocationToReplace : invocationsFromModifPoints) {
 
-			int invocationCounter = 0;
+			// The return type of the new method correspond to the type of variable to
+			// change
+			CtTypeReference returnType = invocationToReplace.getType();
 
-			List<Ingredient> ingredients = ingredientsPerInvocation.get(invocationToReplace);
+			List<Ingredient> ingredients = this.computeIngredientsFromMInvokToReplace(modificationPoint,
+					invocationToReplace);
 
-			List<CtVariableAccess> varsToBeParameters = new ArrayList<>();
-
-			// The parameters to be included in the new method
-			for (Ingredient ingredient : ingredients) {
-				SupportOperators.putVarsNotDuplicated(ingredient.getCode(), varsToBeParameters);
-
+			if (ingredients.isEmpty()) {
+				// Nothing to replace
+				continue;
 			}
 
+			// The parameters to be included in the new method
+			List<CtVariableAccess> varsToBeParameters = ingredients.stream().map(e -> e.getCode())
+					.map(CtVariableAccess.class::cast).collect(Collectors.toList());
 			// The variable from the existing invocation must also be a parameter
 			SupportOperators.putVarsNotDuplicated(modificationPoint.getCodeElement(), varsToBeParameters);
 
@@ -78,20 +82,47 @@ public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionRe
 				realParameters.add(ctVariableAccess.clone().setPositions(new NoSourcePosition()));
 			}
 
-			invocationCounter++;
+			variableCounter++;
 
-			/// Let's start creating the body of the new method.
-			// first the main try
-			CtTypeReference returnTypeOfInvocation = invocationToReplace.getType();
+			MetaGenerator.createMetaForSingleElement(modificationPoint, invocationToReplace, variableCounter,
+					ingredients, parameters, realParameters, returnType, opsOfVariant, ingredientOfMapped);
 
-			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint,
-					invocationToReplace, invocationCounter, ingredients, parameters, realParameters, this,
-					returnTypeOfInvocation);
-			opsMega.add(megaOp);
+		} // End variable
 
-		} // End invocation
+		MetaOperatorInstance opMega = new MetaOperatorInstance(opsOfVariant);
+		opMega.setAllIngredients(ingredientOfMapped);
+		opMega.setOperationApplied(this);
+		opMega.setOriginal(modificationPoint.getCodeElement());
+		opMega.setModificationPoint(modificationPoint);
+
+		List<MetaOperatorInstance> opsMega = new ArrayList();
+		opsMega.add(opMega);
 
 		return opsMega;
+	}
+
+	protected List<Ingredient> computeIngredientsFromMInvokToReplace(ModificationPoint modificationPoint,
+			CtInvocation invocationToReplace) {
+
+		List<Ingredient> ingredients = new ArrayList<>();
+		List<CtVariable> varsInContext = modificationPoint.getContextOfModificationPoint();
+
+		for (CtVariable iVarInContext : varsInContext) {
+
+			if (!SupportOperators.checkIsSubtype(iVarInContext.getType(), invocationToReplace.getType())) {
+				continue;
+			}
+
+			CtVariableAccess iVarAccessFromContext = MutationSupporter.getFactory()
+					.createVariableRead(iVarInContext.getReference(), false);
+			Ingredient ingredient = new Ingredient(iVarAccessFromContext);
+			// we use this property to indicate the old variable to replace
+			ingredient.setDerivedFrom(invocationToReplace);
+			ingredients.add(ingredient);
+
+		}
+
+		return ingredients;
 	}
 
 	@Override
@@ -115,15 +146,6 @@ public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionRe
 		return opInstace;
 	}
 
-	/**
-	 * 
-	 * 
-	 * @param suspiciousElement
-	 * @param context
-	 * @return
-	 */
-	public abstract MapList<CtInvocation, Ingredient> retrieveInvocationIngredient(ModificationPoint point);
-
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
 
@@ -137,12 +159,6 @@ public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionRe
 
 	}
 
-	@Override
-	public boolean checkTargetCompatibility(CtElement target) {
-
-		return target instanceof CtInvocation;
-	}
-
 	protected List<CtInvocation> getInvocations(CtElement suspiciousElement) {
 		List<CtInvocation> invocations = null;
 		if (targetElement == null)
@@ -152,6 +168,12 @@ public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionRe
 			invocations.add((CtInvocation) targetElement);
 		}
 		return invocations;
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement target) {
+
+		return target instanceof CtInvocation;
 	}
 
 }

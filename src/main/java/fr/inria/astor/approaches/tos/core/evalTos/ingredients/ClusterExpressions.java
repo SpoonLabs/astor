@@ -14,7 +14,6 @@ import fr.inria.astor.core.manipulation.synthesis.dynamoth.EvaluatedExpression;
 public class ClusterExpressions extends ArrayList<EvaluatedExpression> {
 
 	String clusterType = null;
-	Object value = null;
 
 	public ClusterExpressions(String clusterType) {
 		super();
@@ -27,6 +26,11 @@ public class ClusterExpressions extends ArrayList<EvaluatedExpression> {
 
 	public void setClusterType(String clusterType) {
 		this.clusterType = clusterType;
+	}
+
+	@Override
+	public String toString() {
+		return "members: " + super.toString();
 	}
 
 }

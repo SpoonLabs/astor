@@ -20,6 +20,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -30,7 +31,10 @@ import spoon.reflect.visitor.filter.TypeFilter;
  * @author Matias Martinez
  *
  */
-public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator implements MetaOperator {
+public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator
+		implements MetaOperator, IOperatorWithTargetElement {
+
+	private CtElement targetElement = null;
 
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
@@ -41,8 +45,15 @@ public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator imp
 
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
-		List<CtLiteral> literalsInModificationPoints = modificationPoint.getCodeElement()
-				.getElements(new TypeFilter<>(CtLiteral.class));
+		List<CtLiteral> literalsInModificationPoints = null;
+
+		if (targetElement == null) {
+			literalsInModificationPoints = modificationPoint.getCodeElement()
+					.getElements(new TypeFilter<>(CtLiteral.class));
+		} else {
+			literalsInModificationPoints = new ArrayList<>();
+			literalsInModificationPoints.add((CtLiteral) targetElement);
+		}
 
 		List<CtLiteral> getAllLiteralsFromClass = modificationPoint.getCtClass()
 				.getElements(new TypeFilter<>(CtLiteral.class)).stream().distinct().collect(Collectors.toList());
@@ -164,5 +175,17 @@ public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator imp
 
 		// See that the modification points are statements
 		return (point.getCodeElement() instanceof CtStatement);
+	}
+
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement target) {
+
+		return target instanceof CtLiteral;
 	}
 }

@@ -21,14 +21,17 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez
  *
  */
-public class UnwrapfromMethodCallOp extends FineGrainedExpressionReplaceOperator {
+public class UnwrapfromMethodCallOp extends FineGrainedExpressionReplaceOperator implements IOperatorWithTargetElement {
+	private CtElement targetElement = null;
 
 	@Override
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
 		List<OperatorInstance> opInstances = new ArrayList<>();
 
+		CtElement elementToVisit = (this.targetElement == null) ? modificationPoint.getCodeElement()
+				: this.targetElement;
 		MapList<CtInvocation, Ingredient> ingredients = retrieveMethodHasCompatibleParameterAndReturnSameMethod(
-				modificationPoint.getCodeElement());
+				elementToVisit);
 
 		for (CtInvocation invocationToReplace : ingredients.keySet()) {
 
@@ -88,5 +91,17 @@ public class UnwrapfromMethodCallOp extends FineGrainedExpressionReplaceOperator
 
 		// See that the modification points are statements
 		return (point.getCodeElement() instanceof CtStatement);
+	}
+
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement e) {
+
+		return (e instanceof CtInvocation);
 	}
 }

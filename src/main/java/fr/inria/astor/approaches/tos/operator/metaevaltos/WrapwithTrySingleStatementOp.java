@@ -12,6 +12,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.code.CtBlockImpl;
 
 /**
@@ -19,13 +20,15 @@ import spoon.support.reflect.code.CtBlockImpl;
  * @author Matias Martinez
  *
  */
-public class WrapwithTrySingleStatementOp extends ReplaceOp {
+public class WrapwithTrySingleStatementOp extends ReplaceOp implements IOperatorWithTargetElement {
+	private CtElement targetElement = null;
 
 	@Override
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
 		List<OperatorInstance> opInstances = new ArrayList<>();
 
-		CtStatement statementPointed = (CtStatement) modificationPoint.getCodeElement();
+		CtStatement statementPointed = (targetElement == null) ? (CtStatement) modificationPoint.getCodeElement()
+				: (CtStatement) targetElement;
 
 		CtTry tryNew = MutationSupporter.getFactory().createTry();
 		List<CtCatch> catchers = new ArrayList<>();
@@ -51,4 +54,15 @@ public class WrapwithTrySingleStatementOp extends ReplaceOp {
 		return false;
 	}
 
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement target) {
+
+		return target instanceof CtStatement;
+	}
 }

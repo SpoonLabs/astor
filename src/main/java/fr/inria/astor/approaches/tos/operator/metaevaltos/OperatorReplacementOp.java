@@ -31,9 +31,11 @@ import spoon.reflect.visitor.filter.TypeFilter;
  * @author Matias Martinez
  *
  */
-public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator implements MetaOperator {
+public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator
+		implements MetaOperator, IOperatorWithTargetElement {
 
 	public BinaryOperatorKind operatorKind = BinaryOperatorKind.OR;
+	private CtElement targetElement = null;
 
 	@Override
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
@@ -47,9 +49,16 @@ public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator 
 		List<MetaOperatorInstance> opsMega = new ArrayList();
 
 // get all binary expressions
-		List<CtBinaryOperator> booleanExpressionsInModificationPoints = modificationPoint.getCodeElement()
-				.getElements(new TypeFilter<>(CtBinaryOperator.class)).stream()
-				.filter(e -> SupportOperators.isBooleanType(e)).collect(Collectors.toList());
+		List<CtBinaryOperator> booleanExpressionsInModificationPoints = null;
+
+		if (targetElement == null) {
+			booleanExpressionsInModificationPoints = modificationPoint.getCodeElement()
+					.getElements(new TypeFilter<>(CtBinaryOperator.class)).stream()
+					.filter(e -> SupportOperators.isBooleanType(e)).collect(Collectors.toList());
+		} else {
+			booleanExpressionsInModificationPoints = new ArrayList<>();
+			booleanExpressionsInModificationPoints.add((CtBinaryOperator) this.targetElement);
+		}
 
 		log.debug("\nLogicExp: \n" + modificationPoint);
 
@@ -165,4 +174,15 @@ public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator 
 
 	}
 
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement e) {
+
+		return e instanceof CtBinaryOperator && SupportOperators.isBooleanType((CtExpression) e);
+	}
 }

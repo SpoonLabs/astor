@@ -22,6 +22,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -31,9 +32,11 @@ import spoon.reflect.visitor.filter.TypeFilter;
  * @author Matias Martinez
  *
  */
-public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOperator implements MetaOperator {
+public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOperator
+		implements MetaOperator, IOperatorWithTargetElement {
 
 	public static final String META_METHOD_LABEL = "_meta_";
+	private CtElement targetElement = null;
 
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
@@ -49,8 +52,15 @@ public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOp
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
 		//
-		List<CtVariableAccess> varAccessInModificationPoints = VariableResolver
-				.collectVariableAccess(modificationPoint.getCodeElement(), false);
+		List<CtVariableAccess> varAccessInModificationPoints = null;
+
+		if (targetElement == null) {
+			varAccessInModificationPoints = VariableResolver.collectVariableAccess(modificationPoint.getCodeElement(),
+					false);
+		} else {
+			varAccessInModificationPoints = new ArrayList<>();
+			varAccessInModificationPoints.add((CtVariableAccess) targetElement);
+		}
 
 		log.debug("\nModifcationPoint: \n" + modificationPoint);
 
@@ -189,4 +199,15 @@ public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOp
 		return (point.getCodeElement() instanceof CtStatement);
 	}
 
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement target) {
+
+		return target instanceof CtVariableAccess;
+	}
 }

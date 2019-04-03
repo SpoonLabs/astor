@@ -19,6 +19,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtBinaryOperatorImpl;
@@ -29,9 +30,10 @@ import spoon.support.reflect.code.CtBinaryOperatorImpl;
  *
  */
 public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
-		implements MetaOperator, DynaIngredientOperator {
+		implements MetaOperator, DynaIngredientOperator, IOperatorWithTargetElement {
 
 	public BinaryOperatorKind operatorKind = BinaryOperatorKind.OR;
+	private CtElement targetElement = null;
 
 	@Override
 	public List<OperatorInstance> createOperatorInstances(ModificationPoint modificationPoint) {
@@ -62,8 +64,14 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 		}
 
 		// get all boolean expressions
-		List<CtExpression<Boolean>> booleanExpressionsInModificationPoints = modificationPoint.getCodeElement()
-				.getElements(e -> e.getType() != null && e.getType().unbox().getSimpleName().equals("boolean"));
+		List<CtExpression<Boolean>> booleanExpressionsInModificationPoints = null;
+		if (targetElement == null)
+			booleanExpressionsInModificationPoints = modificationPoint.getCodeElement()
+					.getElements(e -> e.getType() != null && e.getType().unbox().getSimpleName().equals("boolean"));
+		else {
+			booleanExpressionsInModificationPoints = new ArrayList<>();
+			booleanExpressionsInModificationPoints.add((CtExpression<Boolean>) targetElement);
+		}
 
 		log.debug("\nLogicExp: \n" + modificationPoint);
 
@@ -109,8 +117,8 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 			variableCounter++;
 			CtTypeReference returnType = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
-			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint, expressionToExpand,
-					variableCounter, ingredients, parameters, realParameters, this, returnType);
+			MetaOperatorInstance megaOp = MetaGenerator.createMetaFineGrainedReplacement(modificationPoint,
+					expressionToExpand, variableCounter, ingredients, parameters, realParameters, this, returnType);
 			opsMega.add(megaOp);
 
 		} // End variable
@@ -179,4 +187,19 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 
 	}
 
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement target) {
+
+		if (target instanceof CtExpression) {
+			CtExpression e = (CtExpression) target;
+			return (e.getType() != null && e.getType().unbox().getSimpleName().equals("boolean"));
+		} else
+			return false;
+	}
 }
