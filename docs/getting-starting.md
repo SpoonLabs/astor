@@ -177,7 +177,13 @@ In case that the JVM is version 7 and Astor is not able to determine the version
 If after doing the previous steps Astor produces the exception  `UnsupportedClassVersionError (unsupported major.minor version 52.0)` and you are running Astor using the jar (`astor-0.X.X-jar-with-dependencies.jar`), 
 you will need to add  the jar `<astor_location>/lib/jtestex7.jar` in the java classplath (attention: add it *before* the astor jar).
 
+## FAQ
 
+Q. I get following error after running Astor: `Exception in thread "main" java.lang.IllegalArgumentException: The bin folder /home/user/astor/examples/Math-issue-280/target/classes does not exist`   
+A. Run `mvn clean compile test` again in the example issue folder.  
+
+Q. I get following error after running Astor: `Exception in thread "main" java.lang.IllegalArgumentException: The bin folder /home/user/astor/examples/Math-issue-280/target/test-classes does not exist`  
+A. Run `mvn test-compile` in the example issue folder.
 
 
 
