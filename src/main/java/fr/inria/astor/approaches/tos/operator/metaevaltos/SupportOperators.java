@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -135,18 +136,26 @@ public class SupportOperators {
 			CtClass classUnderAnalysis, ModificationPoint point) {
 		List<CtInvocation> newInvocations = new ArrayList<>();
 
-		// CtClass classUnderAnalysis = point.getCodeElement().getParent(CtClass.class);
+		boolean isParentMethodStatic = isParentMethodStatic(point.getCodeElement());
 
 		List allMethods = SupportOperators.getAllMethodsFromClass(classUnderAnalysis);
 
 		CtThisAccess<Object> createThisAccess = MutationSupporter.getFactory()
 				.createThisAccess(MutationSupporter.getFactory().Type().objectType(), true);
+
 		for (Object omethod : allMethods) {
 
 			if (!(omethod instanceof CtMethod))
 				continue;
 
 			CtMethod anotherMethod = (CtMethod) omethod;
+
+			if (isParentMethodStatic && //
+					!anotherMethod.getModifiers().contains(ModifierKind.STATIC)) {
+				// if the modification point is in a static method, the method to call must be
+				// static
+				continue;
+			}
 
 			if (anotherMethod.getSimpleName().startsWith(VarReplacementByMethodCallOp.META_METHOD_LABEL))
 				// It's a meta-method, discard
@@ -165,17 +174,41 @@ public class SupportOperators {
 		return newInvocations;
 	}
 
+	public static boolean isParentMethodStatic(CtElement codeElement) {
+
+		CtMethod parentMethod = codeElement.getParent(CtMethod.class);
+		if (parentMethod != null) {
+
+			return parentMethod.getModifiers().contains(ModifierKind.STATIC);
+		}
+
+		return false;
+	}
+
 	public static List<CtInvocation> retrieveInvocationsFromVar(CtTypeReference variableToReplaceType,
 			CtClass classUnderAnalysis, ModificationPoint point) {
 		List<CtInvocation> newInvocations = new ArrayList<>();
 
 		List<CtVariable> variablesInScope = point.getContextOfModificationPoint();
 
+		boolean isParentMethodStatic = isParentMethodStatic(point.getCodeElement());
+
 		for (CtVariable varInScope : variablesInScope) {
 
 			if (varInScope.getType() == null || varInScope.getType().isPrimitive()) {
 				continue;
 			}
+
+			//
+
+			if (isParentMethodStatic && //
+					!varInScope.getModifiers().contains(ModifierKind.STATIC)) {
+				// if the modification point is in a static method, the variable to target must
+				// be
+				// static
+				continue;
+			}
+			//
 			List<CtMethod> allMethods = varInScope.getType().getAllExecutables().stream()
 					.filter(e -> e.getExecutableDeclaration() instanceof CtMethod)
 					.map(e -> e.getExecutableDeclaration()).map(CtMethod.class::cast).collect(Collectors.toList());
@@ -335,5 +368,14 @@ public class SupportOperators {
 		}
 		// all parameters exist
 		return newRealParameters;
+	}
+
+	public static void putVarsNotDuplicated(CtElement elementToAnalyze, List<CtVariableAccess> varsToBeParameters) {
+		List<CtVariableAccess> varsFromExpression = elementToAnalyze.getElements(e -> e instanceof CtVariableAccess);
+		for (CtVariableAccess ctVariableAccess : varsFromExpression) {
+			if (!varsToBeParameters.contains(ctVariableAccess))
+				varsToBeParameters.add(ctVariableAccess);
+
+		}
 	}
 }

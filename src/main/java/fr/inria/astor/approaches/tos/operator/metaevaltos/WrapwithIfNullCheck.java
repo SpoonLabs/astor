@@ -19,6 +19,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.code.CtBinaryOperatorImpl;
@@ -28,14 +29,17 @@ import spoon.support.reflect.code.CtBinaryOperatorImpl;
  * @author Matias Martinez
  *
  */
-public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator {
+public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator, IOperatorWithTargetElement {
+
+	private CtElement targetElement = null;
 
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
 		//
-		List<CtVariableAccess> varAccessInModificationPoints = VariableResolver
-				.collectVariableAccess(modificationPoint.getCodeElement());
+		CtElement codeElement = (targetElement == null) ? modificationPoint.getCodeElement() : targetElement;
+
+		List<CtVariableAccess> varAccessInModificationPoints = VariableResolver.collectVariableAccess(codeElement);
 
 		List<Ingredient> ingredients = this.computeIngredientsNullCheck(modificationPoint,
 				varAccessInModificationPoints);
@@ -59,9 +63,9 @@ public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator {
 		int candidateNumber = 0;
 		CtTypeReference returnType = MutationSupporter.getFactory().createCtTypeReference(Boolean.class);
 
-		MetaOperatorInstance megaOp = MetaGenerator.createMetaStatementReplacement(modificationPoint,
-				modificationPoint.getCodeElement(), MutationSupporter.getFactory().createCodeSnippetExpression("true"),
-				candidateNumber, ingredients, parameters, realParameters, this, returnType);
+		MetaOperatorInstance megaOp = MetaGenerator.createMetaStatementReplacement(modificationPoint, codeElement,
+				MutationSupporter.getFactory().createCodeSnippetExpression("true"), candidateNumber, ingredients,
+				parameters, realParameters, this, returnType);
 		List<MetaOperatorInstance> opsMega = new ArrayList();
 		opsMega.add(megaOp);
 
@@ -125,4 +129,15 @@ public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator {
 		return opInstace;
 	}
 
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement target) {
+
+		return true;
+	}
 }

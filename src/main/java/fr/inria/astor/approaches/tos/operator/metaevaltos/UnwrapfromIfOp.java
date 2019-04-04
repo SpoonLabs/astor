@@ -12,13 +12,15 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * 
  * @author Matias Martinez
  *
  */
-public class UnwrapfromIfOp extends ReplaceOp {
+public class UnwrapfromIfOp extends ReplaceOp implements IOperatorWithTargetElement {
+	private CtElement targetElement = null;
 
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
@@ -31,7 +33,7 @@ public class UnwrapfromIfOp extends ReplaceOp {
 
 		log.debug("Unwrap If:");
 
-		CtIf ifToRemove = (CtIf) modificationPoint.getCodeElement();
+		CtIf ifToRemove = (targetElement == null) ? (CtIf) modificationPoint.getCodeElement() : (CtIf) targetElement;
 
 		CtStatement stmtinsideThen = ifToRemove.getThenStatement().clone();
 
@@ -106,4 +108,15 @@ public class UnwrapfromIfOp extends ReplaceOp {
 		return false;
 	}
 
+	@Override
+	public void setTargetElement(CtElement target) {
+		this.targetElement = target;
+
+	}
+
+	@Override
+	public boolean checkTargetCompatibility(CtElement target) {
+
+		return target instanceof CtIf;
+	}
 }

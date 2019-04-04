@@ -36,7 +36,8 @@ public class MethodXMethodReplacementDiffNameOp extends MethodXMethodReplacement
 
 		MapList<CtInvocation, Ingredient> similarInvocationResult = new MapList<>();
 
-		List<CtInvocation> invocations = suspiciousElement.getElements(e -> (e instanceof CtInvocation));
+		List<CtInvocation> invocations = getInvocations(suspiciousElement);
+
 		for (CtInvocation invocationToReplace : invocations) {
 
 			CtExecutable minvokedInAffected = invocationToReplace.getExecutable().getDeclaration();
