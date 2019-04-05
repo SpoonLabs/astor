@@ -3,7 +3,7 @@ ASTOR: A Program Repair Library for Java
 
 [![Build Status](https://travis-ci.org/SpoonLabs/astor.svg?branch=master)](https://travis-ci.org/SpoonLabs/astor)
 
-Astor is an automatic software repair framework in Java for Java, done by Inria, the University of Lille, the University of Valenciennes, and KTH Royal Institute of Technology. 
+Astor is an automatic software repair framework in Java for Java, done by Inria, the University of Lille, the Université Polytechnique Hauts-de-France, and KTH Royal Institute of Technology. 
 Astor is an acronym standing for "Automatic Software Transformations fOr program Repair".
 
 If you use Astor for academic purposes, please cite the appropriate publication:
