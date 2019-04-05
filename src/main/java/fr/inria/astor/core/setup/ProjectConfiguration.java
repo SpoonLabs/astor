@@ -288,7 +288,7 @@ public class ProjectConfiguration {
 		} catch (Exception e) {
 			logger.error("Error retrieving java version: " + e);
 		}
-		logger.error("Error retrieving java version ouput obtained: \n" + processOutput);
+		logger.error("Error retrieving java version output obtained: \n" + processOutput);
 		return null;
 	}
 
