@@ -92,8 +92,10 @@ Usage
 Usage of Astor in education
 -------------------------------
 
-* Astor is being used in a [course by the Chair of Software Engineering (Prof. Dr. rer. nat. Lars Grunske) at Humboldt-Universität zu Berlin](https://www.informatik.hu-berlin.de/de/forschung/gebiete/se/teaching/ss2018/se2/se2)
-* Contact us or make a PR to add your course here :-)
+Make a PR to add your course here :-)
+
+* Used in a [course by the Chair of Software Engineering (Prof. Dr. rer. nat. Lars Grunske) at Humboldt-Universität zu Berlin](https://www.informatik.hu-berlin.de/de/forschung/gebiete/se/teaching/ss2018/se2/se2)
+* Used in a course on [Software Testing and Reverse Engineering (CS4110)](https://github.com/TUDelft-CS4110/syllabus) at TU Delft
 
 
 Astor in the literature
