@@ -65,11 +65,13 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 	public MetaEvalTOSApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		this.operatorSpace = new OperatorSpace();
-
+		loadPredictor();
 	}
 
 	public void loadPredictor() {
+
 		if (ConfigurationProperties.hasProperty("pred")) {
+			log.debug("Loading predictor");
 			String predclass = ConfigurationProperties.getProperty("pred");
 
 			try {
@@ -189,11 +191,12 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 				// Set the target element in the operator//This needs refactor
 				if (this.predictor != null) {
-
+					// Here we have a predictor used for predict the opertor
 					// If we are interested in applying ops only when we have target
-					if (ConfigurationProperties.hasProperty("onlywithtarget") && targetElement == null)
+					// ConfigurationProperties.hasProperty("onlywithtarget") &&
+					if (targetElement == null) {
 						continue;
-
+					}
 					IOperatorWithTargetElement targetOp = (IOperatorWithTargetElement) operator;
 					if (targetOp.checkTargetCompatibility(targetElement)) {
 						targetOp.setTargetElement(targetElement);
@@ -203,8 +206,6 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 						continue;
 					}
 				}
-
-				//
 
 				try {
 					List<ProgramVariant> candidateProgramVariants = new ArrayList<>();
