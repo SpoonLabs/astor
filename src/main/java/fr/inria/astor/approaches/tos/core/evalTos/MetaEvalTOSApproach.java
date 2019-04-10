@@ -42,7 +42,6 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.validation.results.MetaValidationResult;
-import fr.inria.astor.util.MapList;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.declaration.CtElement;
@@ -173,22 +172,35 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		boolean existSolution = false;
 
-		MapList<CtElement, AstorOperator> predictions = computePredictionsForModificationPoint(iModifPoint);
+		IPrediction predictions = computePredictionsForModificationPoint(iModifPoint);
 
+		log.info("Elements to modify in MP " + iModifPoint.identified + ": "
+				+ predictions.getElementsWithPrediction().size());
 		// No prediction, so, we return
-		if (predictions.isEmpty())
+		if (predictions.getElementsWithPrediction().isEmpty())
 			return false;
 
 		DynaIngredientPool poolFromModifPoint = this.getClusteredEvaluatedExpression(iModifPoint);
 
+		log.info("Dyna Ingredients of modify in MP " + iModifPoint.identified + ": "
+				+ ((poolFromModifPoint.getClusterEvaluatedExpressions() != null)
+						? poolFromModifPoint.getClusterEvaluatedExpressions().size()
+						: "Dynamoth null"));
+
 		// Call to the extension point to get the order
 		// We take each operator, in the order given by the EP
-		for (CtElement targetElement : predictions.keySet()) {
+		for (CtElement targetElement : predictions.getElementsWithPrediction()) {
 
-			List<AstorOperator> candidateOperators = predictions.get(targetElement);
+			List<AstorOperator> candidateOperators = predictions.getPrediction(targetElement);
 
 			for (AstorOperator operator : candidateOperators) {
 
+				log.info("Target " + targetElement + " operator " + operator);
+
+				if (operator == null) {
+					log.error("No operator to apply");
+					continue;
+				}
 				// Set the target element in the operator//This needs refactor
 				if (this.predictor != null) {
 					// Here we have a predictor used for predict the opertor
@@ -310,7 +322,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	}
 
-	public MapList<CtElement, AstorOperator> computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
+	public IPrediction computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
 
 		if (this.predictor != null) {
 			try {
@@ -324,7 +336,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		} else {
 			// No predictor, so we put all the operations available
 			List<AstorOperator> ops = this.operatorSpace.getOperators();
-			MapList<CtElement, AstorOperator> optoapply = new MapList<>();
+			Prediction optoapply = new Prediction();
 			optoapply.put(iModifPoint.getCodeElement(), ops);
 
 			return optoapply;

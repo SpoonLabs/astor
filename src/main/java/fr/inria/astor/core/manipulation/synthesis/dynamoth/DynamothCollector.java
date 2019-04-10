@@ -15,8 +15,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.IncompatibleThreadStateException;
@@ -52,7 +51,6 @@ import fr.inria.lille.repair.synthesis.collect.spoon.MethodCollector;
 import fr.inria.lille.repair.synthesis.collect.spoon.StatCollector;
 import fr.inria.lille.repair.synthesis.collect.spoon.VariableTypeCollector;
 import fr.inria.lille.repair.synthesis.collect.spoon.VariablesInSuspiciousCollector;
-import fr.inria.lille.repair.vm.DebugJUnitRunner;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.support.RuntimeProcessingManager;
@@ -66,7 +64,7 @@ import spoon.support.RuntimeProcessingManager;
  *
  */
 public class DynamothCollector {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final org.apache.log4j.Logger logger = Logger.getLogger(this.getClass());
 
 	private final File[] projectRoots;
 	private final SourceLocation location;
@@ -197,13 +195,16 @@ public class DynamothCollector {
 					if (event instanceof VMDeathEvent || event instanceof VMDisconnectEvent) {
 						// exit
 						DebugJUnitRunner.process.destroy();
-						logger.debug("Exit");
+						// logger.debug("Exit");
+						// System.out.println("VM Event: Exit");
 						return;
 					} else if (event instanceof ClassPrepareEvent) {
-						logger.debug("ClassPrepareEvent");
+						// logger.debug("ClassPrepareEvent");
+						// System.out.println("VM event: ClassPrepareEvent");
 						processClassPrepareEvent();
 					} else if (event instanceof BreakpointEvent) {
-						logger.debug("BreakpointEvent");
+						// logger.debug("VM Event: BreakpointEvent");
+						// System.out.println("VM BreakpointEvent");
 						processBreakPointEvents((BreakpointEvent) event);
 					}
 				}
@@ -287,6 +288,7 @@ public class DynamothCollector {
 	}
 
 	private void processBreakPointEvents(BreakpointEvent breakpointEvent) throws IncompatibleThreadStateException {
+		// System.out.println("MM processing Break point " + breakpointEvent);
 		if (jumpEnabled) {
 			breakpointJump.setEnabled(false);
 			jumpEnabled = false;
@@ -323,7 +325,11 @@ public class DynamothCollector {
 		allValues.addAll(expressionCollectedBySpoon);
 		allValues.addAll(expressionsCollectedAtRuntime);
 
+		// System.out.println("candidates spoon: " + expressionCollectedBySpoon.size());
+		// System.out.println("candidates runtime: " +
+		// expressionsCollectedAtRuntime.size());
 		values.get(currentTestClass + "#" + currentTestMethod).add(allValues);
+		// System.out.println("Collected values " + values.keySet().size());
 	}
 
 	private void getCurrentTest(ThreadReference threadRef) {
@@ -348,8 +354,9 @@ public class DynamothCollector {
 								currentTestMethod = frameMethod;
 								this.currentIteration = 0;
 							}
-							logger.info("[test] " + currentTestClass + "#" + currentTestMethod + " iteration "
-									+ this.currentIteration);
+							// logger.info("[test] " + currentTestClass + "#" + currentTestMethod + "
+							// iteration "
+							// + this.currentIteration);
 							return;
 						}
 					}
