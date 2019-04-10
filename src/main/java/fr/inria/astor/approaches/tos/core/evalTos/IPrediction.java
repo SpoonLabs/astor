@@ -24,4 +24,6 @@ public interface IPrediction {
 
 	public JsonObject toJson();
 
+	public List<AstorOperator> getAllOperationsPredicted();
+
 }

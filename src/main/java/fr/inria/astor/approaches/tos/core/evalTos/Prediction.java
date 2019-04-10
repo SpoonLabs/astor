@@ -33,4 +33,14 @@ public class Prediction extends MapList<CtElement, AstorOperator> implements IPr
 		return null;
 	}
 
+	@Override
+	public List<AstorOperator> getAllOperationsPredicted() {
+		List<AstorOperator> allOps = new ArrayList<>();
+
+		for (List ops : this.values()) {
+			allOps.addAll(ops);
+		}
+		return allOps;
+	}
+
 }

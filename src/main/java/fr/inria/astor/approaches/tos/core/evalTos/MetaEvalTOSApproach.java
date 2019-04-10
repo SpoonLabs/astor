@@ -2,7 +2,9 @@ package fr.inria.astor.approaches.tos.core.evalTos;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -60,6 +62,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 	public List<ProgramVariant> evaluatedProgramVariants = new ArrayList<>();
 
 	protected IPredictor predictor = null;
+
+	public Map<ModificationPoint, IPrediction> predictions = new HashMap();
 
 	public MetaEvalTOSApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -172,26 +176,38 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		boolean existSolution = false;
 
-		IPrediction predictions = computePredictionsForModificationPoint(iModifPoint);
+		IPrediction predictionsForModifPoint = computePredictionsForModificationPoint(iModifPoint);
 
 		log.info("Elements to modify in MP " + iModifPoint.identified + ": "
-				+ predictions.getElementsWithPrediction().size());
+				+ predictionsForModifPoint.getElementsWithPrediction().size());
 		// No prediction, so, we return
-		if (predictions.getElementsWithPrediction().isEmpty())
+		if (predictionsForModifPoint.getElementsWithPrediction().isEmpty())
 			return false;
 
-		DynaIngredientPool poolFromModifPoint = this.getClusteredEvaluatedExpression(iModifPoint);
+		this.predictions.put(iModifPoint, predictionsForModifPoint);
 
-		log.info("Dyna Ingredients of modify in MP " + iModifPoint.identified + ": "
-				+ ((poolFromModifPoint.getClusterEvaluatedExpressions() != null)
-						? poolFromModifPoint.getClusterEvaluatedExpressions().size()
-						: "Dynamoth null"));
+		DynaIngredientPool ingredientPool = null;
+
+		List<AstorOperator> allOperationsPredicted = predictionsForModifPoint.getAllOperationsPredicted();
+
+		log.info("Predicted operators for " + iModifPoint.identified + " : " + allOperationsPredicted);
+
+		if (oneOperatorNeedsDynamicIngredients(allOperationsPredicted)) {
+			ingredientPool = this.getClusteredEvaluatedExpression(iModifPoint);
+
+			log.info("Dyna Ingredients of modify in MP " + iModifPoint.identified + ": "
+					+ ((ingredientPool.getClusterEvaluatedExpressions() != null)
+							? ingredientPool.getClusterEvaluatedExpressions().size()
+							: "Dynamoth null"));
+		} else {
+			log.debug("Any operator needs ingredient");
+		}
 
 		// Call to the extension point to get the order
 		// We take each operator, in the order given by the EP
-		for (CtElement targetElement : predictions.getElementsWithPrediction()) {
+		for (CtElement targetElement : predictionsForModifPoint.getElementsWithPrediction()) {
 
-			List<AstorOperator> candidateOperators = predictions.getPrediction(targetElement);
+			List<AstorOperator> candidateOperators = predictionsForModifPoint.getPrediction(targetElement);
 
 			for (AstorOperator operator : candidateOperators) {
 
@@ -242,8 +258,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 							DynaIngredientOperator dynaop = (DynaIngredientOperator) operator;
 
 							List<IngredientFromDyna> newIngredients = synthesizeCandidatesIngredientsFromType(
-									parentVariant, iModifPoint, poolFromModifPoint,
-									dynaop.retrieveTargetTypeReference());
+									parentVariant, iModifPoint, ingredientPool, dynaop.retrieveTargetTypeReference());
 
 							opInstancesMeta = dynaop.createMetaOperatorInstances(iModifPoint, newIngredients);
 
@@ -316,6 +331,22 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			}
 		}
 		return existSolution;
+	}
+
+	/**
+	 * Returns true if there is an operator that needs ingredient
+	 * 
+	 * @param allOperationsPredicted
+	 * @return
+	 */
+	private boolean oneOperatorNeedsDynamicIngredients(List<AstorOperator> allOperationsPredicted) {
+
+		for (AstorOperator astorOperator : allOperationsPredicted) {
+			if (astorOperator instanceof DynaIngredientOperator)
+				return true;
+		}
+
+		return false;
 	}
 
 	public void setTargetElement(CtElement targetElement, AstorOperator operator) {
@@ -492,6 +523,10 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	public List<ProgramVariant> getEvaluatedProgramVariants() {
 		return evaluatedProgramVariants;
+	}
+
+	public IPredictor getPredictor() {
+		return predictor;
 	}
 
 }
