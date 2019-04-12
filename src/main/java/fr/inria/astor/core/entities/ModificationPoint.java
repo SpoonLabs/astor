@@ -7,29 +7,28 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 
 /**
- * ModificationPoint of the program variant. It represents an element (i.e. spoon element, CtElement) of
- * the program under analysis.
+ * ModificationPoint of the program variant. It represents an element (i.e.
+ * spoon element, CtElement) of the program under analysis.
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class ModificationPoint {
+public class ModificationPoint implements Comparable {
 
 	protected ProgramVariant programVariant;
-	
+
 	protected CtElement codeElement;
 
 	protected CtClass ctClass;
-	
+
 	List<CtVariable> contextOfModificationPoint;
 
 	public int identified = 0;
-	
+
 	protected int generation = -1;
 
 	public ModificationPoint() {
 	}
-
 
 	public ModificationPoint(CtElement rootElement, CtClass ctClass, List<CtVariable> contextOfGen) {
 		super();
@@ -55,7 +54,7 @@ public class ModificationPoint {
 	}
 
 	public String toString() {
-		return "[" + codeElement.getClass().getSimpleName() + ", in " + ctClass.getQualifiedName()+ "]";
+		return "[" + codeElement.getClass().getSimpleName() + ", in " + ctClass.getQualifiedName() + "]";
 	}
 
 	public List<CtVariable> getContextOfModificationPoint() {
@@ -72,6 +71,16 @@ public class ModificationPoint {
 
 	public void setProgramVariant(ProgramVariant programVariant) {
 		this.programVariant = programVariant;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		if (o instanceof ModificationPoint) {
+			return Integer.compare(this.identified, ((ModificationPoint) o).identified);
+		}
+
+		return 0;
+
 	}
 
 }
