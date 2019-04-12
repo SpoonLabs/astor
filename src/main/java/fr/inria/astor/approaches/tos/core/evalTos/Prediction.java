@@ -3,6 +3,8 @@ package fr.inria.astor.approaches.tos.core.evalTos;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
@@ -29,8 +31,23 @@ public class Prediction extends MapList<CtElement, AstorOperator> implements IPr
 	}
 
 	@Override
-	public JsonObject toJson() {
-		return null;
+	public JsonElement toJson() {
+
+		JsonObject root = new JsonObject();
+
+		for (CtElement element : this.getElementsWithPrediction()) {
+			root.addProperty("code", element.toString());
+			root.addProperty("type", element.getClass().getSimpleName());
+			root.addProperty("path", element.getPath().toString());
+			JsonArray ops = new JsonArray();
+			root.add("ops", ops);
+			for (AstorOperator op : this.get(element)) {
+				ops.add(op.name());
+			}
+
+		}
+
+		return root;
 	}
 
 	@Override

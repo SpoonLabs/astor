@@ -1,12 +1,16 @@
 package fr.inria.astor.approaches.tos.core.evalTos;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.ClusterExpressions;
@@ -180,6 +184,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		log.info("Elements to modify in MP " + iModifPoint.identified + ": "
 				+ predictionsForModifPoint.getElementsWithPrediction().size());
+		this.predictions.put(iModifPoint, predictionsForModifPoint);
+
 		// No prediction, so, we return
 		if (predictionsForModifPoint.getElementsWithPrediction().isEmpty())
 			return false;
@@ -305,6 +311,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 						// Each program variant is a patch
 						boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
 						if (resultValidation) {
+							log.info("Solution found with Target " + targetElement + " operator " + operator);
+
 							this.solutions.add(iProgramVariant);
 							existSolution = true;
 
@@ -475,9 +483,14 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	@Override
 	public void atEnd() {
+
+		// Now, predictions
+		outPredictions();
+
 		// Replace meta per "plain" variants
 		List<ProgramVariant> previousSolutions = new ArrayList(this.solutions);
 
+		//
 		// Let's remove all solutions
 		this.solutions.clear();
 		// For each solution found
@@ -519,6 +532,39 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		// We proceed with the analysis results
 		super.atEnd();
+
+	}
+
+	/**
+	 * Let's export the predictions
+	 */
+	public void outPredictions() {
+		// Let's save the prediction info:
+		List<ModificationPoint> mpKey = new ArrayList<>(this.predictions.keySet());
+		// Sort the mp
+		JsonObject root = new JsonObject();
+		JsonArray mpoints = new JsonArray();
+		root.add("mod_points", mpoints);
+		root.addProperty("project_id", this.projectFacade.getProperties().getFixid());
+
+		Collections.sort(mpKey);
+		for (ModificationPoint imp : mpKey) {
+			IPrediction ipred = this.predictions.get(imp);
+			JsonElement jsonprediction = ipred.toJson();
+			JsonObject mpobj = new JsonObject();
+			mpobj.addProperty("id", imp.identified);
+			mpobj.addProperty("line", imp.getCodeElement().getPosition().getLine());
+			mpobj.addProperty("file", imp.getCodeElement().getPosition().getFile().getName());
+
+			JsonObject predictionroot = new JsonObject();
+			predictionroot.add("modif_point", mpobj);
+			predictionroot.add("prediction", jsonprediction);
+
+			mpoints.add(predictionroot);
+
+		}
+
+		System.out.println("predout=" + root);
 	}
 
 	public List<ProgramVariant> getEvaluatedProgramVariants() {
