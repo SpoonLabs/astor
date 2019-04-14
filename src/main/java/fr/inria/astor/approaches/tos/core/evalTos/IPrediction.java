@@ -5,7 +5,6 @@ import java.util.List;
 import com.google.gson.JsonElement;
 
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
-import spoon.reflect.declaration.CtElement;
 
 /**
  * 
@@ -18,9 +17,9 @@ public interface IPrediction {
 	 * 
 	 * @return
 	 */
-	public List<CtElement> getElementsWithPrediction();
+	public List<PredictionElement> getElementsWithPrediction();
 
-	public List<AstorOperator> getPrediction(CtElement element);
+	public List<AstorOperator> getPrediction(PredictionElement element);
 
 	public JsonElement toJson();
 

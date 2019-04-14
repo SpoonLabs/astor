@@ -16,16 +16,16 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez
  *
  */
-public class Prediction extends MapList<CtElement, AstorOperator> implements IPrediction {
+public class Prediction extends MapList<PredictionElement, AstorOperator> implements IPrediction {
 
 	@Override
-	public List<CtElement> getElementsWithPrediction() {
+	public List<PredictionElement> getElementsWithPrediction() {
 
 		return new ArrayList(this.keySet());
 	}
 
 	@Override
-	public List<AstorOperator> getPrediction(CtElement element) {
+	public List<AstorOperator> getPrediction(PredictionElement element) {
 
 		return this.get(element);
 	}
@@ -35,13 +35,15 @@ public class Prediction extends MapList<CtElement, AstorOperator> implements IPr
 
 		JsonObject root = new JsonObject();
 
-		for (CtElement element : this.getElementsWithPrediction()) {
+		for (PredictionElement predictedElement : this.getElementsWithPrediction()) {
+			CtElement element = predictedElement.getElement();
 			root.addProperty("code", element.toString());
 			root.addProperty("type", element.getClass().getSimpleName());
 			root.addProperty("path", element.getPath().toString());
+			root.addProperty("index", predictedElement.getIndex());
 			JsonArray ops = new JsonArray();
 			root.add("ops", ops);
-			for (AstorOperator op : this.get(element)) {
+			for (AstorOperator op : this.get(predictedElement)) {
 				ops.add(op.name());
 			}
 

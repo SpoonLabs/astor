@@ -48,6 +48,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.validation.results.MetaValidationResult;
+import fr.inria.astor.util.MapList;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.declaration.CtElement;
@@ -211,9 +212,10 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		// Call to the extension point to get the order
 		// We take each operator, in the order given by the EP
-		for (CtElement targetElement : predictionsForModifPoint.getElementsWithPrediction()) {
+		for (PredictionElement predictionElement : predictionsForModifPoint.getElementsWithPrediction()) {
 
-			List<AstorOperator> candidateOperators = predictionsForModifPoint.getPrediction(targetElement);
+			CtElement targetElement = predictionElement.getElement();
+			List<AstorOperator> candidateOperators = predictionsForModifPoint.getPrediction(predictionElement);
 
 			for (AstorOperator operator : candidateOperators) {
 
@@ -315,7 +317,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 							this.solutions.add(iProgramVariant);
 							existSolution = true;
-
+							// storing pred
+							predictedCtElementWithSol.add(predictionsForModifPoint, predictionElement);
 						}
 						if (ConfigurationProperties.getPropertyBool("saveallevaluatedvariants")) {
 							this.evaluatedProgramVariants.add(iProgramVariant);
@@ -340,6 +343,9 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		}
 		return existSolution;
 	}
+
+//	List<IPrediction> predictWithSol = new ArrayList<>();
+	MapList<IPrediction, PredictionElement> predictedCtElementWithSol = new MapList<>();
 
 	/**
 	 * Returns true if there is an operator that needs ingredient
@@ -376,7 +382,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			// No predictor, so we put all the operations available
 			List<AstorOperator> ops = this.operatorSpace.getOperators();
 			Prediction optoapply = new Prediction();
-			optoapply.put(iModifPoint.getCodeElement(), ops);
+			optoapply.put(new PredictionElement(iModifPoint.getCodeElement()), ops);
 
 			return optoapply;
 		}
@@ -485,7 +491,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 	public void atEnd() {
 
 		// Now, predictions
-		outPredictions();
+		// outPredictions();
 
 		// Replace meta per "plain" variants
 		List<ProgramVariant> previousSolutions = new ArrayList(this.solutions);
@@ -533,6 +539,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		// We proceed with the analysis results
 		super.atEnd();
 
+		outPredictions();
+
 	}
 
 	/**
@@ -560,6 +568,15 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			predictionroot.add("modif_point", mpobj);
 			predictionroot.add("prediction", jsonprediction);
 
+			JsonArray solut = new JsonArray();
+			if (this.predictedCtElementWithSol.keySet().contains(ipred)) {
+				List<PredictionElement> pred = this.predictedCtElementWithSol.get(ipred);
+				for (PredictionElement psol : pred) {
+					solut.add(psol.getIndex());
+				}
+			}
+
+			predictionroot.add("solutions", solut);
 			mpoints.add(predictionroot);
 
 		}
