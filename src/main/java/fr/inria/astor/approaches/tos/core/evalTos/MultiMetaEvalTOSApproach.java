@@ -59,8 +59,9 @@ import spoon.reflect.reference.CtTypeReference;
  * @author Matias Martinez
  *
  */
-public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
+public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
+	public static final String METID = "metid";
 	public static int MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
 	public int modifPointsAnalyzed = 0;
 
@@ -68,9 +69,10 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	protected IPredictor predictor = null;
 
-	public Map<ModificationPoint, IPrediction> predictions = new HashMap();
+	public Map<ModificationPoint, PredictionResult> predictions = new HashMap();
 
-	public MetaEvalTOSApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
+	public MultiMetaEvalTOSApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		this.operatorSpace = new OperatorSpace();
 		loadPredictor();
@@ -98,6 +100,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 	@Override
 	protected void loadOperatorSpaceDefinition() throws Exception {
 		this.operatorSpace = new OperatorSpace();
+		// TODO: add statement
 		this.operatorSpace.register(new WrapwithTrySingleStatementOp());
 		this.operatorSpace.register(new WrapwithIfOp());
 		this.operatorSpace.register(new WrapwithIfNullCheck());
@@ -181,165 +184,173 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		boolean existSolution = false;
 
-		IPrediction predictionsForModifPoint = computePredictionsForModificationPoint(iModifPoint);
+		PredictionResult predictionsForModifPoint = computePredictionsForModificationPoint(iModifPoint);
 
-		log.info("Elements to modify in MP " + iModifPoint.identified + ": "
-				+ predictionsForModifPoint.getElementsWithPrediction().size());
+		log.info("Elements to modify in MP " + iModifPoint.identified + ": " + predictionsForModifPoint.size());
 		this.predictions.put(iModifPoint, predictionsForModifPoint);
 
 		// No prediction, so, we return
-		if (predictionsForModifPoint.getElementsWithPrediction().isEmpty())
+		if (predictionsForModifPoint.isEmpty())
 			return false;
 
 		this.predictions.put(iModifPoint, predictionsForModifPoint);
 
 		DynaIngredientPool ingredientPool = null;
+		int i = 0;
+		for (IPrediction i_prediction : predictionsForModifPoint) {
 
-		List<AstorOperator> allOperationsPredicted = predictionsForModifPoint.getAllOperationsPredicted();
+			log.info("Prediction nr " + (++i) + "/" + predictionsForModifPoint.size());
 
-		log.info("Predicted operators for " + iModifPoint.identified + " : " + allOperationsPredicted);
+			List<AstorOperator> allOperationsPredicted = i_prediction.getAllOperationsPredicted();
 
-		if (oneOperatorNeedsDynamicIngredients(allOperationsPredicted)) {
-			ingredientPool = this.getClusteredEvaluatedExpression(iModifPoint);
+			log.info("Predicted operators for " + iModifPoint.identified + " : " + allOperationsPredicted);
 
-			log.info("Dyna Ingredients of modify in MP " + iModifPoint.identified + ": "
-					+ ((ingredientPool.getClusterEvaluatedExpressions() != null)
-							? ingredientPool.getClusterEvaluatedExpressions().size()
-							: "Dynamoth null"));
-		} else {
-			log.debug("Any operator needs ingredient");
-		}
+			// Initialize
+			if (ingredientPool == null) {
+				if (oneOperatorNeedsDynamicIngredients(allOperationsPredicted)) {
+					ingredientPool = this.getClusteredEvaluatedExpression(iModifPoint);
 
-		// Call to the extension point to get the order
-		// We take each operator, in the order given by the EP
-		for (PredictionElement predictionElement : predictionsForModifPoint.getElementsWithPrediction()) {
-
-			CtElement targetElement = predictionElement.getElement();
-			List<AstorOperator> candidateOperators = predictionsForModifPoint.getPrediction(predictionElement);
-
-			for (AstorOperator operator : candidateOperators) {
-
-				log.info("Target " + targetElement + " operator " + operator);
-
-				if (operator == null) {
-					log.error("No operator to apply");
-					continue;
-				}
-				// Set the target element in the operator//This needs refactor
-				if (this.predictor != null) {
-					// Here we have a predictor used for predict the opertor
-					// If we are interested in applying ops only when we have target
-					// ConfigurationProperties.hasProperty("onlywithtarget") &&
-					if (targetElement == null) {
-						continue;
-					}
-					IOperatorWithTargetElement targetOp = (IOperatorWithTargetElement) operator;
-					if (targetOp.checkTargetCompatibility(targetElement)) {
-						targetOp.setTargetElement(targetElement);
-					} else {
-						// Target not compatible with operator, we continue
-						targetOp.setTargetElement(null);
-						continue;
-					}
-				}
-
-				try {
-					List<ProgramVariant> candidateProgramVariants = new ArrayList<>();
-					List<OperatorInstance> instancesOfOperatorForModificationPoint = null;
-
-					log.debug("***MP " + iModifPoint.identified + " operator " + operator);
-
-					if (!operator.canBeAppliedToPoint(iModifPoint))
-						continue;
-
-					// Decide if merge interfaces DyIng and MetaOp
-
-					if (operator instanceof MetaOperator) {
-
-						instancesOfOperatorForModificationPoint = new ArrayList<>();
-						// Get Candidate expressions:
-
-						List<MetaOperatorInstance> opInstancesMeta = null;
-
-						// if the operator needs ingredients
-						if (operator instanceof DynaIngredientOperator) {
-							DynaIngredientOperator dynaop = (DynaIngredientOperator) operator;
-
-							List<IngredientFromDyna> newIngredients = synthesizeCandidatesIngredientsFromType(
-									parentVariant, iModifPoint, ingredientPool, dynaop.retrieveTargetTypeReference());
-
-							opInstancesMeta = dynaop.createMetaOperatorInstances(iModifPoint, newIngredients);
-
-						} else {
-							// no ingredient needed
-							opInstancesMeta = ((MetaOperator) operator).createMetaOperatorInstances(iModifPoint);
-						}
-						// We create one MetaProgram Variant per metaOperator
-						for (MetaOperatorInstance metaPperatorInstance : opInstancesMeta) {
-
-							MetaProgramVariant metai = new MetaProgramVariant(nrVariant++);
-							metai.setParent(parentVariant);
-							metai.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
-							metai.putModificationInstance(generation, metaPperatorInstance);
-							candidateProgramVariants.add(metai);
-						}
-
-					} else {
-						// It's a "conventional" operator
-						instancesOfOperatorForModificationPoint = operator.createOperatorInstances(iModifPoint);
-
-						for (OperatorInstance operatorInstance : instancesOfOperatorForModificationPoint) {
-							ProgramVariant newProgramVariant = new ProgramVariant(nrVariant++);
-							newProgramVariant.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
-							newProgramVariant.putModificationInstance(generation, operatorInstance);
-
-							candidateProgramVariants.add(newProgramVariant);
-						}
-					}
-
-					// For each candidate variant
-					for (ProgramVariant iProgramVariant : candidateProgramVariants) {
-
-						this.generationsExecuted++;
-
-						// Apply the code transformations
-						for (OperatorInstance operatorInstance : iProgramVariant.getAllOperations()) {
-							operatorInstance.applyModification();
-						}
-
-						int generationEval = 0;
-
-						// For the list of operator instance, we create a mutant program
-						// Each program variant is a patch
-						boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
-						if (resultValidation) {
-							log.info("Solution found with Target " + targetElement + " operator " + operator);
-
-							this.solutions.add(iProgramVariant);
-							existSolution = true;
-							// storing pred
-							predictedCtElementWithSol.add(predictionsForModifPoint, predictionElement);
-						}
-						if (ConfigurationProperties.getPropertyBool("saveallevaluatedvariants")) {
-							this.evaluatedProgramVariants.add(iProgramVariant);
-						}
-
-						// Undo the code transformations
-						for (OperatorInstance operatorInstance : iProgramVariant.getAllOperations()) {
-							operatorInstance.undoModification();
-
-						}
-
-						if (existSolution && ConfigurationProperties.getPropertyBool("stopfirst")) {
-							return true;
-						}
-					}
-				} catch (Exception e) {
-					log.error("Error with operator " + operator.getClass().getSimpleName());
-					log.error(e);
-					e.printStackTrace();
+					log.info("Dyna Ingredients of modify in MP " + iModifPoint.identified + ": "
+							+ ((ingredientPool.getClusterEvaluatedExpressions() != null)
+									? ingredientPool.getClusterEvaluatedExpressions().size()
+									: "Dynamoth null"));
+				} else {
+					log.debug("Any operator needs ingredient");
 				}
 			}
+
+			// Call to the extension point to get the order
+			// We take each operator, in the order given by the EP
+			for (PredictionElement predictionElement : i_prediction.getElementsWithPrediction()) {
+
+				CtElement targetElement = predictionElement.getElement();
+				List<AstorOperator> candidateOperators = i_prediction.getPrediction(predictionElement);
+
+				for (AstorOperator operator : candidateOperators) {
+
+					log.info("Target " + targetElement + " operator " + operator);
+
+					if (operator == null) {
+						log.error("No operator to apply");
+						continue;
+					}
+					// Set the target element in the operator//This needs refactor
+					if (this.predictor != null) {
+						// Here we have a predictor used for predict the opertor
+						// If we are interested in applying ops only when we have target
+						// ConfigurationProperties.hasProperty("onlywithtarget") &&
+						if (targetElement == null) {
+							continue;
+						}
+						IOperatorWithTargetElement targetOp = (IOperatorWithTargetElement) operator;
+						if (targetOp.checkTargetCompatibility(targetElement)) {
+							targetOp.setTargetElement(targetElement);
+						} else {
+							// Target not compatible with operator, we continue
+							targetOp.setTargetElement(null);
+							continue;
+						}
+					}
+
+					try {
+						List<ProgramVariant> candidateProgramVariants = new ArrayList<>();
+						List<OperatorInstance> instancesOfOperatorForModificationPoint = null;
+
+						log.debug("***MP " + iModifPoint.identified + " operator " + operator);
+
+						if (!operator.canBeAppliedToPoint(iModifPoint))
+							continue;
+
+						// Decide if merge interfaces DyIng and MetaOp
+
+						if (operator instanceof MetaOperator) {
+
+							instancesOfOperatorForModificationPoint = new ArrayList<>();
+							// Get Candidate expressions:
+
+							List<MetaOperatorInstance> opInstancesMeta = null;
+
+							// if the operator needs ingredients
+							if (operator instanceof DynaIngredientOperator) {
+								DynaIngredientOperator dynaop = (DynaIngredientOperator) operator;
+
+								List<IngredientFromDyna> newIngredients = synthesizeCandidatesIngredientsFromType(
+										parentVariant, iModifPoint, ingredientPool,
+										dynaop.retrieveTargetTypeReference());
+
+								opInstancesMeta = dynaop.createMetaOperatorInstances(iModifPoint, newIngredients);
+
+							} else {
+								// no ingredient needed
+								opInstancesMeta = ((MetaOperator) operator).createMetaOperatorInstances(iModifPoint);
+							}
+							// We create one MetaProgram Variant per metaOperator
+							for (MetaOperatorInstance metaPperatorInstance : opInstancesMeta) {
+
+								MetaProgramVariant metai = new MetaProgramVariant(nrVariant++);
+								metai.setParent(parentVariant);
+								metai.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
+								metai.putModificationInstance(generation, metaPperatorInstance);
+								candidateProgramVariants.add(metai);
+							}
+
+						} else {
+							// It's a "conventional" operator
+							instancesOfOperatorForModificationPoint = operator.createOperatorInstances(iModifPoint);
+
+							for (OperatorInstance operatorInstance : instancesOfOperatorForModificationPoint) {
+								ProgramVariant newProgramVariant = new ProgramVariant(nrVariant++);
+								newProgramVariant.getBuiltClasses().putAll(parentVariant.getBuiltClasses());
+								newProgramVariant.putModificationInstance(generation, operatorInstance);
+
+								candidateProgramVariants.add(newProgramVariant);
+							}
+						}
+
+						// For each candidate variant
+						for (ProgramVariant iProgramVariant : candidateProgramVariants) {
+
+							this.generationsExecuted++;
+
+							// Apply the code transformations
+							for (OperatorInstance operatorInstance : iProgramVariant.getAllOperations()) {
+								operatorInstance.applyModification();
+							}
+
+							int generationEval = 0;
+
+							// For the list of operator instance, we create a mutant program
+							// Each program variant is a patch
+							boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
+							if (resultValidation) {
+								log.info("Solution found with Target " + targetElement + " operator " + operator);
+
+								this.solutions.add(iProgramVariant);
+								existSolution = true;
+								// storing pred
+								predictedCtElementWithSol.add(i_prediction, predictionElement);
+							}
+							if (ConfigurationProperties.getPropertyBool("saveallevaluatedvariants")) {
+								this.evaluatedProgramVariants.add(iProgramVariant);
+							}
+
+							// Undo the code transformations
+							for (OperatorInstance operatorInstance : iProgramVariant.getAllOperations()) {
+								operatorInstance.undoModification();
+
+							}
+
+							if (existSolution && ConfigurationProperties.getPropertyBool("stopfirst")) {
+								return true;
+							}
+						}
+					} catch (Exception e) {
+						log.error("Error with operator " + operator.getClass().getSimpleName());
+						log.error(e);
+						e.printStackTrace();
+					}
+				} // end operations
+			} // end prediction
 		}
 		return existSolution;
 	}
@@ -367,15 +378,11 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	}
 
-	public IPrediction computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
+	public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
 
 		if (this.predictor != null) {
 			try {
-				PredictionResult rp = predictor.computePredictionsForModificationPoint(iModifPoint);
-				if (rp.size() > 0) {
-					return rp.get(0);
-				} else
-					return null;
+				return predictor.computePredictionsForModificationPoint(iModifPoint);
 			} catch (Exception e) {
 				log.error("#rror when calling predictor");
 				log.error(e);
@@ -388,7 +395,10 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			Prediction optoapply = new Prediction();
 			optoapply.put(new PredictionElement(iModifPoint.getCodeElement()), ops);
 
-			return optoapply;
+			PredictionResult pr = new PredictionResult();
+			pr.add(optoapply);
+
+			return pr;
 		}
 	}
 
@@ -469,7 +479,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 			for (MetaOperatorInstance moi : megavariant.getMetaOpInstances()) {
 
 				for (Integer idMutant : moi.getAllIngredients().keySet()) {
-					ConfigurationProperties.setProperty(MultiMetaEvalTOSApproach.METID, idMutant.toString());
+					ConfigurationProperties.setProperty(moi.getMetaoperator().identifier() + METID,
+							idMutant.toString());
 					VariantValidationResult validation_single = super.validateInstance(variant);
 					if (validation_single != null) {
 						megavalidation.addValidation(idMutant, validation_single);
@@ -561,7 +572,9 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		Collections.sort(mpKey);
 		for (ModificationPoint imp : mpKey) {
-			IPrediction ipred = this.predictions.get(imp);
+			PredictionResult pr = this.predictions.get(imp);
+			// TODO: for all.
+			IPrediction ipred = pr.get(0);
 			JsonElement jsonprediction = ipred.toJson();
 			JsonObject mpobj = new JsonObject();
 			mpobj.addProperty("id", imp.identified);

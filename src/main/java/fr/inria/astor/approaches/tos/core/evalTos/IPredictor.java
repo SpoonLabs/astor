@@ -9,5 +9,5 @@ import fr.inria.astor.core.solutionsearch.extension.AstorExtensionPoint;
  *
  */
 public interface IPredictor extends AstorExtensionPoint {
-	IPrediction computePredictionsForModificationPoint(ModificationPoint iModifPoint);
+	PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint);
 }

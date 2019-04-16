@@ -202,4 +202,10 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 		} else
 			return false;
 	}
+
+	@Override
+	public String identifier() {
+
+		return "expLogicExpand";
+	}
 }

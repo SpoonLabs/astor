@@ -123,4 +123,9 @@ public class MethodXMethodReplacementArgumentRemoveOp extends MethodXMethodRepla
 		// See that the modification points are statements
 		return (point.getCodeElement() instanceof CtStatement);
 	}
+
+	@Override
+	public String identifier() {
+		return "Method_RW_Method_ROP";
+	}
 }

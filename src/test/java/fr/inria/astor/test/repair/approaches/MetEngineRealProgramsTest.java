@@ -16,6 +16,7 @@ import org.junit.Test;
 import fr.inria.astor.approaches.tos.core.InitialConceptMetEngine;
 import fr.inria.astor.approaches.tos.core.evalTos.EvalTOSClusterApproach;
 import fr.inria.astor.approaches.tos.core.evalTos.MetaEvalTOSApproach;
+import fr.inria.astor.approaches.tos.core.evalTos.MultiMetaEvalTOSApproach;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfOp;
@@ -100,7 +101,7 @@ public class MetEngineRealProgramsTest {
 
 		}
 		// The default case:
-		ConfigurationProperties.setProperty("metid", "0");
+		ConfigurationProperties.setProperty(MultiMetaEvalTOSApproach.METID, "0");
 		boolean resultValidation = approach.processCreatedVariant(variant, 0);
 
 		assertFalse(resultValidation);
@@ -114,7 +115,7 @@ public class MetEngineRealProgramsTest {
 		assertEquals(1, ((TestCasesProgramValidationResult) variant.getValidationResult()).getFailureCount());
 
 		/// The wrong patch
-		ConfigurationProperties.setProperty("metid", "1");
+		ConfigurationProperties.setProperty(MultiMetaEvalTOSApproach.METID, "1");
 		resultValidation = approach.processCreatedVariant(variant, 0);
 
 		assertFalse(resultValidation);
@@ -129,7 +130,7 @@ public class MetEngineRealProgramsTest {
 
 		/// The patch
 
-		ConfigurationProperties.setProperty("metid", "2");
+		ConfigurationProperties.setProperty(MultiMetaEvalTOSApproach.METID, "2");
 		resultValidation = approach.processCreatedVariant(variant, 0);
 
 		assertTrue(resultValidation);

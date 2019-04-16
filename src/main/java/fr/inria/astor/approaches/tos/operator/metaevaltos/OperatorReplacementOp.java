@@ -185,4 +185,9 @@ public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator
 
 		return e instanceof CtBinaryOperator && SupportOperators.isBooleanType((CtExpression) e);
 	}
+
+	@Override
+	public String identifier() {
+		return "binOperatorModif";
+	}
 }

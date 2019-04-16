@@ -43,7 +43,7 @@ public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOp
 
 		// Let's create one meta per modif point
 		List<OperatorInstance> metaOperations = new ArrayList();
-		MetaOperatorInstance opMega = new MetaOperatorInstance(metaOperations);
+		MetaOperatorInstance opMega = new MetaOperatorInstance(this, metaOperations);
 		List<MetaOperatorInstance> opsMega = new ArrayList();
 
 		opsMega.add(opMega);
@@ -209,5 +209,11 @@ public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOp
 	public boolean checkTargetCompatibility(CtElement target) {
 
 		return target instanceof CtVariableAccess;
+	}
+
+	@Override
+	public String identifier() {
+
+		return "VAR_RW_Method";
 	}
 }

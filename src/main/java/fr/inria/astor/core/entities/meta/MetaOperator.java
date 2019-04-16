@@ -16,4 +16,6 @@ public interface MetaOperator {
 
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint);
 
+	public String identifier();
+
 }

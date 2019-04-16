@@ -89,7 +89,7 @@ public class MethodXVariableReplacementOp extends FineGrainedExpressionReplaceOp
 
 		} // End variable
 
-		MetaOperatorInstance opMega = new MetaOperatorInstance(opsOfVariant);
+		MetaOperatorInstance opMega = new MetaOperatorInstance(this, opsOfVariant);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(this);
 		opMega.setOriginal(modificationPoint.getCodeElement());
@@ -174,6 +174,12 @@ public class MethodXVariableReplacementOp extends FineGrainedExpressionReplaceOp
 	public boolean checkTargetCompatibility(CtElement target) {
 
 		return target instanceof CtInvocation;
+	}
+
+	@Override
+	public String identifier() {
+
+		return "Method_RW_Var";
 	}
 
 }

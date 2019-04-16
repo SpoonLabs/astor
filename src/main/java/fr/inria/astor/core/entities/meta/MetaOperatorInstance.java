@@ -16,8 +16,11 @@ public class MetaOperatorInstance extends CompositeOperatorInstance {
 
 	protected Map<Integer, Ingredient> allIngredientsingredients;
 
-	public MetaOperatorInstance(List<OperatorInstance> instances) {
+	protected MetaOperator metaoperator;
+
+	public MetaOperatorInstance(MetaOperator metaoperator, List<OperatorInstance> instances) {
 		super(instances);
+		this.metaoperator = metaoperator;
 
 	}
 
@@ -27,6 +30,14 @@ public class MetaOperatorInstance extends CompositeOperatorInstance {
 
 	public void setAllIngredients(Map<Integer, Ingredient> ingredients) {
 		this.allIngredientsingredients = ingredients;
+	}
+
+	public MetaOperator getMetaoperator() {
+		return metaoperator;
+	}
+
+	public void setMetaoperator(MetaOperator metaoperator) {
+		this.metaoperator = metaoperator;
 	}
 
 }

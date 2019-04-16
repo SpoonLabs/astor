@@ -170,4 +170,10 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator
 
 		return e instanceof CtBinaryOperator && SupportOperators.isBooleanType((CtBinaryOperator) e);
 	}
+
+	@Override
+	public String identifier() {
+
+		return "expLogicReduce";
+	}
 }

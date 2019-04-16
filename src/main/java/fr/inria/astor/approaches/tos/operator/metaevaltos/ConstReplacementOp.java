@@ -99,7 +99,7 @@ public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator
 
 		} // End variable
 
-		MetaOperatorInstance opMega = new MetaOperatorInstance(opsOfVariant);
+		MetaOperatorInstance opMega = new MetaOperatorInstance(this, opsOfVariant);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(this);
 		opMega.setOriginal(modificationPoint.getCodeElement());
@@ -187,5 +187,11 @@ public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator
 	public boolean checkTargetCompatibility(CtElement target) {
 
 		return target instanceof CtLiteral;
+	}
+
+	@Override
+	public String identifier() {
+
+		return "constChange";
 	}
 }

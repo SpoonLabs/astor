@@ -122,4 +122,10 @@ public class MethodXMethodReplacementDiffArgumentsOp extends MethodXMethodReplac
 		// See that the modification points are statements
 		return (point.getCodeElement() instanceof CtStatement);
 	}
+
+	@Override
+	public String identifier() {
+		// TODO Auto-generated method stub
+		return "Method_RW_Method_DARG";
+	}
 }

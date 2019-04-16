@@ -140,4 +140,10 @@ public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator, IOpe
 
 		return true;
 	}
+
+	@Override
+	public String identifier() {
+
+		return "wrapsIf_NULL";
+	}
 }

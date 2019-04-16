@@ -15,6 +15,7 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.StatementOperatorInstance;
+import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -58,7 +59,7 @@ public class MetaGenerator {
 		createMetaForSingleElement(modificationPoint, elementSource, variableCounter, ingredients, parameters,
 				realParameters, returnType, opsOfVariant, ingredientOfMapped);
 
-		MetaOperatorInstance opMega = new MetaOperatorInstance(opsOfVariant);
+		MetaOperatorInstance opMega = new MetaOperatorInstance((MetaOperator) parentOperator, opsOfVariant);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(parentOperator);
 		opMega.setOriginal(modificationPoint.getCodeElement());
@@ -151,7 +152,7 @@ public class MetaGenerator {
 
 		log.debug("invocation: \n" + newInvocationToMega);
 
-		MetaOperatorInstance opMega = new MetaOperatorInstance(opsOfVariant);
+		MetaOperatorInstance opMega = new MetaOperatorInstance((MetaOperator) parentOperator, opsOfVariant);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(parentOperator);
 		opMega.setOriginal(modificationPoint.getCodeElement());

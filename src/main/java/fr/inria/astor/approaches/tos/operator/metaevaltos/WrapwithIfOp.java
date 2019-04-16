@@ -130,4 +130,9 @@ public class WrapwithIfOp extends ReplaceOp
 
 		return true;
 	}
+
+	@Override
+	public String identifier() {
+		return "wrapsIfElse_Others";
+	}
 }

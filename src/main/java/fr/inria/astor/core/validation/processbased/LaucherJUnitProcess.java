@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import fr.inria.astor.approaches.tos.core.evalTos.MultiMetaEvalTOSApproach;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.validation.junit.JUnitExternalExecutor;
@@ -69,7 +70,7 @@ public class LaucherJUnitProcess {
 
 			command.add(jvmPath);
 			command.add("-Xmx2048m");
-			command.add("-Dmutnumber=" + ConfigurationProperties.getProperty("metid"));
+			command.add("-Dmutnumber=" + ConfigurationProperties.getProperty(MultiMetaEvalTOSApproach.METID));
 			command.add("-cp");
 			command.add(newClasspath);
 			command.add(laucherClassName().getCanonicalName());
