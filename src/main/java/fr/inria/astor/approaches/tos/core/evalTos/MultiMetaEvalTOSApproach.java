@@ -193,8 +193,10 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		this.predictions.put(iModifPoint, predictionsForModifPoint);
 
 		// No prediction, so, we return
-		if (predictionsForModifPoint.isEmpty())
+		if (predictionsForModifPoint.isEmpty()) {
+			log.debug("No prediction");
 			return false;
+		}
 
 		this.predictions.put(iModifPoint, predictionsForModifPoint);
 
@@ -204,7 +206,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		for (IPrediction i_prediction : predictionsForModifPoint) {
 			log.info("Prediction nr " + (++i) + "/" + predictionsForModifPoint.size());
 
-			existSolution = analyze(parentVariant, iModifPoint, generation, i_prediction);
+			existSolution = analyzePrediction(parentVariant, iModifPoint, generation, i_prediction);
 
 			if (existSolution && ConfigurationProperties.getPropertyBool("stopfirst")) {
 				return true;
@@ -213,7 +215,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		return existSolution;
 	}
 
-	public boolean analyze(ProgramVariant parentVariant, ModificationPoint iModifPoint, int generation,
+	public boolean analyzePrediction(ProgramVariant parentVariant, ModificationPoint iModifPoint, int generation,
 			IPrediction i_prediction) {
 
 		boolean existSolution = false;
@@ -234,10 +236,9 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 				continue;
 			}
 
-			// TODO: it should be a 1-to-1 relation
 			List<AstorOperator> candidateOperators = i_prediction.getPrediction(predictionElement);
 
-			AstorOperator operator = getOperator(candidateOperators);
+			AstorOperator operator = getSingleOperator(candidateOperators);
 
 			log.info("Target " + targetElement + " operator " + operator);
 
@@ -283,9 +284,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 						// no ingredient needed
 						opInstancesMeta = ((MetaOperator) operator).createMetaOperatorInstances(iModifPoint);
 					}
-					// Previous version
 					// We create one MetaProgram Variant per metaOperator
-					//
 					for (MetaOperatorInstance metaPperatorInstance : opInstancesMeta) {
 						opToInstances.add(operator, metaPperatorInstance);
 					}
@@ -455,7 +454,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		}
 	}
 
-	protected AstorOperator getOperator(List<AstorOperator> candidateOperators) {
+	protected AstorOperator getSingleOperator(List<AstorOperator> candidateOperators) {
 		if (candidateOperators.size() > 1) {
 			log.info("More than 1 predicted operator");
 		}
