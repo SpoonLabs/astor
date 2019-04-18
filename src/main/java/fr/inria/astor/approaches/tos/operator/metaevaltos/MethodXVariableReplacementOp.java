@@ -37,6 +37,8 @@ public class MethodXVariableReplacementOp extends FineGrainedExpressionReplaceOp
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
+		MetaOperatorInstance opMega = new MetaOperatorInstance(this, MetaGenerator.getNewIdentifier());
+
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
@@ -84,12 +86,12 @@ public class MethodXVariableReplacementOp extends FineGrainedExpressionReplaceOp
 
 			variableCounter++;
 
-			MetaGenerator.createMetaForSingleElement(modificationPoint, invocationToReplace, variableCounter,
+			MetaGenerator.createMetaForSingleElement(opMega, modificationPoint, invocationToReplace, variableCounter,
 					ingredients, parameters, realParameters, returnType, opsOfVariant, ingredientOfMapped);
 
 		} // End variable
 
-		MetaOperatorInstance opMega = new MetaOperatorInstance(this, opsOfVariant);
+		opMega.setOperatorInstances(opsOfVariant);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(this);
 		opMega.setOriginal(modificationPoint.getCodeElement());

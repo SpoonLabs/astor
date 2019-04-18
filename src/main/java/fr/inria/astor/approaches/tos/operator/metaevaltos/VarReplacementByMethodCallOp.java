@@ -41,12 +41,11 @@ public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOp
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
+		MetaOperatorInstance opMega = new MetaOperatorInstance(this, MetaGenerator.getNewIdentifier());
+
 		// Let's create one meta per modif point
 		List<OperatorInstance> metaOperations = new ArrayList();
-		MetaOperatorInstance opMega = new MetaOperatorInstance(this, metaOperations);
 		List<MetaOperatorInstance> opsMega = new ArrayList();
-
-		opsMega.add(opMega);
 
 		// Map that allows to trace the mutant id with the ingredient used
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
@@ -118,11 +117,13 @@ public class VarReplacementByMethodCallOp extends FineGrainedExpressionReplaceOp
 
 			CtTypeReference returnType = variableAccessToReplace.getType();
 
-			MetaGenerator.createMetaForSingleElement(modificationPoint, variableAccessToReplace, variableCounter,
-					ingredients, parameters, realParameters, returnType, metaOperations, ingredientOfMapped);
+			MetaGenerator.createMetaForSingleElement(opMega, modificationPoint, variableAccessToReplace,
+					variableCounter, ingredients, parameters, realParameters, returnType, metaOperations,
+					ingredientOfMapped);
 
 		} // End variable
-
+		opMega.setOperatorInstances(metaOperations);
+		opsMega.add(opMega);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(this);
 		opMega.setOriginal(modificationPoint.getCodeElement());

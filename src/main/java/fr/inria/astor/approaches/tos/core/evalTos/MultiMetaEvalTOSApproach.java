@@ -1,5 +1,6 @@
 package fr.inria.astor.approaches.tos.core.evalTos;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -22,11 +24,13 @@ import fr.inria.astor.approaches.tos.operator.metaevaltos.ConstReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.IOperatorWithTargetElement;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.MetaGenerator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementArgumentRemoveOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffArgumentsOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffNameOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXVariableReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.SupportOperators;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromTryOp;
@@ -64,6 +68,7 @@ import spoon.reflect.reference.CtTypeReference;
 public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	public static final String METID = "metid";
+	public static final String METALL = "metid";
 	public static int MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
 	public int modifPointsAnalyzed = 0;
 
@@ -228,6 +233,8 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		/// Here will be the resulting variants:
 		List<ProgramVariant> allProgramVariants = new ArrayList<>();
 
+		MapList<PredictionElement, OperatorInstance> opToInstances = new MapList<>();
+
 		for (PredictionElement predictionElement : i_prediction.getElementsWithPrediction()) {
 
 			CtElement targetElement = predictionElement.getElement();
@@ -255,7 +262,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 			try {
 				List<OperatorInstance> instancesOfOperatorForModificationPoint = null;
 
-				MapList<AstorOperator, OperatorInstance> opToInstances = new MapList<>();
+				//
 
 				log.debug("***MP " + iModifPoint.identified + " operator " + operator);
 
@@ -286,7 +293,8 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 					}
 					// We create one MetaProgram Variant per metaOperator
 					for (MetaOperatorInstance metaPperatorInstance : opInstancesMeta) {
-						opToInstances.add(operator, metaPperatorInstance);
+						// opToInstances.add(operator, metaPperatorInstance);
+						opToInstances.add(predictionElement, metaPperatorInstance);
 					}
 
 				} else {
@@ -294,13 +302,15 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 					instancesOfOperatorForModificationPoint = operator.createOperatorInstances(iModifPoint);
 
 					for (OperatorInstance operatorInstance : instancesOfOperatorForModificationPoint) {
-						opToInstances.add(operator, operatorInstance);
+						// opToInstances.add(operator, operatorInstance);
+						opToInstances.add(predictionElement, operatorInstance);
 
 					}
 				}
 				// Create the Program variant
-				List<ProgramVariant> programVariantsOfPrediction = createVariants(opToInstances, parentVariant);
-				allProgramVariants.addAll(programVariantsOfPrediction);
+				// List<ProgramVariant> programVariantsOfPrediction =
+				// createVariants(opToInstances, parentVariant);
+				// allProgramVariants.addAll(programVariantsOfPrediction);
 
 			} catch (Exception e) {
 				log.error("Error with operator " + operator.getClass().getSimpleName());
@@ -309,6 +319,9 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 			}
 
 		}
+		// Create the Program variant
+		List<ProgramVariant> programVariantsOfPrediction = createVariants(opToInstances, parentVariant);
+		allProgramVariants.addAll(programVariantsOfPrediction);
 
 		// EVALUATION
 
@@ -387,19 +400,19 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		return true;
 	}
 
-	public List<ProgramVariant> createVariants(MapList<AstorOperator, OperatorInstance> map,
+	public List<ProgramVariant> createVariants(MapList<PredictionElement, OperatorInstance> map,
 			ProgramVariant parentVariant) {
 
 		List<ProgramVariant> allProgramVariants = new ArrayList<>();
 
-		doCombination(map, new LinkedList<AstorOperator>(map.keySet()).listIterator(),
-				new HashMap<AstorOperator, OperatorInstance>(), allProgramVariants, parentVariant);
+		doCombination(map, new LinkedList<PredictionElement>(map.keySet()).listIterator(),
+				new HashMap<PredictionElement, OperatorInstance>(), allProgramVariants, parentVariant);
 
 		return allProgramVariants;
 	}
 
-	private void doCombination(MapList<AstorOperator, OperatorInstance> opInstances,
-			ListIterator<AstorOperator> operators, Map<AstorOperator, OperatorInstance> current,
+	private void doCombination(MapList<PredictionElement, OperatorInstance> opInstances,
+			ListIterator<PredictionElement> operators, Map<PredictionElement, OperatorInstance> current,
 			List<ProgramVariant> allProgramVariants, ProgramVariant parentVariant) {
 
 		if (!operators.hasNext()) {
@@ -425,7 +438,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 			allProgramVariants.add(newProgramVariant);
 
 		} else {
-			AstorOperator key = operators.next();
+			PredictionElement key = operators.next();
 			List<OperatorInstance> set = opInstances.get(key);
 
 			for (OperatorInstance value : set) {
@@ -585,20 +598,43 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 			MetaValidationResult megavalidation = new MetaValidationResult();
 			MetaProgramVariant megavariant = (MetaProgramVariant) variant;
 
+			// Get all ids of moi
+			String ids = "";
+			Map<Integer, Set<Integer>> mutants = new HashMap<>();
 			for (MetaOperatorInstance moi : megavariant.getMetaOpInstances()) {
+				ids += ((!ids.isEmpty()) ? File.pathSeparator : "") + moi.getIdentifier();
+				mutants.put(moi.getIdentifier(), moi.getAllIngredients().keySet());
+			}
+			ConfigurationProperties.setProperty(MultiMetaEvalTOSApproach.METALL, ids);
 
-				for (Integer idMutant : moi.getAllIngredients().keySet()) {
-					ConfigurationProperties.setProperty(moi.getMetaoperator().identifier() + METID,
-							idMutant.toString());
-					VariantValidationResult validation_single = super.validateInstance(variant);
-					if (validation_single != null) {
-						megavalidation.addValidation(idMutant, validation_single);
-						if (validation_single.isSuccessful())
-							log.debug("Solution found " + idMutant.toString());
-					} else {
-						log.error("Validation Null for metaid " + idMutant.toString());
-					}
+			// now, calculate all combinations of evaluations:
+			List<Map<Integer, Integer>> allCandidates = SupportOperators.combinations(mutants);
+			megavalidation.setAllCandidates(allCandidates);
+
+			// for each candidate
+			int candidateNumber = 1;
+			for (Map<Integer, Integer> candidate : allCandidates) {
+
+				log.debug("Evaluating candidate nr " + candidateNumber + " out of " + allCandidates.size());
+				log.debug("Feature of candidate " + candidateNumber + ": " + candidate);
+				// for each point we put a value:
+				for (Integer mutid : candidate.keySet()) {
+
+					ConfigurationProperties.setProperty(MetaGenerator.MUT_IDENTIFIER + mutid,
+							candidate.get(mutid).toString());
+
 				}
+				// now we validate
+				VariantValidationResult validation_single = super.validateInstance(variant);
+				if (validation_single != null) {
+					megavalidation.addValidation(candidateNumber, validation_single);
+					if (validation_single.isSuccessful())
+						log.debug("Solution found " + candidateNumber);
+				} else {
+					log.error("Validation Null for metaid " + candidateNumber);
+				}
+
+				candidateNumber++;
 			}
 
 			variant.setValidationResult(megavalidation);
@@ -716,6 +752,10 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	public IPredictor getPredictor() {
 		return predictor;
+	}
+
+	public void setPredictor(IPredictor predictor) {
+		this.predictor = predictor;
 	}
 
 }

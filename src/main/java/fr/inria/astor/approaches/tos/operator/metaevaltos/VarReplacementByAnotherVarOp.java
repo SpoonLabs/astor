@@ -32,6 +32,8 @@ public class VarReplacementByAnotherVarOp extends FineGrainedExpressionReplaceOp
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
+		MetaOperatorInstance opMega = new MetaOperatorInstance(this, MetaGenerator.getNewIdentifier());
+
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
@@ -41,6 +43,8 @@ public class VarReplacementByAnotherVarOp extends FineGrainedExpressionReplaceOp
 
 		if (targetElement == null) {
 			varAccessInModificationPoints = VariableResolver.collectVariableAccess(modificationPoint.getCodeElement(),
+					// it must be true because, even we have vars with different names, they are
+					// different access.
 					true);
 		} else {
 			varAccessInModificationPoints = new ArrayList<>();
@@ -87,12 +91,13 @@ public class VarReplacementByAnotherVarOp extends FineGrainedExpressionReplaceOp
 
 			variableCounter++;
 
-			MetaGenerator.createMetaForSingleElement(modificationPoint, variableAccessToReplace, variableCounter,
-					ingredients, parameters, realParameters, returnType, opsOfVariant, ingredientOfMapped);
+			MetaGenerator.createMetaForSingleElement(opMega, modificationPoint, variableAccessToReplace,
+					variableCounter, ingredients, parameters, realParameters, returnType, opsOfVariant,
+					ingredientOfMapped);
 
 		} // End variable
 
-		MetaOperatorInstance opMega = new MetaOperatorInstance(this, opsOfVariant);
+		opMega.setOperatorInstances(opsOfVariant);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(this);
 		opMega.setOriginal(modificationPoint.getCodeElement());

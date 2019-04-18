@@ -46,20 +46,33 @@ import spoon.support.reflect.code.CtReturnImpl;
  */
 public class MetaGenerator {
 
+	private static final String META_CNST = "_meta_";
+
+	public static final String MUT_IDENTIFIER = "mutnumber_";
+
+	public static int global_moi_indentifier = 0;
+
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
+
+	public static int getNewIdentifier() {
+		return ++global_moi_indentifier;
+	}
 
 	public static MetaOperatorInstance createMetaFineGrainedReplacement(ModificationPoint modificationPoint,
 			CtExpression elementSource, int variableCounter, List<Ingredient> ingredients,
 			List<CtParameter<?>> parameters, List<CtExpression<?>> realParameters, AstorOperator parentOperator,
 			CtTypeReference returnType) {
 
+		MetaOperatorInstance opMega = new MetaOperatorInstance((MetaOperator) parentOperator,
+				MetaGenerator.getNewIdentifier());
+
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
-		createMetaForSingleElement(modificationPoint, elementSource, variableCounter, ingredients, parameters,
+		createMetaForSingleElement(opMega, modificationPoint, elementSource, variableCounter, ingredients, parameters,
 				realParameters, returnType, opsOfVariant, ingredientOfMapped);
 
-		MetaOperatorInstance opMega = new MetaOperatorInstance((MetaOperator) parentOperator, opsOfVariant);
+		opMega.setOperatorInstances(opsOfVariant);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(parentOperator);
 		opMega.setOriginal(modificationPoint.getCodeElement());
@@ -68,15 +81,15 @@ public class MetaGenerator {
 		return opMega;
 	}
 
-	public static void createMetaForSingleElement(ModificationPoint modificationPoint, CtExpression elementSource,
-			int variableCounter, List<Ingredient> ingredients, List<CtParameter<?>> parameters,
-			List<CtExpression<?>> realParameters, CtTypeReference returnType, List<OperatorInstance> opsOfVariant,
-			Map<Integer, Ingredient> ingredientOfMapped) {
+	public static void createMetaForSingleElement(MetaOperatorInstance opMega, ModificationPoint modificationPoint,
+			CtExpression elementSource, int variableCounter, List<Ingredient> ingredients,
+			List<CtParameter<?>> parameters, List<CtExpression<?>> realParameters, CtTypeReference returnType,
+			List<OperatorInstance> opsOfVariant, Map<Integer, Ingredient> ingredientOfMapped) {
 		CtExpression defaultReturnElement = elementSource;
 
 		// Creation of mega method
-		CtMethod<?> megaMethod = createMegaMethod(modificationPoint, defaultReturnElement, variableCounter, ingredients,
-				parameters, ingredientOfMapped, returnType);
+		CtMethod<?> megaMethod = createMegaMethod(opMega, modificationPoint, defaultReturnElement, variableCounter,
+				ingredients, parameters, ingredientOfMapped, returnType);
 
 		// Invocation to mega
 		CtInvocation newInvocationToMega = creationInvocationToMega(modificationPoint, realParameters, megaMethod);
@@ -113,12 +126,16 @@ public class MetaGenerator {
 			CtElement elementSource, CtExpression defaultReturnElement, int variableCounter,
 			List<Ingredient> ingredients, List<CtParameter<?>> parameters, List<CtExpression<?>> realParameters,
 			AstorOperator parentOperator, CtTypeReference returnType) {
+
+		MetaOperatorInstance opMega = new MetaOperatorInstance((MetaOperator) parentOperator,
+				MetaGenerator.getNewIdentifier());
+
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
 		// Creation of mega method
-		CtMethod<?> megaMethod = createMegaMethod(modificationPoint, defaultReturnElement, variableCounter, ingredients,
-				parameters, ingredientOfMapped, returnType);
+		CtMethod<?> megaMethod = createMegaMethod(opMega, modificationPoint, defaultReturnElement, variableCounter,
+				ingredients, parameters, ingredientOfMapped, returnType);
 
 		CtInvocation newInvocationToMega = creationInvocationToMega(modificationPoint, realParameters, megaMethod);
 
@@ -152,7 +169,7 @@ public class MetaGenerator {
 
 		log.debug("invocation: \n" + newInvocationToMega);
 
-		MetaOperatorInstance opMega = new MetaOperatorInstance((MetaOperator) parentOperator, opsOfVariant);
+		opMega.setOperatorInstances(opsOfVariant);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(parentOperator);
 		opMega.setOriginal(modificationPoint.getCodeElement());
@@ -184,11 +201,12 @@ public class MetaGenerator {
 		return newInvocationToMega;
 	}
 
-	public static CtMethod<?> createMegaMethod(ModificationPoint modificationPoint, CtExpression defaultReturnElement,
-			int variableCounter, List<Ingredient> ingredients, List<CtParameter<?>> parameters,
-			Map<Integer, Ingredient> ingredientOfMapped, CtTypeReference returnType) {
+	public static CtMethod<?> createMegaMethod(MetaOperatorInstance opMega, ModificationPoint modificationPoint,
+			CtExpression defaultReturnElement, int variableCounter, List<Ingredient> ingredients,
+			List<CtParameter<?>> parameters, Map<Integer, Ingredient> ingredientOfMapped, CtTypeReference returnType) {
 
-		String name = "_meta_" + variableCounter;
+		int moiIdentifier = opMega.getIdentifier();
+		String name = META_CNST + moiIdentifier + "_" + variableCounter;
 		CtType<?> target = modificationPoint.getCodeElement().getParent(CtType.class);
 		Set<ModifierKind> modifiers = new HashSet<>();
 		modifiers.add(ModifierKind.PRIVATE);
@@ -241,8 +259,9 @@ public class MetaGenerator {
 			CtExpression expCloned = expressionCandidate.clone();
 			expCloned.setPosition(new NoSourcePosition());
 			MutationSupporter.clearPosition(expCloned);
-			CtCodeSnippetExpression caseCondition = MutationSupporter.getFactory().createCodeSnippetExpression(
-					"\"" + candidateNumber + "\".equals(System.getProperty(\"mutnumber\")) ");
+
+			CtCodeSnippetExpression caseCondition = MutationSupporter.getFactory().createCodeSnippetExpression("\""
+					+ candidateNumber + "\".equals(System.getProperty(\"" + MUT_IDENTIFIER + moiIdentifier + "\")) ");
 
 			ingredientOfMapped.put(candidateNumber, ingredientCandidate);
 
@@ -252,8 +271,8 @@ public class MetaGenerator {
 
 			if (ConfigurationProperties.getPropertyBool("meta_add_syso")) {
 
-				CtStatement stPrint = MutationSupporter.getFactory().createCodeSnippetStatement(
-						"System.out.println(" + "\"\\nPROPERTY met:\" +System.getProperty(\"mutnumber\"))");
+				CtStatement stPrint = MutationSupporter.getFactory().createCodeSnippetStatement("System.out.println("
+						+ "\"\\nPROPERTY met:\" +System.getProperty(\"" + MUT_IDENTIFIER + moiIdentifier + "\"))");
 				particularIfBlock.addStatement(stPrint);
 			}
 			particularIf.setThenStatement(particularIfBlock);

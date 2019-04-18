@@ -1,7 +1,12 @@
 package fr.inria.astor.approaches.tos.operator.metaevaltos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import fr.inria.astor.core.entities.Ingredient;
@@ -378,4 +383,37 @@ public class SupportOperators {
 
 		}
 	}
+
+	// https://stackoverflow.com/questions/8173862/map-of-sets-into-list-of-all-combinations
+
+	public static <K, V> List<Map<K, V>> combinations(Map<K, Set<V>> map) {
+		List<Map<K, V>> list = new ArrayList<>();
+		recurse(map, new LinkedList<K>(map.keySet()).listIterator(), new HashMap<K, V>(), list);
+		return list;
+	}
+
+	private static <K, V> void recurse(Map<K, Set<V>> map, ListIterator<K> iter, Map<K, V> cur, List<Map<K, V>> list) {
+
+		if (!iter.hasNext()) {
+			Map<K, V> entry = new HashMap<K, V>();
+
+			for (K key : cur.keySet()) {
+				entry.put(key, cur.get(key));
+			}
+
+			list.add(entry);
+		} else {
+			K key = iter.next();
+			Set<V> set = map.get(key);
+
+			for (V value : set) {
+				cur.put(key, value);
+				recurse(map, iter, cur, list);
+				cur.remove(key);
+			}
+
+			iter.previous();
+		}
+	}
+
 }

@@ -39,6 +39,8 @@ public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator
 	@Override
 	public List<MetaOperatorInstance> createMetaOperatorInstances(ModificationPoint modificationPoint) {
 
+		MetaOperatorInstance opMega = new MetaOperatorInstance(this, MetaGenerator.getNewIdentifier());
+
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
 		List<MetaOperatorInstance> opsMega = new ArrayList();
@@ -94,12 +96,13 @@ public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator
 
 			variableCounter++;
 
-			MetaGenerator.createMetaForSingleElement(modificationPoint, variableAccessToReplace, variableCounter,
-					ingredients, parameters, realParameters, returnType, opsOfVariant, ingredientOfMapped);
+			MetaGenerator.createMetaForSingleElement(opMega, modificationPoint, variableAccessToReplace,
+					variableCounter, ingredients, parameters, realParameters, returnType, opsOfVariant,
+					ingredientOfMapped);
 
 		} // End variable
 
-		MetaOperatorInstance opMega = new MetaOperatorInstance(this, opsOfVariant);
+		opMega.setOperatorInstances(opsOfVariant);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(this);
 		opMega.setOriginal(modificationPoint.getCodeElement());

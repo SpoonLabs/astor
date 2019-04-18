@@ -1,11 +1,9 @@
 package fr.inria.astor.core.entities.meta;
 
-import java.util.List;
 import java.util.Map;
 
 import fr.inria.astor.core.entities.CompositeOperatorInstance;
 import fr.inria.astor.core.entities.Ingredient;
-import fr.inria.astor.core.entities.OperatorInstance;
 
 /**
  * 
@@ -18,10 +16,12 @@ public class MetaOperatorInstance extends CompositeOperatorInstance {
 
 	protected MetaOperator metaoperator;
 
-	public MetaOperatorInstance(MetaOperator metaoperator, List<OperatorInstance> instances) {
-		super(instances);
-		this.metaoperator = metaoperator;
+	protected int metaIdentifier = 0;
 
+	public MetaOperatorInstance(MetaOperator metaoperator, int metaIdentifier) {
+		super();
+		this.metaoperator = metaoperator;
+		this.metaIdentifier = metaIdentifier;
 	}
 
 	public Map<Integer, Ingredient> getAllIngredients() {
@@ -38,6 +38,14 @@ public class MetaOperatorInstance extends CompositeOperatorInstance {
 
 	public void setMetaoperator(MetaOperator metaoperator) {
 		this.metaoperator = metaoperator;
+	}
+
+	public int getIdentifier() {
+		return metaIdentifier;
+	}
+
+	public void setMetaIdentifier(int metaIdentifier) {
+		this.metaIdentifier = metaIdentifier;
 	}
 
 }

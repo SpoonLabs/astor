@@ -12,6 +12,10 @@ public class CompositeOperatorInstance extends OperatorInstance {
 
 	List<OperatorInstance> instances = new ArrayList<>();
 
+	public CompositeOperatorInstance() {
+		super();
+	}
+
 	public CompositeOperatorInstance(List<OperatorInstance> instances) {
 		super();
 		this.instances = instances;
@@ -33,6 +37,10 @@ public class CompositeOperatorInstance extends OperatorInstance {
 			applied &= operatorInstance.undoModification();
 		}
 		return applied;
+	}
+
+	public void setOperatorInstances(List<OperatorInstance> instances) {
+		this.instances = instances;
 	}
 
 }

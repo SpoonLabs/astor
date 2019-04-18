@@ -20,6 +20,7 @@ import fr.inria.astor.approaches.tos.operator.metaevaltos.ConstReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.IOperatorWithTargetElement;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.MetaGenerator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementArgumentRemoveOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffArgumentsOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffNameOp;
@@ -344,7 +345,6 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 		return existSolution;
 	}
 
-//	List<IPrediction> predictWithSol = new ArrayList<>();
 	MapList<IPrediction, PredictionElement> predictedCtElementWithSol = new MapList<>();
 
 	/**
@@ -468,8 +468,17 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 			for (MetaOperatorInstance moi : megavariant.getMetaOpInstances()) {
 
+				ConfigurationProperties.setProperty(MultiMetaEvalTOSApproach.METALL,
+						Integer.toString(moi.getIdentifier()));
+
 				for (Integer idMutant : moi.getAllIngredients().keySet()) {
-					ConfigurationProperties.setProperty(MultiMetaEvalTOSApproach.METID, idMutant.toString());
+
+					ConfigurationProperties.setProperty(MetaGenerator.MUT_IDENTIFIER + moi.getIdentifier(),
+							idMutant.toString());
+
+					// ConfigurationProperties.setProperty(MultiMetaEvalTOSApproach.METALL,
+					// idMutant.toString());
+
 					VariantValidationResult validation_single = super.validateInstance(variant);
 					if (validation_single != null) {
 						megavalidation.addValidation(idMutant, validation_single);

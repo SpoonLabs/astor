@@ -1,6 +1,7 @@
 package fr.inria.astor.core.validation.results;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import fr.inria.astor.core.entities.VariantValidationResult;
@@ -15,6 +16,8 @@ public class MetaValidationResult extends TestCasesProgramValidationResult imple
 
 	protected Map<Integer, VariantValidationResult> validations = new HashMap<>();
 	protected Map<Integer, VariantValidationResult> sucessfulValidations = new HashMap<>();
+
+	protected List<Map<Integer, Integer>> allCandidates;
 
 	public MetaValidationResult() {
 		super(null);
@@ -44,13 +47,22 @@ public class MetaValidationResult extends TestCasesProgramValidationResult imple
 		String r = "\nMeta-evaluation";
 		for (Integer mode : this.validations.keySet()) {
 
-			r += "\n mutant-id " + mode + ": " + this.getValidation(mode).toString();
+			r += "\n mutant-id " + mode + ": (" + allCandidates.get(mode - 1) + ") "
+					+ this.getValidation(mode).toString();
 		}
 		return r;
 	}
 
 	public Map<Integer, VariantValidationResult> getSucessfulValidations() {
 		return sucessfulValidations;
+	}
+
+	public List<Map<Integer, Integer>> getAllCandidates() {
+		return allCandidates;
+	}
+
+	public void setAllCandidates(List<Map<Integer, Integer>> allCandidates) {
+		this.allCandidates = allCandidates;
 	}
 
 }

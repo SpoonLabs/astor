@@ -2,6 +2,7 @@ package fr.inria.astor.core.entities.meta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import fr.inria.astor.core.entities.OperatorInstance;
@@ -39,13 +40,58 @@ public class MetaProgramVariant extends ProgramVariant {
 		MetaValidationResult metaVal = (MetaValidationResult) this.getValidationResult();
 
 		for (Integer id : metaVal.getSucessfulValidations().keySet()) {
-			variants.add(this.getPlainProgramVariantFromMetaId(id));
+
+			Map<Integer, Integer> map2Ingredients = metaVal.getAllCandidates().get(id - 1);
+			variants.add(this.getPlainProgramVariantFromMetaId(map2Ingredients));
 		}
 		return variants;
 
 	}
 
-	public ProgramVariant getPlainProgramVariantFromMetaId(int metaId) {
+	public ProgramVariant getPlainProgramVariantFromMetaId(Map<Integer, Integer> mapMoi2Ingredients) {
+
+		ProgramVariant childPlainVariant = new ProgramVariant(id);
+
+		List<MetaOperatorInstance> metas = getMetaOpInstances();
+		int generation = 0;
+
+		for (MetaOperatorInstance metaOperatorInstance : metas) {
+
+			Integer ingredientId = mapMoi2Ingredients.get(metaOperatorInstance.getIdentifier());
+
+			if (metaOperatorInstance.getAllIngredients().containsKey(ingredientId)) {
+
+				generation++;
+
+				AstorOperator operator = metaOperatorInstance.getOperationApplied();
+
+				if (!(operator instanceof MetaOperator))
+					continue;
+
+				OperatorInstance normalOpInstance = ((MetaOperator) operator)
+						.getConcreteOperatorInstance(metaOperatorInstance, ingredientId);
+
+				childPlainVariant.getOperations(generation).add(normalOpInstance);
+
+			}
+		}
+		if (generation > 0) {
+			childPlainVariant.setGenerationSource(this.getParent().getGenerationSource());
+			childPlainVariant.setParent(this.getParent());
+			childPlainVariant.addModificationPoints(this.getParent().getModificationPoints());
+			childPlainVariant.getBuiltClasses().putAll(this.getParent().getBuiltClasses());
+
+			// Get the meta validation
+			MetaValidationResult metaVal = (MetaValidationResult) this.getValidationResult();
+			childPlainVariant.setFitness(this.getFitness());
+			childPlainVariant.setValidationResult(metaVal.getValidation(id));
+			return childPlainVariant;
+		}
+		return null;
+
+	}
+
+	public ProgramVariant getPlainProgramVariantFromMetaIdOLD(int metaId) {
 
 		List<MetaOperatorInstance> metas = getMetaOpInstances();
 		for (MetaOperatorInstance metaOperatorInstance : metas) {
