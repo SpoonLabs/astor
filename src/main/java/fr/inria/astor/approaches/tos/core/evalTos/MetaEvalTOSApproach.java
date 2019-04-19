@@ -20,7 +20,6 @@ import fr.inria.astor.approaches.tos.operator.metaevaltos.ConstReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.IOperatorWithTargetElement;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
-import fr.inria.astor.approaches.tos.operator.metaevaltos.MetaGenerator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementArgumentRemoveOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffArgumentsOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffNameOp;
@@ -48,7 +47,6 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
-import fr.inria.astor.core.validation.results.MetaValidationResult;
 import fr.inria.astor.util.MapList;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.PlugInLoader;
@@ -461,43 +459,17 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	@Override
 	public VariantValidationResult validateInstance(ProgramVariant variant) {
-
-		if (variant instanceof MetaProgramVariant) {
-			MetaValidationResult megavalidation = new MetaValidationResult();
-			MetaProgramVariant megavariant = (MetaProgramVariant) variant;
-
-			for (MetaOperatorInstance moi : megavariant.getMetaOpInstances()) {
-
-				ConfigurationProperties.setProperty(MultiMetaEvalTOSApproach.METALL,
-						Integer.toString(moi.getIdentifier()));
-
-				for (Integer idMutant : moi.getAllIngredients().keySet()) {
-
-					ConfigurationProperties.setProperty(MetaGenerator.MUT_IDENTIFIER + moi.getIdentifier(),
-							idMutant.toString());
-
-					// ConfigurationProperties.setProperty(MultiMetaEvalTOSApproach.METALL,
-					// idMutant.toString());
-
-					VariantValidationResult validation_single = super.validateInstance(variant);
-					if (validation_single != null) {
-						megavalidation.addValidation(idMutant, validation_single);
-						if (validation_single.isSuccessful())
-							log.debug("Solution found " + idMutant.toString());
-					} else {
-						log.error("Validation Null for metaid " + idMutant.toString());
-					}
-				}
-			}
-
-			variant.setValidationResult(megavalidation);
-
-			return megavalidation;
-
-		} else
-			// by default
-			return super.validateInstance(variant);
-
+//to refactor...
+		MultiMetaEvalTOSApproach multi;
+		try {
+			multi = new MultiMetaEvalTOSApproach(mutatorSupporter, projectFacade);
+			multi.setProgramValidator(this.getProgramValidator());
+			return multi.validateInstance(variant);
+		} catch (JSAPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

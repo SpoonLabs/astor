@@ -595,7 +595,6 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 	public VariantValidationResult validateInstance(ProgramVariant variant) {
 
 		if (variant instanceof MetaProgramVariant) {
-			MetaValidationResult megavalidation = new MetaValidationResult();
 			MetaProgramVariant megavariant = (MetaProgramVariant) variant;
 
 			// Get all ids of moi
@@ -609,7 +608,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 			// now, calculate all combinations of evaluations:
 			List<Map<Integer, Integer>> allCandidates = SupportOperators.combinations(mutants);
-			megavalidation.setAllCandidates(allCandidates);
+			MetaValidationResult megavalidation = new MetaValidationResult(allCandidates);
 
 			// for each candidate
 			int candidateNumber = 1;

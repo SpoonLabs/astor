@@ -19,8 +19,9 @@ public class MetaValidationResult extends TestCasesProgramValidationResult imple
 
 	protected List<Map<Integer, Integer>> allCandidates;
 
-	public MetaValidationResult() {
+	public MetaValidationResult(List<Map<Integer, Integer>> allCandidates) {
 		super(null);
+		this.allCandidates = allCandidates;
 	}
 
 	public void addValidation(Integer id, VariantValidationResult validation) {
