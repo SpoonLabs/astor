@@ -344,7 +344,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				boolean idem = original.equals(st.toString());
 				if (!idem) {
 					log.error("Error variant :" + variant.getId()
-							+ " the model was not the same from the original after this generation");
+							+ " the model was not the same from the original after this generation (see Diff in debug level)");
 					// log.error("Undo Error: original: \n" + original);
 					// log.error("Undo Error: modified: \n" + st.toString());
 					try {
@@ -361,7 +361,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 						PatchDiffCalculator pdc = new PatchDiffCalculator();
 						String diff = pdc.getDiff(forig, fmod, st.getQualifiedName());
 
-						log.error("Undo Error: diff: \n" + diff);
+						log.debug("Undo Error: diff: \n" + diff);
 					} catch (Exception e) {
 						log.error(e);
 					}
@@ -1166,7 +1166,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		} else {
 			outputs.add(new StandardOutputReport());
-			outputs.add(new PatchJSONStandarOutput());
+			if (ConfigurationProperties.getPropertyBool("outputjsonresult")) {
+				outputs.add(new PatchJSONStandarOutput());
+			}
 		}
 
 	}
