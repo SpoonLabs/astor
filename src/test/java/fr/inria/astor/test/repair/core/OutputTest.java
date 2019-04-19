@@ -170,6 +170,7 @@ public class OutputTest {
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-outputresult",
 				PatchJSONStandarOutput.class.getCanonicalName() + "|" + StandardOutputReport.class.getCanonicalName());
+		cs.command.put("-parameters", "outputjsonresult:true");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
