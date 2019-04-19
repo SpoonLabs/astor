@@ -92,8 +92,10 @@ public class MethodXMethodReplacementDiffArgumentsOp extends MethodXMethodReplac
 											&& !affectedMethod.getParameters().isEmpty()
 											&& !anotherMethod.getParameters().equals(affectedMethod.getParameters()))) {
 
-								List<CtInvocation> newInvToMethods = SupportOperators.createRealInvocations(point,
-										anotherMethod, invocationToReplace.getTarget());
+								List<CtInvocation> newInvToMethods = // SupportOperators.createRealInvocationsAllPosibilities(point,
+										// anotherMethod, invocationToReplace.getTarget());
+										SupportOperators.createRealInvocationsReusingVars(point, anotherMethod,
+												invocationToReplace);
 
 								for (CtInvocation ctInvocation : newInvToMethods) {
 									CtInvocation newInvocation = ctInvocation.clone();

@@ -1,6 +1,7 @@
 package fr.inria.astor.approaches.tos.operator.metaevaltos;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -171,7 +172,8 @@ public class SupportOperators {
 
 			if (compatibleReturnTypes) {
 
-				List<CtInvocation> newInvToMethods = createRealInvocations(point, anotherMethod, createThisAccess);
+				List<CtInvocation> newInvToMethods = createRealInvocationsAllPosibilities(point, anotherMethod,
+						createThisAccess);
 				newInvocations.addAll(newInvToMethods);
 			}
 		}
@@ -232,8 +234,9 @@ public class SupportOperators {
 
 				if (compatibleReturnTypes) {
 
-					List<CtInvocation> newInvToMethods = createRealInvocations(point, anotherMethod, MutationSupporter
-							.getFactory().createVariableRead(varInScope.getReference(), varInScope.isStatic()));
+					List<CtInvocation> newInvToMethods = createRealInvocationsAllPosibilities(point, anotherMethod,
+							MutationSupporter.getFactory().createVariableRead(varInScope.getReference(),
+									varInScope.isStatic()));
 					newInvocations.addAll(newInvToMethods);
 
 				}
@@ -249,13 +252,21 @@ public class SupportOperators {
 		return e.getType().unbox().getSimpleName().equals("boolean");
 	}
 
-	public static List<CtInvocation> createRealInvocations(ModificationPoint point, CtMethod anotherMethod,
-			CtExpression target) {
-		List<CtInvocation> newInvocations = new ArrayList<>();
+	public static List<CtInvocation> createRealInvocationsAllPosibilities(ModificationPoint point,
+			CtMethod anotherMethod, CtExpression target) {
+
 		// All the possibles variables
 		List<List<CtExpression<?>>> possibleArguments = computeParameters(anotherMethod, point);
 		if (possibleArguments == null || possibleArguments.isEmpty())
-			return newInvocations;
+			return Collections.EMPTY_LIST;
+
+		List<CtInvocation> newInvocations = realInvocationsFromCombination(anotherMethod, target, possibleArguments);
+		return newInvocations;
+	}
+
+	public static List<CtInvocation> realInvocationsFromCombination(CtMethod anotherMethod, CtExpression target,
+			List<List<CtExpression<?>>> possibleArguments) {
+		List<CtInvocation> newInvocations = new ArrayList<>();
 
 		for (List<CtExpression<?>> arguments : possibleArguments) {
 			CtInvocation newInvocation = MutationSupporter.getFactory().createInvocation(target,
@@ -267,46 +278,111 @@ public class SupportOperators {
 
 			newInvocations.add(newInvocation);
 
-			// newInvocation.setT
 		}
+		return newInvocations;
+	}
+
+	public static List<CtInvocation> createRealInvocationsReusingVars(ModificationPoint point, CtMethod anotherMethod,
+			CtInvocation invocationToReplace) {
+
+		List<CtParameter> parameterTypes = anotherMethod.getParameters();
+		CtExpression target = invocationToReplace.getTarget();
+		MapList<CtTypeReference, CtElement> candidateMappings = new MapList<>();
+
+		List<CtVariable> variablesInScope = point.getContextOfModificationPoint();
+
+		for (CtParameter aParameterAnotherMethod : parameterTypes) {
+
+			CtTypeReference aTypePar = aParameterAnotherMethod.getType();
+
+			List similarExpression = (List<CtExpression>) invocationToReplace.getArguments().stream()
+					.filter(e -> e.equals(aTypePar)).collect(Collectors.toList());
+
+			// TODO: put a configuration point here.
+			if (similarExpression.size() > 0) {
+
+				if (!candidateMappings.containsKey(aTypePar)) {
+
+					candidateMappings.put(aTypePar, similarExpression);
+				}
+
+			} else {
+
+				if (!candidateMappings.containsKey(aTypePar)) {
+					List compatible = variablesInScope.stream().filter(e -> e.getType().isSubtypeOf(aTypePar))
+							.collect(Collectors.toList());
+					// A par without a var
+					if (compatible.isEmpty())
+						return null;
+
+					candidateMappings.put(aTypePar, compatible);
+				}
+			}
+
+		}
+
+		List<List<CtExpression<?>>> candidateArguments = createAllParametersCombinations(parameterTypes,
+				candidateMappings);
+
+		if (candidateArguments == null || candidateArguments.isEmpty())
+			return Collections.EMPTY_LIST;
+
+		List<CtInvocation> newInvocations = realInvocationsFromCombination(anotherMethod, target, candidateArguments);
+
 		return newInvocations;
 	}
 
 	public static List<List<CtExpression<?>>> computeParameters(CtMethod anotherMethod, ModificationPoint point) {
 
-		List<List<CtExpression<?>>> candidateArguments = new ArrayList();
-
 		List<CtVariable> variablesInScope = point.getContextOfModificationPoint();
 
-		List<CtParameter> parameterType = anotherMethod.getParameters();
+		List<CtParameter> parameterTypes = anotherMethod.getParameters();
 
-		MapList<CtTypeReference, CtVariable> types = new MapList<>();
+		MapList<CtTypeReference, CtElement> candidateMappings = new MapList<>();
 		// Groups vars according to types
-		for (CtParameter ctTypeParameter : parameterType) {
+		for (CtParameter ctTypeParameter : parameterTypes) {
 			CtTypeReference parType = ctTypeParameter.getType();
 
-			if (!types.containsKey(parType)) {
+			if (!candidateMappings.containsKey(parType)) {
 				List compatible = variablesInScope.stream().filter(e -> e.getType().isSubtypeOf(parType))
 						.collect(Collectors.toList());
 				// A par without a var
 				if (compatible.isEmpty())
 					return null;
 
-				types.put(parType, compatible);
+				candidateMappings.put(parType, compatible);
 
 			}
 
 		}
-		long maxCombinations = getMaxCombinations(parameterType, types);
+		List<List<CtExpression<?>>> candidateArguments = createAllParametersCombinations(parameterTypes,
+				candidateMappings);
+
+		return candidateArguments;
+	}
+
+	public static List<List<CtExpression<?>>> createAllParametersCombinations(List<CtParameter> parameterType,
+			MapList<CtTypeReference, CtElement> candidateMappings) {
+		List<List<CtExpression<?>>> candidateArguments = new ArrayList();
+
+		long maxCombinations = getMaxCombinations(parameterType, candidateMappings);
 		// number of arguments
 		for (int i = 0; i < maxCombinations; i++) {
 			List<CtExpression<?>> callArguments = new ArrayList();
 			for (CtParameter ctTypeParameter : parameterType) {
 
-				List<CtVariable> compVar = types.get(ctTypeParameter.getType());
-				CtVariable varSelected = compVar.get(RandomManager.nextInt(compVar.size()));
-				callArguments.add(MutationSupporter.getFactory().createVariableRead(varSelected.getReference(),
-						varSelected.isStatic()));
+				List<CtElement> compVar = candidateMappings.get(ctTypeParameter.getType());
+				CtElement elSelected = compVar.get(RandomManager.nextInt(compVar.size()));
+				if (elSelected instanceof CtVariable) {
+					CtVariable varSelected = (CtVariable) elSelected;
+					callArguments.add(MutationSupporter.getFactory().createVariableRead(varSelected.getReference(),
+							varSelected.isStatic()));
+				} else {
+					if (elSelected instanceof CtExpression) {
+						// for the moment, we dont clone
+						callArguments.add((CtExpression<?>) elSelected);
+					}
+				}
 
 			}
 			// check if the arguments are not already considered
@@ -314,14 +390,10 @@ public class SupportOperators {
 				candidateArguments.add(callArguments);
 			}
 		}
-
-		// let's create realParameters
-
 		return candidateArguments;
 	}
 
-	private static long getMaxCombinations(List<CtParameter> parameterType,
-			MapList<CtTypeReference, CtVariable> types) {
+	private static long getMaxCombinations(List<CtParameter> parameterType, MapList<CtTypeReference, CtElement> types) {
 
 		long max = 1;
 		for (CtParameter ctTypeParameter : parameterType) {
