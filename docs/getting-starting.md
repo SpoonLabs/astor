@@ -1,6 +1,14 @@
 # Getting started Astor
 
-## Compilation and installation
+Astor can be built either with an install generating an executable jar file which contains classpath and build dependencies, or by compiling the code and building the classpath separately, storing it in a text file to be included using the -cp option on execution.
+
+Note: When running any of the mvn commands it may be necessary to use **sudo** permissions.
+
+Pre-requisites:
+* You will need **jdk 8** installed (if you have multiple jdk versions installed you can switched between them using update-alternatives).
+* You will need **maven** installed (possibly with some additional pluggins, so look out for these if error messages come up during compilation).
+
+## Option 1: the installation route
 
      git clone https://github.com/SpoonLabs/astor.git
      cd astor
@@ -8,18 +16,16 @@
 
 Warning: Windows is only partially supported.
 
-## Creating astor.jar
+### Creating astor.jar containing dependencies.
 
      mvn package -DskipTests=true
      
 The following JAR will be created: `target/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar`  
-This will referenced as `astor.jar` for the rest of this guide.
+This will referenced as `astor.jar` for the rest of this guide but you will need to replace it with the full line when inserting commands.
 
-## jGenProg
+## Option 2: compiling and building class path separately
 
-We present a command line with the required arguments for executing jGenProg.  Optional arguments can find using option -help are listed below. They arguments can also be changed  in "configuration.properties".
-
-Getting started: 
+In addition to compiling and building the classpath for astor, the following also gives you the command required to compile an example test.
 
      git clone https://github.com/SpoonLabs/astor.git
      cd astor
@@ -29,14 +35,27 @@ Getting started:
      cd ../../
      mvn dependency:build-classpath -B | egrep -v "(^\[INFO\]|^\[WARNING\])" | tee /tmp/astor-classpath.txt
      cat /tmp/astor-classpath.txt
+
+Note: you will need to rebuild the class path each day if you store it in /tmp/ as suggested, so expect an error if you come back the following day and try to run astor without doing so.
      
-Then the main command (note that the "location" argument is mandatory, and must be an absolute path):
+## Executing the program
+
+The execution of the program will be different depending on the build option you chose previously.
+
+### Executing after building with option 2, demonstrated for jGenProg
+
+We present a command line with the required arguments for executing jGenProg.  Optional arguments found using option -help are also listed further down this document. The arguments can also be changed  in "./target/classes/configuration.properties".
+
+Then the main execution command is as follows (note that the "location" argument is mandatory, and must be an absolute path):
 
      java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.AstorMain -mode jgenprog -srcjavafolder /src/java/ -srctestfolder /src/test/  -binjavafolder /target/classes/ -bintestfolder  /target/test-classes/ -location /home/user/astor/examples/Math-issue-280/ -dependencies examples/Math-issue-280/lib
 
+The only part of the above command that you should need to alter is the absolute path that follows the -location argument.
 
-Output: Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
-Astor writes in the output folder (property `workingDirectory` in the mentioned command line), a folder with all the variants that fulfill the goals i.e., repair the bugs. Example output:
+### Output
+
+Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
+Astor writes in the output folder (property `workingDirectory` in the configuration.properties file, set by default to ./output_astor/), a folder with all the variants that fulfill the goals i.e., repair the bugs. You can change the location of this output folder by either altering the configuration file or by using the -out command line argument. Example output:
 
 ```
 PATCH_DIFF=--- /afs/pdc.kth.se/home/m/monp/astor/./output_astor/AstorMain-Math-issue-280/src/default/org/apache/commons/math/analysis/solvers/UnivariateRealSolverUtils.java	
@@ -58,26 +77,28 @@ PATCH_DIFF=--- /afs/pdc.kth.se/home/m/monp/astor/./output_astor/AstorMain-Math-i
 
 ```
 
-Each variant folder contains the files that Astor has analyzed (and eventually modified). Additionally, it contains a file called `patch.diff` that summarized all changes done in the variant.
-The summary of the execution is also printed on the screen at the end of the execution. If there is at least one solution, it prints “Solution found” and then it lists the program variants that are solution i.e., they fixed versions of the program. Then, if you go to the folder to each of those variants, the file patch appears, which summarizes the changes done for repairing the bug. In other words, the file `patch.diff` is only present if the variant is a valid solution (fixes the failing test and no regression).
-If Astor does not find any solution in the execution, it prints at the screen something like “Not solution found”. 
+Each variant folder contains the files that Astor has analyzed (and eventually modified). Additionally, it contains a file called `patch.diff` that summarizes all changes done in the variant.
+The summary of the execution is also printed on the screen at the end of the execution. If there is at least one solution, it prints “Solution found” and then it lists the program variants that are a solution i.e., they fixed versions of the program. Then, if you go to the folder for each of those variants, you'll see the file patch, which summarizes the changes done for repairing the bug. In other words, the file `patch.diff` is only present if the variant is a valid solution (fixes the failing test and introduces no regression).
 
+If Astor does not find any solution in the execution, it prints on the screen something like “No solution found”. 
 
-Moreover, Astor saves the patched version of the program on disk.
-The Astor's output is located in folder "./output_astor". You can change it through command line argument '-out'. There Astor writes a JSON file ('astor_output.json') which summarizes the information of each patch found (location, code modified, etc.) and some statistics.
+Additionally, Astor writes a JSON file ('astor_output.json') which summarizes the information of each patch found (location, code modified, etc.) and some statistics.
+
 Inside the folder "/src/" Astor stores the source code of the solutions that it found.
 
-Folder “default” contains the original program, without any modification. It's a sanity check, it’s the output of spoon without applying any processor over the spoon model of the application under repair.
+Folder “default” contains the original program, without any modification. It's a sanity check, containing the output of spoon without applying any processor over the spoon model of the application under repair.
 
-Each folder "variant-x" is a valid solution to the repair problem (passes all tests). The "x" corresponds to the id (unique identifier) assigned to a variant. There is an command line argument `saveall` that allows you to save all variants that Astor generates, even they are not solution.
+Each folder "variant-x" is a valid solution to the repair problem (passes all tests). The "x" corresponds to the id (unique identifier) assigned to a variant. There is an command line argument `saveall` that allows you to save all variants that Astor generates, even if they are not a solution.
 
-## jKali
+## Executing after building with option 1
+
+### jKali
 
 For executing Astor in jKali mode:
 
     java  -cp astor.jar fr.inria.main.evolution.AstorMain -mode jkali -location <>......
 
-## jMutRepair
+### jMutRepair
 
 For executing Astor in jMutRepair mode:
 
