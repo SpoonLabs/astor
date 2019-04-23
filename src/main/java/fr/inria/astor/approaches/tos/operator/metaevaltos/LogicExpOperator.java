@@ -32,7 +32,6 @@ import spoon.support.reflect.code.CtBinaryOperatorImpl;
 public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 		implements MetaOperator, DynaIngredientOperator, IOperatorWithTargetElement {
 
-	public BinaryOperatorKind operatorKind = BinaryOperatorKind.OR;
 	private CtElement targetElement = null;
 
 	@Override
@@ -88,7 +87,10 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 			// change
 
 			List<Ingredient> ingredients = this.computeIngredientsFromExpressionExplansion(modificationPoint,
-					expressionToExpand, ingredientsDynamoth, this.operatorKind);
+					expressionToExpand, ingredientsDynamoth, BinaryOperatorKind.OR);
+
+			ingredients.addAll(this.computeIngredientsFromExpressionExplansion(modificationPoint, expressionToExpand,
+					ingredientsDynamoth, BinaryOperatorKind.AND));
 
 			// The parameters to be included in the new method
 			List<CtVariableAccess> varsToBeParameters = SupportOperators
@@ -136,7 +138,11 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 
 			CtBinaryOperator binaryOperator = new CtBinaryOperatorImpl<>();
 			binaryOperator.setKind(operatorKind2);
-			CtExpression previousExpressionCloned = previousExpression.clone();
+			CtExpression previousExpressionCloned = previousExpression;
+			// if (ConfigurationProperties.getPropertyBool("metamustclone")) {
+			previousExpressionCloned = previousExpression.clone();
+
+			// }
 			MutationSupporter.clearPosition(previousExpressionCloned);
 			binaryOperator.setLeftHandOperand(previousExpressionCloned);
 

@@ -28,7 +28,6 @@ import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
-import fr.inria.astor.util.MapList;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
@@ -130,24 +129,13 @@ public class EvalTOSBTTest {
 
 		// System.out.println(candidatesnew);
 
-		MapList<String, ClusterExpressions> cluster = approach.clusterCandidatesByValue(candidatesnew);
+		List<ClusterExpressions> clusterOfTest = approach.clusterCandidatesByValue(candidatesnew);
+		;
 
-		///
-		System.out.println("END clustering: Visualization cluster: ");
-
-		for (String i_testName : cluster.keySet()) {
-
-			List<ClusterExpressions> clusterOfTest = cluster.get(i_testName);
-
-			System.out.println("--Test " + i_testName + " # clustersL " + clusterOfTest.size());
-			int i = 0;
-			for (List<EvaluatedExpression> aCluster : clusterOfTest) {
-
-				System.out.println(String.format("c %d: nr evals %d pach first %s size %s, evaluations: %s ", i++,
-						aCluster.get(0).getEvaluations().get(i_testName).size(), aCluster.get(0).asPatch(),
-						aCluster.size(), aCluster.get(0).getEvaluations().get(i_testName)));
-			}
-
+		System.out.println("--Test " + " # clustersL " + clusterOfTest.size());
+		int i = 0;
+		for (List<EvaluatedExpression> aCluster : clusterOfTest) {
+			// TODO:
 		}
 
 		// assertTrue(approach.getSolutions().size() > 0);

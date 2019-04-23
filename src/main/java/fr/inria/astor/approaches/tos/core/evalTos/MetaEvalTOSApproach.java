@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -413,25 +412,8 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 				|| clusterEvaluatedExpressions.getClusterEvaluatedExpressions() == null) {
 			return newIngredientsResult;
 		}
-		String i_testName = null;
 
-		if (this.projectFacade.getProperties().getFailingTestCases().size() > 0
-				&& clusterEvaluatedExpressions.getClusterEvaluatedExpressions()
-						.containsKey(this.projectFacade.getProperties().getFailingTestCases().get(0))) {
-			i_testName = this.projectFacade.getProperties().getFailingTestCases().get(0);
-		} else {
-			// The expression from one cluster
-			Optional<String> findFirst = clusterEvaluatedExpressions.getClusterEvaluatedExpressions().keySet().stream()
-					.findFirst();
-			if (!findFirst.isPresent())
-				return newIngredientsResult;
-			i_testName = findFirst.get();
-		}
-		List<ClusterExpressions> clustersOfTest = clusterEvaluatedExpressions.getClusterEvaluatedExpressions()
-				.get(i_testName);
-
-		for (ClusterExpressions i_cluster : clustersOfTest) {
-			// valuefromtesti++;
+		for (ClusterExpressions i_cluster : clusterEvaluatedExpressions.getClusterEvaluatedExpressions()) {
 			if (i_cluster.size() > 0) {
 				EvaluatedExpression firstExpressionOfCluster = i_cluster.get(0);
 

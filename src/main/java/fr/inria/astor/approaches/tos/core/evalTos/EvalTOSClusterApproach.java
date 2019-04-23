@@ -1,6 +1,6 @@
 package fr.inria.astor.approaches.tos.core.evalTos;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -47,7 +47,7 @@ public class EvalTOSClusterApproach extends EvalTOSCoreApproach {
 			throws IllegalAccessException, Exception, IllegalAccessError {
 
 		final boolean stop = true;
-		MapList<String, ClusterExpressions> clusterEvaluatedExpressions = getEvaluatedExpression(iModifPoint);
+		List<ClusterExpressions> clusterEvaluatedExpressions = getEvaluatedExpression(iModifPoint);
 		if (clusterEvaluatedExpressions == null)
 			return false;
 
@@ -75,89 +75,81 @@ public class EvalTOSClusterApproach extends EvalTOSCoreApproach {
 					"\n\n---hole-> `" + iHole + "`,  return type " + aholeExpression.getType().box().getQualifiedName()
 							+ "--hole type: " + iHole.getClass().getCanonicalName());
 
-			int[] sizesofClusters = clusterEvaluatedExpressions.values().stream().mapToInt(i -> i.size()).toArray();
+			log.info("number of clusters " + clusterEvaluatedExpressions.size());
 
-			log.info("number of clusters " + Arrays.toString(sizesofClusters));
+			int valuefromtesti = 0;
+			for (ClusterExpressions i_cluster : clusterEvaluatedExpressions) {
+				valuefromtesti++;
+				if (i_cluster.size() > 0) {
+					EvaluatedExpression firstExpressionOfCluster = i_cluster.get(0);
 
-			// Simplification
-			int nrtestfromholei = 0;
-			for (String i_testName : clusterEvaluatedExpressions.keySet()) {
-				List<ClusterExpressions> clustersOfTest = clusterEvaluatedExpressions.get(i_testName);
-				nrtestfromholei++;
-				log.debug(String.format("Nr clusters of test %s: %d/%d", i_testName, nrtestfromholei,
-						clustersOfTest.size()));
-
-				int valuefromtesti = 0;
-				for (ClusterExpressions i_cluster : clustersOfTest) {
-					valuefromtesti++;
-					if (i_cluster.size() > 0) {
-						EvaluatedExpression firstExpressionOfCluster = i_cluster.get(0);
-
-						if (firstExpressionOfCluster.asPatch().toString().equals(iHole.toString())) {
-							continue;
-						}
-						operationsExecuted++;
-
-						// let's check the types
-						String classofExpression = i_cluster.getClusterType();// returnExpressionType(firstExpressionOfCluster);//
-																				// firstExpressionOfCluster.getValue().getType().getCanonicalName();
-
-						String classofiHole = aholeExpression.getType().box().getQualifiedName();
-
-						if (!ConfigurationProperties.getPropertyBool("avoidtypecomparison")// In case that we dont want
-																							// to compare hole types
-								&& !classofiHole.equals(classofExpression)) {
-							continue;
-						}
-
-						log.info(String.format("--Analyzing value %d/%d of test %d from hole %d", valuefromtesti,
-								clustersOfTest.size(), nrtestfromholei, nrholefrommpi));
-
-						currentStat.increment(GeneralStatEnum.NR_GENERATIONS);
-						boolean isExpressionASolution = createAndEvaluatePatch(operationsExecuted, parentVariant,
-								iModifPoint, aholeExpression, firstExpressionOfCluster);
-
-						if (isExpressionASolution) {
-							log.info(String.format("Patch found with expresion %s evaluated as %s in modif point %s ",
-									firstExpressionOfCluster.asPatch(),
-									firstExpressionOfCluster.getEvaluations().get(i_testName), iModifPoint.toString()));
-						}
-						if (MAX_GENERATIONS <= operationsExecuted) {
-
-							this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
-							log.info("Stop-Max operator Applied " + operationsExecuted);
-							return stop;
-						}
-
-						if (!(belowMaxTime(dateInitEvolution, maxMinutes))) {
-							log.debug("\n Max time reached " + generationsExecuted);
-							this.outputStatus = AstorOutputStatus.TIME_OUT;
-							return stop;
-						}
-
-						boolean stopSearch = !this.solutions.isEmpty()
-								&& (ConfigurationProperties.getPropertyBool("stopfirst")
-										// or nr solutions are greater than max
-										// allowed
-										|| (this.solutions.size() >= ConfigurationProperties
-												.getPropertyInt("maxnumbersolutions")));
-
-						if (stopSearch) {
-							log.debug("\n Max Solution found " + this.solutions.size());
-							this.outputStatus = AstorOutputStatus.STOP_BY_PATCH_FOUND;
-							return stop;
-						}
-
+					if (firstExpressionOfCluster.asPatch().toString().equals(iHole.toString())) {
+						continue;
 					}
+					operationsExecuted++;
+
+					// let's check the types
+					String classofExpression = i_cluster.getClusterType();// returnExpressionType(firstExpressionOfCluster);//
+																			// firstExpressionOfCluster.getValue().getType().getCanonicalName();
+
+					String classofiHole = aholeExpression.getType().box().getQualifiedName();
+
+					if (!ConfigurationProperties.getPropertyBool("avoidtypecomparison")// In case that we dont want
+																						// to compare hole types
+							&& !classofiHole.equals(classofExpression)) {
+						continue;
+					}
+
+					// log.info(String.format("--Analyzing value %d/%d from hole %d",
+					// valuefromtesti,
+					// nrtestfromholei, nrholefrommpi));
+
+					currentStat.increment(GeneralStatEnum.NR_GENERATIONS);
+					boolean isExpressionASolution = createAndEvaluatePatch(operationsExecuted, parentVariant,
+							iModifPoint, aholeExpression, firstExpressionOfCluster);
+
+					if (isExpressionASolution) {
+						// log.info(String.format("Patch found with expresion %s evaluated as %s in
+						// modif point %s ",
+						// firstExpressionOfCluster.asPatch(),
+						// firstExpressionOfCluster.getEvaluations().get(i_testName),
+						// iModifPoint.toString()));
+					}
+					if (MAX_GENERATIONS <= operationsExecuted) {
+
+						this.setOutputStatus(AstorOutputStatus.MAX_GENERATION);
+						log.info("Stop-Max operator Applied " + operationsExecuted);
+						return stop;
+					}
+
+					if (!(belowMaxTime(dateInitEvolution, maxMinutes))) {
+						log.debug("\n Max time reached " + generationsExecuted);
+						this.outputStatus = AstorOutputStatus.TIME_OUT;
+						return stop;
+					}
+
+					boolean stopSearch = !this.solutions.isEmpty() && (ConfigurationProperties
+							.getPropertyBool("stopfirst")
+							// or nr solutions are greater than max
+							// allowed
+							|| (this.solutions.size() >= ConfigurationProperties.getPropertyInt("maxnumbersolutions")));
+
+					if (stopSearch) {
+						log.debug("\n Max Solution found " + this.solutions.size());
+						this.outputStatus = AstorOutputStatus.STOP_BY_PATCH_FOUND;
+						return stop;
+					}
+
 				}
 
 			}
 
 		}
 		return !stop;
+
 	}
 
-	public MapList<String, ClusterExpressions> getEvaluatedExpression(ModificationPoint iModifPoint) {
+	public List<ClusterExpressions> getEvaluatedExpression(ModificationPoint iModifPoint) {
 		DynamothSynthesisContext contextCollected = null;
 		try {
 			contextCollected = this.collectorFacade.collectValues(getProjectFacade(), iModifPoint);
@@ -190,12 +182,12 @@ public class EvalTOSClusterApproach extends EvalTOSCoreApproach {
 		log.info("Start clustering");
 		// Key: test name, value list of clusters, each cluster is a list of
 		// evaluated expressions
-		MapList<String, ClusterExpressions> cluster = clusterCandidatesByValue(evaluatedExpressions);
+		List<ClusterExpressions> cluster = clusterCandidatesByValue(evaluatedExpressions);
 		return cluster;
 	}
 
 	public DynaIngredientPool getClusteredEvaluatedExpression(ModificationPoint iModifPoint) {
-		MapList<String, ClusterExpressions> cluster = this.getEvaluatedExpression(iModifPoint);
+		List<ClusterExpressions> cluster = this.getEvaluatedExpression(iModifPoint);
 		return new DynaIngredientPool(cluster);
 	}
 
@@ -229,6 +221,60 @@ public class EvalTOSClusterApproach extends EvalTOSCoreApproach {
 		return type;
 	}
 
+	public List<ClusterExpressions> clusterCandidatesByValue(Candidates candidates) {
+
+		log.debug("number candidates " + candidates.size());
+
+		// For each test:
+		// test name, cluster of expressions
+		List<ClusterExpressions> clusters = new ArrayList<>();
+
+		for (int i = 0; i < candidates.size(); i++) {
+			EvaluatedExpression i_expression_under_Classification = (EvaluatedExpression) candidates.get(i);
+
+			// For all test, the values are the similar
+			boolean clustered = false;
+
+			for (ClusterExpressions existingCluster : clusters) {
+
+				// that should not happen, but just in case:
+				if (existingCluster.size() == 0)
+					continue;
+
+				EvaluatedExpression alreadyClustered = existingCluster.get(0);
+				boolean fulfillAllValues = true;
+				for (String i_testName : alreadyClustered.getEvaluations().keySet()) {
+
+					double similarity = calculateSimilarity(i_testName, alreadyClustered,
+							i_expression_under_Classification);
+
+					if (similarity < COMPARISON_THRESHOLD) {
+						// i.e., don't belong to the cluster
+						fulfillAllValues = false;
+						break;
+					}
+
+				}
+				// the cluster corresponds to the expression
+				if (fulfillAllValues) {
+					existingCluster.add(i_expression_under_Classification);
+					clustered = true;
+				}
+
+			}
+			// Any cluster is similar
+			if (!clustered) {
+				String expressionType = returnExpressionType(i_expression_under_Classification);
+				ClusterExpressions evacluster = new ClusterExpressions(expressionType);
+				evacluster.add(i_expression_under_Classification);
+				clusters.add(evacluster);
+			}
+
+		}
+
+		return clusters;
+	}
+
 	/**
 	 * Key: test name, value list of clusters, each cluster is a list of evaluated
 	 * expressions EACH cluster has a list of expressions that have the same value
@@ -237,7 +283,8 @@ public class EvalTOSClusterApproach extends EvalTOSCoreApproach {
 	 * @param candidates
 	 * @return
 	 */
-	public MapList<String, ClusterExpressions> clusterCandidatesByValue(Candidates candidates) {
+
+	public MapList<String, ClusterExpressions> clusterCandidatesByValueOLD(Candidates candidates) {
 
 		log.debug("number candidates " + candidates.size());
 

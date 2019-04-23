@@ -1,6 +1,6 @@
 package fr.inria.astor.approaches.tos.core.evalTos.ingredients;
 
-import fr.inria.astor.util.MapList;
+import java.util.List;
 
 /**
  * A pool with all ingredients from Dynamod
@@ -12,17 +12,19 @@ public class DynaIngredientPool {
 
 	// Key: test name, value list of clusters, each cluster is a list of
 	// evaluated expressions
-	public MapList<String, ClusterExpressions> clusterEvaluatedExpressionsByTests;
+//	public MapList<String, ClusterExpressions> clusterEvaluatedExpressionsByTests;
 
-	public DynaIngredientPool(MapList<String, ClusterExpressions> cluster) {
+	List<ClusterExpressions> clusterEvaluatedExpressionsByTests;
+
+	public DynaIngredientPool(List<ClusterExpressions> cluster) {
 		this.clusterEvaluatedExpressionsByTests = cluster;
 	}
 
-	public MapList<String, ClusterExpressions> getClusterEvaluatedExpressions() {
+	public List<ClusterExpressions> getClusterEvaluatedExpressions() {
 		return clusterEvaluatedExpressionsByTests;
 	}
 
-	public void setClusterEvaluatedExpressions(MapList<String, ClusterExpressions> clusterEvaluatedExpressions) {
+	public void setClusterEvaluatedExpressions(List<ClusterExpressions> clusterEvaluatedExpressions) {
 		this.clusterEvaluatedExpressionsByTests = clusterEvaluatedExpressions;
 	}
 

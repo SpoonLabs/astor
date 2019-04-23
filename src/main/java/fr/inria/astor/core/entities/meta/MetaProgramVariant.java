@@ -9,6 +9,8 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.validation.results.MetaValidationResult;
+import fr.inria.astor.util.MapList;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * Meta Progam variant
@@ -17,6 +19,8 @@ import fr.inria.astor.core.validation.results.MetaValidationResult;
  *
  */
 public class MetaProgramVariant extends ProgramVariant {
+
+	private MapList<CtElement, CtElement> stackOriginal = new MapList<>();
 
 	public MetaProgramVariant(int id) {
 		super(id);
@@ -124,6 +128,10 @@ public class MetaProgramVariant extends ProgramVariant {
 		}
 
 		return null;
+	}
+
+	public MapList<CtElement, CtElement> getStackOriginal() {
+		return stackOriginal;
 	}
 
 }

@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import com.google.gson.JsonArray;
@@ -293,7 +292,9 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 					}
 					// We create one MetaProgram Variant per metaOperator
 					for (MetaOperatorInstance metaPperatorInstance : opInstancesMeta) {
-						// opToInstances.add(operator, metaPperatorInstance);
+						//
+						metaPperatorInstance.applyModification();
+						//
 						opToInstances.add(predictionElement, metaPperatorInstance);
 					}
 
@@ -307,10 +308,6 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 					}
 				}
-				// Create the Program variant
-				// List<ProgramVariant> programVariantsOfPrediction =
-				// createVariants(opToInstances, parentVariant);
-				// allProgramVariants.addAll(programVariantsOfPrediction);
 
 			} catch (Exception e) {
 				log.error("Error with operator " + operator.getClass().getSimpleName());
@@ -332,7 +329,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 			// Apply the code transformations
 			for (OperatorInstance operatorInstance : iProgramVariant.getAllOperations()) {
-				operatorInstance.applyModification();
+				operatorInstance.applyModification(); // MM 23/4/19
 			}
 
 			int generationEval = 0;
@@ -547,25 +544,9 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 				|| clusterEvaluatedExpressions.getClusterEvaluatedExpressions() == null) {
 			return newIngredientsResult;
 		}
-		String i_testName = null;
 
-		if (this.projectFacade.getProperties().getFailingTestCases().size() > 0
-				&& clusterEvaluatedExpressions.getClusterEvaluatedExpressions()
-						.containsKey(this.projectFacade.getProperties().getFailingTestCases().get(0))) {
-			i_testName = this.projectFacade.getProperties().getFailingTestCases().get(0);
-		} else {
-			// The expression from one cluster
-			Optional<String> findFirst = clusterEvaluatedExpressions.getClusterEvaluatedExpressions().keySet().stream()
-					.findFirst();
-			if (!findFirst.isPresent())
-				return newIngredientsResult;
-			i_testName = findFirst.get();
-		}
-		List<ClusterExpressions> clustersOfTest = clusterEvaluatedExpressions.getClusterEvaluatedExpressions()
-				.get(i_testName);
+		for (ClusterExpressions i_cluster : clusterEvaluatedExpressions.getClusterEvaluatedExpressions()) {
 
-		for (ClusterExpressions i_cluster : clustersOfTest) {
-			// valuefromtesti++;
 			if (i_cluster.size() > 0) {
 				EvaluatedExpression firstExpressionOfCluster = i_cluster.get(0);
 
