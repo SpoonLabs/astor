@@ -367,4 +367,73 @@ public class MultiMetEngineSimpleProgramsTest {
 		assertTrue(exists);
 
 	}
+
+	@Test
+	public void test_doomy_Expr_Exp_1_multimeta() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testExprExp1").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "1110");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-expr_exp1");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+
+		MultiMetaEvalTOSApproach approach = (MultiMetaEvalTOSApproach) main1.getEngine();
+		approach.getOperatorSpace().getOperators().removeIf(e -> !(e instanceof LogicExpOperator));
+
+		approach.getVariants().get(0).getModificationPoints()
+				.removeIf(e -> !((e.getCodeElement().getPosition().getLine() == 24 // or 27
+						&& e.getCodeElement().getPosition().getFile().getName().equals("MyBuggy.java"))));
+
+		approach.startEvolution();
+
+		approach.atEnd();
+
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions();
+
+		boolean exists = true;
+		for (ProgramVariant programVariant : solutionVarByVar1) {
+			exists = true;
+
+			exists &= programVariant.getAllOperations().stream()
+					.filter(e -> e.getModified().toString().equals("(i2 > i1) || i1 == i2")
+							&& e.getOriginal().toString().equals("i2 > i1"))
+					.findFirst().isPresent();
+
+			exists &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff()
+					.contains("+			if ((i2 > i1) || i1 == i2)");
+
+			if (exists)
+				break;
+		}
+		assertTrue(exists);
+
+	}
+
 }
