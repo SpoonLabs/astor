@@ -343,19 +343,28 @@ public class MultiMetEngineSimpleProgramsTest {
 		List<ProgramVariant> solutions = approach.getSolutions();
 
 		assertTrue(solutions.size() > 0);
-		assertEquals(1, solutions.size());
 		ProgramVariant solutions0 = solutions.get(0);
 		assertEquals(2, solutions0.getAllOperations().size());
 
-		// assertTrue(solutions0.getAllOperations().stream()
-		// .filter(e ->
-		// e.getModified().toString().startsWith("(myinst.toPositive(i2))")).findFirst().isPresent());
+		boolean exists = true;
 
-		// assertTrue(solutions0.getPatchDiff().getOriginalStatementAlignmentDiff()
-		// .contains("- return (myinst.toPositive(i1)) * (myinst.toNegative(i1))"));
+		for (ProgramVariant programVariant : solutions) {
+			exists = true;
+			exists &= programVariant.getAllOperations().stream()
+					.filter(e -> e.getModified().toString().startsWith("(i1 > i2) || i1 == i2")
+							&& e.getOriginal().toString().equals("i1 > i1"))
+					.findFirst().isPresent();
 
-		// assertTrue(solutions0.getPatchDiff().getOriginalStatementAlignmentDiff()
-		// .contains("+ return (myinst.toPositive(i1)) * (myinst.toPositive(i2))"));
+			exists &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff()
+					.contains("+			if ((i1 > i2) || i1 == i2)");
+
+			exists &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff()
+					.contains("-			if (i1 > i1)");
+
+			if (exists)
+				break;
+		}
+		assertTrue(exists);
 
 	}
 }

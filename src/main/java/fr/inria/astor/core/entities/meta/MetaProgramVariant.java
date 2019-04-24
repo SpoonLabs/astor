@@ -1,6 +1,7 @@
 package fr.inria.astor.core.entities.meta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,8 +10,6 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.validation.results.MetaValidationResult;
-import fr.inria.astor.util.MapList;
-import spoon.reflect.declaration.CtElement;
 
 /**
  * Meta Progam variant
@@ -19,8 +18,6 @@ import spoon.reflect.declaration.CtElement;
  *
  */
 public class MetaProgramVariant extends ProgramVariant {
-
-	private MapList<CtElement, CtElement> stackOriginal = new MapList<>();
 
 	public MetaProgramVariant(int id) {
 		super(id);
@@ -57,6 +54,9 @@ public class MetaProgramVariant extends ProgramVariant {
 		ProgramVariant childPlainVariant = new ProgramVariant(id);
 
 		List<MetaOperatorInstance> metas = getMetaOpInstances();
+
+		Collections.reverse(metas);
+
 		int generation = 0;
 
 		for (MetaOperatorInstance metaOperatorInstance : metas) {
@@ -128,10 +128,6 @@ public class MetaProgramVariant extends ProgramVariant {
 		}
 
 		return null;
-	}
-
-	public MapList<CtElement, CtElement> getStackOriginal() {
-		return stackOriginal;
 	}
 
 }

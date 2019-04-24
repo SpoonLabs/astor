@@ -75,7 +75,7 @@ public class MetaGenerator {
 		opMega.setOperatorInstances(opsOfVariant);
 		opMega.setAllIngredients(ingredientOfMapped);
 		opMega.setOperationApplied(parentOperator);
-		opMega.setOriginal(modificationPoint.getCodeElement());
+		opMega.setOriginal(elementSource);
 		opMega.setModificationPoint(modificationPoint);
 
 		return opMega;

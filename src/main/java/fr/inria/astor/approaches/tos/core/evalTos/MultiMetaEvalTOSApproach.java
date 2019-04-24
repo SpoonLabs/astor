@@ -292,7 +292,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 					}
 					// We create one MetaProgram Variant per metaOperator
 					for (MetaOperatorInstance metaPperatorInstance : opInstancesMeta) {
-						//
+						// new MM 24-04
 						metaPperatorInstance.applyModification();
 						//
 						opToInstances.add(predictionElement, metaPperatorInstance);

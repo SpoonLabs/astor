@@ -1,5 +1,8 @@
 package fr.inria.astor.core.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.IngredientPoolScope;
 import spoon.reflect.declaration.CtElement;
 
@@ -15,6 +18,8 @@ public class Ingredient {
 	protected CtElement derivedFrom;
 	// Store the value of code var
 	protected String cacheString = null;
+
+	protected Map<String, Object> metadata = new HashMap<>();
 
 	public Ingredient(CtElement code, IngredientPoolScope scope, CtElement derivedFrom) {
 		super();
@@ -98,6 +103,10 @@ public class Ingredient {
 		} else if (!ingredientCode.equals(other.ingredientCode))
 			return false;
 		return true;
+	}
+
+	public Map<String, Object> getMetadata() {
+		return metadata;
 	}
 
 }

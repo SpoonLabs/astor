@@ -5,11 +5,11 @@ import java.util.List;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
 import fr.inria.astor.approaches.tos.operator.DynaIngredientOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.simple.SingleLogicExpOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.IngredientFromDyna;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -138,11 +138,8 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 
 			CtBinaryOperator binaryOperator = new CtBinaryOperatorImpl<>();
 			binaryOperator.setKind(operatorKind2);
-			CtExpression previousExpressionCloned = previousExpression;
-			// if (ConfigurationProperties.getPropertyBool("metamustclone")) {
-			previousExpressionCloned = previousExpression.clone();
 
-			// }
+			CtExpression previousExpressionCloned = previousExpression.clone();
 			MutationSupporter.clearPosition(previousExpressionCloned);
 			binaryOperator.setLeftHandOperand(previousExpressionCloned);
 
@@ -155,7 +152,12 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 			binaryOperator.setParent(previousExpression.getParent());
 
 			Ingredient newIngredientExtended = new Ingredient(binaryOperator);
-			newIngredientExtended.setDerivedFrom(previousExpression);
+			// Updated: new code
+			newIngredientExtended.getMetadata().put("operator", operatorKind2);
+			newIngredientExtended.getMetadata().put("right", newRightExpression);
+			newIngredientExtended.getMetadata().put("leftoriginal", previousExpression);
+			//
+
 			ingredientsNewBinaryExpressions.add(newIngredientExtended);
 		}
 
@@ -169,7 +171,8 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 
 		ModificationPoint modificationPoint = operatorInstance.getModificationPoint();
 
-		CtExpression expressionSource = (CtExpression) ingredient.getDerivedFrom();
+		CtExpression expressionSource = (CtExpression) operatorInstance.getOriginal();
+
 		CtExpression expressionTarget = (CtExpression) ingredient.getCode();
 
 		log.debug("Target element to clean " + expressionTarget);
@@ -178,8 +181,11 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
-		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, expressionSource,
-				expressionTarget);
+
+		OperatorInstance opInstace = new SingleLogicExpOperator(modificationPoint,
+				(CtExpression) ingredient.getMetadata().get("leftoriginal"),
+				(CtExpression) ingredient.getMetadata().get("right"),
+				(BinaryOperatorKind) ingredient.getMetadata().get("operator"), this);
 		opsOfVariant.add(opInstace);
 
 		return opInstace;

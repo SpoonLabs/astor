@@ -43,9 +43,9 @@ public class StatementOperatorInstance extends OperatorInstance {
 		this.defineParentInformation(modificationPoint);
 	}
 
-	public StatementOperatorInstance(ModificationPoint modificationPoint, AstorOperator nullPreconditionOperator,
+	public StatementOperatorInstance(ModificationPoint modificationPoint, AstorOperator astorOperator,
 			CtElement modified) {
-		this(modificationPoint, nullPreconditionOperator, modificationPoint.getCodeElement(), modified);
+		this(modificationPoint, astorOperator, modificationPoint.getCodeElement(), modified);
 	}
 
 	public CtBlock getParentBlock() {
