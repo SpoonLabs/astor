@@ -21,8 +21,8 @@ function compilemaven {
 	     if [[ -f "$FILE/pom.xml" ]]; then
     	    cd $FILE
         	mvn test -DskipTests
-        	cd $OLD
-    	fi
+        	cd ../../
+    	fi 
 	done
 	cd $OLD
 }
@@ -49,3 +49,4 @@ compile "examples/lang_7/"
 
 echo calling compile maven
 compilemaven 'examples/testMultiMet/'
+compilemaven 'examples/testMet/'
