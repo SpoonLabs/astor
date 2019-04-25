@@ -16,8 +16,9 @@ function compilemaven {
 	do
 		cd $FILE
     	pwd
-    	echo compiling mvn on folder $FILE
-	     if [[ -f "$FILE/pom.xml" ]]; then
+    	F="pwd"
+    	echo compiling mvn on folder $F
+	     if [[ -f "$F/pom.xml" ]]; then
         	mvn test -DskipTests
         	cd ../../../
     	fi 
