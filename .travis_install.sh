@@ -14,10 +14,10 @@ function compilemaven {
 	OLD="$pwd"
 	for FILE in ls "$DIR"*
 	do
-    	#cd $FILE
+    	cd $FILE
     	pwd
     	echo compiling $FILE
-		#if [[ ! -d "$1target/classes"  && -f "$1pom.xml" ]]; then
+		#if [[ ! -d "$FILE/target/classes"  && -f "$FILE/pom.xml" ]]; then
 	     if [[ -f "$FILE/pom.xml" ]]; then
     	    cd $FILE
         	mvn test -DskipTests
