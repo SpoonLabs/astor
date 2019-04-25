@@ -16,8 +16,8 @@ function compilemaven {
 	for FILE in ls "$DIR"*
 	do
     	pwd
+    	cd $FILE
     	echo compiling $FILE
-		#if [[ ! -d "$FILE/target/classes"  && -f "$FILE/pom.xml" ]]; then
 	     if [[ -f "$FILE/pom.xml" ]]; then
     	    cd $FILE
         	mvn test -DskipTests
