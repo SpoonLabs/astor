@@ -12,19 +12,19 @@ function compile {
 function compilemaven {
 	DIR=$1
 	OLD="$pwd"
+	cd $1
 	for FILE in ls "$DIR"*
 	do
-    	cd $FILE
     	pwd
     	echo compiling $FILE
 		#if [[ ! -d "$FILE/target/classes"  && -f "$FILE/pom.xml" ]]; then
 	     if [[ -f "$FILE/pom.xml" ]]; then
     	    cd $FILE
         	mvn test -DskipTests
-        	cd ../../
+        	cd ../../../
     	fi 
 	done
-	cd $OLD
+	#cd $OLD
 }
 
 compile "examples/Math-0c1ef/"
