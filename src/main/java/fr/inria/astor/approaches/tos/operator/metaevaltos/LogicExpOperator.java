@@ -171,8 +171,6 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 
 		ModificationPoint modificationPoint = operatorInstance.getModificationPoint();
 
-		CtExpression expressionSource = (CtExpression) operatorInstance.getOriginal();
-
 		CtExpression expressionTarget = (CtExpression) ingredient.getCode();
 
 		log.debug("Target element to clean " + expressionTarget);
@@ -180,7 +178,6 @@ public class LogicExpOperator extends FineGrainedExpressionReplaceOperator
 		MutationSupporter.clearPosition(expressionTarget);
 
 		List<OperatorInstance> opsOfVariant = new ArrayList();
-
 
 		OperatorInstance opInstace = new SingleLogicExpOperator(modificationPoint,
 				(CtExpression) ingredient.getMetadata().get("leftoriginal"),

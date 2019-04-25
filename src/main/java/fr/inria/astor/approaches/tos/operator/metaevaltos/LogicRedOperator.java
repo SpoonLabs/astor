@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.simple.SingleLogicRedOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -108,21 +108,24 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator
 
 		List<Ingredient> ingredientsReducedExpressions = new ArrayList();
 
-		CtExpression left = binaryToReduce.getLeftHandOperand().clone();
+		CtExpression left = binaryToReduce.getLeftHandOperand();
 		addOperator(ingredientsReducedExpressions, binaryToReduce, left);
-		CtExpression right = binaryToReduce.getRightHandOperand().clone();
+		CtExpression right = binaryToReduce.getRightHandOperand();
 		addOperator(ingredientsReducedExpressions, binaryToReduce, right);
 
 		return ingredientsReducedExpressions;
 	}
 
-	public void addOperator(List<Ingredient> ingredientsReducedExpressions, CtBinaryOperator binaryOperator,
+	public void addOperator(List<Ingredient> ingredientsReducedExpressions, CtBinaryOperator binaryOperatorToReduce,
 			CtExpression subterm) {
 
 		MutationSupporter.clearPosition(subterm);
-		Ingredient newIngredientExtended = new Ingredient(subterm);
-		newIngredientExtended.setDerivedFrom(binaryOperator);
+		Ingredient newIngredientExtended = new Ingredient(subterm.clone());
+		newIngredientExtended.setDerivedFrom(binaryOperatorToReduce);
 		ingredientsReducedExpressions.add(newIngredientExtended);
+
+		newIngredientExtended.getMetadata().put("original", binaryOperatorToReduce);
+		newIngredientExtended.getMetadata().put("reduced", subterm);
 	}
 
 	@Override
@@ -132,8 +135,8 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator
 
 		ModificationPoint modificationPoint = operatorInstance.getModificationPoint();
 
-		CtExpression expressionSource = (CtExpression) ingredient.getDerivedFrom();
-		CtExpression expressionTarget = (CtExpression) ingredient.getCode();
+		CtExpression expressionSource = (CtExpression) ingredient.getMetadata().get("original");
+		CtExpression expressionTarget = (CtExpression) ingredient.getMetadata().get("reduced");
 
 		System.out.println("Target element to clean " + expressionTarget);
 
@@ -141,8 +144,8 @@ public class LogicRedOperator extends FineGrainedExpressionReplaceOperator
 
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
-		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, expressionSource,
-				expressionTarget);
+		OperatorInstance opInstace = new SingleLogicRedOperator(modificationPoint, expressionSource, expressionTarget,
+				this);
 		opsOfVariant.add(opInstace);
 
 		return opInstace;
