@@ -46,4 +46,4 @@ function compilemaven {
 	done
 	cd $OLD
 }
-compilemaven '/Users/matias/develop/code/astor/examples/testMultiMet/'
+compilemaven 'examples/testMultiMet/'
