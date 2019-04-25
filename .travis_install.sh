@@ -9,6 +9,24 @@ function compile {
     fi
 }
 
+function compilemaven {
+	DIR=$1
+	OLD="$pwd"
+	for FILE in ls "$DIR"*
+	do
+    	cd $FILE
+    	pwd
+    	echo compiling $FILE
+		#if [[ ! -d "$1target/classes"  && -f "$1pom.xml" ]]; then
+	     if [[ -f "$FILE/pom.xml" ]]; then
+    	    cd $FILE
+        	mvn test -DskipTests
+        	cd ../../
+    	fi
+	done
+	cd $OLD
+}
+
 compile "examples/Math-0c1ef/"
 compile "examples/math_85/"
 compile "examples/math_70/"
@@ -29,21 +47,5 @@ compile "examples/math_57/"
 compile "examples/math_70_modified/"
 compile "examples/lang_7/"
 
-
-function compilemaven {
-	DIR=$1
-	OLD="$pwd"
-	for FILE in ls "$DIR"*
-	do
-    	cd $FILE
-    	pwd
-		#if [[ ! -d "$1target/classes"  && -f "$1pom.xml" ]]; then
-	     if [[ -f "$FILE/pom.xml" ]]; then
-    	    cd $FILE
-        	mvn test -DskipTests
-        	cd ../../
-    	fi
-	done
-	cd $OLD
-}
+echo calling compile maven
 compilemaven 'examples/testMultiMet/'
