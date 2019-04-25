@@ -10,8 +10,9 @@ function compile {
 }
 
 function compilemaven {
+	DIR="$1/*"
 	cd $1
-	for FILE in "$1/"*
+	for FILE in "$DIR"
 	do
 		cd $FILE
     	pwd
