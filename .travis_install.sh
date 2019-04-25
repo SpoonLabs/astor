@@ -10,21 +10,17 @@ function compile {
 }
 
 function compilemaven {
-	DIR=$1
-	OLD="$pwd"
 	cd $1
-	for FILE in ls "$DIR"*
+	for FILE in "$1/"*
 	do
+		cd $FILE
     	pwd
-    	cd $FILE
     	echo compiling mvn on folder $FILE
 	     if [[ -f "$FILE/pom.xml" ]]; then
-    	    cd $FILE
         	mvn test -DskipTests
         	cd ../../../
     	fi 
 	done
-	#cd $OLD
 }
 
 compile "examples/Math-0c1ef/"
