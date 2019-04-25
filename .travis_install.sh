@@ -22,6 +22,9 @@ function compilemaven {
     	fi 
 	done
 }
+echo calling compile maven
+compilemaven "examples/testMultiMet/"
+compilemaven "examples/testMet/"
 
 compile "examples/Math-0c1ef/"
 compile "examples/math_85/"
@@ -43,6 +46,3 @@ compile "examples/math_57/"
 compile "examples/math_70_modified/"
 compile "examples/lang_7/"
 
-echo calling compile maven
-compilemaven  "examples/testMultiMet/"
-compilemaven "examples/testMet/"
