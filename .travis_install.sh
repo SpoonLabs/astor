@@ -17,7 +17,7 @@ function compilemaven {
 	do
     	pwd
     	cd $FILE
-    	echo compiling $FILE
+    	echo compiling mvn on folder $FILE
 	     if [[ -f "$FILE/pom.xml" ]]; then
     	    cd $FILE
         	mvn test -DskipTests
@@ -48,5 +48,5 @@ compile "examples/math_70_modified/"
 compile "examples/lang_7/"
 
 echo calling compile maven
-compilemaven 'examples/testMultiMet/'
-compilemaven 'examples/testMet/'
+compilemaven  "examples/testMultiMet/"
+compilemaven "examples/testMet/"
