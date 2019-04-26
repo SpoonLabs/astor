@@ -515,7 +515,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		Optional<ProgramVariant> solution1 = solutionReductionLogic1.stream()
 				.filter(soli -> soli.getAllOperations().stream()
 						.filter(e -> e.getModified().toString().equals("i2 >= i1")
-								&& e.getOriginal().toString().equals("(i2 >= i1) || (i1 > i2)"))
+								&& e.getOriginal().toString().equals("i2 >= i1 || (i1 > i2)"))
 						.findFirst().isPresent())
 				.findFirst();
 		assertTrue(solution1.isPresent());
@@ -524,7 +524,7 @@ public class MultiMetEngineSimpleProgramsTest {
 				.contains("+			if (i2 >= i1)"));
 		// Check undo
 		assertTrue(solution1.get().getAllOperations().get(0).getModificationPoint().getCodeElement().toString()
-				.contains("if ((i2 >= i1) || (i1 > i2)) "));
+				.contains("if (i2 >= i1 || (i1 > i2)) "));
 	}
 
 	@Test
@@ -586,14 +586,14 @@ public class MultiMetEngineSimpleProgramsTest {
 		assertTrue(solution0.isPresent());
 
 		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
-				.contains("+			if ((i2 >= i1) || (i1 == i2))"));
+				.contains("+			if (i2 >= i1 || (i1 == i2))"));
 
 		assertTrue(solutionReductionLogic1.size() > 0);
 
 		Optional<ProgramVariant> solution1 = solutionReductionLogic1.stream()
 				.filter(soli -> soli.getAllOperations().stream()
 						.filter(e -> e.getModified().toString().equals("i2 >= i1")
-								&& e.getOriginal().toString().equals("(i2 >= i1) || ((i1 == i2) || (i1 > i2))"))
+								&& e.getOriginal().toString().equals("i2 >= i1 || ((i1 == i2) || (i1 > i2))"))
 						.findFirst().isPresent())
 				.findFirst();
 		assertTrue(solution1.isPresent());
@@ -603,7 +603,7 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		// Check undo
 		assertTrue(solution1.get().getAllOperations().get(0).getModificationPoint().getCodeElement().toString()
-				.contains("(i2 >= i1) || ((i1 == i2) || (i1 > i2))"));
+				.contains("i2 >= i1 || ((i1 == i2) || (i1 > i2))"));
 	}
 
 	/**
