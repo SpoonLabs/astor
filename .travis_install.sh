@@ -10,20 +10,25 @@ function compile {
 }
 
 function compilemaven {
-	DIR="$1/*"
-	cd $1
-	for FILE in "$DIR"
+	DIR=$1
+	OLD=`pwd`
+	for FILE in ls "$DIR"*
 	do
-		cd $FILE
-    	pwd
-    	F="pwd"
-    	echo compiling mvn on folder $F
-	     if [[ -f "$F/pom.xml" ]]; then
+    	#cd $FILE
+    	#pwd
+    	echo compiling $FILE
+		#if [[ ! -d "$1target/classes"  && -f "$1pom.xml" ]]; then
+	     if [[ -f "$FILE/pom.xml" ]]; then
+    	    cd $FILE
+    	    echo in dir `pwd`
         	mvn test -DskipTests
         	cd ../../../
     	fi 
 	done
+#	cd $OLD
 }
+
+
 echo calling compile maven
 compilemaven "examples/testMultiMet/"
 compilemaven "examples/testMet/"
