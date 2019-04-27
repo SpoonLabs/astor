@@ -183,7 +183,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-try");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 
 		AstorMain main1 = new AstorMain();
@@ -242,7 +242,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-try");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 
 		AstorMain main1 = new AstorMain();
@@ -309,7 +309,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-var-by-method1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -361,7 +361,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-var-by-var1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -417,7 +417,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-expr_exp1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -489,7 +489,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-wmr1c2");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -545,7 +545,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-wmr1c2");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -599,7 +599,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-wmr1c2");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -654,7 +654,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-wmr1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -708,7 +708,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-wmr3");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -762,7 +762,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-wmr1c2");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -815,7 +815,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-wmr1c2");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -870,7 +870,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-wmr1c2");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -924,7 +924,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-unwr-invo1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -976,7 +976,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-unw-try1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.01");
 		command.command.put("-saveall", "true");
 
@@ -1027,7 +1027,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-unwif");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.01");
 		command.command.put("-saveall", "true");
 
@@ -1080,7 +1080,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-reduce-bin-1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -1132,7 +1132,7 @@ public class MetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-reduce-bin-1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
