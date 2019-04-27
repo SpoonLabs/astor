@@ -30,6 +30,14 @@ public class ModificationPoint implements Comparable {
 	public ModificationPoint() {
 	}
 
+	public ModificationPoint(int id, CtElement rootElement, CtClass ctClass, List<CtVariable> contextOfGen) {
+		super();
+		this.identified = id;
+		this.codeElement = rootElement;
+		this.ctClass = ctClass;
+		this.contextOfModificationPoint = contextOfGen;
+	}
+
 	public ModificationPoint(CtElement rootElement, CtClass ctClass, List<CtVariable> contextOfGen) {
 		super();
 		this.codeElement = rootElement;
@@ -81,6 +89,10 @@ public class ModificationPoint implements Comparable {
 
 		return 0;
 
+	}
+
+	public ModificationPoint clone() {
+		return new ModificationPoint(identified, codeElement, ctClass, contextOfModificationPoint);
 	}
 
 }

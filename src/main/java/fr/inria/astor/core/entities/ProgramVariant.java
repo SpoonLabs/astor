@@ -276,6 +276,19 @@ public class ProgramVariant {
 		}
 	}
 
+	/**
+	 * Given the list of the modif point, it clones each and add it to this
+	 * 
+	 * @param points
+	 */
+	public void copyModificationPoints(List<? extends ModificationPoint> points) {
+		for (ModificationPoint mp : points) {
+			ModificationPoint modificationPoint = mp.clone();
+			this.modificationPoints.add(modificationPoint);
+			modificationPoint.setProgramVariant(this);
+		}
+	}
+
 	public List<CtType<?>> computeAffectedClassesByOperators() {
 		List<CtType<?>> typesToProcess = new ArrayList<>();
 		for (List<OperatorInstance> modifofGeneration : this.getOperations().values()) {
