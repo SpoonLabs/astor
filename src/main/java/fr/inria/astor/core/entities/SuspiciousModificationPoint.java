@@ -44,7 +44,12 @@ public class SuspiciousModificationPoint extends ModificationPoint {
 	@Override
 	public ModificationPoint clone() {
 
-		return new SuspiciousModificationPoint(suspicious, codeElement, ctClass, contextOfModificationPoint);
+		SuspiciousModificationPoint sp = new SuspiciousModificationPoint(suspicious, codeElement, ctClass,
+				contextOfModificationPoint);
+		sp.identified = this.identified;
+		sp.generation = this.generation;
+		sp.programVariant = this.programVariant;
+		return sp;
 	}
 
 }

@@ -342,7 +342,8 @@ public class ProgramVariantFactory {
 		ProgramVariant childVariant = new ProgramVariant(id);
 		childVariant.setGenerationSource(generation);
 		childVariant.setParent(parentVariant);
-		childVariant.copyModificationPoints(parentVariant.getModificationPoints());
+		// childVariant.copyModificationPoints(parentVariant.getModificationPoints());
+		childVariant.addModificationPoints(parentVariant.getModificationPoints());
 
 		if (!ConfigurationProperties.getPropertyBool("resetoperations"))
 			childVariant.getOperations().putAll(parentVariant.getOperations());

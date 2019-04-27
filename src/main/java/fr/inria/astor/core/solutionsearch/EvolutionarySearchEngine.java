@@ -214,14 +214,14 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 		return childVariant;
 	}
 
-	Map<ModificationPoint, List<OperatorInstance>> operationGenerated = new HashedMap();
+	Map<Integer, List<OperatorInstance>> operationGenerated = new HashedMap();
 
 	protected boolean alreadyApplied(OperatorInstance operationNew) {
 
-		List<OperatorInstance> ops = operationGenerated.get(operationNew.getModificationPoint());
+		List<OperatorInstance> ops = operationGenerated.get(operationNew.getModificationPoint().identified);
 		if (ops == null) {
 			ops = new ArrayList<>();
-			operationGenerated.put(operationNew.getModificationPoint(), ops);
+			operationGenerated.put(operationNew.getModificationPoint().identified, ops);
 			ops.add(operationNew);
 			return false;
 		}
