@@ -6,35 +6,45 @@ import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
+
 /**
- * ModificationPoint created from a Suspicious code. 
- * That means, the ModificationPoint is a suspicious to have a bug.
- * @author Matias Martinez,  matias.martinez@inria.fr
+ * ModificationPoint created from a Suspicious code. That means, the
+ * ModificationPoint is a suspicious to have a bug.
+ * 
+ * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class SuspiciousModificationPoint extends ModificationPoint{
+public class SuspiciousModificationPoint extends ModificationPoint {
 
 	protected SuspiciousCode suspicious;
 
-	
-	public SuspiciousModificationPoint(){
+	public SuspiciousModificationPoint() {
 		super();
 	}
-	
-	public SuspiciousModificationPoint(SuspiciousCode suspicious, CtElement rootElement, CtClass clonedClass,List<CtVariable> context) {
+
+	public SuspiciousModificationPoint(SuspiciousCode suspicious, CtElement rootElement, CtClass clonedClass,
+			List<CtVariable> context) {
 		super(rootElement, clonedClass, context);
 		this.suspicious = suspicious;
 	}
+
 	public SuspiciousCode getSuspicious() {
 		return suspicious;
 	}
+
 	public void setSuspicious(SuspiciousCode suspicious) {
 		this.suspicious = suspicious;
 	}
-	
-	public String toString(){
-		return "MP="
-				+ ctClass.getQualifiedName()+" line: "+suspicious.getLineNumber()+", pointed element: "+codeElement.getClass().getSimpleName()+"";
+
+	public String toString() {
+		return "MP=" + ctClass.getQualifiedName() + " line: " + suspicious.getLineNumber() + ", pointed element: "
+				+ codeElement.getClass().getSimpleName() + "";
 	}
-	
+
+	@Override
+	public ModificationPoint clone() {
+
+		return new SuspiciousModificationPoint(suspicious, codeElement, ctClass, contextOfModificationPoint);
+	}
+
 }
