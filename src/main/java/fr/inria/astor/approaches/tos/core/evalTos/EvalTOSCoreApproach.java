@@ -57,7 +57,7 @@ public class EvalTOSCoreApproach extends ExhaustiveIngredientBasedEngine {
 	public int operationsExecuted = 0;
 
 	protected CodeParserLauncher ingredientProcessor = null;
-	protected List<TargetElementProcessor<?>> targetElementProcessors = new ArrayList<TargetElementProcessor<?>>();
+	protected List<TargetElementProcessor<?>> targetElementProcessors = new ArrayList<>();
 
 	protected DynamothCollectorFacade collectorFacade = new DynamothCollectorFacade();
 	public double COMPARISON_THRESHOLD = 1;
@@ -333,7 +333,6 @@ public class EvalTOSCoreApproach extends ExhaustiveIngredientBasedEngine {
 			} catch (Exception e) {
 				log.error("Error " + e);
 			}
-			;
 		}
 		return clusterValues;
 	}

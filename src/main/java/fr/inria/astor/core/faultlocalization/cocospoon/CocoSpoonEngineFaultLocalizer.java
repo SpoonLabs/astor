@@ -88,12 +88,7 @@ public class CocoSpoonEngineFaultLocalizer {
 			current.setEf(ef);
 			statements.add(current);
 		}
-		Collections.sort(statements, new Comparator<StatementSourceLocation>() {
-			@Override
-			public int compare(StatementSourceLocation o1, StatementSourceLocation o2) {
-				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness());
-			}
-		});
+		statements.sort((o1, o2) -> Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()));
 
 		LinkedHashMap<SourceLocation, List<TestResult>> map = new LinkedHashMap<>();
 		for (StatementSourceLocation source : statements) {
@@ -133,7 +128,7 @@ public class CocoSpoonEngineFaultLocalizer {
 			for (SourceLocation sourceLocation : coveredLines.keySet()) {
 				if (coveredLines.get(sourceLocation)) {
 					if (!this.countPerSourceLocation.containsKey(sourceLocation))
-						this.countPerSourceLocation.put(sourceLocation, new ArrayList<TestResult>());
+						this.countPerSourceLocation.put(sourceLocation, new ArrayList<>());
 					this.countPerSourceLocation.get(sourceLocation)
 							.add(new TestResultImpl(TestCase.from(fullQualifiedMethodTestName),
 									resultsPerNameOfTest.get(fullQualifiedMethodTestName)));

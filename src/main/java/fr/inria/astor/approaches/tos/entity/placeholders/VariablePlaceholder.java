@@ -101,7 +101,7 @@ public class VariablePlaceholder extends Placeholder {
 
 		return visitor.process(modificationPoint, this);
 
-	};
+	}
 
 	public MapList<String, CtVariableAccess> getPalceholders() {
 		return palceholdersToVariables;

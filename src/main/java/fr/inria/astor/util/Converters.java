@@ -16,7 +16,7 @@ public class Converters {
 	
 	
 	public static URL[] toURLArray(String[] cp) throws MalformedURLException {
-		List<URL> urls = new ArrayList<URL>();
+		List<URL> urls = new ArrayList<>();
 
 		for (String c : cp) {
 			urls.add(new File(c).toURI().toURL());
@@ -27,7 +27,7 @@ public class Converters {
 	}
 
 	public static URL[] redefineURL(File foutgen, URL[] originalURL) throws MalformedURLException {
-		List<URL> urls = new ArrayList<URL>();
+		List<URL> urls = new ArrayList<>();
 		urls.add(foutgen.toURL());
 		for (int i = 0; (originalURL != null) && i < originalURL.length; i++) {
 			urls.add(originalURL[i]);

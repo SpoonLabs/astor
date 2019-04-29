@@ -35,7 +35,7 @@ import spoon.reflect.declaration.CtType;
  */
 public class ProgramVariant {
 
-	public static String DEFAULT_ORIGINAL_VARIANT = "default";
+	public static final String DEFAULT_ORIGINAL_VARIANT = "default";
 
 	/**
 	 * Variand ID
@@ -47,16 +47,18 @@ public class ProgramVariant {
 	 * program
 	 */
 	protected List<ModificationPoint> modificationPoints = null;
+
 	/**
 	 * Reference to the loaded classes from the spoon model. The classes are shared
 	 * by all variants, a s consequence, it does not have changes of any variant.
 	 */
-	protected Map<String, CtClass> loadClasses = new HashMap<String, CtClass>();
+	protected Map<String, CtClass> loadClasses = new HashMap<>();
 
 	/**
 	 * operations applied to a Modification Point, organizated by generations
 	 */
 	protected Map<Integer, List<OperatorInstance>> operations = null;
+
 	/**
 	 * Fitness value of the variant
 	 */
@@ -66,6 +68,7 @@ public class ProgramVariant {
 	 * Parent Variant
 	 */
 	protected ProgramVariant parent = null;
+
 	/**
 	 * Id of the generation this variant born
 	 */
@@ -91,7 +94,7 @@ public class ProgramVariant {
 	 * cloned from the share model, and only belong to this variant. That means the
 	 * children of this variant do not refer to those instances.
 	 */
-	protected List<CtClass> modifiedClasses = new ArrayList<CtClass>();
+	protected List<CtClass> modifiedClasses = new ArrayList<>();
 
 	VariantValidationResult validationResult = null;
 
@@ -101,8 +104,8 @@ public class ProgramVariant {
 	PatchStat patchInfo = null;
 
 	public ProgramVariant() {
-		modificationPoints = new ArrayList<ModificationPoint>();
-		operations = new HashMap<Integer, List<OperatorInstance>>();
+		modificationPoints = new ArrayList<>();
+		operations = new HashMap<>();
 	}
 
 	public ProgramVariant(int id) {
@@ -139,11 +142,7 @@ public class ProgramVariant {
 	}
 
 	public void putModificationInstance(int generation, OperatorInstance op) {
-		List<OperatorInstance> modificationPoints = operations.get(generation);
-		if (modificationPoints == null) {
-			modificationPoints = new ArrayList<OperatorInstance>();
-			operations.put(generation, modificationPoints);
-		}
+		List<OperatorInstance> modificationPoints = operations.computeIfAbsent(generation, k -> new ArrayList<>());
 		modificationPoints.add(op);
 
 	}
@@ -209,7 +208,7 @@ public class ProgramVariant {
 	 * @return
 	 */
 	public List<CtType<?>> getAffectedClasses() {
-		List<CtType<?>> r = new ArrayList<CtType<?>>();
+		List<CtType<?>> r = new ArrayList<>();
 		for (CtClass c : loadClasses.values()) {
 			r.add(c);
 		}

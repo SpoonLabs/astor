@@ -31,7 +31,7 @@ public class DeepRepairExhausitiveCloneEngine extends ExhaustiveIngredientBasedE
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 
-		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<TargetElementProcessor<?>>();
+		List<TargetElementProcessor<?>> ingredientProcessors = new ArrayList<>();
 		// Fix Space
 		ingredientProcessors.add(new SingleStatementFixSpaceProcessor());
 

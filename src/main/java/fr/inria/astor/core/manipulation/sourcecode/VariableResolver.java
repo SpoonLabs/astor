@@ -113,7 +113,7 @@ public class VariableResolver {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected static List<CtVariable> compatiblesSubType(List<CtVariable> varContext, CtTypeReference typeToFind) {
 
-		List<CtVariable> result = new ArrayList<CtVariable>();
+		List<CtVariable> result = new ArrayList<>();
 
 		for (CtVariable ctVariable_i : varContext) {
 
@@ -565,11 +565,7 @@ public class VariableResolver {
 
 	private static void addVarMappingAsResult(Map<VarAccessWrapper, List<CtVariable>> varMaps,
 			VarAccessWrapper varOutWrapper, CtVariable varInContext) {
-		List<CtVariable> vars = varMaps.get(varOutWrapper);
-		if (vars == null) {
-			vars = new ArrayList<>();
-			varMaps.put(varOutWrapper, vars);
-		}
+		List<CtVariable> vars = varMaps.computeIfAbsent(varOutWrapper, k -> new ArrayList<>());
 		if (!vars.stream().filter(e -> e.getSimpleName().equals(varInContext.getSimpleName())).findAny().isPresent())
 			vars.add(varInContext);
 	}
@@ -827,10 +823,7 @@ public class VariableResolver {
 		// We find the parent method and we extract the parameters
 		CtMethod method = element.getParent(CtMethod.class);
 		if (method != null) {
-			List<CtParameter> pars = method.getParameters();
-			for (CtParameter ctParameter : pars) {
-				variables.add(ctParameter);
-			}
+			variables.addAll(method.getParameters());
 		}
 
 		// We find the parent block and we extract the local variables before
@@ -855,7 +848,7 @@ public class VariableResolver {
 	 */
 	protected static List<CtLocalVariable> retrieveLocalVariables(int positionEl, CtBlock pb) {
 		List stmt = pb.getStatements();
-		List<CtLocalVariable> variables = new ArrayList<CtLocalVariable>();
+		List<CtLocalVariable> variables = new ArrayList<>();
 		for (int i = 0; i < positionEl; i++) {
 			CtElement ct = (CtElement) stmt.get(i);
 			if (ct instanceof CtLocalVariable) {
@@ -1037,7 +1030,7 @@ public class VariableResolver {
 			Map<VarAccessWrapper, List<CtVariable>> mappedVars, NGramManager managerngram) {
 
 		if (mappedVars.isEmpty()) {
-			return new ArrayList<Map<String, CtVariable>>();
+			return new ArrayList<>();
 		}
 
 		List<VarAccessWrapper> varsNamesToCombine = new ArrayList<>(mappedVars.keySet());
@@ -1069,30 +1062,26 @@ public class VariableResolver {
 					Collections.shuffle(sortedVariables, RandomManager.getRandom());
 				} else {
 					logger.debug("Sorting variables by 1-gram");
-					Collections.sort(sortedVariables, new Comparator<CtVariable>() {
+					sortedVariables.sort((v1, v2) -> {
+						String s1 = v1.getSimpleName();
+						String s2 = v2.getSimpleName();
 
-						@Override
-						public int compare(CtVariable v1, CtVariable v2) {
-							String s1 = v1.getSimpleName();
-							String s2 = v2.getSimpleName();
+						Double p1 = (Double) managerngram.getNgglobal().ngrams[1].getProbabilies().get(s1);
+						Double p2 = (Double) managerngram.getNgglobal().ngrams[1].getProbabilies().get(s2);
 
-							Double p1 = (Double) managerngram.getNgglobal().ngrams[1].getProbabilies().get(s1);
-							Double p2 = (Double) managerngram.getNgglobal().ngrams[1].getProbabilies().get(s2);
-
-							if (p1 == null && p2 == null) {
-								return 0;
-							}
-
-							if (p1 == null) {
-								logger.debug("Var not found in global ngram: " + s1);
-								return 1;
-							}
-							if (p2 == null) {
-								logger.debug("Var not found in global ngram: " + s2);
-								return -1;
-							}
-							return Double.compare(p2, p1);
+						if (p1 == null && p2 == null) {
+							return 0;
 						}
+
+						if (p1 == null) {
+							logger.debug("Var not found in global ngram: " + s1);
+							return 1;
+						}
+						if (p2 == null) {
+							logger.debug("Var not found in global ngram: " + s2);
+							return -1;
+						}
+						return Double.compare(p2, p1);
 					});
 					// logger.debug("vars sorted "+sortedVariables);
 				}
@@ -1126,7 +1115,7 @@ public class VariableResolver {
 			logger.error("Problems when calculating combinations, nr vars " + mappedVars.size()
 					+ " teorical combinations: " + Arrays.toString(maxValues));
 			logger.error(e);
-			return new ArrayList<Map<String, CtVariable>>();
+			return new ArrayList<>();
 		}
 		// FIlter combinations that are empty
 		allCombinations = allCombinations.stream().filter(e -> !e.isEmpty()).collect(Collectors.toList());

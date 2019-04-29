@@ -1,6 +1,5 @@
 package fr.inria.astor.approaches.scaffold.scaffoldgeneration;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 

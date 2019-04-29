@@ -42,29 +42,24 @@ public class SimpleDiffOrderFromJSON implements HoleOrder {
 
 		List<CtCodeElement> holesSorted = new ArrayList<>(holes);
 
-		holesSorted.sort(new Comparator<CtCodeElement>() {
-
-			@Override
-			public int compare(CtCodeElement o1, CtCodeElement o2) {
-				String k1 = getKey(o1);
-				String k2 = getKey(o2);
-				Integer f1 = frequancies.get(k1);
-				Integer f2 = frequancies.get(k2);
-				if (f1 == null && f2 == null) {
-					log.debug("Comparison error: elements are null " + k1 + " and " + k2);
-					return 0;
-				}
-				if (f1 == null) {
-					log.debug("Comparison error: k1 is null " + k1);
-					return 1;
-				}
-				if (f2 == null) {
-					log.debug("Comparison error: k2 is null " + k2);
-					return -1;
-				}
-				return f2.compareTo(f1);
+		holesSorted.sort((o1, o2) -> {
+			String k1 = getKey(o1);
+			String k2 = getKey(o2);
+			Integer f1 = frequancies.get(k1);
+			Integer f2 = frequancies.get(k2);
+			if (f1 == null && f2 == null) {
+				log.debug("Comparison error: elements are null " + k1 + " and " + k2);
+				return 0;
 			}
-
+			if (f1 == null) {
+				log.debug("Comparison error: k1 is null " + k1);
+				return 1;
+			}
+			if (f2 == null) {
+				log.debug("Comparison error: k2 is null " + k2);
+				return -1;
+			}
+			return f2.compareTo(f1);
 		});
 
 		return holesSorted;

@@ -53,12 +53,9 @@ public class ScaffoldTest {
 		assertTrue(repairemgine.scaffoldGenerationSpecific("OperatorTransform",toExplore,84).size()>=0);
 		assertTrue(repairemgine.scaffoldGenerationSpecific("ExpressionTransform",toExplore,84).size()>=1);
 		
-		assertTrue(repairemgine.scaffoldGenerationSpecific("OverloadMethodTransform",toExplore,84).toString().
-				indexOf("OMT")!=-1);
-		assertTrue(repairemgine.scaffoldGenerationSpecific("ConditionAddTransform",toExplore,84).toString().
-				indexOf("CAT")!=-1);
-		assertTrue(repairemgine.scaffoldGenerationSpecific("ExpressionTransform",toExplore,84).toString().
-				indexOf("ET")!=-1);
+		assertTrue(repairemgine.scaffoldGenerationSpecific("OverloadMethodTransform", toExplore, 84).toString().contains("OMT"));
+		assertTrue(repairemgine.scaffoldGenerationSpecific("ConditionAddTransform", toExplore, 84).toString().contains("CAT"));
+		assertTrue(repairemgine.scaffoldGenerationSpecific("ExpressionTransform", toExplore, 84).toString().contains("ET"));
 	}
 	
 }

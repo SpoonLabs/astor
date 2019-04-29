@@ -9,5 +9,5 @@ public enum IngredientPoolScope {
 	LOCAL,
 	PACKAGE,
 	GLOBAL,
-	CUSTOM;
+	CUSTOM
 }

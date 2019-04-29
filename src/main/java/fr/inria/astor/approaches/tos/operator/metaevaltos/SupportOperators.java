@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -218,7 +219,7 @@ public class SupportOperators {
 			//
 			List<CtMethod> allMethods = varInScope.getType().getAllExecutables().stream()
 					.filter(e -> e.getExecutableDeclaration() instanceof CtMethod)
-					.map(e -> e.getExecutableDeclaration()).map(CtMethod.class::cast).collect(Collectors.toList());
+					.map(CtExecutableReference::getExecutableDeclaration).map(CtMethod.class::cast).collect(Collectors.toList());
 
 			for (CtMethod anotherMethod : allMethods) {
 
@@ -258,7 +259,7 @@ public class SupportOperators {
 		// All the possibles variables
 		List<List<CtExpression<?>>> possibleArguments = computeParameters(anotherMethod, point);
 		if (possibleArguments == null || possibleArguments.isEmpty())
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 
 		List<CtInvocation> newInvocations = realInvocationsFromCombination(anotherMethod, target, possibleArguments);
 		return newInvocations;
@@ -324,7 +325,7 @@ public class SupportOperators {
 				candidateMappings);
 
 		if (candidateArguments == null || candidateArguments.isEmpty())
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 
 		List<CtInvocation> newInvocations = realInvocationsFromCombination(anotherMethod, target, candidateArguments);
 
@@ -459,14 +460,14 @@ public class SupportOperators {
 
 	public static <K, V> List<Map<K, V>> combinations(Map<K, Set<V>> map) {
 		List<Map<K, V>> list = new ArrayList<>();
-		recurse(map, new LinkedList<K>(map.keySet()).listIterator(), new HashMap<K, V>(), list);
+		recurse(map, new LinkedList<>(map.keySet()).listIterator(), new HashMap<>(), list);
 		return list;
 	}
 
 	private static <K, V> void recurse(Map<K, Set<V>> map, ListIterator<K> iter, Map<K, V> cur, List<Map<K, V>> list) {
 
 		if (!iter.hasNext()) {
-			Map<K, V> entry = new HashMap<K, V>();
+			Map<K, V> entry = new HashMap<>();
 
 			for (K key : cur.keySet()) {
 				entry.put(key, cur.get(key));

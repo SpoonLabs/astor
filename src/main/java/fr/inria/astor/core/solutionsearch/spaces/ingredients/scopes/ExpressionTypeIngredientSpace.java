@@ -221,7 +221,6 @@ public class ExpressionTypeIngredientSpace
 			for (Object v : ings) {
 				ingredients.add(v.toString());
 			}
-			;
 
 		}
 
@@ -287,7 +286,7 @@ public class ExpressionTypeIngredientSpace
 		List<Ingredient> ingredientsKey = (List<Ingredient>) mkp.get(keyLocation, returnTypeExpression);
 
 		if (!mkp.containsKey(keyLocation, returnTypeExpression)) {
-			ingredientsKey = new CacheList<Ingredient>();
+			ingredientsKey = new CacheList<>();
 			mkp.put(keyLocation, returnTypeExpression, ingredientsKey);
 
 		}

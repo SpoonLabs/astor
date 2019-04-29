@@ -34,7 +34,6 @@ import fr.inria.main.evolution.AstorMain;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
@@ -845,7 +844,7 @@ public class VariableResolverTest {
 		public boolean matches(CtVariableAccess element) {
 			return true;
 		}
-	};
+	}
 
 	public class VarFilter implements Filter<CtVariable> {
 
@@ -853,7 +852,7 @@ public class VariableResolverTest {
 		public boolean matches(CtVariable element) {
 			return true;
 		}
-	};
+	}
 
 	public class FieldFilter implements Filter<CtField> {
 
@@ -861,7 +860,7 @@ public class VariableResolverTest {
 		public boolean matches(CtField element) {
 			return true;
 		}
-	};
+	}
 
 	@Test
 	@Ignore

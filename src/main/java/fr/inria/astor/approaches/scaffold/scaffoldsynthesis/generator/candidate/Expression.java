@@ -10,7 +10,7 @@ import java.util.Map;
 public class Expression {
 
 	private Class inputType;
-	private Map<Class, List<ExpressionValueCandidate>> outputMap = new HashMap<Class, List<ExpressionValueCandidate>>();
+	private Map<Class, List<ExpressionValueCandidate>> outputMap = new HashMap<>();
 	private List<ExpressionValueCandidate> lastQuery;
 
 	public Expression(Class input) {
@@ -25,14 +25,14 @@ public class Expression {
 			type = o.getClass();
 			ExpressionValueCandidate cand = new ExpressionValueCandidate(type, names[i], o);
 			if (!outputMap.containsKey(type))
-				outputMap.put(type, new ArrayList<ExpressionValueCandidate>());
+				outputMap.put(type, new ArrayList<>());
 			outputMap.get(type).add(cand);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public Collection<ExpressionValueCandidate> getSJCandidates(Class output) {
-		lastQuery = new ArrayList<ExpressionValueCandidate>();
+		lastQuery = new ArrayList<>();
 		java.util.Iterator<Class> itr = outputMap.keySet().iterator();
 		while (itr.hasNext()) {
 			Class e = itr.next();

@@ -60,15 +60,15 @@ public class OperatorGenerator {
 	@SuppressWarnings("rawtypes")
 	private static ArrayList<CtExpression> getParameter(Factory factory, CtBinaryOperator operator) {
 		
-		ArrayList<CtExpression> names = new ArrayList<CtExpression>();
+		ArrayList<CtExpression> names = new ArrayList<>();
 		names.add(factory.Code().createCodeSnippetExpression("\"" + operator.getLeftHandOperand().toString() + "\""));
 		names.add(factory.Code().createCodeSnippetExpression("\"" + operator.getRightHandOperand().toString() + "\""));
 		
-		ArrayList<CtExpression> values = new ArrayList<CtExpression>();
+		ArrayList<CtExpression> values = new ArrayList<>();
 		values.add(factory.Code().createCodeSnippetExpression(operator.getLeftHandOperand().toString()));
 		values.add(factory.Code().createCodeSnippetExpression(operator.getRightHandOperand().toString()));
 		
-		ArrayList<CtExpression> paramList = new ArrayList<CtExpression>();
+		ArrayList<CtExpression> paramList = new ArrayList<>();
 		CtNewArray<?> arrname = factory.Core().createNewArray().setType(factory.Type().
 				createArrayReference(String.class.getTypeName()));
 		

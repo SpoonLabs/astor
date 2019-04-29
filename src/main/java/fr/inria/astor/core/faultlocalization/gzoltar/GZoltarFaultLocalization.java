@@ -76,10 +76,10 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		logger.info("-Executing Gzoltar classpath: " + locationBytecode + " from " + +testcasesToExecute.size()
 				+ " classes with test cases");
 
-		List<String> listTOInst = new ArrayList<String>();
+		List<String> listTOInst = new ArrayList<>();
 		listTOInst.add(packageToInst);
 
-		Set<String> classPath = new HashSet<String>();
+		Set<String> classPath = new HashSet<>();
 		classPath.add(locationBytecode);
 		for (URL dep : project.getProperties().getDependencies()) {
 			classPath.add(dep.getPath());
@@ -105,7 +105,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		}
 
 		if (ConfigurationProperties.getPropertyBool("filterfaultlocalization")) {
-			List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
+			List<SuspiciousCode> filtercandidates = new ArrayList<>();
 
 			for (SuspiciousCode suspiciousCode : suspiciousStatemens) {
 				if (!suspiciousCode.getClassName().endsWith("Exception")) {
@@ -144,7 +144,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 	protected FaultLocalizationResult searchSuspicious(String locationBytecode, List<String> testsToExecute,
 			List<String> toInstrument, Set<String> cp, String srcFolder) throws Exception {
 
-		List<String> failingTestCases = new ArrayList<String>();
+		List<String> failingTestCases = new ArrayList<>();
 
 		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");
 		logger.info("Gzoltar fault localization: min susp value parameter: " + thr);
@@ -246,12 +246,12 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		}
 
 		// we order the suspicious DESC
-		Collections.sort(gzCandidates, (o1, o2) -> Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()));
+		gzCandidates.sort((o1, o2) -> Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()));
 
 		// We select the best X candidates.
 		int max = (gzCandidates.size() < maxSuspCandidates) ? gzCandidates.size() : maxSuspCandidates;
 
-		List<SuspiciousCode> candidates = new ArrayList<SuspiciousCode>();
+		List<SuspiciousCode> candidates = new ArrayList<>();
 
 		for (int i = 0; i < max; i++) {
 			Statement gzoltarStatement = gzCandidates.get(i);

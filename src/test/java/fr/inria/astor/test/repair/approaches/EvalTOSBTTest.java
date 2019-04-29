@@ -130,7 +130,6 @@ public class EvalTOSBTTest {
 		// System.out.println(candidatesnew);
 
 		List<ClusterExpressions> clusterOfTest = approach.clusterCandidatesByValue(candidatesnew);
-		;
 
 		System.out.println("--Test " + " # clustersL " + clusterOfTest.size());
 		int i = 0;

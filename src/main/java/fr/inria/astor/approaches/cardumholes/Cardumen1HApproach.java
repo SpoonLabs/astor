@@ -42,7 +42,7 @@ public class Cardumen1HApproach extends ExhaustiveIngredientBasedEngine {
 	protected void loadIngredientPool() throws JSAPException, Exception {
 
 		List<TargetElementProcessor<?>> ingredientProcessors = this.getTargetElementProcessors();
-		TOSIngredientPool<CtExpression<?>> ingredientPool = new TOSIngredientPool<CtExpression<?>>(
+		TOSIngredientPool<CtExpression<?>> ingredientPool = new TOSIngredientPool<>(
 				ingredientProcessors);
 		String scope = ConfigurationProperties.getProperty(ExtensionPoints.INGREDIENT_STRATEGY_SCOPE.identifier);
 		if (scope != null) {

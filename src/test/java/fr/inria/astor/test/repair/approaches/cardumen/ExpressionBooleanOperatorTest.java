@@ -234,7 +234,6 @@ public class ExpressionBooleanOperatorTest {
 		for (ModificationPoint mp : jgp.getVariants().get(0).getModificationPoints()) {
 			log.debug(mp.getCodeElement());
 		}
-		;
 
 		assertEquals(allIng.size(), ingredientSpace.allElementsFromSpace.size());
 

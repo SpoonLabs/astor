@@ -50,9 +50,10 @@ public class SpoonClassCompiler implements VariantCompiler {
 		this.factory = factory;
 	}
 
+	@SuppressWarnings("Convert2Diamond")
 	@Override
 	public CompilationResult compile(ProgramVariant instance, URL[] cp) {
-		List<CtClass> ctClasses = new ArrayList<CtClass>(instance.getBuiltClasses().values());
+		List<CtClass> ctClasses = new ArrayList<>(instance.getBuiltClasses().values());
 		CompilationResult compilation2 = this.compile(ctClasses, cp);
 
 		return compilation2;
@@ -61,7 +62,7 @@ public class SpoonClassCompiler implements VariantCompiler {
 	@Override
 	public CompilationResult compile(Collection<? extends CtType> ctClassList, URL[] cp) {
 
-		Map<String, String> toCompile = new HashMap<String, String>();
+		Map<String, String> toCompile = new HashMap<>();
 		prettyPrinter = new DefaultJavaPrettyPrinter(this.getFactory().getEnvironment());
 
 		for (CtType ctClass : ctClassList) {
@@ -92,7 +93,7 @@ public class SpoonClassCompiler implements VariantCompiler {
 		cps.add("-target");
 		cps.add("1." + compliance);
 		dcc = new JavaXToolsCompiler();
-		CompilationResult rbc = dcc.javaBytecodeFor(toCompile, new HashMap<String, byte[]>(), cps);
+		CompilationResult rbc = dcc.javaBytecodeFor(toCompile, new HashMap<>(), cps);
 		return rbc;
 	}
 

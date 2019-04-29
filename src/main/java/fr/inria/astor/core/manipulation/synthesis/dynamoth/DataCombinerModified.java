@@ -82,7 +82,7 @@ public class DataCombinerModified {
 		final List<Expression> result = new ArrayList<>();
 
 		if (nopolContext.isSortExpressions()) {
-			Collections.sort(toCombine, Collections.reverseOrder());
+			toCombine.sort(Collections.reverseOrder());
 		}
 
 		for (Operator operator : operators) {
@@ -154,7 +154,7 @@ public class DataCombinerModified {
 		List<Expression> result = new ArrayList<>();
 
 		if (nopolContext.isSortExpressions()) {
-			Collections.sort(toCombine, Collections.reverseOrder());
+			toCombine.sort(Collections.reverseOrder());
 		}
 		executionTime = System.currentTimeMillis() - startTime;
 		for (int i = 0; i < toCombine.size() && executionTime <= maxTime; i++) {
@@ -274,7 +274,7 @@ public class DataCombinerModified {
 			return result;
 		}
 		if (nopolContext.isSortExpressions()) {
-			Collections.sort(toCombine, Collections.reverseOrder());
+			toCombine.sort(Collections.reverseOrder());
 		}
 		executionTime = System.currentTimeMillis() - startTime;
 		for (int i = 0; i < toCombine.size() && executionTime <= maxTime; i++) {

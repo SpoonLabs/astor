@@ -27,7 +27,7 @@ public class SpoonElementPointer extends AbstractProcessor<CtElement> {
 	/**
 	 * Result of the processor: CtElements found in line given by attribute @line
 	 */
-	public static List<CtElement> inLine = new ArrayList<CtElement>();
+	public static List<CtElement> inLine = new ArrayList<>();
 	
 	
 	public void process(CtElement element) {

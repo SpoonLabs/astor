@@ -30,7 +30,7 @@ public class WeightElement<T> {
 	}
 
 	private static void sortByWeight(List<WeightElement<?>> we) {
-		Collections.sort(we, new Compw());
+		we.sort(new Compw());
 	}
 
 	public static void feedAccumulative(List<WeightElement<?>> we) {

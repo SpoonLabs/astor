@@ -67,7 +67,7 @@ public class LaucherJUnitProcess {
 			if (outputInFile)
 				ftemp = File.createTempFile("out", "txt");
 
-			List<String> command = new ArrayList<String>();
+			List<String> command = new ArrayList<>();
 
 			command.add(jvmPath);
 			command.add("-Xmx2048m");

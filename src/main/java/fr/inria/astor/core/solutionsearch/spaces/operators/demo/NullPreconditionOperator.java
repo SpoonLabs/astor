@@ -54,7 +54,7 @@ public class NullPreconditionOperator extends AutonomousOperator implements Stat
 		}
 		return instances;
 
-	};
+	}
 
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {

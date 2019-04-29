@@ -79,7 +79,8 @@ public class ConstReplacementOp extends FineGrainedExpressionReplaceOperator
 
 			// The parameters to be included in the new method
 			List<CtVariableAccess> varsToBeParameters = ingredients.stream()
-					.filter(e -> e.getCode() instanceof CtVariableAccess).map(e -> e.getCode())
+					.filter(e -> e.getCode() instanceof CtVariableAccess)
+					.map(Ingredient::getCode)
 					.map(CtVariableAccess.class::cast).collect(Collectors.toList());
 			// The variable to be replaced must also be a parameter
 

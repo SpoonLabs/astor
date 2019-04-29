@@ -409,7 +409,6 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 				if (aff.getPackage().equals(ctCodeElement.getCode().getParent(CtPackage.class)))
 					ingrePackageCorrect = true;
 			}
-			;
 
 		}
 		assertTrue(ingrePackageCorrect);

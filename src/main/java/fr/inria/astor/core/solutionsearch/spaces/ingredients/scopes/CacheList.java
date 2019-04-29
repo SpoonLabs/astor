@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class CacheList<E> extends ArrayList<E> {
 
-	private Set<String> cache = new HashSet<String>();
+	private Set<String> cache = new HashSet<>();
 	
 	
 	@Override

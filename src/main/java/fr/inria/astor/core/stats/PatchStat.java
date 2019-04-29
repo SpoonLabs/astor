@@ -20,12 +20,12 @@ public class PatchStat {
 	public enum HunkStatEnum {
 		OPERATOR, LOCATION, PATH, MODIFIED_FILE_PATH, LINE, SUSPICIOUNESS, MP_RANKING, ORIGINAL_CODE, BUGGY_CODE_TYPE,
 		PATCH_HUNK_CODE, PATCH_HUNK_TYPE, INGREDIENT_SCOPE, INGREDIENT_PARENT,
-	};
+	}
 
 	public enum PatchStatEnum {
 		VARIANT_ID, TIME, VALIDATION, GENERATION, FOLDER_SOLUTION_CODE, HUNKS,
 		PATCH_DIFF_ORIG,
-	};
+	}
 
 	private Map<PatchStatEnum, Object> stats = new HashMap<>();
 

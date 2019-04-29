@@ -1,6 +1,7 @@
 package fr.inria.astor.core.entities.meta;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class MetaProgramVariant extends ProgramVariant {
 		List<MetaOperatorInstance> list = this.getAllOperations().stream()
 				.filter(MetaOperatorInstance.class::isInstance).map(MetaOperatorInstance.class::cast)
 				.collect(Collectors.toList());
-		list.sort((e1, e2) -> Integer.compare(e1.metaIdentifier, e2.metaIdentifier));
+		list.sort(Comparator.comparingInt(e -> e.metaIdentifier));
 		return list;
 
 	}

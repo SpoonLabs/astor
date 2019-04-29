@@ -314,7 +314,7 @@ public class DynamothCollector {
 		}
 
 		if (!values.containsKey(currentTestClass + "#" + currentTestMethod)) {
-			values.put(currentTestClass + "#" + currentTestMethod, new ArrayList<Candidates>());
+			values.put(currentTestClass + "#" + currentTestMethod, new ArrayList<>());
 		}
 
 		Candidates allValues = new Candidates();

@@ -18,11 +18,11 @@ public class WeightRandomSuspiciousNavitation implements SuspiciousNavigationStr
 	@Override
 	public List<ModificationPoint> getSortedModificationPointsList(List<ModificationPoint> modificationPoints) {
 
-		List<ModificationPoint> remaining = new ArrayList<ModificationPoint>(modificationPoints);
-		List<ModificationPoint> solution = new ArrayList<ModificationPoint>();
+		List<ModificationPoint> remaining = new ArrayList<>(modificationPoints);
+		List<ModificationPoint> solution = new ArrayList<>();
 
 		for (int i = 0; i < modificationPoints.size(); i++) {
-			List<WeightElement<?>> we = new ArrayList<WeightElement<?>>();
+			List<WeightElement<?>> we = new ArrayList<>();
 			double sum = 0;
 			for (ModificationPoint gen : remaining) {
 				double susp = ((SuspiciousModificationPoint) gen).getSuspicious().getSuspiciousValue();

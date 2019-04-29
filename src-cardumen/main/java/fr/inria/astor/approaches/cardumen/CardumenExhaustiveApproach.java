@@ -20,7 +20,7 @@ import fr.inria.main.evolution.ExtensionPoints;
  * @author Matias Martinez
  *
  */
-public class CardumenExhaustiveApproach extends ExhaustiveIngredientBasedEngine implements IngredientBasedApproach {
+public class CardumenExhaustiveApproach extends ExhaustiveIngredientBasedEngine {
 
 	public CardumenExhaustiveApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {

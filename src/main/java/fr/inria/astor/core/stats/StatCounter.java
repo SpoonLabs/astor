@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class StatCounter<T> {
 	
-	private Map<T, Integer> structure = new HashMap<T, Integer>();
+	private Map<T, Integer> structure = new HashMap<>();
 
 	public void add(T add){
 	    int count;

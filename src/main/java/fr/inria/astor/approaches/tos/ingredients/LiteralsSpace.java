@@ -49,9 +49,7 @@ public class LiteralsSpace extends AstorCtIngredientPool {
 				CtPackage p = ing.getParent(CtPackage.class);
 				if (!packageAnalyzed.contains(p)) {
 					packageAnalyzed.add(p);
-					for (CtType<?> type : p.getTypes()) {
-						types.add(type);
-					}
+					types.addAll(p.getTypes());
 				}
 			}
 			return types;

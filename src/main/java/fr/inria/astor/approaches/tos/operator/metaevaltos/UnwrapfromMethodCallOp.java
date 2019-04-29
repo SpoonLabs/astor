@@ -63,7 +63,7 @@ public class UnwrapfromMethodCallOp extends FineGrainedExpressionReplaceOperator
 	private MapList<CtInvocation, Ingredient> retrieveMethodHasCompatibleParameterAndReturnSameMethod(
 			CtElement suspiciousElement) {
 
-		MapList<CtInvocation, Ingredient> result = new MapList<CtInvocation, Ingredient>();
+		MapList<CtInvocation, Ingredient> result = new MapList<>();
 		List<CtInvocation> invocations = suspiciousElement.getElements(e -> (e instanceof CtInvocation)).stream()
 				.map(CtInvocation.class::cast).collect(Collectors.toList());
 

@@ -69,10 +69,8 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 		try {
 			testClasses = namesFrom(executor.submit(new TestClassesFinder())
 					.get());
-		} catch (InterruptedException ie) {
-			throw new RuntimeException(ie);
-		} catch (ExecutionException ee) {
-			throw new RuntimeException(ee);
+		} catch (InterruptedException | ExecutionException e) {
+			throw new RuntimeException(e);
 		} finally {
 			executor.shutdown();
 		}
@@ -95,7 +93,7 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 	}
 
 	public String[] removeTestSuite(String[] totalTest) {
-		List<String> tests = new ArrayList<String>();
+		List<String> tests = new ArrayList<>();
 		for (int i = 0; i < totalTest.length; i++) {
 			if (!totalTest[i].endsWith("Suite")) {
 				tests.add(totalTest[i]);

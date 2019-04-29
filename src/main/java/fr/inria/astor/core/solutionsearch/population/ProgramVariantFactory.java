@@ -72,7 +72,7 @@ public class ProgramVariantFactory {
 
 		this.projectFacade = projectFacade;
 
-		List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
+		List<ProgramVariant> variants = new ArrayList<>();
 
 		for (int ins = 1; ins <= maxNumberInstances; ins++) {
 			// -Initial setup of directories----------
@@ -208,7 +208,7 @@ public class ProgramVariantFactory {
 	private List<SuspiciousModificationPoint> createModificationPoints(SuspiciousCode suspiciousCode,
 			ProgramVariant progInstance) {
 
-		List<SuspiciousModificationPoint> suspiciousModificationPoints = new ArrayList<SuspiciousModificationPoint>();
+		List<SuspiciousModificationPoint> suspiciousModificationPoints = new ArrayList<>();
 
 		CtClass ctclasspointed = resolveCtClass(suspiciousCode.getClassName(), progInstance);
 		if (ctclasspointed == null) {
@@ -277,7 +277,7 @@ public class ProgramVariantFactory {
 			return ctSuspects;
 		}
 
-		List<CtElement> ctMatching = new ArrayList<CtElement>();
+		List<CtElement> ctMatching = new ArrayList<>();
 
 		try {
 			CodeParserLauncher spaceProcessor = new CodeParserLauncher(processors);
@@ -410,7 +410,7 @@ public class ProgramVariantFactory {
 	}
 
 	public <T> List<T> intersection(List<T> list1, List<T> list2) {
-		List<T> list = new ArrayList<T>();
+		List<T> list = new ArrayList<>();
 
 		for (T t : list1) {
 			try {

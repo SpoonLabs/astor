@@ -25,7 +25,7 @@ public class NegationUnaryOperatorConditionMutator extends SpoonMutator {
 	@Override
 	public List<MutantCtElement> execute(CtElement toMutate) {
 		//List<CtElement> result = new ArrayList<CtElement>();
-		List<MutantCtElement> result = new ArrayList<MutantCtElement>();
+		List<MutantCtElement> result = new ArrayList<>();
 
 		if (toMutate instanceof CtUnaryOperator<?>) {
 			CtUnaryOperator<?> unary = (CtUnaryOperator<?>) toMutate;

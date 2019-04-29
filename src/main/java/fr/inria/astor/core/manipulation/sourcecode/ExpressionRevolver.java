@@ -17,7 +17,7 @@ import spoon.reflect.code.CtUnaryOperator;
 public class ExpressionRevolver {
 
 	public static List<CtExpression<Boolean>> getExpressions(CtExpression<Boolean> element) {
-		List<CtExpression<Boolean>> expsRetrieved = new ArrayList<CtExpression<Boolean>>();
+		List<CtExpression<Boolean>> expsRetrieved = new ArrayList<>();
 
 		if (element instanceof CtUnaryOperator) {
 			expsRetrieved.add(element);

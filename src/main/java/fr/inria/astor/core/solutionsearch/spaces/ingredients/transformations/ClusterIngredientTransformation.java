@@ -24,8 +24,7 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  *
  */
-public class ClusterIngredientTransformation extends CacheTransformationStrategy
-		implements IngredientTransformationStrategy {
+public class ClusterIngredientTransformation extends CacheTransformationStrategy {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 

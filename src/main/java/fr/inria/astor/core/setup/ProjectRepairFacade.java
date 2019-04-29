@@ -156,7 +156,7 @@ public class ProjectRepairFacade {
 	 */
 	public URL[] getClassPathURLforProgramVariant(String currentMutatorIdentifier) throws MalformedURLException {
 
-		List<URL> classpath = new ArrayList<URL>(getProperties().getDependencies());
+		List<URL> classpath = new ArrayList<>(getProperties().getDependencies());
 		// bin
 		URL urlBin = new File(getOutDirWithPrefix(currentMutatorIdentifier)).toURI().toURL();
 		classpath.add(urlBin);

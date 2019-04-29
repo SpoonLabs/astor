@@ -38,7 +38,7 @@ public class CombinationSpoon {
 					if (expression.getType().box().isSubtypeOf(refClass.box())) {
 						// if (expression.getValue().isCompatibleWith(aClass)) {
 						if (this.toCombine.size() < i + 1) {
-							this.toCombine.add(new ArrayList<CtExpression>());
+							this.toCombine.add(new ArrayList<>());
 						}
 						this.toCombine.get(i).add(expression);
 					}

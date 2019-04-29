@@ -254,7 +254,6 @@ public class MultiPatchTest {
 			}
 
 		}
-		;
 
 		ModificationPoint mp0 = main1.getEngine().getVariants().get(0).getModificationPoints().get(0);
 		assertEquals("return solve(min, max)", mp0.getCodeElement().toString());

@@ -26,7 +26,7 @@ public class FileLauncher {
 	public Map<String, String> readJSOn(File f, int bugId, String pathDependencies, String projectLocation,
 			List<String> otherDep) {
 
-		Map<String, String> args = new HashMap<String, String>();
+		Map<String, String> args = new HashMap<>();
 
 		JSONParser parser = new JSONParser();
 
@@ -136,7 +136,7 @@ public class FileLauncher {
 	public String[] getCommand(String[] baseArg, File f, int bugId, String pathDependencies, String projectLocation,
 			List<String> otherDep) {
 
-		ArrayList<String> newObj = new ArrayList<String>(Arrays.asList(baseArg));
+		ArrayList<String> newObj = new ArrayList<>(Arrays.asList(baseArg));
 
 		newObj.addAll(this.transform(this.readJSOn(f, bugId, pathDependencies, projectLocation, otherDep)));
 
@@ -146,7 +146,7 @@ public class FileLauncher {
 	}
 
 	public List<String> transform(Map<String, String> map) {
-		List<String> plain = new ArrayList<String>();
+		List<String> plain = new ArrayList<>();
 		for (String k : map.keySet()) {
 			plain.add(k);
 			plain.add(map.get(k));

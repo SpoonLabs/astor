@@ -88,13 +88,9 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		Prediction prediction = new Prediction();
 
-		approach.setPredictor(new IPredictor() {
-
-			@Override
-			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
-				// No prediction
-				return null;
-			}
+		approach.setPredictor(iModifPoint -> {
+			// No prediction
+			return null;
 		});
 
 		CtElement binary = mp24.getCodeElement().getElements(e -> e.toString().equals("i2 > i1")).get(0);
@@ -237,13 +233,9 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		Prediction prediction = new Prediction();
 
-		approach.setPredictor(new IPredictor() {
-
-			@Override
-			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
-				// No prediction
-				return null;
-			}
+		approach.setPredictor(iModifPoint -> {
+			// No prediction
+			return null;
 		});
 
 		CtElement invocation = mp24.getCodeElement().getElements(e -> e.toString().equals("(myinst.toNegative(i1))"))
@@ -333,13 +325,9 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		Prediction prediction = new Prediction();
 
-		approach.setPredictor(new IPredictor() {
-
-			@Override
-			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
-				// No prediction
-				return null;
-			}
+		approach.setPredictor(iModifPoint -> {
+			// No prediction
+			return null;
 		});
 
 		CtIf ifexp = (CtIf) mp30.getCodeElement();
@@ -659,13 +647,9 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		Prediction prediction = new Prediction();
 
-		approach.setPredictor(new IPredictor() {
-
-			@Override
-			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
-				// No prediction
-				return null;
-			}
+		approach.setPredictor(iModifPoint -> {
+			// No prediction
+			return null;
 		});
 
 		CtElement binary = mp24.getCodeElement()
@@ -781,13 +765,9 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		Prediction prediction = new Prediction();
 
-		approach.setPredictor(new IPredictor() {
-
-			@Override
-			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
-				// No prediction
-				return null;
-			}
+		approach.setPredictor(iModifPoint -> {
+			// No prediction
+			return null;
 		});
 
 		CtElement binaryToReduce = mp24.getCodeElement()
@@ -966,13 +946,9 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		Prediction prediction = new Prediction();
 
-		approach.setPredictor(new IPredictor() {
-
-			@Override
-			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
-				// No prediction
-				return null;
-			}
+		approach.setPredictor(iModifPoint -> {
+			// No prediction
+			return null;
 		});
 
 		CtElement invocationToReplace = mp36.getCodeElement()
@@ -1212,13 +1188,9 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		Prediction prediction = new Prediction();
 
-		approach.setPredictor(new IPredictor() {
-
-			@Override
-			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
-				// No prediction
-				return null;
-			}
+		approach.setPredictor(iModifPoint -> {
+			// No prediction
+			return null;
 		});
 
 		CtElement invocationToReplace = mp24.getCodeElement()
@@ -1384,13 +1356,9 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		Prediction prediction = new Prediction();
 
-		approach.setPredictor(new IPredictor() {
-
-			@Override
-			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
-				// No prediction
-				return null;
-			}
+		approach.setPredictor(iModifPoint -> {
+			// No prediction
+			return null;
 		});
 		ModificationPoint mp7 = approach.getVariants().get(0).getModificationPoints().get(0);
 

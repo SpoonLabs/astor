@@ -17,7 +17,7 @@ public class MutatorComposite<CtExpression> extends SpoonMutator {
 	/**
 	 * List of mutators called by this one.
 	 */
-	List<SpoonMutator> mutators = new ArrayList<SpoonMutator>();
+	List<SpoonMutator> mutators = new ArrayList<>();
 
 	/**
 	 * Level of complexity of a mutator.
@@ -42,7 +42,7 @@ public class MutatorComposite<CtExpression> extends SpoonMutator {
 
 	@Override
 	public List<CtExpression> execute(CtElement toMutate) {
-		List<CtExpression> result = new ArrayList<CtExpression>();
+		List<CtExpression> result = new ArrayList<>();
 		for (SpoonMutator mut : mutators) {
 			if (mut.levelMutation() <= this.levelMutation()) {
 				mut.setParentMutator(this);

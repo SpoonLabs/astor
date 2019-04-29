@@ -57,7 +57,7 @@ public class MaxLcsSimSearchStrategy extends IngredientSearchStrategy {
 			List<Ingredient> ingredientsLocationSort = new ArrayList<>(ingredientsLocation);
 
 			// Sort the ingredient by normalized_lcs distance
-			Collections.sort(ingredientsLocationSort, new sortByLcsDistance(modificationPoint_toString));
+			ingredientsLocationSort.sort(new sortByLcsDistance(modificationPoint_toString));
 
 			// We reintroduce the sorted list ingredient into the space
 			this.ingredientSpace.setIngredients(modificationPoint.getCodeElement(), ingredientsLocationSort);

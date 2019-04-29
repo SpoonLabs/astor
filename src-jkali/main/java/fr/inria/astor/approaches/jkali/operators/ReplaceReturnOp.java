@@ -28,9 +28,9 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public class ReplaceReturnOp extends AutonomousOperator implements StatementLevelOperator {
 
-	ReplaceOp replaceOp = new ReplaceOp();
+	private ReplaceOp replaceOp = new ReplaceOp();
 
-	final Set<String> prim = new HashSet<String>(Arrays.asList("byte", "Byte", "long", "Long", "int", "Integer",
+	private final Set<String> prim = new HashSet<>(Arrays.asList("byte", "Byte", "long", "Long", "int", "Integer",
 			"float", "Float", "double", "Double", "short", "Short", "char", "Character"));
 
 	@Override
@@ -47,7 +47,7 @@ public class ReplaceReturnOp extends AutonomousOperator implements StatementLeve
 	private CtElement createReturn(CtElement rootElement) {
 		CtMethod method = rootElement.getParent(CtMethod.class);
 
-		if (method == null) {
+		if (null == method) {
 			log.info("Element without method parent");
 			return null;
 		}
@@ -81,7 +81,7 @@ public class ReplaceReturnOp extends AutonomousOperator implements StatementLeve
 
 	}
 
-	private String getZeroValue(String simpleName) {
+	private String getZeroValue(final String simpleName) {
 		if ("float".equals(simpleName))
 			return "0f";
 		if ("long".equals(simpleName))
@@ -93,9 +93,7 @@ public class ReplaceReturnOp extends AutonomousOperator implements StatementLeve
 
 	@Override
 	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {
-
 		return replaceOp.applyChangesInModel(operation, p);
-
 	}
 
 	@Override
@@ -110,7 +108,6 @@ public class ReplaceReturnOp extends AutonomousOperator implements StatementLeve
 
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

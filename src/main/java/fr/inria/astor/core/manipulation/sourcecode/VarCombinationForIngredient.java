@@ -27,7 +27,7 @@ public class VarCombinationForIngredient {
 	public void combination2String(Map<String, CtVariable> combination) {
 
 		List<String> flatCombination = combination.values().stream().map(CtVariable::getSimpleName)
-				.collect(Collectors.toList()).stream().sorted(Comparator.comparing(n -> n.toString())).distinct()
+				.collect(Collectors.toList()).stream().sorted(Comparator.comparing(String::toString)).distinct()
 				.collect(Collectors.toList());
 
 		this.combinationString = flatCombination.stream().collect(Collectors.joining(" "));

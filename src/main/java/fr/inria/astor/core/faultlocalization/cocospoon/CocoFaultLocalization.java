@@ -67,7 +67,7 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 
 		// Collecting failing test cases
 		List<String> testsfailing = coco4Astor.getResultsPerNameOfTest().entrySet().stream()
-				.filter(e -> e.getValue() == false).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()))
+				.filter(e -> e.getValue() == false).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
 				.keySet().stream().collect(Collectors.toList());
 
 		Map<SourceLocation, List<TestResult>> stc = coco4Astor.getTestListPerStatement();

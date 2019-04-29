@@ -51,17 +51,14 @@ public class DynamothSynthesizer {
 		final Candidates result = new Candidates();
 		List<String> collectedTests = new ArrayList<>(values.keySet());
 
-		Collections.sort(collectedTests, new Comparator<String>() {
-			@Override
-			public int compare(String s, String t1) {
-				if (values.get(t1).isEmpty()) {
-					return -1;
-				}
-				if (values.get(s).isEmpty()) {
-					return 1;
-				}
-				return values.get(t1).get(0).size() - values.get(s).get(0).size();
+		collectedTests.sort((s, t1) -> {
+			if (values.get(t1).isEmpty()) {
+				return -1;
 			}
+			if (values.get(s).isEmpty()) {
+				return 1;
+			}
+			return values.get(t1).get(0).size() - values.get(s).get(0).size();
 		});
 		for (int i = 0; i < collectedTests.size(); i++) {
 			final String key = collectedTests.get(i);
@@ -89,7 +86,7 @@ public class DynamothSynthesizer {
 				}
 				lastCollectedValues = eexps;
 				if (nopolContext.isSortExpressions()) {
-					Collections.sort(eexps, Collections.reverseOrder());
+					eexps.sort(Collections.reverseOrder());
 				}
 				final Object angelicValue;
 				if (i < oracle.get(key).length) {
@@ -116,18 +113,15 @@ public class DynamothSynthesizer {
 				DataCombinerModified combiner = new DataCombinerModified();
 				final int iterationNumber = i;
 
-				combiner.addCombineListener(new CombineListener() {
-					@Override
-					public boolean check(Expression expression) {
-						if (!angelicValue.equals(expression.getValue().getRealValue())) {
-							return false;
-						}
-						if (checkExpression(key, iterationNumber, expression)) {
-							result.add(expression);
-							return true;
-						}
+				combiner.addCombineListener(expression -> {
+					if (!angelicValue.equals(expression.getValue().getRealValue())) {
 						return false;
 					}
+					if (checkExpression(key, iterationNumber, expression)) {
+						result.add(expression);
+						return true;
+					}
+					return false;
 				});
 				currentTime = System.currentTimeMillis();
 				// combine eexps

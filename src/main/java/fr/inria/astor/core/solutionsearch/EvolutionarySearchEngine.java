@@ -134,7 +134,7 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 		log.debug("\n***** Generation " + generation + " : " + this.nrGenerationWithoutModificatedVariant);
 		boolean foundSolution = false, foundOneVariant = false;
 
-		List<ProgramVariant> temporalInstances = new ArrayList<ProgramVariant>();
+		List<ProgramVariant> temporalInstances = new ArrayList<>();
 
 		currentStat.increment(GeneralStatEnum.NR_GENERATIONS);
 

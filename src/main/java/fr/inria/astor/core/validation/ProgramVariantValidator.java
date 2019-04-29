@@ -17,7 +17,7 @@ public abstract class ProgramVariantValidator implements  AstorExtensionPoint {
 
 	public void setStats(Stats stats) {
 		currentStats = stats;
-	};
+	}
 
 	public abstract VariantValidationResult validate(ProgramVariant variant, ProjectRepairFacade projectFacade);
 

@@ -92,6 +92,6 @@ public class SynthesisBasedTransformationStrategy implements IngredientTransform
 
 	public void setSynthesizer(IngredientSynthesizer synthesizer) {
 		this.synthesizer = synthesizer;
-	};
+	}
 
 }

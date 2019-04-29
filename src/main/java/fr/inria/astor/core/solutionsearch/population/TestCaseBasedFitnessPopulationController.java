@@ -33,7 +33,7 @@ public class TestCaseBasedFitnessPopulationController implements PopulationContr
 			List<ProgramVariant> childVariants, int populationSize, ProgramVariantFactory variantFactory,
 			ProgramVariant original, int generation) {
 
-		List<ProgramVariant> solutionsFromGeneration = new ArrayList<ProgramVariant>();
+		List<ProgramVariant> solutionsFromGeneration = new ArrayList<>();
 
 		// It defines the new population (i.e., the population of the next
 		// generation) with all new program variants created in the current
@@ -49,7 +49,7 @@ public class TestCaseBasedFitnessPopulationController implements PopulationContr
 		int totalInstances = newPopulation.size();
 
 		// The new population is sorted according to the fitness.
-		Collections.sort(newPopulation, comparator);
+		newPopulation.sort(comparator);
 
 		String variantsIds = "";
 

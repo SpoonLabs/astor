@@ -12,9 +12,9 @@ import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 public class JKaliSpace extends OperatorSpace {
 
 	public JKaliSpace(){
-		super.register(new ReplaceIfBooleanOp());
-		super.register(new ReplaceReturnOp());
-		super.register(new RemoveOp());
+		register(new ReplaceIfBooleanOp());
+		register(new ReplaceReturnOp());
+		register(new RemoveOp());
 	}
 	
 }

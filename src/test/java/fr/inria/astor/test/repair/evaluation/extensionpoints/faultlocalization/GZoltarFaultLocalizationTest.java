@@ -55,7 +55,6 @@ public class GZoltarFaultLocalizationTest {
 		for (ModificationPoint mp : pv.getModificationPoints()) {
 			if ("UnivariateRealSolverImpl".equals(mp.getCtClass().getSimpleName()))
 				hasUniv = true;
-			;
 			if ("BisectionSolver".equals(mp.getCtClass().getSimpleName()))
 				hasBisection = true;
 		}

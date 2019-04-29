@@ -57,13 +57,13 @@ public class TOSIngredientPool<T extends CtElement>
 		super(processors);
 
 		if (!ConfigurationProperties.getPropertyBool("excludevariableplaceholder"))
-			tosGenerators.add(new VariablePlaceholderGenerator<T>());
+			tosGenerators.add(new VariablePlaceholderGenerator<>());
 		if (!ConfigurationProperties.getPropertyBool("excludeinvocationplaceholder"))
-			tosGenerators.add(new TOSInvocationGenerator<T>());
+			tosGenerators.add(new TOSInvocationGenerator<>());
 		if (!ConfigurationProperties.getPropertyBool("excludeliteralplaceholder"))
-			tosGenerators.add(new LiteralPlaceholderGenerator<T>());
+			tosGenerators.add(new LiteralPlaceholderGenerator<>());
 		if (!ConfigurationProperties.getPropertyBool("excludevarliteralplaceholder"))
-			tosGenerators.add(new VarLiPlaceholderGenerator<T>());
+			tosGenerators.add(new VarLiPlaceholderGenerator<>());
 
 		log.info("Generators loaded " + tosGenerators);
 	}
@@ -223,9 +223,7 @@ public class TOSIngredientPool<T extends CtElement>
 				CtPackage p = ing.getParent(CtPackage.class);
 				if (!packageAnalyzed.contains(p)) {
 					packageAnalyzed.add(p);
-					for (CtType<?> type : p.getTypes()) {
-						types.add(type);
-					}
+					types.addAll(p.getTypes());
 				}
 			}
 			return types;

@@ -22,16 +22,16 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 	 * Maps that represent the ingredient space. We define different structures
 	 * to optimize the search.
 	 */
-	protected Map<K, List<I>> fixSpaceByLocation = new HashMap<K, List<I>>();
-	protected Map<K, Map<T, List<I>>> fixSpaceByLocationType = new HashMap<K, Map<T, List<I>>>();
-	protected Map<T, List<I>> fixSpaceByType = new HashMap<T, List<I>>();
-	protected Map<Q, K> keysLocation = new HashMap<Q, K>();
+	protected Map<K, List<I>> fixSpaceByLocation = new HashMap<>();
+	protected Map<K, Map<T, List<I>>> fixSpaceByLocationType = new HashMap<>();
+	protected Map<T, List<I>> fixSpaceByType = new HashMap<>();
+	protected Map<Q, K> keysLocation = new HashMap<>();
 
 	protected CodeParserLauncher<Q, P> ingredientProcessor;
 
 	public IngredientPoolLocationType() throws JSAPException {
 		super();
-		ingredientProcessor = new CodeParserLauncher<Q, P>();
+		ingredientProcessor = new CodeParserLauncher<>();
 
 	}
 
@@ -43,7 +43,7 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 	 */
 	public IngredientPoolLocationType(TargetElementProcessor<?> processor) throws JSAPException {
 		super();
-		ingredientProcessor = new CodeParserLauncher<Q, P>(processor);
+		ingredientProcessor = new CodeParserLauncher<>(processor);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 	 */
 	public IngredientPoolLocationType(List<TargetElementProcessor<?>> processors) throws JSAPException {
 		super();
-		ingredientProcessor = new CodeParserLauncher<Q, P>(processors);
+		ingredientProcessor = new CodeParserLauncher<>(processors);
 	}
 
 	protected Map<K, List<I>> getFixSpace() {
@@ -94,25 +94,13 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 
 	private void splitByType(K keyLocation, List<I> ingredients) {
 
-		Map<T, List<I>> typesFromLocation = this.fixSpaceByLocationType.get(keyLocation);
-		if (typesFromLocation == null) {
-			typesFromLocation = new HashMap<>();
-			this.fixSpaceByLocationType.put(keyLocation, typesFromLocation);
-		}
+		Map<T, List<I>> typesFromLocation = this.fixSpaceByLocationType.computeIfAbsent(keyLocation, k -> new HashMap<>());
 		for (I element : ingredients) {
 			T type = getType(element);
-			List<I> list = typesFromLocation.get(type);
-			if (list == null) {
-				list = new ArrayList<>();
-				typesFromLocation.put(type, list);
-			}
+			List<I> list = typesFromLocation.computeIfAbsent(type, k -> new ArrayList<>());
 			list.add(element);
 
-			List<I> listType = this.fixSpaceByType.get(type);
-			if (listType == null) {
-				listType = new ArrayList<>();
-				this.fixSpaceByType.put(type, listType);
-			}
+			List<I> listType = this.fixSpaceByType.computeIfAbsent(type, k -> new ArrayList<>());
 			listType.add(element);
 
 		}
@@ -151,7 +139,7 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 
 	@Override
 	public List<K> getLocations() {
-		return new ArrayList<K>(this.fixSpaceByLocation.keySet());
+		return new ArrayList<>(this.fixSpaceByLocation.keySet());
 	}
 
 	public List<I> getAllIngredients() {
@@ -159,7 +147,6 @@ public abstract class IngredientPoolLocationType<Q, K, I, T, P> implements Ingre
 		for (List<I> listIng : this.fixSpaceByLocation.values()) {
 			ingredients.addAll(listIng);
 		}
-		;
 		return ingredients;
 	}
 

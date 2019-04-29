@@ -67,7 +67,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 		int modifPointsAnalyzed = 0;
 		int operatorExecuted = 0;
 
-		getIngredientSpace().defineSpace(originalVariant);
+		ingredientSpace.defineSpace(originalVariant);
 
 		int totalmodfpoints = variants.get(0).getModificationPoints().size();
 		for (ProgramVariant parentVariant : variants) {

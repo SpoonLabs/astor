@@ -129,9 +129,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	protected List<ReportResults> outputResults = null;
 
 	/// // Flag, output status, results
-	protected List<ProgramVariant> variants = new ArrayList<ProgramVariant>();
+	protected List<ProgramVariant> variants = new ArrayList<>();
 
-	protected List<ProgramVariant> solutions = new ArrayList<ProgramVariant>();
+	protected List<ProgramVariant> solutions = new ArrayList<>();
 
 	protected ProgramVariant originalVariant = null;
 
@@ -1108,7 +1108,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected List<TargetElementProcessor<?>> loadTargetElements(ExtensionPoints epoint) throws Exception {
 
-		List<TargetElementProcessor<?>> loadedTargetElementProcessors = new ArrayList<TargetElementProcessor<?>>();
+		List<TargetElementProcessor<?>> loadedTargetElementProcessors = new ArrayList<>();
 
 		if (!ConfigurationProperties.hasProperty(epoint.identifier)) {
 			// By default, we use statements as granularity level.
@@ -1118,18 +1118,25 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			String ingrProcessors = ConfigurationProperties.getProperty(epoint.identifier);
 			String[] in = ingrProcessors.split(File.pathSeparator);
 			for (String processor : in) {
-				if (processor.equals("statements")) {
-					loadedTargetElementProcessors.add(new SingleStatementFixSpaceProcessor());
-				} else if (processor.equals("expression")) {
-					loadedTargetElementProcessors.add(new ExpressionIngredientSpaceProcessor());
-				} else if (processor.equals("logical-relationaloperators")) {
-					loadedTargetElementProcessors.add(new IFExpressionFixSpaceProcessor());
-				} else if (processor.equals("if-conditions")) {
-					loadedTargetElementProcessors.add(new IFConditionFixSpaceProcessor());
-				} else {
-					TargetElementProcessor proc_i = (TargetElementProcessor) PlugInLoader.loadPlugin(processor,
-							epoint._class);
-					loadedTargetElementProcessors.add(proc_i);
+				// TODO: Create Factory.
+				switch (processor) {
+					case "statements":
+						loadedTargetElementProcessors.add(new SingleStatementFixSpaceProcessor());
+						break;
+					case "expression":
+						loadedTargetElementProcessors.add(new ExpressionIngredientSpaceProcessor());
+						break;
+					case "logical-relationaloperators":
+						loadedTargetElementProcessors.add(new IFExpressionFixSpaceProcessor());
+						break;
+					case "if-conditions":
+						loadedTargetElementProcessors.add(new IFConditionFixSpaceProcessor());
+						break;
+					default:
+						TargetElementProcessor proc_i = (TargetElementProcessor) PlugInLoader.loadPlugin(processor,
+								epoint._class);
+						loadedTargetElementProcessors.add(proc_i);
+						break;
 				}
 			}
 		}

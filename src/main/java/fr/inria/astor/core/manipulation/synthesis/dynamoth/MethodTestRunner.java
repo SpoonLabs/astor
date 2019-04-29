@@ -19,12 +19,10 @@ public class MethodTestRunner {
 		for (int i = 0; i < tests.length; i++) {
 			final String test = tests[i];
 			ExecutorService executor = Executors.newSingleThreadExecutor();
-			Callable<Object> task = new Callable<Object>() {
-				public Object call() {
-					runTest(test);
-					return null;
-				}
-			};
+			Callable<Object> task = () -> {
+                runTest(test);
+                return null;
+            };
 			Future<Object> future = executor.submit(task);
 			try {
 				executor.shutdown();

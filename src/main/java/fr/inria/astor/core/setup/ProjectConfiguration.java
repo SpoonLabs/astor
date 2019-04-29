@@ -25,7 +25,7 @@ public class ProjectConfiguration {
 
 	private static Logger logger = Logger.getLogger(ProjectConfiguration.class.getName());
 
-	private Map<ProjectPropertiesEnum, Object> internalProperties = new HashMap<ProjectPropertiesEnum, Object>();
+	private Map<ProjectPropertiesEnum, Object> internalProperties = new HashMap<>();
 
 	public ProjectConfiguration() {
 		this.internalProperties.put(ProjectPropertiesEnum.originalDirSrc, new ArrayList<String>());
@@ -264,7 +264,7 @@ public class ProjectConfiguration {
 		try {
 			jvmPath += File.separator + "java";
 
-			List<String> command = new ArrayList<String>();
+			List<String> command = new ArrayList<>();
 			command.add(jvmPath);
 			command.add("-version");
 

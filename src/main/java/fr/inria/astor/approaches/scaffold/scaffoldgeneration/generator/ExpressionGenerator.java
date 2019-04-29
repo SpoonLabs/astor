@@ -9,7 +9,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
@@ -23,8 +22,8 @@ import java.util.HashMap;
 
 public class ExpressionGenerator {
 	
-	private final static Set<String> primitive = new HashSet<String>(Arrays.asList("int", "Integer", "String", 
-			"double", "Double", "byte", "Byte", "short", "Short", "long", "Long", "boolean", "Boolean","char"));
+	private final static Set<String> primitive = new HashSet<>(Arrays.asList("int", "Integer", "String",
+			"double", "Double", "byte", "Byte", "short", "Short", "long", "Long", "boolean", "Boolean", "char"));
 	
 	@SuppressWarnings("serial")
 	private final static Map<String, String> primToObj = new HashMap<String, String>() {
@@ -73,7 +72,7 @@ public class ExpressionGenerator {
 				ref, 
 				arr);
 				
-		String castType = primToObj.containsKey(type) ? primToObj.get(type) : type;  
+		String castType = primToObj.getOrDefault(type, type);
 		CtCodeSnippetExpression castedexp = factory.Code().createCodeSnippetExpression("(" + castType+ ")"+"("+methodcall.toString()+
 				".invoke()".toString()+")");
 		return castedexp;
@@ -82,9 +81,9 @@ public class ExpressionGenerator {
 	@SuppressWarnings("rawtypes")
 	public static ArrayList<CtExpression> getParameter(Factory factory, List<CtVariable> visiablevars, String type, Boolean whetherEnum) {
 		
-		ArrayList<CtExpression> paramList = new ArrayList<CtExpression>();
-		ArrayList<CtExpression> names = new ArrayList<CtExpression>();
-		ArrayList<CtExpression> values = new ArrayList<CtExpression>();
+		ArrayList<CtExpression> paramList = new ArrayList<>();
+		ArrayList<CtExpression> names = new ArrayList<>();
+		ArrayList<CtExpression> values = new ArrayList<>();
 
 		if(whetherEnum) {
 		   for (CtVariable var: visiablevars) {

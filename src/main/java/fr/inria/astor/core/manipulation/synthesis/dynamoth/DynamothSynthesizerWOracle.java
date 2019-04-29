@@ -52,7 +52,7 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 
 			List<String> collectedTests = new ArrayList<>(values.keySet());
 
-			Collections.sort(collectedTests, new NumberExpressionsByTestComparator());
+			collectedTests.sort(new NumberExpressionsByTestComparator());
 			for (int i = 0; i < collectedTests.size(); i++) {
 				final String key = collectedTests.get(i);
 				List<Candidates> listValue = values.get(key);
@@ -101,7 +101,7 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 			}
 
 			// STEP 1B: Evaluating single expression i.e., variables.
-			List<EvaluatedExpression> allSingleEvaluatedExpressions = new ArrayList<EvaluatedExpression>();
+			List<EvaluatedExpression> allSingleEvaluatedExpressions = new ArrayList<>();
 
 			for (Expression combinedExpression : singleExpression.values()) {
 				EvaluatedExpression ev = collectEvaluationForAllExecutions(combinedExpression);
@@ -131,7 +131,7 @@ public class DynamothSynthesizerWOracle extends DynamothSynthesizer {
 			// Here, in this list, we will store the expression After evaluating it for each
 			// test and
 			// execution.
-			List<EvaluatedExpression> allCombinedEvaluatedExpressions = new ArrayList<EvaluatedExpression>();
+			List<EvaluatedExpression> allCombinedEvaluatedExpressions = new ArrayList<>();
 
 			for (Expression combinedExpression : allCombinedNotEvaluatedExpressions) {
 				EvaluatedExpression ev = collectEvaluationForAllExecutions(combinedExpression);

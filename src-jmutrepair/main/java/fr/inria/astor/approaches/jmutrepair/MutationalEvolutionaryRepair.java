@@ -37,7 +37,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 
 	MutatorComposite mutatorBinary = null;
 
-	Map<String, List<MutantCtElement>> mutantsCache = new HashMap<String, List<MutantCtElement>>();
+	Map<String, List<MutantCtElement>> mutantsCache = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	public MutationalEvolutionaryRepair(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
@@ -129,12 +129,12 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	 * @return
 	 */
 	private CtElement weightRandom(List<MutantCtElement> mutations) {
-		List<WeightElement<?>> we = new ArrayList<WeightElement<?>>();
+		List<WeightElement<?>> we = new ArrayList<>();
 
 		double sum = 0;
 		for (MutantCtElement mutantCtElement : mutations) {
 			sum += mutantCtElement.getProbabilistic();
-			WeightElement<CtElement> w = new WeightElement<CtElement>(mutantCtElement.getElement(),
+			WeightElement<CtElement> w = new WeightElement<>(mutantCtElement.getElement(),
 					mutantCtElement.getProbabilistic());
 			w.weight = mutantCtElement.getProbabilistic();
 			we.add(w);
@@ -184,7 +184,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	}
 
 	private List<MutantCtElement> clone(List<MutantCtElement> list) {
-		List<MutantCtElement> clonedExpression = new ArrayList<MutantCtElement>();
+		List<MutantCtElement> clonedExpression = new ArrayList<>();
 		for (MutantCtElement mutation : list) {
 			CtExpression cloned = (CtExpression) mutatorBinary.getFactory().Core().clone(mutation.getElement());
 			clonedExpression.add(new MutantCtElement(cloned, mutation.getProbabilistic()));

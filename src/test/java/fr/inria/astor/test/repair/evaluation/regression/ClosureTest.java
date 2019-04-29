@@ -80,46 +80,56 @@ public class ClosureTest {
 		// fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator
 		// ;echo "
 
+		final AstorMain main1 = new AstorMain();
+
 		File projectLocation = new File("./examples/closure_1");
-		AstorMain main1 = new AstorMain();
 		File dirLibs = new File(projectLocation.getAbsolutePath() + File.separator + "/lib/");
+
 		String dep = getDependencies(projectLocation, dirLibs);
+
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String dep2 = "" + projectLocation.getAbsolutePath() + "/build/classes:" + projectLocation.getAbsolutePath()
-				+ "/build/test:" + projectLocation.getAbsolutePath() + "/build/lib/rhino.jar:"
-				+ projectLocation.getAbsolutePath() + "/lib/ant.jar:" + projectLocation.getAbsolutePath()
-				+ "/lib/ant-launcher.jar:" + projectLocation.getAbsolutePath() + "/lib/args4j.jar:"
-				+ projectLocation.getAbsolutePath() + "/lib/guava.jar:" + projectLocation.getAbsolutePath()
-				+ "/lib/jarjar.jar:" + projectLocation.getAbsolutePath() + "/lib/json.jar:"
-				+ projectLocation.getAbsolutePath() + "/lib/jsr305.jar:" + projectLocation.getAbsolutePath()
-				+ "/lib/junit.jar:" + projectLocation.getAbsolutePath() + "/lib/caja-r4314.jar:"
-				+ projectLocation.getAbsolutePath() + "/lib/protobuf-java.jar:";
-		String[] args = new String[] { //
-				"-dependencies", dep2, //
-				"-mode", "jgenprog", //
-				"-population", "1", //
+
+		final String dep2 =
+				projectLocation.getAbsolutePath() + "/build/classes:" +
+						projectLocation.getAbsolutePath() + "/build/test:" +
+						projectLocation.getAbsolutePath() + "/build/lib/rhino.jar:" +
+						projectLocation.getAbsolutePath() + "/lib/ant.jar:" +
+						projectLocation.getAbsolutePath() + "/lib/ant-launcher.jar:" +
+						projectLocation.getAbsolutePath() + "/lib/args4j.jar:" +
+						projectLocation.getAbsolutePath() + "/lib/guava.jar:" +
+						projectLocation.getAbsolutePath() + "/lib/jarjar.jar:" +
+						projectLocation.getAbsolutePath() + "/lib/json.jar:" +
+						projectLocation.getAbsolutePath() + "/lib/jsr305.jar:" +
+						projectLocation.getAbsolutePath() + "/lib/junit.jar:" +
+						projectLocation.getAbsolutePath() + "/lib/caja-r4314.jar:" +
+						projectLocation.getAbsolutePath() + "/lib/protobuf-java.jar:";
+
+		String[] args = {
+				"-dependencies", dep2,
+				"-mode", "jgenprog",
+				"-population", "1",
 				"-failing",
-				"com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:",
-				"-location", projectLocation.getAbsolutePath(), //
-				"-package", "com.google", "-srcjavafolder", "/src/", //
-				"-srctestfolder", "/test/", //
-				"-binjavafolder", "/build/classes/", //
-				"-bintestfolder", "/build/test/", //
-				"-javacompliancelevel", "6", //
-				"-flthreshold", "0.1", //
-				"-out", out.getAbsolutePath(), //
-				"-scope", "local", //
-				"-seed", "3", //
-				"-maxgen", "1000", // No run
-				"-stopfirst", "true", //
-				"-maxtime", "100", //
+					"com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest:",
+				"-location", projectLocation.getAbsolutePath(),
+				"-package", "com.google",
+				"-srcjavafolder", "/src/",
+				"-srctestfolder", "/test/",
+				"-binjavafolder", "/build/classes/",
+				"-bintestfolder", "/build/test/",
+				"-javacompliancelevel", "6",
+				"-flthreshold", "0.1",
+				"-out", out.getAbsolutePath(),
+				"-scope", "local",
+				"-seed", "3",
+				"-maxgen", "1000",
+				"-stopfirst", "true",
+				"-maxtime", "100",
 				"-parameters",
 				"logtestexecution:true" + ":tmax2:1960000:" + ExtensionPoints.TARGET_CODE_PROCESSOR.identifier
 						+ ":fr.inria.astor.core.manipulation.filters.ExpressionBooleanIngredientSpace:ingredienttransformstrategy:fr.inria.astor.core.loop.spaces.ingredients.transformations.InScopeVarsTransformation",
 				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ExpressionIngredientSpace",
 				ExtensionPoints.REPAIR_OPERATORS.argument(),
 				"fr.inria.astor.approaches.jgenprog.operators.ExpressionReplaceOperator",
-
 		};
 
 		System.out.println(Arrays.toString(args));

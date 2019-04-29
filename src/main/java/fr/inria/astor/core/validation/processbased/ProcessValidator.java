@@ -213,7 +213,7 @@ public class ProcessValidator extends ProgramVariantValidator {
 
 		for (String tc : projectFacade.getProperties().getRegressionTestCases()) {
 
-			List<String> parcial = new ArrayList<String>();
+			List<String> parcial = new ArrayList<>();
 			parcial.add(tc);
 			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
 

@@ -62,21 +62,24 @@ public class MutationSupporter {
 	}
 
 	public void buildModel(String srcPathToBuild, String bytecodePathToBuild, String[] classpath) {
-		JDTBasedSpoonCompiler jdtSpoonModelBuilder = null;
+
 		logger.info("building model: " + srcPathToBuild + ", compliance level: "
 				+ factory.getEnvironment().getComplianceLevel());
+
 		factory.getEnvironment().setCommentEnabled(false);
 		factory.getEnvironment().setNoClasspath(false);
 		factory.getEnvironment().setPreserveLineNumbers(ConfigurationProperties.getPropertyBool("preservelinenumbers"));
 
-		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
+		JDTBasedSpoonCompiler jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
 
 		String[] sources = srcPathToBuild.split(File.pathSeparator);
 		for (String src : sources) {
 			if (!src.trim().isEmpty())
 				jdtSpoonModelBuilder.addInputSource(new File(src));
 		}
+
 		logger.info("Classpath (Dependencies) for building SpoonModel: " + Arrays.toString(classpath));
+
 		if (classpath != null && classpath.length > 0) {
 			jdtSpoonModelBuilder.setSourceClasspath(classpath);
 		}

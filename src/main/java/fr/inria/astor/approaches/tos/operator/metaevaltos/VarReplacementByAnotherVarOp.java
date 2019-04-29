@@ -73,7 +73,7 @@ public class VarReplacementByAnotherVarOp extends FineGrainedExpressionReplaceOp
 			}
 
 			// The parameters to be included in the new method
-			List<CtVariableAccess> varsToBeParameters = ingredients.stream().map(e -> e.getCode())
+			List<CtVariableAccess> varsToBeParameters = ingredients.stream().map(Ingredient::getCode)
 					.map(CtVariableAccess.class::cast).collect(Collectors.toList());
 			// The variable to be replaced must also be a parameter
 			varsToBeParameters.add(variableAccessToReplace);

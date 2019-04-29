@@ -34,6 +34,7 @@ import fr.inria.astor.util.Converters;
 import fr.inria.astor.util.EvoSuiteFacade;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtTypeInformation;
 
 /**
  * 
@@ -88,7 +89,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String outES = main1.getEngine().getProjectFacade()
 				.getInDirWithPrefix(ConfigurationProperties.getProperty("evosuiteresultfolder"));
 
-		List<String> affectedTypes = variant.getAffectedClasses().stream().map(e -> e.getQualifiedName())
+		List<String> affectedTypes = variant.getAffectedClasses().stream().map(CtTypeInformation::getQualifiedName)
 				.collect(Collectors.toList());
 
 		boolean executed = fev.runEvosuite(variant, affectedTypes, main1.getEngine().getProjectFacade(), outES, true);// fev.runEvosuite(variant,

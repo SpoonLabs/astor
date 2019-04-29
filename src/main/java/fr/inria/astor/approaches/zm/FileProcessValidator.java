@@ -67,7 +67,7 @@ public class FileProcessValidator extends ProcessValidator {
 			return null;
 		}
 
-		Map<String, String> toCompile = new HashMap<String, String>();
+		Map<String, String> toCompile = new HashMap<>();
 		toCompile.put(fileVariant.getClassName(), content);
 
 		URL[] cp;

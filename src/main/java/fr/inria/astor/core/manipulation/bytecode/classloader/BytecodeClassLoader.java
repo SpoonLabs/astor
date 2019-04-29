@@ -16,7 +16,7 @@ public class BytecodeClassLoader extends URLClassLoader {
 	
 	
 	public void setBytecodes(Map<String, byte[]> bytecodes) {
-		this.bytecodes = new HashMap<String, byte[]>(bytecodes);
+		this.bytecodes = new HashMap<>(bytecodes);
 	}
 	
 	@Override

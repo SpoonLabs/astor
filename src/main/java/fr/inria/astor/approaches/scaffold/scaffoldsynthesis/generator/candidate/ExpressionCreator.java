@@ -6,7 +6,7 @@ import java.util.List;
 @SuppressWarnings("rawtypes")
 public class ExpressionCreator {
 	
-	private List<Expression> expressions = new ArrayList<Expression>();
+	private List<Expression> expressions = new ArrayList<>();
 	private List<ExpressionValueCandidate> lastQuery;
 	private int varLen;
 
@@ -20,7 +20,7 @@ public class ExpressionCreator {
 
 	public ExpressionValueCandidate[] getSJCandidates(Class output, boolean useDefaultValues) {
 		
-		lastQuery = new ArrayList<ExpressionValueCandidate>();
+		lastQuery = new ArrayList<>();
 		for (Expression exp : expressions) {
 			if (exp != null) {
 				lastQuery.addAll(exp.getSJCandidates(output));

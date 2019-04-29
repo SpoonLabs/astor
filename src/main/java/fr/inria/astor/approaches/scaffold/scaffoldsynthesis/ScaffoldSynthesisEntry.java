@@ -13,7 +13,7 @@ import fr.inria.astor.approaches.scaffold.scaffoldsynthesis.request.RequestType;
 
 public class ScaffoldSynthesisEntry {
 	
-	private static Map<RequestType, Map<Integer, AbstractRequest>> allHoles = new TreeMap<RequestType, Map<Integer, AbstractRequest>>();
+	private static Map<RequestType, Map<Integer, AbstractRequest>> allHoles = new TreeMap<>();
 
 	public ScaffoldSynthesisEntry() {
 	}
@@ -41,7 +41,7 @@ public class ScaffoldSynthesisEntry {
 	}
 
 	private static AbstractRequest createRequest(RequestType type, AbstractRequest request, int id) {
-		Map<Integer, AbstractRequest> list = allHoles.getOrDefault(type, new TreeMap<Integer, AbstractRequest>());
+		Map<Integer, AbstractRequest> list = allHoles.getOrDefault(type, new TreeMap<>());
 		if (list.containsKey(id)) {
 			 return list.get(id);
 		}

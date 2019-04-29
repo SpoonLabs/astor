@@ -24,7 +24,6 @@ public class ReplaceIfBooleanOp extends AutonomousOperator implements StatementL
 	ReplaceOp replaceOp = new ReplaceOp();
 
 	public ReplaceIfBooleanOp() {
-		super();
 	}
 
 	@Override
@@ -73,9 +72,7 @@ public class ReplaceIfBooleanOp extends AutonomousOperator implements StatementL
 
 	@Override
 	public boolean applyChangesInModel(OperatorInstance operation, ProgramVariant p) {
-
 		return replaceOp.applyChangesInModel(operation, p);
-
 	}
 
 	@Override

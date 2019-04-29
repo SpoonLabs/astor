@@ -88,7 +88,7 @@ public class StringLibrary {
 	}
 	
 	public static List<String> toStringList(Collection<? extends Object> objects, String nullString) {
-		List<String> toStringList = new LinkedList<String>();
+		List<String> toStringList = new LinkedList<>();
 		for (Object object : objects) {
 			if (object == null) {
 				toStringList.add(nullString);
@@ -100,7 +100,7 @@ public class StringLibrary {
 	}
 	
 	public static <K, V> Map<String, V> toStringMap(Map<K, V> sourceMap) {
-		Map<String, V> toStringMap = new HashMap<String, V>();
+		Map<String, V> toStringMap = new HashMap<>();
 		for (K key : sourceMap.keySet()) {
 			toStringMap.put(key.toString(), sourceMap.get(key));
 		}
@@ -129,7 +129,7 @@ public class StringLibrary {
 	}
 	
 	public static Collection<String> rightFilled(Collection<String> strings, int targetLength, Character filler) {
-		Collection<String> filled = new ArrayList<String>(strings.size());
+		Collection<String> filled = new ArrayList<>(strings.size());
 		for (String string : strings) {
 			filled.add(rightFilled(string, targetLength, filler));
 		}
@@ -146,7 +146,7 @@ public class StringLibrary {
 	}
 	
 	public static Collection<String> leftFilled(Collection<String> strings, int targetLength, Character filler) {
-		Collection<String> filled = new ArrayList<String>(strings.size());
+		Collection<String> filled = new ArrayList<>(strings.size());
 		for (String string : strings) {
 			filled.add(leftFilled(string, targetLength, filler));
 		}

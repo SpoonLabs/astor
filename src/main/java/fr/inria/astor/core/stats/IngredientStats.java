@@ -32,9 +32,9 @@ public class IngredientStats {
 	public List<Pair> successfulTransformedIngredients = new ArrayList<>();
 	public Integer temporalIngCounterUntilPatch = 0;
 	public List<Integer> patch_attempts = new ArrayList<>();
-	public StatCounter<String> sizeSpace = new StatCounter<String>();
-	public List<StatSpaceSize> sizeSpaceOfVariant = new ArrayList<StatSpaceSize>();
-	public StatCounter<Integer> attemptsPerVariant = new StatCounter<Integer>();
+	public StatCounter<String> sizeSpace = new StatCounter<>();
+	public List<StatSpaceSize> sizeSpaceOfVariant = new ArrayList<>();
+	public StatCounter<Integer> attemptsPerVariant = new StatCounter<>();
 	// key are value, values are abundancy
 	public Map<Long, Long> ingredientSpaceSize = new HashedMap();
 	public Map<Long, Long> combinationByIngredientSize = new HashedMap();
@@ -108,11 +108,7 @@ public class IngredientStats {
 	 */
 	public int getIngCounter(Integer idprogvariant) {
 
-		if (!temporalIngCounterByPatch.containsKey(idprogvariant))
-			return 0;
-		else {
-			return temporalIngCounterByPatch.get(idprogvariant);
-		}
+		return temporalIngCounterByPatch.getOrDefault(idprogvariant, 0);
 
 	}
 
@@ -205,7 +201,7 @@ public class IngredientStats {
 		public String toString() {
 			return "(pv:" + pvid + ",at:" + attempts + ")";
 		}
-	};
+	}
 
 	public void addSize(Map<Long, Long> attempts, Integer sizep) {
 

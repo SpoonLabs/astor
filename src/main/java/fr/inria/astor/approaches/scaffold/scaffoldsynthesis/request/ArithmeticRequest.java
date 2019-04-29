@@ -17,7 +17,7 @@ public ArithmeticRequest() {}
 	private int relation = -1;
 	private String[] ops = { "+ ", " - ", " * ", " / ", " % " };
 	
-	private Set<Class> set = new HashSet<Class>(Arrays.asList(byte.class, Byte.class, short.class, Short.class, 
+	private Set<Class> set = new HashSet<>(Arrays.asList(byte.class, Byte.class, short.class, Short.class,
 			int.class, Integer.class, float.class, Float.class, double.class, Double.class,
 			Long.class, long.class, Character.class, char.class));
 

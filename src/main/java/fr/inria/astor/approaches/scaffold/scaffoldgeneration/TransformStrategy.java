@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -40,6 +39,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.CtScanner;
 
+@SuppressWarnings("ALL")
 public abstract class TransformStrategy extends CtScanner {
 	
 	protected Logger log = Logger.getLogger(TransformStrategy.class.getName());
@@ -50,9 +50,9 @@ public abstract class TransformStrategy extends CtScanner {
 	OutputWritter outputWritter;
 	ScaffoldRepairEngine repairEngine;
 	
-	protected List<String> list = new ArrayList<String>();
+	protected List<String> list = new ArrayList<>();
 	@SuppressWarnings("rawtypes")
-	protected Map<CtExpression, CtExpression> candidates = new HashMap<CtExpression, CtExpression>();
+	protected Map<CtExpression, CtExpression> candidates = new HashMap<>();
 	protected int index = 0;
 	protected int indexOfModPoint = 0;
 	protected String pre = "";

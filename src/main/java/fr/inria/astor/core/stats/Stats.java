@@ -23,7 +23,7 @@ public class Stats {
 	public enum GeneralStatEnum {
 	EXECUTION_IDENTIFIER, TOTAL_TIME, NR_GENERATIONS, NR_RIGHT_COMPILATIONS, NR_FAILLING_COMPILATIONS,
 	NR_ERRONEOUS_VARIANCES, NR_FAILING_VALIDATION_PROCESS, OUTPUT_STATUS
-	};
+	}
 
 	/**
 	 * Wrapper of an integer that allows increment

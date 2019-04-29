@@ -58,13 +58,7 @@ public class ShortestIngredientSearchStrategy extends IngredientSearchStrategy {
 			List<Ingredient> ingredientsLocationSort = new ArrayList<>(ingredientsLocation);
 
 			// We have never analyze this location, let's sort the ingredients.
-			Collections.sort(ingredientsLocationSort, new Comparator<Ingredient>() {
-
-				@Override
-				public int compare(Ingredient o1, Ingredient o2) {
-					return Integer.compare(o1.toString().length(), o2.toString().length());
-				}
-			});
+			ingredientsLocationSort.sort(Comparator.comparingInt(o -> o.toString().length()));
 			// We reintroduce the sorted list ingredient into the space
 			this.ingredientSpace.setIngredients(modificationPoint.getCodeElement(), ingredientsLocationSort);
 			ingredientsLocation = ingredientsLocationSort;

@@ -22,19 +22,16 @@ public class Ingredient {
 	protected Map<String, Object> metadata = new HashMap<>();
 
 	public Ingredient(CtElement code, IngredientPoolScope scope, CtElement derivedFrom) {
-		super();
 		this.ingredientCode = code;
 		this.derivedFrom = derivedFrom;
 		this.scope = scope;
 	}
 
 	public Ingredient(CtElement element) {
-		super();
 		this.ingredientCode = element;
 	}
 
 	public Ingredient(CtElement element, IngredientPoolScope scope) {
-		super();
 		this.ingredientCode = element;
 		this.scope = scope;
 	}

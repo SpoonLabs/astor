@@ -76,7 +76,7 @@ public abstract class AstorOperator implements AstorExtensionPoint {
 	 */
 	public String name() {
 		return this.getClass().getSimpleName();
-	};
+	}
 
 	/**
 	 * Indicates whether the operator needs ingredients.

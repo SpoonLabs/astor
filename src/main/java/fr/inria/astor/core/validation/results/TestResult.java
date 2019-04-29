@@ -11,9 +11,9 @@ public class TestResult {
 	
 	public int casesExecuted = 0;
 	public int failures = 0;
-	public List<String> successTest =new ArrayList<String>();
+	public List<String> successTest = new ArrayList<>();
 	 
-	public  List<String> failTest =new ArrayList<String>();
+	public  List<String> failTest = new ArrayList<>();
 
 	 public List<String> getSuccessTest() {
 		return successTest;

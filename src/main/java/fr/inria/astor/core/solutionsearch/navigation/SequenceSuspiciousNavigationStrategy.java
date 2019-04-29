@@ -16,7 +16,7 @@ public class SequenceSuspiciousNavigationStrategy implements SuspiciousNavigatio
 	@Override
 	public List<ModificationPoint> getSortedModificationPointsList(List<ModificationPoint> modificationPoints) {
 		if (modificationPoints.isEmpty()) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		ProgramVariant variant = modificationPoints.get(0).getProgramVariant();
@@ -26,7 +26,7 @@ public class SequenceSuspiciousNavigationStrategy implements SuspiciousNavigatio
 			variant.setLastModificationPointAnalyzed(i + 1);
 			return modificationPoints.subList(i, i + 1);
 		}
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 }

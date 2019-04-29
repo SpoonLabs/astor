@@ -28,7 +28,7 @@ public class TOSBRPlugInLoader {
 
 	public static void loadTargetElements(AstorCoreEngine approach) throws Exception {
 
-		List<TargetElementProcessor<?>> targetElementProcessors = new ArrayList<TargetElementProcessor<?>>();
+		List<TargetElementProcessor<?>> targetElementProcessors = new ArrayList<>();
 		targetElementProcessors.add(new StatementFixSpaceProcessor());
 		approach.setTargetElementProcessors(targetElementProcessors);
 	}

@@ -50,8 +50,8 @@ public class RandomSelectionTransformedIngredientStrategy extends IngredientSear
 	/**
 	 * Ingredients already selected
 	 */
-	public Map<String, List<String>> appliedCache = new HashMap<String, List<String>>();
-	public Map<String, List<Ingredient>> appliedIngredientsCache = new HashMap<String, List<Ingredient>>();
+	public Map<String, List<String>> appliedCache = new HashMap<>();
+	public Map<String, List<Ingredient>> appliedIngredientsCache = new HashMap<>();
 	public MapList<String, Ingredient> exhaustTemplates = new MapList<>();
 
 	/**
@@ -317,7 +317,7 @@ public class RandomSelectionTransformedIngredientStrategy extends IngredientSear
 		List<String> prev = appliedCache.get(lockey);
 		// The element does not have any mutation applied
 		if (prev == null) {
-			prev = new ArrayList<String>();
+			prev = new ArrayList<>();
 			prev.add(fix);
 			appliedCache.put(lockey, prev);
 			log.debug(

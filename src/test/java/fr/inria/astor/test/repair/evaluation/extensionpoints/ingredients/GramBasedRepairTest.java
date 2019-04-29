@@ -6,11 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -347,7 +343,7 @@ public class GramBasedRepairTest {
 
 		Map<String, NGrams> ngramsByClass = transformationStrategy.getNgramManager().getNgramsSplitted();
 
-		assertTrue(Arrays.asList(ngglobals.ngrams).stream().filter(e -> e != null).findFirst().isPresent());
+		assertTrue(Arrays.asList(ngglobals.ngrams).stream().filter(Objects::nonNull).findFirst().isPresent());
 		assertTrue(ngramsByClass.keySet().size() > 0);
 
 		// Ngrams of BisectionSolver
@@ -372,7 +368,7 @@ public class GramBasedRepairTest {
 		NGrams nGramBisection2 = gramProc.calculateGrams4Class(mpointBinCondition0.getCtClass());
 
 		// System.out.println("--> "+nGramBisection2);
-		assertTrue(Arrays.asList(nGramBisection2.ngrams).stream().filter(e -> e != null).findFirst().isPresent());
+		assertTrue(Arrays.asList(nGramBisection2.ngrams).stream().filter(Objects::nonNull).findFirst().isPresent());
 
 		int occurencies2 = (int) nGramBisection2.ngrams[2].get(query1);
 

@@ -42,7 +42,7 @@ public class MetaValidationResult extends TestCasesProgramValidationResult imple
 			}
 		}
 		return false;
-	};
+	}
 
 	public String toString() {
 		String r = "\nMeta-evaluation";

@@ -402,8 +402,8 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		List<ProgramVariant> allProgramVariants = new ArrayList<>();
 
-		doCombination(map, new LinkedList<PredictionElement>(map.keySet()).listIterator(),
-				new HashMap<PredictionElement, OperatorInstance>(), allProgramVariants, parentVariant);
+		doCombination(map, new LinkedList<>(map.keySet()).listIterator(),
+				new HashMap<>(), allProgramVariants, parentVariant);
 
 		return allProgramVariants;
 	}

@@ -40,7 +40,7 @@ public class ProcessEvoSuiteValidator extends ProgramVariantValidator {
 
 	protected List<CtClass> evoTestClasses = new ArrayList<>();
 
-	protected List<String> testAlreadyGenerated = new ArrayList<String>();
+	protected List<String> testAlreadyGenerated = new ArrayList<>();
 
 	public ProcessEvoSuiteValidator() {
 		evoTestClasses = new ArrayList<>();
@@ -106,8 +106,8 @@ public class ProcessEvoSuiteValidator extends ProgramVariantValidator {
 
 		String outPutTest = projectFacade.getOutDirWithPrefix("/evosuite/evosuite-tests/" + sufix);
 
-		List<String> classesToGenerateTests = new ArrayList<String>();
-		List<String> testToExecute = new ArrayList<String>();
+		List<String> classesToGenerateTests = new ArrayList<>();
+		List<String> testToExecute = new ArrayList<>();
 
 		// Classed affected by the patch
 		List<CtType<?>> typesToProcess = fev.getClassesToProcess(currentVariant);
@@ -128,7 +128,7 @@ public class ProcessEvoSuiteValidator extends ProgramVariantValidator {
 
 		if (classesToGenerateTests.size() > 0) {
 
-			List<String> pathTestGenerated = new ArrayList<String>();
+			List<String> pathTestGenerated = new ArrayList<>();
 
 			log.debug("Generating test for the first time");
 			boolean executed = fev.runEvosuite(currentVariant, classesToGenerateTests, projectFacade, testEScodepath,
@@ -169,7 +169,7 @@ public class ProcessEvoSuiteValidator extends ProgramVariantValidator {
 			log.info("Classpath " + classpathForCompile);
 
 			String javaPath = ConfigurationProperties.getProperty("jvm4evosuitetestexecution");
-			List<String> command = new ArrayList<String>();
+			List<String> command = new ArrayList<>();
 			command.add(javaPath + File.separator + "javac");
 			command.add("-classpath");
 			command.add(classpathForCompile);
@@ -181,9 +181,7 @@ public class ProcessEvoSuiteValidator extends ProgramVariantValidator {
 			command.add(outPutTest);
 
 			// Adding the files
-			for (String testPath : pathTestGenerated) {
-				command.add(testPath);
-			}
+			command.addAll(pathTestGenerated);
 			// Run compilation:
 			fev.runProcess(command.toArray(new String[command.size()]));
 

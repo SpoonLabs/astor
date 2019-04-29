@@ -15,7 +15,7 @@ public class UniformRandomSuspiciousNavigation implements SuspiciousNavigationSt
 
 	@Override
 	public List<ModificationPoint> getSortedModificationPointsList(List<ModificationPoint> modificationPoints) {
-		List<ModificationPoint> shuffList = new ArrayList<ModificationPoint>(modificationPoints);
+		List<ModificationPoint> shuffList = new ArrayList<>(modificationPoints);
 		Collections.shuffle(shuffList);
 		return shuffList;
 	}

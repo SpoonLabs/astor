@@ -1,6 +1,5 @@
 package fr.inria.astor.approaches.scaffold.scaffoldgeneration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -29,7 +28,7 @@ public class ConditionMutationTransform extends TransformStrategy {
 		super(modPoint, modificationPointIndex, supporter,facade,engine);
 		pre = "CMT";
 		querytype="COND";
-		usedBinExper=new ArrayList<CtBinaryOperator<?>>();
+		usedBinExper= new ArrayList<>();
 	}
 	
 	@Override
@@ -65,14 +64,9 @@ public class ConditionMutationTransform extends TransformStrategy {
 
 	@SuppressWarnings("rawtypes")
 	private void fetchCOND(CtElement node) {
-		List<String> types = new ArrayList<String>();
+		List<String> types = new ArrayList<>();
 		List<CtVariable> vars = modificationPoint.getContextOfModificationPoint();
-		PriorityQueue<CtVariable> queue = new PriorityQueue<CtVariable>(new Comparator<CtVariable>() {
-			@Override
-			public int compare(CtVariable o1, CtVariable o2) {
-				return o2.getPosition().getLine()-o1.getPosition().getLine();
-			}
-		});	
+		PriorityQueue<CtVariable> queue = new PriorityQueue<>((o1, o2) -> o2.getPosition().getLine() - o1.getPosition().getLine());
 		queue.addAll(vars);
 				
 		while (!queue.isEmpty()) {

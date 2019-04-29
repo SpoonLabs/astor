@@ -30,7 +30,7 @@ public abstract class TargetElementProcessor<T extends CtCodeElement> extends Ab
 	/**
 	 * This list saves the result
 	 */
-	public static List<CtCodeElement> spaceElements = new ArrayList<CtCodeElement>();
+	public static List<CtCodeElement> spaceElements = new ArrayList<>();
 
 	public void add(CtCodeElement st) {
 		

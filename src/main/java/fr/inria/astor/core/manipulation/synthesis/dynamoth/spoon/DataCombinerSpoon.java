@@ -65,7 +65,7 @@ public class DataCombinerSpoon {
 		logger.debug("[combine] start on " + candidates.size() + " elements");
 
 		//
-		List<CtExpression> result = new ArrayList<CtExpression>();
+		List<CtExpression> result = new ArrayList<>();
 		result.addAll(candidates);
 		List<CtExpression> lastTurn = new ArrayList<>();
 		// puts all

@@ -199,27 +199,23 @@ public class ProbabilisticTransformationStrategy extends CacheTransformationStra
 			// (Double.compare(probabilities.get(e2.getSimpleName()),
 			// probabilities.get(e1.getSimpleName()))));
 			logger.debug("All Vars " + vars);
-			Collections.sort(vars, new Comparator<CtVariable>() {
+			vars.sort((e1, e2) -> {
+                Double d2 = probabilities.get(e2.getSimpleName());
+                Double d1 = probabilities.get(e1.getSimpleName());
 
-				@Override
-				public int compare(CtVariable e1, CtVariable e2) {
-					Double d2 = probabilities.get(e2.getSimpleName());
-					Double d1 = probabilities.get(e1.getSimpleName());
+                if (d2 == null && d1 == null)
+                    return 0;
 
-					if (d2 == null && d1 == null)
-						return 0;
-
-					if (d2 == null) {
-						logger.debug("nf2 " + e2.getSimpleName());
-						return -1;
-					}
-					if (d1 == null) {
-						logger.debug("nf1 " + e1.getSimpleName());
-						return 1;
-					}
-					return Double.compare(d2, d1);
-				}
-			});
+                if (d2 == null) {
+                    logger.debug("nf2 " + e2.getSimpleName());
+                    return -1;
+                }
+                if (d1 == null) {
+                    logger.debug("nf1 " + e1.getSimpleName());
+                    return 1;
+                }
+                return Double.compare(d2, d1);
+            });
 		}
 
 	}

@@ -32,10 +32,10 @@ public class LibParser {
 	private Factory factory;
 	private ProjectRepairFacade projFacade;
 	@SuppressWarnings("rawtypes")
-	protected Map<String, CtClass> classMap = new HashMap<String, CtClass>();
-    protected ArrayList<String> parsedfile = new ArrayList<String>();
-    protected Map<String, Class<?>[]> external = new HashMap<String, Class<?>[]>();
-	protected Map<String, CtEnum> enumMap = new HashMap<String, CtEnum>();
+	protected Map<String, CtClass> classMap = new HashMap<>();
+    protected ArrayList<String> parsedfile = new ArrayList<>();
+    protected Map<String, Class<?>[]> external = new HashMap<>();
+	protected Map<String, CtEnum> enumMap = new HashMap<>();
 
     @SuppressWarnings({ "static-access" })
 	public LibParser(ModificationPoint modPoint, MutationSupporter supporter, ProjectRepairFacade facade) {
@@ -56,7 +56,7 @@ public class LibParser {
         for (CtImport certainimport : imports) {
 
         	String importedlibname=certainimport.getReference().toString();
-        	if(importedlibname.indexOf(".")==-1) 
+        	if(!importedlibname.contains("."))
         		continue;
         	
         	if(certainimport.getImportKind()==CtImportKind.FIELD) {
@@ -101,7 +101,7 @@ public class LibParser {
     	if(!parsedfile.contains(name.getAbsolutePath())) {
     	  parsedfile.add(name.getAbsolutePath());
     	  
-		  for (CtClass<?> klass : this.factory.getModel().getElements(new TypeFilter<CtClass>(CtClass.class))) {
+		  for (CtClass<?> klass : this.factory.getModel().getElements(new TypeFilter<>(CtClass.class))) {
 			if(klass.getPosition().getFile().getAbsolutePath().equals(name.getAbsolutePath())) {
 				@SuppressWarnings("rawtypes")
 				CtClass founded=klass;
@@ -160,7 +160,7 @@ public class LibParser {
 			}
 		}
 		
-		List<Class[]> list = new ArrayList<Class[]>();
+		List<Class[]> list = new ArrayList<>();
 		
 		if (cls == null||cls.length==0)
 			return list;

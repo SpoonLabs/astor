@@ -35,7 +35,7 @@ public class CompoundValidationResult implements  TestCaseVariantValidationResul
 			}
 		}
 		return true;
-	};
+	}
 	
 	
 	public String toString(){

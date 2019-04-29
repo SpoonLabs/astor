@@ -35,21 +35,18 @@ public class DebugJUnitRunner {
 	static final protected Logger logger = Logger.getLogger(Thread.currentThread().getName());
 
 	static void copy(final InputStream in, final OutputStream out) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				byte[] buf = new byte[1024];
-				int len;
-				try {
-					while ((len = in.read(buf)) > 0) {
-						// logger.debug("-->" + new String(buf));
-						out.write(buf, 0, len);
-					}
-					out.close();
-					in.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+		new Thread(() -> {
+			byte[] buf = new byte[1024];
+			int len;
+			try {
+				while ((len = in.read(buf)) > 0) {
+					// logger.debug("-->" + new String(buf));
+					out.write(buf, 0, len);
 				}
+				out.close();
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}).start();
 	}
@@ -122,11 +119,7 @@ public class DebugJUnitRunner {
 				logger.error("Error when coping process input/error stream");
 			}
 			// kill process when the program exit
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				public void run() {
-					shutdown(vm);
-				}
-			});
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown(vm)));
 			return vm;
 		} catch (ConnectException e) {
 			process.destroy();

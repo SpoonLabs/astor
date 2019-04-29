@@ -2,6 +2,7 @@ package fr.inria.astor.core.solutionsearch.extension;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -21,7 +22,7 @@ public class IdentifierPriorityCriterion implements SolutionVariantSortCriterion
 	@Override
 	public List<ProgramVariant> priorize(List<ProgramVariant> patches) {
 		List<ProgramVariant> toSort = new ArrayList<>(patches);
-		Collections.sort(toSort, (o1, o2) -> Integer.compare(o1.getId(), o2.getId()));
+		toSort.sort(Comparator.comparingInt(ProgramVariant::getId));
 
 		return toSort;
 	}

@@ -196,13 +196,7 @@ public class GramProcessor {
 	 */
 	public void sortVarsByNames(List<CtVariableAccess> vars) {
 
-		Collections.sort(vars, new Comparator<CtVariableAccess>() {
-
-			@Override
-			public int compare(CtVariableAccess o1, CtVariableAccess o2) {
-				return o1.getVariable().getSimpleName().compareTo(o2.getVariable().getSimpleName());
-			}
-		});
+		vars.sort(Comparator.comparing(o -> o.getVariable().getSimpleName()));
 
 	}
 

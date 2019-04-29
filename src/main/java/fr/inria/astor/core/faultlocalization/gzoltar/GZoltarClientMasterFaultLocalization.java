@@ -23,6 +23,7 @@ import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import spoon.reflect.declaration.CtTypeInformation;
 
 /**
  * GZoltar using Client Master Architecture
@@ -42,7 +43,7 @@ public class GZoltarClientMasterFaultLocalization extends GZoltarFaultLocalizati
 		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");
 		logger.info("Gzoltar fault localization: min susp value parameter: " + thr);
 
-		Set<String> tcset = new HashSet<String>(testsToExecute);
+		Set<String> tcset = new HashSet<>(testsToExecute);
 
 		String ncp = cp.stream().collect(Collectors.joining(File.pathSeparator)) + File.pathSeparator + locationBin;
 
@@ -50,7 +51,7 @@ public class GZoltarClientMasterFaultLocalization extends GZoltarFaultLocalizati
 
 		if (targetClasses == null || targetClasses.trim().isEmpty())
 			targetClasses = MutationSupporter.currentSupporter.getFactory().Type().getAll().stream()
-					.map(t -> t.getQualifiedName()).collect(Collectors.joining(File.pathSeparator));
+					.map(CtTypeInformation::getQualifiedName).collect(Collectors.joining(File.pathSeparator));
 
 		String testNames = testsToExecute.stream().collect(Collectors.joining(File.pathSeparator));
 		logger.debug("#test before: " + testsToExecute.size() + " #after " + tcset.size());
@@ -63,7 +64,7 @@ public class GZoltarClientMasterFaultLocalization extends GZoltarFaultLocalizati
 
 		try {
 
-			List<String> command = new ArrayList<String>();
+			List<String> command = new ArrayList<>();
 
 			long init = new Date().getTime();
 			command.add(jvmPath);

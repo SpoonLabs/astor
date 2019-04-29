@@ -215,30 +215,30 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 
 	public static IngredientSearchStrategy retrieveIngredientSearchStrategy(IngredientPool ingredientspace)
 			throws Exception {
-		IngredientSearchStrategy ingStrategy = null;
 
-		String ingStrategySt = ConfigurationProperties.properties
-				.getProperty(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier);
+		String ingredientSearchStrategyIdentifier = ConfigurationProperties.properties
+			.getProperty(ExtensionPoints.INGREDIENT_SEARCH_STRATEGY.identifier);
 
-		if (ingStrategySt != null) {
+		// TODO: Create Factory.
 
-			if (ingStrategySt.equals("uniform-random")) {
-				ingStrategy = new SimpleRandomSelectionIngredientStrategy(ingredientspace);
-				// new RandomSelectionTransformedIngredientStrategy(ingredientspace);
-			} else if (ingStrategySt.equals("name-probability-based")) {
-				ingStrategy = new ProbabilisticIngredientStrategy(ingredientspace);
-			} else if (ingStrategySt.equals("code-similarity-based")) {
-				ingStrategy = new CloneIngredientSearchStrategy(ingredientspace);
-			} else {
-				ingStrategy = (IngredientSearchStrategy) PlugInLoader.loadPlugin(
-						ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[] { IngredientPool.class },
-						new Object[] { ingredientspace });
-			}
-		} else {
-			ingStrategy = new SimpleRandomSelectionIngredientStrategy(ingredientspace);
-			// new RandomSelectionTransformedIngredientStrategy(ingredientspace);
+		if (null == ingredientSearchStrategyIdentifier) {
+			return new SimpleRandomSelectionIngredientStrategy(ingredientspace);
+			// return new RandomSelectionTransformedIngredientStrategy(ingredientspace);
 		}
-		return ingStrategy;
+
+		switch (ingredientSearchStrategyIdentifier) {
+			case "uniform-random":
+				return new SimpleRandomSelectionIngredientStrategy(ingredientspace);
+				// return new RandomSelectionTransformedIngredientStrategy(ingredientspace);
+			case "name-probability-based":
+				return new ProbabilisticIngredientStrategy(ingredientspace);
+			case "code-similarity-based":
+				return new CloneIngredientSearchStrategy(ingredientspace);
+			default:
+				return (IngredientSearchStrategy) PlugInLoader.loadPlugin(
+						ExtensionPoints.INGREDIENT_SEARCH_STRATEGY, new Class[]{IngredientPool.class},
+						new Object[]{ingredientspace});
+		}
 	}
 
 	protected void loadIngredientTransformationStrategy() throws Exception {
@@ -249,27 +249,28 @@ public abstract class IngredientBasedEvolutionaryRepairApproachImpl extends Evol
 	}
 
 	public static IngredientTransformationStrategy retrieveIngredientTransformationStrategy() throws Exception {
-		IngredientTransformationStrategy ingredientTransformationStrategyLoaded = null;
+
 		String ingredientTransformationStrategy = ConfigurationProperties.properties
 				.getProperty(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier);
 
-		if (ingredientTransformationStrategy == null) {
-			ingredientTransformationStrategyLoaded = (new NoIngredientTransformationWithCheck());
-		} else {// there is a value
-			if (ingredientTransformationStrategy.equals("no-transformation")) {
-				ingredientTransformationStrategyLoaded = (new NoIngredientTransformationWithCheck());
-			} else if (ingredientTransformationStrategy.equals("random-variable-replacement")) {
-				ingredientTransformationStrategyLoaded = (new RandomTransformationStrategy());
-			} else if (ingredientTransformationStrategy.equals("name-cluster-based")) {
-				ingredientTransformationStrategyLoaded = (new ClusterIngredientTransformation());
-			} else if (ingredientTransformationStrategy.equals("name-probability-based")) {
-				ingredientTransformationStrategyLoaded = (new ProbabilisticTransformationStrategy());
-			} else {
-				ingredientTransformationStrategyLoaded = ((IngredientTransformationStrategy) PlugInLoader
-						.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY));
-			}
+		// TODO: Create Factory.
+
+		if (null == ingredientTransformationStrategy) {
+			return new NoIngredientTransformationWithCheck();
 		}
-		return ingredientTransformationStrategyLoaded;
+
+		switch (ingredientTransformationStrategy) {
+			case "no-transformation":
+				return new NoIngredientTransformationWithCheck();
+			case "random-variable-replacement":
+				return new RandomTransformationStrategy();
+			case "name-cluster-based":
+				return new ClusterIngredientTransformation();
+			case "name-probability-based":
+				return new ProbabilisticTransformationStrategy();
+			default:
+				return (IngredientTransformationStrategy)PlugInLoader.loadPlugin(ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY);
+		}
 	}
 
 	public void loadTargetIngredientElement() throws Exception {

@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -40,13 +37,11 @@ public class ClusteringParser {
 				String[] metad = line.split(",");
 				String lexicalElement = metad[0];
 				String idcluster = metad[1];
-				List<String> clusterElements = new ArrayList<String>();
+				List<String> clusterElements = new ArrayList<>();
 
 				if (metad.length == 3) {
 					String cluster = metad[2];
-					for (String elementCluster : cluster.split(";")) {
-						clusterElements.add(elementCluster);
-					}
+					clusterElements.addAll(Arrays.asList(cluster.split(";")));
 				}
 				clusters.put(lexicalElement, clusterElements);
 

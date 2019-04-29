@@ -21,8 +21,7 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  *
  */
-public class InScopeVarsTransformation extends ClusterIngredientTransformation
-		implements IngredientTransformationStrategy {
+public class InScopeVarsTransformation extends ClusterIngredientTransformation {
 
 	protected Logger logger = Logger.getLogger(InScopeVarsTransformation.class.getName());
 

@@ -31,14 +31,14 @@ public class JavaXToolsCompiler {
 	public JavaXToolsCompiler() {
 		options = asList("-nowarn");
 		compiler = ToolProvider.getSystemJavaCompiler();
-		diagnostics = new DiagnosticCollector<JavaFileObject>();
+		diagnostics = new DiagnosticCollector<>();
 		StandardJavaFileManager standardFileManager = compiler().getStandardFileManager(diagnostics(), null, null);
 		fileManager = new VirtualFileObjectManager(standardFileManager);
 	}
 
 	public synchronized CompilationResult javaBytecodeFor(Map<String, String> qualifiedNameAndContent,
 			Map<String, byte[]> compiledDependencies, List<String> options) {
-		diagnostics = new DiagnosticCollector<JavaFileObject>();
+		diagnostics = new DiagnosticCollector<>();
 		fileManager.classFiles().clear();
 		
 		Collection<JavaFileObject> units = addCompilationUnits(qualifiedNameAndContent);

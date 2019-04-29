@@ -57,7 +57,7 @@ public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator
 		if (targetElement == null) {
 			booleanExpressionsInModificationPoints = modificationPoint.getCodeElement()
 					.getElements(new TypeFilter<>(CtBinaryOperator.class)).stream()
-					.filter(e -> SupportOperators.isBooleanType(e)).collect(Collectors.toList());
+					.filter(SupportOperators::isBooleanType).collect(Collectors.toList());
 		} else {
 			booleanExpressionsInModificationPoints = new ArrayList<>();
 			booleanExpressionsInModificationPoints.add((CtBinaryOperator) this.targetElement);

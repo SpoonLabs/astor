@@ -18,7 +18,7 @@ import fr.inria.astor.util.StringUtil;
  */
 public abstract class CacheTransformationStrategy implements IngredientTransformationStrategy {
 
-	public Map<String, List<Ingredient>> appliedIngredientsCache = new HashMap<String, List<Ingredient>>();
+	public Map<String, List<Ingredient>> appliedIngredientsCache = new HashMap<>();
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 

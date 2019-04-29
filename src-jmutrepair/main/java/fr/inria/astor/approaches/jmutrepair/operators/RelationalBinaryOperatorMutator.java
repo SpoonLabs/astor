@@ -57,7 +57,7 @@ public class RelationalBinaryOperatorMutator extends BinaryOperatorMutator {
 			
 	public List<MutantCtElement> execute(CtElement toMutate) {
 
-		List<MutantCtElement> result = new ArrayList<MutantCtElement>();
+		List<MutantCtElement> result = new ArrayList<>();
 
 		 if (toMutate instanceof CtBinaryOperator<?>) {
 		      CtBinaryOperator<?> op = (CtBinaryOperator<?>)toMutate;

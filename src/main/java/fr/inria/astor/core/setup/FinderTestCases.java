@@ -61,7 +61,7 @@ public class FinderTestCases {
 	 */
 
 	private static List<String> refineListofRegressionTestCases(List<String> allTest) {
-			List<String> regressionCases = new ArrayList<String>();
+			List<String> regressionCases = new ArrayList<>();
 			List<String> ignoreTestcases = retriveIgnoreTestCases();
 				
 			if(ignoreTestcases == null || ignoreTestcases.isEmpty())
@@ -107,7 +107,7 @@ public class FinderTestCases {
 			
 			if(nameTestCase.startsWith(ignoreTC)){
 				return true;
-			};
+			}
 		}
 		return false;
 	}

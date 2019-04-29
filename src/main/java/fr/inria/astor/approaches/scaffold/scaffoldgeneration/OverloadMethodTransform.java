@@ -1,6 +1,5 @@
 package fr.inria.astor.approaches.scaffold.scaffoldgeneration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,7 @@ import spoon.reflect.declaration.CtParameter;
 public class OverloadMethodTransform extends TransformStrategy {
 
 	@SuppressWarnings("rawtypes")
-	private Map<String, CtExpression> typeCandidates = new HashMap<String, CtExpression>();
+	private Map<String, CtExpression> typeCandidates = new HashMap<>();
 	private String querytype;
 	private LibParser parser;
 	
@@ -81,7 +80,7 @@ public class OverloadMethodTransform extends TransformStrategy {
 	
 	@SuppressWarnings("rawtypes")
 	private List<String> resolveParams(List<CtParameter> origParam) {
-		List<String> types = new ArrayList<String>();
+		List<String> types = new ArrayList<>();
 		for (int i = 0; i < origParam.size(); i++) {
 			String type =  origParam.get(i).getType().getQualifiedName();
 		//	type = objToPrim.containsKey(type) ? objToPrim.get(type) : type;
@@ -93,7 +92,7 @@ public class OverloadMethodTransform extends TransformStrategy {
 	}
 	
 	private List<String> resolveTypes(List<CtExpression<?>> origParam) {
-		List<String> types = new ArrayList<String>();
+		List<String> types = new ArrayList<>();
 		for (int i = 0; i < origParam.size(); i++) {
 			String type = origParam.get(i).getType().getQualifiedName();
 		//	type = objToPrim.containsKey(type) ? objToPrim.get(type) : type;
@@ -106,7 +105,7 @@ public class OverloadMethodTransform extends TransformStrategy {
 	
 	@SuppressWarnings("rawtypes")
 	private void transformOneConstructor(List<String> origTypes, CtAbstractInvocation invocation, Class[] param) {
-		List<String> target = new ArrayList<String>();
+		List<String> target = new ArrayList<>();
 		for (Class c : param) {
 			String name = c.getName();
 		//	name = name.substring(name.lastIndexOf(".")+1);
@@ -138,7 +137,7 @@ public class OverloadMethodTransform extends TransformStrategy {
 		
 		String name = call.getExecutable().getSimpleName();
 		Set<CtMethod> methods=classname.getMethods();
-		List<CtMethod> overloadmethods = new ArrayList<CtMethod>();
+		List<CtMethod> overloadmethods = new ArrayList<>();
 		for(CtMethod method: methods) {
 			if(method.getSimpleName().equals(name))
 				overloadmethods.add(method);
@@ -188,7 +187,7 @@ public class OverloadMethodTransform extends TransformStrategy {
 	}
 	
 	public List<CtExpression<?>> cloneList(List<CtExpression<?>> list) {
-	    List<CtExpression<?>> clone = new ArrayList<CtExpression<?>>(list.size());
+	    List<CtExpression<?>> clone = new ArrayList<>(list.size());
 	    for (CtExpression<?> item : list) clone.add(item.clone());
 	    return clone;
 	}
@@ -245,7 +244,7 @@ public class OverloadMethodTransform extends TransformStrategy {
 	private List<Edit> editDistance(List<String> target, List<String> orig) {
 		int m = target.size(), n = orig.size();
 		int[][] dp = new int[m + 1][n + 1];
-		List<Edit> edits = new ArrayList<Edit>();
+		List<Edit> edits = new ArrayList<>();
 		int num = 0;
 		for (int i = 0; i <= m; i++)
 			dp[i][0] = i;

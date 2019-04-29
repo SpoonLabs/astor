@@ -45,7 +45,7 @@ public class ExpressionClassTypeIngredientSpace extends ExpressionTypeIngredient
 				returnTypeExpression);
 
 		if (!mkp.containsKey(keyLocation, typeExpression, returnTypeExpression)) {
-			ingredientsKey = new CacheList<Ingredient>();
+			ingredientsKey = new CacheList<>();
 			mkp.put(keyLocation, typeExpression, returnTypeExpression, ingredientsKey);
 
 		}

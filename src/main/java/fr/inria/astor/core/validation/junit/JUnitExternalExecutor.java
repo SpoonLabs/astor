@@ -22,9 +22,9 @@ import fr.inria.astor.core.validation.junit.filters.TestFilter;
  */
 public class JUnitExternalExecutor {
 
-	List<String> successTest = new ArrayList<String>();
+	List<String> successTest = new ArrayList<>();
 
-	List<String> failTest = new ArrayList<String>();
+	List<String> failTest = new ArrayList<>();
 
 	public final static String OUTSEP = "astoroutdel";
 
@@ -93,7 +93,7 @@ public class JUnitExternalExecutor {
 
 	protected List<Class> getClassesToRun(String[] arg) throws ClassNotFoundException {
 		TestFilter tf = new TestFilter();
-		List<Class> classes = new ArrayList<Class>();
+		List<Class> classes = new ArrayList<>();
 		for (int i = 0; i < arg.length; i++) {
 			String classString = arg[i];
 			Class c = Class.forName(classString);

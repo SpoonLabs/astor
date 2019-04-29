@@ -40,7 +40,7 @@ public class MapCounter<K> extends HashMap<K, Integer> {
 			return  probMap;
 		}
 		changeSinceLastCreation = false;
-		probMap = new HashMap<K, Double>();
+		probMap = new HashMap<>();
 		
 		int size = 0;
 		for (Integer values : this.values()) {

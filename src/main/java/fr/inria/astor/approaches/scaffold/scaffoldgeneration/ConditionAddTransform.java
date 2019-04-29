@@ -1,6 +1,5 @@
 package fr.inria.astor.approaches.scaffold.scaffoldgeneration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -59,15 +58,10 @@ public class ConditionAddTransform extends TransformStrategy {
 			return;
 		
 		List<CtVariable> varsavilable = modificationPoint.getContextOfModificationPoint();
-		PriorityQueue<CtVariable> queue = new PriorityQueue<CtVariable>(new Comparator<CtVariable>() {
-			@Override
-			public int compare(CtVariable o1, CtVariable o2) {
-				return o2.getPosition().getLine()-o1.getPosition().getLine();
-			}
-		});	
+		PriorityQueue<CtVariable> queue = new PriorityQueue<>((o1, o2) -> o2.getPosition().getLine() - o1.getPosition().getLine());
 		queue.addAll(varsavilable);
 		
-		List<String> types = new ArrayList<String>();
+		List<String> types = new ArrayList<>();
 		while (!queue.isEmpty()) {
 			CtVariable var = queue.poll();
 		    String type = var.getType().getQualifiedName();

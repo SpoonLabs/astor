@@ -120,7 +120,7 @@ public class AstorMain extends AbstractMain {
 
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
 			// We dont use FL, so at this point the do not have suspicious
-			astorCore.initPopulation(new ArrayList<SuspiciousCode>());
+			astorCore.initPopulation(new ArrayList<>());
 		} else {
 			List<SuspiciousCode> suspicious = astorCore.calculateSuspicious();
 

@@ -27,6 +27,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.extension.VariantCompiler;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeInformation;
 
 /**
  * 
@@ -57,7 +58,7 @@ public class EvoSuiteFacade {
 		List<CtType<?>> types = (!variant.computeAffectedClassesByOperators().isEmpty())
 				? variant.computeAffectedClassesByOperators() : variant.getAffectedClasses();
 
-		List<String> affectedTypes = types.stream().map(e -> e.getQualifiedName()).collect(Collectors.toList());
+		List<String> affectedTypes = types.stream().map(CtTypeInformation::getQualifiedName).collect(Collectors.toList());
 
 		return runEvosuite(variant, affectedTypes, projectFacade, outES, true);
 	}
@@ -185,7 +186,7 @@ public class EvoSuiteFacade {
 			}
 		}
 		logger.info("Classes for generating test: "
-				+ typesToProcess.stream().map(e -> e.getQualifiedName()).collect(Collectors.toList()));
+				+ typesToProcess.stream().map(CtTypeInformation::getQualifiedName).collect(Collectors.toList()));
 		return typesToProcess;
 	}
 
@@ -203,7 +204,7 @@ public class EvoSuiteFacade {
 
 	// TODO: cloned
 	protected static URL[] redefineURL(File foutgen, URL[] originalURL) throws MalformedURLException {
-		List<URL> urls = new ArrayList<URL>();
+		List<URL> urls = new ArrayList<>();
 		urls.add(foutgen.toURL());
 		for (int i = 0; (originalURL != null) && i < originalURL.length; i++) {
 			urls.add(originalURL[i]);
@@ -226,14 +227,12 @@ public class EvoSuiteFacade {
 
 		try {
 
-			List<String> command = new ArrayList<String>();
+			List<String> command = new ArrayList<>();
 			command.add(javaPath);
 			command.add("-jar");
 			command.add(new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath());
 
-			for (String arg : argumentsEvo) {
-				command.add(arg);
-			}
+			command.addAll(Arrays.asList(argumentsEvo));
 			logger.debug("EvoGenerate " + (command));
 			ProcessBuilder pb = new ProcessBuilder(command.toArray(new String[command.size()]));
 			pb.redirectOutput();
@@ -343,7 +342,6 @@ public class EvoSuiteFacade {
 				+ new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath() + File.pathSeparator
 				+ projectFacade.getOutDirWithPrefix(variant.DEFAULT_ORIGINAL_VARIANT) + File.pathSeparator
 				+ System.getProperty("java.class.path");
-		;
 
 		logger.info("Classpath " + classpathForCompileSpoon);
 		String[] classpathForCreateModel = classpathForCompileSpoon.split(File.pathSeparator);
@@ -373,7 +371,7 @@ public class EvoSuiteFacade {
 
 		String classpathForRunTest = classpathForCompileSpoon + (File.pathSeparator) + outPutTest + File.pathSeparator
 				+ System.getProperty("java.class.path");
-		;
+
 		logger.info("Process classpath " + classpathForRunTest);
 
 		ProcessEvoSuiteValidator evoProcess = new ProcessEvoSuiteValidator();

@@ -52,7 +52,7 @@ public class NullPreconditionOperatorMI extends AutonomousOperator implements St
 		}
 		return instances;
 
-	};
+	}
 
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {

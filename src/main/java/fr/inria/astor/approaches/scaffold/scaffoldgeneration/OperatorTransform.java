@@ -1,6 +1,5 @@
 package fr.inria.astor.approaches.scaffold.scaffoldgeneration;
 
-import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.Arrays;
@@ -17,11 +16,11 @@ import spoon.reflect.code.CtExpression;
 
 public class OperatorTransform extends TransformStrategy {
 	
-	private Set<BinaryOperatorKind> rop = new HashSet<BinaryOperatorKind>(Arrays.asList(BinaryOperatorKind.EQ, 
-			BinaryOperatorKind.NE, BinaryOperatorKind.LT, BinaryOperatorKind.GT, BinaryOperatorKind.LE, 
+	private Set<BinaryOperatorKind> rop = new HashSet<>(Arrays.asList(BinaryOperatorKind.EQ,
+			BinaryOperatorKind.NE, BinaryOperatorKind.LT, BinaryOperatorKind.GT, BinaryOperatorKind.LE,
 			BinaryOperatorKind.GE));
 	
-	private Set<BinaryOperatorKind> aop = new HashSet<BinaryOperatorKind>(Arrays.asList(BinaryOperatorKind.PLUS, 
+	private Set<BinaryOperatorKind> aop = new HashSet<>(Arrays.asList(BinaryOperatorKind.PLUS,
 			BinaryOperatorKind.MINUS, BinaryOperatorKind.MUL, BinaryOperatorKind.DIV, BinaryOperatorKind.MOD));
 	
 	public OperatorTransform (ModificationPoint modPoint, int modificationPointIndex, MutationSupporter supporter, ProjectRepairFacade facade

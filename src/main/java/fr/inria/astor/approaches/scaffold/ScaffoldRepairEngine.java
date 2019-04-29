@@ -114,9 +114,9 @@ public class ScaffoldRepairEngine extends AstorCoreEngine {
 		List<ModificationPoint> modificationPointsToProcess = this.suspiciousNavigationStrategy
 				.getSortedModificationPointsList(this.originalVariant.getModificationPoints());
 		
-		List<TransformStrategy> transformer = new ArrayList<TransformStrategy>();
+		List<TransformStrategy> transformer = new ArrayList<>();
 		
-		List<String> files = new ArrayList<String>();
+		List<String> files = new ArrayList<>();
 		int modificationPointIndex=0;
 		
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
@@ -147,7 +147,7 @@ public class ScaffoldRepairEngine extends AstorCoreEngine {
 		List<ModificationPoint> modificationPointsToProcess = this.suspiciousNavigationStrategy
 				.getSortedModificationPointsList(this.originalVariant.getModificationPoints());
 				
-		List<String> files = new ArrayList<String>();
+		List<String> files = new ArrayList<>();
 		int modificationPointIndex=0;
 		
 		for (ModificationPoint modificationPoint : modificationPointsToProcess) {
@@ -168,20 +168,29 @@ public class ScaffoldRepairEngine extends AstorCoreEngine {
 		
 		TransformStrategy transformer = null;
 		
-		List<String> files = new ArrayList<String>();
-			
-		if(strategyName.equals("OverloadMethodTransform"))
-			transformer=new OverloadMethodTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
-		else if(strategyName.equals("ConditionRemoveTransform"))
-			transformer=new ConditionRemoveTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
-		else if(strategyName.equals("ConditionMutationTransform"))
-			transformer=new ConditionMutationTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
-		else if(strategyName.equals("ConditionAddTransform"))
-			transformer=new ConditionAddTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
-	    else if(strategyName.equals("OperatorTransform"))
-			transformer=new OperatorTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
-	    else if(strategyName.equals("ExpressionTransform"))
-			transformer=new ExpressionTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
+		List<String> files = new ArrayList<>();
+
+		// TODO: Create factory.
+		switch (strategyName) {
+			case "OverloadMethodTransform":
+				transformer = new OverloadMethodTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
+				break;
+			case "ConditionRemoveTransform":
+				transformer = new ConditionRemoveTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
+				break;
+			case "ConditionMutationTransform":
+				transformer = new ConditionMutationTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
+				break;
+			case "ConditionAddTransform":
+				transformer = new ConditionAddTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
+				break;
+			case "OperatorTransform":
+				transformer = new OperatorTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
+				break;
+			case "ExpressionTransform":
+				transformer = new ExpressionTransform(specificModificationPoint, index, this.mutatorSupporter, this.projectFacade, this);
+				break;
+		}
 
 		files.addAll(transformer.transform());
 						

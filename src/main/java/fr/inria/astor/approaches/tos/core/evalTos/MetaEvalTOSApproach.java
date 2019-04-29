@@ -477,7 +477,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 					plainNewVariantSolution.setId(this.generationsExecuted++);
 					// Apply the changes
-					plainNewVariantSolution.getAllOperations().stream().forEach(e -> e.applyModification());
+					plainNewVariantSolution.getAllOperations().stream().forEach(OperatorInstance::applyModification);
 					try {
 						// Check if solution
 						boolean isSolution = this.processCreatedVariant(plainNewVariantSolution, 1);
@@ -492,7 +492,7 @@ public class MetaEvalTOSApproach extends EvalTOSClusterApproach {
 						e1.printStackTrace();
 					}
 					// Undo the changes
-					plainNewVariantSolution.getAllOperations().stream().forEach(e -> e.undoModification());
+					plainNewVariantSolution.getAllOperations().stream().forEach(OperatorInstance::undoModification);
 
 				}
 
