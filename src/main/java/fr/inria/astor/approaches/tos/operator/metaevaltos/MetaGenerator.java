@@ -306,13 +306,24 @@ public class MetaGenerator {
 	}
 
 	public static Map<CtElement, CtElement> sourceTarget = new HashMap<>();
-	public static Map<CtElement, CtElement> targetSource = new HashMap<>();
 
 	public static Map<CtElement, CtElement> getSourceTarget() {
-		return targetSource;
+		return sourceTarget;
 	}
 
-	public static void setStackOriginal(Map<CtElement, CtElement> stackOriginal) {
-		stackOriginal = stackOriginal;
+	public static CtElement geOriginalElement(CtElement element) {
+		if (!MetaGenerator.getSourceTarget().containsKey(element)) {
+			return element;
+		}
+
+		if (!getSourceTarget().keySet().stream().filter(e -> e == element).findFirst().isPresent()) {
+			return element;
+		}
+
+		CtElement replacement = MetaGenerator.getSourceTarget().get(element);
+
+		return (replacement != null) ? replacement : element;
+
 	}
+
 }

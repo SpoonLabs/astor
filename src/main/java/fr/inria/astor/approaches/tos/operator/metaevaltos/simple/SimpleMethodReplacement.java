@@ -50,7 +50,6 @@ public class SimpleMethodReplacement extends OperatorInstance {
 			CtExpression epArg = (CtExpression) obi;
 
 			Object replacement = MetaGenerator.getSourceTarget().get(epArg);
-			// Object replacement = MetaGenerator.targetSource.get(epArg);
 
 			if (replacement != null) {
 				log.debug("found a mega on invocation par " + epArg);

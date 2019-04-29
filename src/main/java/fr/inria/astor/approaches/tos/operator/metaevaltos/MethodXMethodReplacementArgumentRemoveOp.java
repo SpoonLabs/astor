@@ -104,6 +104,9 @@ public class MethodXMethodReplacementArgumentRemoveOp extends MethodXMethodRepla
 									newIngredient.setDerivedFrom(invocationToReplace);
 
 									similarInvocationResult.add(invocationToReplace, newIngredient);
+
+									newIngredient.getMetadata().put("original", invocationToReplace);
+									newIngredient.getMetadata().put("replacement", newInvocation);
 								}
 							}
 						}

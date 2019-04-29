@@ -1,17 +1,15 @@
 package fr.inria.astor.approaches.tos.operator.metaevaltos;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
-import fr.inria.astor.approaches.jmutrepair.MutantCtElement;
-import fr.inria.astor.approaches.jmutrepair.operators.LogicalBinaryOperatorMutator;
-import fr.inria.astor.approaches.jmutrepair.operators.RelationalBinaryOperatorMutator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.simple.SingleOperatorChangeOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -34,7 +32,12 @@ import spoon.reflect.visitor.filter.TypeFilter;
 public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator
 		implements MetaOperator, IOperatorWithTargetElement {
 
-	public BinaryOperatorKind operatorKind = BinaryOperatorKind.OR;
+	List<BinaryOperatorKind> logicalOps = Arrays.asList(BinaryOperatorKind.AND, BinaryOperatorKind.OR);
+	List<BinaryOperatorKind> relationalOps = Arrays.asList(BinaryOperatorKind.EQ, BinaryOperatorKind.NE,
+			BinaryOperatorKind.GE, BinaryOperatorKind.GT, BinaryOperatorKind.LE, BinaryOperatorKind.LT
+
+	);
+
 	private CtElement targetElement = null;
 
 	@Override
@@ -70,7 +73,7 @@ public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator
 			// change
 
 			List<Ingredient> ingredients = this.computeIngredientsFromExpressionExplansion(modificationPoint,
-					expressionToExpand, this.operatorKind);
+					expressionToExpand);
 
 			// The parameters to be included in the new method
 			List<CtVariableAccess> varsToBeParameters = new ArrayList<>();
@@ -110,37 +113,42 @@ public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator
 	}
 
 	private List<Ingredient> computeIngredientsFromExpressionExplansion(ModificationPoint modificationPoint,
-			CtExpression previousExpression, BinaryOperatorKind operatorKind2) {
+			CtExpression previousExpression) {
 
 		List<Ingredient> ingredientsNewBinaryExpressions = new ArrayList();
 
-		LogicalBinaryOperatorMutator logical = new LogicalBinaryOperatorMutator(MutationSupporter.getFactory());
-		RelationalBinaryOperatorMutator relational = new RelationalBinaryOperatorMutator(
-				MutationSupporter.getFactory());
+		if (!(previousExpression instanceof CtBinaryOperator))
+			return ingredientsNewBinaryExpressions;
 
-		List<MutantCtElement> mutantsLogical = logical.execute(previousExpression);
-		List<MutantCtElement> mutantsRelational = relational.execute(previousExpression);
-
-		List<CtElement> mutationAll = new ArrayList<>();
-
-		for (MutantCtElement mi : mutantsLogical) {
-			mutationAll.add(mi.getElement());
-
-		}
-		for (MutantCtElement mi : mutantsRelational) {
-			mutationAll.add(mi.getElement());
-
-		}
-
-		for (CtElement mutated : mutationAll) {
-
-			MutationSupporter.clearPosition(mutated);
-			Ingredient newIngredientExtended = new Ingredient(mutated);
-			newIngredientExtended.setDerivedFrom(previousExpression);
-			ingredientsNewBinaryExpressions.add(newIngredientExtended);
-		}
+		ingredientsNewBinaryExpressions.addAll(getNewBinary((CtBinaryOperator) previousExpression, logicalOps));
+		ingredientsNewBinaryExpressions.addAll(getNewBinary((CtBinaryOperator) previousExpression, relationalOps));
 
 		return ingredientsNewBinaryExpressions;
+	}
+
+	public List<Ingredient> getNewBinary(CtBinaryOperator oldBinary, List<BinaryOperatorKind> ops) {
+		List<Ingredient> mutationAll = new ArrayList<>();
+
+		if (ops.contains(oldBinary.getKind())) {
+
+			for (BinaryOperatorKind binaryOperatorKind2 : ops) {
+
+				if (binaryOperatorKind2.equals(oldBinary.getKind()))
+					continue;
+
+				CtBinaryOperator binaryOp = MutationSupporter.getFactory().Code().createBinaryOperator(
+						oldBinary.getLeftHandOperand().clone(), oldBinary.getRightHandOperand(), binaryOperatorKind2);
+				MutationSupporter.clearPosition(binaryOp);
+				Ingredient newIngredientExtended = new Ingredient(binaryOp);
+				newIngredientExtended.setDerivedFrom(oldBinary);
+				mutationAll.add(newIngredientExtended);
+				newIngredientExtended.getMetadata().put("left_original", oldBinary.getLeftHandOperand());
+				newIngredientExtended.getMetadata().put("right_original", oldBinary.getRightHandOperand());
+				newIngredientExtended.getMetadata().put("operator", binaryOperatorKind2);
+			}
+		}
+
+		return mutationAll;
 	}
 
 	@Override
@@ -159,8 +167,10 @@ public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator
 
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
-		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, expressionSource,
-				expressionTarget);
+		OperatorInstance opInstace = new SingleOperatorChangeOperator(modificationPoint,
+				(CtBinaryOperator) expressionSource, (CtExpression) ingredient.getMetadata().get("left_original"),
+				(CtExpression) ingredient.getMetadata().get("right_original"),
+				(BinaryOperatorKind) ingredient.getMetadata().get("operator"), this);
 		opsOfVariant.add(opInstace);
 
 		return opInstace;
@@ -169,7 +179,6 @@ public class OperatorReplacementOp extends FineGrainedExpressionReplaceOperator
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
 
-// See that the modification points are statements
 		return (point.getCodeElement() instanceof CtStatement);
 
 	}
