@@ -45,18 +45,13 @@ public class SimpleMethodReplacement extends OperatorInstance {
 	public boolean applyModification() {
 		ps.clear();
 		previousParent.clear();
-//previousParent
+
 		for (Object obi : newExpression.getArguments()) {
 			CtExpression epArg = (CtExpression) obi;
 
-			Object replacement = MetaGenerator.getSourceTarget().get(epArg);
+			CtElement replacement = MetaGenerator.geOriginalElement(epArg);
 
-			if (replacement != null) {
-				log.debug("found a mega on invocation par " + epArg);
-				ps.add((CtExpression) replacement);
-			} else {
-				ps.add(epArg);
-			}
+			ps.add((CtExpression) replacement);
 
 		}
 

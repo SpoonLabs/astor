@@ -1,5 +1,6 @@
 package fr.inria.astor.approaches.tos.operator.metaevaltos.simple;
 
+import fr.inria.astor.approaches.tos.operator.metaevaltos.MetaGenerator;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -35,17 +36,18 @@ public class SingleLogicExpOperator extends OperatorInstance {
 		CtBinaryOperator binaryOperator = new CtBinaryOperatorImpl<>();
 		binaryOperator.setKind(operator);
 
-		binaryOperator.setLeftHandOperand(leftOriginal.clone());
+		CtExpression leftOriginal2 = (CtExpression) MetaGenerator.geOriginalElement(leftOriginal);
+		binaryOperator.setLeftHandOperand(leftOriginal2.clone());
 
 		CtExpression newRightExpression = rightNew;
 		binaryOperator.setRightHandOperand(newRightExpression);
 
 		//
 		binaryOperator.setFactory(MutationSupporter.getFactory());
-		binaryOperator.setParent(leftOriginal.getParent());
+		binaryOperator.setParent(leftOriginal2.getParent());
 		//
 
-		super.setOriginal(leftOriginal);
+		super.setOriginal(leftOriginal2);
 		super.setModified(binaryOperator);
 
 		return super.applyModification();
