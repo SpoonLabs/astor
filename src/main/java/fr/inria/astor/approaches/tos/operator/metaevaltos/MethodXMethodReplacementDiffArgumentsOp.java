@@ -101,6 +101,8 @@ public class MethodXMethodReplacementDiffArgumentsOp extends MethodXMethodReplac
 									Ingredient newIngredient = new Ingredient(newInvocation);
 									newIngredient.setDerivedFrom(invocationToReplace);
 									similarInvocationResult.add(invocationToReplace, newIngredient);
+									newIngredient.getMetadata().put("original", invocationToReplace);
+									newIngredient.getMetadata().put("replacement", ctInvocation);
 
 								}
 

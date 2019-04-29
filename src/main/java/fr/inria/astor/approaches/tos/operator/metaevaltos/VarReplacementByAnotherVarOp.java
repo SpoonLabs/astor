@@ -149,8 +149,10 @@ public class VarReplacementByAnotherVarOp extends FineGrainedExpressionReplaceOp
 
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
-		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, expressionSource,
-				expressionTarget);
+		OperatorInstance opInstace = // new OperatorInstance(modificationPoint, this, expressionSource,
+										// expressionTarget);
+				new StatementOperatorInstance(modificationPoint, this, expressionSource, expressionTarget);
+
 		opsOfVariant.add(opInstace);
 
 		return opInstace;

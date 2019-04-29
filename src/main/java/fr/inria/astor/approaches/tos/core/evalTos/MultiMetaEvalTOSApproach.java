@@ -425,6 +425,8 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 				newProgramVariant = new ProgramVariant(nrVariant++);
 			}
 
+			newProgramVariant.copyModificationPoints(parentVariant.getModificationPoints());
+
 			int generation = 1;
 			for (OperatorInstance operatorInstance : current.values()) {
 				newProgramVariant.setParent(parentVariant);
@@ -650,7 +652,17 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 					plainNewVariantSolution.setId(this.generationsExecuted++);
 					// Apply the changes
-					plainNewVariantSolution.getAllOperations().stream().forEach(e -> e.applyModification());
+					// plainNewVariantSolution.getAllOperations().stream().forEach(e ->
+					// e.applyModification());
+
+					for (OperatorInstance oi : plainNewVariantSolution.getAllOperations()) {
+
+						boolean applyied = oi.applyModification();
+						log.debug("applied op " + oi.getOperationApplied().name() + ": " + applyied);
+
+						log.debug(oi.getModified());
+					}
+
 					try {
 						// Check if solution
 						boolean isSolution = this.processCreatedVariant(plainNewVariantSolution, 1);
@@ -665,7 +677,12 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 						e1.printStackTrace();
 					}
 					// Undo the changes
-					plainNewVariantSolution.getAllOperations().stream().forEach(e -> e.undoModification());
+					// plainNewVariantSolution.getAllOperations().stream().forEach(e ->
+					// e.undoModification());
+					for (int i = plainNewVariantSolution.getAllOperations().size() - 1; i >= 0; i--) {
+						OperatorInstance opi = plainNewVariantSolution.getAllOperations().get(i);
+						opi.undoModification();
+					}
 
 				}
 

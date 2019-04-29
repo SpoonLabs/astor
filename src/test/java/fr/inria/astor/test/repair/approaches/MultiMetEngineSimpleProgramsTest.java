@@ -19,6 +19,7 @@ import fr.inria.astor.approaches.tos.core.evalTos.PredictionResult;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.ConstReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffArgumentsOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffNameOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
@@ -67,7 +68,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-mr1a");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 
 		AstorMain main1 = new AstorMain();
@@ -148,7 +149,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-mr1b");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "");
 
@@ -214,7 +215,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-mr2a");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "");
 
@@ -251,8 +252,8 @@ public class MultiMetEngineSimpleProgramsTest {
 		CtElement vacc = invocation.getElements(e -> e.toString().equals("i1")).get(0);
 		assertNotNull(vacc);
 
-		prediction.add(new PredictionElement(1, invocation), new MethodXMethodReplacementDiffNameOp());
-		prediction.add(new PredictionElement(2, vacc), new VarReplacementByAnotherVarOp());
+		prediction.add(new PredictionElement(1, vacc), new VarReplacementByAnotherVarOp());
+		prediction.add(new PredictionElement(2, invocation), new MethodXMethodReplacementDiffNameOp());
 
 		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, 0, prediction);
 
@@ -308,7 +309,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-mr3a");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "");
 		command.command.put("-parameters", "metamustclone:false");
@@ -419,7 +420,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-expr_exp1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -487,7 +488,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-reduce-bin-1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -552,7 +553,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-reduce-bin-1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -612,7 +613,7 @@ public class MultiMetEngineSimpleProgramsTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void test_Reduce_VM_change_binary_2() throws Exception {
+	public void test_double_Reduce_VM_change_binary_2() throws Exception {
 
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 
@@ -636,7 +637,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-reduce-bin-1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -758,7 +759,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-reduce-bin-1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -834,6 +835,182 @@ public class MultiMetEngineSimpleProgramsTest {
 		// Check undo
 		assertTrue(solution0.get().getAllOperations().get(0).getModificationPoint().getCodeElement().toString()
 				.contains("(i2 >= i1) || ((100 == i2) || (i1 > i2))"));
+	}
+
+	/**
+	 * One single change to repair: change the method inv
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void test_single_repair_WMRcase3() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testWMRcase3").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-wmr3");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+
+		MultiMetaEvalTOSApproach approach = (MultiMetaEvalTOSApproach) main1.getEngine();
+		approach.getOperatorSpace().getOperators()
+				.removeIf(e -> !(e instanceof MethodXMethodReplacementDiffArgumentsOp));
+
+		approach.getVariants().get(0).getModificationPoints()
+				.removeIf(e -> !((e.getCodeElement().getPosition().getLine() == 36
+						&& e.getCodeElement().getPosition().getFile().getName().equals("MyBuggy.java"))));
+
+		assertEquals("return (myinst.toPositive(i1)) * (myinst.toPositive(\"1\"))",
+				approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString());
+
+		approach.startEvolution();
+
+		// check if it was well revert
+		assertEquals("return (myinst.toPositive(i1)) * (myinst.toPositive(\"1\"))",
+				approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString());
+
+		approach.atEnd();
+
+		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
+				.filter(e -> e.getAllOperations().stream()
+						.filter(o -> o.getOperationApplied() instanceof MethodXMethodReplacementDiffArgumentsOp)
+						.findAny().isPresent())
+				.collect(Collectors.toList());
+
+		assertTrue(solutionVarByVar1.size() > 0);
+
+		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream()
+				.filter(soli -> soli.getAllOperations().stream()
+						.filter(e -> e.getModified().toString().equals("(myinst.toPositive(i2))")
+								&& e.getOriginal().toString().equals("(myinst.toPositive(\"1\"))"))
+						.findFirst().isPresent())
+				.findFirst();
+		assertTrue(solution0.isPresent());
+
+		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
+				.contains("+			return (myinst.toPositive(i1)) * (myinst.toPositive(i2));"));
+		// check if it was well revert
+		assertEquals("return (myinst.toPositive(i1)) * (myinst.toPositive(\"1\"))",
+				approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString());
+
+	}
+
+	@Test
+	public void test_composed_repair_WMVMcase3() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMultiMet/testWMVMRcase3").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-wmr3");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-flthreshold", "0.24");
+		command.command.put("-saveall", "true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+
+		MultiMetaEvalTOSApproach approach = (MultiMetaEvalTOSApproach) main1.getEngine();
+
+		approach.getVariants().get(0).getModificationPoints()
+				.removeIf(e -> !((e.getCodeElement().getPosition().getLine() == 36
+						&& e.getCodeElement().getPosition().getFile().getName().equals("MyBuggy.java"))));
+
+		ModificationPoint mp36 = approach.getVariants().get(0).getModificationPoints().get(0);
+
+		assertTrue(mp36.getCodeElement() instanceof CtReturn);
+
+		Prediction prediction = new Prediction();
+
+		approach.setPredictor(new IPredictor() {
+
+			@Override
+			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
+				// No prediction
+				return null;
+			}
+		});
+
+		CtElement invocationToReplace = mp36.getCodeElement()
+				.getElements(e -> (e.toString().equals("(myinst.toNegative(i2, 1))") && e instanceof CtInvocation))
+				.get(0);
+		assertNotNull(invocationToReplace);
+		assertTrue(invocationToReplace instanceof CtInvocation);
+		// The var inside invocation
+		CtElement varWrong = invocationToReplace
+				.getElements(e -> (e.toString().contains("i2") && e instanceof CtVariableAccess)).get(0);
+		assertNotNull(varWrong);
+
+		prediction.add(new PredictionElement(1, varWrong), new VarReplacementByAnotherVarOp());
+		prediction.add(new PredictionElement(2, invocationToReplace), new MethodXMethodReplacementDiffNameOp());
+
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp36, 0, prediction);
+
+		assertTrue(isSolution);
+		// check redo
+		assertEquals("return (myinst.toNegative(i2, 1)) * (myinst.toPositive(i2))", mp36.getCodeElement().toString());
+		approach.atEnd();
+
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions();
+
+		assertTrue(solutionVarByVar1.size() > 0);
+
+		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream().filter(soli -> soli.getAllOperations().stream()
+				.filter(e -> e.getModified().toString().equals("(myinst.toPositive(i1, 1))")
+				// && e.getOriginal().toString().equals("(myinst.toPositive(\"1\"))" )
+				).findFirst().isPresent()).findFirst();
+		assertTrue(solution0.isPresent());
+
+		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
+				.contains("+			return (myinst.toPositive(i1, 1)) * (myinst.toPositive(i2))"));
+		// check redo
+		assertEquals("return (myinst.toNegative(i2, 1)) * (myinst.toPositive(i2))", mp36.getCodeElement().toString());
+
 	}
 
 }

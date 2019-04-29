@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import fr.inria.astor.approaches.tos.operator.metaevaltos.MetaGenerator;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.validation.results.MetaValidationResult;
+import spoon.reflect.declaration.CtElement;
 
 /**
- * Meta Progam variant
+ * Meta Program variant
  * 
  * @author Matias Martinez
  *
@@ -58,7 +60,7 @@ public class MetaProgramVariant extends ProgramVariant {
 		Collections.reverse(metas);
 
 		int generation = 0;
-
+		MetaGenerator.getSourceTarget().clear();
 		for (MetaOperatorInstance metaOperatorInstance : metas) {
 
 			Integer ingredientId = mapMoi2Ingredients.get(metaOperatorInstance.getIdentifier());
@@ -72,8 +74,13 @@ public class MetaProgramVariant extends ProgramVariant {
 				if (!(operator instanceof MetaOperator))
 					continue;
 
+				CtElement meta_element = (CtElement) metaOperatorInstance.getAllIngredients().get(ingredientId)
+						.getMetadata().get("meta_object");
+
 				OperatorInstance normalOpInstance = ((MetaOperator) operator)
 						.getConcreteOperatorInstance(metaOperatorInstance, ingredientId);
+
+				MetaGenerator.getSourceTarget().put(meta_element, normalOpInstance.getModified());
 
 				childPlainVariant.getOperations(generation).add(normalOpInstance);
 
@@ -81,7 +88,7 @@ public class MetaProgramVariant extends ProgramVariant {
 		}
 		if (generation > 0) {
 			childPlainVariant.setGenerationSource(this.getParent().getGenerationSource());
-			childPlainVariant.setParent(this.getParent());
+			childPlainVariant.setParent(this);
 			childPlainVariant.addModificationPoints(this.getParent().getModificationPoints());
 			childPlainVariant.getBuiltClasses().putAll(this.getParent().getBuiltClasses());
 

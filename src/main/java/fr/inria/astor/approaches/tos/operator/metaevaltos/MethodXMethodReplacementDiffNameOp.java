@@ -95,12 +95,13 @@ public class MethodXMethodReplacementDiffNameOp extends MethodXMethodReplacement
 							List<CtInvocation> newInvToMethods = SupportOperators
 									.createRealInvocationsReusingVars(point, anotherMethod, invocationToReplace);
 
-							for (CtInvocation ctInvocation : newInvToMethods) {
-								CtInvocation newInvocation = ctInvocation.clone();
-								// newInvocation.setLabel(anotherMethod.getSimpleName());
-								newInvocation.setExecutable(anotherMethod.getReference());
-								Ingredient newIngredient = new Ingredient(newInvocation);
+							for (CtInvocation aNewInvocation : newInvToMethods) {
+								CtInvocation newInvocationCloned = aNewInvocation.clone();
+								newInvocationCloned.setExecutable(anotherMethod.getReference());
+								Ingredient newIngredient = new Ingredient(newInvocationCloned);
 								newIngredient.setDerivedFrom(invocationToReplace);
+								newIngredient.getMetadata().put("original", invocationToReplace);
+								newIngredient.getMetadata().put("replacement", aNewInvocation);
 
 								similarInvocationResult.add(invocationToReplace, newIngredient);
 

@@ -1,6 +1,7 @@
 package fr.inria.astor.approaches.cardumen;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.MetaGenerator;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -15,6 +16,8 @@ import spoon.reflect.declaration.CtElement;
  */
 public class FineGrainedExpressionReplaceOperator extends ReplaceOp {
 
+	CtElement originalParent = null;
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean applyChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
@@ -24,6 +27,11 @@ public class FineGrainedExpressionReplaceOperator extends ReplaceOp {
 
 		CtElement elFixIngredient = opInstance.getModified();
 
+		MetaGenerator.getSourceTarget().put(elementToModify, elFixIngredient);
+
+		// MetaGenerator.targetSource.put(elementToModify, elFixIngredient);
+
+		this.originalParent = elementToModify.getParent();
 		// we transform the Spoon model
 		try {
 			elementToModify.replace(elFixIngredient);
@@ -48,6 +56,7 @@ public class FineGrainedExpressionReplaceOperator extends ReplaceOp {
 	@Override
 	public boolean undoChangesInModel(OperatorInstance opInstance, ProgramVariant p) {
 
+		opInstance.getModified().setParent(this.originalParent);
 		// We update the spoon Model
 		opInstance.getModified().replace(opInstance.getOriginal());
 		// Finally, we update the modification point (i.e., Astor

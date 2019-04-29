@@ -94,6 +94,11 @@ public class MetaGenerator {
 		// Invocation to mega
 		CtInvocation newInvocationToMega = creationInvocationToMega(modificationPoint, realParameters, megaMethod);
 
+		//
+		for (Ingredient ingredient : ingredients) {
+			ingredient.getMetadata().put("meta_object", newInvocationToMega);
+		}
+
 		// Now the if to be inserted:
 		// 1:
 
@@ -298,5 +303,16 @@ public class MetaGenerator {
 		defaultReturnLast.setReturnedExpression(expCloned);
 		methodBodyBlock.addStatement(defaultReturnLast);
 		return megaMethod;
+	}
+
+	public static Map<CtElement, CtElement> sourceTarget = new HashMap<>();
+	public static Map<CtElement, CtElement> targetSource = new HashMap<>();
+
+	public static Map<CtElement, CtElement> getSourceTarget() {
+		return targetSource;
+	}
+
+	public static void setStackOriginal(Map<CtElement, CtElement> stackOriginal) {
+		stackOriginal = stackOriginal;
 	}
 }

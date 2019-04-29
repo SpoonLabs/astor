@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.simple.SimpleMethodReplacement;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -101,15 +101,15 @@ public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionRe
 
 		ModificationPoint modificationPoint = operatorInstance.getModificationPoint();
 
-		CtExpression expressionSource = (CtExpression) ingredient.getDerivedFrom();
-		CtExpression expressionTarget = (CtExpression) ingredient.getCode();
+		CtInvocation expressionSource = (CtInvocation) ingredient.getMetadata().get("original");// ingredient.getDerivedFrom();
+		CtInvocation expressionTarget = (CtInvocation) ingredient.getMetadata().get("replacement");
 
 		MutationSupporter.clearPosition(expressionTarget);
 
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 
-		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, expressionSource,
-				expressionTarget);
+		OperatorInstance opInstace = new SimpleMethodReplacement(modificationPoint, expressionSource, expressionTarget,
+				this);
 		opsOfVariant.add(opInstace);
 
 		return opInstace;

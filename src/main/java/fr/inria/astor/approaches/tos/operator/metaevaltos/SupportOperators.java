@@ -271,7 +271,6 @@ public class SupportOperators {
 		for (List<CtExpression<?>> arguments : possibleArguments) {
 			CtInvocation newInvocation = MutationSupporter.getFactory().createInvocation(target,
 					anotherMethod.getReference(), arguments);
-			// newInvocation.setLabel(anotherMethod.getSimpleName());
 			newInvocation.setExecutable(anotherMethod.getReference());
 			newInvocation.setArguments(arguments);
 			newInvocation.setTarget(target);
@@ -296,8 +295,8 @@ public class SupportOperators {
 			CtTypeReference aTypePar = aParameterAnotherMethod.getType();
 
 			List similarExpression = (List<CtExpression>) invocationToReplace.getArguments().stream()
-					.filter(e -> e.equals(aTypePar)).collect(Collectors.toList());
-
+					// .filter(e -> e.equals(aTypePar)).collect(Collectors.toList());
+					.filter(e -> ((CtExpression) e).getType().equals(aTypePar)).collect(Collectors.toList());
 			// TODO: put a configuration point here.
 			if (similarExpression.size() > 0) {
 
