@@ -1,7 +1,6 @@
 package fr.inria.astor.core.entities.meta;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,8 +31,11 @@ public class MetaProgramVariant extends ProgramVariant {
 	 */
 	public List<MetaOperatorInstance> getMetaOpInstances() {
 
-		return this.getAllOperations().stream().filter(MetaOperatorInstance.class::isInstance)
-				.map(MetaOperatorInstance.class::cast).collect(Collectors.toList());
+		List<MetaOperatorInstance> list = this.getAllOperations().stream()
+				.filter(MetaOperatorInstance.class::isInstance).map(MetaOperatorInstance.class::cast)
+				.collect(Collectors.toList());
+		list.sort((e1, e2) -> Integer.compare(e1.metaIdentifier, e2.metaIdentifier));
+		return list;
 
 	}
 
@@ -52,12 +54,14 @@ public class MetaProgramVariant extends ProgramVariant {
 	}
 
 	public ProgramVariant getPlainProgramVariantFromMetaId(Map<Integer, Integer> mapMoi2Ingredients) {
+		List<MetaOperatorInstance> metas = getMetaOpInstances();
+		return getPlainProgramVariantFromMetaId(mapMoi2Ingredients, metas);
+	}
+
+	public ProgramVariant getPlainProgramVariantFromMetaId(Map<Integer, Integer> mapMoi2Ingredients,
+			List<MetaOperatorInstance> metas) {
 
 		ProgramVariant childPlainVariant = new ProgramVariant(id);
-
-		List<MetaOperatorInstance> metas = getMetaOpInstances();
-
-		Collections.reverse(metas);
 
 		int generation = 0;
 		MetaGenerator.getSourceTarget().clear();
