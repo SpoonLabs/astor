@@ -5,8 +5,9 @@ It is possible to change any configuration parameter of Astor using the command 
 
 The value of -parameters has a following format: <property_name_1>:<property_value_1>:<property_name_2>:<property_value_2>:...<property_name_n>:<property_value_n>
 
-For example, in the previous command -parameters stopfirst:true:maxGeneration:100, we have that stopfirstis the first parameter which value is true, and maxGeneration is the second parameter with value 100.
+For example, in the previous command `-parameters stopfirst:true:maxGeneration:100`, we have that `stopfirst` is the first parameter which value is `true`, and `maxGeneration` is the second parameter with value `100`.
 
+All the default values are stored in the file  [configuration.properties](https://github.com/SpoonLabs/astor/blob/master/src/main/resources/configuration.properties).
 
 ## List of Parameters (to be used exclusivelly via the parameter -parameters):
 
