@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.simple.SingleWrapIfOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.meta.MetaOperator;
 import fr.inria.astor.core.entities.meta.MetaOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -15,7 +15,6 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
@@ -108,25 +107,12 @@ public class WrapwithIfNullCheck extends ReplaceOp implements MetaOperator, IOpe
 
 		ModificationPoint modificationPoint = operatorInstance.getModificationPoint();
 
-		// We create the new operator
-		CtIf ifNew = MutationSupporter.getFactory().createIf();
-
 		CtStatement statementPointed = (CtStatement) modificationPoint.getCodeElement();
-		CtStatement statementPointedCloned = statementPointed.clone();
 
-		MutationSupporter.clearPosition(statementPointedCloned);
-		ifNew.setThenStatement(statementPointedCloned);
+		SingleWrapIfOperator opIfOperator = new SingleWrapIfOperator(modificationPoint,
+				(CtExpression<Boolean>) ingredient.getCode(), statementPointed, this);
 
-		// as difference with the meta, here we put the ingredient evaluated in the
-		// meta.
-		ifNew.setCondition((CtExpression<Boolean>) ingredient.getCode());
-		// Let's create the operations
-		List<OperatorInstance> opsOfVariant = new ArrayList();
-
-		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, statementPointed, ifNew);
-		opsOfVariant.add(opInstace);
-
-		return opInstace;
+		return opIfOperator;
 	}
 
 	@Override

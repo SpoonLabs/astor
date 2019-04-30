@@ -24,6 +24,7 @@ import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplaceme
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffNameOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -1269,6 +1270,178 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		assertTrue(approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
 				.contains("i2 > i2"));
+
+	}
+
+	@Test
+	public void test_simple_songle_NullCheck_NE_cases() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testIfNullCheck1").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "0");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-try");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-flthreshold", "0.24");
+
+		AstorMain main1 = new AstorMain();
+
+		main1.execute(command.flat());
+
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+
+		MultiMetaEvalTOSApproach approach = (MultiMetaEvalTOSApproach) main1.getEngine();
+
+		approach.getOperatorSpace().getOperators().removeIf(e -> !(e instanceof WrapwithIfNullCheck));
+
+		approach.getVariants().get(0).getModificationPoints()
+				.removeIf(e -> !((e.getCodeElement().getPosition().getLine() == 7
+						&& e.getCodeElement().getPosition().getFile().getName().equals("MyBuggy.java"))));
+
+		assertTrue(approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
+				.contains("java.lang.System.out.println(type.toString())"));
+
+		approach.startEvolution();
+		approach.atEnd();
+
+		assertTrue(approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
+				.contains("java.lang.System.out.println(type.toString())"));
+
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+
+		ProgramVariant solution1 = solutions.get(0);
+
+		assertTrue(solution1.getAllOperations().stream()
+				.filter(e -> e.getModified().toString().startsWith("if (type != null)")).findFirst().isPresent());
+
+		assertTrue(solution1.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+		if (type != null)"));
+
+	}
+
+	@Test
+	public void test_composed_songle_NullCheck_NE_VR() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMultiMet/testIfNullCheckVR").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "0");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-try");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "INFO");
+		command.command.put("-flthreshold", "0.24");
+
+		AstorMain main1 = new AstorMain();
+
+		main1.execute(command.flat());
+
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+
+		MultiMetaEvalTOSApproach approach = (MultiMetaEvalTOSApproach) main1.getEngine();
+
+		approach.getOperatorSpace().getOperators().removeIf(e -> !(e instanceof WrapwithIfNullCheck));
+
+		approach.getVariants().get(0).getModificationPoints()
+				.removeIf(e -> !((e.getCodeElement().getPosition().getLine() == 9
+						&& e.getCodeElement().getPosition().getFile().getName().equals("MyBuggy.java"))));
+
+		assertTrue(approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
+				.contains("java.lang.System.out.println(type.toString())"));
+
+		Prediction prediction = new Prediction();
+
+		approach.setPredictor(new IPredictor() {
+
+			@Override
+			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
+				// No prediction
+				return null;
+			}
+		});
+		ModificationPoint mp7 = approach.getVariants().get(0).getModificationPoints().get(0);
+
+		CtElement invocationToReplace = mp7.getCodeElement()
+				.getElements(e -> (e.toString().equals("java.lang.System.out.println(type.toString())")
+						&& e instanceof CtInvocation))
+				.get(0);
+		assertNotNull(invocationToReplace);
+		assertTrue(invocationToReplace instanceof CtInvocation);
+		// The var inside invocation
+		CtElement varWrong = invocationToReplace
+				.getElements(e -> (e.toString().contains("type") && e instanceof CtVariableAccess)).get(0);
+		assertNotNull(varWrong);
+
+		prediction.add(new PredictionElement(1, varWrong), new VarReplacementByAnotherVarOp());
+		prediction.add(new PredictionElement(2, invocationToReplace), new WrapwithIfNullCheck());
+
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp7, 0, prediction);
+
+		assertTrue(isSolution);
+
+		assertTrue(approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
+				.contains("java.lang.System.out.println(type.toString())"));
+
+		approach.atEnd();
+
+		assertTrue(approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
+				.contains("java.lang.System.out.println(type.toString())"));
+
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+
+		boolean exist = false;
+		for (ProgramVariant soli : solutions) {
+			exist = true;
+			exist &= soli.getAllOperations().stream()
+					.filter(e -> e.getModified().toString().contains("if (type != null)") && e.getModified().toString()
+							.contains("java.lang.System.out.println(this.anotherV.toString())"))
+					.findFirst().isPresent();
+
+			exist &= soli.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+		if (type != null)");
+			exist &= soli.getPatchDiff().getOriginalStatementAlignmentDiff()
+					.contains("+			java.lang.System.out.println(this.anotherV.toString());");
+			exist &= soli.getPatchDiff().getOriginalStatementAlignmentDiff()
+					.contains("-		java.lang.System.out.println(type.toString());");
+
+			if (exist)
+				break;
+		}
+		assertTrue(exist);
 
 	}
 
