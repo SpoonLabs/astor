@@ -54,18 +54,23 @@ public class MetaProgramVariant extends ProgramVariant {
 	}
 
 	public ProgramVariant getPlainProgramVariantFromMetaId(Map<Integer, Integer> mapMoi2Ingredients) {
-		List<MetaOperatorInstance> metas = getMetaOpInstances();
-		return getPlainProgramVariantFromMetaId(mapMoi2Ingredients, metas);
+		List<MetaOperatorInstance> metaOps = getMetaOpInstances();
+		List<OperatorInstance> noMetaOps = new ArrayList(this.getAllOperations());
+		// Remove all meta ops
+		noMetaOps.removeAll(metaOps);
+
+		return getPlainProgramVariantFromMetaId(mapMoi2Ingredients, metaOps, noMetaOps);
 	}
 
-	public ProgramVariant getPlainProgramVariantFromMetaId(Map<Integer, Integer> mapMoi2Ingredients,
-			List<MetaOperatorInstance> metas) {
+	private ProgramVariant getPlainProgramVariantFromMetaId(Map<Integer, Integer> mapMoi2Ingredients,
+			List<MetaOperatorInstance> metaOps, List<OperatorInstance> noMetaOps) {
 
 		ProgramVariant childPlainVariant = new ProgramVariant(id);
 
 		int generation = 0;
+
 		MetaGenerator.getSourceTarget().clear();
-		for (MetaOperatorInstance metaOperatorInstance : metas) {
+		for (MetaOperatorInstance metaOperatorInstance : metaOps) {
 
 			Integer ingredientId = mapMoi2Ingredients.get(metaOperatorInstance.getIdentifier());
 
@@ -90,6 +95,12 @@ public class MetaProgramVariant extends ProgramVariant {
 
 			}
 		}
+		//Adding the no meta ops
+		for (OperatorInstance normalOpInstances : noMetaOps) {
+			generation++;
+			childPlainVariant.getOperations(generation).add(normalOpInstances);
+		}
+
 		if (generation > 0) {
 			childPlainVariant.setGenerationSource(this.getParent().getGenerationSource());
 			childPlainVariant.setParent(this);
