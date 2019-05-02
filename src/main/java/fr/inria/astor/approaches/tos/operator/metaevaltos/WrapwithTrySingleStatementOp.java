@@ -4,16 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.simple.SingleTryOperator;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
-import fr.inria.astor.core.entities.StatementOperatorInstance;
-import fr.inria.astor.core.manipulation.MutationSupporter;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtElement;
-import spoon.support.reflect.code.CtBlockImpl;
 
 /**
  * 
@@ -30,21 +25,9 @@ public class WrapwithTrySingleStatementOp extends ReplaceOp implements IOperator
 		CtStatement statementPointed = (targetElement == null) ? (CtStatement) modificationPoint.getCodeElement()
 				: (CtStatement) targetElement;
 
-		CtTry tryNew = MutationSupporter.getFactory().createTry();
-		List<CtCatch> catchers = new ArrayList<>();
-		CtCatch catchEx1 = MutationSupporter.getFactory().createCtCatch("e", Exception.class, new CtBlockImpl());
-		catchers.add(catchEx1);
-		tryNew.setCatchers(catchers);
-		CtBlock tryBoddy = new CtBlockImpl();
-		tryNew.setBody(tryBoddy);
+		SingleTryOperator singleTry = new SingleTryOperator(modificationPoint, statementPointed, this);
 
-		CtStatement stmtC = statementPointed.clone();
-
-		MutationSupporter.clearPosition(stmtC);
-		tryBoddy.addStatement(stmtC);
-
-		OperatorInstance opInstace = new StatementOperatorInstance(modificationPoint, this, statementPointed, tryNew);
-		opInstances.add(opInstace);
+		opInstances.add(singleTry);
 
 		return opInstances;
 	}
