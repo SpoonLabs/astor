@@ -1274,7 +1274,7 @@ public class MultiMetEngineSimpleProgramsTest {
 	}
 
 	@Test
-	public void test_simple_songle_NullCheck_NE_cases() throws Exception {
+	public void test_simple_NullCheck_NE_cases() throws Exception {
 
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 
@@ -1295,7 +1295,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-srctestfolder", "src/test/java/");
 		command.command.put("-binjavafolder", "target/classes/");
 		command.command.put("-bintestfolder", "target/test-classes/");
-		command.command.put("-id", "test-try");
+		command.command.put("-id", "test-NullCheck_NE");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
 		command.command.put("-loglevel", "INFO");
@@ -1328,12 +1328,20 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 
-		ProgramVariant solution1 = solutions.get(0);
+		boolean existsSolution = false;
+		for (ProgramVariant solution1 : solutions) {
+			existsSolution = true;
+			existsSolution &= (solution1.getAllOperations().stream()
+					.filter(e -> e.getModified().toString().startsWith("if (type != null)")).findFirst().isPresent());
 
-		assertTrue(solution1.getAllOperations().stream()
-				.filter(e -> e.getModified().toString().startsWith("if (type != null)")).findFirst().isPresent());
+			existsSolution &= (solution1.getPatchDiff().getOriginalStatementAlignmentDiff()
+					.contains("+		if (type != null)"));
 
-		assertTrue(solution1.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+		if (type != null)"));
+			if (existsSolution)
+				// we found the solution we attended
+				break;
+		}
+		assertTrue(existsSolution);
 
 	}
 
