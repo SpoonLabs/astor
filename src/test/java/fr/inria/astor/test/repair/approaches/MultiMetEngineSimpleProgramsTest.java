@@ -1851,7 +1851,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-id", "test-unwif");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-loglevel", "INFO");
 		command.command.put("-flthreshold", "0.01");
 		command.command.put("-saveall", "true");
 
@@ -1918,7 +1918,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-srctestfolder", "src/test/java/");
 		command.command.put("-binjavafolder", "target/classes/");
 		command.command.put("-bintestfolder", "target/test-classes/");
-		command.command.put("-id", "test-unwif");
+		command.command.put("-id", "test-unwifvr");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
 		command.command.put("-loglevel", "DEBUG");
@@ -1989,19 +1989,18 @@ public class MultiMetEngineSimpleProgramsTest {
 			existsSol &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff()
 					.contains("-		if (type == null)");
 
-			existsSol &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff()
-					.contains("-			result = i1 + i1");
+			existsSol &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff().contains("result = i1 + i1");
 
 			existsSol &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff()
 					.contains("+		result = i1 + i2");
-
-			assertTrue(programVariant.getAllOperations().get(0).getModificationPoint().getCodeElement().toString()
-					.contains("result = i1 + i1"));
 
 			if (existsSol)
 				break;
 		}
 		assertTrue(existsSol);
+
+		assertTrue(main1.getEngine().getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
+				.contains("result = i1 + i1"));
 
 	}
 
