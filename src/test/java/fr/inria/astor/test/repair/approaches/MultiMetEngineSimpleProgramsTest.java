@@ -23,6 +23,7 @@ import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffArgumentsOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffNameOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfOp;
@@ -1822,6 +1823,185 @@ public class MultiMetEngineSimpleProgramsTest {
 				.contains("+				return i1 + i2;"));
 		assertTrue(solution1.getPatchDiff().getOriginalStatementAlignmentDiff()
 				.contains("catch (java.lang.Exception e) {}"));
+
+	}
+
+	@Test
+	public void test_simple_UnwrapIf1() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMet/testUnwrapIf1").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-unwif");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-flthreshold", "0.01");
+		command.command.put("-saveall", "true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		MultiMetaEvalTOSApproach approach = (MultiMetaEvalTOSApproach) main1.getEngine();
+
+		approach.getOperatorSpace().getOperators().removeIf(e -> !(e instanceof UnwrapfromIfOp));
+
+		approach.getVariants().get(0).getModificationPoints()
+				.removeIf(e -> !((e.getCodeElement().getPosition().getLine() == 34
+						&& e.getCodeElement().getPosition().getFile().getName().equals("MyBuggy.java"))));
+
+		assertTrue(approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
+				.contains("if (type == null)"));
+
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+		approach.startEvolution();
+		approach.atEnd();
+
+		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions();
+
+		assertTrue("No solution with the target operator", solutionVarByVar1.size() > 0);
+
+		boolean existsSol = true;
+		for (ProgramVariant programVariant : solutionVarByVar1) {
+
+			existsSol = true;
+			existsSol &= programVariant.getAllOperations().stream()
+					.filter(e -> e.getModified().toString().equals("result = i1 + i2")
+							&& e.getOriginal().toString().contains("if (type == null)"))
+					.findFirst().isPresent();
+
+			existsSol &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff()
+					.contains("-		if (type == null)");
+
+			if (existsSol)
+				break;
+		}
+		assertTrue(existsSol);
+
+	}
+
+	@Test
+	public void test_composed_UnwrapIf1() throws Exception {
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+
+		CommandSummary command = new CommandSummary();
+		command.command.put("-location", new File("./examples/testMultiMet/testUnwrapIfVR1").getAbsolutePath());
+		command.command.put("-mode", "custom");
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
+		command.command.put("-javacompliancelevel", "7");
+		command.command.put("-maxtime", "120");
+		command.command.put("-seed", "0");
+		command.command.put("-stopfirst", "false");
+		command.command.put("-maxgen", "0");
+		command.command.put("-population", "1");
+		command.command.put("-scope", "local");
+		command.command.put("-srcjavafolder", "src/main/java/");
+		command.command.put("-srctestfolder", "src/test/java/");
+		command.command.put("-binjavafolder", "target/classes/");
+		command.command.put("-bintestfolder", "target/test-classes/");
+		command.command.put("-id", "test-unwif");
+		command.command.put("-out", out.getAbsolutePath());
+		command.command.put("-dependencies", dep);
+		command.command.put("-loglevel", "DEBUG");
+		command.command.put("-flthreshold", "0.01");
+		command.command.put("-saveall", "true");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		MultiMetaEvalTOSApproach approach = (MultiMetaEvalTOSApproach) main1.getEngine();
+
+		approach.getOperatorSpace().getOperators().removeIf(e -> !(e instanceof UnwrapfromIfOp));
+
+		approach.getVariants().get(0).getModificationPoints()
+				.removeIf(e -> !((e.getCodeElement().getPosition().getLine() == 34
+						&& e.getCodeElement().getPosition().getFile().getName().equals("MyBuggy.java"))));
+
+		assertTrue(approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
+				.contains("if (type == null)"));
+
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+		Prediction prediction = new Prediction();
+
+		approach.setPredictor(new IPredictor() {
+
+			@Override
+			public PredictionResult computePredictionsForModificationPoint(ModificationPoint iModifPoint) {
+				// No prediction
+				return null;
+			}
+		});
+
+		ModificationPoint mp34 = approach.getVariants().get(0).getModificationPoints().get(0);
+
+		CtElement assignmentToWrap = mp34.getCodeElement();
+		assertNotNull(assignmentToWrap);
+		assertTrue(assignmentToWrap instanceof CtIf);
+		// The var inside invocation
+		CtElement varWrong = assignmentToWrap
+				.getElements(e -> (e.toString().contains("i1") && e instanceof CtVariableAccess)).get(1);
+		assertNotNull(varWrong);
+
+		// We suppose that the var from assignment needs to be changed from i2 = i2
+		prediction.add(new PredictionElement(1, varWrong), new VarReplacementByAnotherVarOp());
+		prediction.add(new PredictionElement(2, assignmentToWrap), new UnwrapfromIfOp());
+
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp34, 0, prediction);
+		assertTrue(isSolution);
+
+		assertTrue(approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
+				.contains("result = i1 + i1"));
+
+		approach.atEnd();
+
+		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions();
+
+		assertTrue("No solution with the target operator", solutionVarByVar1.size() > 0);
+
+		boolean existsSol = true;
+		for (ProgramVariant programVariant : solutionVarByVar1) {
+
+			existsSol = true;
+			existsSol &= programVariant.getAllOperations().stream()
+					.filter(e -> e.getModified().toString().equals("result = i1 + i2")
+							&& e.getOriginal().toString().contains("if (type == null)"))
+					.findFirst().isPresent();
+
+			existsSol &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff()
+					.contains("-		if (type == null)");
+
+			existsSol &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff()
+					.contains("-			result = i1 + i1");
+
+			existsSol &= programVariant.getPatchDiff().getOriginalStatementAlignmentDiff()
+					.contains("+		result = i1 + i2");
+
+			assertTrue(programVariant.getAllOperations().get(0).getModificationPoint().getCodeElement().toString()
+					.contains("result = i1 + i1"));
+
+			if (existsSol)
+				break;
+		}
+		assertTrue(existsSol);
 
 	}
 
