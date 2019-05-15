@@ -764,6 +764,12 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		String codeLocation = "";
 		if (ConfigurationProperties.getPropertyBool("parsesourcefromoriginal")) {
 			List<String> codeLocations = projectFacade.getProperties().getOriginalDirSrc();
+
+			if (ConfigurationProperties.getPropertyBool("includeTestInSusp")
+					&& projectFacade.getProperties().getTestDirSrc().size() > 0) {
+				codeLocations.addAll(projectFacade.getProperties().getTestDirSrc());
+			}
+
 			for (String source : codeLocations) {
 				codeLocation += source + File.pathSeparator;
 			}
