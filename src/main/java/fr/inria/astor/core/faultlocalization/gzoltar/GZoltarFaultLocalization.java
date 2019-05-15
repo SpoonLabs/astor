@@ -108,9 +108,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
 			for (SuspiciousCode suspiciousCode : suspiciousStatemens) {
-				if (!suspiciousCode.getClassName().endsWith("Exception")) {
-					filtercandidates.add(suspiciousCode);
-				}
+				filtercandidates.add(suspiciousCode);
 			}
 			flResult.setCandidates(filtercandidates);
 
@@ -172,7 +170,9 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		}
 		for (String test : testsToExecute) {
 			gz.addTestToExecute(test);
-			gz.addClassNotToInstrument(test);
+			if (!ConfigurationProperties.getPropertyBool("includeTestInSusp")) {
+				gz.addClassNotToInstrument(test);
+			}
 		}
 
 		String testToAvoid = ConfigurationProperties.getProperty("gzoltartestpackagetoexclude");
@@ -227,8 +227,18 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		logger.info("nr test results " + testResults.size());
 		for (Statement gzoltarStatement : gz.getSuspiciousStatements()) {
 			String compName = gzoltarStatement.getMethod().getParent().getLabel();
-			if (isSource(compName, srcFolder) && (!ConfigurationProperties.getPropertyBool("limitbysuspicious")
-					|| (gzoltarStatement.getSuspiciousness() >= thr))) {
+			if (// Kind of files to include in analysis
+			(ConfigurationProperties.getPropertyBool("includeTestInSusp") || isSource(compName, srcFolder))
+					// Analyze suspiciousness
+					&& (!ConfigurationProperties.getPropertyBool("limitbysuspicious")
+							|| (gzoltarStatement.getSuspiciousness() >= thr))
+					//
+					&& (!ConfigurationProperties.getPropertyBool("onlympcovered")
+							|| !gzoltarStatement.getCoverage().isEmpty())
+					//
+					&& (!ConfigurationProperties.getPropertyBool("onlympfromtest")
+							|| (testsToExecute.contains(gzoltarStatement.getMethod().getParent().getLabel())))) {
+
 				gzCandidates.add(gzoltarStatement);
 
 			}
@@ -259,7 +269,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 			logger.debug("Suspicious: line " + compName + " l: " + gzoltarStatement.getLineNumber() + ", susp "
 					+ df.format(gzoltarStatement.getSuspiciousness()));
-			SuspiciousCode suspcode = new SuspiciousCode(compName, gzoltarStatement.getMethod().toString(),
+			SuspiciousCode suspcode = new SuspiciousCode(compName, gzoltarStatement.getMethod().getName(),
 					gzoltarStatement.getLineNumber(), gzoltarStatement.getSuspiciousness(),
 					gzoltarStatement.getCountMap());
 			candidates.add(suspcode);
