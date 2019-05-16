@@ -17,6 +17,11 @@ public class TestCaseResult {
 		super();
 		this.testCaseCompleteName = testCaseCompleteName;
 		this.correct = correct;
+		if (testCaseCompleteName.contains("#")) {
+			String[] names = testCaseCompleteName.split("#");
+			this.testCaseClass = names[0];
+			this.testCaseName = names[1];
+		}
 	}
 
 	public String getTestCaseCompleteName() {
