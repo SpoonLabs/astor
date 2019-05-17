@@ -816,7 +816,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * @param suspicious
 	 * @throws Exception
 	 */
-	private void initializePopulation(List<SuspiciousCode> suspicious) throws Exception {
+	protected void initializePopulation(List<SuspiciousCode> suspicious) throws Exception {
 
 		variantFactory.setMutatorExecutor(getMutatorSupporter());
 
