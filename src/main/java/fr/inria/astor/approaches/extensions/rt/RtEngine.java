@@ -167,10 +167,10 @@ public class RtEngine extends AstorCoreEngine {
 
 				List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel);
 
-				Classication<CtInvocation> rAssert = classifyAssertions(testMethodModel, mapLinesCovered,
+				Classification<CtInvocation> rAssert = classifyAssertions(testMethodModel, mapLinesCovered,
 						aTestModelCtClass, allAssertionsFromTest);
 
-				Classication<Helper> rHelper = classifyHelpers(aTestModelCtClass, allHelperInvocationFromTest,
+				Classification<Helper> rHelper = classifyHelpers(aTestModelCtClass, allHelperInvocationFromTest,
 						mapCacheSuspicious);
 
 				boolean isFullR = allAssertionsFromTest.isEmpty() && allHelperInvocationFromTest.isEmpty();
@@ -245,13 +245,13 @@ public class RtEngine extends AstorCoreEngine {
 	public class TestClassificationResult {
 		String nameOfTestClass;
 		String testMethodFromClass;
-		Classication<CtInvocation> rAssert = null;
-		Classication<Helper> rHelper = null;
+		Classification<CtInvocation> rAssert = null;
+		Classification<Helper> rHelper = null;
 
 		List<CtInvocation> allMissedFailFromTest;
 		List<CtReturn> allSkipFromTest;
 
-		public TestClassificationResult(Classication<CtInvocation> rAssert, Classication<Helper> rHelper,
+		public TestClassificationResult(Classification<CtInvocation> rAssert, Classification<Helper> rHelper,
 				String aNameOfTestClass, String aTestMethodFromClass, List<CtInvocation> allMissedFailFromTest,
 				List<CtReturn> allSkipFromTest, boolean isFullR) {
 			super();
@@ -263,11 +263,11 @@ public class RtEngine extends AstorCoreEngine {
 			this.testMethodFromClass = aTestMethodFromClass;
 		}
 
-		public Classication<CtInvocation> getClassificationAssert() {
+		public Classification<CtInvocation> getClassificationAssert() {
 			return rAssert;
 		}
 
-		public Classication<Helper> getClassificationHelper() {
+		public Classification<Helper> getClassificationHelper() {
 			return rHelper;
 		}
 
@@ -289,7 +289,7 @@ public class RtEngine extends AstorCoreEngine {
 
 	}
 
-	public class Classication<T> {
+	public class Classification<T> {
 
 		protected List<T> resultNotExecuted = new ArrayList<>();
 		protected List<T> resultExecuted = new ArrayList<>();
@@ -304,10 +304,10 @@ public class RtEngine extends AstorCoreEngine {
 
 	}
 
-	private Classication<Helper> classifyHelpers(CtClass aTestModelCtClass, List<Helper> allHelperInvocationFromTest,
+	private Classification<Helper> classifyHelpers(CtClass aTestModelCtClass, List<Helper> allHelperInvocationFromTest,
 			Map<String, SuspiciousCode> cacheSuspicious) {
 
-		Classication<Helper> result = new Classication<>();
+		Classification<Helper> result = new Classification<>();
 		for (Helper aHelper : allHelperInvocationFromTest) {
 
 			CtInvocation assertion = aHelper.getAssertion();
@@ -356,10 +356,10 @@ public class RtEngine extends AstorCoreEngine {
 		return false;
 	}
 
-	public Classication<CtInvocation> classifyAssertions(CtExecutable methodOfAssertment,
+	public Classification<CtInvocation> classifyAssertions(CtExecutable methodOfAssertment,
 			MapList<String, Integer> linesCovered, CtClass aTestModelCtClass,
 			List<CtInvocation> allAssertionsFromTest) {
-		Classication<CtInvocation> result = new Classication<>();
+		Classification<CtInvocation> result = new Classification<>();
 		// For each assert
 		for (CtInvocation anAssertFromTest : allAssertionsFromTest) {
 
