@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
@@ -19,11 +21,11 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.LineFilter;
@@ -35,6 +37,8 @@ import spoon.reflect.visitor.filter.LineFilter;
  */
 public class RtEngine extends AstorCoreEngine {
 	List<SuspiciousCode> allExecutedStatements = null;
+
+	List<TestClassificationResult> resultByTest = null;
 
 	public RtEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -106,24 +110,14 @@ public class RtEngine extends AstorCoreEngine {
 		// Lines of code covered grouped by test. The key is the test class name
 		MapList<String, Integer> mapLinesCovered = new MapList<>();
 		Map<String, SuspiciousCode> mapCacheSuspicious = new HashMap<>();
-		// The test cases (method) executed by test class
-		// MapList<String, String> mapTestCasesFromClasses = new MapList<>();
-		//
+
 		for (SuspiciousCode executedStatement : allExecutedStatements) {
 			mapLinesCovered.add(executedStatement.getClassName(), executedStatement.getLineNumber());
 			mapCacheSuspicious.put(executedStatement.getClassName() + executedStatement.getLineNumber(),
 					executedStatement);
-			// mapTestCasesFromClasses.add(executedStatement.getClassName(),
-			// getTestCaseMethodName(executedStatement));
 		}
 
-		List<CtInvocation> resultAssertionsNotInvoked = new ArrayList<>();
-		List<CtInvocation> resultAssertionsExecuted = new ArrayList<>();
-
-		List<Helper> resultHelperNotInvoked = new ArrayList<>();
-		List<Helper> resultHelperExecuted = new ArrayList<>();
-
-		MapList<String, CtInvocation> assertionsByTest = new MapList<>();
+		resultByTest = new ArrayList<>();
 
 		// For each class name
 		for (String aNameOfTestClass : allTestCases) {
@@ -134,7 +128,6 @@ public class RtEngine extends AstorCoreEngine {
 				log.error("No class modeled for " + aNameOfTestClass);
 				continue;
 			}
-			// assertNotNull("no modeled class " + aNameOfTestClass, aTestModelCtClass);
 
 			List<String> testMethodsFromClass = passingCoveredTestCaseFromClass.get(aNameOfTestClass);
 
@@ -165,46 +158,156 @@ public class RtEngine extends AstorCoreEngine {
 
 				List<CtStatement> allStmtsFromClass = testMethodModel.getElements(new LineFilter());
 				List<CtInvocation> allAssertionsFromTest = filterAssertions(allStmtsFromClass);
-
 				List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass);
 
-				analyzeAssertions(testMethodModel, mapLinesCovered, aTestModelCtClass, allAssertionsFromTest,
-						resultAssertionsNotInvoked, resultAssertionsExecuted);
+				List<CtInvocation> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
+				// The missed fails are removed from the assertion list (they are a
+				// sub-category).
+				allAssertionsFromTest.removeAll(allMissedFailFromTest);
 
-				// TODO: it must be by test
-				analyzeHelpers(aTestModelCtClass, allHelperInvocationFromTest, resultHelperNotInvoked,
-						resultHelperExecuted, mapCacheSuspicious);
+				List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel);
 
+				Classication<CtInvocation> rAssert = classifyAssertions(testMethodModel, mapLinesCovered,
+						aTestModelCtClass, allAssertionsFromTest);
+
+				Classication<Helper> rHelper = classifyHelpers(aTestModelCtClass, allHelperInvocationFromTest,
+						mapCacheSuspicious);
+
+				boolean isFullR = allAssertionsFromTest.isEmpty() && allHelperInvocationFromTest.isEmpty();
+
+				TestClassificationResult resultTestCase = new TestClassificationResult(rAssert, rHelper,
+						aNameOfTestClass, aTestMethodFromClass, allMissedFailFromTest, allSkipFromTest, isFullR);
+
+				resultByTest.add(resultTestCase);
 			}
 
 		}
 
-		log.info("End processing");
+		log.info("End processing RT");
 
-		for (CtInvocation ctInvocation : resultAssertionsNotInvoked) {
-			System.out.println("\nas: " + ctInvocation.getParent(CtClass.class).getQualifiedName() + " "
-					+ ctInvocation.getParent(CtMethod.class).getSimpleName() + " " + ctInvocation);
+//		for (CtInvocation ctInvocation : resultAssertionsNotInvoked) {
+//			System.out.println("\nas: " + ctInvocation.getParent(CtClass.class).getQualifiedName() + " "
+//					+ ctInvocation.getParent(CtMethod.class).getSimpleName() + " " + ctInvocation);
+//		}
+//
+//		for (Helper helper : resultHelperNotInvoked) {
+//			System.out.println("\nhp: " + helper.getAssertion().getParent(CtClass.class).getQualifiedName() + " " + " "
+//					+ helper.getAssertion().getParent(CtMethod.class).getSimpleName() + " " + helper.getAssertion()
+//					+ " " + helper.getCalls());
+//		}
+//		log.info("assert not invoked " + resultAssertionsNotInvoked.size());
+//
+//		log.info("assert invoked " + resultAssertionsExecuted.size());
+//
+//		log.info("helper not invoked " + resultHelperNotInvoked.size());
+//
+//		log.info("helper invoked " + resultHelperExecuted.size());
+	}
+
+	private List<CtInvocation> filterMissedFail(List<CtInvocation> allAssertionsFromTest) {
+
+		List<CtInvocation> missedFail = new ArrayList<>();
+
+		for (CtInvocation anInvocation : allAssertionsFromTest) {
+			CtElement el = null;
+			if (anInvocation.getArguments().size() == 1) {
+				el = (CtElement) anInvocation.getArguments().get(0);
+			} else if (anInvocation.getArguments().size() == 2) {
+				el = (CtElement) anInvocation.getArguments().get(1);
+			}
+
+			if (el != null) {
+				String contentArgumentLC = el.toString().toLowerCase();
+				if (contentArgumentLC.equals("\"true\"") || contentArgumentLC.equals("\"false\"")
+						|| contentArgumentLC.equals("boolean.true") || contentArgumentLC.equals("boolean.false"))
+					missedFail.add(anInvocation);
+			}
+
+		}
+		return missedFail;
+	}
+
+	private List<CtReturn> filterSkips(List<CtStatement> allStmtsFromClass, CtExecutable method) {
+
+		List<CtReturn> skips = new ArrayList<>();
+		for (CtStatement aStatement : allStmtsFromClass) {
+			if (aStatement instanceof CtReturn) {
+				// check that is not the last statement (if it's the last one we don't care)
+				if (!method.getBody().getLastStatement().equals(aStatement)
+						&& !method.getBody().getLastStatement().equals(aStatement.getParent(new LineFilter()))) {
+					skips.add((CtReturn) aStatement);
+				}
+			}
+		}
+		return skips;
+	}
+
+	public class TestClassificationResult {
+		String nameOfTestClass;
+		String testMethodFromClass;
+		Classication<CtInvocation> rAssert = null;
+		Classication<Helper> rHelper = null;
+
+		List<CtInvocation> allMissedFailFromTest;
+		List<CtReturn> allSkipFromTest;
+
+		public TestClassificationResult(Classication<CtInvocation> rAssert, Classication<Helper> rHelper,
+				String aNameOfTestClass, String aTestMethodFromClass, List<CtInvocation> allMissedFailFromTest,
+				List<CtReturn> allSkipFromTest, boolean isFullR) {
+			super();
+			this.rAssert = rAssert;
+			this.rHelper = rHelper;
+			this.allMissedFailFromTest = allMissedFailFromTest;
+			this.allSkipFromTest = allSkipFromTest;
+			this.nameOfTestClass = aNameOfTestClass;
+			this.testMethodFromClass = aTestMethodFromClass;
 		}
 
-		for (Helper helper : resultHelperNotInvoked) {
-			System.out.println("\nhp: " + helper.getAssertion().getParent(CtClass.class).getQualifiedName() + " " + " "
-					+ helper.getAssertion().getParent(CtMethod.class).getSimpleName() + " " + helper.getAssertion()
-					+ " " + helper.getCalls());
+		public Classication<CtInvocation> getClassificationAssert() {
+			return rAssert;
 		}
-		log.info("assert not invoked " + resultAssertionsNotInvoked.size());
 
-		log.info("assert invoked " + resultAssertionsExecuted.size());
+		public Classication<Helper> getClassificationHelper() {
+			return rHelper;
+		}
 
-		log.info("helper not invoked " + resultHelperNotInvoked.size());
+		public String getNameOfTestClass() {
+			return nameOfTestClass;
+		}
 
-		log.info("helper invoked " + resultHelperExecuted.size());
+		public String getTestMethodFromClass() {
+			return testMethodFromClass;
+		}
+
+		public List<CtInvocation> getAllMissedFailFromTest() {
+			return allMissedFailFromTest;
+		}
+
+		public List<CtReturn> getAllSkipFromTest() {
+			return allSkipFromTest;
+		}
 
 	}
 
-	private void analyzeHelpers(CtClass aTestModelCtClass, List<Helper> allHelperInvocationFromTest,
-			List<Helper> resultAssertionsNotInvoked, List<Helper> resultAssertionsExecuted,
+	public class Classication<T> {
+
+		protected List<T> resultNotExecuted = new ArrayList<>();
+		protected List<T> resultExecuted = new ArrayList<>();
+
+		public List<T> getResultNotExecuted() {
+			return resultNotExecuted;
+		}
+
+		public List<T> getResultExecuted() {
+			return resultExecuted;
+		}
+
+	}
+
+	private Classication<Helper> classifyHelpers(CtClass aTestModelCtClass, List<Helper> allHelperInvocationFromTest,
 			Map<String, SuspiciousCode> cacheSuspicious) {
 
+		Classication<Helper> result = new Classication<>();
 		for (Helper aHelper : allHelperInvocationFromTest) {
 
 			CtInvocation assertion = aHelper.getAssertion();
@@ -214,12 +317,12 @@ public class RtEngine extends AstorCoreEngine {
 			if (!covered) {
 				isCovered(cacheSuspicious, assertion, aTestModelCtClass, ctclassFromAssert);
 
-				resultAssertionsNotInvoked.add(aHelper);
+				result.getResultNotExecuted().add(aHelper);
 			} else {
-				resultAssertionsExecuted.add(aHelper);
+				result.getResultExecuted().add(aHelper);
 			}
 		}
-
+		return result;
 	}
 
 	private boolean isCovered(Map<String, SuspiciousCode> cacheSuspicious, CtInvocation assertion,
@@ -253,23 +356,23 @@ public class RtEngine extends AstorCoreEngine {
 		return false;
 	}
 
-	public void analyzeAssertions(CtExecutable methodOfAssertment, MapList<String, Integer> linesCovered,
-			CtClass aTestModelCtClass, List<CtInvocation> allAssertionsFromTest,
-			List<CtInvocation> resultAssertionsNotInvoked, List<CtInvocation> resultAssertionsExecuted) {
+	public Classication<CtInvocation> classifyAssertions(CtExecutable methodOfAssertment,
+			MapList<String, Integer> linesCovered, CtClass aTestModelCtClass,
+			List<CtInvocation> allAssertionsFromTest) {
+		Classication<CtInvocation> result = new Classication<>();
 		// For each assert
 		for (CtInvocation anAssertFromTest : allAssertionsFromTest) {
 
 			boolean covered = isCovered(linesCovered, anAssertFromTest, aTestModelCtClass);
 			if (!covered) {
-				// assertionsByTest.add(testCaseKey, anAssertFromTest);
-				// isCovered(linesCovered, anAssertFromTest, aTestModelCtClass);
-				// log.debug("test class name: " + aTestModelCtClass.getQualifiedName());
-				resultAssertionsNotInvoked.add(anAssertFromTest);
+
+				result.getResultNotExecuted().add(anAssertFromTest);
 				log.info("Not covered: " + anAssertFromTest + " at " + aTestModelCtClass.getQualifiedName());
 			} else {
-				resultAssertionsExecuted.add(anAssertFromTest);
+				result.getResultExecuted().add(anAssertFromTest);
 			}
 		}
+		return result;
 	}
 
 	public class Helper {
@@ -433,4 +536,115 @@ public class RtEngine extends AstorCoreEngine {
 	public class ResultRT {
 
 	}
+
+	public List<TestClassificationResult> getResultByTest() {
+		return resultByTest;
+	}
+
+	public JsonObject toJson() {
+
+		JsonObject root = new JsonObject();
+		root.addProperty("project", this.projectFacade.getProperties().getFixid());
+		JsonArray testsAssertionArray = new JsonArray();
+		root.add("tests", testsAssertionArray);
+		for (TestClassificationResult tr : resultByTest) {
+
+			JsonObject testjson = new JsonObject();
+			testjson.addProperty("testclass", tr.getNameOfTestClass());
+			testjson.addProperty("testname", tr.getTestMethodFromClass());
+
+			boolean onerotten = false;
+			// Asserts
+			List<CtInvocation> notExecutedAssert = tr.getClassificationAssert().getResultNotExecuted();
+			if (!notExecutedAssert.isEmpty()) {
+
+				System.out.println("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
+
+				JsonArray assertionarray = new JsonArray();
+				testjson.add("rotten_assertions", assertionarray);
+				for (CtInvocation anInvocation : notExecutedAssert) {
+					System.out.println("--> " + anInvocation);
+					JsonObject singleAssertion = new JsonObject();
+					singleAssertion.addProperty("code", anInvocation.toString());
+					singleAssertion.addProperty("line", anInvocation.getPosition().getLine());
+					singleAssertion.addProperty("path", getRelativePath(anInvocation));
+
+					assertionarray.add(singleAssertion);
+					onerotten = true;
+					// parent
+				}
+			}
+			//
+			List<Helper> notExecutedHelper = tr.getClassificationHelper().getResultNotExecuted();
+			if (!notExecutedHelper.isEmpty()) {
+				System.out.println("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
+
+				JsonArray helperarray = new JsonArray();
+				testjson.add("rotten_helpers", helperarray);
+				for (Helper anHelper : notExecutedHelper) {
+					System.out.println("--> " + anHelper);
+					JsonObject singleHelper = new JsonObject();
+					singleHelper.addProperty("code_assertion", anHelper.getAssertion().toString());
+					singleHelper.addProperty("line_assertion", anHelper.getAssertion().getPosition().getLine());
+
+					JsonArray callsarray = new JsonArray();
+					for (CtInvocation call : anHelper.getCalls()) {
+						callsarray.add(call.toString());
+					}
+					onerotten = true;
+					helperarray.add(singleHelper);
+				}
+			}
+
+			//
+			if (!tr.getAllSkipFromTest().isEmpty()) {
+				JsonArray skiprarray = new JsonArray();
+				testjson.add("rotten_skip", skiprarray);
+				for (CtReturn skip : tr.getAllSkipFromTest()) {
+					JsonObject singleSkip = new JsonObject();
+					singleSkip.addProperty("code_assertion", skip.toString().toString());
+					singleSkip.addProperty("line_assertion", skip.getPosition().getLine());
+
+					onerotten = true;
+					skiprarray.add(singleSkip);
+				}
+			}
+
+			//
+			if (!tr.getAllMissedFailFromTest().isEmpty()) {
+				JsonArray missrarray = new JsonArray();
+				testjson.add("rotten_missed", missrarray);
+				for (CtInvocation missedInv : tr.getAllMissedFailFromTest()) {
+					JsonObject missedJson = new JsonObject();
+					missedJson.addProperty("code_assertion", missedInv.toString().toString());
+					missedJson.addProperty("line_assertion", missedInv.getPosition().getLine());
+					missedJson.addProperty("path_assertion", getRelativePath(missedInv));
+					onerotten = true;
+					missrarray.add(missedJson);
+				}
+			}
+
+			///
+			if (onerotten) {
+				testsAssertionArray.add(testjson);
+			}
+		}
+
+		return root;
+	}
+
+	public String getRelativePath(CtInvocation anInvocation) {
+		return anInvocation.getPosition().getFile().getAbsolutePath().replace("./", "")
+				.replace(this.getProjectFacade().getProperties().getOriginalProjectRootDir().replace("./", ""), "");
+	}
+
+	@Override
+	public void atEnd() {
+
+		super.atEnd();
+		JsonObject json = toJson();
+		System.out.println("rtjsonoutput: " + json);
+
+	}
+
 }
