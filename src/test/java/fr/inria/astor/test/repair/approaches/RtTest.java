@@ -51,6 +51,14 @@ public class RtTest {
 
 		assertEquals(1, sumHelperNotExec);
 
+		int sumReturnNotExec = resultByTest.stream().map(e -> e.getAllSkipFromTest().size())
+				.collect(Collectors.summingInt(i -> i));
+
+		assertEquals(1, sumReturnNotExec);
+
+		TestClassificationResult testwithskip = resultByTest.stream().filter(e -> !e.getAllSkipFromTest().isEmpty())
+				.findFirst().get();
+		assertEquals("testMMRt_return_truePositive", testwithskip.getTestMethodFromClass());
 	}
 
 }

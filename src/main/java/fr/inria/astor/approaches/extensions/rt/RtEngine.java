@@ -165,7 +165,7 @@ public class RtEngine extends AstorCoreEngine {
 				// sub-category).
 				allAssertionsFromTest.removeAll(allMissedFailFromTest);
 
-				List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel);
+				List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, aTestModelCtClass);
 
 				Classification<CtInvocation> rAssert = classifyAssertions(testMethodModel, mapLinesCovered,
 						aTestModelCtClass, allAssertionsFromTest);
@@ -227,14 +227,21 @@ public class RtEngine extends AstorCoreEngine {
 		return missedFail;
 	}
 
-	private List<CtReturn> filterSkips(List<CtStatement> allStmtsFromClass, CtExecutable method) {
+	private List<CtReturn> filterSkips(List<CtStatement> allStmtsFromClass, CtExecutable method,
+			CtClass aTestModelCtClass) {
 
 		List<CtReturn> skips = new ArrayList<>();
 		for (CtStatement aStatement : allStmtsFromClass) {
 			if (aStatement instanceof CtReturn) {
-				// check that is not the last statement (if it's the last one we don't care)
-				if (!method.getBody().getLastStatement().equals(aStatement)
-						&& !method.getBody().getLastStatement().equals(aStatement.getParent(new LineFilter()))) {
+				// check the parent class is the test method (discarding elements from anonymous
+				// classes)
+				if (aTestModelCtClass.equals(aStatement.getParent(CtClass.class)) &&
+				// check that is not the last statement (if it's the last one it's fine)
+						!method.getBody().getLastStatement().equals(aStatement)
+						// check that statement is not inside an element that is the last one
+						&& !method.getBody().getLastStatement().equals(aStatement.getParent(new LineFilter()))
+
+				) {
 					skips.add((CtReturn) aStatement);
 				}
 			}
