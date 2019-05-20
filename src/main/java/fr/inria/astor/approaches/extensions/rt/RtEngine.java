@@ -26,6 +26,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.LineFilter;
@@ -155,11 +156,11 @@ public class RtEngine extends AstorCoreEngine {
 					continue;
 
 				}
-
+				// get all statements
 				List<CtStatement> allStmtsFromClass = testMethodModel.getElements(new LineFilter());
 				List<CtInvocation> allAssertionsFromTest = filterAssertions(allStmtsFromClass);
 				List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass);
-
+				// filter from assertions the missed fail
 				List<CtInvocation> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
 				// The missed fails are removed from the assertion list (they are a
 				// sub-category).
@@ -185,33 +186,18 @@ public class RtEngine extends AstorCoreEngine {
 
 		log.info("End processing RT");
 
-//		for (CtInvocation ctInvocation : resultAssertionsNotInvoked) {
-//			System.out.println("\nas: " + ctInvocation.getParent(CtClass.class).getQualifiedName() + " "
-//					+ ctInvocation.getParent(CtMethod.class).getSimpleName() + " " + ctInvocation);
-//		}
-//
-//		for (Helper helper : resultHelperNotInvoked) {
-//			System.out.println("\nhp: " + helper.getAssertion().getParent(CtClass.class).getQualifiedName() + " " + " "
-//					+ helper.getAssertion().getParent(CtMethod.class).getSimpleName() + " " + helper.getAssertion()
-//					+ " " + helper.getCalls());
-//		}
-//		log.info("assert not invoked " + resultAssertionsNotInvoked.size());
-//
-//		log.info("assert invoked " + resultAssertionsExecuted.size());
-//
-//		log.info("helper not invoked " + resultHelperNotInvoked.size());
-//
-//		log.info("helper invoked " + resultHelperExecuted.size());
 	}
 
 	private List<CtInvocation> filterMissedFail(List<CtInvocation> allAssertionsFromTest) {
 
-		List<CtInvocation> missedFail = new ArrayList<>();
+		List<CtInvocation> missedFails = new ArrayList<>();
 
 		for (CtInvocation anInvocation : allAssertionsFromTest) {
 			CtElement el = null;
+			// case having a single argument
 			if (anInvocation.getArguments().size() == 1) {
 				el = (CtElement) anInvocation.getArguments().get(0);
+				// case having a message as first arg
 			} else if (anInvocation.getArguments().size() == 2) {
 				el = (CtElement) anInvocation.getArguments().get(1);
 			}
@@ -220,11 +206,11 @@ public class RtEngine extends AstorCoreEngine {
 				String contentArgumentLC = el.toString().toLowerCase();
 				if (contentArgumentLC.equals("\"true\"") || contentArgumentLC.equals("\"false\"")
 						|| contentArgumentLC.equals("boolean.true") || contentArgumentLC.equals("boolean.false"))
-					missedFail.add(anInvocation);
+					missedFails.add(anInvocation);
 			}
 
 		}
-		return missedFail;
+		return missedFails;
 	}
 
 	private List<CtReturn> filterSkips(List<CtStatement> allStmtsFromClass, CtExecutable method,
@@ -578,7 +564,8 @@ public class RtEngine extends AstorCoreEngine {
 
 					assertionarray.add(singleAssertion);
 					onerotten = true;
-					// parent
+					singleAssertion.add("parent_types", getParentTypes(anInvocation));
+
 				}
 			}
 			//
@@ -598,6 +585,7 @@ public class RtEngine extends AstorCoreEngine {
 					for (CtInvocation call : anHelper.getCalls()) {
 						callsarray.add(call.toString());
 					}
+					singleHelper.add("calls", callsarray);
 					onerotten = true;
 					helperarray.add(singleHelper);
 				}
@@ -611,7 +599,7 @@ public class RtEngine extends AstorCoreEngine {
 					JsonObject singleSkip = new JsonObject();
 					singleSkip.addProperty("code_assertion", skip.toString().toString());
 					singleSkip.addProperty("line_assertion", skip.getPosition().getLine());
-
+					singleSkip.add("parent_types", getParentTypes(skip));
 					onerotten = true;
 					skiprarray.add(singleSkip);
 				}
@@ -626,6 +614,7 @@ public class RtEngine extends AstorCoreEngine {
 					missedJson.addProperty("code_assertion", missedInv.toString().toString());
 					missedJson.addProperty("line_assertion", missedInv.getPosition().getLine());
 					missedJson.addProperty("path_assertion", getRelativePath(missedInv));
+
 					onerotten = true;
 					missrarray.add(missedJson);
 				}
@@ -638,6 +627,29 @@ public class RtEngine extends AstorCoreEngine {
 		}
 
 		return root;
+	}
+
+	private JsonArray getParentTypes(CtElement anElement) {
+		JsonArray parentArray = new JsonArray();
+		CtElement parent = anElement.getParent();
+		while (parent != null) {
+			// removing the prefix "Ct" and suffix "Impl"
+			parentArray.add(cleanTypeName(parent.getClass().getSimpleName()));
+			parent = parent.getParent();
+			// we discard parents from package
+			if (parent instanceof CtPackage) {
+				break;
+			}
+		}
+
+		return parentArray;
+	}
+
+	public String cleanTypeName(String parent) {
+		if (parent.length() < 6) {
+			return parent;
+		}
+		return parent.substring(2, parent.length() - 4);
 	}
 
 	public String getRelativePath(CtInvocation anInvocation) {
