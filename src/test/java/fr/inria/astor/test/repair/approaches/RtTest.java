@@ -1,6 +1,9 @@
 package fr.inria.astor.test.repair.approaches;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
@@ -11,6 +14,7 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.extensions.rt.RtEngine;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.TestClassificationResult;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
@@ -61,4 +65,76 @@ public class RtTest {
 		assertEquals("testMMRt_return_truePositive", testwithskip.getTestMethodFromClass());
 	}
 
+	@Test
+	public void testRow01() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		assertNotNull(resultByTest);
+		List<TestClassificationResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass()
+						.equals("RTFRow01HelperExecutedAssertionExecutedContainsHelperContainsAssertion"))
+				.collect(Collectors.toList());
+
+		assertTrue(tc.isEmpty());
+		// assert: rottenTestsFound rottenTests isEmpty
+		// assertFalse(tc.isRotten());
+		// assertFalse(resultByTest.stream().filter(e ->
+		// e.isRotten()).findFirst().isPresent());
+	}
+
+	@Test
+	public void testRow02() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		List<TestClassificationResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass()
+						.contains("RTFRow02HelperNotExecutedAssertionExecutedContainsHelperContainsAssertion"))
+				.collect(Collectors.toList());
+
+		assertFalse(tc.isEmpty());
+		// self
+		// assert: rottenTestsFound rottenTests size equals: 1;
+		assertEquals(1, tc.size());
+
+		// assert: (rottenTestsFound rottenCompiledMethods anySatisfy: [ :m |
+		// m methodClass =
+		// RTFRow02HelperNotExecutedAssertionExecutedContainsHelperContainsAssertion
+		// and: [ m selector = #test ] ])
+
+		List<TestClassificationResult> rottens = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
+
+		assertFalse(rottens.isEmpty());
+
+	}
+
+	private RtEngine detectRt() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 500;
+
+		String[] args = new String[] { "-dependencies", dep, "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
+				"-stopfirst", "true", "-maxtime", "100",
+
+		};
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "INFO");
+		cs.command.put("-location", new File("./examples/rt-project").getAbsolutePath());
+		cs.command.put("-mode", "custom");
+		cs.command.put("-customengine", RtEngine.class.getCanonicalName());
+		cs.command.put("-parameters", "canhavezerosusp:true");
+
+		main1.execute(cs.flat());
+		RtEngine etEn = (RtEngine) main1.getEngine();
+		return etEn;
+	}
 }
