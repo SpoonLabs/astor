@@ -235,12 +235,18 @@ public class RtEngine extends AstorCoreEngine {
 		return skips;
 	}
 
+	/**
+	 * Classification of a particular test
+	 * 
+	 * @author Matias Martinez
+	 *
+	 */
 	public class TestClassificationResult {
 		String nameOfTestClass;
 		String testMethodFromClass;
 		Classification<CtInvocation> rAssert = null;
 		Classification<Helper> rHelper = null;
-
+		boolean isFullR = false;
 		List<CtInvocation> allMissedFailFromTest;
 		List<CtReturn> allSkipFromTest;
 
@@ -254,6 +260,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.allSkipFromTest = allSkipFromTest;
 			this.nameOfTestClass = aNameOfTestClass;
 			this.testMethodFromClass = aTestMethodFromClass;
+			this.isFullR = isFullR;
 		}
 
 		public Classification<CtInvocation> getClassificationAssert() {
@@ -280,6 +287,11 @@ public class RtEngine extends AstorCoreEngine {
 			return allSkipFromTest;
 		}
 
+		public boolean isRotten() {
+			return isFullR || !this.getClassificationAssert().getResultNotExecuted().isEmpty()
+					|| !this.getClassificationHelper().getResultNotExecuted().isEmpty()
+					|| !this.getAllMissedFailFromTest().isEmpty() || !this.getAllSkipFromTest().isEmpty();
+		}
 	}
 
 	public class Classification<T> {
