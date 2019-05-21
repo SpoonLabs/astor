@@ -90,7 +90,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		List<SuspiciousCode> suspiciousStatemens = flResult.getCandidates();
 
-		if (suspiciousStatemens == null || suspiciousStatemens.isEmpty())
+		if ((suspiciousStatemens == null || suspiciousStatemens.isEmpty())
+				&& !ConfigurationProperties.getPropertyBool("canhavezerosusp"))
 			throw new IllegalArgumentException("No suspicious gen for analyze");
 
 		List<String> failingTestCases = flResult.getFailingTestCases();
