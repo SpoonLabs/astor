@@ -171,13 +171,17 @@ public class RtEngine extends AstorCoreEngine {
 				Classification<CtInvocation> rAssert = classifyAssertions(testMethodModel, mapLinesCovered,
 						aTestModelCtClass, allAssertionsFromTest);
 
-				Classification<Helper> rHelper = classifyHelpers(aTestModelCtClass, allHelperInvocationFromTest,
-						mapCacheSuspicious);
+				Classification<Helper> rHelperAssertion = classifyHelpersAssertionExecution(aTestModelCtClass,
+						allHelperInvocationFromTest, mapCacheSuspicious, true);
+
+				Classification<Helper> rHelperCall = classifyHelpersAssertionExecution(aTestModelCtClass,
+						allHelperInvocationFromTest, mapCacheSuspicious, false);
 
 				boolean isFullR = allAssertionsFromTest.isEmpty() && allHelperInvocationFromTest.isEmpty();
 
-				TestClassificationResult resultTestCase = new TestClassificationResult(rAssert, rHelper,
-						aNameOfTestClass, aTestMethodFromClass, allMissedFailFromTest, allSkipFromTest, isFullR);
+				TestClassificationResult resultTestCase = new TestClassificationResult(rAssert, rHelperAssertion,
+						rHelperCall, aNameOfTestClass, aTestMethodFromClass, allMissedFailFromTest, allSkipFromTest,
+						isFullR);
 
 				resultByTest.add(resultTestCase);
 			}
@@ -245,17 +249,19 @@ public class RtEngine extends AstorCoreEngine {
 		String nameOfTestClass;
 		String testMethodFromClass;
 		Classification<CtInvocation> rAssert = null;
-		Classification<Helper> rHelper = null;
+		Classification<Helper> rHelperAssertion = null;
+		Classification<Helper> rHelperCall = null;
 		boolean isFullR = false;
 		List<CtInvocation> allMissedFailFromTest;
 		List<CtReturn> allSkipFromTest;
 
-		public TestClassificationResult(Classification<CtInvocation> rAssert, Classification<Helper> rHelper,
-				String aNameOfTestClass, String aTestMethodFromClass, List<CtInvocation> allMissedFailFromTest,
-				List<CtReturn> allSkipFromTest, boolean isFullR) {
+		public TestClassificationResult(Classification<CtInvocation> rAssert, Classification<Helper> rHelperAssertion,
+				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
+				List<CtInvocation> allMissedFailFromTest, List<CtReturn> allSkipFromTest, boolean isFullR) {
 			super();
 			this.rAssert = rAssert;
-			this.rHelper = rHelper;
+			this.rHelperAssertion = rHelperAssertion;
+			this.rHelperCall = rHelperCall;
 			this.allMissedFailFromTest = allMissedFailFromTest;
 			this.allSkipFromTest = allSkipFromTest;
 			this.nameOfTestClass = aNameOfTestClass;
@@ -267,8 +273,12 @@ public class RtEngine extends AstorCoreEngine {
 			return rAssert;
 		}
 
-		public Classification<Helper> getClassificationHelper() {
-			return rHelper;
+		public Classification<Helper> getClassificationHelperAssertion() {
+			return rHelperAssertion;
+		}
+
+		public Classification<Helper> getClassificationHelperCall() {
+			return rHelperCall;
 		}
 
 		public String getNameOfTestClass() {
@@ -289,9 +299,10 @@ public class RtEngine extends AstorCoreEngine {
 
 		public boolean isRotten() {
 			return isFullR || !this.getClassificationAssert().getResultNotExecuted().isEmpty()
-					|| !this.getClassificationHelper().getResultNotExecuted().isEmpty()
+					|| !this.getClassificationHelperAssertion().getResultNotExecuted().isEmpty()
 					|| !this.getAllMissedFailFromTest().isEmpty() || !this.getAllSkipFromTest().isEmpty();
 		}
+
 	}
 
 	public class Classification<T> {
@@ -309,18 +320,18 @@ public class RtEngine extends AstorCoreEngine {
 
 	}
 
-	private Classification<Helper> classifyHelpers(CtClass aTestModelCtClass, List<Helper> allHelperInvocationFromTest,
-			Map<String, SuspiciousCode> cacheSuspicious) {
+	private Classification<Helper> classifyHelpersAssertionExecution(CtClass aTestModelCtClass,
+			List<Helper> allHelperInvocationFromTest, Map<String, SuspiciousCode> cacheSuspicious,
+			boolean checkAssertion) {
 
 		Classification<Helper> result = new Classification<>();
 		for (Helper aHelper : allHelperInvocationFromTest) {
 
-			CtInvocation assertion = aHelper.getAssertion();
+			CtInvocation assertion = (checkAssertion) ? aHelper.getAssertion() : aHelper.getCalls().get(0);
 			CtClass ctclassFromAssert = assertion.getParent(CtClass.class);
 
 			boolean covered = isCovered(cacheSuspicious, assertion, aTestModelCtClass, ctclassFromAssert);
 			if (!covered) {
-				isCovered(cacheSuspicious, assertion, aTestModelCtClass, ctclassFromAssert);
 
 				result.getResultNotExecuted().add(aHelper);
 			} else {
@@ -330,17 +341,36 @@ public class RtEngine extends AstorCoreEngine {
 		return result;
 	}
 
-	private boolean isCovered(Map<String, SuspiciousCode> cacheSuspicious, CtInvocation assertion,
+	private Classification<Helper> classifyHelpersInvocationExecution(CtClass aTestModelCtClass,
+			List<Helper> allHelperInvocationFromTest, Map<String, SuspiciousCode> cacheSuspicious) {
+
+		Classification<Helper> result = new Classification<>();
+		for (Helper aHelper : allHelperInvocationFromTest) {
+
+			CtInvocation firstHelperInvocation = aHelper.getCalls().get(0);
+			CtClass ctclassFromAssert = firstHelperInvocation.getParent(CtClass.class);
+
+			boolean covered = isCovered(cacheSuspicious, firstHelperInvocation, aTestModelCtClass, ctclassFromAssert);
+			if (!covered) {
+				result.getResultNotExecuted().add(aHelper);
+			} else {
+				result.getResultExecuted().add(aHelper);
+			}
+		}
+		return result;
+	}
+
+	private boolean isCovered(Map<String, SuspiciousCode> cacheSuspicious, CtElement elementToCheck,
 			CtClass aTestModelCtClass, CtClass ctclassFromAssert) {
 
 		// the location of the assertion contained in the helper
-		String keyLocationAssertion = ctclassFromAssert.getQualifiedName() + assertion.getPosition().getLine();
+		String keyLocationAssertion = ctclassFromAssert.getQualifiedName() + elementToCheck.getPosition().getLine();
 
 		if (checkCoverLine(cacheSuspicious, aTestModelCtClass, keyLocationAssertion))
 			return true;
 
 		// let's try matching with the end line
-		keyLocationAssertion = ctclassFromAssert.getQualifiedName() + assertion.getPosition().getEndLine();
+		keyLocationAssertion = ctclassFromAssert.getQualifiedName() + elementToCheck.getPosition().getEndLine();
 
 		return checkCoverLine(cacheSuspicious, aTestModelCtClass, keyLocationAssertion);
 	}
@@ -468,7 +498,8 @@ public class RtEngine extends AstorCoreEngine {
 					if (methodDeclaration.getBody() == null) {
 						continue;
 					}
-					List<CtStatement> statementsFromMethod = methodDeclaration.getBody().getStatements();
+					List<CtStatement> statementsFromMethod = methodDeclaration.getBody().getElements(new LineFilter());
+					// methodDeclaration.getBody().getStatements();
 					List<CtInvocation> assertionsFromMethod = filterAssertions(statementsFromMethod);
 					// If the method body has assertions, we add them.
 					if (assertionsFromMethod != null && !assertionsFromMethod.isEmpty()) {
@@ -581,7 +612,7 @@ public class RtEngine extends AstorCoreEngine {
 				}
 			}
 			//
-			List<Helper> notExecutedHelper = tr.getClassificationHelper().getResultNotExecuted();
+			List<Helper> notExecutedHelper = tr.getClassificationHelperAssertion().getResultNotExecuted();
 			if (!notExecutedHelper.isEmpty()) {
 				System.out.println("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 

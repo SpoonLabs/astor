@@ -50,7 +50,7 @@ public class RtTest {
 
 		assertEquals(7, sumAssertionNotExec);
 
-		int sumHelperNotExec = resultByTest.stream().map(e -> e.getClassificationHelper().getResultNotExecuted().size())
+		int sumHelperNotExec = resultByTest.stream().map(e -> e.getClassificationHelperAssertion().getResultNotExecuted().size())
 				.collect(Collectors.summingInt(i -> i));
 
 		assertEquals(1, sumHelperNotExec);
@@ -101,15 +101,54 @@ public class RtTest {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		// assert: (rottenTestsFound rottenCompiledMethods anySatisfy: [ :m |
-		// m methodClass =
-		// RTFRow02HelperNotExecutedAssertionExecutedContainsHelperContainsAssertion
-		// and: [ m selector = #test ] ])
+		List<TestClassificationResult> rottens = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
+
+		assertFalse(rottens.isEmpty());
+
+	}
+//	{ #category : #tests }
+//	RottenTestsFinderTestForPaper >> testRow03 [
+//		| rottenTestsFound |
+//		rottenTestsFound := RottenTestsFinder analyze: RTFRow03HelperExecutedAssertionNotExecutedContainsHelperContainsAssertion suite.
+//		
+//		self
+//			assert: rottenTestsFound rottenTests size equals: 2;
+//			assert: (rottenTestsFound rottenCompiledMethods anySatisfy: [ :m | 
+//				m methodClass = RTFRow03HelperExecutedAssertionNotExecutedContainsHelperContainsAssertion
+//					and: [ m selector = #test ] ]);
+//			assert: (rottenTestsFound rottenCompiledMethods anySatisfy: [ :m | 
+//				m methodClass = RTFAbstractTestCaseForPaper
+//					and: [ m selector = #rottenHelper ] ])
+//	]
+
+	@Test
+	public void testRow03() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		List<TestClassificationResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass()
+						.contains("RTFRow03HelperExecutedAssertionNotExecutedContainsHelperContainsAssertion"))
+				.collect(Collectors.toList());
+
+		assertFalse(tc.isEmpty());
+		// self
+		// assert: rottenTestsFound rottenTests size equals: 1;
+		assertEquals(1, tc.size());
 
 		List<TestClassificationResult> rottens = tc.stream()
 				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
 
 		assertFalse(rottens.isEmpty());
+
+		TestClassificationResult rottenTest0 = rottens.get(0);
+
+		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
+		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
+		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
 
 	}
 
