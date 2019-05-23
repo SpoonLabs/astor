@@ -303,6 +303,10 @@ public class RtEngine extends AstorCoreEngine {
 					|| !this.getAllMissedFailFromTest().isEmpty() || !this.getAllSkipFromTest().isEmpty();
 		}
 
+		public boolean isFullR() {
+			return isFullR;
+		}
+
 	}
 
 	public class Classification<T> {
