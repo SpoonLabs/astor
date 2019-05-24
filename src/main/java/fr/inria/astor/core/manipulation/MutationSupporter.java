@@ -66,7 +66,7 @@ public class MutationSupporter {
 		logger.info("building model: " + srcPathToBuild + ", compliance level: "
 				+ factory.getEnvironment().getComplianceLevel());
 		factory.getEnvironment().setCommentEnabled(false);
-		factory.getEnvironment().setNoClasspath(false);
+		factory.getEnvironment().setNoClasspath(ConfigurationProperties.getPropertyBool("noclasspathspoon"));
 		factory.getEnvironment().setPreserveLineNumbers(ConfigurationProperties.getPropertyBool("preservelinenumbers"));
 
 		jdtSpoonModelBuilder = new JDTBasedSpoonCompiler(factory);
