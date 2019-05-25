@@ -159,7 +159,7 @@ public class RtEngine extends AstorCoreEngine {
 				// get all statements
 				List<CtStatement> allStmtsFromClass = testMethodModel.getElements(new LineFilter());
 				List<CtInvocation> allAssertionsFromTest = filterAssertions(allStmtsFromClass);
-				List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass);
+				List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass, new ArrayList());
 				// filter from assertions the missed fail
 				List<CtInvocation> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
 				// The missed fails are removed from the assertion list (they are a
@@ -484,9 +484,10 @@ public class RtEngine extends AstorCoreEngine {
 	 * A helper must have an invocation
 	 * 
 	 * @param allStmtsFromClass
+	 * @param testMethodModel
 	 * @return
 	 */
-	private List<Helper> filterHelper(List<CtStatement> allStmtsFromClass) {
+	private List<Helper> filterHelper(List<CtStatement> allStmtsFromClass, List<CtExecutable> calls) {
 		List<Helper> helpersMined = new ArrayList<>();
 		// for each statement, let's find which one is a helper
 		for (CtStatement targetElement : allStmtsFromClass) {
@@ -502,6 +503,12 @@ public class RtEngine extends AstorCoreEngine {
 					if (methodDeclaration.getBody() == null) {
 						continue;
 					}
+
+					if (calls.contains(methodDeclaration)) {
+						log.info("Already analyzed this method");
+						continue;
+					}
+
 					List<CtStatement> statementsFromMethod = methodDeclaration.getBody().getElements(new LineFilter());
 					// methodDeclaration.getBody().getStatements();
 					List<CtInvocation> assertionsFromMethod = filterAssertions(statementsFromMethod);
@@ -516,16 +523,21 @@ public class RtEngine extends AstorCoreEngine {
 
 					} // else {
 
-					// we find if the body calls to another helper
-					List<Helper> helpersFromInvocation = filterHelper(statementsFromMethod);
-					// we add to the results
-					helpersMined.addAll(helpersFromInvocation);
-					// We update the helper to include the calls.
-					for (Helper aHelper : helpersFromInvocation) {
-						// in the first place to keep the order of the invocation
-						aHelper.getCalls().add(0, targetInvocation);
+					try {
+						List<CtExecutable> previouscalls = new ArrayList<>(calls);
+						previouscalls.add(methodDeclaration);
+						// we find if the body calls to another helper
+						List<Helper> helpersFromInvocation = filterHelper(statementsFromMethod, previouscalls);
+						// we add to the results
+						helpersMined.addAll(helpersFromInvocation);
+						// We update the helper to include the calls.
+						for (Helper aHelper : helpersFromInvocation) {
+							// in the first place to keep the order of the invocation
+							aHelper.getCalls().add(0, targetInvocation);
+						}
+					} catch (Throwable l) {
+						System.out.println("error ");
 					}
-					// }
 				}
 			}
 		}
@@ -598,12 +610,12 @@ public class RtEngine extends AstorCoreEngine {
 			List<CtInvocation> notExecutedAssert = tr.getClassificationAssert().getResultNotExecuted();
 			if (!notExecutedAssert.isEmpty()) {
 
-				System.out.println("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
+				log.debug("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
 				JsonArray assertionarray = new JsonArray();
 				testjson.add("rotten_assertions", assertionarray);
 				for (CtInvocation anInvocation : notExecutedAssert) {
-					System.out.println("--> " + anInvocation);
+					log.debug("-R-Assertion:-> " + anInvocation);
 					JsonObject singleAssertion = new JsonObject();
 					singleAssertion.addProperty("code", anInvocation.toString());
 					singleAssertion.addProperty("line", anInvocation.getPosition().getLine());
@@ -618,24 +630,20 @@ public class RtEngine extends AstorCoreEngine {
 			//
 			List<Helper> notExecutedHelper = tr.getClassificationHelperAssertion().getResultNotExecuted();
 			if (!notExecutedHelper.isEmpty()) {
-				System.out.println("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
+				log.debug("-R Helper assertion- " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
 				JsonArray helperarray = new JsonArray();
-				testjson.add("rotten_helpers", helperarray);
-				for (Helper anHelper : notExecutedHelper) {
-					System.out.println("--> " + anHelper);
-					JsonObject singleHelper = new JsonObject();
-					singleHelper.addProperty("code_assertion", anHelper.getAssertion().toString());
-					singleHelper.addProperty("line_assertion", anHelper.getAssertion().getPosition().getLine());
+				testjson.add("rotten_helpers_assertion", helperarray);
+				onerotten = helperToJson(onerotten, notExecutedHelper, helperarray);
+			}
+			//
+			List<Helper> notExecutedHelperInvoc = tr.getClassificationHelperCall().getResultNotExecuted();
+			if (!notExecutedHelperInvoc.isEmpty()) {
+				System.out.println("-- R Helper call  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
-					JsonArray callsarray = new JsonArray();
-					for (CtInvocation call : anHelper.getCalls()) {
-						callsarray.add(call.toString());
-					}
-					singleHelper.add("calls", callsarray);
-					onerotten = true;
-					helperarray.add(singleHelper);
-				}
+				JsonArray helperarray = new JsonArray();
+				testjson.add("rotten_helpers_call", helperarray);
+				onerotten = helperToJson(onerotten, notExecutedHelperInvoc, helperarray);
 			}
 
 			//
@@ -674,6 +682,24 @@ public class RtEngine extends AstorCoreEngine {
 		}
 
 		return root;
+	}
+
+	public boolean helperToJson(boolean onerotten, List<Helper> notExecutedHelper, JsonArray helperarray) {
+		for (Helper anHelper : notExecutedHelper) {
+			System.out.println("--> " + anHelper);
+			JsonObject singleHelper = new JsonObject();
+			singleHelper.addProperty("code_assertion", anHelper.getAssertion().toString());
+			singleHelper.addProperty("line_assertion", anHelper.getAssertion().getPosition().getLine());
+
+			JsonArray callsarray = new JsonArray();
+			for (CtInvocation call : anHelper.getCalls()) {
+				callsarray.add(call.toString());
+			}
+			singleHelper.add("calls", callsarray);
+			onerotten = true;
+			helperarray.add(singleHelper);
+		}
+		return onerotten;
 	}
 
 	private JsonArray getParentTypes(CtElement anElement) {
