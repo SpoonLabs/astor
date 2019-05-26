@@ -36,7 +36,7 @@ public class GZoltarClientMasterFaultLocalization extends GZoltarFaultLocalizati
 
 	@Override
 	public FaultLocalizationResult searchSuspicious(String locationBin, List<String> testsToExecute,
-			List<String> toInstrument, Set<String> cp, String srcFolder) throws Exception {
+			List<String> toInstrument, List<String> cp, String srcFolder) throws Exception {
 
 		logger.info("GZoltar CM location " + locationBin);
 		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");

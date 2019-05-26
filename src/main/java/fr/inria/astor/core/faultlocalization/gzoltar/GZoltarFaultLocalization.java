@@ -8,9 +8,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -79,8 +77,15 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		List<String> listTOInst = new ArrayList<String>();
 		listTOInst.add(packageToInst);
 
-		Set<String> classPath = new HashSet<String>();
-		classPath.add(locationBytecode);
+		List<String> classPath = new ArrayList<String>();
+
+		if (ConfigurationProperties.getPropertyBool("runonoriginalbin")) {
+			classPath.addAll(project.getProperties().getOriginalAppBinDir());
+			classPath.addAll(project.getProperties().getOriginalTestBinDir());
+		} else {
+			classPath.add(locationBytecode);
+		}
+
 		for (URL dep : project.getProperties().getDependencies()) {
 			classPath.add(dep.getPath());
 		}
@@ -141,7 +146,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 	}
 
 	protected FaultLocalizationResult searchSuspicious(String locationBytecode, List<String> testsToExecute,
-			List<String> toInstrument, Set<String> cp, String srcFolder) throws Exception {
+			List<String> toInstrument, List<String> cp, String srcFolder) throws Exception {
 
 		List<String> failingTestCases = new ArrayList<String>();
 
@@ -197,7 +202,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		gz.run();
 		int[] sum = new int[2];
-		for (TestResult tr : gz.getTestResults()) {
+		List<TestResult> testResults = gz.getTestResults();
+		for (TestResult tr : testResults) {
 			String testName = tr.getName().split("#")[0];
 			if (testName.startsWith("junit")) {
 				continue;
@@ -224,7 +230,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
 
 		List<Statement> gzCandidates = new ArrayList();
-		List<TestResult> testResults = gz.getTestResults();
+
 		logger.info("nr test results " + testResults.size());
 		for (Statement gzoltarStatement : gz.getSuspiciousStatements()) {
 			String compName = gzoltarStatement.getMethod().getParent().getLabel();

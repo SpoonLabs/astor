@@ -5,11 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -237,7 +236,7 @@ public class GZoltarFaultLocalizationTest {
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
-		Set<String> classPath = new HashSet<>();
+		List<String> classPath = new ArrayList<>();
 		for (URL dep : main1.getEngine().getProjectFacade().getProperties().getDependencies()) {
 			classPath.add(dep.getPath());
 		}
