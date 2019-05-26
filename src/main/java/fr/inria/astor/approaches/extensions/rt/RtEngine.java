@@ -118,11 +118,29 @@ public class RtEngine extends AstorCoreEngine {
 					executedStatement);
 		}
 
+		// Check results
+		List<String> notexec = new ArrayList<>();
+		for (String test : allTestCases) {
+
+			if (!mapLinesCovered.containsKey(test)) {
+				log.error("Test " + test + " not executed");
+				notexec.add(test);
+			}
+		}
+		if (!notexec.isEmpty()) {
+			log.error("nr test not ex " + notexec.size());
+			// throw new IllegalStateException("Not executed tests");
+		}
+
 		resultByTest = new ArrayList<>();
 
 		// For each class name
 		for (String aNameOfTestClass : allTestCases) {
 
+			if (notexec.contains(aNameOfTestClass)) {
+				log.debug("Ignoring -not executed line- test: " + aNameOfTestClass);
+				continue;
+			}
 			log.info("*-*-*-*----- Analying TestClass: " + aNameOfTestClass);
 			CtClass aTestModelCtClass = MutationSupporter.getFactory().Class().get(aNameOfTestClass);
 			if (aTestModelCtClass == null) {
@@ -368,15 +386,17 @@ public class RtEngine extends AstorCoreEngine {
 			CtClass aTestModelCtClass, CtClass ctclassFromAssert) {
 
 		// the location of the assertion contained in the helper
-		String keyLocationAssertion = ctclassFromAssert.getQualifiedName() + elementToCheck.getPosition().getLine();
+		int init = elementToCheck.getPosition().getLine();
+		int end = elementToCheck.getPosition().getEndLine();
+		for (int i = init; i <= end; i++) {
+			String keyLocationAssertion = ctclassFromAssert.getQualifiedName() + i;
 
-		if (checkCoverLine(cacheSuspicious, aTestModelCtClass, keyLocationAssertion))
-			return true;
+			if (checkCoverLine(cacheSuspicious, aTestModelCtClass, keyLocationAssertion))
+				return true;
 
-		// let's try matching with the end line
-		keyLocationAssertion = ctclassFromAssert.getQualifiedName() + elementToCheck.getPosition().getEndLine();
+		}
+		return false;
 
-		return checkCoverLine(cacheSuspicious, aTestModelCtClass, keyLocationAssertion);
 	}
 
 	public boolean checkCoverLine(Map<String, SuspiciousCode> cacheSuspicious, CtClass aTestModelCtClass,
@@ -407,6 +427,7 @@ public class RtEngine extends AstorCoreEngine {
 
 				result.getResultNotExecuted().add(anAssertFromTest);
 				log.info("Not covered: " + anAssertFromTest + " at " + aTestModelCtClass.getQualifiedName());
+				isCovered(linesCovered, anAssertFromTest, aTestModelCtClass);
 			} else {
 				result.getResultExecuted().add(anAssertFromTest);
 			}
@@ -553,10 +574,15 @@ public class RtEngine extends AstorCoreEngine {
 		if (!executedLines.containsKey(className))
 			return false;
 		List<Integer> linesOfTestCase = executedLines.get(className);
-		if (linesOfTestCase.contains(aStatementNotInvoked.getPosition().getLine())
-				|| linesOfTestCase.contains(aStatementNotInvoked.getPosition().getEndLine())) {
-			return true;
+		int start = aStatementNotInvoked.getPosition().getLine();
+		int end = aStatementNotInvoked.getPosition().getEndLine();
+
+		for (int i = start; i <= end; i++) {
+			if (linesOfTestCase.contains(i)) {
+				return true;
+			}
 		}
+
 		return false;
 	}
 
