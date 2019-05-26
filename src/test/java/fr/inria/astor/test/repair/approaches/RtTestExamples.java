@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -68,13 +69,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> rottens = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).findFirst();
 
-		assertFalse(rottens.isEmpty());
-		assertEquals(1, rottens.size());
+		assertTrue(rotten0OP.isPresent());
 
-		TestClassificationResult rottenTest0 = rottens.get(0);
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(1, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
@@ -119,12 +119,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> rottens = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).findFirst();
 
-		assertFalse(rottens.isEmpty());
+		assertTrue(rotten0OP.isPresent());
 
-		TestClassificationResult rottenTest0 = rottens.get(0);
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0);
@@ -167,12 +167,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> rottens = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).findFirst();
 
-		assertFalse(rottens.isEmpty());
+		assertTrue(rotten0OP.isPresent());
 
-		TestClassificationResult rottenTest0 = rottens.get(0);
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0);
@@ -206,12 +206,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> testO = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
-				.collect(Collectors.toList());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
 
-		assertFalse(testO.isEmpty());
+		assertTrue(rotten0OP.isPresent());
 
-		TestClassificationResult rottenTest0 = testO.get(0);
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 		assertFalse(rottenTest0.isRotten());
 		assertFalse(rottenTest0.isFullR());
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
@@ -241,13 +241,13 @@ public class RtTestExamples {
 		// self
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
 
-		List<TestClassificationResult> testO = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
-				.collect(Collectors.toList());
+		assertTrue(rotten0OP.isPresent());
 
-		assertFalse(testO.isEmpty());
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 
-		TestClassificationResult rottenTest0 = testO.get(0);
 		assertFalse(rottenTest0.isRotten());
 		assertFalse(rottenTest0.isFullR());
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
@@ -280,13 +280,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> norottens = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
-				.collect(Collectors.toList());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
 
-		assertFalse(norottens.isEmpty());
-		assertEquals(1, norottens.size());
+		assertTrue(rotten0OP.isPresent());
 
-		TestClassificationResult norotten = norottens.get(0);
+		TestClassificationResult norotten = rotten0OP.get();
 
 		assertFalse(norotten.isRotten());
 
@@ -321,12 +320,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> rottens = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).findFirst();
 
-		assertFalse(rottens.isEmpty());
+		assertTrue(rotten0OP.isPresent());
 
-		TestClassificationResult rottenTest0 = rottens.get(0);
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0);
@@ -359,12 +358,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> rottens = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).findFirst();
 
-		assertFalse(rottens.isEmpty());
+		assertTrue(rotten0OP.isPresent());
 
-		TestClassificationResult rottenTest0 = rottens.get(0);
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0);
@@ -390,12 +389,12 @@ public class RtTestExamples {
 
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> targetTestCase = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0")).collect(Collectors.toList());
-		assertEquals(1, targetTestCase.size());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
 
-		// assert: rottenTestsFound rottenTests isEmpty
-		TestClassificationResult rottenTest0 = targetTestCase.get(0);
+		assertTrue(rotten0OP.isPresent());
+
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertFalse(rottenTest0.isRotten());
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
@@ -431,11 +430,12 @@ public class RtTestExamples {
 
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> targetTestCase = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
-		assertEquals(1, targetTestCase.size());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
 
-		TestClassificationResult rottenTest0 = targetTestCase.get(0);
+		assertTrue(rotten0OP.isPresent());
+
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 		assertTrue(rottenTest0.isRotten());
 
 		// Not assertion found in code (even it's executed via 'perform')
@@ -477,12 +477,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> rottens = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
 
-		assertFalse(rottens.isEmpty());
+		assertTrue(rotten0OP.isPresent());
 
-		TestClassificationResult rottenTest0 = rottens.get(0);
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
@@ -525,12 +525,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> rottens = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
 
-		assertFalse(rottens.isEmpty());
+		assertTrue(rotten0OP.isPresent());
 
-		TestClassificationResult rottenTest0 = rottens.get(0);
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
@@ -568,21 +568,104 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		assertEquals(1, tc.size());
 
-		List<TestClassificationResult> rottens = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
-				.collect(Collectors.toList());
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
 
-		assertFalse(rottens.isEmpty());
+		assertTrue(rotten0OP.isPresent());
 
-		TestClassificationResult rottenTest0 = rottens.get(0);
+		TestClassificationResult rottenTest0 = rotten0OP.get();
 		// TODO: must be detected as rotten?
 		assertTrue(rottenTest0.isRotten());
 
+		checkIsEmpty(rottenTest0);
+
+	}
+
+	// { #category : #tests }
+	// self
+	// assert: rottenTestsFound rottenTests isEmpty
+	@Test
+	public void testRow014() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		List<TestClassificationResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass()
+						.contains("RTFRow14HelperNotExecutedAssertionExecutedContainsNoHelperContainsNoAssertion"))
+				.collect(Collectors.toList());
+
+		assertFalse(tc.isEmpty());
+		// self
+		// assert: rottenTestsFound rottenTests size equals: 1;
+		assertEquals(1, tc.size());
+
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
+
+		assertTrue(rotten0OP.isPresent());
+
+		TestClassificationResult rottenTest0 = rotten0OP.get();
+		// TODO: must be detected as rotten?
+		assertTrue(rottenTest0.isRotten());
+		assertTrue(rottenTest0.isFullR());
+
+		checkIsEmpty(rottenTest0);
+
+	}
+
+//	self
+	// assert: rottenTestsFound rottenTests isEmpty
+	@Test
+	public void testRow015() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		List<TestClassificationResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass()
+						.contains("RTFRow15HelperExecutedAssertionNotExecutedContainsNoHelperContainsNoAssertion"))
+				.collect(Collectors.toList());
+
+		assertFalse(tc.isEmpty());
+		// self
+		// assert: rottenTestsFound rottenTests size equals: 1;
+		assertEquals(2, tc.size());
+
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
+
+		assertTrue(rotten0OP.isPresent());
+
+		TestClassificationResult rottenTest0 = rotten0OP.get();
+		// TODO: must be detected as rotten?
+		assertTrue(rottenTest0.isRotten());
+		assertTrue(rottenTest0.isFullR());
+
+		checkIsEmpty(rottenTest0);
+
+		Optional<TestClassificationResult> rotten1OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test2")).findFirst();
+
+		assertTrue(rotten0OP.isPresent());
+
+		TestClassificationResult rottenTest1 = rotten1OP.get();
+		// TODO: must be detected as rotten?
+		assertTrue(rottenTest1.isRotten());
+		assertTrue(rottenTest1.isFullR());
+
+		checkIsEmpty(rottenTest1);
+
+	}
+
+	public void checkIsEmpty(TestClassificationResult rottenTest0) {
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperCall().getResultExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperCall().getResultNotExecuted().size());
-
 	}
 
 	// self

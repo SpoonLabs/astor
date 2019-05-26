@@ -10,9 +10,8 @@ public class AbstractRtTestCase extends TestCase {
 	 * ]
 	 */
 
-	// @Test
 	public void goodHelper() {
-		this.assertTrue(true);
+		this.assertTrue(1 > 0);
 	}
 
 	/**
@@ -20,7 +19,6 @@ public class AbstractRtTestCase extends TestCase {
 	 * self goodHelper ]
 	 */
 
-	// @Test
 	public void goodHelperWrapper() {
 		this.goodHelper();
 	}
@@ -30,7 +28,6 @@ public class AbstractRtTestCase extends TestCase {
 	 * methodDoingNothing [ "Do nothing on purpose." ]
 	 * 
 	 */
-	// @Test
 	public void methodDoingNothing() {
 		System.out.println("Nothing");
 	}
@@ -42,8 +39,30 @@ public class AbstractRtTestCase extends TestCase {
 
 	public void rottenHelper() {
 		if (false) {
-			this.assertTrue(true);
+			this.assertTrue(1 > 0);
 		}
 	}
 
+	protected void perform(Object receiver, String methodName) {
+		java.lang.reflect.Method method;
+		try {
+			method = receiver.getClass().getMethod(methodName);
+			method.invoke(receiver);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	protected void performAssert(Object receiver, String methodName) {
+		java.lang.reflect.Method method;
+		try {
+			method = receiver.getClass().getMethod(methodName, boolean.class);
+			// for simplicity, we pass value 'true'
+			method.invoke(receiver, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 }
