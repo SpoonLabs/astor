@@ -1,9 +1,7 @@
 package fr.inria.astor.approaches.extensions.rt;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +20,8 @@ import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.util.MapList;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.LineFilter;
@@ -86,12 +87,11 @@ public class RtEngine extends AstorCoreEngine {
 
 		}
 
-		assertNotNull(allTestCases);
-		assertTrue(allTestCases.size() > 0);
-		log.debug("# Test cases: " + allTestCases.size());
+		if (allTestCases.isEmpty()) {
+			throw new IllegalStateException("No test to execute");
+		}
 
-		// Let's compute the suspicious code
-		// List<SuspiciousCode> allExecutedStatements = this.calculateSuspicious();
+		log.debug("# Test cases: " + allTestCases.size());
 
 		// key is test class, values are method (cases)
 		MapList<String, String> passingCoveredTestCaseFromClass = new MapList<>();
@@ -188,7 +188,7 @@ public class RtEngine extends AstorCoreEngine {
 
 				List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, aTestModelCtClass);
 
-				Classification<CtInvocation> rAssert = classifyAssertions(testMethodModel, mapLinesCovered,
+				Classification<AsAssertion> rAssert = classifyAssertions(testMethodModel, mapLinesCovered,
 						aTestModelCtClass, allAssertionsFromTest);
 
 				Classification<Helper> rHelperAssertion = classifyHelpersAssertionExecution(aTestModelCtClass,
@@ -268,14 +268,14 @@ public class RtEngine extends AstorCoreEngine {
 	public class TestClassificationResult {
 		String nameOfTestClass;
 		String testMethodFromClass;
-		Classification<CtInvocation> rAssert = null;
+		Classification<AsAssertion> rAssert = null;
 		Classification<Helper> rHelperAssertion = null;
 		Classification<Helper> rHelperCall = null;
 		boolean isFullR = false;
 		List<CtInvocation> allMissedFailFromTest;
 		List<CtReturn> allSkipFromTest;
 
-		public TestClassificationResult(Classification<CtInvocation> rAssert, Classification<Helper> rHelperAssertion,
+		public TestClassificationResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
 				List<CtInvocation> allMissedFailFromTest, List<CtReturn> allSkipFromTest, boolean isFullR) {
 			super();
@@ -289,7 +289,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.isFullR = isFullR;
 		}
 
-		public Classification<CtInvocation> getClassificationAssert() {
+		public Classification<AsAssertion> getClassificationAssert() {
 			return rAssert;
 		}
 
@@ -351,7 +351,8 @@ public class RtEngine extends AstorCoreEngine {
 		Classification<Helper> result = new Classification<>();
 		for (Helper aHelper : allHelperInvocationFromTest) {
 
-			CtInvocation assertion = (checkAssertion) ? aHelper.getAssertion() : aHelper.getCalls().get(0);
+			CtInvocation assertion = (checkAssertion) ? aHelper.getAssertion().getCtAssertion()
+					: aHelper.getCalls().get(0);
 			CtClass ctclassFromAssert = assertion.getParent(CtClass.class);
 
 			boolean covered = isCovered(cacheSuspicious, assertion, aTestModelCtClass, ctclassFromAssert);
@@ -365,6 +366,7 @@ public class RtEngine extends AstorCoreEngine {
 		return result;
 	}
 
+	@Deprecated
 	private Classification<Helper> classifyHelpersInvocationExecution(CtClass aTestModelCtClass,
 			List<Helper> allHelperInvocationFromTest, Map<String, SuspiciousCode> cacheSuspicious) {
 
@@ -417,32 +419,55 @@ public class RtEngine extends AstorCoreEngine {
 		return false;
 	}
 
-	public Classification<CtInvocation> classifyAssertions(CtExecutable methodOfAssertment,
+	public Classification<AsAssertion> classifyAssertions(CtExecutable methodOfAssertment,
 			MapList<String, Integer> linesCovered, CtClass aTestModelCtClass,
 			List<CtInvocation> allAssertionsFromTest) {
-		Classification<CtInvocation> result = new Classification<>();
+		Classification<AsAssertion> result = new Classification<>();
 		// For each assert
 		for (CtInvocation anAssertFromTest : allAssertionsFromTest) {
 
 			boolean covered = isCovered(linesCovered, anAssertFromTest, aTestModelCtClass);
 			if (!covered) {
 
-				result.getResultNotExecuted().add(anAssertFromTest);
+				result.getResultNotExecuted().add(new AsAssertion(anAssertFromTest));
 				log.info("Not covered: " + anAssertFromTest + " at " + aTestModelCtClass.getQualifiedName());
 				isCovered(linesCovered, anAssertFromTest, aTestModelCtClass);
 			} else {
-				result.getResultExecuted().add(anAssertFromTest);
+				result.getResultExecuted().add(new AsAssertion(anAssertFromTest));
 			}
 		}
 		return result;
 	}
 
+	public class AsAssertion {
+
+		CtInvocation assertion = null;
+
+		public AsAssertion(CtInvocation assertion) {
+			super();
+			this.assertion = assertion;
+		}
+
+		public CtInvocation getCtAssertion() {
+			return assertion;
+		}
+
+		public void setAssertion(CtInvocation assertion) {
+			this.assertion = assertion;
+		}
+
+		@Override
+		public String toString() {
+			return assertion.toString();
+		}
+	}
+
 	public class Helper {
 
 		List<CtInvocation> calls = new ArrayList();
-		CtInvocation assertion = null;
+		AsAssertion assertion = null;
 
-		public Helper(CtInvocation assertion) {
+		public Helper(AsAssertion assertion) {
 			super();
 			this.assertion = assertion;
 		}
@@ -455,11 +480,11 @@ public class RtEngine extends AstorCoreEngine {
 			this.calls = calls;
 		}
 
-		public CtInvocation getAssertion() {
+		public AsAssertion getAssertion() {
 			return assertion;
 		}
 
-		public void setAssertion(CtInvocation assertion) {
+		public void setAssertion(AsAssertion assertion) {
 			this.assertion = assertion;
 		}
 
@@ -539,7 +564,7 @@ public class RtEngine extends AstorCoreEngine {
 					if (assertionsFromMethod != null && !assertionsFromMethod.isEmpty()) {
 
 						for (CtInvocation assertion : assertionsFromMethod) {
-							Helper aHelper = new Helper(assertion);
+							Helper aHelper = new Helper(new AsAssertion(assertion));
 							helpersMined.add(aHelper);
 							aHelper.getCalls().add(0, targetInvocation);
 						}
@@ -643,14 +668,15 @@ public class RtEngine extends AstorCoreEngine {
 
 			nrRtFully += (tr.isFullR()) ? 1 : 0;
 			// Asserts
-			List<CtInvocation> notExecutedAssert = tr.getClassificationAssert().getResultNotExecuted();
+			List<AsAssertion> notExecutedAssert = tr.getClassificationAssert().getResultNotExecuted();
 			if (!notExecutedAssert.isEmpty()) {
 
 				log.debug("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
 				JsonArray assertionarray = new JsonArray();
 				testjson.add("rotten_assertions", assertionarray);
-				for (CtInvocation anInvocation : notExecutedAssert) {
+				for (AsAssertion assertion : notExecutedAssert) {
+					CtInvocation anInvocation = assertion.getCtAssertion();
 					log.debug("-R-Assertion:-> " + anInvocation);
 					JsonObject singleAssertion = new JsonObject();
 					singleAssertion.addProperty("code", anInvocation.toString());
@@ -738,8 +764,9 @@ public class RtEngine extends AstorCoreEngine {
 		for (Helper anHelper : notExecutedHelper) {
 			log.debug("-Helper-> " + anHelper);
 			JsonObject singleHelper = new JsonObject();
-			singleHelper.addProperty("code_assertion", anHelper.getAssertion().toString());
-			singleHelper.addProperty("line_assertion", anHelper.getAssertion().getPosition().getLine());
+			singleHelper.addProperty("code_assertion", anHelper.getAssertion().getCtAssertion().toString());
+			singleHelper.addProperty("line_assertion",
+					anHelper.getAssertion().getCtAssertion().getPosition().getLine());
 
 			JsonArray callsarray = new JsonArray();
 			for (CtInvocation call : anHelper.getCalls()) {
@@ -786,6 +813,42 @@ public class RtEngine extends AstorCoreEngine {
 		super.atEnd();
 		JsonObject json = toJson();
 		System.out.println("rtjsonoutput: " + json);
+
+	}
+
+	public void checkTwoBranches(Classification<CtInvocation> assertions) {
+
+		for (CtInvocation invocation : assertions.resultNotExecuted) {
+			CtIf parentif = null;
+			boolean inThen = false;
+			// Let's retrieve the parent if (I dont use getParent because I want the
+			// inmediate parent)
+			if (invocation.getParent() instanceof CtIf) {
+				parentif = (CtIf) invocation.getParent();
+				inThen = invocation.getRoleInParent().equals(CtRole.THEN);
+			} else {
+
+				if (invocation.getParent() instanceof CtBlock
+						&& (invocation.getParent().getRoleInParent().equals(CtRole.THEN)
+								|| invocation.getParent().getRoleInParent().equals(CtRole.ELSE))) {
+
+					parentif = (CtIf) invocation.getParent().getParent();
+					inThen = invocation.getParent().getRoleInParent().equals(CtRole.THEN);
+				}
+			}
+			//
+			if (parentif != null) {
+				CtStatement toAnalyze = inThen ? parentif.getThenStatement() : parentif.getElseStatement();
+
+				List<CtStatement> stms = (toAnalyze instanceof CtBlock) ? ((CtBlock) toAnalyze).getStatements()
+						: Collections.singletonList(toAnalyze);
+
+				for (CtStatement anStatement : stms) {
+
+				}
+
+			}
+		}
 
 	}
 
