@@ -1,9 +1,6 @@
 package fr.inria.astor.test.repair.approaches;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
@@ -50,7 +47,8 @@ public class RtTest {
 
 		assertEquals(7, sumAssertionNotExec);
 
-		int sumHelperNotExec = resultByTest.stream().map(e -> e.getClassificationHelperAssertion().getResultNotExecuted().size())
+		int sumHelperNotExec = resultByTest.stream()
+				.map(e -> e.getClassificationHelperAssertion().getResultNotExecuted().size())
 				.collect(Collectors.summingInt(i -> i));
 
 		assertEquals(1, sumHelperNotExec);
@@ -66,114 +64,237 @@ public class RtTest {
 	}
 
 	@Test
-	public void testRow01() throws Exception {
-		RtEngine etEn = detectRt();
+	public void testRT1() throws Exception {
+
+		File location = new File("/Users/matias/develop/rt-research/datasetevaluation/javapoet");
+		String dep = "/Users/matias/.m2/repository/net/bytebuddy/byte-buddy-agent/1.7.9/byte-buddy-agent-1.7.9.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/guava/guava/23.4-android/guava-23.4-android.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/org/objenesis/objenesis/2.6/objenesis-2.6.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/eclipse/jdt/core/compiler/ecj/4.6.1/ecj-4.6.1.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/errorprone/error_prone_annotations/2.1.3/error_prone_annotations-2.1.3.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/junit/junit/4.12/junit-4.12.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/auto/value/auto-value/1.5.3/auto-value-1.5.3.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/com/google/truth/truth/0.39/truth-0.39.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/com/google/jimfs/jimfs/1.1/jimfs-1.1.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/testing/compile/compile-testing/0.15/compile-testing-0.15.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/net/bytebuddy/byte-buddy/1.7.9/byte-buddy-1.7.9.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/truth/extensions/truth-java8-extension/0.37/truth-java8-extension-0.37.jar"
+				+ File.pathSeparator
+				+ "/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/../lib/tools.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/mockito/mockito-core/2.13.0/mockito-core-2.13.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/auto/auto-common/0.9/auto-common-0.9.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/com/google/truth/truth/0.39/truth-0.39.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/guava/guava/23.4-android/guava-23.4-android.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/errorprone/error_prone_annotations/2.1.3/error_prone_annotations-2.1.3.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/testing/compile/compile-testing/0.15/compile-testing-0.15.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/truth/extensions/truth-java8-extension/0.37/truth-java8-extension-0.37.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/auto/value/auto-value/1.5.3/auto-value-1.5.3.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/auto/auto-common/0.9/auto-common-0.9.jar"
+				+ File.pathSeparator
+				+ "/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/../lib/tools.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/junit/junit/4.12/junit-4.12.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/com/google/jimfs/jimfs/1.1/jimfs-1.1.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/mockito/mockito-core/2.13.0/mockito-core-2.13.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/net/bytebuddy/byte-buddy/1.7.9/byte-buddy-1.7.9.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/net/bytebuddy/byte-buddy-agent/1.7.9/byte-buddy-agent-1.7.9.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/org/objenesis/objenesis/2.6/objenesis-2.6.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/eclipse/jdt/core/compiler/ecj/4.6.1/ecj-4.6.1.jar";
+
+		RtEngine etEn = detectRt(location, dep);
 
 		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
 
-		assertNotNull(resultByTest);
-		List<TestClassificationResult> tc = resultByTest.stream()
-				.filter(e -> e.getNameOfTestClass()
-						.equals("RTFRow01HelperExecutedAssertionExecutedContainsHelperContainsAssertion"))
-				.collect(Collectors.toList());
-
-		assertTrue(tc.isEmpty());
-		// assert: rottenTestsFound rottenTests isEmpty
-		// assertFalse(tc.isRotten());
-		// assertFalse(resultByTest.stream().filter(e ->
-		// e.isRotten()).findFirst().isPresent());
+		System.out.println(resultByTest);
 	}
 
-	@Test
-	public void testRow02() throws Exception {
-		RtEngine etEn = detectRt();
-
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
-		assertNotNull(resultByTest);
-
-		List<TestClassificationResult> tc = resultByTest.stream()
-				.filter(e -> e.getNameOfTestClass()
-						.contains("RTFRow02HelperNotExecutedAssertionExecutedContainsHelperContainsAssertion"))
-				.collect(Collectors.toList());
-
-		assertFalse(tc.isEmpty());
-		// self
-		// assert: rottenTestsFound rottenTests size equals: 1;
-		assertEquals(1, tc.size());
-
-		List<TestClassificationResult> rottens = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
-
-		assertFalse(rottens.isEmpty());
-
-	}
-//	{ #category : #tests }
-//	RottenTestsFinderTestForPaper >> testRow03 [
-//		| rottenTestsFound |
-//		rottenTestsFound := RottenTestsFinder analyze: RTFRow03HelperExecutedAssertionNotExecutedContainsHelperContainsAssertion suite.
-//		
-//		self
-//			assert: rottenTestsFound rottenTests size equals: 2;
-//			assert: (rottenTestsFound rottenCompiledMethods anySatisfy: [ :m | 
-//				m methodClass = RTFRow03HelperExecutedAssertionNotExecutedContainsHelperContainsAssertion
-//					and: [ m selector = #test ] ]);
-//			assert: (rottenTestsFound rottenCompiledMethods anySatisfy: [ :m | 
-//				m methodClass = RTFAbstractTestCaseForPaper
-//					and: [ m selector = #rottenHelper ] ])
-//	]
-
-	@Test
-	public void testRow03() throws Exception {
-		RtEngine etEn = detectRt();
-
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
-		assertNotNull(resultByTest);
-
-		List<TestClassificationResult> tc = resultByTest.stream()
-				.filter(e -> e.getNameOfTestClass()
-						.contains("RTFRow03HelperExecutedAssertionNotExecutedContainsHelperContainsAssertion"))
-				.collect(Collectors.toList());
-
-		assertFalse(tc.isEmpty());
-		// self
-		// assert: rottenTestsFound rottenTests size equals: 1;
-		assertEquals(1, tc.size());
-
-		List<TestClassificationResult> rottens = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
-
-		assertFalse(rottens.isEmpty());
-
-		TestClassificationResult rottenTest0 = rottens.get(0);
-
-		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
-		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
-		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
-
-	}
-
-	private RtEngine detectRt() throws Exception {
+	private RtEngine detectRt(File location, String dep) throws Exception {
 		AstorMain main1 = new AstorMain();
 
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		// String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 500;
 
-		String[] args = new String[] { "-dependencies", dep, "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
-				"-stopfirst", "true", "-maxtime", "100",
+		String[] args = new String[] { "-dependencies", dep, "-javacompliancelevel", "10", "-flthreshold", "0.001",
+				"-out", out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen",
+				Integer.toString(generations), "-maxtime", "100",
 
 		};
 		CommandSummary cs = new CommandSummary(args);
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "INFO");
-		cs.command.put("-location", new File("./examples/rt-project").getAbsolutePath());
+		cs.command.put("-location", location.getAbsolutePath()// new File("./examples/rt-project").getAbsolutePath()
+		);
 		cs.command.put("-mode", "custom");
 		cs.command.put("-customengine", RtEngine.class.getCanonicalName());
-		cs.command.put("-parameters", "canhavezerosusp:true");
+		cs.command.put("-parameters", "canhavezerosusp:true:runonoriginalbin:true");
 
 		main1.execute(cs.flat());
 		RtEngine etEn = (RtEngine) main1.getEngine();
 		return etEn;
+	}
+
+	@Test
+	public void testRT1_flikcore() throws Exception {
+
+		File location = new File("/Users/matias/develop/rt-research/datasetevaluation/flink/flink-core/");
+		String dep = "/Users/matias/.m2/repository/org/apache/commons/commons-compress/1.18/commons-compress-1.18.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-reflect/2.0.0-RC.4/powermock-reflect-2.0.0-RC.4.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-shaded-guava/18.0-6.0/flink-shaded-guava-18.0-6.0.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/slf4j/slf4j-log4j12/1.7.15/slf4j-log4j12-1.7.15.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-api-support/2.0.0-RC.4/powermock-api-support-2.0.0-RC.4.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/junit/junit/4.12/junit-4.12.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-api-mockito2/2.0.0-RC.4/powermock-api-mockito2-2.0.0-RC.4.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-annotations/1.9-SNAPSHOT/flink-annotations-1.9-SNAPSHOT.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/org/objenesis/objenesis/2.1/objenesis-2.1.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/mockito/mockito-core/2.21.0/mockito-core-2.21.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-shaded-jackson/2.7.9-6.0/flink-shaded-jackson-2.7.9-6.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/esotericsoftware/minlog/minlog/1.2/minlog-1.2.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-shaded-asm-6/6.2.1-6.0/flink-shaded-asm-6-6.2.1-6.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/esotericsoftware/kryo/kryo/2.24.0/kryo-2.24.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/force-shading/1.9-SNAPSHOT/force-shading-1.9-SNAPSHOT.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/projectlombok/lombok/1.16.20/lombok-1.16.20.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-module-junit4-common/2.0.0-RC.4/powermock-module-junit4-common-2.0.0-RC.4.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/joda-time/joda-time/2.5/joda-time-2.5.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-module-junit4/2.0.0-RC.4/powermock-module-junit4-2.0.0-RC.4.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-core/2.0.0-RC.4/powermock-core-2.0.0-RC.4.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/org/joda/joda-convert/1.7/joda-convert-1.7.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-metrics-core/1.9-SNAPSHOT/flink-metrics-core-1.9-SNAPSHOT.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/net/bytebuddy/byte-buddy/1.8.15/byte-buddy-1.8.15.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-test-utils-junit/1.9-SNAPSHOT/flink-test-utils-junit-1.9-SNAPSHOT.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/javassist/javassist/3.19.0-GA/javassist-3.19.0-GA.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/org/slf4j/slf4j-api/1.7.15/slf4j-api-1.7.15.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/net/bytebuddy/byte-buddy-agent/1.8.15/byte-buddy-agent-1.8.15.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-annotations/1.9-SNAPSHOT/flink-annotations-1.9-SNAPSHOT.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-metrics-core/1.9-SNAPSHOT/flink-metrics-core-1.9-SNAPSHOT.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-shaded-asm-6/6.2.1-6.0/flink-shaded-asm-6-6.2.1-6.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/esotericsoftware/kryo/kryo/2.24.0/kryo-2.24.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/esotericsoftware/minlog/minlog/1.2/minlog-1.2.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/org/objenesis/objenesis/2.1/objenesis-2.1.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/commons/commons-compress/1.18/commons-compress-1.18.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-shaded-guava/18.0-6.0/flink-shaded-guava-18.0-6.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-test-utils-junit/1.9-SNAPSHOT/flink-test-utils-junit-1.9-SNAPSHOT.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/joda-time/joda-time/2.5/joda-time-2.5.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/org/joda/joda-convert/1.7/joda-convert-1.7.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/flink-shaded-jackson/2.7.9-6.0/flink-shaded-jackson-2.7.9-6.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/projectlombok/lombok/1.16.20/lombok-1.16.20.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/apache/flink/force-shading/1.9-SNAPSHOT/force-shading-1.9-SNAPSHOT.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/org/slf4j/slf4j-api/1.7.15/slf4j-api-1.7.15.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/junit/junit/4.12/junit-4.12.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/mockito/mockito-core/2.21.0/mockito-core-2.21.0.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/net/bytebuddy/byte-buddy/1.8.15/byte-buddy-1.8.15.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/net/bytebuddy/byte-buddy-agent/1.8.15/byte-buddy-agent-1.8.15.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-module-junit4/2.0.0-RC.4/powermock-module-junit4-2.0.0-RC.4.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-module-junit4-common/2.0.0-RC.4/powermock-module-junit4-common-2.0.0-RC.4.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-reflect/2.0.0-RC.4/powermock-reflect-2.0.0-RC.4.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-core/2.0.0-RC.4/powermock-core-2.0.0-RC.4.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/javassist/javassist/3.19.0-GA/javassist-3.19.0-GA.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-api-mockito2/2.0.0-RC.4/powermock-api-mockito2-2.0.0-RC.4.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/powermock/powermock-api-support/2.0.0-RC.4/powermock-api-support-2.0.0-RC.4.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/org/hamcrest/hamcrest-all/1.3/hamcrest-all-1.3.jar"
+				+ File.pathSeparator
+				+ "/Users/matias/.m2/repository/org/slf4j/slf4j-log4j12/1.7.15/slf4j-log4j12-1.7.15.jar"
+				+ File.pathSeparator + "/Users/matias/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar";
+		RtEngine etEn = detectRt(location, dep);
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
 	}
 }
