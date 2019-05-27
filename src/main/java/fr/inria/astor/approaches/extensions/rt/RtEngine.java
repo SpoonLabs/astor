@@ -5,9 +5,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -623,15 +625,23 @@ public class RtEngine extends AstorCoreEngine {
 
 		JsonObject root = new JsonObject();
 		root.addProperty("project", this.projectFacade.getProperties().getFixid());
+		JsonObject summary = new JsonObject();
+		root.add("project", summary);
+
+		int nrRtest = 0, nrRtAssertion = 0, nrRtHelperCall = 0, nrRttHelperAssert = 0, nrSkip = 0, nrAllMissed = 0,
+				nrRtFully = 0;
+
 		JsonArray testsAssertionArray = new JsonArray();
 		root.add("tests", testsAssertionArray);
+		Set<String> rTestclasses = new HashSet<>();
 		for (TestClassificationResult tr : resultByTest) {
-
 			JsonObject testjson = new JsonObject();
 			testjson.addProperty("testclass", tr.getNameOfTestClass());
 			testjson.addProperty("testname", tr.getTestMethodFromClass());
 
 			boolean onerotten = false;
+
+			nrRtFully += (tr.isFullR()) ? 1 : 0;
 			// Asserts
 			List<CtInvocation> notExecutedAssert = tr.getClassificationAssert().getResultNotExecuted();
 			if (!notExecutedAssert.isEmpty()) {
@@ -650,7 +660,7 @@ public class RtEngine extends AstorCoreEngine {
 					assertionarray.add(singleAssertion);
 					onerotten = true;
 					singleAssertion.add("parent_types", getParentTypes(anInvocation));
-
+					nrRtAssertion++;
 				}
 			}
 			//
@@ -661,6 +671,7 @@ public class RtEngine extends AstorCoreEngine {
 				JsonArray helperarray = new JsonArray();
 				testjson.add("rotten_helpers_assertion", helperarray);
 				onerotten = helperToJson(onerotten, notExecutedHelper, helperarray);
+				nrRttHelperAssert += notExecutedHelper.size();
 			}
 			//
 			List<Helper> notExecutedHelperInvoc = tr.getClassificationHelperCall().getResultNotExecuted();
@@ -670,6 +681,7 @@ public class RtEngine extends AstorCoreEngine {
 				JsonArray helperarray = new JsonArray();
 				testjson.add("rotten_helpers_call", helperarray);
 				onerotten = helperToJson(onerotten, notExecutedHelperInvoc, helperarray);
+				nrRtHelperCall += notExecutedHelperInvoc.size();
 			}
 
 			//
@@ -683,6 +695,7 @@ public class RtEngine extends AstorCoreEngine {
 					singleSkip.add("parent_types", getParentTypes(skip));
 					onerotten = true;
 					skiprarray.add(singleSkip);
+					nrSkip++;
 				}
 			}
 
@@ -698,21 +711,32 @@ public class RtEngine extends AstorCoreEngine {
 
 					onerotten = true;
 					missrarray.add(missedJson);
+					nrAllMissed++;
 				}
 			}
 
 			///
 			if (onerotten) {
 				testsAssertionArray.add(testjson);
+				nrRtest++;
+				rTestclasses.add(tr.getNameOfTestClass());
+
 			}
 		}
-
+		summary.addProperty("nrRtestclasses", rTestclasses.size());
+		summary.addProperty("nrRtestunit", nrRtest);
+		summary.addProperty("nrRtAssertion", nrRtAssertion);
+		summary.addProperty("nrRtHelperCall", nrRtHelperCall);
+		summary.addProperty("nrRttHelperAssert", nrRttHelperAssert);
+		summary.addProperty("nrSkip", nrSkip);
+		summary.addProperty("nrAllMissed", nrAllMissed);
+		summary.addProperty("nrRtFully", nrRtFully);
 		return root;
 	}
 
 	public boolean helperToJson(boolean onerotten, List<Helper> notExecutedHelper, JsonArray helperarray) {
 		for (Helper anHelper : notExecutedHelper) {
-			System.out.println("--> " + anHelper);
+			log.debug("-Helper-> " + anHelper);
 			JsonObject singleHelper = new JsonObject();
 			singleHelper.addProperty("code_assertion", anHelper.getAssertion().toString());
 			singleHelper.addProperty("line_assertion", anHelper.getAssertion().getPosition().getLine());
