@@ -64,17 +64,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.gzoltar</groupId>
 			<artifactId>gzoltar</artifactId>
 			<version>0.1.1</version>
 		</dependency>
 
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-		</dependency>
 
 		<dependency>
 			<groupId>commons-cli</groupId>
