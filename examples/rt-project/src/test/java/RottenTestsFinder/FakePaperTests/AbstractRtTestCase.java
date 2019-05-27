@@ -1,5 +1,7 @@
 package RottenTestsFinder.FakePaperTests;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 
 @SuppressWarnings("static-access")
@@ -9,6 +11,10 @@ public class AbstractRtTestCase extends TestCase {
 	 * 
 	 * ]
 	 */
+	@Test
+	public void test1() {
+
+	}
 
 	public void goodHelper() {
 		this.assertTrue(1 > 0);
