@@ -1,5 +1,7 @@
 package RottenTestsFinder.FakePaperTests;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 public class RTFRow04HelperNotExecutedAssertionNotExecutedContainsHelperContainsAssertion extends AbstractRtTestCase {
