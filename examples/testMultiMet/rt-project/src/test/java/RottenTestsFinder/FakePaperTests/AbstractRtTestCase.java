@@ -2,9 +2,6 @@ package RottenTestsFinder.FakePaperTests;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 @SuppressWarnings("static-access")
 public class AbstractRtTestCase {
 	/**
@@ -12,12 +9,6 @@ public class AbstractRtTestCase {
 	 * 
 	 * ]
 	 */
-	@Test
-	@Ignore
-	public void test1() {
-		assertTrue(1000 > 50);
-	}
-
 	public void goodHelper() {
 		assertTrue(1 > 0);
 	}
