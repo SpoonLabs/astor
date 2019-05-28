@@ -32,6 +32,7 @@ function compilemaven {
     	    cd $FILE
     	    echo in dir `pwd`
     	    mvn clean
+    	    echo after claning $FILE
         	mvn test -DskipTests
         	cd ../../../
     	fi 

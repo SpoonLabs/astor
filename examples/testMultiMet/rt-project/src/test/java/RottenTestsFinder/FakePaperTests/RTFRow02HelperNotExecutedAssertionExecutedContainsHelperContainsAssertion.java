@@ -15,6 +15,7 @@ public class RTFRow02HelperNotExecutedAssertionExecutedContainsHelperContainsAss
 	 */
 	@Test
 	public void test0() {
+		
 		assertTrue(true);
 		if (false) {
 			this.goodHelper();
