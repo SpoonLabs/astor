@@ -3,6 +3,7 @@
 # compile test projects
 function compile {
     if [[ ! -d "$1target/classes" ]]; then
+    	echo compiling $1
         cd $1
         mvn test -DskipTests
         cd ../../
