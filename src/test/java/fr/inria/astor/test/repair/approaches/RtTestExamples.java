@@ -731,7 +731,7 @@ public class RtTestExamples {
 		CommandSummary cs = new CommandSummary(args);
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "INFO");
-		cs.command.put("-location", new File("./examples/rt-project").getAbsolutePath());
+		cs.command.put("-location", new File("./examples/testMultiMet/rt-project/").getAbsolutePath());
 		cs.command.put("-mode", "custom");
 		cs.command.put("-customengine", RtEngine.class.getCanonicalName());
 		cs.command.put("-parameters", "canhavezerosusp:true");
