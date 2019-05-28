@@ -2,12 +2,20 @@
 
 # compile test projects
 function compile {
+	
     if [[ ! -d "$1target/classes" ]]; then
     	echo compiling $1
         cd $1
         mvn test -DskipTests
         cd ../../
     fi
+}
+
+function compilef {
+		echo compilingf $1
+        cd $1
+        mvn test -DskipTests
+        cd ../../
 }
 
 function compilemaven {
@@ -34,6 +42,7 @@ echo calling compile maven
 compilemaven "examples/testMultiMet/"
 compilemaven "examples/testMet/"
 
+compilef "examples/rt-project/"
 compile "examples/Math-0c1ef/"
 compile "examples/math_85/"
 compile "examples/math_70/"
@@ -53,5 +62,5 @@ compile "examples/lang_55/"
 compile "examples/math_57/"
 compile "examples/math_70_modified/"
 compile "examples/lang_7/"
-compile "examples/rt-project/"
+
 
