@@ -31,6 +31,7 @@ function compilemaven {
 	     if [[ -f "$FILE/pom.xml" ]]; then
     	    cd $FILE
     	    echo in dir `pwd`
+    	    mvn clean
         	mvn test -DskipTests
         	cd ../../../
     	fi 
@@ -43,7 +44,6 @@ echo calling compile maven
 compilemaven "examples/testMultiMet/"
 compilemaven "examples/testMet/"
 
-compilef "examples/rt-project/"
 compile "examples/Math-0c1ef/"
 compile "examples/math_85/"
 compile "examples/math_70/"
