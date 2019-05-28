@@ -14,7 +14,8 @@ function compile {
 function compilef {
 		echo compilingf $1
         cd $1
-        mvn test -DskipTests
+        mvn clean
+        mvn install -DskipTests
         cd ../../
 }
 
