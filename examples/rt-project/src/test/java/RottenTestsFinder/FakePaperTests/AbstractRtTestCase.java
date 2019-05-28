@@ -2,6 +2,7 @@ package RottenTestsFinder.FakePaperTests;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 //import junit.framework.TestCase;
@@ -16,8 +17,9 @@ public class AbstractRtTestCase /* extends TestCase */ {
 	 * ]
 	 */
 	@Test
+	@Ignore
 	public void test1() {
-
+		assertTrue(1 > 0);
 	}
 
 	public void goodHelper() {
