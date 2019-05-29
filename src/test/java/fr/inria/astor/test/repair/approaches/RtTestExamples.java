@@ -348,7 +348,7 @@ public class RtTestExamples {
 	@Test
 	public void testRow08() throws Exception {
 		RtEngine etEn = detectRt();
-
+		System.out.println("Running case 8");
 		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
@@ -356,6 +356,8 @@ public class RtTestExamples {
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow08HelperNotExecutedAssertionNotExecutedContainsNoHelperContainsAssertion"))
 				.collect(Collectors.toList());
+
+		assertNotNull("any test found", tc);
 
 		assertFalse(tc.stream().map(e -> e.getTestMethodFromClass()).collect(Collectors.toList()).toString(),
 				tc.isEmpty());
