@@ -357,7 +357,8 @@ public class RtTestExamples {
 						.contains("RTFRow08HelperNotExecutedAssertionNotExecutedContainsNoHelperContainsAssertion"))
 				.collect(Collectors.toList());
 
-		assertFalse(tc.isEmpty());
+		assertFalse(tc.stream().map(e -> e.getTestMethodFromClass()).collect(Collectors.toList()).toString(),
+				tc.isEmpty());
 		// self
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());

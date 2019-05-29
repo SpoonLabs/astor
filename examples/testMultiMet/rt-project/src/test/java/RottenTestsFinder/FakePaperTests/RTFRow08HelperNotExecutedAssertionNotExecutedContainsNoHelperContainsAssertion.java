@@ -8,7 +8,7 @@ public class RTFRow08HelperNotExecutedAssertionNotExecutedContainsNoHelperContai
 //false ifTrue: [ self assert: true ]
 	@Test
 	public void test0() {
-		if (false) {
+		if (0 > 10) {
 			assertTrue(8 > 1);
 		}
 	}
