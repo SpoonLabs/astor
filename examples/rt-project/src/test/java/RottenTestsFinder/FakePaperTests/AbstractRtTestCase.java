@@ -5,22 +5,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Ignore;
 import org.junit.Test;
 
-//import junit.framework.TestCase;
 
-//import junit.framework.TestCase;
 
 @SuppressWarnings("static-access")
-public class AbstractRtTestCase /* extends TestCase */ {
-	/**
-	 * { #category : #helper } RTFAbstractTestCaseForPaper >> goodHelper [
-	 * 
-	 * ]
-	 */
-	@Test
-	@Ignore
-	public void test1() {
-		assertTrue(1 > 0);
-	}
+public class AbstractRtTestCase {
+	
 
 	public void goodHelper() {
 		assertTrue(1 > 0);
