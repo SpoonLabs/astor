@@ -2,7 +2,7 @@ package RottenTestsFinder.FakePaperTests;
 
 import org.junit.Test;
 
-public class RTFRow13HelperExecutedAssertionExecutedContainsNoHelperContainsNoAssertion extends AbstractRtTestCase {
+public class RTFRow13HelperExecutedAssertionExecutedContainsNoHelperContainsNoAssertion extends AbstractRTestCase {
 
 //self perform: ('as' , 'sert:') asSymbol with: true.
 //	self perform: ('goodHelper' , 'Wrapper') asSymbol

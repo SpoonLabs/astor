@@ -1,17 +1,16 @@
 package RottenTestsFinder.FakePaperTests;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("static-access")
-public class AbstractRtTestCase extends TestCase {
+public class AbstractRTestCase {
 	/**
 	 * { #category : #helper } RTFAbstractTestCaseForPaper >> goodHelper [
 	 * 
 	 * ]
 	 */
-
 	public void goodHelper() {
-		this.assertTrue(1 > 0);
+		assertTrue(1 > 0);
 	}
 
 	/**
@@ -39,7 +38,7 @@ public class AbstractRtTestCase extends TestCase {
 
 	public void rottenHelper() {
 		if (false) {
-			this.assertTrue(1 > 0);
+			assertTrue(1 > 0);
 		}
 	}
 
@@ -64,5 +63,9 @@ public class AbstractRtTestCase extends TestCase {
 			e.printStackTrace();
 		}
 
+	}
+
+	private void newH() {
+		System.out.println("test");
 	}
 }

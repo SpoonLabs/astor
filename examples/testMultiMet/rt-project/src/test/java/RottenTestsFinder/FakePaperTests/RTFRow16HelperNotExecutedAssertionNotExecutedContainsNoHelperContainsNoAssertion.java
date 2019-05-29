@@ -3,7 +3,7 @@ package RottenTestsFinder.FakePaperTests;
 import org.junit.Test;
 
 public class RTFRow16HelperNotExecutedAssertionNotExecutedContainsNoHelperContainsNoAssertion
-		extends AbstractRtTestCase {
+		extends AbstractRTestCase {
 //	{ #category : #tests }
 //	RTFRow16HelperNotExecutedAssertionNotExecutedContainsNoHelperContainsNoAssertion >> test [
 //		"Does nothing."

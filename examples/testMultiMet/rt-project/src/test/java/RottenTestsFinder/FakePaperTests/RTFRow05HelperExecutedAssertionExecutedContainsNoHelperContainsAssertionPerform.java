@@ -1,16 +1,18 @@
 package RottenTestsFinder.FakePaperTests;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 public class RTFRow05HelperExecutedAssertionExecutedContainsNoHelperContainsAssertionPerform
-		extends AbstractRtTestCase {
+		extends AbstractRTestCase {
 //self assert: true.
 
 	// self perform: ('good','Helper') asSymbol
 
 	@Test
 	public void test0() {
-		this.assertTrue(5 > 1);
+		assertTrue(5 > 1);
 		this.perform(this, "goodHelper");
 	}
 }

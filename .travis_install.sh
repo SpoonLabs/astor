@@ -2,11 +2,21 @@
 
 # compile test projects
 function compile {
+	
     if [[ ! -d "$1target/classes" ]]; then
+    	echo compiling $1
         cd $1
         mvn test -DskipTests
         cd ../../
     fi
+}
+
+function compilef {
+		echo compilingf $1
+        cd $1
+        mvn clean
+        mvn install -DskipTests
+        cd ../../
 }
 
 function compilemaven {
@@ -21,6 +31,8 @@ function compilemaven {
 	     if [[ -f "$FILE/pom.xml" ]]; then
     	    cd $FILE
     	    echo in dir `pwd`
+    	    mvn clean
+    	    echo after claning $FILE
         	mvn test -DskipTests
         	cd ../../../
     	fi 
@@ -52,5 +64,5 @@ compile "examples/lang_55/"
 compile "examples/math_57/"
 compile "examples/math_70_modified/"
 compile "examples/lang_7/"
-compile "examples/rt-project"
+
 
