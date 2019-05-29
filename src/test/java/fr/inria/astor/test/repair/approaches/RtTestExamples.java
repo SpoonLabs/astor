@@ -132,8 +132,10 @@ public class RtTestExamples {
 		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
-		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0);
-		assertEquals("org.junit.Assert.assertTrue((3 > 1))", assertionNotExecuted.toString());
+
+		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0)
+				.getCtAssertion();
+		assertEquals("junit.framework.Assert.assertTrue((3 > 1))", assertionNotExecuted.toString());
 
 		assertEquals(1, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
 		Helper helperAssertionNotExec = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().get(0);
@@ -180,8 +182,11 @@ public class RtTestExamples {
 		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
-		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0);
-		assertEquals("org.junit.Assert.assertTrue((4 > 1))", assertionNotExecuted.toString());
+
+		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0)
+				.getCtAssertion();
+		assertEquals("junit.framework.Assert.assertTrue((4 > 1))", assertionNotExecuted.toString());
+
 		assertEquals(1, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
 		Helper helperNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().get(0);
 		assertEquals("org.junit.Assert.assertTrue((1 > 0))", helperNotExecuted.getAssertion().toString());
@@ -333,8 +338,11 @@ public class RtTestExamples {
 		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
-		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0);
-		assertEquals("org.junit.Assert.assertTrue((7 > 1))", assertionNotExecuted.toString());
+
+		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0)
+				.getCtAssertion();
+		assertEquals("junit.framework.Assert.assertTrue((7 > 1))", assertionNotExecuted.toString());
+
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
 
@@ -375,8 +383,11 @@ public class RtTestExamples {
 		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
-		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0);
-		assertEquals("org.junit.Assert.assertTrue((8 > 1))", assertionNotExecuted.toString());
+
+		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0)
+				.getCtAssertion();
+		assertEquals("junit.framework.Assert.assertTrue((8 > 1))", assertionNotExecuted.toString());
+
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
 
