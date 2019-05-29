@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.extensions.rt.RtEngine;
@@ -346,6 +347,7 @@ public class RtTestExamples {
 //			and: [ m selector = #test ] ])
 
 	@Test
+	@Ignore
 	public void testRow08() throws Exception {
 		RtEngine etEn = detectRt();
 		System.out.println("Running case 8");
