@@ -199,6 +199,9 @@ public class RtEngine extends AstorCoreEngine {
 
 				boolean isFullR = allAssertionsFromTest.isEmpty() && allHelperInvocationFromTest.isEmpty();
 
+				checkTwoBranches(rAssert, rAssert, rHelperCall);
+				checkTwoBranches(rHelperCall, rAssert, rHelperCall);
+
 				TestClassificationResult resultTestCase = new TestClassificationResult(rAssert, rHelperAssertion,
 						rHelperCall, aNameOfTestClass, aTestMethodFromClass, allMissedFailFromTest, allSkipFromTest,
 						isFullR);
@@ -439,7 +442,21 @@ public class RtEngine extends AstorCoreEngine {
 		return result;
 	}
 
-	public class AsAssertion {
+	public abstract class TestElement {
+		private boolean fp = false;
+
+		public boolean isFp() {
+			return fp;
+		}
+
+		public void setFp(boolean fp) {
+			this.fp = fp;
+		}
+
+		public abstract CtElement getElement();
+	}
+
+	public class AsAssertion extends TestElement {
 
 		CtInvocation assertion = null;
 
@@ -460,9 +477,15 @@ public class RtEngine extends AstorCoreEngine {
 		public String toString() {
 			return assertion.toString();
 		}
+
+		@Override
+		public CtElement getElement() {
+
+			return assertion;
+		}
 	}
 
-	public class Helper {
+	public class Helper extends TestElement {
 
 		List<CtInvocation> calls = new ArrayList();
 		AsAssertion assertion = null;
@@ -491,6 +514,12 @@ public class RtEngine extends AstorCoreEngine {
 		@Override
 		public String toString() {
 			return "Helper [calls=" + calls + ", assertion=" + assertion + "]";
+		}
+
+		@Override
+		public CtElement getElement() {
+
+			return (this.calls.size() > 0) ? this.calls.get(0) : null;
 		}
 	}
 
@@ -816,9 +845,12 @@ public class RtEngine extends AstorCoreEngine {
 
 	}
 
-	public void checkTwoBranches(Classification<CtInvocation> assertions) {
+	public void checkTwoBranches(Classification<? extends TestElement> assertions,
+			Classification<? extends TestElement> rAssertions, Classification<? extends TestElement> rHelperCall) {
 
-		for (CtInvocation invocation : assertions.resultNotExecuted) {
+		for (TestElement target : rAssertions.resultNotExecuted) {
+
+			CtElement invocation = target.getElement();
 			CtIf parentif = null;
 			boolean inThen = false;
 			// Let's retrieve the parent if (I dont use getParent because I want the
@@ -838,13 +870,27 @@ public class RtEngine extends AstorCoreEngine {
 			}
 			//
 			if (parentif != null) {
-				CtStatement toAnalyze = inThen ? parentif.getThenStatement() : parentif.getElseStatement();
+				CtStatement toAnalyze = inThen ? parentif.getElseStatement() : parentif.getThenStatement();
 
+				// other statements in the other branch
 				List<CtStatement> stms = (toAnalyze instanceof CtBlock) ? ((CtBlock) toAnalyze).getStatements()
 						: Collections.singletonList(toAnalyze);
 
-				for (CtStatement anStatement : stms) {
+				// let's check if exist
 
+				for (CtStatement anStatement : stms) {
+					// let's check if the other branch has executed assertions/helpers
+					boolean exist = rAssertions.getResultExecuted().stream().filter(e -> e.getElement() == anStatement)
+							.findFirst().isPresent();
+
+					exist = exist || rHelperCall.getResultExecuted().stream().filter(e -> e.getElement() == anStatement)
+							.findFirst().isPresent();
+
+					if (exist) {
+						target.setFp(true);
+						log.debug("Found executed in the other branch");
+						break;
+					}
 				}
 
 			}

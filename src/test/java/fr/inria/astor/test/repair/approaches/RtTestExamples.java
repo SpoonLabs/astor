@@ -15,6 +15,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.extensions.rt.RtEngine;
+import fr.inria.astor.approaches.extensions.rt.RtEngine.AsAssertion;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.Helper;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.TestClassificationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -734,6 +735,42 @@ public class RtTestExamples {
 		assertEquals(0, rottenTest2.getClassificationHelperCall().getResultExecuted().size());
 		assertTrue(rottenTest2.isFullR());
 
+	}
+
+	@Test
+	public void testRow017() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		List<TestClassificationResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass().contains("RTFRow017")).collect(Collectors.toList());
+
+		assertFalse(tc.isEmpty());
+
+		checkFp(tc, true, "test0");
+
+		checkFp(tc, false, "test1");
+
+		checkFp(tc, true, "test2");
+
+		checkFp(tc, false, "test3");
+	}
+
+	private void checkFp(List<TestClassificationResult> tc, boolean toverif, String testname) {
+		Optional<TestClassificationResult> rotten01 = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals(testname)).findFirst();
+
+		assertTrue(rotten01.isPresent());
+
+		TestClassificationResult rtest1 = rotten01.get();
+
+		assertEquals(1, rtest1.getClassificationAssert().getResultNotExecuted().size());
+
+		AsAssertion rtas1 = rtest1.getClassificationAssert().getResultNotExecuted().get(0);
+
+		assertEquals("--> FP", toverif, rtas1.isFp());
 	}
 
 	private RtEngine detectRt() throws Exception {

@@ -17,4 +17,41 @@ public class RTFRow017 extends AbstractRTestCase {
 			assertTrue(a >= 0);
 		}
 	}
+
+	@Test
+	public void test1() {
+		int a = 0;
+		assertTrue(a >= 0);
+		if (false) {
+			System.out.println("then branch");
+			assertTrue(a < 0);
+		} else {
+			System.out.println("else branch");
+		}
+	}
+
+	@Test
+	public void test2() {
+		int a = 0;
+		assertTrue(a >= 0);
+		if (false) {
+			System.out.println("then branch");
+			assertTrue(a < 0);
+		} else {
+			this.goodHelper();
+		}
+	}
+
+	@Test
+	public void test3() {
+		int a = 0;
+		assertTrue(a >= 0);
+		if (false) {
+			System.out.println("then branch");
+			assertTrue(a < 0);
+		} else {
+			System.out.println("else branch");
+		}
+		this.goodHelper();
+	}
 }
