@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class RTFRow017 extends AbstractRtTestCase {
+public class RTFRow017 extends AbstractRTestCase {
 
 	@Test
 	public void test0() {

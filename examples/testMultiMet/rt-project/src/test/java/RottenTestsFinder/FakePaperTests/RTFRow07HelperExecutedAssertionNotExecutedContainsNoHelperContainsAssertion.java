@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class RTFRow07HelperExecutedAssertionNotExecutedContainsNoHelperContainsAssertion extends AbstractRtTestCase {
+public class RTFRow07HelperExecutedAssertionNotExecutedContainsNoHelperContainsAssertion extends AbstractRTestCase {
 //false
 //	ifTrue: [ self assert: true ].	
 //self perform: ('rotten','Helper') asSymbol

@@ -3,7 +3,7 @@ package RottenTestsFinder.FakePaperTests;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("static-access")
-public class AbstractRtTestCase {
+public class AbstractRTestCase {
 	/**
 	 * { #category : #helper } RTFAbstractTestCaseForPaper >> goodHelper [
 	 * 
@@ -63,5 +63,9 @@ public class AbstractRtTestCase {
 			e.printStackTrace();
 		}
 
+	}
+
+	private void newH() {
+		System.out.println("test");
 	}
 }

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class RTFRow01HelperExecutedAssertionExecutedContainsHelperContainsAssertion extends AbstractRtTestCase {
+public class RTFRow01HelperExecutedAssertionExecutedContainsHelperContainsAssertion extends AbstractRTestCase {
 
 	/**
 	 * { #category : #tests }
