@@ -126,7 +126,7 @@ public class ConfigurationTest extends BaseEvolutionaryTest {
 		// String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		String[] args = new String[] { // "-dependencies", dep,
 				"-mode", "jgenprog", "-failing", "org.apache.commons.math.distribution.NormalDistributionTest",
-				"-location", new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons",
+				"-location", new File("./examples/math_85/").getAbsolutePath(), "-package", "org.apache.commons",
 				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
 				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5",
 				"-stopfirst", "false",
@@ -136,7 +136,6 @@ public class ConfigurationTest extends BaseEvolutionaryTest {
 				ShortestIngredientSearchStrategy.class.getName() };
 
 		main1.execute(args);
-		JGenProg astor = (JGenProg) main1.getEngine();
 		String jdk = ConfigurationProperties.getProperty("jvm4testexecution");
 		String jdkaltern = ConfigurationProperties.getProperty("jvm4evosuitetestexecution");
 		Assert.assertEquals(jdk, jdkaltern);
