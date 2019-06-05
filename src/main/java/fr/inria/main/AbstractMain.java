@@ -715,7 +715,7 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("srctestfolder", testProp);
 			ConfigurationProperties.properties.setProperty("binjavafolder", binSourcesP);
 			ConfigurationProperties.properties.setProperty("bintestfolder", binTestsP);
-			ConfigurationProperties.properties.setProperty("dependencies", classpathP);
+			ConfigurationProperties.properties.setProperty("dependenciespath", classpathP);
 
 		} catch (Exception e) {
 			e.printStackTrace();
