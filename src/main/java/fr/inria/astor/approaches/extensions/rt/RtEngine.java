@@ -99,14 +99,15 @@ public class RtEngine extends AstorCoreEngine {
 		for (SuspiciousCode executed : allExecutedStatements) {
 
 			for (TestCaseResult tcr : executed.getCoveredByTests()) {
+				String testCaseName = formatTestCaseName(tcr.getTestCaseName());
 				if (tcr.isCorrect() && (
 				// Test class not analyzed
 				!passingCoveredTestCaseFromClass.containsKey(tcr.getTestCaseClass())
 						// test method not analyzed
 
 						|| !passingCoveredTestCaseFromClass.get(tcr.getTestCaseClass()) // executed.getClassName()
-								.contains(tcr.getTestCaseName())))
-					passingCoveredTestCaseFromClass.add(tcr.getTestCaseClass(), tcr.getTestCaseName());
+								.contains(testCaseName)))
+					passingCoveredTestCaseFromClass.add(tcr.getTestCaseClass(), testCaseName);
 			}
 		}
 
@@ -213,6 +214,15 @@ public class RtEngine extends AstorCoreEngine {
 
 		log.info("End processing RT");
 
+	}
+
+	private String formatTestCaseName(String testCaseName) {
+		int i = testCaseName.indexOf("[");
+		if (i > 0)
+			return testCaseName.substring(0, i);
+
+		else
+			return testCaseName;
 	}
 
 	private List<CtInvocation> filterMissedFail(List<CtInvocation> allAssertionsFromTest) {
@@ -681,6 +691,12 @@ public class RtEngine extends AstorCoreEngine {
 		root.addProperty("project", this.projectFacade.getProperties().getFixid());
 		JsonObject summary = new JsonObject();
 		root.add("project", summary);
+		String commitid = ConfigurationProperties.getProperty("commitid");
+		String branch = ConfigurationProperties.getProperty("gitbranch");
+		String projectname = ConfigurationProperties.getProperty("projectname");
+		root.addProperty("commitid", commitid);
+		// root.addProperty("gitbranch",
+		// ConfigurationProperties.getProperty("commitid"));
 
 		int nrRtest = 0, nrRtAssertion = 0, nrRtHelperCall = 0, nrRttHelperAssert = 0, nrSkip = 0, nrAllMissed = 0,
 				nrRtFully = 0;
@@ -712,6 +728,10 @@ public class RtEngine extends AstorCoreEngine {
 					singleAssertion.addProperty("line", anInvocation.getPosition().getLine());
 					singleAssertion.addProperty("path", getRelativePath(anInvocation));
 
+					if (projectname != null && branch != null && commitid != null) {
+						singleAssertion.addProperty("githublink", "https://github.com/" + projectname + "/tree/"
+								+ branch + "/" + getRelativePath(anInvocation));
+					}
 					assertionarray.add(singleAssertion);
 					onerotten = true;
 					singleAssertion.add("parent_types", getParentTypes(anInvocation));
