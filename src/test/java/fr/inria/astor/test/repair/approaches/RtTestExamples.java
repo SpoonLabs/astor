@@ -756,6 +756,8 @@ public class RtTestExamples {
 		checkFp(tc, true, "test2");
 
 		checkFp(tc, false, "test3");
+
+		checkFpHelper(tc, true, "test4");
 	}
 
 	private void checkFp(List<TestClassificationResult> tc, boolean toverif, String testname) {
@@ -769,6 +771,21 @@ public class RtTestExamples {
 		assertEquals(1, rtest1.getClassificationAssert().getResultNotExecuted().size());
 
 		AsAssertion rtas1 = rtest1.getClassificationAssert().getResultNotExecuted().get(0);
+
+		assertEquals("--> FP", toverif, rtas1.isFp());
+	}
+
+	private void checkFpHelper(List<TestClassificationResult> tc, boolean toverif, String testname) {
+		Optional<TestClassificationResult> rotten01 = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals(testname)).findFirst();
+
+		assertTrue(rotten01.isPresent());
+
+		TestClassificationResult rtest1 = rotten01.get();
+
+		assertEquals(1, rtest1.getClassificationHelperAssertion().getResultNotExecuted().size());
+
+		Helper rtas1 = rtest1.getClassificationHelperAssertion().getResultNotExecuted().get(0);
 
 		assertEquals("--> FP", toverif, rtas1.isFp());
 	}

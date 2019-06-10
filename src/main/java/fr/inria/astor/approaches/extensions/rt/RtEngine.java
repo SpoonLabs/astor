@@ -207,8 +207,9 @@ public class RtEngine extends AstorCoreEngine {
 
 				boolean isFullR = allAssertionsFromTest.isEmpty() && allHelperInvocationFromTest.isEmpty();
 
-				checkTwoBranches(rAssert, rAssert, rHelperCall);
-				checkTwoBranches(rHelperCall, rAssert, rHelperCall);
+				checkTwoBranches(rAssert, rAssert, rHelperCall, rHelperAssertion);
+				checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
+				checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
 
 				TestClassificationResult resultTestCase = new TestClassificationResult(rAssert, rHelperAssertion,
 						rHelperCall, aNameOfTestClass, aTestMethodFromClass, allMissedFailFromTest, allSkipFromTest,
@@ -377,8 +378,11 @@ public class RtEngine extends AstorCoreEngine {
 
 			boolean covered = isCovered(cacheSuspicious, assertion, aTestModelCtClass, ctclassFromAssert);
 			if (!covered) {
-
 				result.getResultNotExecuted().add(aHelper);
+				if (checkAssertion)
+					aHelper.unexecutedAssert = true;
+				else
+					aHelper.unexecutedCall = true;
 			} else {
 				result.getResultExecuted().add(aHelper);
 			}
@@ -506,6 +510,8 @@ public class RtEngine extends AstorCoreEngine {
 
 		List<CtInvocation> calls = new ArrayList();
 		AsAssertion assertion = null;
+		public boolean unexecutedAssert = false;
+		public boolean unexecutedCall = false;
 
 		public Helper(AsAssertion assertion) {
 			super();
@@ -734,6 +740,7 @@ public class RtEngine extends AstorCoreEngine {
 					jsonsingleAssertion.addProperty("code", anInvocation.toString());
 					jsonsingleAssertion.addProperty("line", anInvocation.getPosition().getLine());
 					jsonsingleAssertion.addProperty("path", getRelativePath(anInvocation));
+					jsonsingleAssertion.addProperty("inbranch", assertion.isFp());
 
 					writeJsonLink(commitid, branch, remote, projectsubfolder, anInvocation, jsonsingleAssertion);
 					assertionarray.add(jsonsingleAssertion);
@@ -856,7 +863,7 @@ public class RtEngine extends AstorCoreEngine {
 
 			JsonObject assertionjson = getJsonElement(commitid, branch, remote, projectsubfolder, ctAssertion);
 			jsonsingleHelper.add("assertion", assertionjson);
-
+			jsonsingleHelper.addProperty("inbranch", anHelper.isFp());
 			JsonArray callsarray = new JsonArray();
 			for (CtInvocation call : anHelper.getCalls()) {
 				// callsarray.add(call.toString());
@@ -926,8 +933,10 @@ public class RtEngine extends AstorCoreEngine {
 		System.out.println("rtjsonoutput: " + json);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String ppjson = gson.toJson(json);
-		String outpath = ConfigurationProperties.getProperty("workingDirectory") + File.separator
-				+ ConfigurationProperties.getProperty("id") + ".json";
+
+		String out = (ConfigurationProperties.getProperty("out") != null) ? ConfigurationProperties.getProperty("out")
+				: ConfigurationProperties.getProperty("workingDirectory");
+		String outpath = out + File.separator + ConfigurationProperties.getProperty("id") + ".json";
 		log.info("Saving json at " + outpath);
 		try {
 			FileWriter fw = new FileWriter(new File(outpath));
@@ -939,15 +948,17 @@ public class RtEngine extends AstorCoreEngine {
 			e.printStackTrace();
 			log.error(e);
 		}
-
 	}
 
-	public void checkTwoBranches(Classification<? extends TestElement> assertions,
-			Classification<? extends TestElement> rAssertions, Classification<? extends TestElement> rHelperCall) {
+	public void checkTwoBranches(Classification<? extends TestElement> elementsToClassify,
+			Classification<? extends TestElement> rAssertions, Classification<? extends TestElement> rHelperCall,
+			Classification<Helper> rHelperAssertion) {
 
-		for (TestElement target : rAssertions.resultNotExecuted) {
+		for (TestElement target : elementsToClassify.resultNotExecuted) {
 
-			CtElement invocation = target.getElement();
+			CtElement invocation = (target instanceof Helper && ((Helper) target).unexecutedAssert)
+					? ((Helper) target).getAssertion().getElement()
+					: target.getElement();
 			CtIf parentif = null;
 			boolean inThen = false;
 			// Let's retrieve the parent if (I dont use getParent because I want the
@@ -980,8 +991,13 @@ public class RtEngine extends AstorCoreEngine {
 					boolean exist = rAssertions.getResultExecuted().stream().filter(e -> e.getElement() == anStatement)
 							.findFirst().isPresent();
 
+					// helper
 					exist = exist || rHelperCall.getResultExecuted().stream().filter(e -> e.getElement() == anStatement)
 							.findFirst().isPresent();
+
+					// Assertion executed by a helper
+					exist = exist || rHelperAssertion.getResultExecuted().stream()
+							.filter(e -> e.getAssertion().getCtAssertion() == anStatement).findFirst().isPresent();
 
 					if (exist) {
 						target.setFp(true);

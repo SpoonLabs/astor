@@ -54,4 +54,18 @@ public class RTFRow017 extends AbstractRTestCase {
 		}
 		this.goodHelper();
 	}
+
+	@Test
+	public void test4() {
+		mytesthelper();
+	}
+
+	private void mytesthelper() {
+		if (false) {
+			assertTrue(10 > 8);
+		} else {
+			assertTrue(10 > 9);
+		}
+
+	}
 }
