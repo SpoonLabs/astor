@@ -143,25 +143,38 @@ public class RtTest {
 	}
 
 	private RtEngine detectRt(File location, String dep) throws Exception {
+		return detectRt(location, dep, null, null);
+
+	}
+
+	private RtEngine detectRt(File location, String dep, String name, String subproject) throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		// String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 500;
 
-		String[] args = new String[] { "-dependencies", dep, "-javacompliancelevel", "10", "-flthreshold", "0.001",
-				"-out", out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen",
-				Integer.toString(generations), "-maxtime", "100",
+		String[] args = new String[] { "-javacompliancelevel", "10", "-flthreshold", "0.001", "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
+				"-maxtime", "100",
 
 		};
 		CommandSummary cs = new CommandSummary(args);
+
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "INFO");
-		cs.command.put("-location", location.getAbsolutePath()// new File("./examples/rt-project").getAbsolutePath()
-		);
+		cs.command.put("-location", location.getAbsolutePath());
+		if (dep == null) {
+			cs.command.put("-autoconfigure", "true");
+		} else {
+			cs.command.put("-dependencies", dep);
+		}
 		cs.command.put("-mode", "custom");
 		cs.command.put("-customengine", RtEngine.class.getCanonicalName());
-		cs.command.put("-parameters", "canhavezerosusp:true:runonoriginalbin:true");
+		cs.command.put("-parameters",
+				"canhavezerosusp:true:runonoriginalbin:true" + ":mvndir:/usr/local/bin/mvn"
+						+ ((name != null) ? ":id:" + name : "")
+						+ ((subproject != null) ? ":projectsubfolder:" + subproject : ""));
 
 		main1.execute(cs.flat());
 		RtEngine etEn = (RtEngine) main1.getEngine();
@@ -297,4 +310,22 @@ public class RtTest {
 
 		System.out.println(resultByTest);
 	}
+
+	@Test
+	public void testRT1_flikcore_ac() throws Exception {
+
+		File location = new File("/Users/matias/develop/rt-research/datasetevaluation/flink/flink-core/");
+
+		RtEngine etEn = detectRt(location, null, "flink-core", "flink-core");
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
+
+		boolean hasrt = resultByTest.stream().anyMatch(e -> e.isRotten());
+
+		// git rev-parse HEAD
+		// git config --get remote.origin.url
+	}
+
 }

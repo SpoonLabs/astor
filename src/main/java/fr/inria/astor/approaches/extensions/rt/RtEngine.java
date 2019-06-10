@@ -1,5 +1,10 @@
 package fr.inria.astor.approaches.extensions.rt;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,6 +14,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.martiansoftware.jsap.JSAPException;
@@ -691,12 +698,12 @@ public class RtEngine extends AstorCoreEngine {
 		root.addProperty("project", this.projectFacade.getProperties().getFixid());
 		JsonObject summary = new JsonObject();
 		root.add("project", summary);
-		String commitid = ConfigurationProperties.getProperty("commitid");
-		String branch = ConfigurationProperties.getProperty("gitbranch");
-		String projectname = ConfigurationProperties.getProperty("projectname");
+		String location = ConfigurationProperties.getProperty("location");
+		String commitid = executeCommand(location, "git rev-parse HEAD");
+		String branch = executeCommand(location, "git rev-parse --abbrev-ref HEAD");
+		String remote = executeCommand(location, "git config --get remote.origin.url");
+		String projectsubfolder = ConfigurationProperties.getProperty("projectsubfolder");
 		root.addProperty("commitid", commitid);
-		// root.addProperty("gitbranch",
-		// ConfigurationProperties.getProperty("commitid"));
 
 		int nrRtest = 0, nrRtAssertion = 0, nrRtHelperCall = 0, nrRttHelperAssert = 0, nrSkip = 0, nrAllMissed = 0,
 				nrRtFully = 0;
@@ -723,18 +730,15 @@ public class RtEngine extends AstorCoreEngine {
 				for (AsAssertion assertion : notExecutedAssert) {
 					CtInvocation anInvocation = assertion.getCtAssertion();
 					log.debug("-R-Assertion:-> " + anInvocation);
-					JsonObject singleAssertion = new JsonObject();
-					singleAssertion.addProperty("code", anInvocation.toString());
-					singleAssertion.addProperty("line", anInvocation.getPosition().getLine());
-					singleAssertion.addProperty("path", getRelativePath(anInvocation));
+					JsonObject jsonsingleAssertion = new JsonObject();
+					jsonsingleAssertion.addProperty("code", anInvocation.toString());
+					jsonsingleAssertion.addProperty("line", anInvocation.getPosition().getLine());
+					jsonsingleAssertion.addProperty("path", getRelativePath(anInvocation));
 
-					if (projectname != null && branch != null && commitid != null) {
-						singleAssertion.addProperty("githublink", "https://github.com/" + projectname + "/tree/"
-								+ branch + "/" + getRelativePath(anInvocation));
-					}
-					assertionarray.add(singleAssertion);
+					writeJsonLink(commitid, branch, remote, projectsubfolder, anInvocation, jsonsingleAssertion);
+					assertionarray.add(jsonsingleAssertion);
 					onerotten = true;
-					singleAssertion.add("parent_types", getParentTypes(anInvocation));
+					jsonsingleAssertion.add("parent_types", getParentTypes(anInvocation));
 					nrRtAssertion++;
 				}
 			}
@@ -745,7 +749,16 @@ public class RtEngine extends AstorCoreEngine {
 
 				JsonArray helperarray = new JsonArray();
 				testjson.add("rotten_helpers_assertion", helperarray);
-				onerotten = helperToJson(onerotten, notExecutedHelper, helperarray);
+				List<JsonObject> result = helperToJson(notExecutedHelper, commitid, branch, remote, projectsubfolder,
+						false);
+
+				if (!result.isEmpty()) {
+					onerotten = true;
+					for (JsonObject jsonObject : result) {
+						helperarray.add(jsonObject);
+					}
+				}
+
 				nrRttHelperAssert += notExecutedHelper.size();
 			}
 			//
@@ -755,7 +768,15 @@ public class RtEngine extends AstorCoreEngine {
 
 				JsonArray helperarray = new JsonArray();
 				testjson.add("rotten_helpers_call", helperarray);
-				onerotten = helperToJson(onerotten, notExecutedHelperInvoc, helperarray);
+				List<JsonObject> result = helperToJson(notExecutedHelperInvoc, commitid, branch, remote,
+						projectsubfolder, true);
+
+				if (!result.isEmpty()) {
+					onerotten = true;
+					for (JsonObject jsonObject : result) {
+						helperarray.add(jsonObject);
+					}
+				}
 				nrRtHelperCall += notExecutedHelperInvoc.size();
 			}
 
@@ -798,6 +819,9 @@ public class RtEngine extends AstorCoreEngine {
 
 			}
 		}
+
+		summary.addProperty("remote", remote);
+		summary.addProperty("localLocation", location);
 		summary.addProperty("nrRtestclasses", rTestclasses.size());
 		summary.addProperty("nrRtestunit", nrRtest);
 		summary.addProperty("nrRtAssertion", nrRtAssertion);
@@ -809,23 +833,61 @@ public class RtEngine extends AstorCoreEngine {
 		return root;
 	}
 
-	public boolean helperToJson(boolean onerotten, List<Helper> notExecutedHelper, JsonArray helperarray) {
+	public void writeJsonLink(String commitid, String branch, String remote, String projectsubfolder,
+			CtInvocation anInvocation, JsonObject singleAssertion) {
+		if (remote != null && branch != null && commitid != null) {
+			singleAssertion.addProperty("githublink", remote
+					// "https://github.com/" + projectname
+					+ "/tree/" + commitid// branch
+					+ ((projectsubfolder != null) ? "/" + projectsubfolder : "") + "/" + getRelativePath(anInvocation)
+					+ "#L" + anInvocation.getPosition().getLine());
+		}
+	}
+
+	public List<JsonObject> helperToJson(List<Helper> notExecutedHelper, String commitid, String branch, String remote,
+			String projectsubfolder, boolean isCall) {
+
+		List<JsonObject> result = new ArrayList();
+
 		for (Helper anHelper : notExecutedHelper) {
 			log.debug("-Helper-> " + anHelper);
-			JsonObject singleHelper = new JsonObject();
-			singleHelper.addProperty("code_assertion", anHelper.getAssertion().getCtAssertion().toString());
-			singleHelper.addProperty("line_assertion",
-					anHelper.getAssertion().getCtAssertion().getPosition().getLine());
+			CtInvocation ctAssertion = anHelper.getAssertion().getCtAssertion();
+			JsonObject jsonsingleHelper = new JsonObject();
+
+			JsonObject assertionjson = getJsonElement(commitid, branch, remote, projectsubfolder, ctAssertion);
+			jsonsingleHelper.add("assertion", assertionjson);
 
 			JsonArray callsarray = new JsonArray();
 			for (CtInvocation call : anHelper.getCalls()) {
-				callsarray.add(call.toString());
+				// callsarray.add(call.toString());
+				callsarray.add(getJsonElement(commitid, branch, remote, projectsubfolder, call));
 			}
-			singleHelper.add("calls", callsarray);
-			onerotten = true;
-			helperarray.add(singleHelper);
+			jsonsingleHelper.add("calls", callsarray);
+
+			if (isCall) {
+
+				if (anHelper.getCalls().size() > 0)
+					writeJsonLink(commitid, branch, remote, projectsubfolder, anHelper.getCalls().get(0),
+							jsonsingleHelper);
+
+			} else {
+
+				writeJsonLink(commitid, branch, remote, projectsubfolder, ctAssertion, jsonsingleHelper);
+			}
+
+			result.add(jsonsingleHelper);
+
 		}
-		return onerotten;
+		return result;
+	}
+
+	public JsonObject getJsonElement(String commitid, String branch, String remote, String projectsubfolder,
+			CtInvocation ctAssertion) {
+		JsonObject jsonsingleHelper = new JsonObject();
+		jsonsingleHelper.addProperty("code", ctAssertion.toString());
+		jsonsingleHelper.addProperty("line", ctAssertion.getPosition().getLine());
+		writeJsonLink(commitid, branch, remote, projectsubfolder, ctAssertion, jsonsingleHelper);
+		return jsonsingleHelper;
 	}
 
 	private JsonArray getParentTypes(CtElement anElement) {
@@ -862,6 +924,21 @@ public class RtEngine extends AstorCoreEngine {
 		super.atEnd();
 		JsonObject json = toJson();
 		System.out.println("rtjsonoutput: " + json);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String ppjson = gson.toJson(json);
+		String outpath = ConfigurationProperties.getProperty("workingDirectory") + File.separator
+				+ ConfigurationProperties.getProperty("id") + ".json";
+		log.info("Saving json at " + outpath);
+		try {
+			FileWriter fw = new FileWriter(new File(outpath));
+			fw.write(ppjson);
+			fw.flush();
+			fw.close();
+		} catch (IOException e) {
+
+			e.printStackTrace();
+			log.error(e);
+		}
 
 	}
 
@@ -916,6 +993,33 @@ public class RtEngine extends AstorCoreEngine {
 			}
 		}
 
+	}
+
+	private String executeCommand(String location, String command) {
+
+		log.debug("Running command  " + command + " at " + location);
+		ProcessBuilder builder = new ProcessBuilder();
+
+		builder.command(command.split(" "));
+
+		builder.directory(new File(location));
+
+		try {
+
+			Process process = builder.start();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String content = "";
+			String line;
+			while ((line = reader.readLine()) != null) {
+				content += line + "\n";
+			}
+			log.info("Command result " + content);
+			return content.trim();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		}
 	}
 
 }
