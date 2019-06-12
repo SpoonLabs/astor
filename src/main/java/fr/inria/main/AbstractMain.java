@@ -664,7 +664,7 @@ public abstract class AbstractMain {
 		return true;
 	}
 
-	private void executeAutoConfigure(String location) {
+	private void executeAutoConfigure(String location) throws IOException {
 
 		log.debug("Determining project properties from " + location);
 		ProcessBuilder builder = new ProcessBuilder();
@@ -674,53 +674,50 @@ public abstract class AbstractMain {
 
 		builder.directory(new File(location));
 
-		try {
+		Process process = builder.start();
 
-			Process process = builder.start();
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			String content = "";
-			String line;
-			while ((line = reader.readLine()) != null) {
-				content += line + "\n";
-			}
-
-			JsonElement jelement = new JsonParser().parse(content);
-			JsonObject jobject = jelement.getAsJsonObject();
-
-			String basedir = jobject.get("baseDir").getAsString();
-			String compliance = jobject.get("complianceLevel").toString();
-			JsonArray sources = jobject.get("sources").getAsJsonArray();
-			JsonArray binSources = jobject.get("binSources").getAsJsonArray();
-			JsonArray binTests = jobject.get("binTests").getAsJsonArray();
-			JsonArray tests = jobject.get("tests").getAsJsonArray();
-			JsonArray classpath = jobject.get("classpath").getAsJsonArray();
-
-			String testProp = getJoin(tests).replace(basedir, "");
-			String sourcesP = getJoin(sources).replace(basedir, "");
-			String binSourcesP = getJoin(binSources).replace(basedir, "");
-			String binTestsP = getJoin(binTests).replace(basedir, "");
-			String classpathP = getJoin(classpath);
-
-			log.debug("basedir: " + basedir);
-			log.debug("test: " + testProp);
-			log.debug("sources: " + sourcesP);
-			log.debug("binSourceP: " + binSourcesP);
-			log.debug("binTests: " + binTestsP);
-			log.debug("classpath: " + classpathP);
-			log.debug("compliance: " + compliance);
-
-			ConfigurationProperties.properties.setProperty("javacompliancelevel", compliance);
-			ConfigurationProperties.properties.setProperty("srcjavafolder", sourcesP);
-			ConfigurationProperties.properties.setProperty("srctestfolder", testProp);
-			ConfigurationProperties.properties.setProperty("binjavafolder", binSourcesP);
-			ConfigurationProperties.properties.setProperty("bintestfolder", binTestsP);
-			ConfigurationProperties.properties.setProperty("dependenciespath", classpathP);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.error("Error when getting the project info " + e.getMessage());
+		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		String content = "";
+		String line;
+		while ((line = reader.readLine()) != null) {
+			content += line + "\n";
+			log.debug(content);
 		}
+
+		JsonElement jelement = new JsonParser().parse(content);
+		JsonObject jobject = jelement.getAsJsonObject();
+
+		String basedir = jobject.get("baseDir").getAsString();
+		String compliance = jobject.get("complianceLevel").toString();
+		JsonArray sources = jobject.get("sources").getAsJsonArray();
+		JsonArray binSources = jobject.get("binSources").getAsJsonArray();
+		JsonArray binTests = jobject.get("binTests").getAsJsonArray();
+		JsonArray tests = jobject.get("tests").getAsJsonArray();
+		JsonArray classpath = jobject.get("classpath").getAsJsonArray();
+
+		String testProp = getJoin(tests).replace(basedir, "");
+		String sourcesP = getJoin(sources).replace(basedir, "");
+		String binSourcesP = getJoin(binSources).replace(basedir, "");
+		String binTestsP = getJoin(binTests).replace(basedir, "");
+		String classpathP = getJoin(classpath);
+
+		log.debug("basedir: " + basedir);
+		log.debug("test: " + testProp);
+		log.debug("sources: " + sourcesP);
+		log.debug("binSourceP: " + binSourcesP);
+		log.debug("binTests: " + binTestsP);
+		log.debug("classpath: " + classpathP);
+		log.debug("compliance: " + compliance);
+
+		if (sourcesP.isEmpty() || !(new File(sourcesP).exists())) {
+			throw new IllegalAccessError("Source folder could not be determined.");
+		}
+		ConfigurationProperties.properties.setProperty("javacompliancelevel", compliance);
+		ConfigurationProperties.properties.setProperty("srcjavafolder", sourcesP);
+		ConfigurationProperties.properties.setProperty("srctestfolder", testProp);
+		ConfigurationProperties.properties.setProperty("binjavafolder", binSourcesP);
+		ConfigurationProperties.properties.setProperty("bintestfolder", binTestsP);
+		ConfigurationProperties.properties.setProperty("dependenciespath", classpathP);
 
 	}
 
