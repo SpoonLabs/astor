@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,6 +31,7 @@ import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
@@ -176,6 +178,10 @@ public class RtEngine extends AstorCoreEngine {
 					continue;
 				}
 				CtExecutable testMethodModel = testMethodOp.get().getDeclaration();
+				List<String> expectException = expectEx(testMethodModel);
+				if (expectException.size() > 0) {
+					System.out.println("expecting");
+				}
 
 				if (!passingCoveredTestCaseFromClass.containsKey(aNameOfTestClass)
 						|| !(passingCoveredTestCaseFromClass.get(aNameOfTestClass).contains(aTestMethodFromClass))) {
@@ -212,8 +218,8 @@ public class RtEngine extends AstorCoreEngine {
 				checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
 
 				TestClassificationResult resultTestCase = new TestClassificationResult(rAssert, rHelperAssertion,
-						rHelperCall, aNameOfTestClass, aTestMethodFromClass, allMissedFailFromTest, allSkipFromTest,
-						isFullR);
+						rHelperCall, aNameOfTestClass, aTestMethodFromClass, testMethodModel, allMissedFailFromTest,
+						allSkipFromTest, isFullR, expectException);
 
 				resultByTest.add(resultTestCase);
 			}
@@ -221,6 +227,17 @@ public class RtEngine extends AstorCoreEngine {
 		}
 
 		log.info("End processing RT");
+
+	}
+
+	private List<String> expectEx(CtExecutable testMethodModel) {
+		// return testMethodModel.getAnnotations().stream()
+		// .anyMatch(e -> e.getType().getSimpleName().equals("Test") &&
+		// e.getValues().containsKey("expected"));
+
+		return testMethodModel.getAnnotations().stream()
+				.filter(e -> e.getType().getSimpleName().equals("Test") && e.getValues().containsKey("expected"))
+				.map(e -> e.getValues().get("expected").toString()).collect(Collectors.toList());
 
 	}
 
@@ -267,7 +284,9 @@ public class RtEngine extends AstorCoreEngine {
 				// check the parent class is the test method (discarding elements from anonymous
 				// classes)
 				if (aTestModelCtClass.equals(aStatement.getParent(CtClass.class)) &&
-				// check that is not the last statement (if it's the last one it's fine)
+				// we dont care about returns inside lambda
+						aStatement.getParent(CtLambda.class) == null &&
+						// check that is not the last statement (if it's the last one it's fine)
 						!method.getBody().getLastStatement().equals(aStatement)
 						// check that statement is not inside an element that is the last one
 						&& !method.getBody().getLastStatement().equals(aStatement.getParent(new LineFilter()))
@@ -295,19 +314,24 @@ public class RtEngine extends AstorCoreEngine {
 		boolean isFullR = false;
 		List<CtInvocation> allMissedFailFromTest;
 		List<CtReturn> allSkipFromTest;
+		CtExecutable testMethodModel;
+		List<String> expectException;
 
 		public TestClassificationResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
-				List<CtInvocation> allMissedFailFromTest, List<CtReturn> allSkipFromTest, boolean isFullR) {
+				CtExecutable testMethodModel, List<CtInvocation> allMissedFailFromTest, List<CtReturn> allSkipFromTest,
+				boolean isFullR, List<String> expectException) {
 			super();
 			this.rAssert = rAssert;
 			this.rHelperAssertion = rHelperAssertion;
 			this.rHelperCall = rHelperCall;
+			this.testMethodModel = testMethodModel;
 			this.allMissedFailFromTest = allMissedFailFromTest;
 			this.allSkipFromTest = allSkipFromTest;
 			this.nameOfTestClass = aNameOfTestClass;
 			this.testMethodFromClass = aTestMethodFromClass;
 			this.isFullR = isFullR;
+			this.expectException = expectException;
 		}
 
 		public Classification<AsAssertion> getClassificationAssert() {
@@ -346,6 +370,22 @@ public class RtEngine extends AstorCoreEngine {
 
 		public boolean isFullR() {
 			return isFullR;
+		}
+
+		public CtExecutable getTestMethodModel() {
+			return testMethodModel;
+		}
+
+		public void setTestMethodModel(CtExecutable testMethodModel) {
+			this.testMethodModel = testMethodModel;
+		}
+
+		public List<String> getExpectException() {
+			return expectException;
+		}
+
+		public void setExpectException(List<String> expectException) {
+			this.expectException = expectException;
 		}
 
 	}
@@ -721,6 +761,7 @@ public class RtEngine extends AstorCoreEngine {
 			JsonObject testjson = new JsonObject();
 			testjson.addProperty("testclass", tr.getNameOfTestClass());
 			testjson.addProperty("testname", tr.getTestMethodFromClass());
+			writeJsonLink(commitid, branch, remote, projectsubfolder, tr.getTestMethodModel(), testjson);
 
 			boolean onerotten = false;
 
@@ -793,11 +834,12 @@ public class RtEngine extends AstorCoreEngine {
 				testjson.add("rotten_skip", skiprarray);
 				for (CtReturn skip : tr.getAllSkipFromTest()) {
 					JsonObject singleSkip = new JsonObject();
-					singleSkip.addProperty("code_assertion", skip.toString().toString());
-					singleSkip.addProperty("line_assertion", skip.getPosition().getLine());
+					singleSkip.addProperty("code", skip.toString().toString());
+					singleSkip.addProperty("line", skip.getPosition().getLine());
 					singleSkip.add("parent_types", getParentTypes(skip));
 					onerotten = true;
 					skiprarray.add(singleSkip);
+					writeJsonLink(commitid, branch, remote, projectsubfolder, skip, singleSkip);
 					nrSkip++;
 				}
 			}
@@ -811,7 +853,7 @@ public class RtEngine extends AstorCoreEngine {
 					missedJson.addProperty("code_assertion", missedInv.toString().toString());
 					missedJson.addProperty("line_assertion", missedInv.getPosition().getLine());
 					missedJson.addProperty("path_assertion", getRelativePath(missedInv));
-
+					writeJsonLink(commitid, branch, remote, projectsubfolder, missedInv, missedJson);
 					onerotten = true;
 					missrarray.add(missedJson);
 					nrAllMissed++;
@@ -819,7 +861,7 @@ public class RtEngine extends AstorCoreEngine {
 			}
 
 			///
-			if (onerotten) {
+			if (onerotten || (tr.isFullR && tr.getExpectException().isEmpty())) {
 				testsAssertionArray.add(testjson);
 				nrRtest++;
 				rTestclasses.add(tr.getNameOfTestClass());
@@ -829,6 +871,7 @@ public class RtEngine extends AstorCoreEngine {
 
 		summary.addProperty("remote", remote);
 		summary.addProperty("localLocation", location);
+		summary.addProperty("nrAllTest", resultByTest.size());
 		summary.addProperty("nrRtestclasses", rTestclasses.size());
 		summary.addProperty("nrRtestunit", nrRtest);
 		summary.addProperty("nrRtAssertion", nrRtAssertion);
@@ -841,7 +884,7 @@ public class RtEngine extends AstorCoreEngine {
 	}
 
 	public void writeJsonLink(String commitid, String branch, String remote, String projectsubfolder,
-			CtInvocation anInvocation, JsonObject singleAssertion) {
+			CtElement anInvocation, JsonObject singleAssertion) {
 		if (remote != null && branch != null && commitid != null) {
 			singleAssertion.addProperty("githublink", remote
 					// "https://github.com/" + projectname
@@ -920,7 +963,7 @@ public class RtEngine extends AstorCoreEngine {
 		return parent.substring(2, parent.length() - 4);
 	}
 
-	public String getRelativePath(CtInvocation anInvocation) {
+	public String getRelativePath(CtElement anInvocation) {
 		return anInvocation.getPosition().getFile().getAbsolutePath().replace("./", "")
 				.replace(this.getProjectFacade().getProperties().getOriginalProjectRootDir().replace("./", ""), "");
 	}
@@ -937,7 +980,7 @@ public class RtEngine extends AstorCoreEngine {
 		String out = (ConfigurationProperties.getProperty("out") != null) ? ConfigurationProperties.getProperty("out")
 				: ConfigurationProperties.getProperty("workingDirectory");
 		String outpath = out + File.separator + ConfigurationProperties.getProperty("id") + ".json";
-		log.info("Saving json at " + outpath);
+		log.info("Saving json at \n" + outpath);
 		try {
 			FileWriter fw = new FileWriter(new File(outpath));
 			fw.write(ppjson);

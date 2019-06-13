@@ -709,7 +709,7 @@ public abstract class AbstractMain {
 		log.debug("classpath: " + classpathP);
 		log.debug("compliance: " + compliance);
 
-		if (sourcesP.isEmpty() || !(new File(sourcesP).exists())) {
+		if (sourcesP.isEmpty()) {
 			throw new IllegalAccessError("Source folder could not be determined.");
 		}
 		ConfigurationProperties.properties.setProperty("javacompliancelevel", compliance);
