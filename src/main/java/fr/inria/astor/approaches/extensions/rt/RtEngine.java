@@ -180,7 +180,7 @@ public class RtEngine extends AstorCoreEngine {
 				CtExecutable testMethodModel = testMethodOp.get().getDeclaration();
 				List<String> expectException = expectEx(testMethodModel);
 				if (expectException.size() > 0) {
-					System.out.println("expecting");
+					log.debug("Method expecting exception via annotation " + aTestMethodFromClass);
 				}
 
 				if (!passingCoveredTestCaseFromClass.containsKey(aNameOfTestClass)
@@ -192,6 +192,11 @@ public class RtEngine extends AstorCoreEngine {
 				}
 				// get all statements
 				List<CtStatement> allStmtsFromClass = testMethodModel.getElements(new LineFilter());
+				List<CtInvocation> allExpectedExceptionFromTest = filterExpectedExceptions(allStmtsFromClass);
+				if (allExpectedExceptionFromTest.size() > 0) {
+					log.debug("Expected exception found at " + aTestMethodFromClass);
+				}
+
 				List<CtInvocation> allAssertionsFromTest = filterAssertions(allStmtsFromClass);
 				List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass, new ArrayList());
 				// filter from assertions the missed fail
@@ -211,15 +216,13 @@ public class RtEngine extends AstorCoreEngine {
 				Classification<Helper> rHelperCall = classifyHelpersAssertionExecution(aTestModelCtClass,
 						allHelperInvocationFromTest, mapCacheSuspicious, false);
 
-				boolean isFullR = allAssertionsFromTest.isEmpty() && allHelperInvocationFromTest.isEmpty();
-
 				checkTwoBranches(rAssert, rAssert, rHelperCall, rHelperAssertion);
 				checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
 				checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
 
 				TestClassificationResult resultTestCase = new TestClassificationResult(rAssert, rHelperAssertion,
 						rHelperCall, aNameOfTestClass, aTestMethodFromClass, testMethodModel, allMissedFailFromTest,
-						allSkipFromTest, isFullR, expectException);
+						allSkipFromTest, expectException, allExpectedExceptionFromTest);
 
 				resultByTest.add(resultTestCase);
 			}
@@ -228,6 +231,21 @@ public class RtEngine extends AstorCoreEngine {
 
 		log.info("End processing RT");
 
+	}
+
+	private List<CtInvocation> filterExpectedExceptions(List<CtStatement> allStmtsFromClass) {
+		List<CtInvocation> expectedEx = new ArrayList<>();
+		for (CtStatement targetElement : allStmtsFromClass) {
+			if (targetElement instanceof CtInvocation) {
+				CtInvocation targetInvocation = (CtInvocation) targetElement;
+				if (targetInvocation.getExecutable().getSimpleName().toLowerCase().startsWith("expect")
+						&& targetInvocation.getExecutable().getDeclaringType().getSimpleName()
+								.equals("ExpectedException")) {
+					expectedEx.add(targetInvocation);
+				}
+			}
+		}
+		return expectedEx;
 	}
 
 	private List<String> expectEx(CtExecutable testMethodModel) {
@@ -311,16 +329,16 @@ public class RtEngine extends AstorCoreEngine {
 		Classification<AsAssertion> rAssert = null;
 		Classification<Helper> rHelperAssertion = null;
 		Classification<Helper> rHelperCall = null;
-		boolean isFullR = false;
 		List<CtInvocation> allMissedFailFromTest;
 		List<CtReturn> allSkipFromTest;
 		CtExecutable testMethodModel;
 		List<String> expectException;
+		List<CtInvocation> allExpectedExceptionFromTest;
 
 		public TestClassificationResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
 				CtExecutable testMethodModel, List<CtInvocation> allMissedFailFromTest, List<CtReturn> allSkipFromTest,
-				boolean isFullR, List<String> expectException) {
+				List<String> expectException, List<CtInvocation> allExpectedExceptionFromTest) {
 			super();
 			this.rAssert = rAssert;
 			this.rHelperAssertion = rHelperAssertion;
@@ -330,8 +348,8 @@ public class RtEngine extends AstorCoreEngine {
 			this.allSkipFromTest = allSkipFromTest;
 			this.nameOfTestClass = aNameOfTestClass;
 			this.testMethodFromClass = aTestMethodFromClass;
-			this.isFullR = isFullR;
 			this.expectException = expectException;
+			this.allExpectedExceptionFromTest = allExpectedExceptionFromTest;
 		}
 
 		public Classification<AsAssertion> getClassificationAssert() {
@@ -363,13 +381,16 @@ public class RtEngine extends AstorCoreEngine {
 		}
 
 		public boolean isRotten() {
-			return isFullR || !this.getClassificationAssert().getResultNotExecuted().isEmpty()
+			return isFullR() || !this.getClassificationAssert().getResultNotExecuted().isEmpty()
 					|| !this.getClassificationHelperAssertion().getResultNotExecuted().isEmpty()
 					|| !this.getAllMissedFailFromTest().isEmpty() || !this.getAllSkipFromTest().isEmpty();
 		}
 
 		public boolean isFullR() {
-			return isFullR;
+			return expectException.isEmpty() && allExpectedExceptionFromTest.isEmpty()
+					&& rAssert.resultExecuted.isEmpty() && rAssert.resultNotExecuted.isEmpty()
+					&& rHelperCall.resultExecuted.isEmpty() && rHelperCall.resultNotExecuted.isEmpty()
+					&& rHelperAssertion.resultExecuted.isEmpty() && rHelperAssertion.resultNotExecuted.isEmpty();
 		}
 
 		public CtExecutable getTestMethodModel() {
@@ -386,6 +407,14 @@ public class RtEngine extends AstorCoreEngine {
 
 		public void setExpectException(List<String> expectException) {
 			this.expectException = expectException;
+		}
+
+		public List<CtInvocation> getAllExpectedExceptionFromTest() {
+			return allExpectedExceptionFromTest;
+		}
+
+		public void setAllExpectedExceptionFromTest(List<CtInvocation> allExpectedExceptionFromTest) {
+			this.allExpectedExceptionFromTest = allExpectedExceptionFromTest;
 		}
 
 	}
@@ -861,7 +890,8 @@ public class RtEngine extends AstorCoreEngine {
 			}
 
 			///
-			if (onerotten || (tr.isFullR && tr.getExpectException().isEmpty())) {
+			if (onerotten || (tr.isFullR() && tr.getExpectException().isEmpty()
+					&& tr.getAllExpectedExceptionFromTest().isEmpty())) {
 				testsAssertionArray.add(testjson);
 				nrRtest++;
 				rTestclasses.add(tr.getNameOfTestClass());

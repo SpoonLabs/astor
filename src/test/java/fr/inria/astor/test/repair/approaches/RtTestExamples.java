@@ -760,6 +760,33 @@ public class RtTestExamples {
 		checkFpHelper(tc, true, "test4");
 	}
 
+	@Test
+	public void testRow019() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		List<TestClassificationResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass().contains("RTFRow19")).collect(Collectors.toList());
+
+		assertFalse(tc.isEmpty());
+
+		Optional<TestClassificationResult> rotten0OP = tc.stream()
+				.filter(e -> e.getTestMethodFromClass().equals("test0")).findFirst();
+
+		assertTrue(rotten0OP.isPresent());
+
+		TestClassificationResult rottenTest0 = rotten0OP.get();
+
+		assertFalse(rottenTest0.isFullR());
+		assertFalse(rottenTest0.isRotten());
+
+		assertTrue(rottenTest0.getAllExpectedExceptionFromTest().size() > 0);
+		assertTrue(rottenTest0.getExpectException().isEmpty());
+
+	}
+
 	private void checkFp(List<TestClassificationResult> tc, boolean toverif, String testname) {
 		Optional<TestClassificationResult> rotten01 = tc.stream()
 				.filter(e -> e.getTestMethodFromClass().equals(testname)).findFirst();
@@ -793,7 +820,7 @@ public class RtTestExamples {
 	private RtEngine detectRt() throws Exception {
 		AstorMain main1 = new AstorMain();
 
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String dep = new File("./examples/libs/junit-4.12.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 500;
 
