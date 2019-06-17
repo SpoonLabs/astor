@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,6 +53,9 @@ public class RtEngine extends AstorCoreEngine {
 	List<SuspiciousCode> allExecutedStatements = null;
 
 	List<TestClassificationResult> resultByTest = null;
+
+	List<String> namespace = Arrays.asList("org.assertj", "org.testng", "org.mockito", "org.spockframework",
+			"org.junit", "cucumber", "org.jbehave");
 
 	public RtEngine(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade) throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -755,8 +759,24 @@ public class RtEngine extends AstorCoreEngine {
 	 * @return
 	 */
 	private boolean isAssertion(CtInvocation targetInvocation) {
-		// We should check the target.
-		return targetInvocation.getExecutable().getSimpleName().toLowerCase().startsWith("assert");
+		log.debug("assert " + targetInvocation.getExecutable().getSimpleName());
+		boolean isAssert = targetInvocation.getExecutable().getSimpleName().toLowerCase().startsWith("assert");
+		if (isAssert) {
+			return true;
+		}
+		String name = targetInvocation.getExecutable().getDeclaringType().getQualifiedName();
+		Optional<String> testnm = this.namespace.stream().filter(e -> name.startsWith(e)).findFirst();
+
+		if (testnm.isPresent()) {
+			log.debug("assert " + targetInvocation.getExecutable().getSimpleName() + " found in " + testnm.get());
+			return true;
+		}
+
+		if (targetInvocation.getTarget() instanceof CtInvocation) {
+			CtInvocation targetInv = (CtInvocation) targetInvocation.getTarget();
+			return isAssertion(targetInv);
+		}
+		return false;
 	}
 
 	public class ResultRT {
@@ -794,7 +814,6 @@ public class RtEngine extends AstorCoreEngine {
 
 			boolean onerotten = false;
 
-			nrRtFully += (tr.isFullR()) ? 1 : 0;
 			// Asserts
 			List<AsAssertion> notExecutedAssert = tr.getClassificationAssert().getResultNotExecuted();
 			if (!notExecutedAssert.isEmpty()) {
@@ -889,13 +908,30 @@ public class RtEngine extends AstorCoreEngine {
 				}
 			}
 
-			///
-			if (onerotten || (tr.isFullR() && tr.getExpectException().isEmpty()
-					&& tr.getAllExpectedExceptionFromTest().isEmpty())) {
+			if (tr.isFullR() && tr.getExpectException().isEmpty() && tr.getAllExpectedExceptionFromTest().isEmpty()) {
+
+				testjson.addProperty("full_rotten", "true");
+				testsAssertionArray.add(testjson);
+				rTestclasses.add(tr.getNameOfTestClass());
+				nrRtFully += 1;
+				List<CtInvocation> allAssertionsFromTest = tr.getTestMethodModel().getBody()
+						.getElements(new LineFilter()).stream().filter(e -> e instanceof CtInvocation)
+						.map(CtInvocation.class::cast).collect(Collectors.toList());
+
+				JsonArray missrarray = new JsonArray();
+				testjson.add("other_method_invocation", missrarray);
+				for (CtInvocation otherinv : allAssertionsFromTest) {
+					missrarray.add(otherinv.getExecutable().getDeclaringType().getQualifiedName() + "#"
+							+ otherinv.getExecutable().getSignature());
+				}
+
+			}
+
+			/// Dont include fully
+			if (onerotten) {
 				testsAssertionArray.add(testjson);
 				nrRtest++;
 				rTestclasses.add(tr.getNameOfTestClass());
-
 			}
 		}
 
@@ -916,7 +952,7 @@ public class RtEngine extends AstorCoreEngine {
 	public void writeJsonLink(String commitid, String branch, String remote, String projectsubfolder,
 			CtElement anInvocation, JsonObject singleAssertion) {
 		if (remote != null && branch != null && commitid != null) {
-			singleAssertion.addProperty("githublink", remote
+			singleAssertion.addProperty("githublink", remote.replace(".git", "")
 					// "https://github.com/" + projectname
 					+ "/tree/" + commitid// branch
 					+ ((projectsubfolder != null) ? "/" + projectsubfolder : "") + "/" + getRelativePath(anInvocation)
