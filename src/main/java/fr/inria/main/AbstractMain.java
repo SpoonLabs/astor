@@ -681,9 +681,8 @@ public abstract class AbstractMain {
 		String line;
 		while ((line = reader.readLine()) != null) {
 			content += line + "\n";
-			log.debug(content);
 		}
-
+		log.debug(content);
 		JsonElement jelement = new JsonParser().parse(content);
 		JsonObject jobject = jelement.getAsJsonObject();
 
