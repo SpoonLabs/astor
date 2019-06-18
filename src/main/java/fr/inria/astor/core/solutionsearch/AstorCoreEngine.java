@@ -2,6 +2,7 @@ package fr.inria.astor.core.solutionsearch;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -193,6 +195,17 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		// Reporting results
 		for (ReportResults out : this.getOutputResults()) {
 			out.produceOutput(patchInfo, this.currentStat.getGeneralStats(), output);
+		}
+
+		if (ConfigurationProperties.getPropertyBool("removeworkingfolder")) {
+			File fout = new File(output);
+
+			try {
+				FileUtils.deleteDirectory(fout);
+			} catch (IOException e) {
+				e.printStackTrace();
+				log.error(e);
+			}
 		}
 
 	}
@@ -795,7 +808,13 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.error("Problem compiling the model with compliance level "
 					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 			log.error(e.getMessage());
-			throw e;
+			if (!ConfigurationProperties.getPropertyBool("continuewhenmodelfail")) {
+				log.error("Astor does not continue when model build fails");
+				throw e;
+			} else {
+				log.error("Astor continues when model build fails");
+			}
+
 		}
 
 		///// ONCE ASTOR HAS BUILT THE MODEL,
