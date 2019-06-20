@@ -898,8 +898,6 @@ public class MultiMetEngineSimpleProgramsTest {
 		assertEquals("return (myinst.toPositive(i1)) * (myinst.toPositive(\"1\"))",
 				approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString());
 
-		approach.atEnd();
-
 		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
 				.filter(e -> e.getAllOperations().stream()
 						.filter(o -> o.getOperationApplied() instanceof MethodXMethodReplacementDiffArgumentsOp)
@@ -1116,10 +1114,10 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-srctestfolder", "src/test/java/");
 		command.command.put("-binjavafolder", "target/classes/");
 		command.command.put("-bintestfolder", "target/test-classes/");
-		command.command.put("-id", "test-wmr1c2");
+		command.command.put("-id", "test-opreplacement1");
 		command.command.put("-out", out.getAbsolutePath());
 		command.command.put("-dependencies", dep);
-		command.command.put("-loglevel", "INFO");
+		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-flthreshold", "0.24");
 		command.command.put("-saveall", "true");
 
@@ -1728,6 +1726,14 @@ public class MultiMetEngineSimpleProgramsTest {
 		assertTrue(solution1.getPatchDiff().getOriginalStatementAlignmentDiff()
 				.contains("catch (java.lang.Exception e) {}"));
 
+	}
+
+	@Test
+	public void test_twoTest() throws Exception {
+		System.out.println("First part");
+		test_composed_Try_VR_1();
+		System.out.println("Second part");
+		test_simple_OperatorBinary1();
 	}
 
 	@Test

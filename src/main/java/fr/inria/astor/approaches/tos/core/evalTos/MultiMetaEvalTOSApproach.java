@@ -479,7 +479,6 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		return null;
 	}
 
-	// List<IPrediction> predictWithSol = new ArrayList<>();
 	MapList<IPrediction, PredictionElement> predictedCtElementWithSol = new MapList<>();
 
 	/**
@@ -515,14 +514,15 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		} else {
 			PredictionResult rp = new PredictionResult();
+			List<AstorOperator> ops = this.operatorSpace.getOperators();
 
 			// No predictor, so we put all the operations available
-			List<AstorOperator> ops = this.operatorSpace.getOperators();
 			for (AstorOperator astorOperator : ops) {
 				Prediction optoapply = new Prediction();
 				optoapply.add(new PredictionElement(iModifPoint.getCodeElement()), astorOperator);
 				rp.add(optoapply);
 			}
+
 			return rp;
 		}
 	}
