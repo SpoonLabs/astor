@@ -115,7 +115,7 @@ public class AstorMain extends AbstractMain {
 		List<String> tr = FinderTestCases.findTestCasesForRegression(
 				projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
 		projectFacade.getProperties().setRegressionCases(tr);
-
+		log.debug("Test retrieved from classes: " + tr.size());
 		// Initialize Population
 
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
