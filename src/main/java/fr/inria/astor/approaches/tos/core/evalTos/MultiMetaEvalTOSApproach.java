@@ -68,7 +68,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	public static final String METID = "metid";
 	public static final String METALL = "metid";
-	public static int MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
+	public static int MAX_GENERATIONS = 0;
 	public int modifPointsAnalyzed = 0;
 
 	public List<ProgramVariant> evaluatedProgramVariants = new ArrayList<>();
@@ -80,6 +80,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 	public MultiMetaEvalTOSApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
+		MAX_GENERATIONS = ConfigurationProperties.getPropertyInt("maxGeneration");
 		this.operatorSpace = new OperatorSpace();
 		loadPredictor();
 	}
@@ -227,6 +228,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 		log.info("Predicted operators for " + iModifPoint.identified + " : " + allOperationsPredicted);
 
+		// if it's not initialized
 		initDynaPool(iModifPoint, allOperationsPredicted);
 
 		/// Here will be the resulting variants:
@@ -260,8 +262,6 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 			try {
 				List<OperatorInstance> instancesOfOperatorForModificationPoint = null;
-
-				//
 
 				log.debug("***MP " + iModifPoint.identified + " operator " + operator);
 
@@ -316,6 +316,12 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 			}
 
 		}
+
+		if (opToInstances.isEmpty()) {
+			log.debug("Any op instance after the prediction of mp: " + iModifPoint.identified);
+			return false;
+		}
+
 		// Create the Program variant
 		List<ProgramVariant> programVariantsOfPrediction = createVariants(opToInstances, parentVariant);
 		allProgramVariants.addAll(programVariantsOfPrediction);
@@ -339,9 +345,6 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 				// Each program variant is a patch
 				boolean resultValidation = this.processCreatedVariant(iProgramVariant, generationEval);
 				if (resultValidation) {
-					// TODO
-					// log.info("Solution found with Target " + targetElement + " operator " +
-					// operator);
 
 					this.solutions.add(iProgramVariant);
 					existSolution = true;
@@ -511,15 +514,16 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 			}
 
 		} else {
+			PredictionResult rp = new PredictionResult();
+
 			// No predictor, so we put all the operations available
 			List<AstorOperator> ops = this.operatorSpace.getOperators();
-			Prediction optoapply = new Prediction();
-			optoapply.put(new PredictionElement(iModifPoint.getCodeElement()), ops);
-
-			PredictionResult pr = new PredictionResult();
-			pr.add(optoapply);
-
-			return pr;
+			for (AstorOperator astorOperator : ops) {
+				Prediction optoapply = new Prediction();
+				optoapply.add(new PredictionElement(iModifPoint.getCodeElement()), astorOperator);
+				rp.add(optoapply);
+			}
+			return rp;
 		}
 	}
 
