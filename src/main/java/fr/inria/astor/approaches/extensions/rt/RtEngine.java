@@ -765,11 +765,13 @@ public class RtEngine extends AstorCoreEngine {
 			return true;
 		}
 		String name = targetInvocation.getExecutable().getDeclaringType().getQualifiedName();
-		Optional<String> testnm = this.namespace.stream().filter(e -> name.startsWith(e)).findFirst();
 
+		// TODO: disable for the moment
+		Optional<String> testnm = this.namespace.stream().filter(e -> name.startsWith(e)).findFirst();
 		if (testnm.isPresent()) {
-			log.debug("assert " + targetInvocation.getExecutable().getSimpleName() + " found in " + testnm.get());
-			return true;
+			// log.debug("assert " + targetInvocation.getExecutable().getSimpleName() + "
+			// found in " + testnm.get());
+			// return true;
 		}
 
 		if (targetInvocation.getTarget() instanceof CtInvocation) {

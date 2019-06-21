@@ -162,7 +162,7 @@ public class RtTest {
 		CommandSummary cs = new CommandSummary(args);
 
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-loglevel", "INFO");
+		cs.command.put("-loglevel", "DEBUG");
 		cs.command.put("-location", location.getAbsolutePath());
 		if (dep == null) {
 			cs.command.put("-autoconfigure", "true");
@@ -172,7 +172,7 @@ public class RtTest {
 		cs.command.put("-mode", "custom");
 		cs.command.put("-customengine", RtEngine.class.getCanonicalName());
 		cs.command.put("-parameters",
-				"canhavezerosusp:true:runonoriginalbin:true" + ":mvndir:/usr/local/bin/mvn"
+				"canhavezerosusp:true:runonoriginalbin:true:continuewhenmodelfail:true" + ":mvndir:/usr/local/bin/mvn"
 						+ ((name != null) ? ":id:" + name : "")
 						+ ((subproject != null) ? ":projectsubfolder:" + subproject : ""));
 
@@ -328,4 +328,92 @@ public class RtTest {
 		// git config --get remote.origin.url
 	}
 
+	@Test
+	public void testRT1_testExpected() throws Exception {
+
+		File location = new File(
+				"/Users/matias/develop/rt-research/datasetevaluation/flink/flink-connectors/flink-connector-filesystem");
+
+		RtEngine etEn = detectRt(location, null, "flink-connector-filesystem",
+				"flink-connectors/flink-connector-filesystem");
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
+
+		boolean hasrt = resultByTest.stream().anyMatch(e -> e.isRotten());
+
+	}
+
+	@Test
+	public void testRT1_testSkip() throws Exception {
+
+		File location = new File(
+				"/Users/matias/develop/rt-research/datasetevaluation/flink/flink-queryable-state/flink-queryable-state-runtime");
+
+		RtEngine etEn = detectRt(location, null, "flink-queryable-state-runtime",
+				"flink-queryable-state/flink-queryable-state-runtime");
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
+
+		boolean hasrt = resultByTest.stream().anyMatch(e -> e.isRotten());
+
+	}
+
+	@Test
+	public void testRT1_testnotfinish() throws Exception {
+
+		File location = new File("/Users/matias/develop/rt-research/datasetevaluation/gs-collections");
+//'/Users/matias/develop/rt-research/datasetevaluation/gs-collections', 'gs-collections', 'gs-collections'
+		RtEngine etEn = detectRt(location, null, "gs-collections", "gs-collections");
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
+
+		boolean hasrt = resultByTest.stream().anyMatch(e -> e.isRotten());
+
+	}
+
+	// '/Users/matias/develop/rt-research/datasetevaluation/metrics/metrics-core',
+	// 'metrics/metrics-core', 'metrics-core'
+	@Test
+	public void testRT1_testzerotestt() throws Exception {
+
+		File location = new File("/Users/matias/develop/rt-research/datasetevaluation/metrics/metrics-core");
+//'/Users/matias/develop/rt-research/datasetevaluation/gs-collections', 'gs-collections', 'gs-collections'
+		RtEngine etEn = detectRt(location, null, "metrics-core", "metrics-core");
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
+
+		boolean hasrt = resultByTest.stream().anyMatch(e -> e.isRotten());
+
+	}
+//legacy-jclouds
+	/// Users/matias/develop/rt-research/datasetevaluation/legacy-jclouds
+
+	// '/Users/matias/develop/rt-research/datasetevaluation/metrics/metrics-core',
+	// 'metrics/metrics-core', 'metrics-core'
+	@Test
+	public void testRT1_testmultim() throws Exception {
+
+		File location = new File(
+				// "/Users/matias/develop/rt-research/datasetevaluation/legacy-jclouds"
+				"/Users/matias/develop/rt-research/datasetevaluation/helios/"
+		// "/Users/matias/develop/rt-research/datasetevaluation/json-simple/"
+		);
+
+		RtEngine etEn = detectRt(location, null, "son-simple", "son-simple");
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
+
+		boolean hasrt = resultByTest.stream().anyMatch(e -> e.isRotten());
+
+	}
 }
