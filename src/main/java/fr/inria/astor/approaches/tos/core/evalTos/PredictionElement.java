@@ -40,4 +40,9 @@ public class PredictionElement {
 		this.element = element;
 	}
 
+	@Override
+	public String toString() {
+		return "PredictionElement [index=" + index + ", element=" + element + "]";
+	}
+
 }

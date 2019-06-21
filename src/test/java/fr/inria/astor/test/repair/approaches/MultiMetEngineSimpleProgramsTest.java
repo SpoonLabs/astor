@@ -110,7 +110,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, binary), new OperatorReplacementOp());
 		prediction.add(new PredictionElement(2, rnt.getReturnedExpression()), new VarReplacementByAnotherVarOp());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, prediction);
 
 		assertTrue(isSolution);
 
@@ -183,7 +183,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, binary), new OperatorReplacementOp());
 		prediction.add(new PredictionElement(2, rnt.getReturnedExpression()), new VarReplacementByAnotherVarOp());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, prediction);
 
 		assertTrue(isSolution);
 
@@ -261,7 +261,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, vacc), new VarReplacementByAnotherVarOp());
 		prediction.add(new PredictionElement(2, invocation), new MethodXMethodReplacementDiffNameOp());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, prediction);
 
 		assertTrue(isSolution);
 
@@ -363,7 +363,7 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		prediction.add(new PredictionElement(2, binif), new LogicExpOperator());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp30, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp30, prediction);
 
 		assertTrue(isSolution);
 
@@ -689,7 +689,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, binary), new LogicRedOperator());
 		prediction.add(new PredictionElement(2, vacc), new VarReplacementByAnotherVarOp());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, prediction);
 
 		assertTrue(isSolution);
 
@@ -809,7 +809,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, constant), new ConstReplacementOp());
 		prediction.add(new PredictionElement(2, binaryToReduce), new LogicRedOperator());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, prediction);
 
 		assertTrue(isSolution);
 
@@ -990,7 +990,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, varWrong), new VarReplacementByAnotherVarOp());
 		prediction.add(new PredictionElement(2, invocationToReplace), new MethodXMethodReplacementDiffNameOp());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp36, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp36, prediction);
 
 		assertTrue(isSolution);
 		// check redo
@@ -1235,7 +1235,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, varWrong), new VarReplacementByAnotherVarOp());
 		prediction.add(new PredictionElement(2, invocationToReplace), new OperatorReplacementOp());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, prediction);
 
 		assertTrue(isSolution);
 
@@ -1418,7 +1418,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, varWrong), new VarReplacementByAnotherVarOp());
 		prediction.add(new PredictionElement(2, invocationToReplace), new WrapwithIfNullCheck());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp7, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp7, prediction);
 
 		assertTrue(isSolution);
 
@@ -1614,7 +1614,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, varWrong), new VarReplacementByAnotherVarOp());
 		prediction.add(new PredictionElement(2, assignmentToWrap), new WrapwithIfOp());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp24, prediction);
 		assertTrue(isSolution);
 		///
 		approach.atEnd();
@@ -1809,7 +1809,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, varWrong), new VarReplacementByAnotherVarOp());
 		prediction.add(new PredictionElement(2, assignmentToWrap), new WrapwithTrySingleStatementOp());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp13, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp13, prediction);
 		assertTrue(isSolution);
 		///
 		approach.atEnd();
@@ -1971,7 +1971,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		prediction.add(new PredictionElement(1, varWrong), new VarReplacementByAnotherVarOp());
 		prediction.add(new PredictionElement(2, assignmentToWrap), new UnwrapfromIfOp());
 
-		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp34, 0, prediction);
+		boolean isSolution = approach.analyzePrediction(approach.getVariants().get(0), mp34, prediction);
 		assertTrue(isSolution);
 
 		assertTrue(approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()
