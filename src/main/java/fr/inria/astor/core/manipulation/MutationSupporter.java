@@ -184,7 +184,8 @@ public class MutationSupporter {
 	public static Environment getEnvironment() {
 		StandardEnvironment env = new StandardEnvironment();
 
-		env.setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
+		Integer complianceLevel = ConfigurationProperties.getPropertyInt("javacompliancelevel");
+		env.setComplianceLevel((complianceLevel > 2) ? complianceLevel : 3);
 		env.setVerbose(false);
 		env.setDebug(true);
 		env.setTabulationSize(5);

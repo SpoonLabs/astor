@@ -72,8 +72,12 @@ public class SpoonClassCompiler implements VariantCompiler {
 				logger.error("Error printing class " + ctClass.getQualifiedName(), e);
 			}
 		}
-
-		return compile(cp, toCompile);
+		try {
+			return compile(cp, toCompile);
+		} catch (Exception e) {
+			logger.error("Problem compiling");
+			throw e;
+		}
 	}
 
 	public CompilationResult compile(URL[] cp, Map<String, String> toCompile) {
