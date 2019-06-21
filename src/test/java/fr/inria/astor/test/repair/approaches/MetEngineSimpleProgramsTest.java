@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.astor.approaches.tos.core.evalTos.MetaEvalTOSApproach;
+import fr.inria.astor.approaches.tos.core.evalTos.MultiMetaEvalTOSApproach;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.ConstReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
@@ -51,7 +51,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testTrySimple1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -100,7 +100,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testIfSimple1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -168,7 +168,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testMethodReplaceByVar1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -191,7 +191,7 @@ public class MetEngineSimpleProgramsTest {
 
 		main1.getEngine().getOperatorSpace().getOperators().removeIf(e -> !(e instanceof MethodXVariableReplacementOp));
 
-		MetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
 
 		main1.getEngine().startEvolution();
 		main1.getEngine().atEnd();
@@ -227,7 +227,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File(path).getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -294,7 +294,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testVarReplaceByMethod1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -346,7 +346,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testVarReplace1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -392,6 +392,10 @@ public class MetEngineSimpleProgramsTest {
 
 	}
 
+	private String removeFormat(String s) {
+		return s.replace("(", "").replace(")", "");
+	}
+
 	@Test
 	public void test_doomy_Expr_Exp_1() throws Exception {
 
@@ -402,7 +406,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testExprExp1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -433,34 +437,21 @@ public class MetEngineSimpleProgramsTest {
 		Optional<ProgramVariant> solution0 = solutionVarByVar1
 				.stream().filter(
 						soli -> soli.getAllOperations().stream()
-								.filter(e -> e.getModified().toString().equals("(i2 > i1) || i2 != 1")
+								.filter(e -> removeFormat(e.getModified().toString()).contains("i2 > i1 || ")
 										&& e.getOriginal().toString().equals("i2 > i1"))
 								.findFirst().isPresent())
 				.findFirst();
 		assertTrue(solution0.isPresent());
 
-		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
-				.contains("+			if ((i2 > i1) || i2 != 1)"));
+		assertTrue(removeFormat(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff())
+				.contains("+			if i2 > i1 || )"));
 
 		Optional<ProgramVariant> solution1 = solutionVarByVar1.stream().filter(soli -> soli.getAllOperations().stream()
-				.filter(e -> e.getModified().toString().equals("(i2 > i1) || i1 == i2"// "(i1 > i2) || i1 == i2"
+				.filter(e -> removeFormat(e.getModified().toString()).equals("i2 > i1 || "// "(i1 > i2) || i1 ==
+																							// i2"
 				) && e.getOriginal().toString().equals("i2 > i1"// "i1 > i2"
 				)).findFirst().isPresent()).findFirst();
 		assertTrue(solution1.isPresent());
-
-		Optional<ProgramVariant> solution2 = solutionVarByVar1
-				.stream().filter(
-						soli -> soli.getAllOperations().stream()
-								.filter(e -> e.getModified().toString().equals("(i1 > i2) || i1 == i2")
-										&& e.getOriginal().toString().equals("i1 > i2"))
-								.findFirst().isPresent())
-				.findFirst();
-		// assertTrue(solution2.isPresent());
-
-		// assertTrue(solution1.get().getPatchDiff().getOriginalStatementAlignmentDiff().contains(//
-		// "+ if ((i1 > i2) || i1
-		// // == i2) "
-		// "+ if ((i2 > i1) || i2 != 1)"));
 
 	}
 
@@ -474,7 +465,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testWMRcase2a").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -530,7 +521,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testWMRcase2b").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -584,7 +575,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testWMRcase2c").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -639,7 +630,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testWMRcase1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -693,7 +684,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testWMRcase3").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -747,7 +738,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testConstantPerVar1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -800,7 +791,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testOperatorBinary1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -855,7 +846,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testOperatorBinary2").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -909,7 +900,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testUnwrapInvocation1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -961,7 +952,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testUnwrapTry1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -1012,7 +1003,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testUnwrapIf1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -1065,7 +1056,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testBinaryExprReduce1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -1098,7 +1089,8 @@ public class MetEngineSimpleProgramsTest {
 		Optional<ProgramVariant> solution1 = solutionReductionLogic1.stream()
 				.filter(soli -> soli.getAllOperations().stream()
 						.filter(e -> e.getModified().toString().equals("i2 >= i1")
-								&& e.getOriginal().toString().equals("(i2 >= i1) || (i1 > i2)"))
+								&& (e.getOriginal().toString().equals("(i2 >= i1) || (i1 > i2)"))
+								|| (e.getOriginal().toString().equals("i2 >= i1 || (i1 > i2)")))
 						.findFirst().isPresent())
 				.findFirst();
 		assertTrue(solution1.isPresent());
@@ -1117,7 +1109,7 @@ public class MetEngineSimpleProgramsTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testBinaryExprReduce2").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");

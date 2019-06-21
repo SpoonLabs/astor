@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import fr.inria.astor.approaches.tos.core.evalTos.MetaEvalTOSApproach;
+import fr.inria.astor.approaches.tos.core.evalTos.MultiMetaEvalTOSApproach;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
@@ -37,7 +37,7 @@ public class MetEngineDebuggingTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -107,7 +107,7 @@ public class MetEngineDebuggingTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -145,7 +145,7 @@ public class MetEngineDebuggingTest {
 
 		main1.getEngine().getSolutions().clear();
 
-		MetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
 		main1.getEngine().startEvolution();
 		main1.getEngine().atEnd();
 
@@ -174,7 +174,7 @@ public class MetEngineDebuggingTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -212,7 +212,7 @@ public class MetEngineDebuggingTest {
 
 		main1.getEngine().getSolutions().clear();
 
-		MetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
 		main1.getEngine().startEvolution();
 		main1.getEngine().atEnd();
 
@@ -225,7 +225,7 @@ public class MetEngineDebuggingTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -257,7 +257,7 @@ public class MetEngineDebuggingTest {
 
 		main1.getEngine().getSolutions().clear();
 
-		MetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
 		main1.getEngine().startEvolution();
 		main1.getEngine().atEnd();
 
@@ -270,7 +270,7 @@ public class MetEngineDebuggingTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "1000");
 		command.command.put("-seed", "0");
@@ -310,7 +310,7 @@ public class MetEngineDebuggingTest {
 		command.command.put("-stopfirst", "false");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-maxgen", "1000");
-		MetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
 		main1.getEngine().startEvolution();
 		// assertTrue(main1.getEngine().getSolutions().size() > 0);
 		main1.getEngine().atEnd();
@@ -327,7 +327,7 @@ public class MetEngineDebuggingTest {
 		CommandSummary command = new CommandSummary();
 		command.command.put("-location", new File("./examples/testMet/testTrySimple1").getAbsolutePath());
 		command.command.put("-mode", "custom");
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -383,7 +383,7 @@ public class MetEngineDebuggingTest {
 
 		CommandSummary command = new CommandSummary(args);
 
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -442,7 +442,7 @@ public class MetEngineDebuggingTest {
 
 		CommandSummary command = new CommandSummary(args);
 
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");

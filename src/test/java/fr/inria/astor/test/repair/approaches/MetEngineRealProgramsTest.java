@@ -10,12 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.tos.core.InitialConceptMetEngine;
 import fr.inria.astor.approaches.tos.core.evalTos.EvalTOSClusterApproach;
-import fr.inria.astor.approaches.tos.core.evalTos.MetaEvalTOSApproach;
 import fr.inria.astor.approaches.tos.core.evalTos.MultiMetaEvalTOSApproach;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
@@ -167,7 +165,7 @@ public class MetEngineRealProgramsTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -199,9 +197,7 @@ public class MetEngineRealProgramsTest {
 
 		main1.getEngine().getSolutions().clear();
 
-		MetaEvalTOSApproach.MAX_GENERATIONS = 1000;
-
-		List<AstorOperator> originalOperators = main1.getEngine().getOperatorSpace().getOperators();
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
 
 		main1.getEngine().getOperatorSpace().getOperators().removeIf(e -> !(e instanceof OperatorReplacementOp)
 				&& !(e instanceof WrapwithTrySingleStatementOp) && !(e instanceof WrapwithIfOp));
@@ -233,7 +229,7 @@ public class MetEngineRealProgramsTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -258,16 +254,12 @@ public class MetEngineRealProgramsTest {
 				.findAny().get();
 		assertNotNull(mp199);
 
-		// assertTrue(mp198.getCodeElement() instanceof CtIf);
-
 		main1.getEngine().getVariants().get(0).getModificationPoints().clear();
 		main1.getEngine().getVariants().get(0).getModificationPoints().add(mp199);
 
 		main1.getEngine().getSolutions().clear();
 
-		MetaEvalTOSApproach.MAX_GENERATIONS = 1000;
-
-		List<AstorOperator> originalOperators = main1.getEngine().getOperatorSpace().getOperators();
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
 
 		main1.getEngine().getOperatorSpace().getOperators().removeIf(e -> !(e instanceof OperatorReplacementOp)
 				&& !(e instanceof WrapwithTrySingleStatementOp) && !(e instanceof WrapwithIfOp));
@@ -293,14 +285,13 @@ public class MetEngineRealProgramsTest {
 	}
 
 	@Test
-	// @Ignore
 	public void testBT_Math85_OpTry() throws Exception {
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "120");
 		command.command.put("-seed", "0");
@@ -338,9 +329,7 @@ public class MetEngineRealProgramsTest {
 		main1.getEngine().getVariants().get(0).getModificationPoints().add(mp199);
 		main1.getEngine().getSolutions().clear();
 
-		MetaEvalTOSApproach.MAX_GENERATIONS = 1000;
-
-		List<AstorOperator> originalOperators = main1.getEngine().getOperatorSpace().getOperators();
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
 
 		main1.getEngine().getOperatorSpace().getOperators().removeIf(e -> !(e instanceof WrapwithIfOp));
 		main1.getEngine().startEvolution();
@@ -356,14 +345,14 @@ public class MetEngineRealProgramsTest {
 	}
 
 	@Test
-	@Ignore
+//	@Ignore
 	public void testBT_Math85_CheckVarReplacement() throws Exception {
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 
 		CommandSummary command = MathCommandsTests.getMath85Command();
-		command.command.put("-customengine", MetaEvalTOSApproach.class.getName());
+		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
 		command.command.put("-maxtime", "1000");
 		command.command.put("-seed", "0");
@@ -403,7 +392,7 @@ public class MetEngineRealProgramsTest {
 		command.command.put("-stopfirst", "false");
 		command.command.put("-loglevel", "DEBUG");
 		command.command.put("-maxgen", "1000");
-		MetaEvalTOSApproach.MAX_GENERATIONS = 1000;
+		MultiMetaEvalTOSApproach.MAX_GENERATIONS = 1000;
 		main1.getEngine().startEvolution();
 		// assertTrue(main1.getEngine().getSolutions().size() > 0);
 		main1.getEngine().atEnd();

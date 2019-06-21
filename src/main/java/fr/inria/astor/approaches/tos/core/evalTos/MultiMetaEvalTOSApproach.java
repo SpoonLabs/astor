@@ -248,7 +248,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 			AstorOperator operator = getSingleOperator(candidateOperators);
 
-			log.info("Target " + targetElement + " operator " + operator);
+			log.info("Target: " + targetElement + ", operator applied:" + operator);
 
 			if (operator == null) {
 				log.error("No operator to apply");
