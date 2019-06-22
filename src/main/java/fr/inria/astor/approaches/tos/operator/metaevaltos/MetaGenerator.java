@@ -24,11 +24,13 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -87,6 +89,7 @@ public class MetaGenerator {
 			List<OperatorInstance> opsOfVariant, Map<Integer, Ingredient> ingredientOfMapped) {
 		CtExpression defaultReturnElement = elementSource;
 
+		realParameters = filterParameter(realParameters);
 		// Creation of mega method
 		CtMethod<?> megaMethod = createMegaMethod(opMega, modificationPoint, defaultReturnElement, variableCounter,
 				ingredients, parameters, ingredientOfMapped, returnType);
@@ -138,6 +141,7 @@ public class MetaGenerator {
 		List<OperatorInstance> opsOfVariant = new ArrayList();
 		Map<Integer, Ingredient> ingredientOfMapped = new HashMap<>();
 
+		realParameters = filterParameter(realParameters);
 		// Creation of mega method
 		CtMethod<?> megaMethod = createMegaMethod(opMega, modificationPoint, defaultReturnElement, variableCounter,
 				ingredients, parameters, ingredientOfMapped, returnType);
@@ -183,6 +187,32 @@ public class MetaGenerator {
 		return opMega;
 	}
 
+	private static List<CtExpression<?>> filterParameter(List<CtExpression<?>> realParameters) {
+		List<CtExpression<?>> parametersN = new ArrayList<>();
+		HashMap<String, CtVariableAccess> seen = new HashMap();
+		for (CtExpression<?> ctParameter : realParameters) {
+			if (ctParameter instanceof CtVariableAccess) {
+				CtVariableAccess va = (CtVariableAccess) ctParameter;
+				if (!seen.containsKey(va.getVariable().getSimpleName())) {
+					parametersN.add(ctParameter);
+					seen.put(va.getVariable().getSimpleName(), va);
+				} else {
+					// we have a var with the same name
+					CtVariableAccess other = seen.get(va.getVariable().getSimpleName());
+					if (other instanceof CtFieldAccess && !(va instanceof CtFieldAccess)) {
+						// replace the field access by the other var access
+						int ind = parametersN.indexOf(other);
+						parametersN.remove(ind);
+						parametersN.add(ind, va);
+						seen.put(va.getVariable().getSimpleName(), va);
+					}
+				}
+			}
+		}
+
+		return parametersN;
+	}
+
 	public static CtInvocation creationInvocationToMega(ModificationPoint modificationPoint,
 			List<CtExpression<?>> realParameters, CtMethod<?> megaMethod) {
 		CtType target = modificationPoint.getCodeElement().getParent(CtType.class);
@@ -210,6 +240,7 @@ public class MetaGenerator {
 			CtExpression defaultReturnElement, int variableCounter, List<Ingredient> ingredients,
 			List<CtParameter<?>> parameters, Map<Integer, Ingredient> ingredientOfMapped, CtTypeReference returnType) {
 
+		parameters = filterParameters(parameters);
 		int moiIdentifier = opMega.getIdentifier();
 		String name = META_CNST + moiIdentifier + "_" + variableCounter;
 		CtType<?> target = modificationPoint.getCodeElement().getParent(CtType.class);
@@ -303,6 +334,19 @@ public class MetaGenerator {
 		defaultReturnLast.setReturnedExpression(expCloned);
 		methodBodyBlock.addStatement(defaultReturnLast);
 		return megaMethod;
+	}
+
+	private static List<CtParameter<?>> filterParameters(List<CtParameter<?>> parameters) {
+		List<CtParameter<?>> parametersN = new ArrayList<>();
+		Set<String> seen = new HashSet();
+		for (CtParameter<?> ctParameter : parameters) {
+			if (!seen.contains(ctParameter.getSimpleName())) {
+				parametersN.add(ctParameter);
+				seen.add(ctParameter.getSimpleName());
+			}
+		}
+
+		return parametersN;
 	}
 
 	public static Map<CtElement, CtElement> sourceTarget = new HashMap<>();
