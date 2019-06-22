@@ -36,7 +36,6 @@ import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.SupportOperators;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromIfOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromMethodCallOp;
-import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromTryOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
@@ -103,6 +102,38 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 	 */
 	Map<IPrediction, Integer> attempts = new HashMap<>();
 
+	public static MapList<String, AstorOperator> operators = new MapList<>();
+
+	static {
+		// "addassignment"
+		operators.add("wrapsTryCatch", new WrapwithTrySingleStatementOp());
+		operators.add("wrapsIfElse_Others", new WrapwithIfOp());//
+		operators.add("wrapsIf_Others", new WrapwithIfOp());// duplicate
+		operators.add("wrapsIfElse_NULL", new WrapwithIfNullCheck());
+		operators.add("wrapsIf_NULL", new WrapwithIfNullCheck());// duplicate
+		//
+
+		// wrapsLoop
+		operators.add("VAR_RW_VAR", new VarReplacementByAnotherVarOp());
+		operators.add("expLogicExpand", new LogicExpOperator());
+		operators.add("Method_RW_Method", new MethodXMethodReplacementDiffNameOp());// TODO
+		operators.add("Method_RW_Method", new MethodXMethodReplacementDiffArgumentsOp());
+		operators.add("Method_RW_Method", new MethodXMethodReplacementArgumentRemoveOp());
+		operators.add("unwrapMethod", new UnwrapfromMethodCallOp());
+		// ops.add("", new UnwrapfromTryOp());//ignored
+		operators.add("unwrapIfElse", new UnwrapfromIfOp());
+		operators.add("expLogicReduce", new LogicRedOperator());
+		operators.add("VAR_RW_Method", new VarReplacementByMethodCallOp());
+		operators.add("binOperatorModif", new OperatorReplacementOp());
+		operators.add("constChange", new ConstReplacementOp());
+
+		//
+		operators.add("wrapsMethod", null);// TODO
+		operators.add("Method_RW_Var", new MethodXVariableReplacementOp());// TODO
+		//
+
+	}
+
 	public MultiMetaEvalTOSApproach(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
@@ -132,24 +163,15 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	@Override
 	protected void loadOperatorSpaceDefinition() throws Exception {
-		this.operatorSpace = new OperatorSpace();
-		// TODO: add statement
-		this.operatorSpace.register(new WrapwithTrySingleStatementOp());
-		this.operatorSpace.register(new WrapwithIfOp());
-		this.operatorSpace.register(new WrapwithIfNullCheck());
-		this.operatorSpace.register(new VarReplacementByAnotherVarOp());
-		this.operatorSpace.register(new LogicExpOperator());
-		this.operatorSpace.register(new MethodXMethodReplacementDiffNameOp());
-		this.operatorSpace.register(new MethodXMethodReplacementDiffArgumentsOp());
-		this.operatorSpace.register(new MethodXMethodReplacementArgumentRemoveOp());
-		this.operatorSpace.register(new MethodXVariableReplacementOp());
-		this.operatorSpace.register(new UnwrapfromMethodCallOp());
-		this.operatorSpace.register(new UnwrapfromTryOp());
-		this.operatorSpace.register(new UnwrapfromIfOp());
-		this.operatorSpace.register(new LogicRedOperator());
-		this.operatorSpace.register(new VarReplacementByMethodCallOp());
-		this.operatorSpace.register(new OperatorReplacementOp());
-		this.operatorSpace.register(new ConstReplacementOp());
+
+		for (List<AstorOperator> astorOperationsFromAbstractOperator : operators.values()) {
+			// We register all operators
+			for (AstorOperator astorOperator : astorOperationsFromAbstractOperator) {
+				this.operatorSpace.register(astorOperator);
+			}
+
+		}
+
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -40,6 +40,7 @@ public abstract class MethodXMethodReplacementOp extends FineGrainedExpressionRe
 		MapList<CtInvocation, Ingredient> ingredientsPerInvocation = this
 				.retrieveInvocationIngredient(modificationPoint);
 		if (ingredientsPerInvocation.isEmpty()) {
+			log.debug("Any ingredient (other invocations) for modif point " + modificationPoint.identified);
 			// Nothing to replace
 			return opsMega;
 		}
