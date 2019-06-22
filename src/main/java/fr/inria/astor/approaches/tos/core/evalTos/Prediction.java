@@ -44,7 +44,8 @@ public class Prediction extends MapList<PredictionElement, AstorOperator> implem
 			JsonArray ops = new JsonArray();
 			root.add("ops", ops);
 			for (AstorOperator op : this.get(predictedElement)) {
-				ops.add(op.name());
+				if (op != null)
+					ops.add(op.name());
 			}
 
 		}
