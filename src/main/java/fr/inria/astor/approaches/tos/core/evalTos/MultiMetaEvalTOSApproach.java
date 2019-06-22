@@ -23,19 +23,16 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.ClusterExpressions;
 import fr.inria.astor.approaches.tos.core.evalTos.ingredients.DynaIngredientPool;
 import fr.inria.astor.approaches.tos.operator.DynaIngredientOperator;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.CompositeMethodXMethodReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.ConstReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.IOperatorWithTargetElement;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MetaGenerator;
-import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementArgumentRemoveOp;
-import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffArgumentsOp;
-import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXMethodReplacementDiffNameOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXVariableReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.SupportOperators;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromIfOp;
-import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
@@ -116,11 +113,14 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		// wrapsLoop
 		operators.add("VAR_RW_VAR", new VarReplacementByAnotherVarOp());
 		operators.add("expLogicExpand", new LogicExpOperator());
-		operators.add("Method_RW_Method", new MethodXMethodReplacementDiffNameOp());// TODO
-		operators.add("Method_RW_Method", new MethodXMethodReplacementDiffArgumentsOp());
-		operators.add("Method_RW_Method", new MethodXMethodReplacementArgumentRemoveOp());
-		operators.add("unwrapMethod", new UnwrapfromMethodCallOp());
-		// ops.add("", new UnwrapfromTryOp());//ignored
+
+		operators.add("Method_RW_Method", new CompositeMethodXMethodReplacementOp());
+
+//		operators.add("Method_RW_Method", new MethodXMethodReplacementDiffNameOp());// TODO
+//		operators.add("Method_RW_Method", new MethodXMethodReplacementDiffArgumentsOp());
+//		operators.add("Method_RW_Method", new MethodXMethodReplacementArgumentRemoveOp());
+//		operators.add("unwrapMethod", new UnwrapfromMethodCallOp());
+//		// ops.add("", new UnwrapfromTryOp());//ignored
 		operators.add("unwrapIfElse", new UnwrapfromIfOp());
 		operators.add("expLogicReduce", new LogicRedOperator());
 		operators.add("VAR_RW_Method", new VarReplacementByMethodCallOp());

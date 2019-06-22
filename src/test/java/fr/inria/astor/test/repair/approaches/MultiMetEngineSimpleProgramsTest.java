@@ -17,6 +17,7 @@ import fr.inria.astor.approaches.tos.core.evalTos.MultiMetaEvalTOSApproach;
 import fr.inria.astor.approaches.tos.core.evalTos.Prediction;
 import fr.inria.astor.approaches.tos.core.evalTos.PredictionElement;
 import fr.inria.astor.approaches.tos.core.evalTos.PredictionResult;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.CompositeMethodXMethodReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.ConstReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicExpOperator;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.LogicRedOperator;
@@ -1052,7 +1053,7 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		MultiMetaEvalTOSApproach approach = (MultiMetaEvalTOSApproach) main1.getEngine();
 
-		approach.getOperatorSpace().getOperators().removeIf(e -> !(e instanceof MethodXMethodReplacementDiffNameOp));
+		approach.getOperatorSpace().getOperators().removeIf(e -> !(e instanceof CompositeMethodXMethodReplacementOp));
 
 		approach.getVariants().get(0).getModificationPoints()
 				.removeIf(e -> !((e.getCodeElement().getPosition().getLine() == 33
