@@ -62,7 +62,7 @@ public class QuixBugsRepairTest {
 		cs.command.put("-binjavafolder", "/bin");
 		cs.command.put("-bintestfolder", "/bin");
 		cs.command.put("-flthreshold", "0.0");
-		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-stopfirst", "TRUE");
 		cs.command.put("-parameters", "logtestexecution:TRUE:"
 				+ "disablelog:TRUE:maxtime:120:autocompile:false:gzoltarpackagetonotinstrument:com.google.gson_engine"
