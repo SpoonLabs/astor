@@ -62,12 +62,12 @@ public class QuixBugsRepairTest {
 		cs.command.put("-binjavafolder", "/bin");
 		cs.command.put("-bintestfolder", "/bin");
 		cs.command.put("-flthreshold", "0.0");
-		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-stopfirst", "TRUE");
 		cs.command.put("-parameters", "logtestexecution:TRUE:"
-				+ "disablelog:TRUE:maxtime:120:autocompile:true:gzoltarpackagetonotinstrument:com.google.gson_engine"
+				+ "disablelog:TRUE:maxtime:120:autocompile:false:gzoltarpackagetonotinstrument:com.google.gson_engine"
 				+ GZoltarFaultLocalization.PACKAGE_SEPARATOR + "java_programs_test");
-		cs.command.put("-location", new File("./examples/quixbugs/" + name).getAbsolutePath());
+		cs.command.put("-location", new File("./examples/quixbugscompiled/" + name).getAbsolutePath());
 
 		return cs;
 	}
@@ -256,6 +256,7 @@ public class QuixBugsRepairTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void test_get_factorsRepair_cardumen() throws Exception {
 		AstorMain main1 = new AstorMain();
 
