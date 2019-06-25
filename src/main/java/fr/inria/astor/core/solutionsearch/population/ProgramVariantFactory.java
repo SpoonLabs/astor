@@ -116,11 +116,16 @@ public class ProgramVariantFactory {
 		log.debug("Creating variant " + idProgramInstance);
 
 		if (!suspiciousList.isEmpty()) {
+			int maxModPoints = ConfigurationProperties.getPropertyInt("maxmodificationpoints");
 			for (SuspiciousCode suspiciousCode : suspiciousList) {
 
 				List<SuspiciousModificationPoint> modifPoints = createModificationPoints(suspiciousCode, progInstance);
 				if (modifPoints != null && !modifPoints.isEmpty()) {
 					progInstance.addModificationPoints(modifPoints);
+				}
+				if (progInstance.getModificationPoints().size() > maxModPoints) {
+					progInstance.setModificationPoints(progInstance.getModificationPoints().subList(0, maxModPoints));
+					log.info("Reducing Total ModPoint created to: " + progInstance.getModificationPoints().size());
 				}
 
 			}
@@ -134,11 +139,6 @@ public class ProgramVariantFactory {
 			progInstance.getModificationPoints().addAll(pointsFromAllStatements);
 		}
 		log.info("Total ModPoint created: " + progInstance.getModificationPoints().size());
-		int maxModPoints = ConfigurationProperties.getPropertyInt("maxmodificationpoints");
-		if (progInstance.getModificationPoints().size() > maxModPoints) {
-			progInstance.setModificationPoints(progInstance.getModificationPoints().subList(0, maxModPoints));
-			log.info("Reducing Total ModPoint created to: " + progInstance.getModificationPoints().size());
-		}
 
 		// Defining identified of each modif point
 		for (int i = 0; i < progInstance.getModificationPoints().size(); i++) {
@@ -154,7 +154,6 @@ public class ProgramVariantFactory {
 		List<SuspiciousModificationPoint> suspGen = new ArrayList<>();
 		List<CtClass> classesFromModel = mutatorSupporter.getFactory().Class().getAll().stream()
 				.filter(CtClass.class::isInstance).map(sc -> (CtClass) sc).collect(Collectors.toList());
-
 		for (CtClass ctclasspointed : classesFromModel) {
 
 			List<String> allTest = projectFacade.getProperties().getRegressionTestCases();
@@ -175,6 +174,8 @@ public class ProgramVariantFactory {
 			classesToProcess.add(ctclasspointed);
 			List<CtElement> extractedElements = extractChildElements(classesToProcess, processors);
 
+			int maxModPoints = ConfigurationProperties.getPropertyInt("maxmodificationpoints");
+
 			for (CtElement suspiciousElement : extractedElements) {
 
 				List<CtVariable> contextOfGen = VariableResolver.searchVariablesInScope(suspiciousElement);
@@ -190,6 +191,11 @@ public class ProgramVariantFactory {
 						+ point.getSuspicious().getSuspiciousValue() + ", line "
 						+ suspiciousElement.getPosition().getLine() + ", file "
 						+ suspiciousElement.getPosition().getFile().getName());
+
+				if (suspGen.size() > maxModPoints) {
+					log.info("Reducing Total ModPoint created to: " + maxModPoints);
+					return suspGen;
+				}
 			}
 
 		}
