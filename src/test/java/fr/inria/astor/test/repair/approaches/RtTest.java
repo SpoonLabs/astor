@@ -162,7 +162,7 @@ public class RtTest {
 		CommandSummary cs = new CommandSummary(args);
 
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-loglevel", "DEBUG");
+ 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-location", location.getAbsolutePath());
 		if (dep == null) {
 			cs.command.put("-autoconfigure", "true");

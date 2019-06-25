@@ -43,6 +43,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.LineFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 /**
  * 
@@ -50,6 +51,18 @@ import spoon.reflect.visitor.filter.LineFilter;
  *
  */
 public class RtEngine extends AstorCoreEngine {
+	private static final String FULL_ROTTEN = "Full_Rotten";
+
+	private static final String ROTTEN_MISSED = "Rotten_Missed";
+
+	private static final String ROTTEN_SKIP = "Rotten_Skip";
+
+	private static final String ROTTEN_HELPERS_CALL = "Rotten_Helpers_Call";
+
+	private static final String ROTTEN_HELPERS_ASSERTION = "Rotten_Helpers_Assertion";
+
+	private static final String ROTTEN_ASSERTIONS = "Rotten_Assertions";
+
 	List<SuspiciousCode> allExecutedStatements = null;
 
 	List<TestClassificationResult> resultByTest = null;
@@ -752,15 +765,23 @@ public class RtEngine extends AstorCoreEngine {
 
 	}
 
+	private boolean isAssertion(CtInvocation targetInvocation) {
+		return isInvWithName(targetInvocation, "assert");
+	}
+
+	private boolean isFail(CtInvocation targetInvocation) {
+		return isInvWithName(targetInvocation, "fail");
+	}
+
 	/**
 	 * Return if the invocation is an assertion
 	 * 
 	 * @param targetInvocation
 	 * @return
 	 */
-	private boolean isAssertion(CtInvocation targetInvocation) {
+	private boolean isInvWithName(CtInvocation targetInvocation, String methodName) {
 		log.debug("assert " + targetInvocation.getExecutable().getSimpleName());
-		boolean isAssert = targetInvocation.getExecutable().getSimpleName().toLowerCase().startsWith("assert");
+		boolean isAssert = targetInvocation.getExecutable().getSimpleName().toLowerCase().startsWith(methodName);
 		if (isAssert) {
 			return true;
 		}
@@ -800,7 +821,7 @@ public class RtEngine extends AstorCoreEngine {
 		String branch = executeCommand(location, "git rev-parse --abbrev-ref HEAD");
 		String remote = executeCommand(location, "git config --get remote.origin.url");
 		String projectsubfolder = ConfigurationProperties.getProperty("projectsubfolder");
-		root.addProperty("commitid", commitid);
+		summary.addProperty("commitid", commitid);
 
 		int nrRtest = 0, nrRtAssertion = 0, nrRtHelperCall = 0, nrRttHelperAssert = 0, nrSkip = 0, nrAllMissed = 0,
 				nrRtFully = 0;
@@ -823,7 +844,7 @@ public class RtEngine extends AstorCoreEngine {
 				log.debug("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
 				JsonArray assertionarray = new JsonArray();
-				testjson.add("rotten_assertions", assertionarray);
+				testjson.add(ROTTEN_ASSERTIONS, assertionarray);
 				for (AsAssertion assertion : notExecutedAssert) {
 					CtInvocation anInvocation = assertion.getCtAssertion();
 					log.debug("-R-Assertion:-> " + anInvocation);
@@ -846,7 +867,7 @@ public class RtEngine extends AstorCoreEngine {
 				log.debug("-R Helper assertion- " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
 				JsonArray helperarray = new JsonArray();
-				testjson.add("rotten_helpers_assertion", helperarray);
+				testjson.add(ROTTEN_HELPERS_ASSERTION, helperarray);
 				List<JsonObject> result = helperToJson(notExecutedHelper, commitid, branch, remote, projectsubfolder,
 						false);
 
@@ -865,7 +886,7 @@ public class RtEngine extends AstorCoreEngine {
 				System.out.println("-- R Helper call  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
 				JsonArray helperarray = new JsonArray();
-				testjson.add("rotten_helpers_call", helperarray);
+				testjson.add(ROTTEN_HELPERS_CALL, helperarray);
 				List<JsonObject> result = helperToJson(notExecutedHelperInvoc, commitid, branch, remote,
 						projectsubfolder, true);
 
@@ -881,7 +902,7 @@ public class RtEngine extends AstorCoreEngine {
 			//
 			if (!tr.getAllSkipFromTest().isEmpty()) {
 				JsonArray skiprarray = new JsonArray();
-				testjson.add("rotten_skip", skiprarray);
+				testjson.add(ROTTEN_SKIP, skiprarray);
 				for (CtReturn skip : tr.getAllSkipFromTest()) {
 					JsonObject singleSkip = new JsonObject();
 					singleSkip.addProperty("code", skip.toString().toString());
@@ -897,7 +918,7 @@ public class RtEngine extends AstorCoreEngine {
 			//
 			if (!tr.getAllMissedFailFromTest().isEmpty()) {
 				JsonArray missrarray = new JsonArray();
-				testjson.add("rotten_missed", missrarray);
+				testjson.add(ROTTEN_MISSED, missrarray);
 				for (CtInvocation missedInv : tr.getAllMissedFailFromTest()) {
 					JsonObject missedJson = new JsonObject();
 					missedJson.addProperty("code_assertion", missedInv.toString().toString());
@@ -912,19 +933,26 @@ public class RtEngine extends AstorCoreEngine {
 
 			if (tr.isFullR() && tr.getExpectException().isEmpty() && tr.getAllExpectedExceptionFromTest().isEmpty()) {
 
-				testjson.addProperty("full_rotten", "true");
+				List<CtInvocation> allAssertionsFromTest = tr.getTestMethodModel().getBody()
+						// .getElements(new LineFilter())
+						// .stream().filter(e -> e instanceof CtInvocation)
+						// .map(CtInvocation.class::cast)
+						// .collect(Collectors.toList())
+						.getElements(new TypeFilter<>(CtInvocation.class));
+
+				if (hasFail(allAssertionsFromTest)) {
+					continue;
+				}
+
+				testjson.addProperty(FULL_ROTTEN, "true");
 				testsAssertionArray.add(testjson);
 				rTestclasses.add(tr.getNameOfTestClass());
 				nrRtFully += 1;
-				List<CtInvocation> allAssertionsFromTest = tr.getTestMethodModel().getBody()
-						.getElements(new LineFilter()).stream().filter(e -> e instanceof CtInvocation)
-						.map(CtInvocation.class::cast).collect(Collectors.toList());
 
 				JsonArray missrarray = new JsonArray();
 				testjson.add("other_method_invocation", missrarray);
 				for (CtInvocation otherinv : allAssertionsFromTest) {
-					missrarray.add(otherinv.getExecutable().getDeclaringType().getQualifiedName() + "#"
-							+ otherinv.getExecutable().getSignature());
+					missrarray.add(createMethodSignature(otherinv));
 				}
 
 			}
@@ -939,16 +967,32 @@ public class RtEngine extends AstorCoreEngine {
 
 		summary.addProperty("remote", remote);
 		summary.addProperty("localLocation", location);
-		summary.addProperty("nrAllTest", resultByTest.size());
-		summary.addProperty("nrRtestclasses", rTestclasses.size());
-		summary.addProperty("nrRtestunit", nrRtest);
-		summary.addProperty("nrRtAssertion", nrRtAssertion);
-		summary.addProperty("nrRtHelperCall", nrRtHelperCall);
-		summary.addProperty("nrRttHelperAssert", nrRttHelperAssert);
-		summary.addProperty("nrSkip", nrSkip);
-		summary.addProperty("nrAllMissed", nrAllMissed);
-		summary.addProperty("nrRtFully", nrRtFully);
+		summary.addProperty("nr_All_Test", resultByTest.size());
+		summary.addProperty("nr_Classes_With_Rotten", rTestclasses.size());
+		summary.addProperty("nr_Rotten_Test_Units", nrRtest);
+		summary.addProperty("nr_" + this.ROTTEN_ASSERTIONS, nrRtAssertion);
+		summary.addProperty("nr_" + this.ROTTEN_HELPERS_CALL, nrRtHelperCall);
+		summary.addProperty("nr_" + this.ROTTEN_HELPERS_ASSERTION, nrRttHelperAssert);
+		summary.addProperty("nr_" + this.ROTTEN_SKIP, nrSkip);
+		summary.addProperty("nr_" + this.ROTTEN_MISSED, nrAllMissed);
+		summary.addProperty("nr_" + this.FULL_ROTTEN, nrRtFully);
 		return root;
+	}
+
+	public String createMethodSignature(CtInvocation anInvocation) {
+		String signature = "";
+		signature += anInvocation.getExecutable().getDeclaringType().getQualifiedName() + "#"
+				+ anInvocation.getExecutable().getSignature();
+		return signature;
+	}
+
+	private boolean hasFail(List<CtInvocation> allAssertionsFromTest) {
+		for (CtInvocation ctInvocation : allAssertionsFromTest) {
+			if (isFail(ctInvocation)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void writeJsonLink(String commitid, String branch, String remote, String projectsubfolder,
