@@ -31,8 +31,6 @@ import fr.inria.astor.core.faultlocalization.entity.runtestsuite.ClassloaderFind
 import fr.inria.astor.core.faultlocalization.entity.runtestsuite.Processor;
 import fr.inria.astor.core.faultlocalization.entity.runtestsuite.TestFilter;
 
-
-
 /**
  * @author Favio D. DeMarco
  * 
@@ -42,10 +40,9 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 	private final Logger logger = Logger.getLogger(this.getClass());
 
 	public Collection<Class<?>> call() throws Exception {
-
 		Class<?>[] classes = new Processor(
-				new ClassloaderFinder((URLClassLoader) Thread.currentThread()
-						.getContextClassLoader()), new TestFilter()).process();
+				new ClassloaderFinder((URLClassLoader) Thread.currentThread().getContextClassLoader()),
+				new TestFilter()).process();
 
 		return java.util.Arrays.asList(classes);
 	}
@@ -60,15 +57,13 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 		return names;
 	}
 
-	public String[] findIn(ClassLoader dumpedToClassLoader,
-			boolean acceptTestSuite) {
+	public String[] findIn(ClassLoader dumpedToClassLoader, boolean acceptTestSuite) {
 		ExecutorService executor = Executors
-				.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(
-						dumpedToClassLoader));
+				.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(dumpedToClassLoader));
 		String[] testClasses;
 		try {
-			testClasses = namesFrom(executor.submit(new TestClassesFinder())
-					.get());
+			Collection<Class<?>> classes = executor.submit(new TestClassesFinder()).get();
+			testClasses = namesFrom(classes);
 		} catch (InterruptedException ie) {
 			throw new RuntimeException(ie);
 		} catch (ExecutionException ee) {
@@ -82,9 +77,9 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 		}
 
 		if (this.logger.isDebugEnabled()) {
-			//this.logger.debug("Test clases:");
+			// this.logger.debug("Test clases:");
 			for (String testClass : testClasses) {
-				//this.logger.debug(testClass);
+				// this.logger.debug(testClass);
 			}
 		}
 		return testClasses;
