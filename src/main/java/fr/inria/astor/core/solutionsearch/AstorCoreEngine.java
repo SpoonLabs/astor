@@ -732,20 +732,13 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		ConfigurationProperties.setProperty("forceExecuteRegression", Boolean.TRUE.toString());
 
 		// Initial validation and fitness
-		long inittime = System.currentTimeMillis();
 		VariantValidationResult validationResult = validateInstance(originalVariant);
-		long endtime = System.currentTimeMillis();
 
 		if (validationResult == null) {
 			log.error("Initial run of test suite fails");
 
 		} else if (validationResult.isSuccessful()) {
 			throw new IllegalStateException("The application under repair has not failling test cases");
-		}
-
-		if (ConfigurationProperties.getPropertyBool("overridemaxtime")) {
-			Long diff = (endtime - inittime) * 2;// in milliseconds
-			ConfigurationProperties.setProperty("tmax2", diff.toString());
 		}
 
 		double fitness = this.fitnessFunction.calculateFitnessValue(validationResult);
@@ -849,7 +842,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.originalVariant = variants.get(0);
 
 		if (originalVariant.getModificationPoints().isEmpty()) {
-			throw new IllegalStateException("Variant without any modification point. It must have at least one.");
+			// throw new IllegalStateException("Variant without any modification point. It
+			// must have at least one.");
+			log.error("[warning] Any modification point in variant");
 		}
 	}
 
@@ -921,7 +916,21 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public List<SuspiciousCode> calculateSuspicious() throws Exception {
-		return this.getFaultLocalization().searchSuspicious(getProjectFacade()).getCandidates();
+		long inittime = System.currentTimeMillis();
+		List<SuspiciousCode> susp = this.getFaultLocalization().searchSuspicious(getProjectFacade()).getCandidates();
+
+		long endtime = System.currentTimeMillis();
+		// milliseconds
+		Long diffTime = (endtime - inittime);
+
+		log.debug("Executing time Fault localization: " + diffTime / 1000 + " sec");
+
+		if (ConfigurationProperties.getPropertyBool("overridemaxtime")) {
+			Long newMaxtime = diffTime * ConfigurationProperties.getPropertyInt("maxtimefactor");
+			log.info("Setting up the max to " + newMaxtime + " milliseconds (" + newMaxtime / 1000 + " sec)");
+			ConfigurationProperties.setProperty("tmax2", newMaxtime.toString());
+		}
+		return susp;
 	}
 
 	public List<TargetElementProcessor<?>> getTargetElementProcessors() {

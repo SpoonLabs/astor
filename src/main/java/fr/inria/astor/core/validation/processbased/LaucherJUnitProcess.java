@@ -71,11 +71,7 @@ public class LaucherJUnitProcess {
 
 			command.add(jvmPath);
 			command.add("-Xmx2048m");
-			//
-			// command.add("-Dmutnumber=" +
-			// ConfigurationProperties.getProperty(MultiMetaEvalTOSApproach.METID));
 
-			//
 			String[] ids = ConfigurationProperties.getProperty(MultiMetaEvalTOSApproach.METALL)
 					.split(File.pathSeparator);
 			for (String mutid : ids) {
@@ -88,7 +84,7 @@ public class LaucherJUnitProcess {
 			command.add(laucherClassName().getCanonicalName());
 			command.addAll(cls);
 
-			printCommandToExecute(command);
+			printCommandToExecute(command, waitTime);
 
 			ProcessBuilder pb = new ProcessBuilder("/bin/bash");
 
@@ -233,13 +229,13 @@ public class LaucherJUnitProcess {
 		return out;
 	}
 
-	private void printCommandToExecute(List<String> command) {
+	private void printCommandToExecute(List<String> command, int waitTime) {
 		String commandString = toString(command);
 		int trunk = ConfigurationProperties.getPropertyInt("commandTrunk");
 		String commandToPrint = (trunk != 0 && commandString.length() > trunk)
 				? (commandString.substring(0, trunk) + "..AND " + (commandString.length() - trunk) + " CHARS MORE...")
 				: commandString;
-		log.debug("Executing process: \n" + commandToPrint);
+		log.debug("Executing process: (timeout" + waitTime / 1000 + "secs) \n" + commandToPrint);
 	}
 
 	private String toString(List<String> command) {
