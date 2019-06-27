@@ -179,7 +179,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 	public void startEvolution() throws Exception {
 
 		dateInitEvolution = new Date();
-		// We don't evolve variants, so the generation is always one.
+		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 		generationsExecuted = 1;
 		modifPointsAnalyzed = 0;
 		evaluatedProgramVariants.clear();
@@ -215,10 +215,18 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 				if (existsSolution) {
 
-					if (ConfigurationProperties.getPropertyBool("stopfirst")) {
+					if (ConfigurationProperties.getPropertyBool("stopfirst") || (this.solutions
+							.size() >= ConfigurationProperties.getPropertyInt("maxnumbersolutions"))) {
 						this.setOutputStatus(AstorOutputStatus.STOP_BY_PATCH_FOUND);
 						return;
 					}
+				}
+
+				if (!belowMaxTime(dateInitEvolution, maxMinutes)) {
+
+					this.setOutputStatus(AstorOutputStatus.TIME_OUT);
+					log.info("Max time reached");
+					return;
 				}
 			}
 		}
@@ -806,23 +814,24 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 			mpobj.add("predictions", arraypred);
 
 			for (IPrediction iPrediction : pr) {
+				if (iPrediction == null)
+					continue;
 
-				IPrediction ipred = iPrediction;
 				JsonObject predjson = new JsonObject();
-				JsonElement jsonprediction = ipred.toJson();
+				JsonElement jsonprediction = iPrediction.toJson();
 				arraypred.add(predjson);
 				predjson.add("info", jsonprediction);
 
 				//
-				Integer attemptsOfPrediction = this.attempts.get(ipred);
+				Integer attemptsOfPrediction = this.attempts.get(iPrediction);
 				predjson.addProperty("attempts", attemptsOfPrediction);
 
 				//
 				JsonArray solut = new JsonArray();
 				predjson.add("patches", solut);
-				if (this.predictedVariantWithSol.keySet().contains(ipred)) {
+				if (this.predictedVariantWithSol.keySet().contains(iPrediction)) {
 
-					List<ProgramVariant> pred = this.predictedVariantWithSol.get(ipred);
+					List<ProgramVariant> pred = this.predictedVariantWithSol.get(iPrediction);
 					for (ProgramVariant variantWithSolution : pred) {
 
 						if (variantWithSolution.isSolution()) {
