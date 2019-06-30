@@ -126,6 +126,8 @@ public class ProgramVariantFactory {
 				if (progInstance.getModificationPoints().size() > maxModPoints) {
 					progInstance.setModificationPoints(progInstance.getModificationPoints().subList(0, maxModPoints));
 					log.info("Reducing Total ModPoint created to: " + progInstance.getModificationPoints().size());
+					// we dont continue creating Modif points
+					break;
 				}
 
 			}
