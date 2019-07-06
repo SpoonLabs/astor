@@ -20,7 +20,7 @@ public class TibraApproach extends JGenProg {
 
 		ConfigurationProperties.setProperty("ingredienttransformstrategy",
 				RandomTransformationStrategy.class.getCanonicalName());
-
+		ConfigurationProperties.setProperty("consideryvarloops", "false");
 	}
 
 }

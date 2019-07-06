@@ -841,8 +841,10 @@ public class VariableResolver {
 		if (parentblock != null) {
 			int positionEl = parentblock.getStatements().indexOf(currentElement);
 			variables.addAll(VariableResolver.retrieveLocalVariables(positionEl, parentblock));
-			variables.addAll(getVarsInFor(currentElement));
-			variables.addAll(getVarsInForEach(currentElement));
+			if (ConfigurationProperties.getPropertyBool("consideryvarloops")) {
+				variables.addAll(getVarsInFor(currentElement));
+				variables.addAll(getVarsInForEach(currentElement));
+			}
 
 		}
 
