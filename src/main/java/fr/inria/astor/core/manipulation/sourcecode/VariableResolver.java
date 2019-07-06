@@ -27,6 +27,7 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -836,13 +837,43 @@ public class VariableResolver {
 		// We find the parent block and we extract the local variables before
 		// the element under analysis
 		CtBlock parentblock = element.getParent(CtBlock.class);
+		CtElement currentElement = element;
 		if (parentblock != null) {
-			int positionEl = parentblock.getStatements().indexOf(element);
+			int positionEl = parentblock.getStatements().indexOf(currentElement);
 			variables.addAll(VariableResolver.retrieveLocalVariables(positionEl, parentblock));
+			variables.addAll(getVarsInFor(currentElement));
+			variables.addAll(getVarsInForEach(currentElement));
+
 		}
 
 		return variables;
 
+	}
+
+	private static List<CtLocalVariable> getVarsInFor(CtElement element) {
+		List<CtLocalVariable> variables = new ArrayList<CtLocalVariable>();
+		CtElement currentElement = element;
+		CtFor ff = currentElement.getParent(CtFor.class);
+		while (ff != null) {
+			variables.addAll(ff.getForInit().stream().filter(e -> e instanceof CtLocalVariable)
+					.map(CtLocalVariable.class::cast).collect(Collectors.toList()));
+
+			ff = ff.getParent(CtFor.class);
+
+		}
+		return variables;
+	}
+
+	private static List<CtLocalVariable> getVarsInForEach(CtElement element) {
+		List<CtLocalVariable> variables = new ArrayList<CtLocalVariable>();
+		CtElement currentElement = element;
+		CtForEach ff = currentElement.getParent(CtForEach.class);
+		while (ff != null) {
+			variables.add((CtLocalVariable) ff.getVariable());
+			ff = ff.getParent(CtForEach.class);
+
+		}
+		return variables;
 	}
 
 	/**
