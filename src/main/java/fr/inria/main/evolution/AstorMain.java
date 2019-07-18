@@ -225,6 +225,9 @@ public class AstorMain extends AbstractMain {
 		}
 
 		String dependencies = ConfigurationProperties.getProperty("dependenciespath");
+		dependencies += (ConfigurationProperties.hasProperty("extendeddependencies"))
+				? (File.pathSeparator + ConfigurationProperties.hasProperty("extendeddependencies"))
+				: "";
 		String failing = ConfigurationProperties.getProperty("failing");
 		String location = ConfigurationProperties.getProperty("location");
 		String packageToInstrument = ConfigurationProperties.getProperty("packageToInstrument");
