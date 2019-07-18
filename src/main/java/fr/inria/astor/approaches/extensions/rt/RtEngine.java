@@ -57,11 +57,11 @@ public class RtEngine extends AstorCoreEngine {
 
 	private static final String ROTTEN_SKIP = "Rotten_Skip";
 
-	private static final String ROTTEN_HELPERS_CALL = "Rotten_Helpers_Call";
+	private static final String ROTTEN_CONTEXT_DEP_HELPERS_CALL = "Context_Dep_Rotten_Helpers_Call";
 
-	private static final String ROTTEN_HELPERS_ASSERTION = "Rotten_Helpers_Assertion";
+	private static final String ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION = "Context_Dep_Rotten_Helpers_Assertion";
 
-	private static final String ROTTEN_ASSERTIONS = "Rotten_Assertions";
+	private static final String ROTTEN_CONTEXT_DEP_ASSERTIONS = "Context_Dep_Rotten_Assertions";
 
 	List<SuspiciousCode> allExecutedStatements = null;
 
@@ -844,7 +844,7 @@ public class RtEngine extends AstorCoreEngine {
 				log.debug("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
 				JsonArray assertionarray = new JsonArray();
-				testjson.add(ROTTEN_ASSERTIONS, assertionarray);
+				testjson.add(ROTTEN_CONTEXT_DEP_ASSERTIONS, assertionarray);
 				for (AsAssertion assertion : notExecutedAssert) {
 					CtInvocation anInvocation = assertion.getCtAssertion();
 					log.debug("-R-Assertion:-> " + anInvocation);
@@ -867,7 +867,7 @@ public class RtEngine extends AstorCoreEngine {
 				log.debug("-R Helper assertion- " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
 				JsonArray helperarray = new JsonArray();
-				testjson.add(ROTTEN_HELPERS_ASSERTION, helperarray);
+				testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION, helperarray);
 				List<JsonObject> result = helperToJson(notExecutedHelper, commitid, branch, remote, projectsubfolder,
 						false);
 
@@ -886,7 +886,7 @@ public class RtEngine extends AstorCoreEngine {
 				System.out.println("-- R Helper call  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
 				JsonArray helperarray = new JsonArray();
-				testjson.add(ROTTEN_HELPERS_CALL, helperarray);
+				testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_CALL, helperarray);
 				List<JsonObject> result = helperToJson(notExecutedHelperInvoc, commitid, branch, remote,
 						projectsubfolder, true);
 
@@ -970,9 +970,9 @@ public class RtEngine extends AstorCoreEngine {
 		summary.addProperty("nr_All_Test", resultByTest.size());
 		summary.addProperty("nr_Classes_With_Rotten", rTestclasses.size());
 		summary.addProperty("nr_Rotten_Test_Units", nrRtest);
-		summary.addProperty("nr_" + this.ROTTEN_ASSERTIONS, nrRtAssertion);
-		summary.addProperty("nr_" + this.ROTTEN_HELPERS_CALL, nrRtHelperCall);
-		summary.addProperty("nr_" + this.ROTTEN_HELPERS_ASSERTION, nrRttHelperAssert);
+		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_ASSERTIONS, nrRtAssertion);
+		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_HELPERS_CALL, nrRtHelperCall);
+		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION, nrRttHelperAssert);
 		summary.addProperty("nr_" + this.ROTTEN_SKIP, nrSkip);
 		summary.addProperty("nr_" + this.ROTTEN_MISSED, nrAllMissed);
 		summary.addProperty("nr_" + this.FULL_ROTTEN, nrRtFully);
