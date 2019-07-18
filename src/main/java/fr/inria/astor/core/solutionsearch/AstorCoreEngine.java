@@ -580,60 +580,67 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		String line = "";
 		line += "\n --SOLUTIONS DESCRIPTION--\n";
 		for (ProgramVariant solutionVariant : variants) {
-			line += "\n ----\n";
-			line += "ProgramVariant " + solutionVariant.getId() + "\n ";
-			line += "\ntime(sec)= "
-					+ TimeUtil.getDateDiff(this.dateInitEvolution, solutionVariant.getBornDate(), TimeUnit.SECONDS);
+			line += getSolutionString(generation, solutionVariant);
+		}
+		return line;
+	}
 
-			for (int i = 1; i <= generation; i++) {
-				List<OperatorInstance> genOperationInstances = solutionVariant.getOperations().get(i);
-				if (genOperationInstances == null)
-					continue;
+	public String getSolutionString(int generation, ProgramVariant solutionVariant) {
+		String line = "";
+		line += "\n ----\n";
+		line += "ProgramVariant " + solutionVariant.getId() + "\n ";
+		long dateDiff = TimeUtil.getDateDiff(this.dateInitEvolution, solutionVariant.getBornDate(), TimeUnit.SECONDS);
+		line += "\ntime(sec)= " + dateDiff;
 
-				for (OperatorInstance genOperationInstance : genOperationInstances) {
+		for (int i = 1; i <= generation; i++) {
+			List<OperatorInstance> genOperationInstances = solutionVariant.getOperations().get(i);
+			if (genOperationInstances == null)
+				continue;
 
-					line += "\noperation: " + genOperationInstance.getOperationApplied().toString() + "\nlocation= "
-							+ genOperationInstance.getModificationPoint().getCtClass().getQualifiedName();
+			for (OperatorInstance genOperationInstance : genOperationInstances) {
 
-					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
-						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
-								.getModificationPoint();
-						line += "\nline= " + gs.getSuspicious().getLineNumber();
-						line += "\nlineSuspiciousness= " + gs.getSuspicious().getSuspiciousValueString();
-					}
-					line += "\nlineSuspiciousness= " + genOperationInstance.getModificationPoint().identified;
-					line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
-					line += "\nbuggy kind= " + genOperationInstance.getOriginal().getClass().getSimpleName() + "|"
-							+ genOperationInstance.getOriginal().getParent().getClass().getSimpleName();
+				line += "\noperation: " + genOperationInstance.getOperationApplied().toString() + "\nlocation= "
+						+ genOperationInstance.getModificationPoint().getCtClass().getQualifiedName();
 
-					line += "\nfixed statement= ";
-					if (genOperationInstance.getModified() != null) {
-						// if fix content is the same that original buggy
-						// content, we do not write the patch, remaining empty
-						// the property fixed statement
-						if (genOperationInstance.getModified().toString() != genOperationInstance.getOriginal()
-								.toString())
-							line += genOperationInstance.getModified().toString();
-						else {
-							line += genOperationInstance.getOriginal().toString();
-						}
-						// Information about types Parents
-
-						line += "\nPatch kind= " + genOperationInstance.getModified().getClass().getSimpleName() + "|"
-								+ genOperationInstance.getModified().getParent().getClass().getSimpleName();
-					}
-					line += "\ngeneration= " + Integer.toString(i);
-					line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope() != null)
-							? genOperationInstance.getIngredientScope()
-							: "-");
-
-					if (genOperationInstance.getIngredient() != null
-							&& genOperationInstance.getIngredient().getDerivedFrom() != null)
-						line += "\ningredientParent= " + genOperationInstance.getIngredient().getDerivedFrom();
-
+				if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
+					SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
+							.getModificationPoint();
+					line += "\nline= " + gs.getSuspicious().getLineNumber();
+					line += "\nlineSuspiciousness= " + gs.getSuspicious().getSuspiciousValueString();
 				}
+				line += "\nlineSuspiciousness= " + genOperationInstance.getModificationPoint().identified;
+				line += "\noriginal statement= " + genOperationInstance.getOriginal().toString();
+				line += "\nbuggy kind= " + genOperationInstance.getOriginal().getClass().getSimpleName() + "|"
+						+ genOperationInstance.getOriginal().getParent().getClass().getSimpleName();
+
+				line += "\nfixed statement= ";
+				if (genOperationInstance.getModified() != null) {
+					// if fix content is the same that original buggy
+					// content, we do not write the patch, remaining empty
+					// the property fixed statement
+					if (genOperationInstance.getModified().toString() != genOperationInstance.getOriginal().toString())
+						line += genOperationInstance.getModified().toString();
+					else {
+						line += genOperationInstance.getOriginal().toString();
+					}
+					// Information about types Parents
+
+					line += "\nPatch kind= " + genOperationInstance.getModified().getClass().getSimpleName() + "|"
+							+ genOperationInstance.getModified().getParent().getClass().getSimpleName();
+				}
+				line += "\ngeneration= " + Integer.toString(i);
+				line += "\ningredientScope= " + ((genOperationInstance.getIngredientScope() != null)
+						? genOperationInstance.getIngredientScope()
+						: "-");
+
+				if (genOperationInstance.getIngredient() != null
+						&& genOperationInstance.getIngredient().getDerivedFrom() != null)
+					line += "\ningredientParent= " + genOperationInstance.getIngredient().getDerivedFrom();
+
 			}
-			line += "\nvalidation=" + solutionVariant.getValidationResult().toString();
+		}
+		line += "\nvalidation=" + solutionVariant.getValidationResult().toString();
+		if (solutionVariant.getPatchDiff() != null) {
 			String diffPatch = solutionVariant.getPatchDiff().getFormattedDiff();
 			line += "\ndiffpatch=" + diffPatch;
 			String diffPatchoriginal = solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff();
@@ -744,7 +751,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		double fitness = this.fitnessFunction.calculateFitnessValue(validationResult);
 		originalVariant.setFitness(fitness);
 
-		log.debug("The original fitness is : " + fitness);
+		log.info("The original fitness is : " + fitness);
 		for (ProgramVariant initvariant : variants) {
 			initvariant.setFitness(fitness);
 		}
@@ -801,11 +808,21 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.error("Problem compiling the model with compliance level "
 					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 			log.error(e.getMessage());
-			if (!ConfigurationProperties.getPropertyBool("continuewhenmodelfail")) {
-				log.error("Astor does not continue when model build fails");
-				throw e;
-			} else {
-				log.error("Astor continues when model build fails");
+			try {
+				log.info("Recompiling with compliance level "
+						+ ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
+				mutatorSupporter.getFactory().getEnvironment()
+						.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
+				mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
+
+			} catch (Exception e2) {
+				if (!ConfigurationProperties.getPropertyBool("continuewhenmodelfail")) {
+					log.error("Astor does not continue when model build fails");
+					throw e2;
+				} else {
+					log.error("Astor continues when model build fails");
+				}
+
 			}
 
 		}
