@@ -51,7 +51,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
  *
  */
 public class RtEngine extends AstorCoreEngine {
-	private static final String FULL_ROTTEN = "Full_Rotten";
+	private static final String SMOKE_TEST = "Smoke_Test";
 
 	private static final String ROTTEN_MISSED = "Rotten_Missed";
 
@@ -944,7 +944,7 @@ public class RtEngine extends AstorCoreEngine {
 					continue;
 				}
 
-				testjson.addProperty(FULL_ROTTEN, "true");
+				testjson.addProperty(SMOKE_TEST, "true");
 				testsAssertionArray.add(testjson);
 				rTestclasses.add(tr.getNameOfTestClass());
 				nrRtFully += 1;
@@ -975,7 +975,7 @@ public class RtEngine extends AstorCoreEngine {
 		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION, nrRttHelperAssert);
 		summary.addProperty("nr_" + this.ROTTEN_SKIP, nrSkip);
 		summary.addProperty("nr_" + this.ROTTEN_MISSED, nrAllMissed);
-		summary.addProperty("nr_" + this.FULL_ROTTEN, nrRtFully);
+		summary.addProperty("nr_" + this.SMOKE_TEST, nrRtFully);
 		return root;
 	}
 
