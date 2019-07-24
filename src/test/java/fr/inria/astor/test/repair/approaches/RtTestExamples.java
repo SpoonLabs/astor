@@ -224,7 +224,7 @@ public class RtTestExamples {
 
 		TestClassificationResult rottenTest0 = rotten0OP.get();
 		assertFalse(rottenTest0.isRotten());
-		assertFalse(rottenTest0.isFullR());
+		assertFalse(rottenTest0.isSmokeTest());
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultExecuted().size());
 
@@ -260,7 +260,7 @@ public class RtTestExamples {
 		TestClassificationResult rottenTest0 = rotten0OP.get();
 
 		assertFalse(rottenTest0.isRotten());
-		assertFalse(rottenTest0.isFullR());
+		assertFalse(rottenTest0.isSmokeTest());
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultExecuted().size());
 
@@ -596,7 +596,7 @@ public class RtTestExamples {
 
 		TestClassificationResult rottenTest0 = rotten0OP.get();
 		// TODO: must be detected as rotten?
-		assertTrue(rottenTest0.isRotten());
+		assertFalse(rottenTest0.isRotten());
 
 		checkIsEmpty(rottenTest0);
 
@@ -629,8 +629,8 @@ public class RtTestExamples {
 
 		TestClassificationResult rottenTest0 = rotten0OP.get();
 		// TODO: must be detected as rotten?
-		assertTrue(rottenTest0.isRotten());
-		assertTrue(rottenTest0.isFullR());
+		assertFalse(rottenTest0.isRotten());
+		assertTrue(rottenTest0.isSmokeTest());
 
 		checkIsEmpty(rottenTest0);
 
@@ -662,8 +662,8 @@ public class RtTestExamples {
 
 		TestClassificationResult rottenTest0 = rotten0OP.get();
 		// TODO: must be detected as rotten?
-		assertTrue(rottenTest0.isRotten());
-		assertTrue(rottenTest0.isFullR());
+		assertFalse(rottenTest0.isRotten());
+		assertTrue(rottenTest0.isSmokeTest());
 
 		checkIsEmpty(rottenTest0);
 
@@ -674,8 +674,8 @@ public class RtTestExamples {
 
 		TestClassificationResult rottenTest1 = rotten1OP.get();
 		// TODO: must be detected as rotten?
-		assertTrue(rottenTest1.isRotten());
-		assertTrue(rottenTest1.isFullR());
+		assertFalse(rottenTest1.isRotten());
+		assertTrue(rottenTest1.isSmokeTest());
 
 		checkIsEmpty(rottenTest1);
 
@@ -710,30 +710,27 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(2, tc.size());
 
-		List<TestClassificationResult> rottens = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).collect(Collectors.toList());
-
-		assertFalse(rottens.isEmpty());
-
-		TestClassificationResult rottenTest0 = rottens.get(0);
-
-		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
-		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
-		assertEquals(0, rottenTest0.getClassificationHelperCall().getResultExecuted().size());
-		assertTrue(rottenTest0.isFullR());
-
-//now check the second test
-		rottens = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test2") && e.isRotten())
+		List<TestClassificationResult> rottens = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.collect(Collectors.toList());
 
 		assertFalse(rottens.isEmpty());
 
-		TestClassificationResult rottenTest2 = rottens.get(0);
+		TestClassificationResult rottenTest0 = rottens.get(0);
+		assertTrue(rottenTest0.isSmokeTest());
+		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
+		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
+		assertEquals(0, rottenTest0.getClassificationHelperCall().getResultExecuted().size());
 
+//now check the second test
+		rottens = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test2")).collect(Collectors.toList());
+
+		assertFalse(rottens.isEmpty());
+
+		TestClassificationResult rottenTest2 = rottens.get(0);
+		assertTrue(rottenTest2.isSmokeTest());
 		assertEquals(0, rottenTest2.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest2.getClassificationHelperAssertion().getResultExecuted().size());
 		assertEquals(0, rottenTest2.getClassificationHelperCall().getResultExecuted().size());
-		assertTrue(rottenTest2.isFullR());
 
 	}
 
@@ -779,7 +776,7 @@ public class RtTestExamples {
 
 		TestClassificationResult rottenTest0 = rotten0OP.get();
 
-		assertFalse(rottenTest0.isFullR());
+		assertFalse(rottenTest0.isSmokeTest());
 		assertFalse(rottenTest0.isRotten());
 
 		assertTrue(rottenTest0.getAllExpectedExceptionFromTest().size() > 0);
