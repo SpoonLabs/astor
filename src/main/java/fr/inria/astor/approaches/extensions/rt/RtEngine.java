@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -68,7 +69,7 @@ public class RtEngine extends AstorCoreEngine {
 
 	List<SuspiciousCode> allExecutedStatements = null;
 
-	List<TestClassificationResult> resultByTest = null;
+	public List<TestClassificationResult> resultByTest = new ArrayList<>();
 
 	List<String> namespace = Arrays.asList("org.assertj", "org.testng", "org.mockito", "org.spockframework",
 			"org.junit", "cucumber", "org.jbehave");
@@ -215,7 +216,7 @@ public class RtEngine extends AstorCoreEngine {
 		}
 	}
 
-	private TestClassificationResult processTest(String aTestMethodFromClass, String aNameOfTestClass,
+	public TestClassificationResult processTest(String aTestMethodFromClass, String aNameOfTestClass,
 			CtClass aTestModelCtClass, RuntimeInformation runtimeinfo) {
 		log.info("**** Analying TestMethod: " + aTestMethodFromClass);
 
@@ -259,11 +260,11 @@ public class RtEngine extends AstorCoreEngine {
 		Classification<AsAssertion> rAssert = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
 				aTestModelCtClass, allAssertionsFromTest);
 
-		Classification<Helper> rHelperAssertion = classifyHelpersAssertionExecution(aTestModelCtClass,
-				allHelperInvocationFromTest, runtimeinfo.mapCacheSuspicious, true);
-
 		Classification<Helper> rHelperCall = classifyHelpersAssertionExecution(aTestModelCtClass,
 				allHelperInvocationFromTest, runtimeinfo.mapCacheSuspicious, false);
+
+		Classification<Helper> rHelperAssertion = classifyHelpersAssertionExecution(aTestModelCtClass,
+				allHelperInvocationFromTest, runtimeinfo.mapCacheSuspicious, true);
 
 		checkTwoBranches(rAssert, rAssert, rHelperCall, rHelperAssertion);
 		checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
@@ -913,16 +914,40 @@ public class RtEngine extends AstorCoreEngine {
 				}
 			}
 			//
+
+			List<Helper> notExecutedHelperInvoc = tr.getClassificationHelperCall().getResultNotExecuted();
+			if (!notExecutedHelperInvoc.isEmpty()) {
+				System.out.println("-- R Helper call  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
+
+				List<JsonObject> result = helperToJson(notExecutedHelperInvoc, Lists.newArrayList(), commitid, branch,
+						remote, projectsubfolder, true);
+
+				if (!result.isEmpty()) {
+					JsonArray helperarray = new JsonArray();
+
+					testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_CALL, helperarray);
+
+					onerotten = true;
+					for (JsonObject jsonObject : result) {
+						helperarray.add(jsonObject);
+					}
+				}
+				nrRtHelperCall += notExecutedHelperInvoc.size();
+			}
+			//
 			List<Helper> notExecutedHelper = tr.getClassificationHelperAssertion().getResultNotExecuted();
 			if (!notExecutedHelper.isEmpty()) {
 				log.debug("-R Helper assertion- " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
-				JsonArray helperarray = new JsonArray();
-				testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION, helperarray);
-				List<JsonObject> result = helperToJson(notExecutedHelper, commitid, branch, remote, projectsubfolder,
-						false);
+				List<JsonObject> result = helperToJson(notExecutedHelper,
+						tr.getClassificationHelperCall().getResultNotExecuted(), commitid, branch, remote,
+						projectsubfolder, false);
 
 				if (!result.isEmpty()) {
+					JsonArray helperarray = new JsonArray();
+
+					testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION, helperarray);
+
 					onerotten = true;
 					for (JsonObject jsonObject : result) {
 						helperarray.add(jsonObject);
@@ -930,24 +955,6 @@ public class RtEngine extends AstorCoreEngine {
 				}
 
 				nrRttHelperAssert += notExecutedHelper.size();
-			}
-			//
-			List<Helper> notExecutedHelperInvoc = tr.getClassificationHelperCall().getResultNotExecuted();
-			if (!notExecutedHelperInvoc.isEmpty()) {
-				System.out.println("-- R Helper call  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
-
-				JsonArray helperarray = new JsonArray();
-				testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_CALL, helperarray);
-				List<JsonObject> result = helperToJson(notExecutedHelperInvoc, commitid, branch, remote,
-						projectsubfolder, true);
-
-				if (!result.isEmpty()) {
-					onerotten = true;
-					for (JsonObject jsonObject : result) {
-						helperarray.add(jsonObject);
-					}
-				}
-				nrRtHelperCall += notExecutedHelperInvoc.size();
 			}
 
 			//
@@ -1059,12 +1066,16 @@ public class RtEngine extends AstorCoreEngine {
 		}
 	}
 
-	public List<JsonObject> helperToJson(List<Helper> notExecutedHelper, String commitid, String branch, String remote,
-			String projectsubfolder, boolean isCall) {
+	public List<JsonObject> helperToJson(List<Helper> notExecutedHelper, List<Helper> others, String commitid,
+			String branch, String remote, String projectsubfolder, boolean isCall) {
 
 		List<JsonObject> result = new ArrayList();
 
 		for (Helper anHelper : notExecutedHelper) {
+
+			if (others.contains(anHelper)) {
+				continue;
+			}
 			log.debug("-Helper-> " + anHelper);
 			CtInvocation ctAssertion = anHelper.getAssertion().getCtAssertion();
 			JsonObject jsonsingleHelper = new JsonObject();
@@ -1074,7 +1085,6 @@ public class RtEngine extends AstorCoreEngine {
 			jsonsingleHelper.addProperty("inbranch", anHelper.isFp());
 			JsonArray callsarray = new JsonArray();
 			for (CtInvocation call : anHelper.getCalls()) {
-				// callsarray.add(call.toString());
 				callsarray.add(getJsonElement(commitid, branch, remote, projectsubfolder, call));
 			}
 			jsonsingleHelper.add("calls", callsarray);

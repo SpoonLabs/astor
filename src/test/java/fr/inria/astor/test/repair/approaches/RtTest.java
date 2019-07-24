@@ -1,6 +1,8 @@
 package fr.inria.astor.test.repair.approaches;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
@@ -10,11 +12,14 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.extensions.rt.RtEngine;
+import fr.inria.astor.approaches.extensions.rt.RtEngine.RuntimeInformation;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.TestClassificationResult;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
+import spoon.reflect.declaration.CtClass;
 
 /**
  * 
@@ -150,7 +155,14 @@ public class RtTest {
 	private RtEngine detectRt(File location, String dep, String name, String subproject) throws Exception {
 		AstorMain main1 = new AstorMain();
 
-		// String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		CommandSummary cs = getCommand(location, dep, name, subproject);
+
+		main1.execute(cs.flat());
+		RtEngine etEn = (RtEngine) main1.getEngine();
+		return etEn;
+	}
+
+	public CommandSummary getCommand(File location, String dep, String name, String subproject) {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 500;
 
@@ -162,7 +174,7 @@ public class RtTest {
 		CommandSummary cs = new CommandSummary(args);
 
 		cs.command.put("-stopfirst", "true");
- 		cs.command.put("-loglevel", "INFO");
+		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-location", location.getAbsolutePath());
 		if (dep == null) {
 			cs.command.put("-autoconfigure", "true");
@@ -175,10 +187,7 @@ public class RtTest {
 				"canhavezerosusp:true:runonoriginalbin:true:continuewhenmodelfail:true" + ":mvndir:/usr/local/bin/mvn"
 						+ ((name != null) ? ":id:" + name : "")
 						+ ((subproject != null) ? ":projectsubfolder:" + subproject : ""));
-
-		main1.execute(cs.flat());
-		RtEngine etEn = (RtEngine) main1.getEngine();
-		return etEn;
+		return cs;
 	}
 
 	@Test
@@ -326,6 +335,45 @@ public class RtTest {
 
 		// git rev-parse HEAD
 		// git config --get remote.origin.url
+	}
+
+	@Test
+	public void testRT1_flikcore_ac_wrong_classification() throws Exception {
+
+		File location = new File("/Users/matias/develop/rt-research/datasetevaluation/flink/flink-core/");
+
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = getCommand(location, null, "flink-core", "flink-core");
+		cs.append("-parameters", "skipanalysis:true");
+		main1.execute(cs.flat());
+		RtEngine etEn = (RtEngine) main1.getEngine();
+
+		RuntimeInformation ri = etEn.computeDynamicInformation();
+		assertNotNull(ri);
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
+
+		String classNameOfTest = "org.apache.flink.api.common.typeutils.base.DoubleComparatorTest";
+		CtClass aTestModelCtClass = MutationSupporter.getFactory().Class().get(classNameOfTest);
+
+		assertNotNull(aTestModelCtClass);
+
+		TestClassificationResult tresult = etEn.processTest("testNormalizedKeysEqualsFullLength", classNameOfTest,
+				aTestModelCtClass, ri);
+
+		assertNotNull(tresult);
+
+		assertTrue(tresult.isRotten());
+
+		etEn.resultByTest.add(tresult);
+
+		System.out.println(etEn.toJson());
+
+		// org.apache.flink.api.common.typeutils.base.DoubleComparatorTest
+		// testDuplicate
 	}
 
 	@Test
