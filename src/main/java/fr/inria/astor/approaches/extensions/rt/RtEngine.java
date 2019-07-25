@@ -31,11 +31,16 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -69,6 +74,8 @@ public class RtEngine extends AstorCoreEngine {
 
 	private static final String ROTTEN_CONTEXT_DEP_ASSERTIONS = "Context_Dep_Rotten_Assertions";
 
+	private static final String TEST_HAS_CONTROL_FLOW_STMT = "Test_with_Control_flow_stmt";
+	private static final String TEST_HAS_HELPER_CALL = "Test_with_Helper";
 	List<SuspiciousCode> allExecutedStatements = null;
 
 	public List<TestClassificationResult> resultByTest = new ArrayList<>();
@@ -246,6 +253,7 @@ public class RtEngine extends AstorCoreEngine {
 		}
 		// get all statements
 		List<CtStatement> allStmtsFromClass = testMethodModel.getElements(new LineFilter());
+
 		List<CtInvocation> allExpectedExceptionFromTest = filterExpectedExceptions(allStmtsFromClass);
 		if (allExpectedExceptionFromTest.size() > 0) {
 			log.debug("Expected exception found at " + aTestMethodFromClass);
@@ -259,8 +267,7 @@ public class RtEngine extends AstorCoreEngine {
 		// sub-category).
 		allAssertionsFromTest.removeAll(allMissedFailFromTest);
 
-		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel,
-				allClasses/* aTestModelCtClass */);
+		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, allClasses);
 
 		Classification<AsAssertion> rAssert = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
 				aTestModelCtClass, allAssertionsFromTest);
@@ -299,9 +306,6 @@ public class RtEngine extends AstorCoreEngine {
 	}
 
 	private List<String> expectEx(CtExecutable testMethodModel) {
-		// return testMethodModel.getAnnotations().stream()
-		// .anyMatch(e -> e.getType().getSimpleName().equals("Test") &&
-		// e.getValues().containsKey("expected"));
 
 		return testMethodModel.getAnnotations().stream()
 				.filter(e -> e.getType().getSimpleName().equals("Test") && e.getValues().containsKey("expected"))
@@ -550,6 +554,14 @@ public class RtEngine extends AstorCoreEngine {
 			}
 		}
 
+		/**
+		 * If the element has an IF parent, then goes to complex list, otherwise to the
+		 * no complex.
+		 * 
+		 * @param notComplex
+		 * @param resultNotExecutedHelperCallComplex
+		 * @param resultNotExecutedAssertion
+		 */
 		public void classifyComplexAssert(List<TestElement> notComplex,
 				List<AsAssertion> resultNotExecutedHelperCallComplex, List<AsAssertion> resultNotExecutedAssertion) {
 			for (AsAssertion testElement : resultNotExecutedAssertion) {
@@ -1021,7 +1033,7 @@ public class RtEngine extends AstorCoreEngine {
 		summary.addProperty("commitid", commitid);
 
 		int nrRtest = 0, nrRtAssertion = 0, nrRtHelperCall = 0, nrRttHelperAssert = 0, nrSkip = 0, nrAllMissed = 0,
-				nrSmokeTest = 0, nrRtFull = 0;
+				nrSmokeTest = 0, nrRtFull = 0, nrTestWithControlStruct = 0, nrTestWithHelper = 0;
 
 		JsonArray testsAssertionArray = new JsonArray();
 		root.add("tests", testsAssertionArray);
@@ -1037,6 +1049,23 @@ public class RtEngine extends AstorCoreEngine {
 
 			boolean onerotten = false;
 
+			boolean hasControlFlow = tr.testMethodModel.getElements(new TypeFilter<>(CtIf.class)).size() > 0
+					//
+					|| tr.testMethodModel.getElements(new TypeFilter<>(CtWhile.class)).size() > 0
+					//
+					|| tr.testMethodModel.getElements(new TypeFilter<>(CtFor.class)).size() > 0
+					//
+					|| tr.testMethodModel.getElements(new TypeFilter<>(CtForEach.class)).size() > 0
+					//
+					|| tr.testMethodModel.getElements(new TypeFilter<>(CtSwitch.class)).size() > 0
+					//
+					|| tr.testMethodModel.getElements(new TypeFilter<>(CtDo.class)).size() > 0;
+			nrTestWithControlStruct += (hasControlFlow) ? 1 : 0;
+
+			boolean hasHelperCall = !tr.getClassificationHelperCall().getResultExecuted().isEmpty()
+					|| !tr.getClassificationHelperCall().getResultNotExecuted().isEmpty();
+
+			nrTestWithHelper += (hasHelperCall) ? 1 : 0;
 			// Asserts
 			List<AsAssertion> notExecutedAssert = rclassif.contextAssertion;
 			// tr.getClassificationAssert().getResultNotExecuted();
@@ -1187,16 +1216,24 @@ public class RtEngine extends AstorCoreEngine {
 
 			}
 
-			/// Dont include fully
+			/// Dont include smoke
 			if (onerotten) {
 				testsAssertionArray.add(testjson);
 				nrRtest++;
 				rTestclasses.add(tr.getNameOfTestClass());
 			}
+
+			// Some stats
+			if (testjson != null) {
+				testjson.addProperty(TEST_HAS_CONTROL_FLOW_STMT, hasControlFlow);
+				testjson.addProperty(TEST_HAS_HELPER_CALL, hasHelperCall);
+			}
 		}
 
 		summary.addProperty("remote", remote);
 		summary.addProperty("localLocation", location);
+		summary.addProperty("nr_Test_With_Control_Flow_Stmt", nrTestWithControlStruct);
+		summary.addProperty("nr_Test_With_Helper", nrTestWithHelper);
 		summary.addProperty("nr_All_Test", resultByTest.size());
 		summary.addProperty("nr_Classes_With_Rotten", rTestclasses.size());
 		summary.addProperty("nr_Rotten_Test_Units", nrRtest);
