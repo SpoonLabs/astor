@@ -40,11 +40,13 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.LineFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.declaration.CtClassImpl;
 
 /**
  * 
@@ -220,6 +222,8 @@ public class RtEngine extends AstorCoreEngine {
 			CtClass aTestModelCtClass, RuntimeInformation runtimeinfo) {
 		log.info("**** Analying TestMethod: " + aTestMethodFromClass);
 
+		List<CtClass> allClasses = getClasses(aTestModelCtClass);
+
 		Optional<CtExecutableReference<?>> testMethodOp = aTestModelCtClass.getAllExecutables().stream()
 				.filter(e -> e.getSimpleName().equals(aTestMethodFromClass)).findFirst();
 		if (!testMethodOp.isPresent()) {
@@ -255,7 +259,8 @@ public class RtEngine extends AstorCoreEngine {
 		// sub-category).
 		allAssertionsFromTest.removeAll(allMissedFailFromTest);
 
-		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, aTestModelCtClass);
+		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel,
+				allClasses/* aTestModelCtClass */);
 
 		Classification<AsAssertion> rAssert = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
 				aTestModelCtClass, allAssertionsFromTest);
@@ -339,15 +344,20 @@ public class RtEngine extends AstorCoreEngine {
 	}
 
 	private List<CtReturn> filterSkips(List<CtStatement> allStmtsFromClass, CtExecutable method,
-			CtClass aTestModelCtClass) {
+			// CtClass aTestModelCtClass
+			List<CtClass> allClasses) {
 
 		List<CtReturn> skips = new ArrayList<>();
+
 		for (CtStatement aStatement : allStmtsFromClass) {
 			if (aStatement instanceof CtReturn) {
 				// check the parent class is the test method (discarding elements from anonymous
 				// classes)
-				if (aTestModelCtClass.equals(aStatement.getParent(CtClass.class)) &&
-				// we dont care about returns inside lambda
+				CtClassImpl parentClass = (CtClassImpl) aStatement.getParent(CtClassImpl.class);
+
+				if (allClasses.contains(parentClass) &&
+				// aTestModelCtClass.equals(parentClass) &&
+				// we don't care about returns inside lambda
 						aStatement.getParent(CtLambda.class) == null &&
 						// check that is not the last statement (if it's the last one it's fine)
 						!method.getBody().getLastStatement().equals(aStatement)
@@ -360,6 +370,20 @@ public class RtEngine extends AstorCoreEngine {
 			}
 		}
 		return skips;
+	}
+
+	public List<CtClass> getClasses(CtClass aTestModelCtClass) {
+		List<CtClass> allClasses = new ArrayList();
+		allClasses.add(aTestModelCtClass);
+
+		CtTypeReference superclass = ((CtClassImpl) aTestModelCtClass).getSuperclass();
+		if (superclass == null)
+			return allClasses;
+		CtType td = superclass.getTypeDeclaration();
+		if (td instanceof CtClassImpl) {
+			allClasses.addAll(getClasses((CtClassImpl) td));
+		}
+		return allClasses;
 	}
 
 	/**
@@ -461,6 +485,115 @@ public class RtEngine extends AstorCoreEngine {
 
 		public void setAllExpectedExceptionFromTest(List<CtInvocation> allExpectedExceptionFromTest) {
 			this.allExpectedExceptionFromTest = allExpectedExceptionFromTest;
+		}
+
+		public RottenFinalClassification generateFinalResult() {
+			List<CtReturn> allSkipFromTest2 = this.getAllSkipFromTest();
+
+			List<TestElement> notComplex = new ArrayList();
+
+			//
+			List<Helper> resultNotExecutedHelperCallComplex = new ArrayList<>();
+			List<Helper> resultNotExecutedHelperAssertComplex = new ArrayList<>();
+			List<AsAssertion> resultNotExecutedAssertComplex = new ArrayList<>();
+
+			//
+			List<Helper> resultNotExecutedHelperCall = this.getClassificationHelperCall().getResultNotExecuted();
+			List<Helper> resultNotExecutedHelperAssertion = this.getClassificationHelperAssertion()
+					.getResultNotExecuted();
+			List<AsAssertion> resultNotExecutedAssertion = this.getClassificationAssert().getResultNotExecuted();
+
+			// Skips
+			if (allSkipFromTest2 != null && allSkipFromTest2.size() > 0) {
+				List<Skip> skipss = new ArrayList<>();
+				for (CtReturn aReturn : allSkipFromTest2) {
+					Skip aSkip = new Skip(aReturn);
+					aSkip.notExecutedTestElements.addAll(resultNotExecutedHelperCall);
+					// Not necessary
+					// aSkip.notExecutedTestElements.addAll(resultNotExecutedHelperAssertion);
+					aSkip.notExecutedTestElements.addAll(resultNotExecutedAssertion);
+
+					skipss.add(aSkip);
+
+				}
+				return new RottenFinalClassification(skipss);
+			}
+
+			List<CtInvocation> allMissedFailFromTest2 = this.getAllMissedFailFromTest();
+
+			boolean smokeTest = isSmokeTest();
+
+			//
+			classifyComplexHelper(notComplex, resultNotExecutedHelperCallComplex, resultNotExecutedHelperCall);
+			classifyComplexHelper(notComplex, resultNotExecutedHelperAssertComplex, resultNotExecutedHelperAssertion);
+			classifyComplexAssert(notComplex, resultNotExecutedAssertComplex, resultNotExecutedAssertion);
+
+			return new RottenFinalClassification(notComplex, smokeTest, allMissedFailFromTest2,
+					resultNotExecutedHelperCallComplex, resultNotExecutedHelperAssertComplex,
+					resultNotExecutedAssertComplex);
+
+		}
+
+		public void classifyComplexHelper(List<TestElement> notComplex, List<Helper> resultNotExecutedHelperCallComplex,
+				List<Helper> resultNotExecutedAssertion) {
+			for (Helper testElement : resultNotExecutedAssertion) {
+
+				CtIf parentIf = testElement.getElement().getParent(CtIf.class);
+				if (parentIf != null) {
+					// complex
+					resultNotExecutedHelperCallComplex.add(testElement);
+				} else {
+					// not complex
+					notComplex.add(testElement);
+
+				}
+			}
+		}
+
+		public void classifyComplexAssert(List<TestElement> notComplex,
+				List<AsAssertion> resultNotExecutedHelperCallComplex, List<AsAssertion> resultNotExecutedAssertion) {
+			for (AsAssertion testElement : resultNotExecutedAssertion) {
+
+				CtIf parentIf = testElement.getElement().getParent(CtIf.class);
+				if (parentIf != null) {
+					// complex
+					resultNotExecutedHelperCallComplex.add(testElement);
+				} else {
+					// not complex
+					notComplex.add(testElement);
+
+				}
+			}
+		}
+
+	}
+
+	public class RottenFinalClassification {
+
+		public List<TestElement> fullRotten = Collections.EMPTY_LIST;
+		public boolean smokeTest = false;
+		public List<CtInvocation> missed = Collections.EMPTY_LIST;
+		public List<Skip> skip = Collections.EMPTY_LIST;
+		public List<Helper> contextHelperCall = Collections.EMPTY_LIST;
+		public List<Helper> contextHelperAssertion = Collections.EMPTY_LIST;
+		public List<AsAssertion> contextAssertion = Collections.EMPTY_LIST;
+
+		public RottenFinalClassification(List<TestElement> fullRotten, boolean smokeTest, List<CtInvocation> missed,
+				// List<Skip> skip,
+				List<Helper> contextHelperCall, List<Helper> contextHelperAssertion,
+				List<AsAssertion> contextAssertion) {
+			super();
+			this.fullRotten = fullRotten;
+			this.smokeTest = smokeTest;
+			this.missed = missed;
+			// this.skip = skip;
+			this.contextHelperCall = contextHelperCall;
+			this.contextHelperAssertion = contextHelperAssertion;
+			this.contextAssertion = contextAssertion;
+		}
+
+		public RottenFinalClassification(List<Skip> skip) {
+			this.skip = skip;
 		}
 
 	}
@@ -615,6 +748,18 @@ public class RtEngine extends AstorCoreEngine {
 		public abstract CtElement getElement();
 	}
 
+	public class Skip {
+
+		CtReturn executedReturn;
+		public List<TestElement> notExecutedTestElements = new ArrayList<>();
+
+		public Skip(CtReturn executedReturn) {
+			super();
+			this.executedReturn = executedReturn;
+		}
+
+	}
+
 	public class AsAssertion extends TestElement {
 
 		CtInvocation assertion = null;
@@ -731,7 +876,7 @@ public class RtEngine extends AstorCoreEngine {
 		for (CtStatement targetElement : allStmtsFromClass) {
 			if (targetElement instanceof CtInvocation) {
 				CtInvocation targetInvocation = (CtInvocation) targetElement;
-				// a halper must be an Invocation to a something different to assertion
+				// a helper must be an Invocation to a something different to assertion
 				if (!isAssertion(targetInvocation) && targetInvocation.getExecutable() != null
 						&& targetInvocation.getExecutable().getDeclaration() != null) {
 
@@ -876,12 +1021,15 @@ public class RtEngine extends AstorCoreEngine {
 		summary.addProperty("commitid", commitid);
 
 		int nrRtest = 0, nrRtAssertion = 0, nrRtHelperCall = 0, nrRttHelperAssert = 0, nrSkip = 0, nrAllMissed = 0,
-				nrSmokeTest = 0;
+				nrSmokeTest = 0, nrRtFull = 0;
 
 		JsonArray testsAssertionArray = new JsonArray();
 		root.add("tests", testsAssertionArray);
 		Set<String> rTestclasses = new HashSet<>();
 		for (TestClassificationResult tr : resultByTest) {
+
+			RottenFinalClassification rclassif = tr.generateFinalResult();
+
 			JsonObject testjson = new JsonObject();
 			testjson.addProperty("testclass", tr.getNameOfTestClass());
 			testjson.addProperty("testname", tr.getTestMethodFromClass());
@@ -890,7 +1038,8 @@ public class RtEngine extends AstorCoreEngine {
 			boolean onerotten = false;
 
 			// Asserts
-			List<AsAssertion> notExecutedAssert = tr.getClassificationAssert().getResultNotExecuted();
+			List<AsAssertion> notExecutedAssert = rclassif.contextAssertion;
+			// tr.getClassificationAssert().getResultNotExecuted();
 			if (!notExecutedAssert.isEmpty()) {
 
 				log.debug("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
@@ -915,7 +1064,8 @@ public class RtEngine extends AstorCoreEngine {
 			}
 			//
 
-			List<Helper> notExecutedHelperInvoc = tr.getClassificationHelperCall().getResultNotExecuted();
+			List<Helper> notExecutedHelperInvoc = rclassif.contextHelperCall;
+			// tr.getClassificationHelperCall().getResultNotExecuted();
 			if (!notExecutedHelperInvoc.isEmpty()) {
 				System.out.println("-- R Helper call  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
@@ -935,7 +1085,8 @@ public class RtEngine extends AstorCoreEngine {
 				nrRtHelperCall += notExecutedHelperInvoc.size();
 			}
 			//
-			List<Helper> notExecutedHelper = tr.getClassificationHelperAssertion().getResultNotExecuted();
+			List<Helper> notExecutedHelper = rclassif.contextHelperAssertion;
+			// tr.getClassificationHelperAssertion().getResultNotExecuted();
 			if (!notExecutedHelper.isEmpty()) {
 				log.debug("-R Helper assertion- " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
@@ -956,12 +1107,35 @@ public class RtEngine extends AstorCoreEngine {
 
 				nrRttHelperAssert += notExecutedHelper.size();
 			}
-
 			//
-			if (!tr.getAllSkipFromTest().isEmpty()) {
+			if (!rclassif.fullRotten.isEmpty()) {
+
+				JsonArray fullrottennarray = new JsonArray();
+				testjson.add(FULL_ROTTEN_TEST, fullrottennarray);
+				for (TestElement assertion : rclassif.fullRotten) {
+					CtElement anInvocation = assertion.getElement();
+					log.debug("-R-Assertion:-> " + anInvocation);
+					JsonObject jsonsingleElement = new JsonObject();
+					jsonsingleElement.addProperty("code", anInvocation.toString());
+					jsonsingleElement.addProperty("line", anInvocation.getPosition().getLine());
+					jsonsingleElement.addProperty("path", getRelativePath(anInvocation));
+					jsonsingleElement.addProperty("inbranch", assertion.isFp());
+
+					writeJsonLink(commitid, branch, remote, projectsubfolder, anInvocation, jsonsingleElement);
+					fullrottennarray.add(jsonsingleElement);
+					onerotten = true;
+					jsonsingleElement.add("parent_types", getParentTypes(anInvocation));
+					nrRtFull++;
+				}
+
+			}
+			//
+			if (// !tr.getAllSkipFromTest().isEmpty()
+			!rclassif.skip.isEmpty()) {
 				JsonArray skiprarray = new JsonArray();
 				testjson.add(ROTTEN_SKIP, skiprarray);
-				for (CtReturn skip : tr.getAllSkipFromTest()) {
+				for (Skip iSkip : rclassif.skip) {
+					CtReturn skip = iSkip.executedReturn;
 					JsonObject singleSkip = new JsonObject();
 					singleSkip.addProperty("code", skip.toString().toString());
 					singleSkip.addProperty("line", skip.getPosition().getLine());
@@ -974,10 +1148,11 @@ public class RtEngine extends AstorCoreEngine {
 			}
 
 			//
-			if (!tr.getAllMissedFailFromTest().isEmpty()) {
+			if (// !tr.getAllMissedFailFromTest().isEmpty()
+			!rclassif.missed.isEmpty()) {
 				JsonArray missrarray = new JsonArray();
 				testjson.add(ROTTEN_MISSED, missrarray);
-				for (CtInvocation missedInv : tr.getAllMissedFailFromTest()) {
+				for (CtInvocation missedInv : rclassif.missed) {
 					JsonObject missedJson = new JsonObject();
 					missedJson.addProperty("code_assertion", missedInv.toString().toString());
 					missedJson.addProperty("line_assertion", missedInv.getPosition().getLine());
@@ -993,10 +1168,6 @@ public class RtEngine extends AstorCoreEngine {
 					&& tr.getAllExpectedExceptionFromTest().isEmpty()) {
 
 				List<CtInvocation> allAssertionsFromTest = tr.getTestMethodModel().getBody()
-						// .getElements(new LineFilter())
-						// .stream().filter(e -> e instanceof CtInvocation)
-						// .map(CtInvocation.class::cast)
-						// .collect(Collectors.toList())
 						.getElements(new TypeFilter<>(CtInvocation.class));
 
 				if (hasFail(allAssertionsFromTest)) {
@@ -1035,6 +1206,7 @@ public class RtEngine extends AstorCoreEngine {
 		summary.addProperty("nr_" + this.ROTTEN_SKIP, nrSkip);
 		summary.addProperty("nr_" + this.ROTTEN_MISSED, nrAllMissed);
 		summary.addProperty("nr_" + this.SMOKE_TEST, nrSmokeTest);
+		summary.addProperty("nr_" + this.FULL_ROTTEN_TEST, nrRtFull);
 		// summary.addProperty("nr_" + this.FULL_ROTTEN_TEST, nrSmokeTest);
 		return root;
 	}

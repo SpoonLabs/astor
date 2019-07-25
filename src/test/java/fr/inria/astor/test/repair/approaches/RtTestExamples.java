@@ -17,6 +17,7 @@ import org.junit.Test;
 import fr.inria.astor.approaches.extensions.rt.RtEngine;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.AsAssertion;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.Helper;
+import fr.inria.astor.approaches.extensions.rt.RtEngine.RottenFinalClassification;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.TestClassificationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.CommandSummary;
@@ -755,6 +756,34 @@ public class RtTestExamples {
 		checkFp(tc, false, "test3");
 
 		checkFpHelper(tc, true, "test4");
+	}
+
+	@Test
+	public void testRow018() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		List<TestClassificationResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass().contains("RTFRow018")).collect(Collectors.toList());
+
+		tc = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0")).collect(Collectors.toList());
+
+		assertFalse(tc.isEmpty());
+
+		TestClassificationResult rottenTest0 = tc.get(0);
+		assertFalse(rottenTest0.isSmokeTest());
+
+		RottenFinalClassification res = rottenTest0.generateFinalResult();
+
+		assertNotNull(res);
+
+		assertTrue(res.fullRotten.size() > 0);
+
+		assertTrue(res.contextAssertion.isEmpty());
+		assertTrue(res.contextHelperAssertion.isEmpty());
+		assertTrue(res.contextHelperCall.isEmpty());
 	}
 
 	@Test
