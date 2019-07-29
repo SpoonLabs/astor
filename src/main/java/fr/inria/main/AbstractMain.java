@@ -670,6 +670,11 @@ public abstract class AbstractMain {
 		ProcessBuilder builder = new ProcessBuilder();
 
 		String mvnCommand = getMvnCommand();
+		if (mvnCommand == null || mvnCommand.trim().isEmpty()) {
+			throw new IllegalArgumentException(
+					"To execute autoconfigure please add the maven command in your path or add it to the property 'mvndir'");
+		}
+
 		builder.command(mvnCommand, "com.github.tdurieux:project-config-maven-plugin:info", "-q");
 
 		builder.directory(new File(location));
