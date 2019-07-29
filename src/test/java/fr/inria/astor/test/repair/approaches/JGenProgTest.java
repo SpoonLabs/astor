@@ -335,6 +335,51 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	@SuppressWarnings("rawtypes")
 	@Test
+	public void testMath5_buggy() throws Exception {
+		AstorMain main1 = new AstorMain();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String dep = new File("./examples/libs/junit-4.10.jar").getAbsolutePath();
+		String[] args = new String[] { "-mode", "jgenprog", "-location",
+				new File("./examples/math_5").getAbsolutePath(),
+				//
+				"-dependencies", dep,
+				//
+				"-flthreshold", "0.5", "-out", out.getAbsolutePath(),
+				//
+				//
+				"-scope", "local", "-seed", "0",
+				//
+				"-maxgen", "5000",
+				//
+				"-stopfirst", "true", "-maxtime", "200",
+				//
+				"-loglevel", "INFO",
+				//
+				"-stopfirst", "true",
+				//
+				"-srcjavafolder", "/src/main/java/",
+				//
+				"-srctestfolder", "/src/test/java/",
+				//
+				"-binjavafolder", "/target/classes",
+				//
+				"-bintestfolder", "/target/test-classes",
+				//
+				"-javacompliancelevel", "6",
+
+				"-parameters", "maxmodificationpoints:1"
+
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
 	public void testMath106UndoException() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/commons-discovery-0.2.jar").getAbsolutePath() + File.pathSeparator
