@@ -88,6 +88,7 @@ public class JSonResultOriginal {
 			JsonObject testjson = new JsonObject();
 			testjson.addProperty("testclass", tr.getNameOfTestClass());
 			testjson.addProperty("testname", tr.getTestMethodFromClass());
+			testjson.addProperty("expectsexception", (tr.getExpectException().size() > 0) ? "true" : "false");
 			writeJsonLink(commitid, branch, remote, projectsubfolder, tr.getTestMethodModel(), testjson);
 
 			boolean onerotten = false;
