@@ -1235,7 +1235,6 @@ public class RtEngine extends AstorCoreEngine {
 		summary.addProperty("nr_Test_With_Control_Flow_Stmt", nrTestWithControlStruct);
 		summary.addProperty("nr_Test_With_Helper", nrTestWithHelper);
 		summary.addProperty("nr_All_Test", resultByTest.size());
-		summary.addProperty("nr_Classes_With_Rotten", rTestclasses.size());
 		summary.addProperty("nr_Rotten_Test_Units", nrRtest);
 		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_ASSERTIONS, nrRtAssertion);
 		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_HELPERS_CALL, nrRtHelperCall);
@@ -1244,7 +1243,6 @@ public class RtEngine extends AstorCoreEngine {
 		summary.addProperty("nr_" + this.ROTTEN_MISSED, nrAllMissed);
 		summary.addProperty("nr_" + this.SMOKE_TEST, nrSmokeTest);
 		summary.addProperty("nr_" + this.FULL_ROTTEN_TEST, nrRtFull);
-		// summary.addProperty("nr_" + this.FULL_ROTTEN_TEST, nrSmokeTest);
 		return root;
 	}
 
