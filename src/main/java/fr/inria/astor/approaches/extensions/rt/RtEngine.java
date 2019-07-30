@@ -25,11 +25,13 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -76,6 +78,7 @@ public class RtEngine extends AstorCoreEngine {
 
 	@Override
 	public void startEvolution() throws Exception {
+
 		if (!ConfigurationProperties.getPropertyBool("skipanalysis")) {
 			RuntimeInformation ri = computeDynamicInformation();
 			analyzeTestSuiteExecution(ri);
@@ -239,6 +242,8 @@ public class RtEngine extends AstorCoreEngine {
 		allAssertionsFromTest
 				.removeAll(allMissedFailFromTest.stream().map(e -> e.getCtAssertion()).collect(Collectors.toList()));
 
+		chechInsideTry(allMissedFailFromTest, runtimeinfo.mapLinesCovered, aTestModelCtClass);
+
 		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, allClasses);
 
 		Classification<AsAssertion> rAssert = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
@@ -260,6 +265,50 @@ public class RtEngine extends AstorCoreEngine {
 
 		return resultTestCase;
 
+	}
+
+	private void chechInsideTry(List<AsAssertion> allMissedFailFromTest, MapList<String, Integer> executedLines,
+			CtClass parentClass) {
+
+		for (AsAssertion aMissAssertion : allMissedFailFromTest) {
+
+			analyzeMissingAssertion(executedLines, parentClass, aMissAssertion);
+
+		}
+
+	}
+
+	public void analyzeMissingAssertion(MapList<String, Integer> executedLines, CtClass parentClass,
+			AsAssertion aMissAssertion) {
+		CtTry parentTry = aMissAssertion.getCtAssertion().getParent(CtTry.class);
+		if (parentTry != null) {
+			for (CtCatch aCatch : parentTry.getCatchers()) {
+				CtBlock block = aCatch.getBody();
+				if (block != null && block.getStatements().size() > 0) {
+					for (CtStatement anStatementInBlock : block.getStatements()) {
+
+						boolean isCover = isCovered(executedLines, anStatementInBlock, parentClass);
+						if (isCover) {
+							aMissAssertion.setFp(true);
+							return;
+						}
+
+					}
+				} else {
+					CtBlock pblock = parentTry.getParent(CtBlock.class);
+					int indexTry = pblock.getStatements().indexOf(parentTry);
+					if (indexTry >= 0 && indexTry + 1 < pblock.getStatements().size()) {
+						CtStatement stNext = pblock.getStatements().get(indexTry + 1);
+						boolean isCover = isCovered(executedLines, stNext, parentClass);
+						if (isCover) {
+							aMissAssertion.setFp(true);
+							return;
+						}
+					}
+
+				}
+			}
+		}
 	}
 
 	private List<CtInvocation> filterExpectedExceptions(List<CtStatement> allStmtsFromClass) {
@@ -912,7 +961,7 @@ public class RtEngine extends AstorCoreEngine {
 		return helpersMined;
 	}
 
-	private boolean isCovered(MapList<String, Integer> executedLines, CtStatement aStatementNotInvoked,
+	private boolean isCovered(MapList<String, Integer> executedLines, CtElement aStatementNotInvoked,
 			CtClass parentClass) {
 
 		CtClass newParentClass = getTopParentClass(aStatementNotInvoked);
