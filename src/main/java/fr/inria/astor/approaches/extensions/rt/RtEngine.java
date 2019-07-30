@@ -236,15 +236,19 @@ public class RtEngine extends AstorCoreEngine {
 		List<CtInvocation> allAssertionsFromTest = filterAssertions(allStmtsFromClass);
 		List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass, new ArrayList());
 		// filter from assertions the missed fail
-		List<AsAssertion> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
+		List<CtInvocation> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
+
 		// The missed fails are removed from the assertion list (they are a
 		// sub-category).
-		allAssertionsFromTest
-				.removeAll(allMissedFailFromTest.stream().map(e -> e.getCtAssertion()).collect(Collectors.toList()));
-
-		chechInsideTry(allMissedFailFromTest, runtimeinfo.mapLinesCovered, aTestModelCtClass);
+		allAssertionsFromTest.removeAll(allMissedFailFromTest);
 
 		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, allClasses);
+
+		Classification<AsAssertion> rMissing = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
+				aTestModelCtClass, allMissedFailFromTest);
+
+		chechInsideTry(rMissing.resultExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
+		chechInsideTry(rMissing.resultNotExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
 
 		Classification<AsAssertion> rAssert = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
 				aTestModelCtClass, allAssertionsFromTest);
@@ -260,8 +264,8 @@ public class RtEngine extends AstorCoreEngine {
 		checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
 
 		TestClassificationResult resultTestCase = new TestClassificationResult(rAssert, rHelperAssertion, rHelperCall,
-				aNameOfTestClass, aTestMethodFromClass, testMethodModel, allMissedFailFromTest, allSkipFromTest,
-				expectException, allExpectedExceptionFromTest);
+				aNameOfTestClass, aTestMethodFromClass, testMethodModel, rMissing, allSkipFromTest, expectException,
+				allExpectedExceptionFromTest);
 
 		return resultTestCase;
 
@@ -343,9 +347,9 @@ public class RtEngine extends AstorCoreEngine {
 			return testCaseName;
 	}
 
-	private List<AsAssertion> filterMissedFail(List<CtInvocation> allAssertionsFromTest) {
+	private List<CtInvocation> filterMissedFail(List<CtInvocation> allAssertionsFromTest) {
 
-		List<AsAssertion> missedFails = new ArrayList<>();
+		List<CtInvocation> missedFails = new ArrayList<>();
 
 		for (CtInvocation anInvocation : allAssertionsFromTest) {
 			CtElement el = null;
@@ -362,7 +366,7 @@ public class RtEngine extends AstorCoreEngine {
 				if (contentArgumentLC.equals("\"true\"") || contentArgumentLC.equals("\"false\"")
 						|| contentArgumentLC.equals("true") || contentArgumentLC.equals("false")
 						|| contentArgumentLC.equals("boolean.true") || contentArgumentLC.equals("boolean.false"))
-					missedFails.add(new AsAssertion(anInvocation));
+					missedFails.add((anInvocation));
 			}
 
 		}
@@ -424,7 +428,7 @@ public class RtEngine extends AstorCoreEngine {
 		Classification<AsAssertion> rAssert = null;
 		Classification<Helper> rHelperAssertion = null;
 		Classification<Helper> rHelperCall = null;
-		List<AsAssertion> allMissedFailFromTest;
+		Classification<AsAssertion> allMissedFailFromTest;
 		List<CtReturn> allSkipFromTest;
 		CtExecutable testMethodModel;
 		List<String> expectException;
@@ -432,8 +436,9 @@ public class RtEngine extends AstorCoreEngine {
 
 		public TestClassificationResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
-				CtExecutable testMethodModel, List<AsAssertion> allMissedFailFromTest, List<CtReturn> allSkipFromTest,
-				List<String> expectException, List<CtInvocation> allExpectedExceptionFromTest) {
+				CtExecutable testMethodModel, Classification<AsAssertion> allMissedFailFromTest,
+				List<CtReturn> allSkipFromTest, List<String> expectException,
+				List<CtInvocation> allExpectedExceptionFromTest) {
 			super();
 			this.rAssert = rAssert;
 			this.rHelperAssertion = rHelperAssertion;
@@ -467,7 +472,7 @@ public class RtEngine extends AstorCoreEngine {
 			return testMethodFromClass;
 		}
 
-		public List<AsAssertion> getAllMissedFailFromTest() {
+		public Classification<AsAssertion> getAllMissedFailFromTest() {
 			return allMissedFailFromTest;
 		}
 
@@ -479,7 +484,8 @@ public class RtEngine extends AstorCoreEngine {
 			return // isSmokeTest() ||
 			!this.getClassificationAssert().getResultNotExecuted().isEmpty()
 					|| !this.getClassificationHelperAssertion().getResultNotExecuted().isEmpty()
-					|| !this.getAllMissedFailFromTest().isEmpty() || !this.getAllSkipFromTest().isEmpty();
+					|| !this.getAllMissedFailFromTest().getResultNotExecuted().isEmpty()
+					|| !this.getAllSkipFromTest().isEmpty();
 		}
 
 		public boolean isSmokeTest() {
@@ -545,7 +551,7 @@ public class RtEngine extends AstorCoreEngine {
 				return new RottenFinalClassification(skipss);
 			}
 
-			List<AsAssertion> allMissedFailFromTest2 = this.getAllMissedFailFromTest();
+			List<AsAssertion> allMissedFailFromTest2 = this.getAllMissedFailFromTest().getResultNotExecuted();
 
 			boolean smokeTest = isSmokeTest();
 

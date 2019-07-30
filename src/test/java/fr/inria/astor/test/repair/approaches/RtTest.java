@@ -152,7 +152,7 @@ public class RtTest {
 
 	}
 
-	private RtEngine detectRt(File location, String dep, String name, String subproject) throws Exception {
+	public static RtEngine detectRt(File location, String dep, String name, String subproject) throws Exception {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary cs = getCommand(location, dep, name, subproject);
@@ -162,7 +162,7 @@ public class RtTest {
 		return etEn;
 	}
 
-	public CommandSummary getCommand(File location, String dep, String name, String subproject) {
+	public static CommandSummary getCommand(File location, String dep, String name, String subproject) {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 500;
 
@@ -370,27 +370,6 @@ public class RtTest {
 
 		// git rev-parse HEAD
 		// git config --get remote.origin.url
-	}
-
-	@Test
-	public void testRT1_NPE_conf() throws Exception {
-
-		String projectName = "blueocean-plugin";
-
-		runRTinProject(projectName);
-
-	}
-
-	public void runRTinProject(String projectName) throws Exception {
-		File location = new File("/Users/matias/develop/rt-research/clonedrepos/" + projectName);
-
-		RtEngine etEn = detectRt(location, null, projectName, projectName);
-
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
-
-		System.out.println(resultByTest);
-
-		boolean hasrt = resultByTest.stream().anyMatch(e -> e.isRotten());
 	}
 
 	@Test
