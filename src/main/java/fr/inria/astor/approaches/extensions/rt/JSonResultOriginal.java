@@ -224,12 +224,13 @@ public class JSonResultOriginal {
 			!rclassif.missed.isEmpty()) {
 				JsonArray missrarray = new JsonArray();
 				testjson.add(ROTTEN_MISSED, missrarray);
-				for (CtInvocation missedInv : rclassif.missed) {
+				for (AsAssertion missedInv : rclassif.missed) {
 					JsonObject missedJson = new JsonObject();
 					missedJson.addProperty("code_assertion", missedInv.toString().toString());
-					missedJson.addProperty("line_assertion", missedInv.getPosition().getLine());
-					missedJson.addProperty("path_assertion", getRelativePath(missedInv, projectFacade));
-					writeJsonLink(commitid, branch, remote, projectsubfolder, missedInv, missedJson);
+					missedJson.addProperty("line_assertion", missedInv.getCtAssertion().getPosition().getLine());
+					missedJson.addProperty("path_assertion",
+							getRelativePath(missedInv.getCtAssertion(), projectFacade));
+					writeJsonLink(commitid, branch, remote, projectsubfolder, missedInv.getCtAssertion(), missedJson);
 					onerotten = true;
 					missrarray.add(missedJson);
 					nrAllMissed++;

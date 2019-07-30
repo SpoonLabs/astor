@@ -233,10 +233,11 @@ public class RtEngine extends AstorCoreEngine {
 		List<CtInvocation> allAssertionsFromTest = filterAssertions(allStmtsFromClass);
 		List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass, new ArrayList());
 		// filter from assertions the missed fail
-		List<CtInvocation> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
+		List<AsAssertion> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
 		// The missed fails are removed from the assertion list (they are a
 		// sub-category).
-		allAssertionsFromTest.removeAll(allMissedFailFromTest);
+		allAssertionsFromTest
+				.removeAll(allMissedFailFromTest.stream().map(e -> e.getCtAssertion()).collect(Collectors.toList()));
 
 		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, allClasses);
 
@@ -293,9 +294,9 @@ public class RtEngine extends AstorCoreEngine {
 			return testCaseName;
 	}
 
-	private List<CtInvocation> filterMissedFail(List<CtInvocation> allAssertionsFromTest) {
+	private List<AsAssertion> filterMissedFail(List<CtInvocation> allAssertionsFromTest) {
 
-		List<CtInvocation> missedFails = new ArrayList<>();
+		List<AsAssertion> missedFails = new ArrayList<>();
 
 		for (CtInvocation anInvocation : allAssertionsFromTest) {
 			CtElement el = null;
@@ -310,8 +311,9 @@ public class RtEngine extends AstorCoreEngine {
 			if (el != null) {
 				String contentArgumentLC = el.toString().toLowerCase();
 				if (contentArgumentLC.equals("\"true\"") || contentArgumentLC.equals("\"false\"")
+						|| contentArgumentLC.equals("true") || contentArgumentLC.equals("false")
 						|| contentArgumentLC.equals("boolean.true") || contentArgumentLC.equals("boolean.false"))
-					missedFails.add(anInvocation);
+					missedFails.add(new AsAssertion(anInvocation));
 			}
 
 		}
@@ -373,7 +375,7 @@ public class RtEngine extends AstorCoreEngine {
 		Classification<AsAssertion> rAssert = null;
 		Classification<Helper> rHelperAssertion = null;
 		Classification<Helper> rHelperCall = null;
-		List<CtInvocation> allMissedFailFromTest;
+		List<AsAssertion> allMissedFailFromTest;
 		List<CtReturn> allSkipFromTest;
 		CtExecutable testMethodModel;
 		List<String> expectException;
@@ -381,7 +383,7 @@ public class RtEngine extends AstorCoreEngine {
 
 		public TestClassificationResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
-				CtExecutable testMethodModel, List<CtInvocation> allMissedFailFromTest, List<CtReturn> allSkipFromTest,
+				CtExecutable testMethodModel, List<AsAssertion> allMissedFailFromTest, List<CtReturn> allSkipFromTest,
 				List<String> expectException, List<CtInvocation> allExpectedExceptionFromTest) {
 			super();
 			this.rAssert = rAssert;
@@ -416,7 +418,7 @@ public class RtEngine extends AstorCoreEngine {
 			return testMethodFromClass;
 		}
 
-		public List<CtInvocation> getAllMissedFailFromTest() {
+		public List<AsAssertion> getAllMissedFailFromTest() {
 			return allMissedFailFromTest;
 		}
 
@@ -494,7 +496,7 @@ public class RtEngine extends AstorCoreEngine {
 				return new RottenFinalClassification(skipss);
 			}
 
-			List<CtInvocation> allMissedFailFromTest2 = this.getAllMissedFailFromTest();
+			List<AsAssertion> allMissedFailFromTest2 = this.getAllMissedFailFromTest();
 
 			boolean smokeTest = isSmokeTest();
 
@@ -555,13 +557,13 @@ public class RtEngine extends AstorCoreEngine {
 
 		public List<TestElement> fullRotten = Collections.EMPTY_LIST;
 		public boolean smokeTest = false;
-		public List<CtInvocation> missed = Collections.EMPTY_LIST;
+		public List<AsAssertion> missed = Collections.EMPTY_LIST;
 		public List<Skip> skip = Collections.EMPTY_LIST;
 		public List<Helper> contextHelperCall = Collections.EMPTY_LIST;
 		public List<Helper> contextHelperAssertion = Collections.EMPTY_LIST;
 		public List<AsAssertion> contextAssertion = Collections.EMPTY_LIST;
 
-		public RottenFinalClassification(List<TestElement> fullRotten, boolean smokeTest, List<CtInvocation> missed,
+		public RottenFinalClassification(List<TestElement> fullRotten, boolean smokeTest, List<AsAssertion> missed,
 				// List<Skip> skip,
 				List<Helper> contextHelperCall, List<Helper> contextHelperAssertion,
 				List<AsAssertion> contextAssertion) {
