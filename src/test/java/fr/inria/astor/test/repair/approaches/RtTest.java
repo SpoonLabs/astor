@@ -338,6 +338,62 @@ public class RtTest {
 	}
 
 	@Test
+	public void testRT1_flik_root_ac() throws Exception {
+
+		File location = new File("/Users/matias/develop/rt-research/datasetevaluation/flink/");
+
+		RtEngine etEn = detectRt(location, null, "flink", "flink");
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
+
+		boolean hasrt = resultByTest.stream().anyMatch(e -> e.isRotten());
+
+		// git rev-parse HEAD
+		// git config --get remote.origin.url
+	}
+	//
+
+	@Test
+	public void testRT1_rocketmq_spring_ac() throws Exception {
+
+		File location = new File("/Users/matias/develop/rt-research/clonedrepos/rocketmq-spring");
+
+		RtEngine etEn = detectRt(location, null, "rocketmq-spring", "rocketmq-spring");
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
+
+		boolean hasrt = resultByTest.stream().anyMatch(e -> e.isRotten());
+
+		// git rev-parse HEAD
+		// git config --get remote.origin.url
+	}
+
+	@Test
+	public void testRT1_NPE_conf() throws Exception {
+
+		String projectName = "blueocean-plugin";
+
+		runRTinProject(projectName);
+
+	}
+
+	public void runRTinProject(String projectName) throws Exception {
+		File location = new File("/Users/matias/develop/rt-research/clonedrepos/" + projectName);
+
+		RtEngine etEn = detectRt(location, null, projectName, projectName);
+
+		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+
+		System.out.println(resultByTest);
+
+		boolean hasrt = resultByTest.stream().anyMatch(e -> e.isRotten());
+	}
+
+	@Test
 	public void testRT1_flikcore_ac_wrong_classification() throws Exception {
 
 		File location = new File("/Users/matias/develop/rt-research/datasetevaluation/flink/flink-core/");
@@ -370,7 +426,7 @@ public class RtTest {
 
 		etEn.resultByTest.add(tresult);
 
-		System.out.println(etEn.toJson());
+		// System.out.println(etEn.toJson());
 
 		// org.apache.flink.api.common.typeutils.base.DoubleComparatorTest
 		// testDuplicate
