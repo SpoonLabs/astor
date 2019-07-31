@@ -96,7 +96,8 @@ public class RtEngine extends AstorCoreEngine {
 			CtClass aTestModelCtClass = MutationSupporter.getFactory().Class().get(tc);
 
 			if (aTestModelCtClass == null) {
-				log.error("Not ct model for class " + tc);
+				log.error("Error: Not ct model for class " + tc);
+				continue;
 			}
 
 			CtTypeReference supclass = aTestModelCtClass.getSuperclass();

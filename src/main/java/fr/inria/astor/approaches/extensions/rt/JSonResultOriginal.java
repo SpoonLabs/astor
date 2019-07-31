@@ -422,8 +422,20 @@ public class JSonResultOriginal {
 
 	public String createMethodSignature(CtInvocation anInvocation) {
 		String signature = "";
-		signature += anInvocation.getExecutable().getDeclaringType().getQualifiedName() + "#"
-				+ anInvocation.getExecutable().getSignature();
+
+		if (anInvocation.getExecutable() != null)
+
+			signature +=
+					//
+					((anInvocation.getExecutable().getDeclaringType() != null)
+							? anInvocation.getExecutable().getDeclaringType().getQualifiedName()
+							: anInvocation.getExecutable().getSimpleName())
+							//
+							+ "#" + anInvocation.getExecutable().getSignature();
+
+		else {
+			signature += anInvocation.getShortRepresentation();
+		}
 		return signature;
 	}
 
