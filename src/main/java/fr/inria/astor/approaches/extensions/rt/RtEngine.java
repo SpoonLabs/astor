@@ -95,6 +95,10 @@ public class RtEngine extends AstorCoreEngine {
 			allTestCases.add(tc);
 			CtClass aTestModelCtClass = MutationSupporter.getFactory().Class().get(tc);
 
+			if (aTestModelCtClass == null) {
+				log.error("Not ct model for class " + tc);
+			}
+
 			CtTypeReference supclass = aTestModelCtClass.getSuperclass();
 			while (supclass != null) {
 				if (!allTestCases.contains(supclass.getQualifiedName()))
@@ -1018,19 +1022,27 @@ public class RtEngine extends AstorCoreEngine {
 		if (isAssert) {
 			return true;
 		}
-		String name = targetInvocation.getExecutable().getDeclaringType().getQualifiedName();
+		try {
+			if (targetInvocation.getExecutable() != null
+					&& targetInvocation.getExecutable().getDeclaringType() != null) {
+				String name = targetInvocation.getExecutable().getDeclaringType().getQualifiedName();
+				// TODO: disable for the moment
+				Optional<String> testnm = this.namespace.stream().filter(e -> name.startsWith(e)).findFirst();
+				if (testnm.isPresent()) {
+					// log.debug("assert " + targetInvocation.getExecutable().getSimpleName() + "
+					// found in " + testnm.get());
+					// return true;
+				}
+			}
 
-		// TODO: disable for the moment
-		Optional<String> testnm = this.namespace.stream().filter(e -> name.startsWith(e)).findFirst();
-		if (testnm.isPresent()) {
-			// log.debug("assert " + targetInvocation.getExecutable().getSimpleName() + "
-			// found in " + testnm.get());
-			// return true;
-		}
-
-		if (targetInvocation.getTarget() instanceof CtInvocation) {
-			CtInvocation targetInv = (CtInvocation) targetInvocation.getTarget();
-			return isAssertion(targetInv);
+			if (targetInvocation.getTarget() != null && targetInvocation.getTarget() instanceof CtInvocation) {
+				CtInvocation targetInv = (CtInvocation) targetInvocation.getTarget();
+				return isAssertion(targetInv);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+			log.error("Continue executing after " + e.getMessage());
 		}
 		return false;
 	}
