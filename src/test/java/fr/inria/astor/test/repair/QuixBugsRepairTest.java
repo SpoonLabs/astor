@@ -62,10 +62,10 @@ public class QuixBugsRepairTest {
 		cs.command.put("-binjavafolder", "/bin");
 		cs.command.put("-bintestfolder", "/bin");
 		cs.command.put("-flthreshold", "0.0");
-		cs.command.put("-loglevel", "INFO");
+		cs.command.put("-loglevel", "DEBUG");
 		cs.command.put("-stopfirst", "TRUE");
 		cs.command.put("-parameters", "logtestexecution:TRUE:"
-				+ "disablelog:TRUE:maxtime:120:autocompile:false:gzoltarpackagetonotinstrument:com.google.gson_engine"
+				+ "disablelog:FALSE:maxtime:120:autocompile:false:gzoltarpackagetonotinstrument:com.google.gson_engine"
 				+ GZoltarFaultLocalization.PACKAGE_SEPARATOR + "java_programs_test");
 		cs.command.put("-location", new File("./examples/quixbugscompiled/" + name).getAbsolutePath());
 
@@ -336,7 +336,7 @@ public class QuixBugsRepairTest {
 		// - if ((arr.size()) == 0) {
 		// + if (((arr.size()) / 2) == 0) {
 
-		String susp = "(arr.size())";
+		String susp = "arr.size()";
 
 		ModificationPoint buggyModifPoint = main1.getEngine().getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> e.getCodeElement().toString().equals(susp)
@@ -369,8 +369,8 @@ public class QuixBugsRepairTest {
 		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 		// - if ((arr.size()) == 0) {
 		// + if (((arr.size()) / 2) == 0) {
-		String susp = "(arr.size())";
-		assertTrue(checkPatch(main1.getEngine(), susp, "((arr.size()) / 2)"));
+		String susp = "arr.size()";
+		assertTrue(checkPatch(main1.getEngine(), susp, "(arr.size() / 2)"));
 	}
 
 	/**
@@ -383,7 +383,7 @@ public class QuixBugsRepairTest {
 		AstorMain main1 = new AstorMain();
 
 		CommandSummary command = (getQuixBugsCommand("powerset"));
-		command.command.put("-maxgen", "500");
+		command.command.put("-maxgen", "1000");
 		command.command.put("-mode", "custom");
 		command.command.put("-customengine", TibraApproach.class.getCanonicalName());
 
@@ -434,8 +434,8 @@ public class QuixBugsRepairTest {
 		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 		assertTrue(checkPatch(main1.getEngine(),
-				"int length = (!(prefix_lengths.isEmpty())) ? java.util.Collections.max(prefix_lengths) : 0",
-				"ends.put((length + 1), i)"));
+				"int length = (!prefix_lengths.isEmpty()) ? java.util.Collections.max(prefix_lengths) : 0",
+				"ends.put(length + 1, i)"));
 
 	}
 
@@ -457,7 +457,7 @@ public class QuixBugsRepairTest {
 
 		main1.execute(command.flat());
 
-		String susp = "int length = (!(prefix_lengths.isEmpty())) ? java.util.Collections.max(prefix_lengths) : 0";
+		String susp = "int length = (!prefix_lengths.isEmpty()) ? java.util.Collections.max(prefix_lengths) : 0";
 
 		ModificationPoint mpl20 = main1.getEngine().getVariants().get(0).getModificationPoints().stream()
 				.filter(e -> e.getCodeElement().toString().equals(susp)).findFirst().get();
@@ -475,8 +475,8 @@ public class QuixBugsRepairTest {
 		approach.atEnd();
 
 		assertTrue(checkPatch(approach,
-				"int length = (!(prefix_lengths.isEmpty())) ? java.util.Collections.max(prefix_lengths) : 0",
-				"ends.put((length + 1), i)"));
+				"int length = (!prefix_lengths.isEmpty()) ? java.util.Collections.max(prefix_lengths) : 0",
+				"ends.put(length + 1, i)"));
 	}
 
 	public boolean checkPatch(AstorCoreEngine approach, String original, String patched) {
@@ -520,7 +520,7 @@ public class QuixBugsRepairTest {
 		}
 
 		Optional<Ingredient> opIng1 = allIngredients.stream()
-				.filter(e -> e.getCode().toString().equals("ends.put((length + 1), i)")).findAny();
+				.filter(e -> e.getCode().toString().equals("ends.put(length + 1, i)")).findAny();
 		assertTrue(opIng1.isPresent());
 		Ingredient ing1 = opIng1.get();
 
