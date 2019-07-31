@@ -84,7 +84,7 @@ public class RtTestExamples {
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(1, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
 		Helper helperNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().get(0);
-		assertEquals("org.junit.Assert.assertTrue((1 > 0))", helperNotExecuted.getAssertion().toString());
+		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperNotExecuted.getAssertion().toString());
 
 		assertEquals(1, helperNotExecuted.getCalls().size());
 		assertEquals("this.goodHelper()", helperNotExecuted.getCalls().get(0).toString());
@@ -137,11 +137,11 @@ public class RtTestExamples {
 
 		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0)
 				.getCtAssertion();
-		assertEquals("org.junit.Assert.assertTrue((3 > 1))", assertionNotExecuted.toString());
+		assertEquals("org.junit.Assert.assertTrue(3 > 1)", assertionNotExecuted.toString());
 
 		assertEquals(1, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
 		Helper helperAssertionNotExec = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().get(0);
-		assertEquals("org.junit.Assert.assertTrue((1 > 0))", helperAssertionNotExec.getAssertion().toString());
+		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperAssertionNotExec.getAssertion().toString());
 		assertEquals("this.rottenHelper()", helperAssertionNotExec.getCalls().get(0).toString());
 
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
@@ -187,11 +187,11 @@ public class RtTestExamples {
 
 		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0)
 				.getCtAssertion();
-		assertEquals("org.junit.Assert.assertTrue((4 > 1))", assertionNotExecuted.toString());
+		assertEquals("org.junit.Assert.assertTrue(4 > 1)", assertionNotExecuted.toString());
 
 		assertEquals(1, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
 		Helper helperNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().get(0);
-		assertEquals("org.junit.Assert.assertTrue((1 > 0))", helperNotExecuted.getAssertion().toString());
+		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperNotExecuted.getAssertion().toString());
 
 		assertEquals(1, helperNotExecuted.getCalls().size());
 		assertEquals("this.goodHelper()", helperNotExecuted.getCalls().get(0).toString());
@@ -343,7 +343,7 @@ public class RtTestExamples {
 
 		CtInvocation assertionNotExecuted = rottenTest0.getClassificationAssert().getResultNotExecuted().get(0)
 				.getCtAssertion();
-		assertEquals("org.junit.Assert.assertTrue((7 > 1))", assertionNotExecuted.toString());
+		assertEquals("org.junit.Assert.assertTrue(7 > 1)", assertionNotExecuted.toString());
 
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
@@ -424,7 +424,7 @@ public class RtTestExamples {
 		assertEquals(1, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
 
 		Helper helperAssertionExecuted = rottenTest0.getClassificationHelperAssertion().getResultExecuted().get(0);
-		assertEquals("org.junit.Assert.assertTrue((1 > 0))", helperAssertionExecuted.getAssertion().toString());
+		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperAssertionExecuted.getAssertion().toString());
 		// Let's check the caller of the assertion
 		assertEquals(1, helperAssertionExecuted.getCalls().size());
 		assertEquals("this.goodHelper()", helperAssertionExecuted.getCalls().get(0).toString());
@@ -467,7 +467,7 @@ public class RtTestExamples {
 
 		Helper helperAssertionNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted()
 				.get(0);
-		assertEquals("org.junit.Assert.assertTrue((1 > 0))", helperAssertionNotExecuted.getAssertion().toString());
+		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperAssertionNotExecuted.getAssertion().toString());
 		// Let's check the caller of the assertion
 		assertEquals(1, helperAssertionNotExecuted.getCalls().size());
 		assertEquals("this.goodHelper()", helperAssertionNotExecuted.getCalls().get(0).toString());
@@ -511,7 +511,7 @@ public class RtTestExamples {
 		assertEquals(1, rottenTest0.getClassificationHelperCall().getResultExecuted().size());
 		Helper helperAssertionNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted()
 				.get(0);
-		assertEquals("org.junit.Assert.assertTrue((1 > 0))", helperAssertionNotExecuted.getAssertion().toString());
+		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperAssertionNotExecuted.getAssertion().toString());
 
 		// Let's check who calls the assertion
 		assertEquals(1, helperAssertionNotExecuted.getCalls().size());
@@ -559,7 +559,7 @@ public class RtTestExamples {
 		assertEquals(0, rottenTest0.getClassificationHelperCall().getResultExecuted().size());
 		Helper helperAssertionNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted()
 				.get(0);
-		assertEquals("org.junit.Assert.assertTrue((1 > 0))", helperAssertionNotExecuted.getAssertion().toString());
+		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperAssertionNotExecuted.getAssertion().toString());
 		// Let's check the caller of the assertion
 		assertEquals(1, helperAssertionNotExecuted.getCalls().size());
 		assertEquals("this.goodHelper()", helperAssertionNotExecuted.getCalls().get(0).toString());

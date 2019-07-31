@@ -808,7 +808,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.error("Problem compiling the model with compliance level "
 					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 			log.error(e.getMessage());
+			e.printStackTrace();
 			try {
+				mutatorSupporter.cleanFactory();
 				log.info("Recompiling with compliance level "
 						+ ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
 				mutatorSupporter.getFactory().getEnvironment()
@@ -816,16 +818,22 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
 
 			} catch (Exception e2) {
+				e2.printStackTrace();
+				log.error("Error compiling: " + e2.getMessage());
 				if (!ConfigurationProperties.getPropertyBool("continuewhenmodelfail")) {
 					log.error("Astor does not continue when model build fails");
 					throw e2;
 				} else {
-					log.error("Astor continues when model build fails");
+
+					log.error("Astor continues when model build fails. Classes created: "
+							+ mutatorSupporter.getFactory().Type().getAll().size());
+
 				}
 
 			}
 
 		}
+		log.info("Number of CtTypes created: " + mutatorSupporter.getFactory().Type().getAll().size());
 
 		///// ONCE ASTOR HAS BUILT THE MODEL,
 		///// We apply different processes and manipulation over it.
