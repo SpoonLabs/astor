@@ -7,8 +7,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import fr.inria.astor.approaches.zm.FileProgramVariant;
-import fr.inria.astor.approaches.zm.ZmEngine;
+import fr.inria.astor.approaches._3sfix.FileProgramVariant;
+import fr.inria.astor.approaches._3sfix.ZmEngine;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.entities.VariantValidationResult;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;

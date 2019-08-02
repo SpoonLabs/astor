@@ -1,7 +1,5 @@
 outputMutation
 
-# Created by https://www.gitignore.io/api/maven
-
 ### Maven ###
 target/
 pom.xml.tag
@@ -16,6 +14,10 @@ buildNumber.properties
 **/.project
 **/.classpath
 **/.gitignore
+
+# intellij
+.idea
+*.iml
 
 /.settings/
 /.classpath

@@ -83,6 +83,15 @@ Cardumen is a repair approach based on mined templates. The experiments about Ca
 * [Open-ended Exploration of the Program Repair Search Space with Mined Templates: the Next 8935 Patches for Defects4J](https://arxiv.org/pdf/1712.03854v1) (Martin Monperrus, Matias Martinez), Arxiv 1712.03854, 2017
 * Open-science repository with Cardumen patches: <https://github.com/SpoonLabs/astor-experiments/>
 
+3sfix
+----------
+
+3sfix is a repair approach based on selecting the most similar repair ingredients.
+
+* Paper: [The Remarkable Role of Similarity in Redundancy-based Program Repair (arxiv 1811.05703, 2018)](http://arxiv.org/pdf/1811.05703)
+* Open-science repository: <https://github.com/kth-tcs/3sFix-experiments>
+
+
 Usage
 ------
 

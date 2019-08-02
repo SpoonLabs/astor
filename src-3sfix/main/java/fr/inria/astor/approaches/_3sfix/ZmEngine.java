@@ -1,4 +1,4 @@
-package fr.inria.astor.approaches.zm;
+package fr.inria.astor.approaches._3sfix;
 
 import java.io.File;
 import java.util.ArrayList;
