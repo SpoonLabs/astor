@@ -86,6 +86,9 @@ public class JSonResultOriginal {
 			RottenFinalClassification rclassif = tr.generateFinalResult();
 
 			JsonObject testjson = new JsonObject();
+			JsonArray typesRottens = new JsonArray();
+			Set<String> uniquesTypesRottern = new HashSet();
+			testjson.add("types", typesRottens);
 			testjson.addProperty("testclass", tr.getNameOfTestClass());
 			testjson.addProperty("testname", tr.getTestMethodFromClass());
 			testjson.addProperty("expectsexception", (tr.getExpectException().size() > 0) ? "true" : "false");
@@ -133,6 +136,8 @@ public class JSonResultOriginal {
 					onerotten = true;
 					jsonsingleAssertion.add("parent_types", getParentTypes(anInvocation));
 					nrRtAssertion++;
+
+					uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_ASSERTIONS);
 				}
 			}
 			//
@@ -154,6 +159,7 @@ public class JSonResultOriginal {
 					for (JsonObject jsonObject : result) {
 						helperarray.add(jsonObject);
 					}
+					uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_HELPERS_CALL);
 				}
 				nrRtHelperCall += notExecutedHelperInvoc.size();
 			}
@@ -176,6 +182,7 @@ public class JSonResultOriginal {
 					for (JsonObject jsonObject : result) {
 						helperarray.add(jsonObject);
 					}
+					uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION);
 				}
 
 				nrRttHelperAssert += notExecutedHelper.size();
@@ -199,6 +206,8 @@ public class JSonResultOriginal {
 					onerotten = true;
 					jsonsingleElement.add("parent_types", getParentTypes(anInvocation));
 					nrRtFull++;
+
+					uniquesTypesRottern.add(FULL_ROTTEN_TEST);
 				}
 
 			}
@@ -217,6 +226,7 @@ public class JSonResultOriginal {
 					skiprarray.add(singleSkip);
 					writeJsonLink(commitid, branch, remote, projectsubfolder, skip, singleSkip);
 					nrSkip++;
+					uniquesTypesRottern.add(ROTTEN_SKIP);
 				}
 			}
 
@@ -235,6 +245,7 @@ public class JSonResultOriginal {
 					onerotten = true;
 					missrarray.add(missedJson);
 					nrAllMissed++;
+					uniquesTypesRottern.add(ROTTEN_MISSED);
 				}
 			}
 
@@ -259,7 +270,7 @@ public class JSonResultOriginal {
 				for (CtInvocation otherinv : allAssertionsFromTest) {
 					missrarray.add(createMethodSignature(otherinv));
 				}
-
+				uniquesTypesRottern.add(SMOKE_TEST);
 			}
 
 			/// Dont include smoke
@@ -273,6 +284,10 @@ public class JSonResultOriginal {
 			if (testjson != null) {
 				testjson.addProperty(TEST_HAS_CONTROL_FLOW_STMT, hasControlFlow);
 				testjson.addProperty(TEST_HAS_HELPER_CALL, hasHelperCall);
+			}
+			// We put the the types found in "types"
+			for (String types : uniquesTypesRottern) {
+				typesRottens.add(types);
 			}
 		}
 
