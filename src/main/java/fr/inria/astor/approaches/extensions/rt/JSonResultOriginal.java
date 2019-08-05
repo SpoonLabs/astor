@@ -19,7 +19,6 @@ import fr.inria.astor.approaches.extensions.rt.RtEngine.Helper;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.RottenFinalClassification;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.Skip;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.TestClassificationResult;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.TestElement;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import spoon.reflect.code.CtDo;
@@ -54,6 +53,13 @@ public class JSonResultOriginal {
 
 	private static final String ROTTEN_CONTEXT_DEP_ASSERTIONS = "Context_Dep_Rotten_Assertions";
 
+	// The fulls
+	private static final String FULL_ROTTEN_TEST_HELPERS_CALL = "Full_Rotten_Test_Rotten_Helpers_Call";
+
+	private static final String FULL_ROTTEN_TEST_HELPERS_ASSERTION = "Full_Rotten_Test_Rotten_Helpers_Assertion";
+
+	private static final String FULL_ROTTEN_TEST_ASSERTIONS = "Full_Rotten_Test_Rotten_Assertions";
+
 	private static final String TEST_HAS_CONTROL_FLOW_STMT = "Test_with_Control_flow_stmt";
 	private static final String TEST_HAS_HELPER_CALL = "Test_with_Helper";
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
@@ -83,7 +89,7 @@ public class JSonResultOriginal {
 		Set<String> rTestclasses = new HashSet<>();
 		for (TestClassificationResult tr : resultByTest) {
 
-			RottenFinalClassification rclassif = tr.generateFinalResult();
+			RottenFinalClassification resultClassification = tr.generateFinalResult();
 
 			JsonObject testjson = new JsonObject();
 			JsonArray typesRottens = new JsonArray();
@@ -113,110 +119,53 @@ public class JSonResultOriginal {
 					|| !tr.getClassificationHelperCall().getResultNotExecuted().isEmpty();
 
 			nrTestWithHelper += (hasHelperCall) ? 1 : 0;
+
+			// Here the complex:
+
 			// Asserts
-			List<AsAssertion> notExecutedAssert = rclassif.contextAssertion;
-			// tr.getClassificationAssert().getResultNotExecuted();
-			if (!notExecutedAssert.isEmpty()) {
 
-				log.debug("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
-
-				JsonArray assertionarray = new JsonArray();
-				testjson.add(ROTTEN_CONTEXT_DEP_ASSERTIONS, assertionarray);
-				for (AsAssertion assertion : notExecutedAssert) {
-					CtInvocation anInvocation = assertion.getCtAssertion();
-					log.debug("-R-Assertion:-> " + anInvocation);
-					JsonObject jsonsingleAssertion = new JsonObject();
-					jsonsingleAssertion.addProperty("code", anInvocation.toString());
-					jsonsingleAssertion.addProperty("line", anInvocation.getPosition().getLine());
-					jsonsingleAssertion.addProperty("path", getRelativePath(anInvocation, projectFacade));
-					jsonsingleAssertion.addProperty("inbranch", assertion.isFp());
-
-					writeJsonLink(commitid, branch, remote, projectsubfolder, anInvocation, jsonsingleAssertion);
-					assertionarray.add(jsonsingleAssertion);
-					onerotten = true;
-					jsonsingleAssertion.add("parent_types", getParentTypes(anInvocation));
-					nrRtAssertion++;
-
-					uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_ASSERTIONS);
-				}
-			}
+			int r = add_ASSERTIONS(projectFacade, commitid, branch, remote, projectsubfolder, tr, testjson,
+					uniquesTypesRottern, resultClassification.contextAssertion, ROTTEN_CONTEXT_DEP_ASSERTIONS);
+			onerotten = onerotten || (r > 0);
+			nrRtAssertion += r;
 			//
 
-			List<Helper> notExecutedHelperInvoc = rclassif.contextHelperCall;
-			// tr.getClassificationHelperCall().getResultNotExecuted();
-			if (!notExecutedHelperInvoc.isEmpty()) {
-				System.out.println("-- R Helper call  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
+			r = add_HELPERS_CALL(commitid, branch, remote, projectsubfolder, tr, testjson, uniquesTypesRottern,
+					resultClassification.contextHelperCall, ROTTEN_CONTEXT_DEP_HELPERS_CALL);
+			onerotten = onerotten || (r > 0);
+			nrRtHelperCall += r;
 
-				List<JsonObject> result = helperToJson(notExecutedHelperInvoc, Lists.newArrayList(), commitid, branch,
-						remote, projectsubfolder, true);
-
-				if (!result.isEmpty()) {
-					JsonArray helperarray = new JsonArray();
-
-					testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_CALL, helperarray);
-
-					onerotten = true;
-					for (JsonObject jsonObject : result) {
-						helperarray.add(jsonObject);
-					}
-					uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_HELPERS_CALL);
-				}
-				nrRtHelperCall += notExecutedHelperInvoc.size();
-			}
 			//
-			List<Helper> notExecutedHelper = rclassif.contextHelperAssertion;
-			// tr.getClassificationHelperAssertion().getResultNotExecuted();
-			if (!notExecutedHelper.isEmpty()) {
-				log.debug("-R Helper assertion- " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
-				List<JsonObject> result = helperToJson(notExecutedHelper,
-						tr.getClassificationHelperCall().getResultNotExecuted(), commitid, branch, remote,
-						projectsubfolder, false);
-
-				if (!result.isEmpty()) {
-					JsonArray helperarray = new JsonArray();
-
-					testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION, helperarray);
-
-					onerotten = true;
-					for (JsonObject jsonObject : result) {
-						helperarray.add(jsonObject);
-					}
-					uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION);
-				}
-
-				nrRttHelperAssert += notExecutedHelper.size();
-			}
+			r = add_HELPERS_ASSERTION(commitid, branch, remote, projectsubfolder, tr, testjson, uniquesTypesRottern,
+					resultClassification.contextHelperAssertion, ROTTEN_CONTEXT_DEP_ASSERTIONS);
+			onerotten = onerotten || (r > 0);
+			nrRttHelperAssert += r;
 			//
-			if (!rclassif.fullRotten.isEmpty()) {
+			/// ------Now the full-----
 
-				JsonArray fullrottennarray = new JsonArray();
-				testjson.add(FULL_ROTTEN_TEST, fullrottennarray);
-				for (TestElement assertion : rclassif.fullRotten) {
-					CtElement anInvocation = assertion.getElement();
-					log.debug("-R-Assertion:-> " + anInvocation);
-					JsonObject jsonsingleElement = new JsonObject();
-					jsonsingleElement.addProperty("code", anInvocation.toString());
-					jsonsingleElement.addProperty("line", anInvocation.getPosition().getLine());
-					jsonsingleElement.addProperty("path", getRelativePath(anInvocation, projectFacade));
-					jsonsingleElement.addProperty("inbranch", assertion.isFp());
-
-					writeJsonLink(commitid, branch, remote, projectsubfolder, anInvocation, jsonsingleElement);
-					fullrottennarray.add(jsonsingleElement);
-					onerotten = true;
-					jsonsingleElement.add("parent_types", getParentTypes(anInvocation));
-					nrRtFull++;
-
-					uniquesTypesRottern.add(FULL_ROTTEN_TEST);
-				}
-
-			}
+			r = add_ASSERTIONS(projectFacade, commitid, branch, remote, projectsubfolder, tr, testjson,
+					uniquesTypesRottern, resultClassification.fullRottenAssert, FULL_ROTTEN_TEST_ASSERTIONS);
+			onerotten = onerotten || (r > 0);
+			nrRtFull += r;
 			//
-			if (// !tr.getAllSkipFromTest().isEmpty()
-			!rclassif.skip.isEmpty()) {
+
+			r = add_HELPERS_CALL(commitid, branch, remote, projectsubfolder, tr, testjson, uniquesTypesRottern,
+					resultClassification.fullRottenHelperCall, FULL_ROTTEN_TEST_HELPERS_CALL);
+			onerotten = onerotten || (r > 0);
+			nrRtFull += r;
+
+			//
+			r = add_HELPERS_ASSERTION(commitid, branch, remote, projectsubfolder, tr, testjson, uniquesTypesRottern,
+					resultClassification.fullRottenHelperAssert, FULL_ROTTEN_TEST_HELPERS_ASSERTION);
+			onerotten = onerotten || (r > 0);
+			nrRtFull += r;
+
+			//
+			if (!resultClassification.skip.isEmpty()) {
 				JsonArray skiprarray = new JsonArray();
 				testjson.add(ROTTEN_SKIP, skiprarray);
-				for (Skip iSkip : rclassif.skip) {
+				for (Skip iSkip : resultClassification.skip) {
 					CtReturn skip = iSkip.executedReturn;
 					JsonObject singleSkip = new JsonObject();
 					singleSkip.addProperty("code", skip.toString().toString());
@@ -231,11 +180,10 @@ public class JSonResultOriginal {
 			}
 
 			//
-			if (// !tr.getAllMissedFailFromTest().isEmpty()
-			!rclassif.missed.isEmpty()) {
+			if (!resultClassification.missed.isEmpty()) {
 				JsonArray missrarray = new JsonArray();
 				testjson.add(ROTTEN_MISSED, missrarray);
-				for (AsAssertion missedInv : rclassif.missed) {
+				for (AsAssertion missedInv : resultClassification.missed) {
 					JsonObject missedJson = new JsonObject();
 					missedJson.addProperty("code_assertion", missedInv.toString().toString());
 					missedJson.addProperty("line_assertion", missedInv.getCtAssertion().getPosition().getLine());
@@ -305,6 +253,91 @@ public class JSonResultOriginal {
 		summary.addProperty("nr_" + this.SMOKE_TEST, nrSmokeTest);
 		summary.addProperty("nr_" + this.FULL_ROTTEN_TEST, nrRtFull);
 		return root;
+	}
+
+	public int add_ASSERTIONS(ProjectRepairFacade projectFacade, String commitid, String branch, String remote,
+			String projectsubfolder, TestClassificationResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
+			List<AsAssertion> notExecutedAssert, String ROTTEN_CONTEXT_DEP_ASSERTIONS) {
+		int nrRtAssertion = 0;
+		if (!notExecutedAssert.isEmpty()) {
+
+			log.debug("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
+
+			JsonArray assertionarray = new JsonArray();
+			testjson.add(ROTTEN_CONTEXT_DEP_ASSERTIONS, assertionarray);
+			for (AsAssertion assertion : notExecutedAssert) {
+				CtInvocation anInvocation = assertion.getCtAssertion();
+				log.debug("-R-Assertion:-> " + anInvocation);
+				JsonObject jsonsingleAssertion = new JsonObject();
+				jsonsingleAssertion.addProperty("code", anInvocation.toString());
+				jsonsingleAssertion.addProperty("line", anInvocation.getPosition().getLine());
+				jsonsingleAssertion.addProperty("path", getRelativePath(anInvocation, projectFacade));
+				jsonsingleAssertion.addProperty("inbranch", assertion.isFp());
+
+				writeJsonLink(commitid, branch, remote, projectsubfolder, anInvocation, jsonsingleAssertion);
+				assertionarray.add(jsonsingleAssertion);
+				// onerotten = true;
+				jsonsingleAssertion.add("parent_types", getParentTypes(anInvocation));
+				nrRtAssertion++;
+
+				uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_ASSERTIONS);
+			}
+		}
+		return nrRtAssertion;
+	}
+
+	public int add_HELPERS_ASSERTION(String commitid, String branch, String remote, String projectsubfolder,
+			TestClassificationResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
+			List<Helper> notExecutedHelper, String ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION) {
+		int nrRttHelperAssert = 0;
+		if (!notExecutedHelper.isEmpty()) {
+			log.debug("-R Helper assertion- " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
+
+			List<JsonObject> result = helperToJson(notExecutedHelper,
+					tr.getClassificationHelperCall().getResultNotExecuted(), commitid, branch, remote, projectsubfolder,
+					false);
+
+			if (!result.isEmpty()) {
+				JsonArray helperarray = new JsonArray();
+
+				testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION, helperarray);
+
+				// onerotten = true;
+				for (JsonObject jsonObject : result) {
+					helperarray.add(jsonObject);
+				}
+				uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION);
+			}
+
+			nrRttHelperAssert += notExecutedHelper.size();
+		}
+		return nrRttHelperAssert;
+	}
+
+	public int add_HELPERS_CALL(String commitid, String branch, String remote, String projectsubfolder,
+			TestClassificationResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
+			List<Helper> notExecutedHelperInvoc, String ROTTEN_CONTEXT_DEP_HELPERS_CALL) {
+		int nrRtHelperCall = 0;
+		if (!notExecutedHelperInvoc.isEmpty()) {
+			System.out.println("-- R Helper call  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
+
+			List<JsonObject> result = helperToJson(notExecutedHelperInvoc, Lists.newArrayList(), commitid, branch,
+					remote, projectsubfolder, true);
+
+			if (!result.isEmpty()) {
+				JsonArray helperarray = new JsonArray();
+
+				testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_CALL, helperarray);
+
+				// onerotten = true;
+				for (JsonObject jsonObject : result) {
+					helperarray.add(jsonObject);
+				}
+				uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_HELPERS_CALL);
+			}
+			nrRtHelperCall += notExecutedHelperInvoc.size();
+		}
+		return nrRtHelperCall;
 	}
 
 	private String executeCommand(String location, String command) {

@@ -527,8 +527,9 @@ public class RtEngine extends AstorCoreEngine {
 		public RottenFinalClassification generateFinalResult() {
 			List<CtReturn> allSkipFromTest2 = this.getAllSkipFromTest();
 
-			List<TestElement> notComplex = new ArrayList();
-
+			List<Helper> notComplexHelperCallComplex = new ArrayList();
+			List<Helper> notComplexHelperAssertComplex = new ArrayList();
+			List<AsAssertion> notComplexAssertComplex = new ArrayList();
 			//
 			List<Helper> resultNotExecutedHelperCallComplex = new ArrayList<>();
 			List<Helper> resultNotExecutedHelperAssertComplex = new ArrayList<>();
@@ -561,17 +562,19 @@ public class RtEngine extends AstorCoreEngine {
 			boolean smokeTest = isSmokeTest();
 
 			//
-			classifyComplexHelper(notComplex, resultNotExecutedHelperCallComplex, resultNotExecutedHelperCall);
-			classifyComplexHelper(notComplex, resultNotExecutedHelperAssertComplex, resultNotExecutedHelperAssertion);
-			classifyComplexAssert(notComplex, resultNotExecutedAssertComplex, resultNotExecutedAssertion);
+			classifyComplexHelper(notComplexHelperCallComplex, resultNotExecutedHelperCallComplex,
+					resultNotExecutedHelperCall);
+			classifyComplexHelper(notComplexHelperAssertComplex, resultNotExecutedHelperAssertComplex,
+					resultNotExecutedHelperAssertion);
+			classifyComplexAssert(notComplexAssertComplex, resultNotExecutedAssertComplex, resultNotExecutedAssertion);
 
-			return new RottenFinalClassification(notComplex, smokeTest, allMissedFailFromTest2,
-					resultNotExecutedHelperCallComplex, resultNotExecutedHelperAssertComplex,
-					resultNotExecutedAssertComplex);
+			return new RottenFinalClassification(notComplexHelperCallComplex, notComplexHelperAssertComplex,
+					notComplexAssertComplex, smokeTest, allMissedFailFromTest2, resultNotExecutedHelperCallComplex,
+					resultNotExecutedHelperAssertComplex, resultNotExecutedAssertComplex);
 
 		}
 
-		public void classifyComplexHelper(List<TestElement> notComplex, List<Helper> resultNotExecutedHelperCallComplex,
+		public void classifyComplexHelper(List<Helper> notComplex, List<Helper> resultNotExecutedHelperCallComplex,
 				List<Helper> resultNotExecutedAssertion) {
 			for (Helper testElement : resultNotExecutedAssertion) {
 
@@ -595,7 +598,7 @@ public class RtEngine extends AstorCoreEngine {
 		 * @param resultNotExecutedHelperCallComplex
 		 * @param resultNotExecutedAssertion
 		 */
-		public void classifyComplexAssert(List<TestElement> notComplex,
+		public void classifyComplexAssert(List<AsAssertion> notComplex,
 				List<AsAssertion> resultNotExecutedHelperCallComplex, List<AsAssertion> resultNotExecutedAssertion) {
 			for (AsAssertion testElement : resultNotExecutedAssertion) {
 
@@ -615,7 +618,9 @@ public class RtEngine extends AstorCoreEngine {
 
 	public class RottenFinalClassification {
 
-		public List<TestElement> fullRotten = Collections.EMPTY_LIST;
+		public List<Helper> fullRottenHelperCall = Collections.EMPTY_LIST;
+		public List<Helper> fullRottenHelperAssert = Collections.EMPTY_LIST;
+		public List<AsAssertion> fullRottenAssert = Collections.EMPTY_LIST;
 		public boolean smokeTest = false;
 		public List<AsAssertion> missed = Collections.EMPTY_LIST;
 		public List<Skip> skip = Collections.EMPTY_LIST;
@@ -623,12 +628,18 @@ public class RtEngine extends AstorCoreEngine {
 		public List<Helper> contextHelperAssertion = Collections.EMPTY_LIST;
 		public List<AsAssertion> contextAssertion = Collections.EMPTY_LIST;
 
-		public RottenFinalClassification(List<TestElement> fullRotten, boolean smokeTest, List<AsAssertion> missed,
+		public RottenFinalClassification(
+				//
+				List<Helper> fullRottenHelperCall, List<Helper> fullRottenHelperAssert, //
+				List<AsAssertion> fullRottenAssert, //
+				boolean smokeTest, List<AsAssertion> missed, //
 				// List<Skip> skip,
 				List<Helper> contextHelperCall, List<Helper> contextHelperAssertion,
 				List<AsAssertion> contextAssertion) {
 			super();
-			this.fullRotten = fullRotten;
+			this.fullRottenHelperCall = fullRottenHelperCall;
+			this.fullRottenHelperAssert = fullRottenHelperAssert;
+			this.fullRottenAssert = fullRottenAssert;
 			this.smokeTest = smokeTest;
 			this.missed = missed;
 			// this.skip = skip;
@@ -641,6 +652,13 @@ public class RtEngine extends AstorCoreEngine {
 			this.skip = skip;
 		}
 
+		public List<TestElement> getFullRotten() {
+			List<TestElement> allRT = new ArrayList<>();
+			allRT.addAll(this.fullRottenAssert);
+			allRT.addAll(this.fullRottenHelperCall);
+			allRT.addAll(this.fullRottenHelperAssert);
+			return allRT;
+		}
 	}
 
 	public class Classification<T> {

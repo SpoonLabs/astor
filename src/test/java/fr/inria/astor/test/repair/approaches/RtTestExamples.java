@@ -779,7 +779,7 @@ public class RtTestExamples {
 
 		assertNotNull(res);
 
-		assertTrue(res.fullRotten.size() > 0);
+		assertTrue(res.getFullRotten().size() > 0);
 
 		assertTrue(res.contextAssertion.isEmpty());
 		assertTrue(res.contextHelperAssertion.isEmpty());
@@ -854,7 +854,7 @@ public class RtTestExamples {
 
 		RottenFinalClassification fr2 = rottenTest2.generateFinalResult();
 
-		assertTrue(fr2.fullRotten.isEmpty());
+		assertTrue(fr2.getFullRotten().isEmpty());
 		assertTrue(fr2.contextAssertion.isEmpty());
 		assertTrue(fr2.contextHelperAssertion.isEmpty());
 		assertTrue(fr2.contextHelperCall.isEmpty());
@@ -887,7 +887,7 @@ public class RtTestExamples {
 
 		RottenFinalClassification fr2 = rottenTest2.generateFinalResult();
 
-		assertTrue(fr2.fullRotten.isEmpty());
+		assertTrue(fr2.getFullRotten().isEmpty());
 		assertFalse(fr2.contextAssertion.isEmpty());
 		assertTrue(fr2.contextHelperAssertion.isEmpty());
 		assertTrue(fr2.contextHelperCall.isEmpty());
