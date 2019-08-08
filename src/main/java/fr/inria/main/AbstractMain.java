@@ -674,8 +674,8 @@ public abstract class AbstractMain {
 			throw new IllegalArgumentException(
 					"To execute autoconfigure please add the maven command in your path or add it to the property 'mvndir'");
 		}
-
-		builder.command(mvnCommand, "com.github.tdurieux:project-config-maven-plugin:info", "-q");
+		String projectInfoCommand = ConfigurationProperties.getProperty("projectinfocommand");
+		builder.command(mvnCommand, projectInfoCommand, "-q");
 
 		builder.directory(new File(location));
 
