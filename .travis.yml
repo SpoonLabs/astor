@@ -5,6 +5,7 @@ global:
 dist: trusty
 script:
 - mvn versions:set -DnewVersion=`git rev-parse HEAD`
-- mvn package site deploy --settings .travis-settings.xml -DskipTests=true -B;
+- mvn deploy
+- mvn site:site --settings .travis-settings.xml -DskipTests=true -B;
 jdk:
 - oraclejdk8

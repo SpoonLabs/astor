@@ -250,14 +250,14 @@
 					<repositoryName>maven-repository</repositoryName>
 					<repositoryOwner>tdurieux</repositoryOwner>
 				</configuration>
-				<executions>
+<!--				<executions>
 					<execution>
 						<goals>
 							<goal>site</goal>
 						</goals>
 						<phase>deploy</phase>
 					</execution>
-				</executions>
+				</executions>-->
 			</plugin>
 
 			<plugin>
@@ -329,7 +329,7 @@
 
 	<distributionManagement>
 		<repository>
-			<id>internal-repo</id>
+			<id>release</id>
 			<name>Temporary Staging Repository</name>
 			<url>file://${project.build.directory}/mvn-repo/releases</url>
 		</repository>
