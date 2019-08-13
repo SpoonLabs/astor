@@ -1,11 +1,13 @@
 language: java
 install: true
-global:
-  secure: KAXmlzbC3aTis3In/HnYpLHgnWmcct9ou7cHTGZZhv+8Tu7eta7HPHBQBju+qD4WkAA8PqyjEhOBHHd7GoSVtUY0nHqPRhjKjeQAPHDgA+kvWVVPyzSEar/gCbFqyzf6MhTs5Feq0PkljmfqF/0Omlps06B7qDVmYaALSFIvgrg=
+env:
+  global:
+    secure: KAXmlzbC3aTis3In/HnYpLHgnWmcct9ou7cHTGZZhv+8Tu7eta7HPHBQBju+qD4WkAA8PqyjEhOBHHd7GoSVtUY0nHqPRhjKjeQAPHDgA+kvWVVPyzSEar/gCbFqyzf6MhTs5Feq0PkljmfqF/0Omlps06B7qDVmYaALSFIvgrg=
 dist: trusty
 script:
-- mvn versions:set -DnewVersion=`git rev-parse HEAD`
+- git checkout master src*
+- mvn versions:set -DnewVersion=`git rev-parse master`
 - mvn deploy -DskipTests=true 
-- mvn site:site --settings .travis-settings.xml -DskipTests=true -B;
+- mvn site:site --settings .travis-settings.xml -DskipTests=true -B
 jdk:
 - oraclejdk8
