@@ -322,7 +322,7 @@
 			<url>file://${project.build.directory}/mvn-repo/releases</url>
 		</repository>
 		<snapshotRepository>
-			<id>internal-snapshot-repo</id>
+			<id>snapshots</id>
 			<name>Temporary Staging Snapshot Repository</name>
 			<url>file://${project.build.directory}/mvn-repo/snapshots</url>
 		</snapshotRepository>
