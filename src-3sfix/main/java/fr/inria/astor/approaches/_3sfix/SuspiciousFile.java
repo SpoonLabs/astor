@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 
-class SuspiciousFile
+public class SuspiciousFile
 {
 private int suspiciousLineNumber;
 private String suspiciousLine;
