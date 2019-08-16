@@ -250,14 +250,6 @@
 					<repositoryName>maven-repository</repositoryName>
 					<repositoryOwner>tdurieux</repositoryOwner>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>site</goal>
-						</goals>
-						<phase>deploy</phase>
-					</execution>
-				</executions>
 			</plugin>
 
 			<plugin>
