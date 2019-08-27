@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.extensions.rt.RtEngine;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.RuntimeInformation;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.TestClassificationResult;
+import fr.inria.astor.approaches.extensions.rt.RtEngine.TestInspectionResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
@@ -44,7 +44,7 @@ public class RtTest {
 		main1.execute(cs.flat());
 		RtEngine etEn = (RtEngine) main1.getEngine();
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		int sumAssertionNotExec = resultByTest.stream()
 				.map(e -> e.getClassificationAssert().getResultNotExecuted().size())
@@ -63,7 +63,7 @@ public class RtTest {
 
 		assertEquals(1, sumReturnNotExec);
 
-		TestClassificationResult testwithskip = resultByTest.stream().filter(e -> !e.getAllSkipFromTest().isEmpty())
+		TestInspectionResult testwithskip = resultByTest.stream().filter(e -> !e.getAllSkipFromTest().isEmpty())
 				.findFirst().get();
 		assertEquals("testMMRt_return_truePositive", testwithskip.getTestMethodFromClass());
 	}
@@ -142,7 +142,7 @@ public class RtTest {
 
 		RtEngine etEn = detectRt(location, dep);
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 	}
@@ -315,7 +315,7 @@ public class RtTest {
 				+ File.pathSeparator + "/Users/matias/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar";
 		RtEngine etEn = detectRt(location, dep);
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 	}
@@ -327,7 +327,7 @@ public class RtTest {
 
 		RtEngine etEn = detectRt(location, null, "flink-core", "flink-core");
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 
@@ -344,7 +344,7 @@ public class RtTest {
 
 		RtEngine etEn = detectRt(location, null, "flink", "flink");
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 
@@ -362,7 +362,7 @@ public class RtTest {
 
 		RtEngine etEn = detectRt(location, null, "rocketmq-spring", "rocketmq-spring");
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 
@@ -387,7 +387,7 @@ public class RtTest {
 		RuntimeInformation ri = etEn.computeDynamicInformation();
 		assertNotNull(ri);
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 
@@ -396,7 +396,7 @@ public class RtTest {
 
 		assertNotNull(aTestModelCtClass);
 
-		TestClassificationResult tresult = etEn.processTest("testNormalizedKeysEqualsFullLength", classNameOfTest,
+		TestInspectionResult tresult = etEn.processTest("testNormalizedKeysEqualsFullLength", classNameOfTest,
 				aTestModelCtClass, ri);
 
 		assertNotNull(tresult);
@@ -420,7 +420,7 @@ public class RtTest {
 		RtEngine etEn = detectRt(location, null, "flink-connector-filesystem",
 				"flink-connectors/flink-connector-filesystem");
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 
@@ -437,7 +437,7 @@ public class RtTest {
 		RtEngine etEn = detectRt(location, null, "flink-queryable-state-runtime",
 				"flink-queryable-state/flink-queryable-state-runtime");
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 
@@ -452,7 +452,7 @@ public class RtTest {
 //'/Users/matias/develop/rt-research/datasetevaluation/gs-collections', 'gs-collections', 'gs-collections'
 		RtEngine etEn = detectRt(location, null, "gs-collections", "gs-collections");
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 
@@ -469,7 +469,7 @@ public class RtTest {
 //'/Users/matias/develop/rt-research/datasetevaluation/gs-collections', 'gs-collections', 'gs-collections'
 		RtEngine etEn = detectRt(location, null, "metrics-core", "metrics-core");
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 
@@ -492,7 +492,7 @@ public class RtTest {
 
 		RtEngine etEn = detectRt(location, null, "son-simple", "son-simple");
 
-		List<TestClassificationResult> resultByTest = etEn.getResultByTest();
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 
 		System.out.println(resultByTest);
 

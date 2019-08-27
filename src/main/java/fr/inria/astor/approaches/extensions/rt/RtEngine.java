@@ -51,7 +51,7 @@ public class RtEngine extends AstorCoreEngine {
 
 	List<SuspiciousCode> allExecutedStatements = null;
 
-	public List<TestClassificationResult> resultByTest = new ArrayList<>();
+	public List<TestInspectionResult> resultByTest = new ArrayList<>();
 
 	List<String> namespace = Arrays.asList("org.assertj", "org.testng", "org.mockito", "org.spockframework",
 			"org.junit", "cucumber", "org.jbehave");
@@ -195,7 +195,7 @@ public class RtEngine extends AstorCoreEngine {
 
 			for (String aTestMethodFromClass : testMethodsFromClass) {
 
-				TestClassificationResult resultTestCase = processTest(aTestMethodFromClass, aNameOfTestClass,
+				TestInspectionResult resultTestCase = processTest(aTestMethodFromClass, aNameOfTestClass,
 						aTestModelCtClass, runtimeinfo);
 				if (resultTestCase != null) {
 					resultByTest.add(resultTestCase);
@@ -204,7 +204,7 @@ public class RtEngine extends AstorCoreEngine {
 		}
 	}
 
-	public TestClassificationResult processTest(String aTestMethodFromClass, String aNameOfTestClass,
+	public TestInspectionResult processTest(String aTestMethodFromClass, String aNameOfTestClass,
 			CtClass aTestModelCtClass, RuntimeInformation runtimeinfo) {
 		log.info("**** Analying TestMethod: " + aTestMethodFromClass);
 
@@ -264,15 +264,42 @@ public class RtEngine extends AstorCoreEngine {
 		Classification<Helper> rHelperAssertion = classifyHelpersAssertionExecution(aTestModelCtClass,
 				allHelperInvocationFromTest, runtimeinfo.mapCacheSuspicious, true);
 
+		if (rHelperAssertion.getResultExecuted().isEmpty() && rHelperCall.getResultExecuted().isEmpty()
+				&& rAssert.getResultExecuted().isEmpty()) {
+			boolean anyExecuted = checkAnyStatementExecuted(allStmtsFromClass, runtimeinfo.mapLinesCovered,
+					aTestModelCtClass);
+			// If any statement in the test code was executed, we return.
+			if (!anyExecuted) {
+				log.info("NO test element executed for test " + aTestMethodFromClass + ", class " + aNameOfTestClass
+						+ " any executed: " + anyExecuted);
+
+				return null;
+			}
+
+		}
+
 		checkTwoBranches(rAssert, rAssert, rHelperCall, rHelperAssertion);
 		checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
 		checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
 
-		TestClassificationResult resultTestCase = new TestClassificationResult(rAssert, rHelperAssertion, rHelperCall,
+		TestInspectionResult resultTestCase = new TestInspectionResult(rAssert, rHelperAssertion, rHelperCall,
 				aNameOfTestClass, aTestMethodFromClass, testMethodModel, rMissing, allSkipFromTest, expectException,
 				allExpectedExceptionFromTest);
 
 		return resultTestCase;
+
+	}
+
+	private boolean checkAnyStatementExecuted(List<CtStatement> allStmtsFromClass,
+			MapList<String, Integer> mapLinesCovered, CtClass aTestModelCtClass) {
+
+		for (CtStatement statement : allStmtsFromClass) {
+			boolean covered = isCovered(mapLinesCovered, statement, aTestModelCtClass);
+			if (covered) {
+				return true;
+			}
+		}
+		return false;
 
 	}
 
@@ -427,7 +454,7 @@ public class RtEngine extends AstorCoreEngine {
 	 * @author Matias Martinez
 	 *
 	 */
-	public class TestClassificationResult {
+	public class TestInspectionResult {
 		String nameOfTestClass;
 		String testMethodFromClass;
 		Classification<AsAssertion> rAssert = null;
@@ -438,8 +465,9 @@ public class RtEngine extends AstorCoreEngine {
 		CtExecutable testMethodModel;
 		List<String> expectException;
 		List<CtInvocation> allExpectedExceptionFromTest;
+		// boolean
 
-		public TestClassificationResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
+		public TestInspectionResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
 				CtExecutable testMethodModel, Classification<AsAssertion> allMissedFailFromTest,
 				List<CtReturn> allSkipFromTest, List<String> expectException,
@@ -524,7 +552,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.allExpectedExceptionFromTest = allExpectedExceptionFromTest;
 		}
 
-		public RottenFinalClassification generateFinalResult() {
+		public TestRottenAnalysisResult generateFinalResult() {
 			List<CtReturn> allSkipFromTest2 = this.getAllSkipFromTest();
 
 			List<Helper> notComplexHelperCallComplex = new ArrayList();
@@ -554,7 +582,7 @@ public class RtEngine extends AstorCoreEngine {
 					skipss.add(aSkip);
 
 				}
-				return new RottenFinalClassification(skipss);
+				return new TestRottenAnalysisResult(skipss);
 			}
 
 			List<AsAssertion> allMissedFailFromTest2 = this.getAllMissedFailFromTest().getResultNotExecuted();
@@ -568,7 +596,7 @@ public class RtEngine extends AstorCoreEngine {
 					resultNotExecutedHelperAssertion);
 			classifyComplexAssert(notComplexAssertComplex, resultNotExecutedAssertComplex, resultNotExecutedAssertion);
 
-			return new RottenFinalClassification(notComplexHelperCallComplex, notComplexHelperAssertComplex,
+			return new TestRottenAnalysisResult(notComplexHelperCallComplex, notComplexHelperAssertComplex,
 					notComplexAssertComplex, smokeTest, allMissedFailFromTest2, resultNotExecutedHelperCallComplex,
 					resultNotExecutedHelperAssertComplex, resultNotExecutedAssertComplex);
 
@@ -614,9 +642,15 @@ public class RtEngine extends AstorCoreEngine {
 			}
 		}
 
+		@Override
+		public String toString() {
+			return "TestClassificationResult [nameOfTestClass=" + nameOfTestClass + ", testMethodFromClass="
+					+ testMethodFromClass + "]";
+		}
+
 	}
 
-	public class RottenFinalClassification {
+	public class TestRottenAnalysisResult {
 
 		public List<Helper> fullRottenHelperCall = Collections.EMPTY_LIST;
 		public List<Helper> fullRottenHelperAssert = Collections.EMPTY_LIST;
@@ -628,7 +662,7 @@ public class RtEngine extends AstorCoreEngine {
 		public List<Helper> contextHelperAssertion = Collections.EMPTY_LIST;
 		public List<AsAssertion> contextAssertion = Collections.EMPTY_LIST;
 
-		public RottenFinalClassification(
+		public TestRottenAnalysisResult(
 				//
 				List<Helper> fullRottenHelperCall, List<Helper> fullRottenHelperAssert, //
 				List<AsAssertion> fullRottenAssert, //
@@ -648,7 +682,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.contextAssertion = contextAssertion;
 		}
 
-		public RottenFinalClassification(List<Skip> skip) {
+		public TestRottenAnalysisResult(List<Skip> skip) {
 			this.skip = skip;
 		}
 
@@ -1070,7 +1104,7 @@ public class RtEngine extends AstorCoreEngine {
 
 	}
 
-	public List<TestClassificationResult> getResultByTest() {
+	public List<TestInspectionResult> getResultByTest() {
 		return resultByTest;
 	}
 

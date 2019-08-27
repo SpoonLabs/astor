@@ -12,7 +12,8 @@ public class RTFRow04HelperNotExecutedAssertionNotExecutedContainsHelperContains
 	 */
 	@Test
 	public void test0() {
-		if (false) {
+		int a = 1;
+		if (a > 10) {// condition must be false
 			assertTrue(4 > 1);
 			this.goodHelper();
 		}

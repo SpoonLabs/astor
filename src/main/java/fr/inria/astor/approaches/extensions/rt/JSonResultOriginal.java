@@ -16,9 +16,9 @@ import com.google.gson.JsonObject;
 
 import fr.inria.astor.approaches.extensions.rt.RtEngine.AsAssertion;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.Helper;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.RottenFinalClassification;
+import fr.inria.astor.approaches.extensions.rt.RtEngine.TestRottenAnalysisResult;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.Skip;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.TestClassificationResult;
+import fr.inria.astor.approaches.extensions.rt.RtEngine.TestInspectionResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import spoon.reflect.code.CtDo;
@@ -66,7 +66,7 @@ public class JSonResultOriginal {
 
 	ProjectRepairFacade projectFacade = null;
 
-	public JsonObject toJson(ProjectRepairFacade projectFacade, List<TestClassificationResult> resultByTest) {
+	public JsonObject toJson(ProjectRepairFacade projectFacade, List<TestInspectionResult> resultByTest) {
 
 		this.projectFacade = projectFacade;
 
@@ -87,9 +87,9 @@ public class JSonResultOriginal {
 		JsonArray testsAssertionArray = new JsonArray();
 		root.add("tests", testsAssertionArray);
 		Set<String> rTestclasses = new HashSet<>();
-		for (TestClassificationResult tr : resultByTest) {
+		for (TestInspectionResult tr : resultByTest) {
 
-			RottenFinalClassification resultClassification = tr.generateFinalResult();
+			TestRottenAnalysisResult resultClassification = tr.generateFinalResult();
 
 			JsonObject testjson = new JsonObject();
 			JsonArray typesRottens = new JsonArray();
@@ -256,7 +256,7 @@ public class JSonResultOriginal {
 	}
 
 	public int add_ASSERTIONS(ProjectRepairFacade projectFacade, String commitid, String branch, String remote,
-			String projectsubfolder, TestClassificationResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
+			String projectsubfolder, TestInspectionResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
 			List<AsAssertion> notExecutedAssert, String ROTTEN_CONTEXT_DEP_ASSERTIONS) {
 		int nrRtAssertion = 0;
 		if (!notExecutedAssert.isEmpty()) {
@@ -287,7 +287,7 @@ public class JSonResultOriginal {
 	}
 
 	public int add_HELPERS_ASSERTION(String commitid, String branch, String remote, String projectsubfolder,
-			TestClassificationResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
+			TestInspectionResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
 			List<Helper> notExecutedHelper, String ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION) {
 		int nrRttHelperAssert = 0;
 		if (!notExecutedHelper.isEmpty()) {
@@ -315,7 +315,7 @@ public class JSonResultOriginal {
 	}
 
 	public int add_HELPERS_CALL(String commitid, String branch, String remote, String projectsubfolder,
-			TestClassificationResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
+			TestInspectionResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
 			List<Helper> notExecutedHelperInvoc, String ROTTEN_CONTEXT_DEP_HELPERS_CALL) {
 		int nrRtHelperCall = 0;
 		if (!notExecutedHelperInvoc.isEmpty()) {
