@@ -72,7 +72,7 @@
 		<dependency>
 			<groupId>com.gzoltar</groupId>
 			<artifactId>gzoltar</artifactId>
-			<version>0.1.1</version>
+			<version>1.7.2</version>
 		</dependency>
 
 
