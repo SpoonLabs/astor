@@ -41,6 +41,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.Pro
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.RandomTransformationStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.astor.test.repair.approaches.TestHelper;
 import fr.inria.astor.test.repair.evaluation.regression.ClosureTest;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.AstorOutputStatus;
@@ -445,14 +446,14 @@ public class CardumenApproachTest {
 		ProgramVariant pvar = cardumen.getVariants().get(0);
 
 		ModificationPoint mp = pvar.getModificationPoints().stream()
-				.filter(e -> e.getCodeElement().toString().equals("i < (maximalIterationCount)")).findFirst().get();
+				.filter(e -> e.getCodeElement().toString().equals("i < maximalIterationCount")).findFirst().get();
 		CtElement codeElement0 = mp.getCodeElement();
 		List<Ingredient> ingredients = ingredientSpace.getIngredients(codeElement0);
 
-		String template = "((_double_0 < _double_1) || (_double_0 > _double_2))";
+		String template = "_double_0 < _double_1 || _double_0 > _double_2";
 
-		Ingredient ingredientToModify = ingredients.stream().filter(e -> e.toString().equals(template)).findFirst()
-				.get();
+		Ingredient ingredientToModify = ingredients.stream()
+				.filter(e -> TestHelper.equalsNoParentesis(e.toString(), template)).findFirst().get();
 
 		List<Ingredient> ingredientsTransformed = cardumen.getIngredientTransformationStrategy().transform(mp,
 				ingredientToModify);
@@ -471,7 +472,7 @@ public class CardumenApproachTest {
 			assertFalse(ing.contains(transformation));
 			ing.add(transformation);
 
-			assertFalse("((max < min) || (min > max))".equals(transformation));
+			assertFalse(TestHelper.equalsNoParentesis("((max < min) || (min > max))", (transformation)));
 		}
 
 	}
