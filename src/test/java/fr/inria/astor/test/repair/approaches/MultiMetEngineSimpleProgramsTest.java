@@ -251,7 +251,7 @@ public class MultiMetEngineSimpleProgramsTest {
 			}
 		});
 
-		CtElement invocation = mp24.getCodeElement().getElements(e -> e.toString().equals("(myinst.toNegative(i1))"))
+		CtElement invocation = mp24.getCodeElement().getElements(e -> e.toString().equals("myinst.toNegative(i1)"))
 				.get(0);
 		assertNotNull(invocation);
 		assertTrue(invocation instanceof CtInvocation);
@@ -276,13 +276,13 @@ public class MultiMetEngineSimpleProgramsTest {
 		assertEquals(2, solutions0.getAllOperations().size());
 
 		assertTrue(solutions0.getAllOperations().stream()
-				.filter(e -> e.getModified().toString().startsWith("(myinst.toPositive(i2))")).findFirst().isPresent());
+				.filter(e -> e.getModified().toString().startsWith("myinst.toPositive(i2)")).findFirst().isPresent());
 
 		assertTrue(solutions0.getPatchDiff().getOriginalStatementAlignmentDiff()
-				.contains("-			return (myinst.toPositive(i1)) * (myinst.toNegative(i1))"));
+				.contains("-			return myinst.toPositive(i1) * myinst.toNegative(i1)"));
 
 		assertTrue(solutions0.getPatchDiff().getOriginalStatementAlignmentDiff()
-				.contains("+			return (myinst.toPositive(i1)) * (myinst.toPositive(i2))"));
+				.contains("+			return myinst.toPositive(i1) * myinst.toPositive(i2)"));
 
 	}
 
@@ -979,7 +979,7 @@ public class MultiMetEngineSimpleProgramsTest {
 		});
 
 		CtElement invocationToReplace = mp36.getCodeElement()
-				.getElements(e -> (e.toString().equals("(myinst.toNegative(i2, 1))") && e instanceof CtInvocation))
+				.getElements(e -> (e.toString().equals("myinst.toNegative(i2, 1)") && e instanceof CtInvocation))
 				.get(0);
 		assertNotNull(invocationToReplace);
 		assertTrue(invocationToReplace instanceof CtInvocation);
@@ -995,7 +995,7 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		assertTrue(isSolution);
 		// check redo
-		assertEquals("return (myinst.toNegative(i2, 1)) * (myinst.toPositive(i2))", mp36.getCodeElement().toString());
+		assertEquals("return myinst.toNegative(i2, 1) * myinst.toPositive(i2)", mp36.getCodeElement().toString());
 		approach.atEnd();
 
 		assertTrue(main1.getEngine().getSolutions().size() > 0);
@@ -1005,15 +1005,15 @@ public class MultiMetEngineSimpleProgramsTest {
 		assertTrue(solutionVarByVar1.size() > 0);
 
 		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream().filter(soli -> soli.getAllOperations().stream()
-				.filter(e -> e.getModified().toString().equals("(myinst.toPositive(i1, 1))")
+				.filter(e -> e.getModified().toString().equals("myinst.toPositive(i1, 1)")
 				// && e.getOriginal().toString().equals("(myinst.toPositive(\"1\"))" )
 				).findFirst().isPresent()).findFirst();
 		assertTrue(solution0.isPresent());
 
 		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
-				.contains("+			return (myinst.toPositive(i1, 1)) * (myinst.toPositive(i2))"));
+				.contains("+			return myinst.toPositive(i1, 1) * myinst.toPositive(i2)"));
 		// check redo
-		assertEquals("return (myinst.toNegative(i2, 1)) * (myinst.toPositive(i2))", mp36.getCodeElement().toString());
+		assertEquals("return myinst.toNegative(i2, 1) * myinst.toPositive(i2)", mp36.getCodeElement().toString());
 
 	}
 
