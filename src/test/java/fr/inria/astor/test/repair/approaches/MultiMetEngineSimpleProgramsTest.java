@@ -890,14 +890,14 @@ public class MultiMetEngineSimpleProgramsTest {
 				.removeIf(e -> !((e.getCodeElement().getPosition().getLine() == 36
 						&& e.getCodeElement().getPosition().getFile().getName().equals("MyBuggy.java"))));
 
-		assertEquals("return (myinst.toPositive(i1)) * (myinst.toPositive(\"1\"))",
-				approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString());
+		assertTrue(TestHelper.equalsNoParentesis("return (myinst.toPositive(i1)) * (myinst.toPositive(\"1\"))",
+				approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()));
 
 		approach.startEvolution();
 
 		// check if it was well revert
-		assertEquals("return (myinst.toPositive(i1)) * (myinst.toPositive(\"1\"))",
-				approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString());
+		assertTrue(TestHelper.equalsNoParentesis("return (myinst.toPositive(i1)) * (myinst.toPositive(\"1\"))",
+				approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()));
 
 		List<ProgramVariant> solutionVarByVar1 = main1.getEngine().getSolutions().stream()
 				.filter(e -> e.getAllOperations().stream()
@@ -907,19 +907,17 @@ public class MultiMetEngineSimpleProgramsTest {
 
 		assertTrue(solutionVarByVar1.size() > 0);
 
-		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream()
-				.filter(soli -> soli.getAllOperations().stream()
-						.filter(e -> e.getModified().toString().equals("(myinst.toPositive(i2))")
-								&& e.getOriginal().toString().equals("(myinst.toPositive(\"1\"))"))
-						.findFirst().isPresent())
-				.findFirst();
+		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream().filter(soli -> soli.getAllOperations().stream()
+				.filter(e -> TestHelper.equalsNoParentesis(e.getModified().toString(), "(myinst.toPositive(i2))")
+						&& TestHelper.equalsNoParentesis(e.getOriginal().toString(), "(myinst.toPositive(\"1\"))"))
+				.findFirst().isPresent()).findFirst();
 		assertTrue(solution0.isPresent());
 
 		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
-				.contains("+			return (myinst.toPositive(i1)) * (myinst.toPositive(i2));"));
+				.contains("+			return myinst.toPositive(i1) * myinst.toPositive(i2);"));
 		// check if it was well revert
-		assertEquals("return (myinst.toPositive(i1)) * (myinst.toPositive(\"1\"))",
-				approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString());
+		assertTrue(TestHelper.equalsNoParentesis("return (myinst.toPositive(i1)) * (myinst.toPositive(\"1\"))",
+				approach.getVariants().get(0).getModificationPoints().get(0).getCodeElement().toString()));
 
 	}
 
@@ -1075,21 +1073,21 @@ public class MultiMetEngineSimpleProgramsTest {
 		assertTrue(solutionVarByVar1.size() > 0);
 
 		assertTrue(solutionVarByVar1.get(0).getAllOperations().get(0).getModificationPoint().getCodeElement().toString()
-				.contains("return (toPositive(i1)) * (toNegative(i2))"));
+				.contains("return toPositive(i1) * toNegative(i2)"));
 
 		assertTrue("No solution with the target operator", solutionVarByVar1.size() > 0);
 
 		Optional<ProgramVariant> solution0 = solutionVarByVar1.stream()
 				.filter(soli -> soli.getAllOperations().stream()
-						.filter(e -> e.getModified().toString().equals("(toPositive(i2))")
-								&& e.getOriginal().toString().equals("(toNegative(i2))"))
+						.filter(e -> TestHelper.equalsNoParentesis(e.getModified().toString(), "(toPositive(i2))")
+								&& TestHelper.equalsNoParentesis(e.getOriginal().toString(), "(toNegative(i2))"))
 						.findFirst().isPresent())
 				.findFirst();
 		assertTrue(solution0.isPresent());
 		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
-				.contains("-			return (toPositive(i1)) * (toNegative(i2));"));
+				.contains("-			return toPositive(i1) * toNegative(i2);"));
 		assertTrue(solution0.get().getPatchDiff().getOriginalStatementAlignmentDiff()
-				.contains("+			return (toPositive(i1)) * (toPositive(i2));"));
+				.contains("+			return toPositive(i1) * toPositive(i2);"));
 
 	}
 
