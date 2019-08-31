@@ -320,8 +320,8 @@ public class VariableResolverTest {
 		// //if
 		// ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0,
 		// i),
-		assertTrue(iif.toString()
-				.startsWith("if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i)"));
+		assertTrue(TestHelper.getWithoutParentheses(iif.toString()).startsWith(TestHelper.getWithoutParentheses(
+				"if ((org.apache.commons.math.util.MathUtils.compareTo(tableau.getEntry(0, i)")));
 		assertTrue(iif instanceof CtIf);
 		boolean matchIf = VariableResolver.fitInContext(mp.getContextOfModificationPoint(), iif, true);
 
