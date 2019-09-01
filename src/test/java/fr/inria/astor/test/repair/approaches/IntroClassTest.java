@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
 
@@ -18,14 +19,9 @@ import fr.inria.main.evolution.AstorMain;
  * @author matias
  *
  */
-public class IntroClassTest {
+public class IntroClassTest extends BaseEvolutionaryTest {
 
 	public static Logger log = Logger.getLogger(IntroClassTest.class.getName());
-
-	@Test
-	public void fakeTest() {
-		assertTrue(true);
-	}
 
 	@Test
 	public void test_3b2376_003() throws Exception {
