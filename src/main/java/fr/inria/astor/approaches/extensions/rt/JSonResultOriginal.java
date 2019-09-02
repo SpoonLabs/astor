@@ -16,9 +16,9 @@ import com.google.gson.JsonObject;
 
 import fr.inria.astor.approaches.extensions.rt.RtEngine.AsAssertion;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.Helper;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.TestRottenAnalysisResult;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.Skip;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.TestInspectionResult;
+import fr.inria.astor.approaches.extensions.rt.RtEngine.TestRottenAnalysisResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import spoon.reflect.code.CtDo;
@@ -39,6 +39,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
  *
  */
 public class JSonResultOriginal {
+	public static final String TYPE_ROTTEN = "type";
+
 	private static final String FULL_ROTTEN_TEST = "Full_Rotten_Test";
 
 	private static final String SMOKE_TEST = "Smoke_Test";
@@ -84,8 +86,8 @@ public class JSonResultOriginal {
 		int nrRtest = 0, nrRtAssertion = 0, nrRtHelperCall = 0, nrRttHelperAssert = 0, nrSkip = 0, nrAllMissed = 0,
 				nrSmokeTest = 0, nrRtFull = 0, nrTestWithControlStruct = 0, nrTestWithHelper = 0;
 
-		JsonArray testsAssertionArray = new JsonArray();
-		root.add("tests", testsAssertionArray);
+		JsonArray testsArray = new JsonArray();
+		root.add("tests", testsArray);
 		Set<String> rTestclasses = new HashSet<>();
 		for (TestInspectionResult tr : resultByTest) {
 
@@ -94,7 +96,10 @@ public class JSonResultOriginal {
 			JsonObject testjson = new JsonObject();
 			JsonArray typesRottens = new JsonArray();
 			Set<String> uniquesTypesRottern = new HashSet();
-			testjson.add("types", typesRottens);
+			testjson.add("rotten_types_summary", typesRottens);
+
+			JsonArray summaryRottens = new JsonArray();
+			testjson.add("rotten_info", summaryRottens);
 			testjson.addProperty("testclass", tr.getNameOfTestClass());
 			testjson.addProperty("testname", tr.getTestMethodFromClass());
 			testjson.addProperty("expectsexception", (tr.getExpectException().size() > 0) ? "true" : "false");
@@ -124,47 +129,47 @@ public class JSonResultOriginal {
 
 			// Asserts
 
-			int r = add_ASSERTIONS(projectFacade, commitid, branch, remote, projectsubfolder, tr, testjson,
+			int r = add_ASSERTIONS(projectFacade, commitid, branch, remote, projectsubfolder, tr, summaryRottens,
 					uniquesTypesRottern, resultClassification.contextAssertion, ROTTEN_CONTEXT_DEP_ASSERTIONS);
 			onerotten = onerotten || (r > 0);
 			nrRtAssertion += r;
 			//
 
-			r = add_HELPERS_CALL(commitid, branch, remote, projectsubfolder, tr, testjson, uniquesTypesRottern,
+			r = add_HELPERS_CALL(commitid, branch, remote, projectsubfolder, tr, summaryRottens, uniquesTypesRottern,
 					resultClassification.contextHelperCall, ROTTEN_CONTEXT_DEP_HELPERS_CALL);
 			onerotten = onerotten || (r > 0);
 			nrRtHelperCall += r;
 
 			//
 
-			r = add_HELPERS_ASSERTION(commitid, branch, remote, projectsubfolder, tr, testjson, uniquesTypesRottern,
-					resultClassification.contextHelperAssertion, ROTTEN_CONTEXT_DEP_ASSERTIONS);
+			r = add_HELPERS_ASSERTION(commitid, branch, remote, projectsubfolder, tr, summaryRottens,
+					uniquesTypesRottern, resultClassification.contextHelperAssertion, ROTTEN_CONTEXT_DEP_ASSERTIONS);
 			onerotten = onerotten || (r > 0);
 			nrRttHelperAssert += r;
 			//
 			/// ------Now the full-----
 
-			r = add_ASSERTIONS(projectFacade, commitid, branch, remote, projectsubfolder, tr, testjson,
+			r = add_ASSERTIONS(projectFacade, commitid, branch, remote, projectsubfolder, tr, summaryRottens,
 					uniquesTypesRottern, resultClassification.fullRottenAssert, FULL_ROTTEN_TEST_ASSERTIONS);
 			onerotten = onerotten || (r > 0);
 			nrRtFull += r;
 			//
 
-			r = add_HELPERS_CALL(commitid, branch, remote, projectsubfolder, tr, testjson, uniquesTypesRottern,
+			r = add_HELPERS_CALL(commitid, branch, remote, projectsubfolder, tr, summaryRottens, uniquesTypesRottern,
 					resultClassification.fullRottenHelperCall, FULL_ROTTEN_TEST_HELPERS_CALL);
 			onerotten = onerotten || (r > 0);
 			nrRtFull += r;
 
 			//
-			r = add_HELPERS_ASSERTION(commitid, branch, remote, projectsubfolder, tr, testjson, uniquesTypesRottern,
-					resultClassification.fullRottenHelperAssert, FULL_ROTTEN_TEST_HELPERS_ASSERTION);
+			r = add_HELPERS_ASSERTION(commitid, branch, remote, projectsubfolder, tr, summaryRottens,
+					uniquesTypesRottern, resultClassification.fullRottenHelperAssert,
+					FULL_ROTTEN_TEST_HELPERS_ASSERTION);
 			onerotten = onerotten || (r > 0);
 			nrRtFull += r;
 
 			//
 			if (!resultClassification.skip.isEmpty()) {
-				JsonArray skiprarray = new JsonArray();
-				testjson.add(ROTTEN_SKIP, skiprarray);
+
 				for (Skip iSkip : resultClassification.skip) {
 					CtReturn skip = iSkip.executedReturn;
 					JsonObject singleSkip = new JsonObject();
@@ -172,7 +177,8 @@ public class JSonResultOriginal {
 					singleSkip.addProperty("line", skip.getPosition().getLine());
 					singleSkip.add("parent_types", getParentTypes(skip));
 					onerotten = true;
-					skiprarray.add(singleSkip);
+					summaryRottens.add(singleSkip);
+					singleSkip.addProperty(TYPE_ROTTEN, ROTTEN_SKIP);
 					writeJsonLink(commitid, branch, remote, projectsubfolder, skip, singleSkip);
 					nrSkip++;
 					uniquesTypesRottern.add(ROTTEN_SKIP);
@@ -181,8 +187,6 @@ public class JSonResultOriginal {
 
 			//
 			if (!resultClassification.missed.isEmpty()) {
-				JsonArray missrarray = new JsonArray();
-				testjson.add(ROTTEN_MISSED, missrarray);
 				for (AsAssertion missedInv : resultClassification.missed) {
 					JsonObject missedJson = new JsonObject();
 					missedJson.addProperty("code_assertion", missedInv.toString().toString());
@@ -191,7 +195,8 @@ public class JSonResultOriginal {
 							getRelativePath(missedInv.getCtAssertion(), projectFacade));
 					writeJsonLink(commitid, branch, remote, projectsubfolder, missedInv.getCtAssertion(), missedJson);
 					onerotten = true;
-					missrarray.add(missedJson);
+					summaryRottens.add(missedJson);
+					missedJson.addProperty(TYPE_ROTTEN, ROTTEN_MISSED);
 					nrAllMissed++;
 					uniquesTypesRottern.add(ROTTEN_MISSED);
 				}
@@ -208,22 +213,27 @@ public class JSonResultOriginal {
 				// continue;
 				// }
 
-				testjson.addProperty(SMOKE_TEST, "true");
-				testsAssertionArray.add(testjson);
+				testsArray.add(testjson);
 				rTestclasses.add(tr.getNameOfTestClass());
 				nrSmokeTest += 1;
+				JsonObject smokeTest = new JsonObject();
+				smokeTest.addProperty(TYPE_ROTTEN, SMOKE_TEST);
 
 				JsonArray missrarray = new JsonArray();
-				testjson.add("other_method_invocation", missrarray);
+				smokeTest.add("other_method_invocation", missrarray);
 				for (CtInvocation otherinv : allAssertionsFromTest) {
 					missrarray.add(createMethodSignature(otherinv));
 				}
+
+				summaryRottens.add(smokeTest);
+
 				uniquesTypesRottern.add(SMOKE_TEST);
+
 			}
 
 			/// Dont include smoke
 			if (onerotten) {
-				testsAssertionArray.add(testjson);
+				testsArray.add(testjson);
 				nrRtest++;
 				rTestclasses.add(tr.getNameOfTestClass());
 			}
@@ -256,15 +266,13 @@ public class JSonResultOriginal {
 	}
 
 	public int add_ASSERTIONS(ProjectRepairFacade projectFacade, String commitid, String branch, String remote,
-			String projectsubfolder, TestInspectionResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
+			String projectsubfolder, TestInspectionResult tr, JsonArray summaryRottens, Set<String> uniquesTypesRottern,
 			List<AsAssertion> notExecutedAssert, String ROTTEN_CONTEXT_DEP_ASSERTIONS) {
 		int nrRtAssertion = 0;
 		if (!notExecutedAssert.isEmpty()) {
 
 			log.debug("-- Test  " + tr.getNameOfTestClass() + ": " + tr.getTestMethodFromClass());
 
-			JsonArray assertionarray = new JsonArray();
-			testjson.add(ROTTEN_CONTEXT_DEP_ASSERTIONS, assertionarray);
 			for (AsAssertion assertion : notExecutedAssert) {
 				CtInvocation anInvocation = assertion.getCtAssertion();
 				log.debug("-R-Assertion:-> " + anInvocation);
@@ -275,8 +283,8 @@ public class JSonResultOriginal {
 				jsonsingleAssertion.addProperty("inbranch", assertion.isFp());
 
 				writeJsonLink(commitid, branch, remote, projectsubfolder, anInvocation, jsonsingleAssertion);
-				assertionarray.add(jsonsingleAssertion);
-				// onerotten = true;
+				summaryRottens.add(jsonsingleAssertion);
+				jsonsingleAssertion.addProperty(TYPE_ROTTEN, ROTTEN_CONTEXT_DEP_ASSERTIONS);
 				jsonsingleAssertion.add("parent_types", getParentTypes(anInvocation));
 				nrRtAssertion++;
 
@@ -287,7 +295,7 @@ public class JSonResultOriginal {
 	}
 
 	public int add_HELPERS_ASSERTION(String commitid, String branch, String remote, String projectsubfolder,
-			TestInspectionResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
+			TestInspectionResult tr, JsonArray summaryRottens, Set<String> uniquesTypesRottern,
 			List<Helper> notExecutedHelper, String ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION) {
 		int nrRttHelperAssert = 0;
 		if (!notExecutedHelper.isEmpty()) {
@@ -298,13 +306,10 @@ public class JSonResultOriginal {
 					false);
 
 			if (!result.isEmpty()) {
-				JsonArray helperarray = new JsonArray();
-
-				testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION, helperarray);
-
-				// onerotten = true;
 				for (JsonObject jsonObject : result) {
-					helperarray.add(jsonObject);
+					summaryRottens.add(jsonObject);
+					jsonObject.addProperty(TYPE_ROTTEN, ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION);
+
 				}
 				uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION);
 			}
@@ -315,7 +320,7 @@ public class JSonResultOriginal {
 	}
 
 	public int add_HELPERS_CALL(String commitid, String branch, String remote, String projectsubfolder,
-			TestInspectionResult tr, JsonObject testjson, Set<String> uniquesTypesRottern,
+			TestInspectionResult tr, JsonArray summaryRottens, Set<String> uniquesTypesRottern,
 			List<Helper> notExecutedHelperInvoc, String ROTTEN_CONTEXT_DEP_HELPERS_CALL) {
 		int nrRtHelperCall = 0;
 		if (!notExecutedHelperInvoc.isEmpty()) {
@@ -325,13 +330,10 @@ public class JSonResultOriginal {
 					remote, projectsubfolder, true);
 
 			if (!result.isEmpty()) {
-				JsonArray helperarray = new JsonArray();
 
-				testjson.add(ROTTEN_CONTEXT_DEP_HELPERS_CALL, helperarray);
-
-				// onerotten = true;
 				for (JsonObject jsonObject : result) {
-					helperarray.add(jsonObject);
+					summaryRottens.add(jsonObject);
+					jsonObject.addProperty(TYPE_ROTTEN, ROTTEN_CONTEXT_DEP_HELPERS_CALL);
 				}
 				uniquesTypesRottern.add(ROTTEN_CONTEXT_DEP_HELPERS_CALL);
 			}
