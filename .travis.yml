@@ -47,6 +47,7 @@ sudo: required
 before_script:
  - "echo Java_OPTS $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx4096m"
+# openjdk8 is more open-source
 jdk:
 - openjdk8
 cache:
