@@ -11,7 +11,7 @@ env:
   - TEST=fr.inria.astor.test.repair.approaches.jKaliTest
   - TEST=fr.inria.astor.test.repair.approaches.MutRepairTest
   - TEST=fr.inria.astor.test.repair.approaches.JGenProgTest
-  - TEST=fr.inria.astor.test.repair.approaches.IntroClassTest
+#  - TEST=fr.inria.astor.test.repair.approaches.IntroClassTest
   - TEST=fr.inria.astor.test.repair.approaches.EvoSuiteGenerationTest
   - TEST=fr.inria.astor.test.repair.approaches.TibraApproachTest
   - TEST=fr.inria.astor.test.repair.approaches.cardumen.CardumenApproachTest
