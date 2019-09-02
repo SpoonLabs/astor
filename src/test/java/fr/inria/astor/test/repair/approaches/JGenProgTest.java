@@ -266,6 +266,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	@SuppressWarnings("rawtypes")
 	@Test
+	@Ignore
 	public void testMath50Remove() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.8.2.jar").getAbsolutePath();
