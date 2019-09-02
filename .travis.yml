@@ -52,7 +52,7 @@ jdk:
 cache:
   directories:
   - "$HOME/.m2"
-  - examples/
+ # - examples/
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - '[[ $TRAVIS_BRANCH == "master" ]] && [[ $TEST == "fr.inria.astor.test.repair.approaches.IntroClassTest"
