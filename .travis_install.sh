@@ -6,7 +6,7 @@ function compile {
     if [[ ! -d "$1target/classes" ]]; then
     	echo compiling $1
         cd $1
-        mvn test -DskipTests
+        mvn -ff -q test -DskipTests
         cd ../../
     fi
 }
@@ -14,8 +14,8 @@ function compile {
 function compilef {
 		echo compilingf $1
         cd $1
-        mvn clean
-        mvn install -DskipTests
+        mvn -ff -q clean
+        mvn -ff -q install -DskipTests
         cd ../../
 }
 
@@ -31,9 +31,9 @@ function compilemaven {
 	     if [[ -f "$FILE/pom.xml" ]]; then
     	    cd $FILE
     	    echo in dir `pwd`
-    	    mvn clean
+    	    mvn -ff -q clean
     	    echo after claning $FILE
-        	mvn test -DskipTests
+        	mvn -ff -q test -DskipTests
         	cd ../../../
     	fi 
 	done
