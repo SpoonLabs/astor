@@ -40,15 +40,15 @@ env:
     secure: KAXmlzbC3aTis3In/HnYpLHgnWmcct9ou7cHTGZZhv+8Tu7eta7HPHBQBju+qD4WkAA8PqyjEhOBHHd7GoSVtUY0nHqPRhjKjeQAPHDgA+kvWVVPyzSEar/gCbFqyzf6MhTs5Feq0PkljmfqF/0Omlps06B7qDVmYaALSFIvgrg=
 dist: trusty
 script:
-- mvn clean
-- mvn test -DskipTests -DfailIfNoTests=false
-- mvn surefire:test -DfailIfNoTests=false -Dtest=$TEST
+- mvn -ff -q clean
+- mvn -ff -q test -DskipTests -DfailIfNoTests=false
+- mvn -ff -q surefire:test -DfailIfNoTests=false -Dtest=$TEST
 sudo: required
 before_script:
  - "echo Java_OPTS $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx4096m"
 jdk:
-- oraclejdk8
+- openjdk8
 cache:
   directories:
   - "$HOME/.m2"
@@ -56,7 +56,7 @@ cache:
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - '[[ $TRAVIS_BRANCH == "master" ]] && [[ $TEST == "fr.inria.astor.test.repair.approaches.IntroClassTest"
-  ]] && { mvn versions:set -DnewVersion=`git rev-parse HEAD`; mvn deploy --settings .travis-settings.xml -DskipTests=true -B; };'
+  ]] && { mvn -ff -q versions:set -DnewVersion=`git rev-parse HEAD`; mvn -ff -q deploy --settings .travis-settings.xml -DskipTests=true -B; };'
 notifications:
   email:
   - martin.monperrus@gnieh.org
