@@ -48,7 +48,7 @@ before_script:
  - "echo Java_OPTS $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx4096m"
 jdk:
-- oraclejdk8
+- openjdk8
 cache:
   directories:
   - "$HOME/.m2"
