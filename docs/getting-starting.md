@@ -52,6 +52,11 @@ Then the main execution command is as follows (note that the "location" argument
 
 The only part of the above command that you should need to alter is the absolute path that follows the -location argument.
 
+Notes:
+
+* the default ingredient scope is `package`, to change it do `ConfigurationProperties.properties.setProperty("scope","global")`
+* Always put code in a package, not in the default unnamed package. 
+
 ### Output
 
 Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
