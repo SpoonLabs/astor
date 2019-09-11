@@ -40,6 +40,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.LineFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.declaration.CtClassImpl;
 
 /**
@@ -242,10 +243,11 @@ public class RtEngine extends AstorCoreEngine {
 		List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass, new ArrayList());
 		// filter from assertions the missed fail
 		List<CtInvocation> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
+		List<CtInvocation> allAssertionTrueromTest = filterAssertionTrue(allAssertionsFromTest);
 
 		// The missed fails are removed from the assertion list (they are a
 		// sub-category).
-		allAssertionsFromTest.removeAll(allMissedFailFromTest);
+		// allAssertionsFromTest.removeAll(allMissedFailFromTest);
 
 		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, allClasses);
 
@@ -288,6 +290,11 @@ public class RtEngine extends AstorCoreEngine {
 
 		return resultTestCase;
 
+	}
+
+	private List<CtInvocation> filterAssertionTrue(List<CtInvocation> allAssertionsFromTest) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private boolean checkAnyStatementExecuted(List<CtStatement> allStmtsFromClass,
@@ -384,17 +391,21 @@ public class RtEngine extends AstorCoreEngine {
 		List<CtInvocation> missedFails = new ArrayList<>();
 
 		for (CtInvocation anInvocation : allAssertionsFromTest) {
-			CtElement el = null;
+			CtElement argument = null;
 			// case having a single argument
 			if (anInvocation.getArguments().size() == 1) {
-				el = (CtElement) anInvocation.getArguments().get(0);
+				argument = (CtElement) anInvocation.getArguments().get(0);
 				// case having a message as first arg
 			} else if (anInvocation.getArguments().size() == 2) {
-				el = (CtElement) anInvocation.getArguments().get(1);
+				argument = (CtElement) anInvocation.getArguments().get(1);
 			}
 
-			if (el != null) {
-				String contentArgumentLC = el.toString().toLowerCase();
+			// if(isInvWithName(anInvocation, "assertTrue")) {
+
+			// }
+
+			if (argument != null) {
+				String contentArgumentLC = argument.toString().toLowerCase();
 				if (contentArgumentLC.equals("\"true\"") || contentArgumentLC.equals("\"false\"")
 						|| contentArgumentLC.equals("true") || contentArgumentLC.equals("false")
 						|| contentArgumentLC.equals("boolean.true") || contentArgumentLC.equals("boolean.false"))
@@ -465,7 +476,6 @@ public class RtEngine extends AstorCoreEngine {
 		CtExecutable testMethodModel;
 		List<String> expectException;
 		List<CtInvocation> allExpectedExceptionFromTest;
-		// boolean
 
 		public TestInspectionResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
@@ -514,8 +524,7 @@ public class RtEngine extends AstorCoreEngine {
 		}
 
 		public boolean isRotten() {
-			return // isSmokeTest() ||
-			!this.getClassificationAssert().getResultNotExecuted().isEmpty()
+			return !this.getClassificationAssert().getResultNotExecuted().isEmpty()
 					|| !this.getClassificationHelperAssertion().getResultNotExecuted().isEmpty()
 					|| !this.getAllMissedFailFromTest().getResultNotExecuted().isEmpty()
 					|| !this.getAllSkipFromTest().isEmpty();
@@ -585,7 +594,8 @@ public class RtEngine extends AstorCoreEngine {
 				return new TestRottenAnalysisResult(skipss);
 			}
 
-			List<AsAssertion> allMissedFailFromTest2 = this.getAllMissedFailFromTest().getResultNotExecuted();
+			// Executed
+			List<AsAssertion> allMissedFailFromTest2 = this.getAllMissedFailFromTest().getResultExecuted();
 
 			boolean smokeTest = isSmokeTest();
 
@@ -596,9 +606,12 @@ public class RtEngine extends AstorCoreEngine {
 					resultNotExecutedHelperAssertion);
 			classifyComplexAssert(notComplexAssertComplex, resultNotExecutedAssertComplex, resultNotExecutedAssertion);
 
+			List<CtInvocation> allAssertionsFromTest = getTestMethodModel().getBody()
+					.getElements(new TypeFilter<>(CtInvocation.class));
+
 			return new TestRottenAnalysisResult(notComplexHelperCallComplex, notComplexHelperAssertComplex,
 					notComplexAssertComplex, smokeTest, allMissedFailFromTest2, resultNotExecutedHelperCallComplex,
-					resultNotExecutedHelperAssertComplex, resultNotExecutedAssertComplex);
+					resultNotExecutedHelperAssertComplex, resultNotExecutedAssertComplex, allAssertionsFromTest);
 
 		}
 
@@ -662,14 +675,16 @@ public class RtEngine extends AstorCoreEngine {
 		public List<Helper> contextHelperAssertion = Collections.EMPTY_LIST;
 		public List<AsAssertion> contextAssertion = Collections.EMPTY_LIST;
 
+		List<CtInvocation> otherMethodInvocations = Collections.EMPTY_LIST;
+
 		public TestRottenAnalysisResult(
 				//
 				List<Helper> fullRottenHelperCall, List<Helper> fullRottenHelperAssert, //
 				List<AsAssertion> fullRottenAssert, //
 				boolean smokeTest, List<AsAssertion> missed, //
 				// List<Skip> skip,
-				List<Helper> contextHelperCall, List<Helper> contextHelperAssertion,
-				List<AsAssertion> contextAssertion) {
+				List<Helper> contextHelperCall, List<Helper> contextHelperAssertion, List<AsAssertion> contextAssertion,
+				List<CtInvocation> allAssertionsFromTest) {
 			super();
 			this.fullRottenHelperCall = fullRottenHelperCall;
 			this.fullRottenHelperAssert = fullRottenHelperAssert;
@@ -680,6 +695,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.contextHelperCall = contextHelperCall;
 			this.contextHelperAssertion = contextHelperAssertion;
 			this.contextAssertion = contextAssertion;
+			this.otherMethodInvocations = allAssertionsFromTest;
 		}
 
 		public TestRottenAnalysisResult(List<Skip> skip) {
@@ -692,6 +708,14 @@ public class RtEngine extends AstorCoreEngine {
 			allRT.addAll(this.fullRottenHelperCall);
 			allRT.addAll(this.fullRottenHelperAssert);
 			return allRT;
+		}
+
+		public List<CtInvocation> getOtherMethodInvocations() {
+			return otherMethodInvocations;
+		}
+
+		public void setOtherMethodInvocations(List<CtInvocation> otherMethodInvocations) {
+			this.otherMethodInvocations = otherMethodInvocations;
 		}
 	}
 
