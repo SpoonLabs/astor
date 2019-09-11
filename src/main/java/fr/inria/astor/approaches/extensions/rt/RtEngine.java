@@ -243,7 +243,7 @@ public class RtEngine extends AstorCoreEngine {
 		List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass, new ArrayList());
 		// filter from assertions the missed fail
 		List<CtInvocation> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
-		List<CtInvocation> allAssertionTrueromTest = filterAssertionTrue(allAssertionsFromTest);
+		List<CtInvocation> allRedundantAssertionFromTest = filterRedundantAssertions(allAssertionsFromTest);
 
 		// The missed fails are removed from the assertion list (they are a
 		// sub-category).
@@ -251,11 +251,21 @@ public class RtEngine extends AstorCoreEngine {
 
 		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, allClasses);
 
-		Classification<AsAssertion> rMissing = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
+		// Fail missing analysis
+		Classification<AsAssertion> rFailMissing = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
 				aTestModelCtClass, allMissedFailFromTest);
 
-		chechInsideTry(rMissing.resultExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
-		chechInsideTry(rMissing.resultNotExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
+		chechInsideTry(rFailMissing.resultExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
+		chechInsideTry(rFailMissing.resultNotExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
+
+		// Redundant
+		Classification<AsAssertion> rRedundantAssertion = classifyAssertions(testMethodModel,
+				runtimeinfo.mapLinesCovered, aTestModelCtClass, allRedundantAssertionFromTest);
+
+		chechInsideTry(rRedundantAssertion.resultExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
+		chechInsideTry(rRedundantAssertion.resultNotExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
+
+		///
 
 		Classification<AsAssertion> rAssert = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
 				aTestModelCtClass, allAssertionsFromTest);
@@ -285,16 +295,11 @@ public class RtEngine extends AstorCoreEngine {
 		checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
 
 		TestInspectionResult resultTestCase = new TestInspectionResult(rAssert, rHelperAssertion, rHelperCall,
-				aNameOfTestClass, aTestMethodFromClass, testMethodModel, rMissing, allSkipFromTest, expectException,
-				allExpectedExceptionFromTest);
+				aNameOfTestClass, aTestMethodFromClass, testMethodModel, rFailMissing, rRedundantAssertion,
+				allSkipFromTest, expectException, allExpectedExceptionFromTest);
 
 		return resultTestCase;
 
-	}
-
-	private List<CtInvocation> filterAssertionTrue(List<CtInvocation> allAssertionsFromTest) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	private boolean checkAnyStatementExecuted(List<CtStatement> allStmtsFromClass,
@@ -310,18 +315,32 @@ public class RtEngine extends AstorCoreEngine {
 
 	}
 
+	/**
+	 * Check if a missing assertion is inside a try-catch
+	 * 
+	 * @param allMissedFailFromTest
+	 * @param executedLines
+	 * @param parentClass
+	 */
 	private void chechInsideTry(List<AsAssertion> allMissedFailFromTest, MapList<String, Integer> executedLines,
 			CtClass parentClass) {
 
 		for (AsAssertion aMissAssertion : allMissedFailFromTest) {
 
-			analyzeMissingAssertion(executedLines, parentClass, aMissAssertion);
+			analyzeMissingAssertionInsideTryCatch(executedLines, parentClass, aMissAssertion);
 
 		}
 
 	}
 
-	public void analyzeMissingAssertion(MapList<String, Integer> executedLines, CtClass parentClass,
+	/**
+	 * Marks those assertions inside a try-catch
+	 * 
+	 * @param executedLines
+	 * @param parentClass
+	 * @param aMissAssertion
+	 */
+	public void analyzeMissingAssertionInsideTryCatch(MapList<String, Integer> executedLines, CtClass parentClass,
 			AsAssertion aMissAssertion) {
 		CtTry parentTry = aMissAssertion.getCtAssertion().getParent(CtTry.class);
 		if (parentTry != null) {
@@ -391,29 +410,106 @@ public class RtEngine extends AstorCoreEngine {
 		List<CtInvocation> missedFails = new ArrayList<>();
 
 		for (CtInvocation anInvocation : allAssertionsFromTest) {
-			CtElement argument = null;
-			// case having a single argument
-			if (anInvocation.getArguments().size() == 1) {
-				argument = (CtElement) anInvocation.getArguments().get(0);
-				// case having a message as first arg
-			} else if (anInvocation.getArguments().size() == 2) {
-				argument = (CtElement) anInvocation.getArguments().get(1);
-			}
-
-			// if(isInvWithName(anInvocation, "assertTrue")) {
-
-			// }
-
-			if (argument != null) {
-				String contentArgumentLC = argument.toString().toLowerCase();
-				if (contentArgumentLC.equals("\"true\"") || contentArgumentLC.equals("\"false\"")
-						|| contentArgumentLC.equals("true") || contentArgumentLC.equals("false")
-						|| contentArgumentLC.equals("boolean.true") || contentArgumentLC.equals("boolean.false"))
-					missedFails.add((anInvocation));
-			}
+			filterMissingFailAssertion(missedFails, anInvocation);
 
 		}
 		return missedFails;
+	}
+
+	/**
+	 * Tree cases: AssertEquals (x,x) AssertTrue(True) AssertFalse(False)
+	 * 
+	 * @param allAssertionsFromTest
+	 * @return
+	 */
+	private List<CtInvocation> filterRedundantAssertions(List<CtInvocation> allAssertionsFromTest) {
+
+		List<CtInvocation> redundantAssertion = new ArrayList<>();
+
+		for (CtInvocation anInvocation : allAssertionsFromTest) {
+
+			filterCaseEquals(anInvocation, redundantAssertion);
+
+			filterCaseAssertRedundant(redundantAssertion, anInvocation);
+
+		}
+		return redundantAssertion;
+	}
+
+	protected void filterMissingFailAssertion(List<CtInvocation> redundantAssertion, CtInvocation anInvocation) {
+		CtElement argument = null;
+		// case having a single argument
+		if (anInvocation.getArguments().size() == 1) {
+			argument = (CtElement) anInvocation.getArguments().get(0);
+			// case having a message as first arg
+		} else if (anInvocation.getArguments().size() == 2) {
+			argument = (CtElement) anInvocation.getArguments().get(1);
+		}
+		if (argument != null) {
+			String contentArgumentLC = argument.toString().toLowerCase();
+			if (isInvWithName(anInvocation, "assertFalse")) {
+				// Now, we case expecting false and passing True
+				if (contentArgumentLC.equals("\"true\"") || contentArgumentLC.equals("true")
+						|| contentArgumentLC.equals("boolean.true"))
+					redundantAssertion.add((anInvocation));
+
+			} else if (isInvWithName(anInvocation, "assertTrue")) {
+				if (contentArgumentLC.equals("\"false\"") || contentArgumentLC.equals("false")
+						|| contentArgumentLC.equals("boolean.false"))
+					// Now, we find for a false parameter:
+					redundantAssertion.add((anInvocation));
+
+			}
+		}
+	}
+
+	public void filterCaseAssertRedundant(List<CtInvocation> redundantAssertion, CtInvocation anInvocation) {
+		CtElement argument = null;
+		// case having a single argument
+		if (anInvocation.getArguments().size() == 1) {
+			argument = (CtElement) anInvocation.getArguments().get(0);
+			// case having a message as first arg
+		} else if (anInvocation.getArguments().size() == 2) {
+			argument = (CtElement) anInvocation.getArguments().get(1);
+		}
+		if (argument != null) {
+			String contentArgumentLC = argument.toString().toLowerCase();
+			if (isInvWithName(anInvocation, "assertTrue")) {
+				// Now, we case expecting false and passing True
+				if (contentArgumentLC.equals("\"true\"") || contentArgumentLC.equals("true")
+						|| contentArgumentLC.equals("boolean.true"))
+					redundantAssertion.add((anInvocation));
+
+			} else if (isInvWithName(anInvocation, "assertFalse")) {
+				if (contentArgumentLC.equals("\"false\"") || contentArgumentLC.equals("false")
+						|| contentArgumentLC.equals("boolean.false"))
+					// Now, we find for a false parameter:
+					redundantAssertion.add((anInvocation));
+
+			}
+		}
+	}
+
+	private void filterCaseEquals(CtInvocation anInvocation, List<CtInvocation> redundantAssertion) {
+		CtElement argument1 = null, argument2 = null;
+
+		if (isInvWithName(anInvocation, "assertEquals")) {
+
+			// case having a single argument
+			if (anInvocation.getArguments().size() == 3) {
+				argument1 = (CtElement) anInvocation.getArguments().get(1);
+				argument2 = (CtElement) anInvocation.getArguments().get(2);
+				// case having a message as first arg
+			} else if (anInvocation.getArguments().size() == 2) {
+				argument1 = (CtElement) anInvocation.getArguments().get(0);
+				argument2 = (CtElement) anInvocation.getArguments().get(1);
+			}
+
+			if (argument1 != null && argument2 != null && argument1.toString().equals(argument2.toString())) {
+				redundantAssertion.add(anInvocation);
+			}
+
+		}
 	}
 
 	private List<CtReturn> filterSkips(List<CtStatement> allStmtsFromClass, CtExecutable method,
@@ -476,12 +572,13 @@ public class RtEngine extends AstorCoreEngine {
 		CtExecutable testMethodModel;
 		List<String> expectException;
 		List<CtInvocation> allExpectedExceptionFromTest;
+		Classification<AsAssertion> rRedundantAssertion;
 
 		public TestInspectionResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
 				CtExecutable testMethodModel, Classification<AsAssertion> allMissedFailFromTest,
-				List<CtReturn> allSkipFromTest, List<String> expectException,
-				List<CtInvocation> allExpectedExceptionFromTest) {
+				Classification<AsAssertion> rRedundantAssertion, List<CtReturn> allSkipFromTest,
+				List<String> expectException, List<CtInvocation> allExpectedExceptionFromTest) {
 			super();
 			this.rAssert = rAssert;
 			this.rHelperAssertion = rHelperAssertion;
@@ -493,6 +590,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.testMethodFromClass = aTestMethodFromClass;
 			this.expectException = expectException;
 			this.allExpectedExceptionFromTest = allExpectedExceptionFromTest;
+			this.rRedundantAssertion = rRedundantAssertion;
 		}
 
 		public Classification<AsAssertion> getClassificationAssert() {
@@ -594,9 +692,6 @@ public class RtEngine extends AstorCoreEngine {
 				return new TestRottenAnalysisResult(skipss);
 			}
 
-			// Executed
-			List<AsAssertion> allMissedFailFromTest2 = this.getAllMissedFailFromTest().getResultExecuted();
-
 			boolean smokeTest = isSmokeTest();
 
 			//
@@ -609,8 +704,13 @@ public class RtEngine extends AstorCoreEngine {
 			List<CtInvocation> allAssertionsFromTest = getTestMethodModel().getBody()
 					.getElements(new TypeFilter<>(CtInvocation.class));
 
+			// Executed
+			List<AsAssertion> allMissedFail = this.getAllMissedFailFromTest().getAll();
+
+			List<AsAssertion> allRedundant = this.getRedundantAssertions().getAll();
+
 			return new TestRottenAnalysisResult(notComplexHelperCallComplex, notComplexHelperAssertComplex,
-					notComplexAssertComplex, smokeTest, allMissedFailFromTest2, resultNotExecutedHelperCallComplex,
+					notComplexAssertComplex, smokeTest, allMissedFail, allRedundant, resultNotExecutedHelperCallComplex,
 					resultNotExecutedHelperAssertComplex, resultNotExecutedAssertComplex, allAssertionsFromTest);
 
 		}
@@ -661,6 +761,14 @@ public class RtEngine extends AstorCoreEngine {
 					+ testMethodFromClass + "]";
 		}
 
+		public Classification<AsAssertion> getRedundantAssertions() {
+			return rRedundantAssertion;
+		}
+
+		public void setrRedundantAssertion(Classification<AsAssertion> rRedundantAssertion) {
+			this.rRedundantAssertion = rRedundantAssertion;
+		}
+
 	}
 
 	public class TestRottenAnalysisResult {
@@ -675,14 +783,15 @@ public class RtEngine extends AstorCoreEngine {
 		public List<Helper> contextHelperAssertion = Collections.EMPTY_LIST;
 		public List<AsAssertion> contextAssertion = Collections.EMPTY_LIST;
 
-		List<CtInvocation> otherMethodInvocations = Collections.EMPTY_LIST;
+		public List<CtInvocation> otherMethodInvocations = Collections.EMPTY_LIST;
+		public List<AsAssertion> redundantAssertion = Collections.EMPTY_LIST;
 
 		public TestRottenAnalysisResult(
 				//
 				List<Helper> fullRottenHelperCall, List<Helper> fullRottenHelperAssert, //
 				List<AsAssertion> fullRottenAssert, //
 				boolean smokeTest, List<AsAssertion> missed, //
-				// List<Skip> skip,
+				List<AsAssertion> allRedundantFromTest, // List<Skip> skip,
 				List<Helper> contextHelperCall, List<Helper> contextHelperAssertion, List<AsAssertion> contextAssertion,
 				List<CtInvocation> allAssertionsFromTest) {
 			super();
@@ -691,6 +800,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.fullRottenAssert = fullRottenAssert;
 			this.smokeTest = smokeTest;
 			this.missed = missed;
+			this.redundantAssertion = allRedundantFromTest;
 			// this.skip = skip;
 			this.contextHelperCall = contextHelperCall;
 			this.contextHelperAssertion = contextHelperAssertion;
@@ -730,6 +840,14 @@ public class RtEngine extends AstorCoreEngine {
 
 		public List<T> getResultExecuted() {
 			return resultExecuted;
+		}
+
+		public List<T> getAll() {
+
+			List<T> resultAll = new ArrayList<>();
+			resultAll.addAll(resultExecuted);
+			resultAll.addAll(resultNotExecuted);
+			return resultAll;
 		}
 
 	}
@@ -1095,7 +1213,8 @@ public class RtEngine extends AstorCoreEngine {
 	 */
 	private boolean isInvWithName(CtInvocation targetInvocation, String methodName) {
 		log.debug("assert " + targetInvocation.getExecutable().getSimpleName());
-		boolean isAssert = targetInvocation.getExecutable().getSimpleName().toLowerCase().startsWith(methodName);
+		boolean isAssert = targetInvocation.getExecutable().getSimpleName().toLowerCase()
+				.startsWith(methodName.toLowerCase());
 		if (isAssert) {
 			return true;
 		}
