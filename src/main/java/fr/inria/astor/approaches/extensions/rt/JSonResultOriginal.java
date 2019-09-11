@@ -47,6 +47,8 @@ public class JSonResultOriginal {
 
 	private static final String ROTTEN_MISSED = "Rotten_Missed";
 
+	private static final String ROTTEN_REDUNDANT_ASSERTION = "Rotten_Redundant_Assertion";
+
 	private static final String ROTTEN_SKIP = "Rotten_Skip";
 
 	private static final String ROTTEN_CONTEXT_DEP_HELPERS_CALL = "Context_Dep_Rotten_Helpers_Call";
@@ -84,7 +86,7 @@ public class JSonResultOriginal {
 		summary.addProperty("commitid", commitid);
 
 		int nrRtest = 0, nrRtAssertion = 0, nrRtHelperCall = 0, nrRttHelperAssert = 0, nrSkip = 0, nrAllMissed = 0,
-				nrSmokeTest = 0, nrRtFull = 0, nrTestWithControlStruct = 0, nrTestWithHelper = 0;
+				nrAllRedundant = 0, nrSmokeTest = 0, nrRtFull = 0, nrTestWithControlStruct = 0, nrTestWithHelper = 0;
 
 		JsonArray testsArray = new JsonArray();
 		root.add("tests", testsArray);
@@ -202,16 +204,27 @@ public class JSonResultOriginal {
 				}
 			}
 
+			//
+			if (!resultClassification.redundantAssertion.isEmpty()) {
+				for (AsAssertion missedInv : resultClassification.redundantAssertion) {
+					JsonObject missedJson = new JsonObject();
+					missedJson.addProperty("code_assertion", missedInv.toString().toString());
+					missedJson.addProperty("line_assertion", missedInv.getCtAssertion().getPosition().getLine());
+					missedJson.addProperty("path_assertion",
+							getRelativePath(missedInv.getCtAssertion(), projectFacade));
+					writeJsonLink(commitid, branch, remote, projectsubfolder, missedInv.getCtAssertion(), missedJson);
+					onerotten = true;
+					summaryRottens.add(missedJson);
+					missedJson.addProperty(TYPE_ROTTEN, ROTTEN_REDUNDANT_ASSERTION);
+					nrAllRedundant++;
+					uniquesTypesRottern.add(ROTTEN_REDUNDANT_ASSERTION);
+				}
+			}
+
 			if (tr.isSmokeTest() && tr.getExpectException().isEmpty()
 					&& tr.getAllExpectedExceptionFromTest().isEmpty()) {
 
-				List<CtInvocation> allAssertionsFromTest = tr.getTestMethodModel().getBody()
-						.getElements(new TypeFilter<>(CtInvocation.class));
-
-				// TODO: Move verification to RTEngine
-				// if (hasFail(allAssertionsFromTest)) {
-				// continue;
-				// }
+				List<CtInvocation> allAssertionsFromTest = resultClassification.getOtherMethodInvocations();
 
 				testsArray.add(testjson);
 				rTestclasses.add(tr.getNameOfTestClass());
@@ -256,12 +269,14 @@ public class JSonResultOriginal {
 		summary.addProperty("nr_All_Test", resultByTest.size());
 		summary.addProperty("nr_Rotten_Test_Units", nrRtest);
 		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_ASSERTIONS, nrRtAssertion);
+		summary.addProperty("nr_" + this.ROTTEN_REDUNDANT_ASSERTION, nrAllRedundant);
 		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_HELPERS_CALL, nrRtHelperCall);
 		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION, nrRttHelperAssert);
 		summary.addProperty("nr_" + this.ROTTEN_SKIP, nrSkip);
 		summary.addProperty("nr_" + this.ROTTEN_MISSED, nrAllMissed);
 		summary.addProperty("nr_" + this.SMOKE_TEST, nrSmokeTest);
 		summary.addProperty("nr_" + this.FULL_ROTTEN_TEST, nrRtFull);
+
 		return root;
 	}
 

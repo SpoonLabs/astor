@@ -973,7 +973,7 @@ public class RtTestExamples {
 		rottenTest2 = rotten2P.get();
 
 		assertFalse(rottenTest2.isSmokeTest());
-		assertTrue(rottenTest2.isRotten());
+		assertFalse(rottenTest2.isRotten());
 
 		assertTrue(rottenTest2.getExpectException().isEmpty());
 
