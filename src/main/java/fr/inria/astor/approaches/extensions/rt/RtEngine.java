@@ -948,16 +948,20 @@ public class RtEngine extends AstorCoreEngine {
 
 	private boolean isCovered(Map<String, SuspiciousCode> cacheSuspicious, CtElement elementToCheck,
 			CtClass aTestModelCtClass, CtClass ctclassFromAssert) {
+		try {
+			// the location of the assertion contained in the helper
+			int init = elementToCheck.getPosition().getLine();
+			int end = elementToCheck.getPosition().getEndLine();
+			for (int i = init; i <= end; i++) {
+				String keyLocationAssertion = ctclassFromAssert.getQualifiedName() + i;
 
-		// the location of the assertion contained in the helper
-		int init = elementToCheck.getPosition().getLine();
-		int end = elementToCheck.getPosition().getEndLine();
-		for (int i = init; i <= end; i++) {
-			String keyLocationAssertion = ctclassFromAssert.getQualifiedName() + i;
+				if (checkCoverLine(cacheSuspicious, aTestModelCtClass, keyLocationAssertion))
+					return true;
 
-			if (checkCoverLine(cacheSuspicious, aTestModelCtClass, keyLocationAssertion))
-				return true;
-
+			}
+		} catch (Exception e) {
+			log.error("Error getting position of element");
+			e.printStackTrace();
 		}
 		return false;
 
@@ -1231,21 +1235,25 @@ public class RtEngine extends AstorCoreEngine {
 	private boolean isCovered(MapList<String, Integer> executedLines, CtElement aStatementNotInvoked,
 			CtClass parentClass) {
 
-		CtClass newParentClass = getTopParentClass(aStatementNotInvoked);
+		try {
+			CtClass newParentClass = getTopParentClass(aStatementNotInvoked);
 
-		String className = newParentClass.getQualifiedName();// parentClass.getQualifiedName();
-		if (!executedLines.containsKey(className))
-			return false;
-		List<Integer> linesOfTestCase = executedLines.get(className);
-		int start = aStatementNotInvoked.getPosition().getLine();
-		int end = aStatementNotInvoked.getPosition().getEndLine();
+			String className = newParentClass.getQualifiedName();// parentClass.getQualifiedName();
+			if (!executedLines.containsKey(className))
+				return false;
+			List<Integer> linesOfTestCase = executedLines.get(className);
+			int start = aStatementNotInvoked.getPosition().getLine();
+			int end = aStatementNotInvoked.getPosition().getEndLine();
 
-		for (int i = start; i <= end; i++) {
-			if (linesOfTestCase.contains(i)) {
-				return true;
+			for (int i = start; i <= end; i++) {
+				if (linesOfTestCase.contains(i)) {
+					return true;
+				}
 			}
+		} catch (Exception e) {
+			log.error("Error getting position of element");
+			e.printStackTrace();
 		}
-
 		return false;
 	}
 

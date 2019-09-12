@@ -168,7 +168,7 @@ public class JSonResultOriginal {
 					CtReturn skip = iSkip.executedReturn;
 					JsonObject singleSkip = new JsonObject();
 					singleSkip.addProperty("code", skip.toString().toString());
-					singleSkip.addProperty("line", skip.getPosition().getLine());
+					singleSkip.addProperty("line", getPosition(skip));
 					singleSkip.add("parent_types", getParentTypes(skip));
 					onerotten = true;
 					summaryRottens.add(singleSkip);
@@ -184,7 +184,7 @@ public class JSonResultOriginal {
 				for (AsAssertion missedInv : resultClassification.missed) {
 					JsonObject missedJson = new JsonObject();
 					missedJson.addProperty("code_assertion", missedInv.toString().toString());
-					missedJson.addProperty("line_assertion", missedInv.getCtAssertion().getPosition().getLine());
+					missedJson.addProperty("line_assertion", getPosition(missedInv.getCtAssertion()));
 					missedJson.addProperty("path_assertion",
 							getRelativePath(missedInv.getCtAssertion(), projectFacade));
 					writeJsonLink(commitid, branch, remote, projectsubfolder, missedInv.getCtAssertion(), missedJson);
@@ -201,7 +201,7 @@ public class JSonResultOriginal {
 				for (AsAssertion missedInv : resultClassification.redundantAssertion) {
 					JsonObject missedJson = new JsonObject();
 					missedJson.addProperty("code_assertion", missedInv.toString().toString());
-					missedJson.addProperty("line_assertion", missedInv.getCtAssertion().getPosition().getLine());
+					missedJson.addProperty("line_assertion", getPosition(missedInv.getCtAssertion()));
 					missedJson.addProperty("path_assertion",
 							getRelativePath(missedInv.getCtAssertion(), projectFacade));
 					writeJsonLink(commitid, branch, remote, projectsubfolder, missedInv.getCtAssertion(), missedJson);
@@ -231,7 +231,7 @@ public class JSonResultOriginal {
 
 					JsonObject failJson = new JsonObject();
 					failJson.addProperty("code_assertion", inv.toString().toString());
-					failJson.addProperty("line_assertion", inv.getPosition().getLine());
+					failJson.addProperty("line_assertion", getPosition(inv));
 					failJson.addProperty("path_assertion", getRelativePath(inv, projectFacade));
 					writeJsonLink(commitid, branch, remote, projectsubfolder, inv, failJson);
 					onerotten = true;
@@ -303,6 +303,16 @@ public class JSonResultOriginal {
 		return root;
 	}
 
+	public int getPosition(CtElement inv) {
+		try {
+			return inv.getPosition().getLine();
+		} catch (Exception e) {
+			log.error("Error getting position of element");
+			e.printStackTrace();
+			return -1;
+		}
+	}
+
 	public int add_ASSERTIONS(ProjectRepairFacade projectFacade, String commitid, String branch, String remote,
 			String projectsubfolder, TestInspectionResult tr, JsonArray summaryRottens, Set<String> uniquesTypesRottern,
 			List<AsAssertion> notExecutedAssert, String ROTTEN_CONTEXT_DEP_ASSERTIONS) {
@@ -316,7 +326,7 @@ public class JSonResultOriginal {
 				log.debug("-R-Assertion:-> " + anInvocation);
 				JsonObject jsonsingleAssertion = new JsonObject();
 				jsonsingleAssertion.addProperty("code", anInvocation.toString());
-				jsonsingleAssertion.addProperty("line", anInvocation.getPosition().getLine());
+				jsonsingleAssertion.addProperty("line", getPosition(anInvocation));
 				jsonsingleAssertion.addProperty("path", getRelativePath(anInvocation, projectFacade));
 				jsonsingleAssertion.addProperty("inbranch", assertion.isFp());
 
@@ -443,7 +453,7 @@ public class JSonResultOriginal {
 					// "https://github.com/" + projectname
 					+ "/tree/" + commitid// branch
 					+ ((projectsubfolder != null) ? "/" + projectsubfolder : "") + "/"
-					+ getRelativePath(anInvocation, this.projectFacade) + "#L" + anInvocation.getPosition().getLine());
+					+ getRelativePath(anInvocation, this.projectFacade) + "#L" + getPosition(anInvocation));
 		}
 	}
 
@@ -491,7 +501,7 @@ public class JSonResultOriginal {
 			CtInvocation ctAssertion) {
 		JsonObject jsonsingleHelper = new JsonObject();
 		jsonsingleHelper.addProperty("code", ctAssertion.toString());
-		jsonsingleHelper.addProperty("line", ctAssertion.getPosition().getLine());
+		jsonsingleHelper.addProperty("line", getPosition(ctAssertion));
 		writeJsonLink(commitid, branch, remote, projectsubfolder, ctAssertion, jsonsingleHelper);
 		return jsonsingleHelper;
 	}
@@ -504,8 +514,14 @@ public class JSonResultOriginal {
 	}
 
 	public String getRelativePath(CtElement anInvocation, ProjectRepairFacade projectFacade) {
-		return anInvocation.getPosition().getFile().getAbsolutePath().replace("./", "")
-				.replace(projectFacade.getProperties().getOriginalProjectRootDir().replace("./", ""), "");
+		try {
+			return anInvocation.getPosition().getFile().getAbsolutePath().replace("./", "")
+					.replace(projectFacade.getProperties().getOriginalProjectRootDir().replace("./", ""), "");
+		} catch (Exception e) {
+			log.error("Error in position relative path");
+			e.printStackTrace();
+			return "NoPosition";
+		}
 	}
 
 	public String createMethodSignature(CtInvocation anInvocation) {
