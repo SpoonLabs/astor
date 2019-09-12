@@ -26,12 +26,17 @@ import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -302,7 +307,7 @@ public class RtEngine extends AstorCoreEngine {
 
 		TestInspectionResult resultTestCase = new TestInspectionResult(rAssert, rHelperAssertion, rHelperCall,
 				aNameOfTestClass, aTestMethodFromClass, testMethodModel, rFailMissing, rRedundantAssertion,
-				allSkipFromTest, expectException, allExpectedExceptionFromTest, allMIFromTest);
+				allSkipFromTest, expectException, allExpectedExceptionFromTest, allMIFromTest, allFailsFromTest);
 
 		return resultTestCase;
 
@@ -580,13 +585,14 @@ public class RtEngine extends AstorCoreEngine {
 		List<CtInvocation> allExpectedExceptionFromTest;
 		Classification<AsAssertion> rRedundantAssertion;
 		List<CtInvocation> allOtherMIFromTest;
+		List<CtInvocation> allFailsFromTest;
 
 		public TestInspectionResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
 				CtExecutable testMethodModel, Classification<AsAssertion> allMissedFailFromTest,
 				Classification<AsAssertion> rRedundantAssertion, List<CtReturn> allSkipFromTest,
 				List<String> expectException, List<CtInvocation> allExpectedExceptionFromTest,
-				List<CtInvocation> allMIFromTest) {
+				List<CtInvocation> allMIFromTest, List<CtInvocation> allFailsFromTest) {
 			super();
 			this.rAssert = rAssert;
 			this.rHelperAssertion = rHelperAssertion;
@@ -600,6 +606,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.allExpectedExceptionFromTest = allExpectedExceptionFromTest;
 			this.rRedundantAssertion = rRedundantAssertion;
 			this.allOtherMIFromTest = allMIFromTest;
+			this.allFailsFromTest = allFailsFromTest;
 		}
 
 		public Classification<AsAssertion> getClassificationAssert() {
@@ -628,6 +635,21 @@ public class RtEngine extends AstorCoreEngine {
 
 		public List<CtReturn> getAllSkipFromTest() {
 			return allSkipFromTest;
+		}
+
+		public boolean hasControlFlow() {
+			return testMethodModel.getElements(new TypeFilter<>(CtIf.class)).size() > 0
+					//
+					|| testMethodModel.getElements(new TypeFilter<>(CtWhile.class)).size() > 0
+					//
+					|| testMethodModel.getElements(new TypeFilter<>(CtFor.class)).size() > 0
+					//
+					|| testMethodModel.getElements(new TypeFilter<>(CtForEach.class)).size() > 0
+					//
+					|| testMethodModel.getElements(new TypeFilter<>(CtSwitch.class)).size() > 0
+					//
+					|| testMethodModel.getElements(new TypeFilter<>(CtDo.class)).size() > 0;
+
 		}
 
 		public boolean isRotten() {
@@ -775,6 +797,26 @@ public class RtEngine extends AstorCoreEngine {
 			this.rRedundantAssertion = rRedundantAssertion;
 		}
 
+		public boolean hasHelperCall() {
+			return !getClassificationHelperCall().getResultExecuted().isEmpty()
+					|| !getClassificationHelperCall().getResultNotExecuted().isEmpty();
+		}
+
+		public boolean hasFailInvocation() {
+
+			return this.allFailsFromTest.size() > 0;
+		}
+
+		public boolean hasTryCatch() {
+			return testMethodModel.getElements(new TypeFilter<>(CtTry.class)).size() > 0;
+		}
+
+		public boolean isExceptionExpected() {
+
+			return (isSmokeTest()) && ((hasTryCatch() && hasFailInvocation())
+					|| (getExpectException().size() > 0 || getAllExpectedExceptionFromTest().size() > 0));
+		}
+
 	}
 
 	public class TestRottenAnalysisResult {
@@ -812,6 +854,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.contextHelperAssertion = contextHelperAssertion;
 			this.contextAssertion = contextAssertion;
 			this.otherMethodInvocations = allAssertionsFromTest;
+
 		}
 
 		public TestRottenAnalysisResult(List<Skip> skip) {
