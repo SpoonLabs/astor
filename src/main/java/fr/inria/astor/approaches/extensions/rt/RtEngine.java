@@ -240,6 +240,7 @@ public class RtEngine extends AstorCoreEngine {
 		}
 
 		List<CtInvocation> allAssertionsFromTest = filterAssertions(allStmtsFromClass);
+		List<CtInvocation> allFailsFromTest = filterFails(allStmtsFromClass);
 		List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass, new ArrayList());
 		// filter from assertions the missed fail
 		List<CtInvocation> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
@@ -294,9 +295,12 @@ public class RtEngine extends AstorCoreEngine {
 		checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
 		checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
 
+		List<CtInvocation> allMIFromTest = testMethodModel.getBody().getElements(new TypeFilter<>(CtInvocation.class));
+		allMIFromTest.removeAll(allAssertionsFromTest);
+
 		TestInspectionResult resultTestCase = new TestInspectionResult(rAssert, rHelperAssertion, rHelperCall,
 				aNameOfTestClass, aTestMethodFromClass, testMethodModel, rFailMissing, rRedundantAssertion,
-				allSkipFromTest, expectException, allExpectedExceptionFromTest);
+				allSkipFromTest, expectException, allExpectedExceptionFromTest, allMIFromTest);
 
 		return resultTestCase;
 
@@ -573,12 +577,14 @@ public class RtEngine extends AstorCoreEngine {
 		List<String> expectException;
 		List<CtInvocation> allExpectedExceptionFromTest;
 		Classification<AsAssertion> rRedundantAssertion;
+		List<CtInvocation> allOtherMIFromTest;
 
 		public TestInspectionResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
 				CtExecutable testMethodModel, Classification<AsAssertion> allMissedFailFromTest,
 				Classification<AsAssertion> rRedundantAssertion, List<CtReturn> allSkipFromTest,
-				List<String> expectException, List<CtInvocation> allExpectedExceptionFromTest) {
+				List<String> expectException, List<CtInvocation> allExpectedExceptionFromTest,
+				List<CtInvocation> allMIFromTest) {
 			super();
 			this.rAssert = rAssert;
 			this.rHelperAssertion = rHelperAssertion;
@@ -591,6 +597,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.expectException = expectException;
 			this.allExpectedExceptionFromTest = allExpectedExceptionFromTest;
 			this.rRedundantAssertion = rRedundantAssertion;
+			this.allOtherMIFromTest = allMIFromTest;
 		}
 
 		public Classification<AsAssertion> getClassificationAssert() {
@@ -701,9 +708,6 @@ public class RtEngine extends AstorCoreEngine {
 					resultNotExecutedHelperAssertion);
 			classifyComplexAssert(notComplexAssertComplex, resultNotExecutedAssertComplex, resultNotExecutedAssertion);
 
-			List<CtInvocation> allAssertionsFromTest = getTestMethodModel().getBody()
-					.getElements(new TypeFilter<>(CtInvocation.class));
-
 			// Executed
 			List<AsAssertion> allMissedFail = this.getAllMissedFailFromTest().getAll();
 
@@ -711,7 +715,7 @@ public class RtEngine extends AstorCoreEngine {
 
 			return new TestRottenAnalysisResult(notComplexHelperCallComplex, notComplexHelperAssertComplex,
 					notComplexAssertComplex, smokeTest, allMissedFail, allRedundant, resultNotExecutedHelperCallComplex,
-					resultNotExecutedHelperAssertComplex, resultNotExecutedAssertComplex, allAssertionsFromTest);
+					resultNotExecutedHelperAssertComplex, resultNotExecutedAssertComplex, allOtherMIFromTest);
 
 		}
 
@@ -1102,6 +1106,19 @@ public class RtEngine extends AstorCoreEngine {
 		return assertions;
 	}
 
+	private List<CtInvocation> filterFails(List<CtStatement> allStmtsFromClass) {
+		List<CtInvocation> assertions = new ArrayList<>();
+		for (CtStatement targetElement : allStmtsFromClass) {
+			if (targetElement instanceof CtInvocation) {
+				CtInvocation targetInvocation = (CtInvocation) targetElement;
+				if (isInvWithName(targetInvocation, "fail")) {
+					assertions.add(targetInvocation);
+				}
+			}
+		}
+		return assertions;
+	}
+
 	/**
 	 * A helper must have an invocation
 	 * 
@@ -1212,7 +1229,6 @@ public class RtEngine extends AstorCoreEngine {
 	 * @return
 	 */
 	private boolean isInvWithName(CtInvocation targetInvocation, String methodName) {
-		log.debug("assert " + targetInvocation.getExecutable().getSimpleName());
 		boolean isAssert = targetInvocation.getExecutable().getSimpleName().toLowerCase()
 				.startsWith(methodName.toLowerCase());
 		if (isAssert) {
@@ -1233,7 +1249,7 @@ public class RtEngine extends AstorCoreEngine {
 
 			if (targetInvocation.getTarget() != null && targetInvocation.getTarget() instanceof CtInvocation) {
 				CtInvocation targetInv = (CtInvocation) targetInvocation.getTarget();
-				return isAssertion(targetInv);
+				return isInvWithName(targetInv, methodName);
 			}
 		} catch (Exception e) {
 			log.error(e);
