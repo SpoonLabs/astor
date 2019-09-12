@@ -295,8 +295,10 @@ public class RtEngine extends AstorCoreEngine {
 		checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
 		checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
 
+		// We exclude assertions and fails from the list of other method invocations.
 		List<CtInvocation> allMIFromTest = testMethodModel.getBody().getElements(new TypeFilter<>(CtInvocation.class));
 		allMIFromTest.removeAll(allAssertionsFromTest);
+		allMIFromTest.removeAll(allFailsFromTest);
 
 		TestInspectionResult resultTestCase = new TestInspectionResult(rAssert, rHelperAssertion, rHelperCall,
 				aNameOfTestClass, aTestMethodFromClass, testMethodModel, rFailMissing, rRedundantAssertion,
