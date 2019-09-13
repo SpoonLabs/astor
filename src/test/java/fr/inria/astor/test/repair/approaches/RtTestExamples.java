@@ -1032,6 +1032,92 @@ public class RtTestExamples {
 		assertTrue(fr2.redundantAssertion.isEmpty());
 	}
 
+	@Test
+	public void testRTFRow25Exception() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		List<TestInspectionResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass().contains("RTFRow25Exception")).collect(Collectors.toList());
+
+		// Second test
+		Optional<TestInspectionResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+				.findFirst();
+
+		assertTrue(rotten2P.isPresent());
+
+		TestInspectionResult rottenTest2 = rotten2P.get();
+
+		assertFalse(rottenTest2.isSmokeTest());
+		assertFalse(rottenTest2.isRotten());
+
+		// we expect exceptions
+		assertFalse(rottenTest2.getExpectException().isEmpty());
+
+		TestRottenAnalysisResult fr2 = rottenTest2.generateFinalResult();
+
+		assertTrue(fr2.getFullRotten().isEmpty());
+		assertTrue(fr2.contextAssertion.isEmpty());
+		assertTrue(fr2.contextHelperAssertion.isEmpty());
+		assertTrue(fr2.contextHelperCall.isEmpty());
+		assertTrue(fr2.missed.isEmpty());
+		assertTrue(fr2.skip.isEmpty());
+		assertTrue(fr2.redundantAssertion.isEmpty());
+
+		/// Case 2
+		rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test1")).findFirst();
+
+		assertTrue(rotten2P.isPresent());
+
+		rottenTest2 = rotten2P.get();
+		// TODO:
+		assertTrue(rottenTest2.isSmokeTest());
+		assertFalse(rottenTest2.isRotten());
+
+		fr2 = rottenTest2.generateFinalResult();
+
+		assertTrue(fr2.getFullRotten().isEmpty());
+		assertTrue(fr2.contextAssertion.isEmpty());
+		assertTrue(fr2.contextHelperAssertion.isEmpty());
+		assertTrue(fr2.contextHelperCall.isEmpty());
+		assertTrue(fr2.missed.isEmpty());
+		assertTrue(fr2.skip.isEmpty());
+		assertTrue(fr2.redundantAssertion.isEmpty());
+		//
+		assertTrue(rottenTest2.hasFailInvocation());
+		assertTrue(rottenTest2.hasTryCatch());
+		assertTrue(rottenTest2.isExceptionExpected());
+		assertTrue(rottenTest2.getExpectException().isEmpty());
+
+		/// Case 2
+		rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test2")).findFirst();
+
+		assertTrue(rotten2P.isPresent());
+
+		rottenTest2 = rotten2P.get();
+
+		assertFalse(rottenTest2.isSmokeTest());
+		assertFalse(rottenTest2.isRotten());
+
+		fr2 = rottenTest2.generateFinalResult();
+
+		assertTrue(fr2.getFullRotten().isEmpty());
+		assertTrue(fr2.contextAssertion.isEmpty());
+		assertTrue(fr2.contextHelperAssertion.isEmpty());
+		assertTrue(fr2.contextHelperCall.isEmpty());
+		assertTrue(fr2.missed.isEmpty());
+		assertTrue(fr2.skip.isEmpty());
+		assertTrue(fr2.redundantAssertion.isEmpty());
+		//
+		assertFalse(rottenTest2.hasFailInvocation());
+		assertFalse(rottenTest2.hasTryCatch());
+		assertFalse(rottenTest2.isExceptionExpected());
+		assertTrue(rottenTest2.getExpectException().isEmpty());
+
+	}
+
 	private void checkFp(List<TestInspectionResult> tc, boolean toverif, String testname) {
 		Optional<TestInspectionResult> rotten01 = tc.stream().filter(e -> e.getTestMethodFromClass().equals(testname))
 				.findFirst();
