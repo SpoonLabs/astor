@@ -1072,8 +1072,8 @@ public class RtTestExamples {
 		assertTrue(rotten2P.isPresent());
 
 		rottenTest2 = rotten2P.get();
-		// TODO:
-		assertTrue(rottenTest2.isSmokeTest());
+		// TODO: For the moment is the test expect exception is not Smoke test
+		assertFalse(rottenTest2.isSmokeTest());
 		assertFalse(rottenTest2.isRotten());
 
 		fr2 = rottenTest2.generateFinalResult();

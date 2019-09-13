@@ -660,8 +660,11 @@ public class RtEngine extends AstorCoreEngine {
 		}
 
 		public boolean isSmokeTest() {
-			return expectException.isEmpty() && allExpectedExceptionFromTest.isEmpty()
-					&& rAssert.resultExecuted.isEmpty() && rAssert.resultNotExecuted.isEmpty()
+			return !isExceptionExpected() && testElementsNotPresentInTest();
+		}
+
+		public boolean testElementsNotPresentInTest() {
+			return rAssert.resultExecuted.isEmpty() && rAssert.resultNotExecuted.isEmpty()
 					&& rHelperCall.resultExecuted.isEmpty() && rHelperCall.resultNotExecuted.isEmpty()
 					&& rHelperAssertion.resultExecuted.isEmpty() && rHelperAssertion.resultNotExecuted.isEmpty();
 		}
@@ -813,7 +816,7 @@ public class RtEngine extends AstorCoreEngine {
 
 		public boolean isExceptionExpected() {
 
-			return (isSmokeTest()) && ((hasTryCatch() && hasFailInvocation())
+			return ((hasTryCatch() && hasFailInvocation())
 					|| (getExpectException().size() > 0 || getAllExpectedExceptionFromTest().size() > 0));
 		}
 
