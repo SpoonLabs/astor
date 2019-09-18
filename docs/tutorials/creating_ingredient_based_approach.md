@@ -78,7 +78,7 @@ Let's start defining the granularity of the manipulated code. That is the granul
 Our approach will work on Expression level. As Astor models the program under repair using the Spoon meta-model (i.e., creates a Spoon AST), to define the granularity involves to decide which are the elements form  that meta-model that we want to consider (i.e., the type of nodes from the Spoon AST).
 
 As Astor already provides components for working at the level of expression and statements (see all provided components HERE), we only have to specify the component we want to use.
-For that, it's necessary to override the default value of the modification point, which are specified in the "configuration.properties" file and accessible (for reading/writing) via class ConfigurationProperties.
+For that, it's necessary to override the default value of the modification point, which are specified in the "astor.properties" file and accessible (for reading/writing) via class ConfigurationProperties.
 We will write the statement that specify the component on the constructor of the approach.
 ConfigurationProperties.setProperty(ExtensionPoints.TARGET_CODE_PROCESSOR
 .identifier, "expression");
