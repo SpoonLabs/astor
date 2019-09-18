@@ -7,7 +7,7 @@ The value of -parameters has a following format: <property_name_1>:<property_val
 
 For example, in the previous command `-parameters stopfirst:true:maxGeneration:100`, we have that `stopfirst` is the first parameter which value is `true`, and `maxGeneration` is the second parameter with value `100`.
 
-All the default values are stored in the file  [configuration.properties](https://github.com/SpoonLabs/astor/blob/master/src/main/resources/configuration.properties).
+All the default values are stored in the file  [astor.properties](https://github.com/SpoonLabs/astor/blob/master/src/main/resources/astor.properties).
 
 ## List of Parameters (to be used exclusivelly via the parameter -parameters):
 

@@ -44,7 +44,7 @@ The execution of the program will be different depending on the build option you
 
 ### Executing after building with option 2, demonstrated for jGenProg
 
-We present a command line with the required arguments for executing jGenProg.  Optional arguments found using option -help are also listed further down this document. The arguments can also be changed  in "./target/classes/configuration.properties".
+We present a command line with the required arguments for executing jGenProg.  Optional arguments found using option -help are also listed further down this document. The arguments can also be changed  in "./target/classes/astor.properties".
 
 Then the main execution command is as follows (note that the "location" argument is mandatory, and must be an absolute path):
 
@@ -60,7 +60,7 @@ Notes:
 ### Output
 
 Astor uses the standard output to print the solutions (i.e., the patches code), if any. 
-Astor writes in the output folder (property `workingDirectory` in the configuration.properties file, set by default to ./output_astor/), a folder with all the variants that fulfill the goals i.e., repair the bugs. You can change the location of this output folder by either altering the configuration file or by using the -out command line argument. Example output:
+Astor writes in the output folder (property `workingDirectory` in the astor.properties file, set by default to ./output_astor/), a folder with all the variants that fulfill the goals i.e., repair the bugs. You can change the location of this output folder by either altering the configuration file or by using the -out command line argument. Example output:
 
 ```
 PATCH_DIFF=--- /afs/pdc.kth.se/home/m/monp/astor/./output_astor/AstorMain-Math-issue-280/src/default/org/apache/commons/math/analysis/solvers/UnivariateRealSolverUtils.java	
