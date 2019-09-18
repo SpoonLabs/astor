@@ -271,6 +271,7 @@ public class ProjectConfiguration {
 			ProcessBuilder pb = new ProcessBuilder(command.toArray(new String[command.size()]));
 			pb.redirectOutput();
 			pb.redirectErrorStream(true);
+			pb.directory(new File((ConfigurationProperties.getProperty("location"))));
 			Process p = pb.start();
 			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 

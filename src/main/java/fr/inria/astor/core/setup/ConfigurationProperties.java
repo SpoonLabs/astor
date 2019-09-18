@@ -25,7 +25,7 @@ public class ConfigurationProperties {
 	protected static void loadPropertiesFromFile() {
 		InputStream propFile;
 		try {
-			propFile = ConfigurationProperties.class.getClassLoader().getResourceAsStream("configuration.properties");
+			propFile = ConfigurationProperties.class.getClassLoader().getResourceAsStream("astor.properties");
 			properties.load(propFile);
 		} catch (Exception e) {
 			e.printStackTrace();
