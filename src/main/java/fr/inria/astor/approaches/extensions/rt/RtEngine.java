@@ -82,17 +82,26 @@ public class RtEngine extends AstorCoreEngine {
 		allExecutedStatements = suspicious;
 	}
 
+	Exception exceptionReceived = null;
+
 	@Override
 	public void startEvolution() throws Exception {
 
 		if (!ConfigurationProperties.getPropertyBool("skipanalysis")) {
-			RuntimeInformation ri = computeDynamicInformation();
-			analyzeTestSuiteExecution(ri);
+			try {
+				RuntimeInformation ri = computeDynamicInformation();
+				analyzeTestSuiteExecution(ri);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.error(e);
+				exceptionReceived = e;
+			}
 		}
 
 	}
 
-	public RuntimeInformation computeDynamicInformation() {
+	public RuntimeInformation computeDynamicInformation() throws Exception {
 		List<String> allTestCases = new ArrayList();
 
 		List<String> allTestCasesWithoutParent = this.getProjectFacade().getProperties().getRegressionTestCases();
@@ -120,7 +129,9 @@ public class RtEngine extends AstorCoreEngine {
 		}
 
 		if (allTestCases.isEmpty()) {
-			throw new IllegalStateException("No test to execute");
+			log.error("No test to execute");
+			throw new Exception("No test to execute");
+
 		}
 
 		log.debug("# Test cases: " + allTestCases.size());
@@ -1328,7 +1339,16 @@ public class RtEngine extends AstorCoreEngine {
 
 		super.atEnd();
 		JSonResultOriginal jsoncoverted = new JSonResultOriginal();
-		JsonObject json = jsoncoverted.toJson(this.projectFacade, this.resultByTest);
+		JsonObject json = null;
+		if (exceptionReceived == null) {
+			json = jsoncoverted.toJson(ConfigurationProperties.getProperty("id"), this.projectFacade,
+					this.resultByTest);
+
+		} else {
+			json = jsoncoverted.toJsonError(ConfigurationProperties.getProperty("id"), this.projectFacade,
+					this.exceptionReceived);
+		}
+
 		System.out.println("rtjsonoutput: " + json);
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String ppjson = gson.toJson(json);

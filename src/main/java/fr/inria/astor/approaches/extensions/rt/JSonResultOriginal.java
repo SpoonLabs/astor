@@ -66,7 +66,7 @@ public class JSonResultOriginal {
 
 	ProjectRepairFacade projectFacade = null;
 
-	public JsonObject toJson(ProjectRepairFacade projectFacade, List<TestInspectionResult> resultByTest) {
+	public JsonObject toJsonError(String name, ProjectRepairFacade projectFacade, Exception e) {
 
 		this.projectFacade = projectFacade;
 
@@ -74,6 +74,27 @@ public class JSonResultOriginal {
 		root.addProperty("project", projectFacade.getProperties().getFixid());
 		JsonObject summary = new JsonObject();
 		root.add("project", summary);
+		String location = ConfigurationProperties.getProperty("location");
+		String commitid = executeCommand(location, "git rev-parse HEAD");
+
+		summary.addProperty("commitid", commitid);
+
+		root.addProperty("error", e.getMessage());
+		JsonArray testsArray = new JsonArray();
+		root.add("tests", testsArray);
+
+		return root;
+	}
+
+	public JsonObject toJson(String name, ProjectRepairFacade projectFacade, List<TestInspectionResult> resultByTest) {
+
+		this.projectFacade = projectFacade;
+
+		JsonObject root = new JsonObject();
+		root.addProperty("project", projectFacade.getProperties().getFixid());
+		JsonObject summary = new JsonObject();
+		root.add("project", summary);
+		String projectName = name;
 		String location = ConfigurationProperties.getProperty("location");
 		String commitid = executeCommand(location, "git rev-parse HEAD");
 		String branch = executeCommand(location, "git rev-parse --abbrev-ref HEAD");
@@ -213,7 +234,7 @@ public class JSonResultOriginal {
 				}
 			}
 
-			if (tr.isExceptionExpected()) {
+			if (tr.isExceptionExpected() && tr.testElementsNotPresentInTest()) {
 				JsonObject testWithException = new JsonObject();
 				summaryRottens.add(testWithException);
 				testWithException.addProperty(TYPE_ROTTEN, TEST_WITH_EXCEPTION);
@@ -284,6 +305,7 @@ public class JSonResultOriginal {
 			}
 		}
 
+		summary.addProperty("name", projectName);
 		summary.addProperty("remote", remote);
 		summary.addProperty("localLocation", location);
 		summary.addProperty("nr_Test_With_Control_Flow_Stmt", nrTestWithControlStruct);
