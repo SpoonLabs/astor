@@ -3,6 +3,7 @@ package fr.inria.astor.approaches.tos.operator.metaevaltos;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -49,11 +50,14 @@ public class SupportOperators {
 	public static List<CtVariableAccess> collectAllVarsFromDynaIngredients(List<IngredientFromDyna> candidates,
 			ModificationPoint modificationPoint) {
 		// First collect variables from dynamoth
-		List<VariableImpl> dynaVars = new ArrayList<>();
+		Set<String> dynaVars = new HashSet<>();
 		List<CtVariableAccess> varAccessList = new ArrayList();
 
 		for (IngredientFromDyna candidateIngr : candidates) {
-			dynaVars.addAll(candidateIngr.getVariable());
+			List<VariableImpl> variablesFromDina = candidateIngr.getVariable();
+			for (VariableImpl ctVariableAccess : variablesFromDina) {
+				addVarNames(dynaVars, ctVariableAccess);
+			}
 		}
 
 		if (dynaVars.isEmpty()) {
@@ -63,11 +67,11 @@ public class SupportOperators {
 		// the context of the modification point)
 		List<CtVariable> varAccessCandidate = modificationPoint.getContextOfModificationPoint();
 
-		for (VariableImpl aDynaVariable : dynaVars) {
+		for (String aDynaVariable : dynaVars) {
 
 			for (CtVariable aVariableSinScope : varAccessCandidate) {
 
-				if (aVariableSinScope.getSimpleName().equals(aDynaVariable.getVariableName())) {
+				if (aVariableSinScope.getSimpleName().equals(aDynaVariable)) {
 
 					CtVariableAccess aVariableRead = MutationSupporter.getFactory()
 							.createVariableRead(aVariableSinScope.getReference(), false);
@@ -79,6 +83,16 @@ public class SupportOperators {
 		}
 
 		return varAccessList;
+	}
+
+	public static void addVarNames(Set<String> dynaVars, VariableImpl ctVariableAccess) {
+		String dynavarname = ctVariableAccess.getVariableName();
+		if (!dynaVars.contains(dynavarname)) {
+			dynaVars.add(dynavarname);
+		}
+		if (ctVariableAccess.getTarget() != null && ctVariableAccess.getTarget() instanceof VariableImpl) {
+			addVarNames(dynaVars, (VariableImpl) ctVariableAccess.getTarget());
+		}
 	}
 
 	/**

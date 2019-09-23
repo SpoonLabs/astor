@@ -123,8 +123,12 @@ public class VarReplacementByAnotherVarOp extends FineGrainedExpressionReplaceOp
 				continue;
 			}
 
+			CtParameter pr = MutationSupporter.getFactory().createParameter(null, iVarInContext.getType(),
+					iVarInContext.getSimpleName());
+
 			CtVariableAccess iVarAccessFromContext = MutationSupporter.getFactory()
-					.createVariableRead(iVarInContext.getReference(), false);
+					.createVariableRead(pr.getReference(), false);
+
 			Ingredient ingredient = new Ingredient(iVarAccessFromContext);
 			// we use this property to indicate the old variable to replace
 			ingredient.setDerivedFrom(variableAccessToReplace);

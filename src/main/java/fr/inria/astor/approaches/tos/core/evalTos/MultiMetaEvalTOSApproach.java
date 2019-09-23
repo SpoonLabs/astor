@@ -33,6 +33,7 @@ import fr.inria.astor.approaches.tos.operator.metaevaltos.MethodXVariableReplace
 import fr.inria.astor.approaches.tos.operator.metaevaltos.OperatorReplacementOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.SupportOperators;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromIfOp;
+import fr.inria.astor.approaches.tos.operator.metaevaltos.UnwrapfromMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByAnotherVarOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.VarReplacementByMethodCallOp;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.WrapwithIfNullCheck;
@@ -119,7 +120,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 //		operators.add("Method_RW_Method", new MethodXMethodReplacementDiffNameOp());// TODO
 //		operators.add("Method_RW_Method", new MethodXMethodReplacementDiffArgumentsOp());
 //		operators.add("Method_RW_Method", new MethodXMethodReplacementArgumentRemoveOp());
-//		operators.add("unwrapMethod", new UnwrapfromMethodCallOp());
+		operators.add("unwrapMethod", new UnwrapfromMethodCallOp());
 //		// ops.add("", new UnwrapfromTryOp());//ignored
 		operators.add("unwrapIfElse", new UnwrapfromIfOp());
 		operators.add("expLogicReduce", new LogicRedOperator());
@@ -174,12 +175,14 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 	}
 
+	private boolean reachTimeout = false;
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void startEvolution() throws Exception {
 
+		reachTimeout = false;
 		dateInitEvolution = new Date();
-		int maxMinutes = ConfigurationProperties.getPropertyInt("maxtime");
 		generationsExecuted = 1;
 		modifPointsAnalyzed = 0;
 		evaluatedProgramVariants.clear();
@@ -207,9 +210,10 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 				log.info("\n*************\n\n MP (" + modifPointsAnalyzed + "/"
 						+ parentVariant.getModificationPoints().size() + ") "
 						+ +Long.valueOf(((new Date().getTime() - this.dateEngineCreation.getTime()) / 60000))
-						+ " minutes passed,  location to modify: " + iModifPoint);
+						+ " minutes passed,  location to modify: " + iModifPoint + " sol found: "
+						+ this.solutions.size());
 
-				System.out.println("MP code: " + iModifPoint.getCodeElement());
+				log.debug("MP code: " + iModifPoint.getCodeElement());
 
 				boolean existsSolution = analyzeModificationPoint(parentVariant, iModifPoint);
 
@@ -217,13 +221,12 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 					if (ConfigurationProperties.getPropertyBool("stopfirst") || (this.solutions
 							.size() >= ConfigurationProperties.getPropertyInt("maxnumbersolutions"))) {
+						log.info("Stoping solution research");
 						this.setOutputStatus(AstorOutputStatus.STOP_BY_PATCH_FOUND);
 						return;
 					}
 				}
-
-				if (!belowMaxTime(dateInitEvolution, maxMinutes)) {
-
+				if (this.reachTimeout || !stillTime()) {
 					this.setOutputStatus(AstorOutputStatus.TIME_OUT);
 					log.info("Max time reached");
 					return;
@@ -235,6 +238,14 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		System.out.println("\nEND exhaustive search Summary:\n" + "modpoint:" + modifPointsAnalyzed + ":all:"
 				+ totalmodfpoints + ":operators:" + operationsExecuted);
 
+	}
+
+	private boolean stillTime() {
+		boolean stillTime = belowMaxTime(dateInitEvolution, ConfigurationProperties.getPropertyInt("maxtime"));
+		if (!stillTime)
+			this.reachTimeout = true;
+
+		return stillTime;
 	}
 
 	int nrVariant = 1;
@@ -262,10 +273,24 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		for (IPrediction i_prediction : predictionsForModifPoint) {
 			log.info("Prediction nr " + (++iPredictionOfPoint) + "/" + predictionsForModifPoint.size());
 
+			// boolean foundsol = analyzePrediction(parentVariant, iModifPoint,
+			// i_prediction);
+
 			existSolution = analyzePrediction(parentVariant, iModifPoint, i_prediction);
 
-			if (existSolution && ConfigurationProperties.getPropertyBool("stopfirst")) {
-				return true;
+			if (existSolution) {
+				existSolution = true;
+
+				if (ConfigurationProperties.getPropertyBool("stopfirst")) {
+					return true;
+				}
+			}
+			if (!stillTime()) {
+				log.info("Timeout reach at prediction " + (iPredictionOfPoint) + "/" + predictionsForModifPoint.size()
+						+ " of mod point" + iModifPoint.identified);
+
+				this.reachTimeout = true;
+				return existSolution;
 			}
 		}
 		return existSolution;
@@ -413,6 +438,12 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 					existSolution = true;
 					// storing pred
 					predictedVariantWithSol.add(i_prediction, iProgramVariant);
+					try {
+						log.info("Meta Solution summary: \n"
+								+ getSolutionString(iProgramVariant.getOperations().keySet().size(), iProgramVariant));
+					} catch (Exception e) {
+						log.error("Error printing the meta solution ");
+					}
 				}
 				if (ConfigurationProperties.getPropertyBool("saveallevaluatedvariants")) {
 					this.evaluatedProgramVariants.add(iProgramVariant);
@@ -428,6 +459,13 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 				if (existSolution && ConfigurationProperties.getPropertyBool("stopfirst")) {
 					return true;
 				}
+
+				if (!stillTime()) {
+					log.info("Timeout reach at variant evaluation " + iProgramVariant.getId());
+					this.reachTimeout = true;
+					return existSolution;
+				}
+
 			} catch (Exception e) {
 				log.error("Error validating variant " + iProgramVariant.getId());
 				log.error(e);
@@ -684,7 +722,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 			for (Map<Integer, Integer> candidate : allCandidates) {
 
 				this.generationsExecuted++;
-				log.debug("Evaluating candidate nr " + candidateNumber + " out of " + allCandidates.size());
+				log.info("Eval pv: " + variant.getId() + ", mut nr " + candidateNumber + " / " + allCandidates.size());
 				log.debug("Feature of candidate " + candidateNumber + ": " + candidate);
 				// for each point we put a value:
 				for (Integer mutid : candidate.keySet()) {
@@ -703,7 +741,14 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 					log.error("Validation Null for metaid " + candidateNumber);
 				}
 
+				if (!stillTime()) {
+					log.info("Stop evaluating meta due to timeout at candidate " + candidateNumber);
+					this.reachTimeout = true;
+					break;
+				}
+
 				candidateNumber++;
+
 			}
 
 			variant.setValidationResult(megavalidation);
@@ -724,6 +769,9 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		// Replace meta per "plain" variants
 		List<ProgramVariant> previousSolutions = new ArrayList(this.solutions);
 
+		log.info("Meta Analysis: Nr Solutions " + previousSolutions.size());
+
+		log.info(this.getSolutionData(previousSolutions, this.generationsExecuted) + "\n");
 		//
 		// Let's remove all solutions
 		this.solutions.clear();
@@ -731,6 +779,9 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 		for (ProgramVariant originalVariantSolution : previousSolutions) {
 
 			if (originalVariantSolution instanceof MetaProgramVariant) {
+
+				log.info("Solution found Meta pv " + originalVariantSolution);
+
 				MetaProgramVariant metap = (MetaProgramVariant) originalVariantSolution;
 				List<ProgramVariant> allPlainProgramVariant = metap.getAllPlainProgramVariant();
 				// Let's verify that every solution in the meta passes all the test cases
@@ -740,11 +791,15 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 					// Apply the changes
 
 					for (OperatorInstance oi : plainNewVariantSolution.getAllOperations()) {
+						try {
+							boolean applyied = oi.applyModification();
+							log.debug("applied op " + oi.getOperationApplied().name() + ": " + applyied);
 
-						boolean applyied = oi.applyModification();
-						log.debug("applied op " + oi.getOperationApplied().name() + ": " + applyied);
-
-						log.debug(oi.getModified());
+							log.debug(oi.getModified());
+						} catch (Exception e) {
+							log.error("Error when calculating plain variant from meta");
+							log.error(e);
+						}
 					}
 
 					try {
@@ -773,6 +828,7 @@ public class MultiMetaEvalTOSApproach extends EvalTOSClusterApproach {
 
 			} else {
 				// We add the "plain" solutions
+				log.info("Solution found not meta pv " + originalVariantSolution);
 				this.solutions.add(originalVariantSolution);
 			}
 
