@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtPackageIngredientScope;
+import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 
 /**
@@ -21,9 +22,19 @@ public class ChartTest {
 
 	@Test
 	public void testChart1() throws Exception {
+		AstorMain main1 = new AstorMain();
 
 		File projectLocation = new File("./examples/chart_1");
-		AstorMain main1 = new AstorMain();
+
+		String[] args = commandChart1(projectLocation).flat();
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		assertTrue(main1.getEngine().getSolutions().size() > 0);
+
+	}
+
+	public static CommandSummary commandChart1(File projectLocation) {
 		File dirLibs = new File(projectLocation.getAbsolutePath() + File.separator + "/lib/");
 		String dep = getDependencies(dirLibs);
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
@@ -50,14 +61,11 @@ public class ChartTest {
 				//
 
 		};
-		System.out.println(Arrays.toString(args));
-		main1.execute(args);
 
-		assertTrue(main1.getEngine().getSolutions().size() > 0);
-
+		return new CommandSummary(args);
 	}
 
-	private String getDependencies(File dirLibs) {
+	private static String getDependencies(File dirLibs) {
 		String dep = "";
 		System.out.println(dirLibs);
 		for (File depend : dirLibs.listFiles()) {

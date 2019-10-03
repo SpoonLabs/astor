@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;

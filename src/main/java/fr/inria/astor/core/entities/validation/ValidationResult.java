@@ -1,4 +1,4 @@
-package fr.inria.astor.core.entities;
+package fr.inria.astor.core.entities.validation;
 /**
  * 
  * @author matias

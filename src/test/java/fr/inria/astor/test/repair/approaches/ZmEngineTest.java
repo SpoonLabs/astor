@@ -10,7 +10,7 @@ import org.junit.Test;
 import fr.inria.astor.approaches._3sfix.FileProgramVariant;
 import fr.inria.astor.approaches._3sfix.ZmEngine;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.entities.VariantValidationResult;
+import fr.inria.astor.core.entities.validation.VariantValidationResult;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;

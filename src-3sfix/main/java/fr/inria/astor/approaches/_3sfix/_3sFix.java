@@ -23,9 +23,9 @@ import fr.inria.main.evolution.AstorMain;
 import fr.inria.main.CommandSummary;
 
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
+import fr.inria.astor.core.entities.validation.VariantValidationResult;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.setup.ProjectConfiguration;
-import fr.inria.astor.core.entities.VariantValidationResult;
 
 import org.apache.commons.io.FileUtils;
 

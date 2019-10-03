@@ -1,4 +1,4 @@
-package fr.inria.astor.core.validation.processbased;
+package fr.inria.astor.core.validation.junit;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,8 +20,6 @@ import fr.inria.astor.approaches.tos.core.evalTos.MultiMetaEvalTOSApproach;
 import fr.inria.astor.approaches.tos.operator.metaevaltos.MetaGenerator;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectConfiguration;
-import fr.inria.astor.core.validation.junit.JUnitExternalExecutor;
-import fr.inria.astor.core.validation.junit.JUnitNologExternalExecutor;
 import fr.inria.astor.core.validation.results.TestResult;
 
 /**

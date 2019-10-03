@@ -17,7 +17,7 @@ import fr.inria.astor.approaches.scaffold.scaffoldsynthesis.ScaffoldSynthesisEnt
 import fr.inria.astor.approaches.scaffold.scaffoldsynthesis.executor.ScaffoldExecutor;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.VariantValidationResult;
+import fr.inria.astor.core.entities.validation.VariantValidationResult;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;

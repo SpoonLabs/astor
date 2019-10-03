@@ -1,4 +1,4 @@
-package fr.inria.astor.core.validation.processbased;
+package fr.inria.astor.core.validation.junit;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -10,7 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -25,7 +25,7 @@ import fr.inria.astor.util.Converters;
  * @author Matias Martinez
  *
  */
-public class ProcessValidator extends ProgramVariantValidator {
+public class JUnitProcessValidator extends ProgramVariantValidator {
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 
@@ -46,8 +46,8 @@ public class ProcessValidator extends ProgramVariantValidator {
 
 	/**
 	 * Run the validation of the program variant in two steps: one the original
-	 * failing test, the second the complete test suite (only in case the
-	 * failing now passes)
+	 * failing test, the second the complete test suite (only in case the failing
+	 * now passes)
 	 * 
 	 * @param mutatedVariant
 	 * @param projectFacade
@@ -90,44 +90,6 @@ public class ProcessValidator extends ProgramVariantValidator {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public TestCaseVariantValidationResult runFailing(ProgramVariant mutatedVariant,
-			ProjectRepairFacade projectFacade) {
-
-		try {
-			URL[] bc = createClassPath(mutatedVariant, projectFacade);
-
-			LaucherJUnitProcess testProcessRunner = new LaucherJUnitProcess();
-			String jvmPath = ConfigurationProperties.getProperty("jvm4testexecution");
-
-			TestResult trfailing = testProcessRunner.execute(jvmPath, bc,
-					projectFacade.getProperties().getFailingTestCases(),
-					ConfigurationProperties.getPropertyInt("tmax1"));
-			if (trfailing == null)
-				return null;
-			else {
-				TestCaseVariantValidationResult validationResult = new TestCasesProgramValidationResult(trfailing,
-						trfailing.wasSuccessful(), false);
-				return validationResult;
-			}
-
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public TestCaseVariantValidationResult runRegression(ProgramVariant mutatedVariant,
-			ProjectRepairFacade projectFacade) {
-		try {
-			URL[] bc = createClassPath(mutatedVariant, projectFacade);
-			return this.runRegression(mutatedVariant, projectFacade, bc);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return null;
-		}
-
 	}
 
 	protected TestCaseVariantValidationResult runRegression(ProgramVariant mutatedVariant,

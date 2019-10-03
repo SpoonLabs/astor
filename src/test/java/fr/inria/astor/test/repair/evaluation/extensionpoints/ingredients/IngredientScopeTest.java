@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.population.PopulationConformation;

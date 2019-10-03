@@ -1,6 +1,6 @@
 package fr.inria.astor.core.validation.results;
 
-import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
 
 /**
  * 

@@ -26,7 +26,7 @@ import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.PatchDiff;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.entities.VariantValidationResult;
+import fr.inria.astor.core.entities.validation.VariantValidationResult;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.faultlocalization.cocospoon.CocoFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
@@ -69,7 +69,7 @@ import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
-import fr.inria.astor.core.validation.processbased.ProcessValidator;
+import fr.inria.astor.core.validation.junit.JUnitProcessValidator;
 import fr.inria.astor.util.PatchDiffCalculator;
 import fr.inria.astor.util.TimeUtil;
 import fr.inria.main.AstorOutputStatus;
@@ -1139,7 +1139,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		} else
 		// if validation is different to default (process)
 		if (validationArgument.equals("process") || validationArgument.equals("test-suite")) {
-			ProcessValidator validator = new ProcessValidator();
+			JUnitProcessValidator validator = new JUnitProcessValidator();
 			this.setProgramValidator(validator);
 		} else {
 			this.setProgramValidator((ProgramVariantValidator) PlugInLoader.loadPlugin(ExtensionPoints.VALIDATION));

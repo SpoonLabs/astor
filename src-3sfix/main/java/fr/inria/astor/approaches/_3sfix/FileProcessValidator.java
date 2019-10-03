@@ -15,7 +15,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
-import fr.inria.astor.core.validation.processbased.ProcessValidator;
+import fr.inria.astor.core.validation.junit.JUnitProcessValidator;
 import fr.inria.astor.util.Converters;
 
 /**
@@ -23,7 +23,7 @@ import fr.inria.astor.util.Converters;
  * @author Matias Martinez
  *
  */
-public class FileProcessValidator extends ProcessValidator {
+public class FileProcessValidator extends JUnitProcessValidator {
 	SpoonClassCompiler compiled = new SpoonClassCompiler();
 
 	

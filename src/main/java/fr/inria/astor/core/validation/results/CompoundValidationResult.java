@@ -3,7 +3,7 @@ package fr.inria.astor.core.validation.results;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
 /**
  * Contains a set of Validation Results
  * @author Matias Martinez
