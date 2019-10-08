@@ -13,6 +13,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
@@ -196,6 +197,13 @@ public class JUnitProcessValidator extends ProgramVariantValidator {
 		log.debug(trregressionall);
 		return new TestCasesProgramValidationResult(trregressionall, true, trregressionall.wasSuccessful());
 
+	}
+
+	@Override
+	public List<String> findTestCasesToExecute(ProjectRepairFacade projectFacade) {
+		List<String> testCasesToRun = FinderTestCases.findTestCasesForRegression(projectFacade);
+
+		return testCasesToRun;
 	}
 
 }
