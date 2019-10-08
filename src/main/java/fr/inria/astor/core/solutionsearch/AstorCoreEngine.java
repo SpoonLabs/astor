@@ -1366,7 +1366,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		projectFacade.getProperties().setRegressionCases(testCasesFound);
 
 		log.debug("Test retrieved from classes: " + testCasesFound.size());
-
+		log.debug("Test retrieved from classes: " + testCasesFound);
 		return testCasesFound;
 
 	}

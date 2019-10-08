@@ -36,14 +36,17 @@ public class UnitFrameworkTest extends BaseEvolutionaryTest {
 		cs.command.put("-loglevel", "DEBUG");
 
 		try {
+			// Fails due to Gzoltar 0.1.1
 			main1.execute(cs.flat());
+
 			fail("it found a test");
 		} catch (Exception e) {
 			// Let's try directly:
+			e.printStackTrace();
 			try {
 				List<String> test = main1.getEngine().resolveTestsToRun();
 
-				assertTrue(test.size() == 0);
+				assertTrue(test.size() > 0);
 			} catch (Exception e1) {
 				fail("sss");
 			}
