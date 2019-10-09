@@ -53,7 +53,9 @@ public class TestFilter implements ClassFilter {
 			if (acceptTestClass(clazz)) {
 				return true;
 			}
-
+			if (acceptTestClassJUnit5(clazz)) {
+				return true;
+			}
 		}
 		if (isInSuiteTypes(TestType.JUNIT38_TEST_CLASSES)) {
 			if (acceptJUnit38Test(clazz)) {
@@ -97,6 +99,29 @@ public class TestFilter implements ClassFilter {
 					// if (name.contains(".Test"))
 					// return true;
 				}
+			}
+		} catch (NoClassDefFoundError ignore) {
+		} catch (java.lang.VerifyError e) {
+			System.out.println("Error analyzing class " + clazz.getName());
+
+			e.printStackTrace();
+
+		}
+
+		return false;
+	}
+
+	private boolean acceptTestClassJUnit5(Class<?> clazz) {
+		if (isAbstractClass(clazz)) {
+			return false;
+		}
+
+		try {
+			for (Method method : clazz.getMethods()) {
+				if (method.getAnnotation(org.junit.jupiter.api.Test.class) != null) {
+					return true;
+				}
+
 			}
 		} catch (NoClassDefFoundError ignore) {
 		} catch (java.lang.VerifyError e) {

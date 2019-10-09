@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import fr.inria.astor.approaches.extensions.minimpact.validator.EvoSuiteValidationResult;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.VariantValidationResult;
+import fr.inria.astor.core.entities.validation.VariantValidationResult;
 import fr.inria.astor.core.solutionsearch.extension.SolutionVariantSortCriterion;
 
 /**

@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import fr.inria.astor.approaches.deeprepair.CloneIngredientSearchStrategy;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ctscopes.CtClassIngredientSpace;
 import fr.inria.main.CommandSummary;

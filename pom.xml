@@ -70,6 +70,16 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>com.gzoltar</groupId>
 			<artifactId>com.gzoltar.core</artifactId>
 			<version>1.7.2</version>
@@ -270,8 +280,8 @@
 								<source>src-jmutrepair/main/java</source>
 								<source>src-cardumen/main/java</source>
 								<source>src-deeprepair/main/java</source>
-                                                                <source>src-3sfix/main/java</source>
-                                                            </sources>
+								<source>src-3sfix/main/java</source>
+							</sources>
 						</configuration>
 					</execution>
 				</executions>

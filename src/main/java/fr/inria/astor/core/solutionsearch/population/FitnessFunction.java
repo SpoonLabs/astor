@@ -1,6 +1,6 @@
 package fr.inria.astor.core.solutionsearch.population;
 
-import fr.inria.astor.core.entities.VariantValidationResult;
+import fr.inria.astor.core.entities.validation.VariantValidationResult;
 import fr.inria.astor.core.solutionsearch.extension.AstorExtensionPoint;
 
 /**

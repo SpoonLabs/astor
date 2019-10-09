@@ -25,7 +25,6 @@ import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.ingredientbased.ExhaustiveIngredientBasedEngine;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.core.solutionsearch.population.ProgramVariantFactory;
@@ -112,11 +111,8 @@ public class AstorMain extends AbstractMain {
 
 		astorCore.setVariantFactory(new ProgramVariantFactory(astorCore.getTargetElementProcessors()));
 		// Find test cases to use in validation
-		List<String> tr = FinderTestCases.findTestCasesForRegression(
-				projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT), projectFacade);
-		projectFacade.getProperties().setRegressionCases(tr);
-		log.debug("Test retrieved from classes: " + tr.size());
-		// Initialize Population
+
+		astorCore.resolveTestsToRun();
 
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
 			// We dont use FL, so at this point the do not have suspicious

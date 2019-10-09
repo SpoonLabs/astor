@@ -23,7 +23,7 @@ import org.junit.Test;
 import fr.inria.astor.approaches.extensions.minimpact.validator.EvoSuiteValidationResult;
 import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator;
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
@@ -385,7 +385,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 				+ "-stopfirst,true," + "-scope,package,-maxtime,10," + "-population,1,"
 				+ "-srcjavafolder,src/main/java/," + "-srctestfolder,src/test/java/,-binjavafolder,/target/classes/,"
 				+ "-bintestfolder,/target/test-classes/," + "-flthreshold,0.1," + "-validation,"
-				+ fr.inria.astor.approaches.extensions.minimpact.validator.RegressionValidation.class.getCanonicalName()
+				+ fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator.class
+						.getCanonicalName()
 				+ ",-testbystep";
 		String[] args = command.split(",");
 		AstorMain main1 = new AstorMain();

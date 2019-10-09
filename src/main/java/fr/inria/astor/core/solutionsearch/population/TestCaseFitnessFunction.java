@@ -1,7 +1,7 @@
 package fr.inria.astor.core.solutionsearch.population;
 
-import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
-import fr.inria.astor.core.entities.VariantValidationResult;
+import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
+import fr.inria.astor.core.entities.validation.VariantValidationResult;
 
 /**
  * Fitness function based on test suite execution.

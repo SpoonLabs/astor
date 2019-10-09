@@ -1,4 +1,4 @@
-package fr.inria.astor.core.entities;
+package fr.inria.astor.core.entities.validation;
 
 /**
  * Represents the result of a validation process. 

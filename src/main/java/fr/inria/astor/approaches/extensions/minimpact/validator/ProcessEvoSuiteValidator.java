@@ -12,13 +12,12 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.entities.TestCaseVariantValidationResult;
+import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.stats.Stats.GeneralStatEnum;
-import fr.inria.astor.core.validation.ProgramVariantValidator;
-import fr.inria.astor.core.validation.processbased.LaucherJUnitProcess;
-import fr.inria.astor.core.validation.processbased.ProcessValidator;
+import fr.inria.astor.core.validation.junit.JUnitProcessValidator;
+import fr.inria.astor.core.validation.junit.LaucherJUnitProcess;
 import fr.inria.astor.core.validation.results.TestCasesProgramValidationResult;
 import fr.inria.astor.core.validation.results.TestResult;
 import fr.inria.astor.util.Converters;
@@ -34,7 +33,7 @@ import spoon.reflect.declaration.CtType;
  * @author Matias Martinez, matias.martinez@inria.fr
  *
  */
-public class ProcessEvoSuiteValidator extends ProgramVariantValidator {
+public class ProcessEvoSuiteValidator extends JUnitProcessValidator {
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 
@@ -57,9 +56,8 @@ public class ProcessEvoSuiteValidator extends ProgramVariantValidator {
 	public TestCaseVariantValidationResult validate(ProgramVariant currentVariant, ProjectRepairFacade projectFacade) {
 
 		try {
-			ProcessValidator validator = new ProcessValidator();
 			boolean executeAlloriginalValidation = false;
-			TestCaseVariantValidationResult resultOriginal = validator.validate(currentVariant, projectFacade,
+			TestCaseVariantValidationResult resultOriginal = super.validate(currentVariant, projectFacade,
 					executeAlloriginalValidation);
 			if (resultOriginal == null || !resultOriginal.isSuccessful()) {
 				// It's not a solution, we discard this.
