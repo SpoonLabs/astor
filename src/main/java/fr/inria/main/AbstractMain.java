@@ -901,15 +901,23 @@ public abstract class AbstractMain {
 		}
 
 		if (!ConfigurationProperties.getPropertyBool("autocompile")) {
-			// compileProject(properties);
-			// } else {
-			List<String> originalBin = determineBinFolder(originalProjectRoot,
-					ConfigurationProperties.getProperty("binjavafolder"));
-			properties.setOriginalAppBinDir(originalBin);
 
-			List<String> originalBinTest = determineBinFolder(originalProjectRoot,
-					ConfigurationProperties.getProperty("bintestfolder"));
-			properties.setOriginalTestBinDir(originalBinTest);
+			String paramBinFolder = ConfigurationProperties.getProperty("binjavafolder");
+			if (paramBinFolder == null || paramBinFolder.trim().isEmpty()) {
+				throw new IllegalArgumentException("The bin folders for java src do not exist.");
+			} else {
+				String[] singleFolders = paramBinFolder.split(File.pathSeparator);
+				List<String> originalBin = determineBinFolder(originalProjectRoot, singleFolders);
+				properties.setOriginalAppBinDir(originalBin);
+			}
+			String paramBinTestFolder = ConfigurationProperties.getProperty("bintestfolder");
+			if (paramBinTestFolder == null || paramBinTestFolder.trim().isEmpty()) {
+				throw new IllegalArgumentException("The bin folders  for tests do not exist.");
+			} else {
+				String[] singleBinTestFolders = paramBinTestFolder.split(File.pathSeparator);
+				List<String> originalBinTest = determineBinFolder(originalProjectRoot, singleBinTestFolders);
+				properties.setOriginalTestBinDir(originalBinTest);
+			}
 		}
 
 		properties.setFailingTestCases(failingTestCases);
@@ -923,11 +931,16 @@ public abstract class AbstractMain {
 		return ce;
 	}
 
-	private List<String> determineBinFolder(String originalProjectRoot, String paramBinFolder) {
+	private List<String> determineBinFolder(String originalProjectRoot, String[] singleFolders) {
 
 		List<String> bins = new ArrayList();
-		String[] singleFolders = paramBinFolder.split(File.pathSeparator);
+
 		for (String folder : singleFolders) {
+
+			if (folder.trim().isEmpty()) {
+				throw new IllegalArgumentException("The bin folder is empty");
+			}
+
 			File fBin = new File(originalProjectRoot + File.separator + folder).getAbsoluteFile();
 			if (Files.exists(fBin.toPath())) {
 				bins.add(fBin.getAbsolutePath());
