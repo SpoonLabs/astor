@@ -106,6 +106,8 @@ public class TestFilter implements ClassFilter {
 
 			e.printStackTrace();
 
+		} catch (java.lang.ClassFormatError er) {
+			System.err.println("Error trucated class " + clazz.getName());
 		}
 
 		return false;
@@ -129,6 +131,8 @@ public class TestFilter implements ClassFilter {
 
 			e.printStackTrace();
 
+		} catch (java.lang.ClassFormatError er) {
+			System.err.println("Error trucated class " + clazz.getName());
 		}
 
 		return false;
