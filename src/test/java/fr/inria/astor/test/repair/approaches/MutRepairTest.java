@@ -12,77 +12,89 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.main.evolution.AstorMain;
+
 /**
  * Test for MutRepair engine. (it mutates if conditions)
+ * 
  * @author Matias Martinez matias.martinez@inria.fr
  *
  */
 public class MutRepairTest extends BaseEvolutionaryTest {
-	
-	
+
 	@Test
-	//@Ignore
+	// @Ignore
 	public void testMath85issue280() throws Exception {
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath()
-			+	File.pathSeparator+ new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath() ;
-		String[] args = new String[] { 
-				"-dependencies", dep, "-mode", "mutation", "-failing",
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath() + File.pathSeparator
+				+ new File("./examples/libs/commons-discovery-0.5.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "mutation", "-failing",
 				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
-				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons",
-				 "-srcjavafolder", "/src/java/",
-				"-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.1", 
-				"-stopfirst", "true",
-				"-maxtime", "15",
-				"-seed","10"
-				
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.1", "-stopfirst", "true",
+				"-maxtime", "15", "-seed", "10"
+
 		};
 		System.out.println(Arrays.toString(args));
 		AstorMain m = new AstorMain();
 		m.execute(args);
 		assertTrue(m.getEngine().getSolutions().size() > 0);
-		//location= org.apache.commons.math.analysis.solvers.UnivariateRealSolverUtils
-		//		line= 198
-		//		original statement= if ((fa * fb) >= 0.0) {
+		// location= org.apache.commons.math.analysis.solvers.UnivariateRealSolverUtils
+		// line= 198
+		// original statement= if ((fa * fb) >= 0.0) {
 	}
-	
-	
+
 	@Test
 	@Ignore
 	public void testMath288() throws Exception {
 		File out = new File("./outputMutation/");
-			String[] args = new String[] {
-				"-dependencies", new File("./examples/libs/junit-4.4.jar").getAbsolutePath(),
-				"-mode","mutation",
-				"-failing", 
-				"org.apache.commons.math.optimization.linear.SimplexSolverTest", 
-				"-location",new File("./examples/Math-issue-288/").getAbsolutePath(),							
-				"-srcjavafolder", "/src/main/java/",
-				"-srctestfolder", "/src/test/java/", 
-				"-binjavafolder", "/target/classes/", 
-				"-bintestfolder","/target/test-classes/",
-				"-flthreshold","0.1",
-				"-out",out.getAbsolutePath(),
-				"-stopfirst", "true",
-				"-seed","10"
-				};
+		String[] args = new String[] { "-dependencies", new File("./examples/libs/junit-4.4.jar").getAbsolutePath(),
+				"-mode", "mutation", "-failing", "org.apache.commons.math.optimization.linear.SimplexSolverTest",
+				"-location", new File("./examples/Math-issue-288/").getAbsolutePath(), "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes/",
+				"-bintestfolder", "/target/test-classes/", "-flthreshold", "0.1", "-out", out.getAbsolutePath(),
+				"-stopfirst", "true", "-seed", "10" };
 		System.out.println(Arrays.toString(args));
 		AstorMain main1 = new AstorMain();
 		main1.execute(args);
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
-		log.debug("Solutions "+solutions);
+		log.debug("Solutions " + solutions);
 		assertNotNull(solutions);
 		int nrsolutions = solutions.size();
 		assertEquals(1, nrsolutions);
-		
+
 	}
-	
 
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testIssue196bis_repairing_jmutrepair() throws Exception {
 
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jmutrepair", //
 
-	
-	
+				"-location", new File("./examples/issues/LeapYearIssue196-bis/").getAbsolutePath(), "-package",
+				"LeapYear.bug1", "-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/",
+				"-binjavafolder", "/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel",
+				"7", "-flthreshold", "0.5", "-stopfirst", "true"// Forced
+
+		};
+
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+		assertTrue(variants.size() > 0);
+
+		ProgramVariant oneVariant = variants.get(0);
+		assertTrue(oneVariant.getModificationPoints().size() > 0);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertEquals(1, solutions.size());
+
+	}
 
 }

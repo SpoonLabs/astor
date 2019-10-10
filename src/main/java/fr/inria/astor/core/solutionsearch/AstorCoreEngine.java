@@ -175,37 +175,37 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		currentStat.getGeneralStats().put(GeneralStatEnum.EXECUTION_IDENTIFIER,
 				ConfigurationProperties.getProperty("projectIdentifier"));
 
-		try {
-			this.computePatchDiff(this.solutions);
-		} catch (Exception e) {
-			log.error("Problem at computing diff" + e);
-		}
-		this.sortPatches();
 		this.printFinalStatus();
 
-		log.info(this.getSolutionData(this.solutions, this.generationsExecuted) + "\n");
-
-		// Recreate statistiques of patches
-		if (!solutions.isEmpty()) {
-			patchInfo = createStatsForPatches(solutions, generationsExecuted, dateInitEvolution);
-		}
-
-		String output = this.projectFacade.getProperties().getWorkingDirRoot();
-
-		// Reporting results
-		for (ReportResults out : this.getOutputResults()) {
-			out.produceOutput(patchInfo, this.currentStat.getGeneralStats(), output);
-		}
-
-		if (ConfigurationProperties.getPropertyBool("removeworkingfolder")) {
-			File fout = new File(output);
-
+		if (this.solutions.size() > 0) {
+			this.sortPatches();
 			try {
-				FileUtils.deleteDirectory(fout);
-			} catch (IOException e) {
-				e.printStackTrace();
-				log.error(e);
+
+				this.computePatchDiff(this.solutions);
+
+			} catch (Exception e) {
+				log.error("Problem at computing diff" + e);
 			}
+			log.info(this.getSolutionData(this.solutions, this.generationsExecuted) + "\n");
+
+			patchInfo = createStatsForPatches(solutions, generationsExecuted, dateInitEvolution);
+
+			// Reporting results
+			String output = this.projectFacade.getProperties().getWorkingDirRoot();
+			for (ReportResults out : this.getOutputResults()) {
+				out.produceOutput(patchInfo, this.currentStat.getGeneralStats(), output);
+				if (ConfigurationProperties.getPropertyBool("removeworkingfolder")) {
+					File fout = new File(output);
+
+					try {
+						FileUtils.deleteDirectory(fout);
+					} catch (IOException e) {
+						e.printStackTrace();
+						log.error(e);
+					}
+				}
+			}
+
 		}
 
 	}
@@ -246,15 +246,15 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	public void printFinalStatus() {
 		log.info("\n----SUMMARY_EXECUTION---");
 		if (!this.solutions.isEmpty()) {
-			log.debug("End Repair Loops: Found solution");
-			log.debug("Solution stored at: " + projectFacade.getProperties().getWorkingDirForSource());
+			log.info("End Repair Search: Found solution");
+			log.info("Solution stored at: " + projectFacade.getProperties().getWorkingDirForSource());
+			log.debug("\nNumber solutions:" + this.solutions.size());
+			for (ProgramVariant variant : solutions) {
+				log.debug("f (sol): " + variant.getFitness() + ", " + variant);
+			}
 
 		} else {
-			log.debug("End Repair Loops: NOT Found solution");
-		}
-		log.debug("\nNumber solutions:" + this.solutions.size());
-		for (ProgramVariant variant : solutions) {
-			log.debug("f (sol): " + variant.getFitness() + ", " + variant);
+			log.info("End Repair Search: NOT Found solution");
 		}
 		log.debug("\nAll variants:");
 		for (ProgramVariant variant : variants) {

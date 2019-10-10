@@ -526,4 +526,34 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testIssue196_notrepaired_jgenprog() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		// File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", //
+
+				"-location", new File("./examples/issues/LeapYearIssue196/").getAbsolutePath(), "-package",
+				"LeapYear.bug1", "-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/",
+				"-binjavafolder", "/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel",
+				"7", "-flthreshold", "0.5", "-stopfirst", "true"// Forced
+
+		};
+
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+		assertTrue(variants.size() > 0);
+
+		ProgramVariant oneVariant = variants.get(0);
+		assertTrue(oneVariant.getModificationPoints().size() > 0);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertEquals(0, solutions.size());
+
+	}
+
 }
