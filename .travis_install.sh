@@ -65,5 +65,7 @@ compile "examples/lang_55/"
 compile "examples/math_57/"
 compile "examples/math_70_modified/"
 compile "examples/lang_7/"
+compile "examples/issues/LeapYearIssue196/"
+compile "examples/issues/LeapYearIssue196-bis/"
 
 
