@@ -87,18 +87,23 @@ public class RtEngine extends AstorCoreEngine {
 	@Override
 	public void startEvolution() throws Exception {
 
-		if (!ConfigurationProperties.getPropertyBool("skipanalysis")) {
-			try {
-				RuntimeInformation ri = computeDynamicInformation();
-				analyzeTestSuiteExecution(ri);
+		if (projectFacade.getProperties().getRegressionTestCases().isEmpty()) {
+			log.error("No test can be found");
+			exceptionReceived = new Exception("No test can be found");
+		} else {
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.error(e);
-				exceptionReceived = e;
+			if (!ConfigurationProperties.getPropertyBool("skipanalysis")) {
+				try {
+					RuntimeInformation ri = computeDynamicInformation();
+					analyzeTestSuiteExecution(ri);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.error(e);
+					exceptionReceived = e;
+				}
 			}
 		}
-
 	}
 
 	public RuntimeInformation computeDynamicInformation() throws Exception {

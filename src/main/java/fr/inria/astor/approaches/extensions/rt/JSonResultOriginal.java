@@ -147,40 +147,40 @@ public class JSonResultOriginal {
 			int r = add_ASSERTIONS(projectFacade, commitid, branch, remote, projectsubfolder, tr, summaryRottens,
 					uniquesTypesRottern, resultClassification.contextAssertion, ROTTEN_CONTEXT_DEP_ASSERTIONS);
 			onerotten = onerotten || (r > 0);
-			nrRtAssertion += r;
+			nrRtAssertion += (r > 0) ? 1 : 0;
 			//
 
 			r = add_HELPERS_CALL(commitid, branch, remote, projectsubfolder, tr, summaryRottens, uniquesTypesRottern,
 					resultClassification.contextHelperCall, ROTTEN_CONTEXT_DEP_HELPERS_CALL);
 			onerotten = onerotten || (r > 0);
-			nrRtHelperCall += r;
+			nrRtHelperCall += (r > 0) ? 1 : 0;
 
 			//
 
 			r = add_HELPERS_ASSERTION(commitid, branch, remote, projectsubfolder, tr, summaryRottens,
 					uniquesTypesRottern, resultClassification.contextHelperAssertion, ROTTEN_CONTEXT_DEP_ASSERTIONS);
 			onerotten = onerotten || (r > 0);
-			nrRttHelperAssert += r;
+			nrRttHelperAssert += (r > 0) ? 1 : 0;
 			//
 			/// ------Now the full-----
 
 			r = add_ASSERTIONS(projectFacade, commitid, branch, remote, projectsubfolder, tr, summaryRottens,
 					uniquesTypesRottern, resultClassification.fullRottenAssert, FULL_ROTTEN_TEST_ASSERTIONS);
 			onerotten = onerotten || (r > 0);
-			nrRtFull += r;
+			nrRtFull += (r > 0) ? 1 : 0;
 			//
 
 			r = add_HELPERS_CALL(commitid, branch, remote, projectsubfolder, tr, summaryRottens, uniquesTypesRottern,
 					resultClassification.fullRottenHelperCall, FULL_ROTTEN_TEST_HELPERS_CALL);
 			onerotten = onerotten || (r > 0);
-			nrRtFull += r;
+			nrRtFull += (r > 0) ? 1 : 0;
 
 			//
 			r = add_HELPERS_ASSERTION(commitid, branch, remote, projectsubfolder, tr, summaryRottens,
 					uniquesTypesRottern, resultClassification.fullRottenHelperAssert,
 					FULL_ROTTEN_TEST_HELPERS_ASSERTION);
 			onerotten = onerotten || (r > 0);
-			nrRtFull += r;
+			nrRtFull += (r > 0) ? 1 : 0;
 
 			//
 			if (!resultClassification.skip.isEmpty()) {
@@ -195,9 +195,9 @@ public class JSonResultOriginal {
 					summaryRottens.add(singleSkip);
 					singleSkip.addProperty(TYPE_ROTTEN, ROTTEN_SKIP);
 					writeJsonLink(commitid, branch, remote, projectsubfolder, skip, singleSkip);
-					nrSkip++;
 					uniquesTypesRottern.add(ROTTEN_SKIP);
 				}
+				nrSkip++;
 			}
 
 			//
@@ -212,9 +212,9 @@ public class JSonResultOriginal {
 					onerotten = true;
 					summaryRottens.add(missedJson);
 					missedJson.addProperty(TYPE_ROTTEN, TEST_MISSED_FAIL);
-					nrAllMissed++;
 					uniquesTypesRottern.add(TEST_MISSED_FAIL);
 				}
+				nrAllMissed++;
 			}
 
 			//
@@ -229,11 +229,11 @@ public class JSonResultOriginal {
 					onerotten = true;
 					summaryRottens.add(missedJson);
 					missedJson.addProperty(TYPE_ROTTEN, TEST_WITH_REDUNDANT_ASSERTION);
-					nrAllRedundant++;
 					uniquesTypesRottern.add(TEST_WITH_REDUNDANT_ASSERTION);
 				}
+				nrAllRedundant++;
 			}
-
+			boolean withexception = false;
 			if (tr.isExceptionExpected() && tr.testElementsNotPresentInTest()) {
 				JsonObject testWithException = new JsonObject();
 				summaryRottens.add(testWithException);
@@ -259,7 +259,7 @@ public class JSonResultOriginal {
 					failsAr.add(failJson);
 				}
 
-				onerotten = true;
+				withexception = true;
 				nrWithExceptions++;
 				uniquesTypesRottern.add(TEST_WITH_EXCEPTION);
 			}
@@ -291,6 +291,9 @@ public class JSonResultOriginal {
 			if (onerotten) {
 				testsArray.add(testjson);
 				nrRtest++;
+				rTestclasses.add(tr.getNameOfTestClass());
+			} else if (withexception) {
+				testsArray.add(testjson);
 				rTestclasses.add(tr.getNameOfTestClass());
 			}
 
