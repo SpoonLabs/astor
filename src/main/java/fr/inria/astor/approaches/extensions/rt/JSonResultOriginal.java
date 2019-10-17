@@ -123,6 +123,9 @@ public class JSonResultOriginal {
 			testjson.addProperty("testclass", tr.getNameOfTestClass());
 			testjson.addProperty("testname", tr.getTestMethodFromClass());
 			testjson.addProperty("expectsexception", (tr.getExpectException().size() > 0) ? "true" : "false");
+			testjson.addProperty("isonlyassume", (tr.isOnlyAssumeExecuted()) ? "true" : "false");
+			testjson.addProperty("nr_assume", tr.getAllAssumesFromTest().size());
+
 			writeJsonLink(commitid, branch, remote, projectsubfolder, tr.getTestMethodModel(), testjson);
 
 			boolean onerotten = false;
@@ -201,8 +204,8 @@ public class JSonResultOriginal {
 			}
 
 			//
-			if (!resultClassification.missed.isEmpty()) {
-				for (AsAssertion missedInv : resultClassification.missed) {
+			if (!resultClassification.missedFail.isEmpty()) {
+				for (AsAssertion missedInv : resultClassification.missedFail) {
 					JsonObject missedJson = new JsonObject();
 					missedJson.addProperty("code_assertion", missedInv.toString().toString());
 					missedJson.addProperty("line_assertion", getPosition(missedInv.getCtAssertion()));

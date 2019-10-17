@@ -275,7 +275,7 @@ public class RtEngine extends AstorCoreEngine {
 
 		// The missed fails are removed from the assertion list (they are a
 		// sub-category).
-		// allAssertionsFromTest.removeAll(allMissedFailFromTest);
+		allAssertionsFromTest.removeAll(allMissedFailFromTest);
 
 		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, allClasses);
 
@@ -714,7 +714,7 @@ public class RtEngine extends AstorCoreEngine {
 		public boolean isRotten() {
 			return !this.getClassificationAssert().getResultNotExecuted().isEmpty()
 					|| !this.getClassificationHelperAssertion().getResultNotExecuted().isEmpty()
-					|| !this.getAllMissedFailFromTest().getResultNotExecuted().isEmpty()
+					|| (!this.getAllMissedFailFromTest().getResultNotExecuted().isEmpty())
 					|| !this.getAllSkipFromTest().isEmpty();
 		}
 
@@ -725,7 +725,9 @@ public class RtEngine extends AstorCoreEngine {
 		public boolean testElementsNotPresentInTest() {
 			return rAssert.resultExecuted.isEmpty() && rAssert.resultNotExecuted.isEmpty()
 					&& rHelperCall.resultExecuted.isEmpty() && rHelperCall.resultNotExecuted.isEmpty()
-					&& rHelperAssertion.resultExecuted.isEmpty() && rHelperAssertion.resultNotExecuted.isEmpty();
+					&& rHelperAssertion.resultExecuted.isEmpty() && rHelperAssertion.resultNotExecuted.isEmpty()
+					&& allMissedFailFromTest.resultExecuted.isEmpty()
+					&& allMissedFailFromTest.resultNotExecuted.isEmpty();
 		}
 
 		public CtExecutable getTestMethodModel() {
@@ -887,6 +889,10 @@ public class RtEngine extends AstorCoreEngine {
 			return allAssumesFromTest;
 		}
 
+		public List<CtInvocation> getAllFailsFromTest() {
+			return allFailsFromTest;
+		}
+
 	}
 
 	public class TestRottenAnalysisResult {
@@ -895,7 +901,7 @@ public class RtEngine extends AstorCoreEngine {
 		public List<Helper> fullRottenHelperAssert = Collections.EMPTY_LIST;
 		public List<AsAssertion> fullRottenAssert = Collections.EMPTY_LIST;
 		public boolean smokeTest = false;
-		public List<AsAssertion> missed = Collections.EMPTY_LIST;
+		public List<AsAssertion> missedFail = Collections.EMPTY_LIST;
 		public List<Skip> skip = Collections.EMPTY_LIST;
 		public List<Helper> contextHelperCall = Collections.EMPTY_LIST;
 		public List<Helper> contextHelperAssertion = Collections.EMPTY_LIST;
@@ -917,7 +923,7 @@ public class RtEngine extends AstorCoreEngine {
 			this.fullRottenHelperAssert = fullRottenHelperAssert;
 			this.fullRottenAssert = fullRottenAssert;
 			this.smokeTest = smokeTest;
-			this.missed = missed;
+			this.missedFail = missed;
 			this.redundantAssertion = allRedundantFromTest;
 			// this.skip = skip;
 			this.contextHelperCall = contextHelperCall;
