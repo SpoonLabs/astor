@@ -55,6 +55,10 @@ import spoon.support.reflect.declaration.CtClassImpl;
  */
 public class RtEngine extends AstorCoreEngine {
 
+	private static final String FAIL = "fail";
+
+	private static final String ASSERT = "assert";
+
 	List<SuspiciousCode> allExecutedStatements = null;
 
 	public List<TestInspectionResult> resultByTest = new ArrayList<>();
@@ -259,7 +263,7 @@ public class RtEngine extends AstorCoreEngine {
 		if (allExpectedExceptionFromTest.size() > 0) {
 			log.debug("Expected exception found at " + aTestMethodFromClass);
 		}
-
+		List<CtInvocation> allAssumesFromTest = filterAssertions(allStmtsFromClass);
 		List<CtInvocation> allAssertionsFromTest = filterAssertions(allStmtsFromClass);
 		List<CtInvocation> allFailsFromTest = filterFails(allStmtsFromClass);
 		List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass, new ArrayList());
@@ -1162,24 +1166,19 @@ public class RtEngine extends AstorCoreEngine {
 	 * @return
 	 */
 	private List<CtInvocation> filterAssertions(List<CtStatement> allStmtsFromClass) {
-		List<CtInvocation> assertions = new ArrayList<>();
-		for (CtStatement targetElement : allStmtsFromClass) {
-			if (targetElement instanceof CtInvocation) {
-				CtInvocation targetInvocation = (CtInvocation) targetElement;
-				if (isAssertion(targetInvocation)) {
-					assertions.add(targetInvocation);
-				}
-			}
-		}
-		return assertions;
+		return filterInvocation(allStmtsFromClass, ASSERT);
 	}
 
 	private List<CtInvocation> filterFails(List<CtStatement> allStmtsFromClass) {
+		return filterInvocation(allStmtsFromClass, FAIL);
+	}
+
+	private List<CtInvocation> filterInvocation(List<CtStatement> allStmtsFromClass, String filterName) {
 		List<CtInvocation> assertions = new ArrayList<>();
 		for (CtStatement targetElement : allStmtsFromClass) {
 			if (targetElement instanceof CtInvocation) {
 				CtInvocation targetInvocation = (CtInvocation) targetElement;
-				if (isInvWithName(targetInvocation, "fail")) {
+				if (isInvWithName(targetInvocation, filterName)) {
 					assertions.add(targetInvocation);
 				}
 			}
@@ -1291,7 +1290,7 @@ public class RtEngine extends AstorCoreEngine {
 	}
 
 	private boolean isAssertion(CtInvocation targetInvocation) {
-		return isInvWithName(targetInvocation, "assert");
+		return isInvWithName(targetInvocation, ASSERT);
 	}
 
 	/**
