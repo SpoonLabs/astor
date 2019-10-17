@@ -55,6 +55,8 @@ import spoon.support.reflect.declaration.CtClassImpl;
  */
 public class RtEngine extends AstorCoreEngine {
 
+	private static final String ASSUME = "assume";
+
 	private static final String FAIL = "fail";
 
 	private static final String ASSERT = "assert";
@@ -263,7 +265,7 @@ public class RtEngine extends AstorCoreEngine {
 		if (allExpectedExceptionFromTest.size() > 0) {
 			log.debug("Expected exception found at " + aTestMethodFromClass);
 		}
-		List<CtInvocation> allAssumesFromTest = filterAssertions(allStmtsFromClass);
+		List<CtInvocation> allAssumesFromTest = filterAssume(allStmtsFromClass);
 		List<CtInvocation> allAssertionsFromTest = filterAssertions(allStmtsFromClass);
 		List<CtInvocation> allFailsFromTest = filterFails(allStmtsFromClass);
 		List<Helper> allHelperInvocationFromTest = filterHelper(allStmtsFromClass, new ArrayList());
@@ -315,7 +317,8 @@ public class RtEngine extends AstorCoreEngine {
 			}
 
 		}
-
+		boolean onlyAssumeExecuted = checkOnlyAssumeExecuted(allStmtsFromClass, runtimeinfo.mapLinesCovered,
+				aTestModelCtClass, allAssumesFromTest);
 		checkTwoBranches(rAssert, rAssert, rHelperCall, rHelperAssertion);
 		checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
 		checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
@@ -325,9 +328,10 @@ public class RtEngine extends AstorCoreEngine {
 		allMIFromTest.removeAll(allAssertionsFromTest);
 		allMIFromTest.removeAll(allFailsFromTest);
 
-		TestInspectionResult resultTestCase = new TestInspectionResult(rAssert, rHelperAssertion, rHelperCall,
-				aNameOfTestClass, aTestMethodFromClass, testMethodModel, rFailMissing, rRedundantAssertion,
-				allSkipFromTest, expectException, allExpectedExceptionFromTest, allMIFromTest, allFailsFromTest);
+		TestInspectionResult resultTestCase = new TestInspectionResult(onlyAssumeExecuted, allAssumesFromTest, rAssert,
+				rHelperAssertion, rHelperCall, aNameOfTestClass, aTestMethodFromClass, testMethodModel, rFailMissing,
+				rRedundantAssertion, allSkipFromTest, expectException, allExpectedExceptionFromTest, allMIFromTest,
+				allFailsFromTest);
 
 		return resultTestCase;
 
@@ -344,6 +348,36 @@ public class RtEngine extends AstorCoreEngine {
 		}
 		return false;
 
+	}
+
+	private boolean checkOnlyAssumeExecuted(List<CtStatement> allStmtsFromClass,
+			MapList<String, Integer> mapLinesCovered, CtClass aTestModelCtClass, List<CtInvocation> invocations) {
+
+		if (invocations == null || invocations.isEmpty()) {
+			return false;
+		}
+		// Put true once we analyze the assertion
+		boolean assureAnalyzed = false;
+		for (CtInvocation invocation : invocations) {
+			boolean invocationExecuted = false;
+			boolean otherStatementExecutedAfter = false;
+			for (CtStatement statement : allStmtsFromClass) {
+				boolean covered = isCovered(mapLinesCovered, statement, aTestModelCtClass);
+				if (covered) {
+					if (invocation == statement) {
+						invocationExecuted = true;
+						assureAnalyzed = true;
+					} else {
+						// Once we analyze the assure
+						if (assureAnalyzed)
+							otherStatementExecutedAfter = true;
+					}
+				}
+
+			}
+			return invocationExecuted && !otherStatementExecutedAfter;
+		}
+		return false;
 	}
 
 	/**
@@ -593,6 +627,8 @@ public class RtEngine extends AstorCoreEngine {
 	 *
 	 */
 	public class TestInspectionResult {
+		boolean onlyAssumeExecuted = false;
+		List<CtInvocation> allAssumesFromTest = null;
 		String nameOfTestClass;
 		String testMethodFromClass;
 		Classification<AsAssertion> rAssert = null;
@@ -607,13 +643,16 @@ public class RtEngine extends AstorCoreEngine {
 		List<CtInvocation> allOtherMIFromTest;
 		List<CtInvocation> allFailsFromTest;
 
-		public TestInspectionResult(Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
+		public TestInspectionResult(boolean onlyAssumeExecuted, List<CtInvocation> allAssumesFromTest,
+				Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
 				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
 				CtExecutable testMethodModel, Classification<AsAssertion> allMissedFailFromTest,
 				Classification<AsAssertion> rRedundantAssertion, List<CtReturn> allSkipFromTest,
 				List<String> expectException, List<CtInvocation> allExpectedExceptionFromTest,
 				List<CtInvocation> allMIFromTest, List<CtInvocation> allFailsFromTest) {
 			super();
+			this.onlyAssumeExecuted = onlyAssumeExecuted;
+			this.allAssumesFromTest = allAssumesFromTest;
 			this.rAssert = rAssert;
 			this.rHelperAssertion = rHelperAssertion;
 			this.rHelperCall = rHelperCall;
@@ -838,6 +877,14 @@ public class RtEngine extends AstorCoreEngine {
 
 			return ((hasTryCatch() && hasFailInvocation())
 					|| (getExpectException().size() > 0 || getAllExpectedExceptionFromTest().size() > 0));
+		}
+
+		public boolean isOnlyAssumeExecuted() {
+			return onlyAssumeExecuted;
+		}
+
+		public List<CtInvocation> getAllAssumesFromTest() {
+			return allAssumesFromTest;
 		}
 
 	}
@@ -1171,6 +1218,10 @@ public class RtEngine extends AstorCoreEngine {
 
 	private List<CtInvocation> filterFails(List<CtStatement> allStmtsFromClass) {
 		return filterInvocation(allStmtsFromClass, FAIL);
+	}
+
+	private List<CtInvocation> filterAssume(List<CtStatement> allStmtsFromClass) {
+		return filterInvocation(allStmtsFromClass, ASSUME);
 	}
 
 	private List<CtInvocation> filterInvocation(List<CtStatement> allStmtsFromClass, String filterName) {

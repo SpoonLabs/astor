@@ -1118,6 +1118,51 @@ public class RtTestExamples {
 
 	}
 
+	@Test
+	public void testRTFRow26Assume() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		List<TestInspectionResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass().contains("RTFRow26Assume")).collect(Collectors.toList());
+
+		// Second test
+		Optional<TestInspectionResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+				.findFirst();
+
+		assertTrue(rotten2P.isPresent());
+
+		TestInspectionResult rottenTest2 = rotten2P.get();
+		assertTrue(rottenTest2.getExpectException().isEmpty());
+		assertFalse(rottenTest2.isSmokeTest());
+		assertTrue(rottenTest2.isRotten());
+
+		assertTrue(rottenTest2.isOnlyAssumeExecuted());
+		assertTrue(rottenTest2.getAllAssumesFromTest().size() > 0);
+
+		// we expect exceptions
+
+		// TestRottenAnalysisResult fr2 = rottenTest2.generateFinalResult();
+
+		// Now test with not rotten
+
+		Optional<TestInspectionResult> rotten1 = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test1"))
+				.findFirst();
+
+		assertTrue(rotten1.isPresent());
+
+		TestInspectionResult rottenTest1 = rotten1.get();
+		assertTrue(rottenTest1.getExpectException().isEmpty());
+		assertFalse(rottenTest1.isSmokeTest());
+		assertFalse(rottenTest1.isRotten());
+
+		assertFalse(rottenTest1.isOnlyAssumeExecuted());
+		assertTrue(rottenTest1.getAllAssumesFromTest().size() > 0);
+
+	}
+
 	private void checkFp(List<TestInspectionResult> tc, boolean toverif, String testname) {
 		Optional<TestInspectionResult> rotten01 = tc.stream().filter(e -> e.getTestMethodFromClass().equals(testname))
 				.findFirst();
