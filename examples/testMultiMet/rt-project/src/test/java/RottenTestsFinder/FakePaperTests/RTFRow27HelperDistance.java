@@ -24,6 +24,15 @@ public class RTFRow27HelperDistance extends AbstractRTestCase2 {
 
 	}
 
+	@Test
+	public void test2() {
+		int i = 10;
+		if (i > 11) {
+			this.goodHelperWrapper();
+		}
+
+	}
+
 	public void localHelper() {
 		assertTrue(1 > 0);
 	}
