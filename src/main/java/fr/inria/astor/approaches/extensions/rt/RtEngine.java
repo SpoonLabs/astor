@@ -1164,6 +1164,8 @@ public class RtEngine extends AstorCoreEngine {
 		public boolean unexecutedAssert = false;
 		public boolean unexecutedCall = false;
 
+		public int distance = 0;
+
 		public Helper(AsAssertion assertion) {
 			super();
 			this.assertion = assertion;
@@ -1194,6 +1196,14 @@ public class RtEngine extends AstorCoreEngine {
 		public CtElement getElement() {
 
 			return (this.calls.size() > 0) ? this.calls.get(0) : null;
+		}
+
+		public int getDistance() {
+			return distance;
+		}
+
+		public void setDistance(int distance) {
+			this.distance = distance;
 		}
 	}
 
@@ -1273,7 +1283,7 @@ public class RtEngine extends AstorCoreEngine {
 					}
 
 					List<CtStatement> statementsFromMethod = methodDeclaration.getBody().getElements(new LineFilter());
-					// methodDeclaration.getBody().getStatements();
+
 					List<CtInvocation> assertionsFromMethod = filterAssertions(statementsFromMethod);
 					// If the method body has assertions, we add them.
 					if (assertionsFromMethod != null && !assertionsFromMethod.isEmpty()) {
@@ -1282,14 +1292,30 @@ public class RtEngine extends AstorCoreEngine {
 							Helper aHelper = new Helper(new AsAssertion(assertion));
 							helpersMined.add(aHelper);
 							aHelper.getCalls().add(0, targetInvocation);
+
+							// Check the distance:
+
+							// if same target
+							int distance = 0;
+							// if (assertion.getTarget() == targetInvocation.getTarget()) {
+							// We are in the same hierarchy
+							CtClass typeInvo = targetInvocation.getParent(CtClass.class);
+							CtClass typeAssertion = assertion.getParent(CtClass.class);
+
+							while (typeInvo != null && typeInvo != typeAssertion) {
+								typeInvo = (CtClass) typeInvo.getSuperclass().getDeclaration();
+								distance++;
+							}
+							// }
+							aHelper.setDistance(distance);
+
 						}
 
-					} // else {
-
+					}
 					try {
 						List<CtExecutable> previouscalls = new ArrayList<>(calls);
 						previouscalls.add(methodDeclaration);
-						// we find if the body calls to another helper
+						// we find if the body calls to another helper, recursively
 						List<Helper> helpersFromInvocation = filterHelper(statementsFromMethod, previouscalls);
 						// we add to the results
 						helpersMined.addAll(helpersFromInvocation);

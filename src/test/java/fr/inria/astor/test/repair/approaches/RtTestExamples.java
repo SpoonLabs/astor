@@ -1260,6 +1260,52 @@ public class RtTestExamples {
 
 	}
 
+	@Test
+	public void testRTFRow27HelperDistance() throws Exception {
+		RtEngine etEn = detectRt();
+
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		List<TestInspectionResult> tc = resultByTest.stream()
+				.filter(e -> e.getNameOfTestClass().contains("RTFRow27HelperDistance")).collect(Collectors.toList());
+
+		Optional<TestInspectionResult> rotten0P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+				.findFirst();
+
+		assertTrue(rotten0P.isPresent());
+
+		TestInspectionResult rottenTest0 = rotten0P.get();
+		assertFalse(rottenTest0.isSmokeTest());
+		assertTrue(rottenTest0.isRotten());
+
+		assertFalse(rottenTest0.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+		assertFalse(rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
+
+		Helper rtHelperParent1 = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().get(0);
+		assertEquals(1, rtHelperParent1.distance);
+
+		// Second:
+
+		Optional<TestInspectionResult> rotten1P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test1"))
+				.findFirst();
+
+		assertTrue(rotten1P.isPresent());
+
+		TestInspectionResult rottenTest1 = rotten1P.get();
+		assertFalse(rottenTest1.isSmokeTest());
+		assertTrue(rottenTest1.isRotten());
+
+		assertFalse(rottenTest1.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+		assertFalse(rottenTest1.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
+
+		Helper rtHelperParent0 = rottenTest1.getClassificationHelperAssertion().getResultNotExecuted().get(0);
+		assertEquals(0, rtHelperParent0.distance);
+
+		//
+
+	}
+
 	private void checkFp(List<TestInspectionResult> tc, boolean toverif, String testname) {
 		Optional<TestInspectionResult> rotten01 = tc.stream().filter(e -> e.getTestMethodFromClass().equals(testname))
 				.findFirst();
