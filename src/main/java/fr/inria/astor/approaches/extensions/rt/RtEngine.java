@@ -1270,7 +1270,7 @@ public class RtEngine extends AstorCoreEngine {
 				if (!isAssertion(targetInvocation) && targetInvocation.getExecutable() != null
 						&& targetInvocation.getExecutable().getDeclaration() != null) {
 
-					// Let's find the called method
+					// Let's find the called method to see if it has assertions
 					CtExecutable methodDeclaration = targetInvocation.getExecutable().getDeclaration();
 
 					if (methodDeclaration.getBody() == null) {
@@ -1281,9 +1281,10 @@ public class RtEngine extends AstorCoreEngine {
 						log.info("Already analyzed this method");
 						continue;
 					}
-
+					// All the statements from the method that is invoked
 					List<CtStatement> statementsFromMethod = methodDeclaration.getBody().getElements(new LineFilter());
 
+					// We filter the assertion present in the method body
 					List<CtInvocation> assertionsFromMethod = filterAssertions(statementsFromMethod);
 					// If the method body has assertions, we add them.
 					if (assertionsFromMethod != null && !assertionsFromMethod.isEmpty()) {
@@ -1293,25 +1294,10 @@ public class RtEngine extends AstorCoreEngine {
 							helpersMined.add(aHelper);
 							aHelper.getCalls().add(0, targetInvocation);
 
-							// Check the distance:
-
-							// if same target
-							int distance = 0;
-							// if (assertion.getTarget() == targetInvocation.getTarget()) {
-							// We are in the same hierarchy
-							CtClass typeInvo = targetInvocation.getParent(CtClass.class);
-							CtClass typeAssertion = assertion.getParent(CtClass.class);
-
-							while (typeInvo != null && typeInvo != typeAssertion) {
-								typeInvo = (CtClass) typeInvo.getSuperclass().getDeclaration();
-								distance++;
-							}
-							// }
-							aHelper.setDistance(distance);
-
 						}
 
 					}
+					// Now, let's check if the body has a call to another helper.
 					try {
 						List<CtExecutable> previouscalls = new ArrayList<>(calls);
 						previouscalls.add(methodDeclaration);
@@ -1327,6 +1313,40 @@ public class RtEngine extends AstorCoreEngine {
 					} catch (Throwable l) {
 						System.out.println("error ");
 					}
+				}
+			}
+
+		}
+		// Update the distance
+		for (Helper aHelper : helpersMined) {
+
+			// Check the distance:
+
+			// Let's get the first invocation from the invocation chain
+			CtInvocation statementFirstCall = aHelper.getCalls().get(0);
+			// the class where the invocation is written
+			CtClass typeInvo = statementFirstCall.getParent(CtClass.class);
+			// the class where the invoked method
+			CtClass typeMethod = statementFirstCall.getExecutable().getDeclaration().getParent(CtClass.class);
+
+			// if same target, distance is zero
+			if (typeInvo == typeMethod) {
+				aHelper.setDistance(0);
+			} else {
+				// if it's subtype, lets count the distance
+				if (typeInvo.isSubtypeOf(typeMethod.getReference())) {
+
+					int distance = 0;
+
+					CtType typeToMount = typeInvo;
+					while (typeToMount != null && typeToMount != typeMethod) {
+						typeToMount = (CtClass) typeToMount.getSuperclass().getDeclaration();
+						distance++;
+					}
+					aHelper.setDistance(distance);
+				} else {
+					// Not subtype, the method helper is somewhere else.
+					aHelper.setDistance(-1);
 				}
 			}
 		}
