@@ -67,7 +67,9 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 		} catch (InterruptedException ie) {
 			throw new RuntimeException(ie);
 		} catch (ExecutionException ee) {
-			throw new RuntimeException(ee);
+			// throw new RuntimeException(ee);
+			ee.printStackTrace();
+			return null;
 		} finally {
 			executor.shutdown();
 		}

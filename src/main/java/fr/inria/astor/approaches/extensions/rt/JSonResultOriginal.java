@@ -25,6 +25,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 
 /**
  * 
@@ -120,10 +121,10 @@ public class JSonResultOriginal {
 
 			JsonArray summaryRottens = new JsonArray();
 			testjson.add("rotten_info", summaryRottens);
-			testjson.addProperty("testclass", tr.getNameOfTestClass());
-			testjson.addProperty("testname", tr.getTestMethodFromClass());
-			testjson.addProperty("expectsexception", (tr.getExpectException().size() > 0) ? "true" : "false");
-			testjson.addProperty("isonlyassume", (tr.isOnlyAssumeExecuted()) ? "true" : "false");
+			testjson.addProperty("test_class", tr.getNameOfTestClass());
+			testjson.addProperty("test_name", tr.getTestMethodFromClass());
+			testjson.addProperty("has_expects_exception", (tr.getExpectException().size() > 0) ? "true" : "false");
+			testjson.addProperty("executed_only_assume", (tr.isOnlyAssumeExecuted()) ? "true" : "false");
 			testjson.addProperty("nr_assume", tr.getAllAssumesFromTest().size());
 
 			writeJsonLink(commitid, branch, remote, projectsubfolder, tr.getTestMethodModel(), testjson);
@@ -132,16 +133,16 @@ public class JSonResultOriginal {
 
 			boolean hasControlFlow = tr.hasControlFlow();
 			nrTestWithControlStruct += (hasControlFlow) ? 1 : 0;
-			testjson.addProperty("hasControlFlow", hasControlFlow);
+			testjson.addProperty("has_control_flow", hasControlFlow);
 
 			boolean hasHelperCall = tr.hasHelperCall();
 			nrTestWithHelper += (hasHelperCall) ? 1 : 0;
 
 			boolean hasFailInvocation = tr.hasFailInvocation();
-			testjson.addProperty("hasFailInvocation", hasFailInvocation);
+			testjson.addProperty("has_fail_invocation", hasFailInvocation);
 
 			boolean hasTryCatch = tr.hasTryCatch();
-			testjson.addProperty("hasTryCatch", hasTryCatch);
+			testjson.addProperty("has_try_catch", hasTryCatch);
 
 			// Here the complex:
 
@@ -313,11 +314,11 @@ public class JSonResultOriginal {
 
 		summary.addProperty("name", projectName);
 		summary.addProperty("remote", remote);
-		summary.addProperty("localLocation", location);
-		summary.addProperty("nr_Test_With_Control_Flow_Stmt", nrTestWithControlStruct);
-		summary.addProperty("nr_Test_With_Helper", nrTestWithHelper);
-		summary.addProperty("nr_All_Test", resultByTest.size());
-		summary.addProperty("nr_Rotten_Test_Units", nrRtest);
+		summary.addProperty("local_location", location);
+		summary.addProperty("nr_test_with_control_flow_stmt", nrTestWithControlStruct);
+		summary.addProperty("nr_test_with_helper", nrTestWithHelper);
+		summary.addProperty("nr_all_test", resultByTest.size());
+		summary.addProperty("nr_rotten_test_units", nrRtest);
 		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_ASSERTIONS, nrRtAssertion);
 		summary.addProperty("nr_" + this.TEST_WITH_REDUNDANT_ASSERTION, nrAllRedundant);
 		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_HELPERS_CALL, nrRtHelperCall);
@@ -356,7 +357,7 @@ public class JSonResultOriginal {
 				jsonsingleAssertion.addProperty("code", anInvocation.toString());
 				jsonsingleAssertion.addProperty("line", getPosition(anInvocation));
 				jsonsingleAssertion.addProperty("path", getRelativePath(anInvocation, projectFacade));
-				jsonsingleAssertion.addProperty("inbranch", assertion.isFp());
+				jsonsingleAssertion.addProperty("other_branch_with_assert_executed", assertion.isFp());
 
 				writeJsonLink(commitid, branch, remote, projectsubfolder, anInvocation, jsonsingleAssertion);
 				summaryRottens.add(jsonsingleAssertion);
@@ -477,7 +478,7 @@ public class JSonResultOriginal {
 	public void writeJsonLink(String commitid, String branch, String remote, String projectsubfolder,
 			CtElement anInvocation, JsonObject singleAssertion) {
 		if (remote != null && branch != null && commitid != null) {
-			singleAssertion.addProperty("githublink", remote.replace(".git", "")
+			singleAssertion.addProperty("github_link", remote.replace(".git", "")
 					// "https://github.com/" + projectname
 					+ "/tree/" + commitid// branch
 					+ ((projectsubfolder != null) ? "/" + projectsubfolder : "") + "/"
@@ -501,12 +502,14 @@ public class JSonResultOriginal {
 
 			JsonObject assertionjson = getJsonElement(commitid, branch, remote, projectsubfolder, ctAssertion);
 			jsonsingleHelper.add("assertion", assertionjson);
-			jsonsingleHelper.addProperty("inbranch", anHelper.isFp());
+			jsonsingleHelper.addProperty("other_branch_with_assert_executed", anHelper.isFp());
 			JsonArray callsarray = new JsonArray();
 			for (CtInvocation call : anHelper.getCalls()) {
 				callsarray.add(getJsonElement(commitid, branch, remote, projectsubfolder, call));
 			}
 			jsonsingleHelper.add("calls", callsarray);
+			jsonsingleHelper.addProperty("distance_calls", callsarray.size());
+			jsonsingleHelper.addProperty("distance_hierarchy", anHelper.distance);
 
 			if (isCall) {
 
@@ -530,6 +533,8 @@ public class JSonResultOriginal {
 		JsonObject jsonsingleHelper = new JsonObject();
 		jsonsingleHelper.addProperty("code", ctAssertion.toString());
 		jsonsingleHelper.addProperty("line", getPosition(ctAssertion));
+		CtType type = ctAssertion.getParent(CtType.class);
+		jsonsingleHelper.addProperty("location", type.getQualifiedName());
 		writeJsonLink(commitid, branch, remote, projectsubfolder, ctAssertion, jsonsingleHelper);
 		return jsonsingleHelper;
 	}

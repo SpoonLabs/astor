@@ -30,4 +30,14 @@ public class RTFRow26Assume extends AbstractRTestCase {
 		assertTrue(i > 0);
 	}
 
+	public static void anotherMethodHelper() {
+		int i = 10;
+		aMethodHelper();
+	}
+
+	public static void farMethodHelper() {
+		int i = 10;
+		anotherMethodHelper();
+	}
+
 }

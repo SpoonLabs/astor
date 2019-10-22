@@ -1338,6 +1338,25 @@ public class RtTestExamples {
 		Helper rtHelperParent3 = rottenTest3.getClassificationHelperAssertion().getResultNotExecuted().get(0);
 		assertEquals(-1, rtHelperParent3.distance);
 
+		//
+		// Four:
+
+		Optional<TestInspectionResult> rotten4P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test4"))
+				.findFirst();
+
+		assertTrue(rotten4P.isPresent());
+
+		TestInspectionResult rottenTest4 = rotten4P.get();
+		assertFalse(rottenTest4.isSmokeTest());
+		assertTrue(rottenTest4.isRotten());
+
+		assertFalse(rottenTest4.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+		assertFalse(rottenTest4.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
+
+		Helper rtHelperParent4 = rottenTest4.getClassificationHelperAssertion().getResultNotExecuted().get(0);
+		assertEquals(-1, rtHelperParent4.distance);
+		assertEquals(3, rtHelperParent4.getCalls().size());
+
 	}
 
 	private void checkFp(List<TestInspectionResult> tc, boolean toverif, String testname) {

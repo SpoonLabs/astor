@@ -169,6 +169,9 @@ public class RtTest {
 		String[] args = new String[] { "-javacompliancelevel", "10", "-flthreshold", "0.001", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
 				"-maxtime", "100",
+				//
+				// "-faultlocalization",
+				// GZoltarClientMasterFaultLocalization.class.getCanonicalName()
 
 		};
 		CommandSummary cs = new CommandSummary(args);
