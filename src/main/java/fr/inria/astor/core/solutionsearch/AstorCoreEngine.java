@@ -774,65 +774,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			}
 		}
 
-		String codeLocation = "";
-		if (ConfigurationProperties.getPropertyBool("parsesourcefromoriginal")) {
-			List<String> codeLocations = projectFacade.getProperties().getOriginalDirSrc();
+		this.mutatorSupporter.buildSpoonModel(this.projectFacade);
 
-			if (ConfigurationProperties.getPropertyBool("includeTestInSusp")
-					&& projectFacade.getProperties().getTestDirSrc().size() > 0) {
-				codeLocations.addAll(projectFacade.getProperties().getTestDirSrc());
-			}
-
-			for (String source : codeLocations) {
-				codeLocation += source + File.pathSeparator;
-			}
-			if (codeLocation.length() > 0) {
-				codeLocation = codeLocation.substring(0, codeLocation.length() - 1);
-			}
-		} else {
-			codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		}
-
-		String bytecodeLocation = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		String classpath = projectFacade.getProperties().getDependenciesString();
-		String[] cpArray = (classpath != null && !classpath.trim().isEmpty()) ? classpath.split(File.pathSeparator)
-				: null;
-
-		log.info("Creating model,  Code location from working folder: " + codeLocation);
-
-		try {
-
-			mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
-			log.debug("Spoon Model built from location: " + codeLocation);
-		} catch (Exception e) {
-			log.error("Problem compiling the model with compliance level "
-					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
-			log.error(e.getMessage());
-			e.printStackTrace();
-			try {
-				mutatorSupporter.cleanFactory();
-				log.info("Recompiling with compliance level "
-						+ ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
-				mutatorSupporter.getFactory().getEnvironment()
-						.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
-				mutatorSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
-
-			} catch (Exception e2) {
-				e2.printStackTrace();
-				log.error("Error compiling: " + e2.getMessage());
-				if (!ConfigurationProperties.getPropertyBool("continuewhenmodelfail")) {
-					log.error("Astor does not continue when model build fails");
-					throw e2;
-				} else {
-
-					log.error("Astor continues when model build fails. Classes created: "
-							+ mutatorSupporter.getFactory().Type().getAll().size());
-
-				}
-
-			}
-
-		}
 		log.info("Number of CtTypes created: " + mutatorSupporter.getFactory().Type().getAll().size());
 
 		///// ONCE ASTOR HAS BUILT THE MODEL,

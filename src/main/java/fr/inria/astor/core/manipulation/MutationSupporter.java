@@ -13,6 +13,7 @@ import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.bytecode.OutputWritter;
 import fr.inria.astor.core.manipulation.sourcecode.ROOTTYPE;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.ProjectRepairFacade;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
@@ -205,6 +206,68 @@ public class MutationSupporter {
 	public static void clearPosition(CtElement expCloned) {
 		expCloned.setPosition(new NoSourcePosition());
 		expCloned.getElements(e -> true).stream().forEach(e -> e.setPosition(new NoSourcePosition()));
+	}
+
+	public void buildSpoonModel(ProjectRepairFacade projectFacade) throws Exception {
+		String codeLocation = "";
+		if (ConfigurationProperties.getPropertyBool("parsesourcefromoriginal")) {
+			List<String> codeLocations = projectFacade.getProperties().getOriginalDirSrc();
+
+			if (ConfigurationProperties.getPropertyBool("includeTestInSusp")
+					&& projectFacade.getProperties().getTestDirSrc().size() > 0) {
+				codeLocations.addAll(projectFacade.getProperties().getTestDirSrc());
+			}
+
+			for (String source : codeLocations) {
+				codeLocation += source + File.pathSeparator;
+			}
+			if (codeLocation.length() > 0) {
+				codeLocation = codeLocation.substring(0, codeLocation.length() - 1);
+			}
+		} else {
+			codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		}
+
+		String bytecodeLocation = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		String classpath = projectFacade.getProperties().getDependenciesString();
+		String[] cpArray = (classpath != null && !classpath.trim().isEmpty()) ? classpath.split(File.pathSeparator)
+				: null;
+
+		logger.info("Creating model,  Code location from working folder: " + codeLocation);
+
+		try {
+
+			this.buildModel(codeLocation, bytecodeLocation, cpArray);
+			logger.debug("Spoon Model built from location: " + codeLocation);
+		} catch (Exception e) {
+			logger.error("Problem compiling the model with compliance level "
+					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			try {
+				this.cleanFactory();
+				logger.info("Recompiling with compliance level "
+						+ ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
+				this.getFactory().getEnvironment()
+						.setComplianceLevel(ConfigurationProperties.getPropertyInt("alternativecompliancelevel"));
+				this.buildModel(codeLocation, bytecodeLocation, cpArray);
+
+			} catch (Exception e2) {
+				e2.printStackTrace();
+				logger.error("Error compiling: " + e2.getMessage());
+				if (!ConfigurationProperties.getPropertyBool("continuewhenmodelfail")) {
+					logger.error("Astor does not continue when model build fails");
+					throw e2;
+				} else {
+
+					logger.error("Astor continues when model build fails. Classes created: "
+							+ this.getFactory().Type().getAll().size());
+
+				}
+
+			}
+
+		}
 	}
 
 }
