@@ -19,6 +19,7 @@ import fr.inria.astor.core.faultlocalization.cocospoon.code.StatementSourceLocat
 import fr.inria.astor.core.faultlocalization.cocospoon.metrics.Ochiai;
 import fr.inria.astor.core.faultlocalization.cocospoon.testrunner.TestResult;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.gzoltar.TestCaseResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.classloader.BytecodeClassLoader;
 import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
@@ -85,6 +86,17 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 						statementSourceLocation.getSuspiciousness());
 				spc.setLineNumber(statementSourceLocation.getLocation().getLineNumber());
 				candidates.add(spc);
+				List<TestResult> testCoverLocation = stc.get(statementSourceLocation.getLocation());
+
+				// Transforming the representation of test
+				List<TestCaseResult> testcaseresult = new ArrayList<>();
+
+				for (TestResult testResult : testCoverLocation) {
+					testcaseresult
+							.add(new TestCaseResult(testResult.getTestCase().toString(), testResult.isSuccessful()));
+				}
+
+				spc.setCoveredByTests(testcaseresult);
 			}
 		}
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
@@ -95,7 +107,7 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 		// We select the best X candidates.
 		int max = (candidates.size() < maxSuspCandidates) ? candidates.size() : maxSuspCandidates;
 		candidates = candidates.subList(0, max);
-		
+
 		FaultLocalizationResult flresults = new FaultLocalizationResult(candidates, testsfailing);
 
 		return flresults;
@@ -149,18 +161,7 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 	// Code properties.
 	public void initModel(ProjectRepairFacade projectFacade) throws Exception {
 
-		String codeLocation = projectFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		String bytecodeLocation = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		String classpath = projectFacade.getProperties().getDependenciesString();
-		String[] cpArray = classpath.split(File.pathSeparator);
-
-		try {
-			MutationSupporter.currentSupporter.buildModel(codeLocation, bytecodeLocation, cpArray);
-			log.debug("Spoon Model built from location: " + codeLocation);
-		} catch (Exception e) {
-			log.error("Problem compiling the model with compliance level "
-					+ ConfigurationProperties.getPropertyInt("javacompliancelevel"));
-		}
+		MutationSupporter.currentSupporter.buildSpoonModel(projectFacade);
 
 	}
 
