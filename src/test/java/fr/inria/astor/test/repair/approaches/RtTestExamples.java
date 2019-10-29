@@ -816,22 +816,17 @@ public class RtTestExamples {
 
 	@Test
 	public void testRow21() throws Exception {
-		RtEngine etEn = detectRt();
+		RtEngine etEn = detectRtSkip();
 
 		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().contains("RTFRow21"))
-				.collect(Collectors.toList());
+		RuntimeInformation dynInf = etEn.computeDynamicInformation();
 
-		assertFalse(tc.isEmpty());
+		TestInspectionResult rottenTest0 = etEn.processSingleRest(dynInf, "RottenTestsFinder.FakePaperTests.RTFRow21",
+				"testPrimeNumberChecker");
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("testPrimeNumberChecker")).findFirst();
-
-		assertTrue(rotten0OP.isPresent());
-
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		assertNotNull(rottenTest0);
 
 		assertFalse(rottenTest0.isSmokeTest());
 		assertTrue(rottenTest0.isRotten());
@@ -841,12 +836,11 @@ public class RtTestExamples {
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 
 		// Second test
-		Optional<TestInspectionResult> rotten2P = tc.stream()
-				.filter(e -> e.getTestMethodFromClass().equals("testPrimeNumberChecker2")).findFirst();
 
-		assertTrue(rotten2P.isPresent());
+		TestInspectionResult rottenTest2 = etEn.processSingleRest(dynInf, "RottenTestsFinder.FakePaperTests.RTFRow21",
+				"testPrimeNumberChecker2");
 
-		TestInspectionResult rottenTest2 = rotten2P.get();
+		assertNotNull(rottenTest2);
 
 		assertFalse(rottenTest2.isSmokeTest());
 		assertFalse(rottenTest2.isRotten());
@@ -1405,7 +1399,7 @@ public class RtTestExamples {
 		// One call Not executed
 		assertTrue(rottenTest2.getClassificationHelperCall().getResultNotExecuted().size() > 0);
 		assertTrue(rottenTest2.getClassificationAssert().getResultExecuted().size() == 1);
-		assertTrue(rottenTest2.getClassificationHelperAssertion().getResultExecuted().size() == 1);
+		assertEquals(0, rottenTest2.getClassificationHelperAssertion().getResultExecuted().size());
 		// assertTrue(rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().size()
 		// > 0);
 

@@ -186,7 +186,6 @@ public class RtEngine extends AstorCoreEngine {
 		}
 		if (!notexec.isEmpty()) {
 			log.error("nr test not ex " + notexec.size());
-			// throw new IllegalStateException("Not executed tests");
 		}
 
 		resultByTest = new ArrayList<>();
@@ -308,34 +307,36 @@ public class RtEngine extends AstorCoreEngine {
 		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, allClasses);
 
 		// Fail missing analysis
-		Classification<AsAssertion> rFailMissing = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
+		Classification<AsAssertion> rFailMissing = classifyAssertions(testMethodModel, runtimeinfo.mapCacheSuspicious,
 				aTestModelCtClass, allMissedFailFromTest);
 
-		chechInsideTry(rFailMissing.resultExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
-		chechInsideTry(rFailMissing.resultNotExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
+		chechInsideTry(rFailMissing.resultExecuted, runtimeinfo.mapCacheSuspicious, aTestModelCtClass, testMethodModel);
+		chechInsideTry(rFailMissing.resultNotExecuted, runtimeinfo.mapCacheSuspicious, aTestModelCtClass,
+				testMethodModel);
 
 		// Redundant
 		Classification<AsAssertion> rRedundantAssertion = classifyAssertions(testMethodModel,
-				runtimeinfo.mapLinesCovered, aTestModelCtClass, allRedundantAssertionFromTest);
+				runtimeinfo.mapCacheSuspicious, aTestModelCtClass, allRedundantAssertionFromTest);
 
-		chechInsideTry(rRedundantAssertion.resultExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
-		chechInsideTry(rRedundantAssertion.resultNotExecuted, runtimeinfo.mapLinesCovered, aTestModelCtClass);
+		chechInsideTry(rRedundantAssertion.resultExecuted, runtimeinfo.mapCacheSuspicious, aTestModelCtClass,
+				testMethodModel);
+		chechInsideTry(rRedundantAssertion.resultNotExecuted, runtimeinfo.mapCacheSuspicious, aTestModelCtClass,
+				testMethodModel);
+		//
 
-		///
-
-		Classification<AsAssertion> rAssert = classifyAssertions(testMethodModel, runtimeinfo.mapLinesCovered,
+		Classification<AsAssertion> rAssert = classifyAssertions(testMethodModel, runtimeinfo.mapCacheSuspicious,
 				aTestModelCtClass, allAssertionsFromTest);
 
 		Classification<Helper> rHelperCall = classifyHelpersAssertionExecution(aTestModelCtClass,
-				allHelperInvocationFromTest, runtimeinfo.mapCacheSuspicious, false);
+				allHelperInvocationFromTest, runtimeinfo.mapCacheSuspicious, testMethodModel, false);
 
 		Classification<Helper> rHelperAssertion = classifyHelpersAssertionExecution(aTestModelCtClass,
-				allHelperInvocationFromTest, runtimeinfo.mapCacheSuspicious, true);
+				allHelperInvocationFromTest, runtimeinfo.mapCacheSuspicious, testMethodModel, true);
 
 		if (rHelperAssertion.getResultExecuted().isEmpty() && rHelperCall.getResultExecuted().isEmpty()
 				&& rAssert.getResultExecuted().isEmpty()) {
-			boolean anyExecuted = checkAnyStatementExecuted(allStmtsFromClass, runtimeinfo.mapLinesCovered,
-					aTestModelCtClass);
+			boolean anyExecuted = checkAnyStatementExecuted(allStmtsFromClass, runtimeinfo.mapCacheSuspicious,
+					aTestModelCtClass, testMethodModel);
 			// If any statement in the test code was executed, we return.
 			if (!anyExecuted) {
 				log.info("NO test element executed for test " + aTestMethodFromClass + ", class " + aNameOfTestClass
@@ -345,8 +346,8 @@ public class RtEngine extends AstorCoreEngine {
 			}
 
 		}
-		boolean onlyAssumeExecuted = checkOnlyAssumeExecuted(allStmtsFromClass, runtimeinfo.mapLinesCovered,
-				aTestModelCtClass, allAssumesFromTest);
+		boolean onlyAssumeExecuted = checkOnlyAssumeExecuted(allStmtsFromClass, runtimeinfo.mapCacheSuspicious,
+				aTestModelCtClass, allAssumesFromTest, testMethodModel);
 		checkTwoBranches(rAssert, rAssert, rHelperCall, rHelperAssertion);
 		checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
 		checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
@@ -366,10 +367,13 @@ public class RtEngine extends AstorCoreEngine {
 	}
 
 	private boolean checkAnyStatementExecuted(List<CtStatement> allStmtsFromClass,
-			MapList<String, Integer> mapLinesCovered, CtClass aTestModelCtClass) {
+			Map<String, SuspiciousCode> mapCacheSuspicious, CtClass aTestModelCtClass, CtExecutable testMethodModel) {
 
 		for (CtStatement statement : allStmtsFromClass) {
-			boolean covered = isCovered(mapLinesCovered, statement, aTestModelCtClass);
+			// We pass twice 'aTestModelCtClass' because we check if a test statement is
+			// executed
+			boolean covered = isCovered(mapCacheSuspicious, statement, aTestModelCtClass, aTestModelCtClass,
+					testMethodModel);
 			if (covered) {
 				return true;
 			}
@@ -379,7 +383,8 @@ public class RtEngine extends AstorCoreEngine {
 	}
 
 	private boolean checkOnlyAssumeExecuted(List<CtStatement> allStmtsFromClass,
-			MapList<String, Integer> mapLinesCovered, CtClass aTestModelCtClass, List<CtInvocation> invocations) {
+			Map<String, SuspiciousCode> mapCacheSuspicious, CtClass aTestModelCtClass, List<CtInvocation> invocations,
+			CtExecutable testMethodModel) {
 
 		if (invocations == null || invocations.isEmpty()) {
 			return false;
@@ -390,7 +395,8 @@ public class RtEngine extends AstorCoreEngine {
 			boolean invocationExecuted = false;
 			boolean otherStatementExecutedAfter = false;
 			for (CtStatement statement : allStmtsFromClass) {
-				boolean covered = isCovered(mapLinesCovered, statement, aTestModelCtClass);
+				boolean covered = isCovered(mapCacheSuspicious, statement, aTestModelCtClass, aTestModelCtClass,
+						testMethodModel);
 				if (covered) {
 					if (invocation == statement) {
 						invocationExecuted = true;
@@ -401,7 +407,6 @@ public class RtEngine extends AstorCoreEngine {
 							otherStatementExecutedAfter = true;
 					}
 				}
-
 			}
 			return invocationExecuted && !otherStatementExecutedAfter;
 		}
@@ -413,15 +418,46 @@ public class RtEngine extends AstorCoreEngine {
 	 * 
 	 * @param allMissedFailFromTest
 	 * @param executedLines
+	 * @param mapCacheSuspicious
 	 * @param parentClass
+	 * @param testMethodModel
 	 */
-	private void chechInsideTry(List<AsAssertion> allMissedFailFromTest, MapList<String, Integer> executedLines,
-			CtClass parentClass) {
+	private void chechInsideTry(List<AsAssertion> allMissedFailFromTest, Map<String, SuspiciousCode> mapCacheSuspicious,
+			CtClass parentClass, CtExecutable testMethodModel) {
 
 		for (AsAssertion aMissAssertion : allMissedFailFromTest) {
 
-			analyzeMissingAssertionInsideTryCatch(executedLines, parentClass, aMissAssertion);
+			CtTry parentTry = aMissAssertion.getCtAssertion().getParent(CtTry.class);
+			if (parentTry != null) {
+				for (CtCatch aCatch : parentTry.getCatchers()) {
+					CtBlock block = aCatch.getBody();
+					if (block != null && block.getStatements().size() > 0) {
+						for (CtStatement anStatementInBlock : block.getStatements()) {
 
+							boolean covered = isCovered(mapCacheSuspicious, anStatementInBlock, parentClass,
+									parentClass, testMethodModel);
+							if (covered) {
+								aMissAssertion.setFp(true);
+								continue;
+							}
+
+						}
+					} else {
+						CtBlock pblock = parentTry.getParent(CtBlock.class);
+						int indexTry = pblock.getStatements().indexOf(parentTry);
+						if (indexTry >= 0 && indexTry + 1 < pblock.getStatements().size()) {
+							CtStatement stNext = pblock.getStatements().get(indexTry + 1);
+							boolean covered = isCovered(mapCacheSuspicious, stNext, parentClass, parentClass,
+									testMethodModel);
+							if (covered) {
+								aMissAssertion.setFp(true);
+								continue;
+							}
+						}
+
+					}
+				}
+			}
 		}
 
 	}
@@ -435,35 +471,7 @@ public class RtEngine extends AstorCoreEngine {
 	 */
 	public void analyzeMissingAssertionInsideTryCatch(MapList<String, Integer> executedLines, CtClass parentClass,
 			AsAssertion aMissAssertion) {
-		CtTry parentTry = aMissAssertion.getCtAssertion().getParent(CtTry.class);
-		if (parentTry != null) {
-			for (CtCatch aCatch : parentTry.getCatchers()) {
-				CtBlock block = aCatch.getBody();
-				if (block != null && block.getStatements().size() > 0) {
-					for (CtStatement anStatementInBlock : block.getStatements()) {
 
-						boolean isCover = isCovered(executedLines, anStatementInBlock, parentClass);
-						if (isCover) {
-							aMissAssertion.setFp(true);
-							return;
-						}
-
-					}
-				} else {
-					CtBlock pblock = parentTry.getParent(CtBlock.class);
-					int indexTry = pblock.getStatements().indexOf(parentTry);
-					if (indexTry >= 0 && indexTry + 1 < pblock.getStatements().size()) {
-						CtStatement stNext = pblock.getStatements().get(indexTry + 1);
-						boolean isCover = isCovered(executedLines, stNext, parentClass);
-						if (isCover) {
-							aMissAssertion.setFp(true);
-							return;
-						}
-					}
-
-				}
-			}
-		}
 	}
 
 	private List<CtInvocation> filterExpectedExceptions(List<CtStatement> allStmtsFromClass) {
@@ -1004,11 +1012,17 @@ public class RtEngine extends AstorCoreEngine {
 			return resultAll;
 		}
 
+		@Override
+		public String toString() {
+			return "Classification [#resultNotExecuted=" + resultNotExecuted.size() + ", #resultExecuted="
+					+ resultExecuted.size() + "]";
+		}
+
 	}
 
 	private Classification<Helper> classifyHelpersAssertionExecution(CtClass aTestModelCtClass,
 			List<Helper> allHelperInvocationFromTest, Map<String, SuspiciousCode> cacheSuspicious,
-			boolean checkAssertion) {
+			CtExecutable methodTestExecuted, boolean checkAssertion) {
 
 		Classification<Helper> result = new Classification<>();
 		for (Helper aHelper : allHelperInvocationFromTest) {
@@ -1017,33 +1031,15 @@ public class RtEngine extends AstorCoreEngine {
 					: aHelper.getCalls().get(0);
 			CtClass ctclassFromAssert = assertion.getParent(CtClass.class);
 
-			boolean covered = isCovered(cacheSuspicious, assertion, aTestModelCtClass, ctclassFromAssert);
+			boolean covered = isCovered(cacheSuspicious, assertion, ctclassFromAssert, aTestModelCtClass,
+					methodTestExecuted);
+
 			if (!covered) {
 				result.getResultNotExecuted().add(aHelper);
 				if (checkAssertion)
 					aHelper.unexecutedAssert = true;
 				else
 					aHelper.unexecutedCall = true;
-			} else {
-				result.getResultExecuted().add(aHelper);
-			}
-		}
-		return result;
-	}
-
-	@Deprecated
-	private Classification<Helper> classifyHelpersInvocationExecution(CtClass aTestModelCtClass,
-			List<Helper> allHelperInvocationFromTest, Map<String, SuspiciousCode> cacheSuspicious) {
-
-		Classification<Helper> result = new Classification<>();
-		for (Helper aHelper : allHelperInvocationFromTest) {
-
-			CtInvocation firstHelperInvocation = aHelper.getCalls().get(0);
-			CtClass ctclassFromAssert = firstHelperInvocation.getParent(CtClass.class);
-
-			boolean covered = isCovered(cacheSuspicious, firstHelperInvocation, aTestModelCtClass, ctclassFromAssert);
-			if (!covered) {
-				result.getResultNotExecuted().add(aHelper);
 			} else {
 				result.getResultExecuted().add(aHelper);
 			}
@@ -1059,15 +1055,14 @@ public class RtEngine extends AstorCoreEngine {
 		}
 	}
 
-	// TODO: missing the test???
 	private boolean isCoverSingleLine(Map<String, SuspiciousCode> cacheSuspicious, CtClass aTestModelCtClass,
-			String keyLocationAssertion) {
+			CtExecutable testMethodModel, String keyLocationAssertion) {
 		if (cacheSuspicious.containsKey(keyLocationAssertion)) {
 			// Assertion was covered, let's check if by the current test case
 			SuspiciousCode cover = cacheSuspicious.get(keyLocationAssertion);
-			// TODO: missing the test???
 			for (TestCaseResult tr : cover.getCoveredByTests()) {
-				if (tr.getTestCaseClass().equals(aTestModelCtClass.getQualifiedName())) {
+				if (tr.getTestCaseClass().equals(aTestModelCtClass.getQualifiedName())
+						&& tr.getTestCaseName().equals(testMethodModel.getSimpleName())) {
 					return true;
 				}
 			}
@@ -1076,9 +1071,8 @@ public class RtEngine extends AstorCoreEngine {
 		return false;
 	}
 
-	// TODO: missing the test???
 	private boolean isCovered(Map<String, SuspiciousCode> cacheSuspicious, CtElement elementToCheck,
-			CtClass aTestModelCtClass, CtClass ctclassFromAssert) {
+			CtClass ctclassFromElementToCheck, CtClass aTestModelCtClass, CtExecutable testMethodModel) {
 		try {
 			// the location of the assertion contained in the helper
 			int init = elementToCheck.getPosition().getLine();
@@ -1086,9 +1080,9 @@ public class RtEngine extends AstorCoreEngine {
 			// check if cover in one range of locations
 			for (int i = init; i <= end; i++) {
 
-				String keyLocationAssertion = getClassName(ctclassFromAssert) + i;
+				String keyLocationAssertion = getClassName(ctclassFromElementToCheck) + i;
 
-				if (isCoverSingleLine(cacheSuspicious, aTestModelCtClass, keyLocationAssertion))
+				if (isCoverSingleLine(cacheSuspicious, aTestModelCtClass, testMethodModel, keyLocationAssertion))
 					return true;
 
 			}
@@ -1100,59 +1094,22 @@ public class RtEngine extends AstorCoreEngine {
 
 	}
 
-	private boolean isCovered(MapList<String, Integer> executedLines, CtElement aStatementToCheck,
-			CtClass parentClass) {
-
-		try {
-			CtClass newParentClass = getTopParentClass(aStatementToCheck);
-
-			String className = newParentClass.getQualifiedName();
-			if (!executedLines.containsKey(className))
-				return false;
-
-			List<Integer> linesOfTestCase = executedLines.get(className);
-			int start = aStatementToCheck.getPosition().getLine();
-			int end = aStatementToCheck.getPosition().getEndLine();
-
-			for (int i = start; i <= end; i++) {
-				if (linesOfTestCase.contains(i)) {
-					return true;
-				}
-			}
-		} catch (Exception e) {
-			log.error("Error getting position of element");
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	private CtClass getTopParentClass(CtElement aStatementNotInvoked) {
-		CtClass parent = aStatementNotInvoked.getParent(CtClass.class);
-		if (parent != null) {
-
-			CtClass top = getTopParentClass(parent);
-			if (top != null)
-				return top;
-			else
-				return parent;
-		}
-		return null;
-
-	}
-
-	public Classification<AsAssertion> classifyAssertions(CtExecutable methodOfAssertmentOld,
-			MapList<String, Integer> linesCovered, CtClass aTestModelCtClass,
+	public Classification<AsAssertion> classifyAssertions(CtExecutable methodOfAssertment,
+			Map<String, SuspiciousCode> mapCacheSuspicious, CtClass aTestModelCtClass,
 			List<CtInvocation> allAssertionsFromTest) {
 		Classification<AsAssertion> result = new Classification<>();
 		// For each assert
 		for (CtInvocation anAssertFromTest : allAssertionsFromTest) {
 
-			boolean covered = isCovered(linesCovered, anAssertFromTest, aTestModelCtClass);
+			CtClass ctclassFromAssert = anAssertFromTest.getParent(CtClass.class);
+
+			boolean covered = isCovered(mapCacheSuspicious, anAssertFromTest, ctclassFromAssert, aTestModelCtClass,
+					methodOfAssertment);
+
 			if (!covered) {
 
 				result.getResultNotExecuted().add(new AsAssertion(anAssertFromTest));
 				log.info("Not covered: " + anAssertFromTest + " at " + aTestModelCtClass.getQualifiedName());
-				isCovered(linesCovered, anAssertFromTest, aTestModelCtClass);
 			} else {
 				result.getResultExecuted().add(new AsAssertion(anAssertFromTest));
 			}

@@ -12,6 +12,7 @@ public class TestCaseResult {
 	String testCaseClass;
 	String trance;
 	Boolean correct;
+	Boolean isParametrized = false;
 
 	public TestCaseResult(String testCaseCompleteName, boolean correct) {
 		super();
@@ -21,6 +22,11 @@ public class TestCaseResult {
 			String[] names = testCaseCompleteName.split("#");
 			this.testCaseClass = names[0];
 			this.testCaseName = names[1];
+			if (testCaseName.contains("[")) {
+				this.isParametrized = true;
+				int indexPar = testCaseName.indexOf("[");
+				this.testCaseName = this.testCaseName.substring(0, indexPar);
+			}
 		}
 	}
 
