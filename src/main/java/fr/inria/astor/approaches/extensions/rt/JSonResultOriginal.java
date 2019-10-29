@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,7 @@ import fr.inria.astor.approaches.extensions.rt.RtEngine.Helper;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.Skip;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.TestInspectionResult;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.TestRottenAnalysisResult;
+import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import spoon.reflect.code.CtInvocation;
@@ -92,7 +94,7 @@ public class JSonResultOriginal {
 		this.projectFacade = projectFacade;
 
 		JsonObject root = new JsonObject();
-		root.addProperty("project", projectFacade.getProperties().getFixid());
+		root.addProperty("identifier", projectFacade.getProperties().getFixid());
 		JsonObject summary = new JsonObject();
 		root.add("project", summary);
 		String projectName = name;
@@ -317,8 +319,17 @@ public class JSonResultOriginal {
 		summary.addProperty("local_location", location);
 		summary.addProperty("nr_test_with_control_flow_stmt", nrTestWithControlStruct);
 		summary.addProperty("nr_test_with_helper", nrTestWithHelper);
-		summary.addProperty("nr_all_test", resultByTest.size());
+		summary.addProperty("nr_all_test_cases", resultByTest.size());
+		summary.addProperty("nr_all_test_classes", projectFacade.getProperties().getRegressionTestCases().size());
 		summary.addProperty("nr_rotten_test_units", nrRtest);
+
+		Collection<CtPackage> packages = MutationSupporter.getFactory().Package().getAll();
+
+		summary.addProperty("nr_packages", packages.size());
+
+		Collection<CtType<?>> typesspoon = MutationSupporter.getFactory().Type().getAll();
+		summary.addProperty("nr_classes", typesspoon.size());
+
 		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_ASSERTIONS, nrRtAssertion);
 		summary.addProperty("nr_" + this.TEST_WITH_REDUNDANT_ASSERTION, nrAllRedundant);
 		summary.addProperty("nr_" + this.ROTTEN_CONTEXT_DEP_HELPERS_CALL, nrRtHelperCall);
