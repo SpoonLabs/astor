@@ -17,6 +17,7 @@ import org.junit.Test;
 import fr.inria.astor.approaches.extensions.rt.RtEngine;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.AsAssertion;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.Helper;
+import fr.inria.astor.approaches.extensions.rt.RtEngine.RuntimeInformation;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.TestInspectionResult;
 import fr.inria.astor.approaches.extensions.rt.RtEngine.TestRottenAnalysisResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -1359,6 +1360,59 @@ public class RtTestExamples {
 
 	}
 
+	@Test
+	public void testRTFRow28Inner() throws Exception {
+		RtEngine etEn = detectRtSkip();
+
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		RuntimeInformation dynInf = etEn.computeDynamicInformation();
+
+		TestInspectionResult rottenTest0 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test0");
+
+		assertNotNull(rottenTest0);
+
+		assertFalse(rottenTest0.isSmokeTest());
+
+		// All must be executed
+		assertTrue(rottenTest0.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+		assertTrue(rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
+		assertFalse(rottenTest0.isRotten());
+
+		/// T1 not RT
+		TestInspectionResult rottenTest1 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test1");
+
+		assertNotNull(rottenTest1);
+
+		assertFalse(rottenTest1.isSmokeTest());
+
+		// All must be executed
+		assertTrue(rottenTest1.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+		assertTrue(rottenTest1.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
+		assertFalse(rottenTest1.isRotten());
+
+		///
+		TestInspectionResult rottenTest2 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test2");
+
+		assertNotNull(rottenTest2);
+
+		assertFalse(rottenTest2.isSmokeTest());
+
+		// One call Not executed
+		assertTrue(rottenTest2.getClassificationHelperCall().getResultNotExecuted().size() > 0);
+		assertTrue(rottenTest2.getClassificationAssert().getResultExecuted().size() == 1);
+		assertTrue(rottenTest2.getClassificationHelperAssertion().getResultExecuted().size() == 1);
+		// assertTrue(rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().size()
+		// > 0);
+
+		assertTrue(rottenTest2.isRotten());
+
+	}
+
 	private void checkFp(List<TestInspectionResult> tc, boolean toverif, String testname) {
 		Optional<TestInspectionResult> rotten01 = tc.stream().filter(e -> e.getTestMethodFromClass().equals(testname))
 				.findFirst();
@@ -1408,6 +1462,31 @@ public class RtTestExamples {
 		cs.command.put("-mode", "custom");
 		cs.command.put("-customengine", RtEngine.class.getCanonicalName());
 		cs.command.put("-parameters", "canhavezerosusp:true");
+
+		main1.execute(cs.flat());
+		RtEngine etEn = (RtEngine) main1.getEngine();
+		return etEn;
+	}
+
+	private RtEngine detectRtSkip() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		String dep = new File("./examples/libs/junit-4.12.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 500;
+
+		String[] args = new String[] { "-dependencies", dep, "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
+				"-stopfirst", "true", "-maxtime", "100",
+
+		};
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "INFO");
+		cs.command.put("-location", new File("./examples/testMultiMet/rt-project/").getAbsolutePath());
+		cs.command.put("-mode", "custom");
+		cs.command.put("-customengine", RtEngine.class.getCanonicalName());
+		cs.command.put("-parameters", "canhavezerosusp:true:skipanalysis:true");
 
 		main1.execute(cs.flat());
 		RtEngine etEn = (RtEngine) main1.getEngine();

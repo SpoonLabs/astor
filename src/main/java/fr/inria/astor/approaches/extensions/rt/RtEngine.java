@@ -232,6 +232,34 @@ public class RtEngine extends AstorCoreEngine {
 		}
 	}
 
+	public TestInspectionResult processSingleRest(RuntimeInformation runtimeinfo, String aNameOfTestClass,
+			String aTestMethodFromClass) {
+
+		if (runtimeinfo.notexec.contains(aNameOfTestClass)) {
+			log.debug("Ignoring -not executed line- test: " + aNameOfTestClass);
+			return null;
+		}
+		log.info("*-*-*-*----- Analying TestClass: " + aNameOfTestClass);
+		CtClass aTestModelCtClass = MutationSupporter.getFactory().Class().get(aNameOfTestClass);
+		if (aTestModelCtClass == null) {
+			log.error("No class modeled for " + aNameOfTestClass);
+			return null;
+		}
+
+		List<String> testMethodsFromClass = runtimeinfo.passingCoveredTestCaseFromClass.get(aNameOfTestClass);
+
+		if (testMethodsFromClass == null || testMethodsFromClass.isEmpty()) {
+			log.error("No method executed for class " + aNameOfTestClass);
+			return null;
+		}
+
+		TestInspectionResult resultTestCase = processTest(aTestMethodFromClass, aNameOfTestClass, aTestModelCtClass,
+				runtimeinfo);
+
+		return resultTestCase;
+
+	}
+
 	public TestInspectionResult processTest(String aTestMethodFromClass, String aNameOfTestClass,
 			CtClass aTestModelCtClass, RuntimeInformation runtimeinfo) {
 		log.info("**** Analying TestMethod: " + aTestMethodFromClass);
@@ -713,6 +741,7 @@ public class RtEngine extends AstorCoreEngine {
 
 		public boolean isRotten() {
 			return !this.getClassificationAssert().getResultNotExecuted().isEmpty()
+					|| !this.getClassificationHelperCall().getResultNotExecuted().isEmpty()
 					|| !this.getClassificationHelperAssertion().getResultNotExecuted().isEmpty()
 					|| (!this.getAllMissedFailFromTest().getResultNotExecuted().isEmpty())
 					|| !this.getAllSkipFromTest().isEmpty();
@@ -1022,16 +1051,44 @@ public class RtEngine extends AstorCoreEngine {
 		return result;
 	}
 
+	private String getClassName(CtType mclass) {
+		if (mclass.isAnonymous()) {
+			return getClassName(mclass.getDeclaringType());
+		} else {
+			return mclass.getQualifiedName();
+		}
+	}
+
+	// TODO: missing the test???
+	private boolean isCoverSingleLine(Map<String, SuspiciousCode> cacheSuspicious, CtClass aTestModelCtClass,
+			String keyLocationAssertion) {
+		if (cacheSuspicious.containsKey(keyLocationAssertion)) {
+			// Assertion was covered, let's check if by the current test case
+			SuspiciousCode cover = cacheSuspicious.get(keyLocationAssertion);
+			// TODO: missing the test???
+			for (TestCaseResult tr : cover.getCoveredByTests()) {
+				if (tr.getTestCaseClass().equals(aTestModelCtClass.getQualifiedName())) {
+					return true;
+				}
+			}
+
+		}
+		return false;
+	}
+
+	// TODO: missing the test???
 	private boolean isCovered(Map<String, SuspiciousCode> cacheSuspicious, CtElement elementToCheck,
 			CtClass aTestModelCtClass, CtClass ctclassFromAssert) {
 		try {
 			// the location of the assertion contained in the helper
 			int init = elementToCheck.getPosition().getLine();
 			int end = elementToCheck.getPosition().getEndLine();
+			// check if cover in one range of locations
 			for (int i = init; i <= end; i++) {
-				String keyLocationAssertion = ctclassFromAssert.getQualifiedName() + i;
 
-				if (checkCoverLine(cacheSuspicious, aTestModelCtClass, keyLocationAssertion))
+				String keyLocationAssertion = getClassName(ctclassFromAssert) + i;
+
+				if (isCoverSingleLine(cacheSuspicious, aTestModelCtClass, keyLocationAssertion))
 					return true;
 
 			}
@@ -1043,23 +1100,47 @@ public class RtEngine extends AstorCoreEngine {
 
 	}
 
-	public boolean checkCoverLine(Map<String, SuspiciousCode> cacheSuspicious, CtClass aTestModelCtClass,
-			String keyLocationAssertion) {
-		if (cacheSuspicious.containsKey(keyLocationAssertion)) {
-			// Assertion was covered, let's check if by the current test case
-			SuspiciousCode cover = cacheSuspicious.get(keyLocationAssertion);
+	private boolean isCovered(MapList<String, Integer> executedLines, CtElement aStatementToCheck,
+			CtClass parentClass) {
 
-			for (TestCaseResult tr : cover.getCoveredByTests()) {
-				if (tr.getTestCaseClass().equals(aTestModelCtClass.getQualifiedName())) {
+		try {
+			CtClass newParentClass = getTopParentClass(aStatementToCheck);
+
+			String className = newParentClass.getQualifiedName();
+			if (!executedLines.containsKey(className))
+				return false;
+
+			List<Integer> linesOfTestCase = executedLines.get(className);
+			int start = aStatementToCheck.getPosition().getLine();
+			int end = aStatementToCheck.getPosition().getEndLine();
+
+			for (int i = start; i <= end; i++) {
+				if (linesOfTestCase.contains(i)) {
 					return true;
 				}
 			}
-
+		} catch (Exception e) {
+			log.error("Error getting position of element");
+			e.printStackTrace();
 		}
 		return false;
 	}
 
-	public Classification<AsAssertion> classifyAssertions(CtExecutable methodOfAssertment,
+	private CtClass getTopParentClass(CtElement aStatementNotInvoked) {
+		CtClass parent = aStatementNotInvoked.getParent(CtClass.class);
+		if (parent != null) {
+
+			CtClass top = getTopParentClass(parent);
+			if (top != null)
+				return top;
+			else
+				return parent;
+		}
+		return null;
+
+	}
+
+	public Classification<AsAssertion> classifyAssertions(CtExecutable methodOfAssertmentOld,
 			MapList<String, Integer> linesCovered, CtClass aTestModelCtClass,
 			List<CtInvocation> allAssertionsFromTest) {
 		Classification<AsAssertion> result = new Classification<>();
@@ -1353,45 +1434,6 @@ public class RtEngine extends AstorCoreEngine {
 		return helpersMined;
 	}
 
-	private boolean isCovered(MapList<String, Integer> executedLines, CtElement aStatementNotInvoked,
-			CtClass parentClass) {
-
-		try {
-			CtClass newParentClass = getTopParentClass(aStatementNotInvoked);
-
-			String className = newParentClass.getQualifiedName();// parentClass.getQualifiedName();
-			if (!executedLines.containsKey(className))
-				return false;
-			List<Integer> linesOfTestCase = executedLines.get(className);
-			int start = aStatementNotInvoked.getPosition().getLine();
-			int end = aStatementNotInvoked.getPosition().getEndLine();
-
-			for (int i = start; i <= end; i++) {
-				if (linesOfTestCase.contains(i)) {
-					return true;
-				}
-			}
-		} catch (Exception e) {
-			log.error("Error getting position of element");
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public CtClass getTopParentClass(CtElement aStatementNotInvoked) {
-		CtClass parent = aStatementNotInvoked.getParent(CtClass.class);
-		if (parent != null) {
-
-			CtClass top = getTopParentClass(parent);
-			if (top != null)
-				return top;
-			else
-				return parent;
-		}
-		return null;
-
-	}
-
 	private boolean isAssertion(CtInvocation targetInvocation) {
 		return isInvWithName(targetInvocation, ASSERT);
 	}
@@ -1462,7 +1504,7 @@ public class RtEngine extends AstorCoreEngine {
 
 		String out = (ConfigurationProperties.getProperty("out") != null) ? ConfigurationProperties.getProperty("out")
 				: ConfigurationProperties.getProperty("workingDirectory");
-		String outpath = out + File.separator + ConfigurationProperties.getProperty("id") + ".json";
+		String outpath = out + File.separator + "rt_" + ConfigurationProperties.getProperty("id") + ".json";
 		log.info("Saving json at \n" + outpath);
 		try {
 			FileWriter fw = new FileWriter(new File(outpath));
