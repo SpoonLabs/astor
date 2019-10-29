@@ -13,7 +13,7 @@ public class RTFRow28Inner extends AbstractRTestCase {
 	public void test0() {
 		// This is NOT RT
 		int i = 10;
-		Integer[] is = { 2, 3, 4 };
+		Integer[] is = { 2, 3, 4, 5, 6, 7, 8 };
 
 		Arrays.asList(is).sort(new Comparator<Integer>() {
 
@@ -75,7 +75,9 @@ public class RTFRow28Inner extends AbstractRTestCase {
 				return 0;
 			}
 		};
-		c.compare(1, 1);
+		Integer[] is = { 2, 3, 4, 5, 6, 7, 8 };
+
+		Arrays.asList(is).sort(c);
 
 	}
 

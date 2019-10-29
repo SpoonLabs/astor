@@ -1388,7 +1388,7 @@ public class RtTestExamples {
 		assertTrue(rottenTest1.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
 		assertFalse(rottenTest1.isRotten());
 
-		///
+		/// -----
 		TestInspectionResult rottenTest2 = etEn.processSingleRest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test2");
 
@@ -1400,10 +1400,39 @@ public class RtTestExamples {
 		assertTrue(rottenTest2.getClassificationHelperCall().getResultNotExecuted().size() > 0);
 		assertTrue(rottenTest2.getClassificationAssert().getResultExecuted().size() == 1);
 		assertEquals(0, rottenTest2.getClassificationHelperAssertion().getResultExecuted().size());
-		// assertTrue(rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().size()
-		// > 0);
-
+		assertTrue(rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().size() > 0);
 		assertTrue(rottenTest2.isRotten());
+
+		/// ------
+		/// -----
+		TestInspectionResult rottenTest3 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test3");
+
+		assertNotNull(rottenTest3);
+
+		assertFalse(rottenTest3.isSmokeTest());
+
+		// One call Not executed
+		assertTrue(rottenTest3.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+		assertTrue(rottenTest3.getClassificationAssert().getResultNotExecuted().isEmpty());
+		assertTrue(rottenTest3.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
+		assertFalse(rottenTest3.isRotten());
+
+		// -----
+
+		TestInspectionResult rottenTest4 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test4");
+
+		assertNotNull(rottenTest4);
+
+		assertFalse(rottenTest4.isSmokeTest());
+
+		// One call Not executed
+		assertTrue(rottenTest4.getClassificationHelperCall().getResultNotExecuted().size() > 0);
+		// the assertion is always executed, even the helper only some times.
+		assertTrue(rottenTest4.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
+		assertTrue(rottenTest4.getClassificationAssert().getResultNotExecuted().isEmpty());
+		assertTrue(rottenTest4.isRotten());
 
 	}
 
