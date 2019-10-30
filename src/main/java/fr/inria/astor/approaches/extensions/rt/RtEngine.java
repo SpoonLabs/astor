@@ -828,9 +828,9 @@ public class RtEngine extends AstorCoreEngine {
 
 			//
 			classifyComplexHelper(notComplexHelperCallComplex, resultNotExecutedHelperCallComplex,
-					resultNotExecutedHelperCall);
+					resultNotExecutedHelperCall, false /* not assert, a call */);
 			classifyComplexHelper(notComplexHelperAssertComplex, resultNotExecutedHelperAssertComplex,
-					resultNotExecutedHelperAssertion);
+					resultNotExecutedHelperAssertion, true /* assert */);
 			classifyComplexAssert(notComplexAssertComplex, resultNotExecutedAssertComplex, resultNotExecutedAssertion);
 
 			// Executed
@@ -845,16 +845,19 @@ public class RtEngine extends AstorCoreEngine {
 		}
 
 		public void classifyComplexHelper(List<Helper> notComplex, List<Helper> resultNotExecutedHelperCallComplex,
-				List<Helper> resultNotExecutedAssertion) {
-			for (Helper testElement : resultNotExecutedAssertion) {
+				List<Helper> resultNotExecutedAssertion, boolean checkAssertion) {
+			for (Helper aHelper : resultNotExecutedAssertion) {
 
-				CtIf parentIf = testElement.getElement().getParent(CtIf.class);
+				CtInvocation element = (checkAssertion) ? aHelper.getAssertion().getCtAssertion()
+						: aHelper.getCalls().get(0);
+
+				CtIf parentIf = element.getParent(CtIf.class);
 				if (parentIf != null) {
 					// complex
-					resultNotExecutedHelperCallComplex.add(testElement);
+					resultNotExecutedHelperCallComplex.add(aHelper);
 				} else {
 					// not complex
-					notComplex.add(testElement);
+					notComplex.add(aHelper);
 
 				}
 			}

@@ -1436,6 +1436,54 @@ public class RtTestExamples {
 
 	}
 
+	@Test
+	public void testRTFRow29() throws Exception {
+		RtEngine etEn = detectRtSkip();
+
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		RuntimeInformation dynInf = etEn.computeDynamicInformation();
+
+		TestInspectionResult rottenTest1 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow29Context", "test1");
+
+		assertNotNull(rottenTest1);
+
+		assertFalse(rottenTest1.isSmokeTest());
+
+		// All must be executed
+		assertTrue(rottenTest1.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+		assertTrue(rottenTest1.getClassificationHelperAssertion().getResultNotExecuted().size() > 0);
+		assertTrue(rottenTest1.isRotten());
+
+		TestRottenAnalysisResult finalResult = rottenTest1.generateFinalResult();
+		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
+		assertTrue(finalResult.contextHelperAssertion.size() > 0);
+		assertTrue(finalResult.fullRottenAssert.isEmpty());
+		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
+
+		//// Second
+		TestInspectionResult rottenTest2 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow29Context", "test2");
+
+		assertNotNull(rottenTest2);
+
+		assertFalse(rottenTest2.isSmokeTest());
+
+		// One call Not executed
+		assertTrue(rottenTest2.getClassificationHelperCall().getResultNotExecuted().size() > 0);
+		assertTrue(rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().size() > 0);
+		assertTrue(rottenTest2.isRotten());
+
+		finalResult = rottenTest2.generateFinalResult();
+		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
+		assertTrue(finalResult.contextHelperCall.size() > 0);
+		assertTrue(finalResult.fullRottenAssert.isEmpty());
+		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
+
+	}
+
 	private void checkFp(List<TestInspectionResult> tc, boolean toverif, String testname) {
 		Optional<TestInspectionResult> rotten01 = tc.stream().filter(e -> e.getTestMethodFromClass().equals(testname))
 				.findFirst();
