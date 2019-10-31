@@ -1286,10 +1286,10 @@ public class MultiMetEngineSimpleProgramsTest {
 		command.command.put("-mode", "custom");
 		command.command.put("-customengine", MultiMetaEvalTOSApproach.class.getName());
 		command.command.put("-javacompliancelevel", "7");
-		command.command.put("-maxtime", "0");
+		command.command.put("-maxtime", "10");
 		command.command.put("-seed", "0");
-		command.command.put("-stopfirst", "false");
-		command.command.put("-maxgen", "0");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "10");
 		command.command.put("-population", "1");
 		command.command.put("-scope", "local");
 		command.command.put("-srcjavafolder", "src/main/java/");
@@ -1437,13 +1437,13 @@ public class MultiMetEngineSimpleProgramsTest {
 		for (ProgramVariant soli : solutions) {
 			exist = true;
 			exist &= soli.getAllOperations().stream()
-					.filter(e -> e.getModified().toString().contains("if (type != null)") && e.getModified().toString()
-							.contains("java.lang.System.out.println(this.anotherV.toString())"))
+					.filter(e -> e.getModified().toString().contains(" != null)")
+							&& e.getModified().toString().contains("java.lang.System.out.println(anotherV.toString())"))
 					.findFirst().isPresent();
 
-			exist &= soli.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+		if (type != null)");
+			exist &= soli.getPatchDiff().getOriginalStatementAlignmentDiff().contains("+		if (");
 			exist &= soli.getPatchDiff().getOriginalStatementAlignmentDiff()
-					.contains("+			java.lang.System.out.println(this.anotherV.toString());");
+					.contains("+			java.lang.System.out.println(anotherV.toString());");
 			exist &= soli.getPatchDiff().getOriginalStatementAlignmentDiff()
 					.contains("-		java.lang.System.out.println(type.toString());");
 
