@@ -357,12 +357,43 @@ public class RtEngine extends AstorCoreEngine {
 		allMIFromTest.removeAll(allAssertionsFromTest);
 		allMIFromTest.removeAll(allFailsFromTest);
 
+		// Removing assertion called from helpers not executed
+		ignoringHelperAssertionFromNotExecutedHelper(rHelperAssertion.resultNotExecuted, rHelperCall.resultNotExecuted);
+
 		TestInspectionResult resultTestCase = new TestInspectionResult(onlyAssumeExecuted, allAssumesFromTest, rAssert,
 				rHelperAssertion, rHelperCall, aNameOfTestClass, aTestMethodFromClass, testMethodModel, rFailMissing,
 				rRedundantAssertion, allSkipFromTest, expectException, allExpectedExceptionFromTest, allMIFromTest,
 				allFailsFromTest);
 
 		return resultTestCase;
+
+	}
+
+	private void ignoringHelperAssertionFromNotExecutedHelper(List<Helper> resultNotExecutedHelperAssertion,
+			List<Helper> resultNotExecutedHelperCall) {
+
+		List<Helper> assertionsToRemove = new ArrayList<>();
+
+		for (Helper anHelperWithAssertion : resultNotExecutedHelperAssertion) {
+
+			for (CtInvocation aCallToAssertion : anHelperWithAssertion.getCalls()) {
+				boolean isAlready = false;
+				for (Helper helperCallNotExecuted : resultNotExecutedHelperCall) {
+					CtElement call = helperCallNotExecuted.getElement();
+					if (call.equals(aCallToAssertion)) {
+						isAlready = true;
+						break;
+					}
+				}
+				//
+				if (isAlready) {
+					assertionsToRemove.add(anHelperWithAssertion);
+				}
+
+			}
+
+		}
+		resultNotExecutedHelperAssertion.removeAll(assertionsToRemove);
 
 	}
 
@@ -832,6 +863,9 @@ public class RtEngine extends AstorCoreEngine {
 			classifyComplexHelper(notComplexHelperAssertComplex, resultNotExecutedHelperAssertComplex,
 					resultNotExecutedHelperAssertion, true /* assert */);
 			classifyComplexAssert(notComplexAssertComplex, resultNotExecutedAssertComplex, resultNotExecutedAssertion);
+
+			// ignoringHelperAssertionFromNotExecutedHelper(resultNotExecutedHelperAssertion,
+			// resultNotExecutedHelperCall);
 
 			// Executed
 			List<AsAssertion> allMissedFail = this.getAllMissedFailFromTest().getAll();

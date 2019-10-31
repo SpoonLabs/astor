@@ -83,9 +83,9 @@ public class RtTestExamples {
 		TestInspectionResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
-		assertEquals(1, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
-		Helper helperNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().get(0);
-		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperNotExecuted.getAssertion().toString());
+		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
+		assertEquals(1, rottenTest0.getClassificationHelperCall().getResultNotExecuted().size());
+		Helper helperNotExecuted = rottenTest0.getClassificationHelperCall().getResultNotExecuted().get(0);
 
 		assertEquals(1, helperNotExecuted.getCalls().size());
 		assertEquals("this.goodHelper()", helperNotExecuted.getCalls().get(0).toString());
@@ -190,13 +190,8 @@ public class RtTestExamples {
 				.getCtAssertion();
 		assertEquals("org.junit.Assert.assertTrue(4 > 1)", assertionNotExecuted.toString());
 
-		assertEquals(1, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
-		Helper helperNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().get(0);
-		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperNotExecuted.getAssertion().toString());
-
-		assertEquals(1, helperNotExecuted.getCalls().size());
-		assertEquals("this.goodHelper()", helperNotExecuted.getCalls().get(0).toString());
-
+		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
+		
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
 
 	}
@@ -464,13 +459,14 @@ public class RtTestExamples {
 		// Not assertion found in code (even it's executed via 'perform')
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 
-		assertEquals(1, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
+		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
 
-		Helper helperAssertionNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted()
-				.get(0);
-		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperAssertionNotExecuted.getAssertion().toString());
+		assertEquals(1, rottenTest0.getClassificationHelperCall().getResultNotExecuted().size());
+
+		Helper helperAssertionNotExecuted = rottenTest0.getClassificationHelperCall().getResultNotExecuted().get(0);
 		// Let's check the caller of the assertion
 		assertEquals(1, helperAssertionNotExecuted.getCalls().size());
+		assertEquals("this.goodHelper()", helperAssertionNotExecuted.getElement().toString());
 		assertEquals("this.goodHelper()", helperAssertionNotExecuted.getCalls().get(0).toString());
 
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
@@ -558,16 +554,12 @@ public class RtTestExamples {
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperCall().getResultExecuted().size());
-		Helper helperAssertionNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted()
-				.get(0);
-		assertEquals("org.junit.Assert.assertTrue(1 > 0)", helperAssertionNotExecuted.getAssertion().toString());
-		// Let's check the caller of the assertion
-		assertEquals(1, helperAssertionNotExecuted.getCalls().size());
+		assertEquals(1, rottenTest0.getClassificationHelperCall().getResultNotExecuted().size());
+		Helper helperAssertionNotExecuted = rottenTest0.getClassificationHelperCall().getResultNotExecuted().get(0);
+
 		assertEquals("this.goodHelper()", helperAssertionNotExecuted.getCalls().get(0).toString());
 
-		// Now, check the caller is not invoked
-		Helper helperNotExecuted = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().get(0);
-		assertEquals("this.goodHelper()", helperNotExecuted.getCalls().get(0).toString());
+		assertEquals("this.goodHelper()", helperAssertionNotExecuted.getElement().toString());
 
 	}
 
@@ -1275,9 +1267,8 @@ public class RtTestExamples {
 		assertTrue(rottenTest0.isRotten());
 
 		assertFalse(rottenTest0.getClassificationHelperCall().getResultNotExecuted().isEmpty());
-		assertFalse(rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
 
-		Helper rtHelperParent1 = rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().get(0);
+		Helper rtHelperParent1 = rottenTest0.getClassificationHelperCall().getResultNotExecuted().get(0);
 		assertEquals(1, rtHelperParent1.distance);
 
 		// Second:
@@ -1292,9 +1283,8 @@ public class RtTestExamples {
 		assertTrue(rottenTest1.isRotten());
 
 		assertFalse(rottenTest1.getClassificationHelperCall().getResultNotExecuted().isEmpty());
-		assertFalse(rottenTest1.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
 
-		Helper rtHelperParent0 = rottenTest1.getClassificationHelperAssertion().getResultNotExecuted().get(0);
+		Helper rtHelperParent0 = rottenTest1.getClassificationHelperCall().getResultNotExecuted().get(0);
 		assertEquals(0, rtHelperParent0.distance);
 
 		//
@@ -1311,9 +1301,8 @@ public class RtTestExamples {
 		assertTrue(rottenTest2.isRotten());
 
 		assertFalse(rottenTest2.getClassificationHelperCall().getResultNotExecuted().isEmpty());
-		assertFalse(rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
 
-		Helper rtHelperParent2 = rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().get(0);
+		Helper rtHelperParent2 = rottenTest2.getClassificationHelperCall().getResultNotExecuted().get(0);
 		assertEquals(2, rtHelperParent2.distance);
 
 		// Four:
@@ -1328,9 +1317,8 @@ public class RtTestExamples {
 		assertTrue(rottenTest3.isRotten());
 
 		assertFalse(rottenTest3.getClassificationHelperCall().getResultNotExecuted().isEmpty());
-		assertFalse(rottenTest3.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
 
-		Helper rtHelperParent3 = rottenTest3.getClassificationHelperAssertion().getResultNotExecuted().get(0);
+		Helper rtHelperParent3 = rottenTest3.getClassificationHelperCall().getResultNotExecuted().get(0);
 		assertEquals(-1, rtHelperParent3.distance);
 
 		//
@@ -1346,9 +1334,9 @@ public class RtTestExamples {
 		assertTrue(rottenTest4.isRotten());
 
 		assertFalse(rottenTest4.getClassificationHelperCall().getResultNotExecuted().isEmpty());
-		assertFalse(rottenTest4.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
+		assertTrue(rottenTest4.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
 
-		Helper rtHelperParent4 = rottenTest4.getClassificationHelperAssertion().getResultNotExecuted().get(0);
+		Helper rtHelperParent4 = rottenTest4.getClassificationHelperCall().getResultNotExecuted().get(0);
 		assertEquals(-1, rtHelperParent4.distance);
 		assertEquals(3, rtHelperParent4.getCalls().size());
 
@@ -1400,7 +1388,7 @@ public class RtTestExamples {
 		assertTrue(rottenTest2.getClassificationHelperCall().getResultNotExecuted().size() > 0);
 		assertTrue(rottenTest2.getClassificationAssert().getResultExecuted().size() == 1);
 		assertEquals(0, rottenTest2.getClassificationHelperAssertion().getResultExecuted().size());
-		assertTrue(rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().size() > 0);
+		assertTrue(rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().isEmpty());
 		assertTrue(rottenTest2.isRotten());
 
 		/// ------
@@ -1473,7 +1461,8 @@ public class RtTestExamples {
 
 		// One call Not executed
 		assertTrue(rottenTest2.getClassificationHelperCall().getResultNotExecuted().size() > 0);
-		assertTrue(rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().size() > 0);
+		// assertTrue(rottenTest2.getClassificationHelperAssertion().getResultNotExecuted().size()
+		// > 0);
 		assertTrue(rottenTest2.isRotten());
 
 		finalResult = rottenTest2.generateFinalResult();
@@ -1481,6 +1470,34 @@ public class RtTestExamples {
 		assertTrue(finalResult.contextHelperCall.size() > 0);
 		assertTrue(finalResult.fullRottenAssert.isEmpty());
 		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
+
+		//// Third case
+		TestInspectionResult rottenTest3 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow29Context", "test3");
+
+		assertNotNull(rottenTest3);
+
+		assertFalse(rottenTest3.isSmokeTest());
+
+		// One call Not executed
+		assertTrue(rottenTest3.getClassificationHelperCall().getResultNotExecuted().size() > 0);
+		// assertTrue(rottenTest3.getClassificationHelperAssertion().getResultNotExecuted().size()
+		// > 0);
+		assertTrue(rottenTest3.isRotten());
+
+		finalResult = rottenTest3.generateFinalResult();
+
+		assertTrue(finalResult.contextHelperCall.size() > 0);
+		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
+
+		assertTrue(finalResult.fullRottenAssert.isEmpty());
+		assertTrue(finalResult.contextAssertion.isEmpty());
+
+		assertTrue(finalResult.contextHelperAssertion.isEmpty());
+		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
+
+		// It must be context
+		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
 
 	}
 

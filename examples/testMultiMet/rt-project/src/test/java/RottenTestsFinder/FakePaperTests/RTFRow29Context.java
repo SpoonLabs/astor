@@ -25,12 +25,27 @@ public class RTFRow29Context extends AbstractRTestCase {
 
 	}
 
+	public void helper(int i) {
+
+		assertTrue(i >= 0);
+
+	}
+
 	@Test
 	public void test2() {
 
 		int i = 0;
 		if (i > 0) {
 			helper(true);
+		}
+	}
+
+	@Test
+	public void test3() {
+
+		int i = 0;
+		if (i > 0) {
+			helper(i);
 		}
 	}
 
