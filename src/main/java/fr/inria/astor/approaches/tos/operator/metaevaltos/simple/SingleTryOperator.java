@@ -12,6 +12,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.code.CtBlockImpl;
 
 /**
@@ -37,7 +38,12 @@ public class SingleTryOperator extends StatementOperatorInstance {
 	@Override
 	public boolean applyModification() {
 
-		CtStatement original = (CtStatement) MetaGenerator.geOriginalElement(statementToWrap);
+		CtElement el = MetaGenerator.geOriginalElement(statementToWrap);
+		if (!(el instanceof CtStatement)) {
+			return false;
+		}
+
+		CtStatement original = (CtStatement) el;
 		this.setParentBlock(original.getParent(CtBlock.class));
 
 		CtTry tryNew = MutationSupporter.getFactory().createTry();
