@@ -352,6 +352,11 @@ public class RtEngine extends AstorCoreEngine {
 		checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
 		checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
 
+		// checkTwoBranches(rAssert, runtimeinfo.mapCacheSuspicious,
+		// , aTestModelCtClass );
+		// checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
+		// checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
+
 		// We exclude assertions and fails from the list of other method invocations.
 		List<CtInvocation> allMIFromTest = testMethodModel.getBody().getElements(new TypeFilter<>(CtInvocation.class));
 		allMIFromTest.removeAll(allAssertionsFromTest);
@@ -661,9 +666,7 @@ public class RtEngine extends AstorCoreEngine {
 				// we don't care about returns inside lambda
 						aStatement.getParent(CtLambda.class) == null &&
 						// check that is not the last statement (if it's the last one it's fine)
-						!method.getBody().getLastStatement().equals(aStatement)
-						// check that statement is not inside an element that is the last one
-						&& !method.getBody().getLastStatement().equals(aStatement.getParent(new LineFilter()))
+						checkNotLast(aStatement, method)
 
 				) {
 					skips.add((CtReturn) aStatement);
@@ -671,6 +674,30 @@ public class RtEngine extends AstorCoreEngine {
 			}
 		}
 		return skips;
+	}
+
+	/**
+	 * Return true if it's not last
+	 * 
+	 * @param aStatement
+	 * @param method
+	 * @return
+	 */
+	private boolean checkNotLast(CtStatement aStatement, CtExecutable method) {
+
+		CtStatement lastStatement = method.getBody().getLastStatement();
+
+		if (lastStatement instanceof CtInvocation) {
+			CtInvocation targetInvocation = (CtInvocation) lastStatement;
+			if (isInvWithName(targetInvocation, FAIL)) {
+				return false;
+			}
+		}
+
+		// It's not the last one in the method
+		return !lastStatement.equals(aStatement)
+				// check that statement is not inside an element that is the last one
+				&& !lastStatement.equals(aStatement.getParent(new LineFilter()));
 	}
 
 	public List<CtClass> getClasses(CtClass aTestModelCtClass) {
@@ -989,8 +1016,8 @@ public class RtEngine extends AstorCoreEngine {
 				List<Helper> fullRottenHelperCall, List<Helper> fullRottenHelperAssert, //
 				List<AsAssertion> fullRottenAssert, //
 				boolean smokeTest, List<AsAssertion> missed, //
-				List<AsAssertion> allRedundantFromTest, // List<Skip> skip,
-				List<Helper> contextHelperCall, List<Helper> contextHelperAssertion, List<AsAssertion> contextAssertion,
+				List<AsAssertion> allRedundantFromTest, List<Helper> contextHelperCall,
+				List<Helper> contextHelperAssertion, List<AsAssertion> contextAssertion,
 				List<CtInvocation> allAssertionsFromTest) {
 			super();
 			this.fullRottenHelperCall = fullRottenHelperCall;
@@ -1099,13 +1126,18 @@ public class RtEngine extends AstorCoreEngine {
 			SuspiciousCode cover = cacheSuspicious.get(keyLocationAssertion);
 			for (TestCaseResult tr : cover.getCoveredByTests()) {
 				if (tr.getTestCaseClass().equals(aTestModelCtClass.getQualifiedName())
-						&& tr.getTestCaseName().equals(testMethodModel.getSimpleName())) {
+						&& (testMethodModel == null || tr.getTestCaseName().equals(testMethodModel.getSimpleName()))) {
 					return true;
 				}
 			}
 
 		}
 		return false;
+	}
+
+	private boolean isCovered(Map<String, SuspiciousCode> cacheSuspicious, CtElement elementToCheck,
+			CtClass ctclassFromElementToCheck, CtClass aTestModelCtClass) {
+		return isCovered(cacheSuspicious, elementToCheck, ctclassFromElementToCheck, aTestModelCtClass);
 	}
 
 	private boolean isCovered(Map<String, SuspiciousCode> cacheSuspicious, CtElement elementToCheck,
@@ -1573,4 +1605,55 @@ public class RtEngine extends AstorCoreEngine {
 
 	}
 
+	public void checkTwoBranches(Classification<? extends TestElement> elementsToClassify,
+			Map<String, SuspiciousCode> cacheSuspicious, CtClass ctclassFromElementToCheck, CtClass aTestModelCtClass) {
+
+		for (TestElement target : elementsToClassify.resultNotExecuted) {
+
+			CtElement invocation = (target instanceof Helper && ((Helper) target).unexecutedAssert)
+					? ((Helper) target).getAssertion().getElement()
+					: target.getElement();
+			CtIf parentif = null;
+			boolean inThen = false;
+			// Let's retrieve the parent if (I dont use getParent because I want the
+			// Immediate parent)
+			if (invocation.getParent() instanceof CtIf) {
+				parentif = (CtIf) invocation.getParent();
+				inThen = invocation.getRoleInParent().equals(CtRole.THEN);
+			} else {
+
+				if (invocation.getParent() instanceof CtBlock
+						&& (invocation.getParent().getRoleInParent().equals(CtRole.THEN)
+								|| invocation.getParent().getRoleInParent().equals(CtRole.ELSE))) {
+
+					parentif = (CtIf) invocation.getParent().getParent();
+					inThen = invocation.getParent().getRoleInParent().equals(CtRole.THEN);
+				}
+			}
+			//
+			if (parentif != null) {
+				CtStatement toAnalyze = inThen ? parentif.getElseStatement() : parentif.getThenStatement();
+
+				// other statements in the other branch
+				List<CtStatement> stms = (toAnalyze instanceof CtBlock) ? ((CtBlock) toAnalyze).getStatements()
+						: Collections.singletonList(toAnalyze);
+
+				// let's check if exist
+
+				for (CtStatement anStatement : stms) {
+					// let's check if the other branch has executed assertions/helpers
+					boolean exist = isCovered(cacheSuspicious, anStatement, ctclassFromElementToCheck,
+							aTestModelCtClass);
+
+					if (exist) {
+						target.setFp(true);
+						log.debug("Found executed in the other branch");
+						break;
+					}
+				}
+
+			}
+		}
+
+	}
 }
