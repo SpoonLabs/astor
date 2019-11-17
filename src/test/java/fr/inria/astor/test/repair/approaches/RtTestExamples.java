@@ -1,3 +1,4 @@
+
 package fr.inria.astor.test.repair.approaches;
 
 import static org.junit.Assert.assertEquals;
@@ -191,7 +192,7 @@ public class RtTestExamples {
 		assertEquals("org.junit.Assert.assertTrue(4 > 1)", assertionNotExecuted.toString());
 
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
-		
+
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
 
 	}
@@ -1498,6 +1499,72 @@ public class RtTestExamples {
 
 		// It must be context
 		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
+
+	}
+
+	@Test
+	public void testRTFRow30Skip() throws Exception {
+		RtEngine etEn = detectRtSkip();
+
+		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		RuntimeInformation dynInf = etEn.computeDynamicInformation();
+
+		// First case: not executed a method inv
+		TestInspectionResult rottenTest0 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow30Skip", "test0");
+
+		assertNotNull(rottenTest0);
+
+		assertTrue(rottenTest0.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+		// assertTrue(rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size()
+		// > 0);
+		assertTrue(rottenTest0.isRotten());
+
+		TestRottenAnalysisResult finalResult = rottenTest0.generateFinalResult();
+		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
+		assertTrue(finalResult.contextHelperAssertion.isEmpty());
+		assertTrue(finalResult.fullRottenAssert.isEmpty());
+		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
+		assertTrue(finalResult.skip.size() > 0);
+
+		/// Fail
+		/// Should not be RT:
+		TestInspectionResult rottenTest1 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow30Skip", "test1");
+
+		assertNotNull(rottenTest1);
+
+		assertTrue(rottenTest1.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+		// assertTrue(rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size()
+		// > 0);
+		assertTrue(rottenTest1.isSmokeTest());
+
+		finalResult = rottenTest1.generateFinalResult();
+		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
+		assertTrue(finalResult.contextHelperAssertion.isEmpty());
+		assertTrue(finalResult.fullRottenAssert.isEmpty());
+		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
+		// We dont consider it as rt
+		assertTrue(finalResult.skip.isEmpty());
+
+		/// Assert
+		TestInspectionResult rottenTest2 = etEn.processSingleRest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow30Skip", "test2");
+
+		assertNotNull(rottenTest2);
+
+		assertTrue(rottenTest2.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+		assertTrue(rottenTest2.getClassificationAssert().getResultNotExecuted().size() > 0);
+		assertTrue(rottenTest2.isRotten());
+
+		finalResult = rottenTest2.generateFinalResult();
+		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
+		assertTrue(finalResult.contextHelperAssertion.isEmpty());
+		assertTrue(finalResult.fullRottenAssert.isEmpty());
+		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
+		assertTrue(finalResult.skip.size() > 0);
 
 	}
 
