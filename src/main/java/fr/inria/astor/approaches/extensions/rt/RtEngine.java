@@ -1471,6 +1471,12 @@ public class RtEngine extends AstorCoreEngine {
 	 * @return
 	 */
 	private boolean isInvWithName(CtInvocation targetInvocation, String methodName) {
+
+		String package1 = (targetInvocation.getTarget() != null) ? targetInvocation.getTarget().toString() : null;
+
+		if (package1 != null && !package1.startsWith("org.junit") && !package1.startsWith("junit.framework"))
+			return false;
+
 		boolean isAssert = targetInvocation.getExecutable().getSimpleName().toLowerCase()
 				.startsWith(methodName.toLowerCase());
 		if (isAssert) {
