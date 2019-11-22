@@ -1591,13 +1591,11 @@ public class RtEngine extends AstorCoreEngine {
 					boolean exist = rAssertions.getResultExecuted().stream().filter(e -> e.getElement() == anStatement)
 							.findFirst().isPresent();
 
-					// helper
-					exist = exist || rHelperCall.getResultExecuted().stream().filter(e -> e.getElement() == anStatement)
-							.findFirst().isPresent();
-
 					// Assertion executed by a helper
 					exist = exist || rHelperAssertion.getResultExecuted().stream()
 							.filter(e -> e.getAssertion().getCtAssertion() == anStatement).findFirst().isPresent();
+
+					exist = exist || checkStatementInCallStack(rHelperAssertion, anStatement);
 
 					if (exist) {
 						target.setFp(true);
@@ -1609,6 +1607,19 @@ public class RtEngine extends AstorCoreEngine {
 			}
 		}
 
+	}
+
+	public boolean checkStatementInCallStack(Classification<Helper> rHelperAssertion, CtStatement anStatement) {
+
+		for (Helper helperAssertion : rHelperAssertion.getResultExecuted()) {
+
+			for (CtInvocation invocationInCall : helperAssertion.calls) {
+				if (invocationInCall == anStatement)
+					return true;
+			}
+
+		}
+		return false;
 	}
 
 	public void checkTwoBranches(Classification<? extends TestElement> elementsToClassify,

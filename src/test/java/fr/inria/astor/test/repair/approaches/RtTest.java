@@ -162,6 +162,18 @@ public class RtTest {
 		return etEn;
 	}
 
+	public static RtEngine detectRtSkip(File location, String dep, String name, String subproject) throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary cs = getCommand(location, dep, name, subproject);
+		String ss = cs.command.get("-parameters");
+		cs.command.put("-parameters", ss + ":skipanalysis:true");
+
+		main1.execute(cs.flat());
+		RtEngine etEn = (RtEngine) main1.getEngine();
+		return etEn;
+	}
+
 	public static CommandSummary getCommand(File location, String dep, String name, String subproject) {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		int generations = 500;
@@ -170,7 +182,7 @@ public class RtTest {
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
 				"-maxtime", "100",
 				//
-				// "-faultlocalization",
+				// "-faultlocalization", "cocospoon"
 				// GZoltarClientMasterFaultLocalization.class.getCanonicalName()
 
 		};
