@@ -178,7 +178,7 @@ More information about parameters can be found in [this](https://github.com/Spoo
 ## Common problem running Java 7 apps: `UnsupportedClassVersionError (unsupported major.minor version 52.0` 
 
 
-Astor needs to be executed over a JVM 8+. By default, Astor uses the JVM specified on the `JAVA_HOME` variable to run the test cases for validating candidate patches. However, Defects4J subjects needs to be executed using a JMV 7 (according to the official documentation).
+Astor needs to be executed over a JVM 8+. By default, Astor uses the JVM specified on the `JAVA_HOME` variable to run the test cases for validating candidate patches. However, Defects4J subjects needs to be executed using a JVM 7 (according to the official documentation).
 For example, running bug Math-70 from Defects4J on a JVM 8 could produce two failing/errored test cases:
 
   	testMath280(org.apache.commons.math.distribution.NormalDistributionTest)
