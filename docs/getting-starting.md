@@ -211,6 +211,9 @@ A. Run `mvn clean compile test` again in the example issue folder.
 Q. I get following error after running Astor: `Exception in thread "main" java.lang.IllegalArgumentException: The bin folder /home/user/astor/examples/Math-issue-280/target/test-classes does not exist`  
 A. Run `mvn test-compile` in the example issue folder.
 
+Q. I get following error after running Astor: `Exception in thread "main" java.lang.NullPointerException at com.gzoltar.core.GZoltar.run(GZoltar.java:51)`  
+A. Run the install command under the folder "/astor/lib/gzoltar", which is `mvn install:install-file -Dfile=lib/gzoltar/com.gzoltar-0.0.3.jar -DgroupId=com.gzoltar -DartifactId=gzoltar -Dversion=0.0.3 -Dpackaging=jar` .The command is already provided in a text file called "install" under this folder. Also, copy the folder "/astor/lib/gzoltar" into the "/astor/examples/<your_issue>/lib" and run the install command.
+
 
 
 
