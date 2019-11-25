@@ -16,11 +16,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.extensions.rt.RtEngine;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.AsAssertion;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.Helper;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.RuntimeInformation;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.TestInspectionResult;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.TestRottenAnalysisResult;
+import fr.inria.astor.approaches.extensions.rt.core.RuntimeInformation;
+import fr.inria.astor.approaches.extensions.rt.core.TestAnalysisResult;
+import fr.inria.astor.approaches.extensions.rt.core.TestIntermediateAnalysisResult;
+import fr.inria.astor.approaches.extensions.rt.elements.AsAssertion;
+import fr.inria.astor.approaches.extensions.rt.elements.Helper;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
@@ -41,10 +41,10 @@ public class RtTestExamples {
 	public void testRow01() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 
 		assertNotNull(resultByTest);
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.equals("RTFRow01HelperExecutedAssertionExecutedContainsHelperContainsAssertion"))
 				.collect(Collectors.toList());
@@ -61,10 +61,10 @@ public class RtTestExamples {
 	public void testRow02() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow02HelperNotExecutedAssertionExecutedContainsHelperContainsAssertion"))
 				.collect(Collectors.toList());
@@ -76,12 +76,12 @@ public class RtTestExamples {
 		// e.getTestMethodFromClass()).collect(Collectors.toList()).toString(), 1,
 		// tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream()
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream()
 				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultNotExecuted().size());
@@ -113,10 +113,10 @@ public class RtTestExamples {
 	public void testRow03() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow03HelperExecutedAssertionNotExecutedContainsHelperContainsAssertion"))
 				.collect(Collectors.toList());
@@ -128,12 +128,12 @@ public class RtTestExamples {
 		// e.getTestMethodFromClass()).collect(Collectors.toList()).toString(), 1,
 		// tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream()
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream()
 				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 
@@ -165,10 +165,10 @@ public class RtTestExamples {
 	public void testRow04() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow04HelperNotExecutedAssertionNotExecutedContainsHelperContainsAssertion"))
 				.collect(Collectors.toList());
@@ -178,12 +178,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream()
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream()
 				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 
@@ -203,10 +203,10 @@ public class RtTestExamples {
 	public void testRow05() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().equals(
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().equals(
 				"RottenTestsFinder.FakePaperTests.RTFRow05HelperExecutedAssertionExecutedContainsNoHelperContainsAssertion"))
 				.collect(Collectors.toList());
 
@@ -215,12 +215,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 		assertFalse(rottenTest0.isRotten());
 		assertFalse(rottenTest0.isSmokeTest());
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
@@ -238,10 +238,10 @@ public class RtTestExamples {
 	public void testRow05_perform() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow05HelperExecutedAssertionExecutedContainsNoHelperContainsAssertionPerform"))
 				.collect(Collectors.toList());
@@ -250,12 +250,12 @@ public class RtTestExamples {
 		// self
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 
 		assertFalse(rottenTest0.isRotten());
 		assertFalse(rottenTest0.isSmokeTest());
@@ -276,10 +276,10 @@ public class RtTestExamples {
 	public void testRow06() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow06HelperNotExecutedAssertionExecutedContainsNoHelperContainsAssertion"))
 				.collect(Collectors.toList());
@@ -289,12 +289,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult norotten = rotten0OP.get();
+		TestIntermediateAnalysisResult norotten = rotten0OP.get();
 
 		assertFalse(norotten.isRotten());
 
@@ -316,10 +316,10 @@ public class RtTestExamples {
 	public void testRow07() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow07HelperExecutedAssertionNotExecutedContainsNoHelperContainsAssertion"))
 				.collect(Collectors.toList());
@@ -329,12 +329,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream()
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream()
 				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 
@@ -358,10 +358,10 @@ public class RtTestExamples {
 	public void testRow08() throws Exception {
 		RtEngine etEn = detectRt();
 		System.out.println("Running case 8");
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow08HelperNotExecutedAssertionNotExecutedContainsNoHelperContainsAssertion"))
 				.collect(Collectors.toList());
@@ -374,12 +374,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream()
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream()
 				.filter(e -> e.getTestMethodFromClass().equals("test0") && e.isRotten()).findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(1, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 
@@ -396,10 +396,10 @@ public class RtTestExamples {
 	public void testRow09() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow09HelperExecutedAssertionExecutedContainsHelperContainsNoAssertion"))
 				.collect(Collectors.toList());
@@ -408,12 +408,12 @@ public class RtTestExamples {
 
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 
 		assertFalse(rottenTest0.isRotten());
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
@@ -437,10 +437,10 @@ public class RtTestExamples {
 	public void testRow10() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow10HelperNotExecutedAssertionExecutedContainsHelperContainsNoAssertion"))
 				.collect(Collectors.toList());
@@ -449,12 +449,12 @@ public class RtTestExamples {
 
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 		assertTrue(rottenTest0.isRotten());
 
 		// Not assertion found in code (even it's executed via 'perform')
@@ -484,10 +484,10 @@ public class RtTestExamples {
 	public void testRow011() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow11HelperExecutedAssertionNotExecutedContainsHelperContainsNoAssertion"))
 				.collect(Collectors.toList());
@@ -497,12 +497,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
@@ -532,10 +532,10 @@ public class RtTestExamples {
 	public void testRow012() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow12HelperNotExecutedAssertionNotExecutedContainsHelperContainsNoAssertion"))
 				.collect(Collectors.toList());
@@ -545,12 +545,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
@@ -571,10 +571,10 @@ public class RtTestExamples {
 	public void testRow013() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow13HelperExecutedAssertionExecutedContainsNoHelperContainsNoAssertion"))
 				.collect(Collectors.toList());
@@ -584,12 +584,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 		// TODO: must be detected as rotten?
 		assertFalse(rottenTest0.isRotten());
 
@@ -604,10 +604,10 @@ public class RtTestExamples {
 	public void testRow014() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow14HelperNotExecutedAssertionExecutedContainsNoHelperContainsNoAssertion"))
 				.collect(Collectors.toList());
@@ -617,12 +617,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(1, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 		// TODO: must be detected as rotten?
 		assertFalse(rottenTest0.isRotten());
 		assertTrue(rottenTest0.isSmokeTest());
@@ -637,10 +637,10 @@ public class RtTestExamples {
 	public void testRow015() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow15HelperExecutedAssertionNotExecutedContainsNoHelperContainsNoAssertion"))
 				.collect(Collectors.toList());
@@ -650,24 +650,24 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(2, tc.size());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 		// TODO: must be detected as rotten?
 		assertFalse(rottenTest0.isRotten());
 		assertTrue(rottenTest0.isSmokeTest());
 
 		checkIsEmpty(rottenTest0);
 
-		Optional<TestInspectionResult> rotten1OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test2"))
+		Optional<TestIntermediateAnalysisResult> rotten1OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test2"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest1 = rotten1OP.get();
+		TestIntermediateAnalysisResult rottenTest1 = rotten1OP.get();
 		// TODO: must be detected as rotten?
 		assertFalse(rottenTest1.isRotten());
 		assertTrue(rottenTest1.isSmokeTest());
@@ -676,7 +676,7 @@ public class RtTestExamples {
 
 	}
 
-	public void checkIsEmpty(TestInspectionResult rottenTest0) {
+	public void checkIsEmpty(TestIntermediateAnalysisResult rottenTest0) {
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperCall().getResultExecuted().size());
@@ -692,10 +692,10 @@ public class RtTestExamples {
 	public void testRow016() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass()
 						.contains("RTFRow16HelperNotExecutedAssertionNotExecutedContainsNoHelperContainsNoAssertion"))
 				.collect(Collectors.toList());
@@ -705,12 +705,12 @@ public class RtTestExamples {
 		// assert: rottenTestsFound rottenTests size equals: 1;
 		// assertEquals(2, tc.size());
 
-		List<TestInspectionResult> rottens = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		List<TestIntermediateAnalysisResult> rottens = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.collect(Collectors.toList());
 
 		assertFalse(rottens.isEmpty());
 
-		TestInspectionResult rottenTest0 = rottens.get(0);
+		TestIntermediateAnalysisResult rottenTest0 = rottens.get(0);
 		assertTrue(rottenTest0.isSmokeTest());
 		assertEquals(0, rottenTest0.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest0.getClassificationHelperAssertion().getResultExecuted().size());
@@ -721,7 +721,7 @@ public class RtTestExamples {
 
 		assertFalse(rottens.isEmpty());
 
-		TestInspectionResult rottenTest2 = rottens.get(0);
+		TestIntermediateAnalysisResult rottenTest2 = rottens.get(0);
 		assertTrue(rottenTest2.isSmokeTest());
 		assertEquals(0, rottenTest2.getClassificationAssert().getResultNotExecuted().size());
 		assertEquals(0, rottenTest2.getClassificationHelperAssertion().getResultExecuted().size());
@@ -733,10 +733,10 @@ public class RtTestExamples {
 	public void testRow017() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().contains("RTFRow017"))
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().contains("RTFRow017"))
 				.collect(Collectors.toList());
 
 		assertFalse(tc.isEmpty());
@@ -756,20 +756,20 @@ public class RtTestExamples {
 	public void testRow018() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().contains("RTFRow018"))
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().contains("RTFRow018"))
 				.collect(Collectors.toList());
 
 		tc = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0")).collect(Collectors.toList());
 
 		assertFalse(tc.isEmpty());
 
-		TestInspectionResult rottenTest0 = tc.get(0);
+		TestIntermediateAnalysisResult rottenTest0 = tc.get(0);
 		assertFalse(rottenTest0.isSmokeTest());
 
-		TestRottenAnalysisResult res = rottenTest0.generateFinalResult();
+		TestAnalysisResult res = rottenTest0.generateFinalResult();
 
 		assertNotNull(res);
 
@@ -784,20 +784,20 @@ public class RtTestExamples {
 	public void testRow019() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().contains("RTFRow19"))
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().contains("RTFRow19"))
 				.collect(Collectors.toList());
 
 		assertFalse(tc.isEmpty());
 
-		Optional<TestInspectionResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0OP = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0OP.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0OP.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0OP.get();
 
 		assertFalse(rottenTest0.isSmokeTest());
 		assertFalse(rottenTest0.isRotten());
@@ -811,12 +811,12 @@ public class RtTestExamples {
 	public void testRow21() throws Exception {
 		RtEngine etEn = detectRtSkip();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
 		RuntimeInformation dynInf = etEn.computeDynamicInformation();
 
-		TestInspectionResult rottenTest0 = etEn.processSingleRest(dynInf, "RottenTestsFinder.FakePaperTests.RTFRow21",
+		TestIntermediateAnalysisResult rottenTest0 = etEn.processSingleTest(dynInf, "RottenTestsFinder.FakePaperTests.RTFRow21",
 				"testPrimeNumberChecker");
 
 		assertNotNull(rottenTest0);
@@ -830,7 +830,7 @@ public class RtTestExamples {
 
 		// Second test
 
-		TestInspectionResult rottenTest2 = etEn.processSingleRest(dynInf, "RottenTestsFinder.FakePaperTests.RTFRow21",
+		TestIntermediateAnalysisResult rottenTest2 = etEn.processSingleTest(dynInf, "RottenTestsFinder.FakePaperTests.RTFRow21",
 				"testPrimeNumberChecker2");
 
 		assertNotNull(rottenTest2);
@@ -840,7 +840,7 @@ public class RtTestExamples {
 
 		assertTrue(rottenTest2.getExpectException().isEmpty());
 
-		TestRottenAnalysisResult fr2 = rottenTest2.generateFinalResult();
+		TestAnalysisResult fr2 = rottenTest2.generateFinalResult();
 
 		assertTrue(fr2.getFullRotten().isEmpty());
 		assertTrue(fr2.contextAssertion.isEmpty());
@@ -854,26 +854,26 @@ public class RtTestExamples {
 	public void testRow21_Param_RT() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().contains("RTFRow22"))
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream().filter(e -> e.getNameOfTestClass().contains("RTFRow22"))
 				.collect(Collectors.toList());
 
 		// Second test
-		Optional<TestInspectionResult> rotten2P = tc.stream()
+		Optional<TestIntermediateAnalysisResult> rotten2P = tc.stream()
 				.filter(e -> e.getTestMethodFromClass().equals("testPrimeNumberChecker2")).findFirst();
 
 		assertTrue(rotten2P.isPresent());
 
-		TestInspectionResult rottenTest2 = rotten2P.get();
+		TestIntermediateAnalysisResult rottenTest2 = rotten2P.get();
 
 		assertFalse(rottenTest2.isSmokeTest());
 		assertTrue(rottenTest2.isRotten());
 
 		assertTrue(rottenTest2.getExpectException().isEmpty());
 
-		TestRottenAnalysisResult fr2 = rottenTest2.generateFinalResult();
+		TestAnalysisResult fr2 = rottenTest2.generateFinalResult();
 
 		assertTrue(fr2.getFullRotten().isEmpty());
 		assertFalse(fr2.contextAssertion.isEmpty());
@@ -887,26 +887,26 @@ public class RtTestExamples {
 	public void testRow23_missing() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass().contains("RTFRow23MissingFail")).collect(Collectors.toList());
 
 		// Second test
-		Optional<TestInspectionResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten2P.isPresent());
 
-		TestInspectionResult rottenTest2 = rotten2P.get();
+		TestIntermediateAnalysisResult rottenTest2 = rotten2P.get();
 
 		assertFalse(rottenTest2.isSmokeTest());
 		assertTrue(rottenTest2.isRotten());
 
 		assertTrue(rottenTest2.getExpectException().isEmpty());
 
-		TestRottenAnalysisResult fr2 = rottenTest2.generateFinalResult();
+		TestAnalysisResult fr2 = rottenTest2.generateFinalResult();
 
 		assertTrue(fr2.getFullRotten().isEmpty());
 		assertTrue(fr2.contextAssertion.isEmpty());
@@ -922,26 +922,26 @@ public class RtTestExamples {
 	public void testRow24_RedundantAssertion() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass().contains("RTFRow24Redundant")).collect(Collectors.toList());
 
 		// Second test
-		Optional<TestInspectionResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten2P.isPresent());
 
-		TestInspectionResult rottenTest2 = rotten2P.get();
+		TestIntermediateAnalysisResult rottenTest2 = rotten2P.get();
 
 		assertFalse(rottenTest2.isSmokeTest());
 		assertFalse(rottenTest2.isRotten());
 
 		assertTrue(rottenTest2.getExpectException().isEmpty());
 
-		TestRottenAnalysisResult fr2 = rottenTest2.generateFinalResult();
+		TestAnalysisResult fr2 = rottenTest2.generateFinalResult();
 
 		assertTrue(fr2.getFullRotten().isEmpty());
 		assertTrue(fr2.contextAssertion.isEmpty());
@@ -1024,19 +1024,19 @@ public class RtTestExamples {
 	public void testRTFRow25Exception() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass().contains("RTFRow25Exception")).collect(Collectors.toList());
 
 		// Second test
-		Optional<TestInspectionResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten2P.isPresent());
 
-		TestInspectionResult rottenTest2 = rotten2P.get();
+		TestIntermediateAnalysisResult rottenTest2 = rotten2P.get();
 
 		assertFalse(rottenTest2.isSmokeTest());
 		assertFalse(rottenTest2.isRotten());
@@ -1044,7 +1044,7 @@ public class RtTestExamples {
 		// we expect exceptions
 		assertFalse(rottenTest2.getExpectException().isEmpty());
 
-		TestRottenAnalysisResult fr2 = rottenTest2.generateFinalResult();
+		TestAnalysisResult fr2 = rottenTest2.generateFinalResult();
 
 		assertTrue(fr2.getFullRotten().isEmpty());
 		assertTrue(fr2.contextAssertion.isEmpty());
@@ -1110,19 +1110,19 @@ public class RtTestExamples {
 	public void testRTFRow25Exception2() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass().contains("RTFRow25Exception2")).collect(Collectors.toList());
 
 		// Second test
-		Optional<TestInspectionResult> rotten0 = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0 = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0.get();
 
 		assertFalse(rottenTest0.isSmokeTest());
 		// Must be rotten, the assertion has logic
@@ -1131,7 +1131,7 @@ public class RtTestExamples {
 		// we expect exceptions
 		assertFalse(rottenTest0.getExpectException().isEmpty());
 
-		TestRottenAnalysisResult fr0 = rottenTest0.generateFinalResult();
+		TestAnalysisResult fr0 = rottenTest0.generateFinalResult();
 
 		// We have values
 		assertFalse(fr0.getFullRotten().isEmpty());
@@ -1145,12 +1145,12 @@ public class RtTestExamples {
 		//// Case two: missedfail
 
 		// Second test
-		Optional<TestInspectionResult> rotten1 = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test1"))
+		Optional<TestIntermediateAnalysisResult> rotten1 = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test1"))
 				.findFirst();
 
 		assertTrue(rotten1.isPresent());
 
-		TestInspectionResult rottenTest1 = rotten1.get();
+		TestIntermediateAnalysisResult rottenTest1 = rotten1.get();
 
 		assertFalse(rottenTest1.isSmokeTest());
 		assertTrue(rottenTest1.getAllMissedFailFromTest().getAll().size() > 0);
@@ -1161,7 +1161,7 @@ public class RtTestExamples {
 		// we expect exceptions
 		assertFalse(rottenTest1.getExpectException().isEmpty());
 
-		TestRottenAnalysisResult fr1 = rottenTest1.generateFinalResult();
+		TestAnalysisResult fr1 = rottenTest1.generateFinalResult();
 
 		assertTrue(fr1.getFullRotten().isEmpty());
 		assertTrue(fr1.contextAssertion.isEmpty());
@@ -1174,12 +1174,12 @@ public class RtTestExamples {
 		//// Case 3: failt
 
 		// Second test
-		Optional<TestInspectionResult> rotten2 = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test2"))
+		Optional<TestIntermediateAnalysisResult> rotten2 = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test2"))
 				.findFirst();
 
 		assertTrue(rotten2.isPresent());
 
-		TestInspectionResult rottenTest2 = rotten2.get();
+		TestIntermediateAnalysisResult rottenTest2 = rotten2.get();
 
 		assertFalse(rottenTest2.isSmokeTest());
 		assertTrue(rottenTest2.getAllMissedFailFromTest().getAll().isEmpty());
@@ -1190,7 +1190,7 @@ public class RtTestExamples {
 		// we expect exceptions
 		assertFalse(rottenTest2.getExpectException().isEmpty());
 
-		TestRottenAnalysisResult fr2 = rottenTest2.generateFinalResult();
+		TestAnalysisResult fr2 = rottenTest2.generateFinalResult();
 
 		assertTrue(fr2.getFullRotten().isEmpty());
 		assertTrue(fr2.contextAssertion.isEmpty());
@@ -1207,19 +1207,19 @@ public class RtTestExamples {
 	public void testRTFRow26Assume() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass().contains("RTFRow26Assume")).collect(Collectors.toList());
 
 		// Second test
-		Optional<TestInspectionResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten2P.isPresent());
 
-		TestInspectionResult rottenTest2 = rotten2P.get();
+		TestIntermediateAnalysisResult rottenTest2 = rotten2P.get();
 		assertTrue(rottenTest2.getExpectException().isEmpty());
 		assertFalse(rottenTest2.isSmokeTest());
 		assertTrue(rottenTest2.isRotten());
@@ -1233,12 +1233,12 @@ public class RtTestExamples {
 
 		// Now test with not rotten
 
-		Optional<TestInspectionResult> rotten1 = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test1"))
+		Optional<TestIntermediateAnalysisResult> rotten1 = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test1"))
 				.findFirst();
 
 		assertTrue(rotten1.isPresent());
 
-		TestInspectionResult rottenTest1 = rotten1.get();
+		TestIntermediateAnalysisResult rottenTest1 = rotten1.get();
 		assertTrue(rottenTest1.getExpectException().isEmpty());
 		assertFalse(rottenTest1.isSmokeTest());
 		assertFalse(rottenTest1.isRotten());
@@ -1252,18 +1252,18 @@ public class RtTestExamples {
 	public void testRTFRow27HelperDistance() throws Exception {
 		RtEngine etEn = detectRt();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
-		List<TestInspectionResult> tc = resultByTest.stream()
+		List<TestIntermediateAnalysisResult> tc = resultByTest.stream()
 				.filter(e -> e.getNameOfTestClass().contains("RTFRow27HelperDistance")).collect(Collectors.toList());
 
-		Optional<TestInspectionResult> rotten0P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
+		Optional<TestIntermediateAnalysisResult> rotten0P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test0"))
 				.findFirst();
 
 		assertTrue(rotten0P.isPresent());
 
-		TestInspectionResult rottenTest0 = rotten0P.get();
+		TestIntermediateAnalysisResult rottenTest0 = rotten0P.get();
 		assertFalse(rottenTest0.isSmokeTest());
 		assertTrue(rottenTest0.isRotten());
 
@@ -1274,12 +1274,12 @@ public class RtTestExamples {
 
 		// Second:
 
-		Optional<TestInspectionResult> rotten1P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test1"))
+		Optional<TestIntermediateAnalysisResult> rotten1P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test1"))
 				.findFirst();
 
 		assertTrue(rotten1P.isPresent());
 
-		TestInspectionResult rottenTest1 = rotten1P.get();
+		TestIntermediateAnalysisResult rottenTest1 = rotten1P.get();
 		assertFalse(rottenTest1.isSmokeTest());
 		assertTrue(rottenTest1.isRotten());
 
@@ -1292,12 +1292,12 @@ public class RtTestExamples {
 
 		// Thirds:
 
-		Optional<TestInspectionResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test2"))
+		Optional<TestIntermediateAnalysisResult> rotten2P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test2"))
 				.findFirst();
 
 		assertTrue(rotten2P.isPresent());
 
-		TestInspectionResult rottenTest2 = rotten2P.get();
+		TestIntermediateAnalysisResult rottenTest2 = rotten2P.get();
 		assertFalse(rottenTest2.isSmokeTest());
 		assertTrue(rottenTest2.isRotten());
 
@@ -1308,12 +1308,12 @@ public class RtTestExamples {
 
 		// Four:
 
-		Optional<TestInspectionResult> rotten3P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test3"))
+		Optional<TestIntermediateAnalysisResult> rotten3P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test3"))
 				.findFirst();
 
 		assertTrue(rotten3P.isPresent());
 
-		TestInspectionResult rottenTest3 = rotten3P.get();
+		TestIntermediateAnalysisResult rottenTest3 = rotten3P.get();
 		assertFalse(rottenTest3.isSmokeTest());
 		assertTrue(rottenTest3.isRotten());
 
@@ -1325,12 +1325,12 @@ public class RtTestExamples {
 		//
 		// Four:
 
-		Optional<TestInspectionResult> rotten4P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test4"))
+		Optional<TestIntermediateAnalysisResult> rotten4P = tc.stream().filter(e -> e.getTestMethodFromClass().equals("test4"))
 				.findFirst();
 
 		assertTrue(rotten4P.isPresent());
 
-		TestInspectionResult rottenTest4 = rotten4P.get();
+		TestIntermediateAnalysisResult rottenTest4 = rotten4P.get();
 		assertFalse(rottenTest4.isSmokeTest());
 		assertTrue(rottenTest4.isRotten());
 
@@ -1347,12 +1347,12 @@ public class RtTestExamples {
 	public void testRTFRow28Inner() throws Exception {
 		RtEngine etEn = detectRtSkip();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
 		RuntimeInformation dynInf = etEn.computeDynamicInformation();
 
-		TestInspectionResult rottenTest0 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest0 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test0");
 
 		assertNotNull(rottenTest0);
@@ -1365,7 +1365,7 @@ public class RtTestExamples {
 		assertFalse(rottenTest0.isRotten());
 
 		/// T1 not RT
-		TestInspectionResult rottenTest1 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest1 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test1");
 
 		assertNotNull(rottenTest1);
@@ -1378,7 +1378,7 @@ public class RtTestExamples {
 		assertFalse(rottenTest1.isRotten());
 
 		/// -----
-		TestInspectionResult rottenTest2 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest2 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test2");
 
 		assertNotNull(rottenTest2);
@@ -1394,7 +1394,7 @@ public class RtTestExamples {
 
 		/// ------
 		/// -----
-		TestInspectionResult rottenTest3 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest3 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test3");
 
 		assertNotNull(rottenTest3);
@@ -1409,7 +1409,7 @@ public class RtTestExamples {
 
 		// -----
 
-		TestInspectionResult rottenTest4 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest4 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow28Inner", "test4");
 
 		assertNotNull(rottenTest4);
@@ -1429,12 +1429,12 @@ public class RtTestExamples {
 	public void testRTFRow29() throws Exception {
 		RtEngine etEn = detectRtSkip();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
 		RuntimeInformation dynInf = etEn.computeDynamicInformation();
 
-		TestInspectionResult rottenTest1 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest1 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow29Context", "test1");
 
 		assertNotNull(rottenTest1);
@@ -1446,14 +1446,14 @@ public class RtTestExamples {
 		assertTrue(rottenTest1.getClassificationHelperAssertion().getResultNotExecuted().size() > 0);
 		assertTrue(rottenTest1.isRotten());
 
-		TestRottenAnalysisResult finalResult = rottenTest1.generateFinalResult();
+		TestAnalysisResult finalResult = rottenTest1.generateFinalResult();
 		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
 		assertTrue(finalResult.contextHelperAssertion.size() > 0);
 		assertTrue(finalResult.fullRottenAssert.isEmpty());
 		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
 
 		//// Second
-		TestInspectionResult rottenTest2 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest2 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow29Context", "test2");
 
 		assertNotNull(rottenTest2);
@@ -1473,7 +1473,7 @@ public class RtTestExamples {
 		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
 
 		//// Third case
-		TestInspectionResult rottenTest3 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest3 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow29Context", "test3");
 
 		assertNotNull(rottenTest3);
@@ -1506,13 +1506,13 @@ public class RtTestExamples {
 	public void testRTFRow30Skip() throws Exception {
 		RtEngine etEn = detectRtSkip();
 
-		List<TestInspectionResult> resultByTest = etEn.getResultByTest();
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
 		assertNotNull(resultByTest);
 
 		RuntimeInformation dynInf = etEn.computeDynamicInformation();
 
 		// First case: not executed a method inv
-		TestInspectionResult rottenTest0 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest0 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow30Skip", "test0");
 
 		assertNotNull(rottenTest0);
@@ -1522,7 +1522,7 @@ public class RtTestExamples {
 		// > 0);
 		assertTrue(rottenTest0.isRotten());
 
-		TestRottenAnalysisResult finalResult = rottenTest0.generateFinalResult();
+		TestAnalysisResult finalResult = rottenTest0.generateFinalResult();
 		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
 		assertTrue(finalResult.contextHelperAssertion.isEmpty());
 		assertTrue(finalResult.fullRottenAssert.isEmpty());
@@ -1531,7 +1531,7 @@ public class RtTestExamples {
 
 		/// Fail
 		/// Should not be RT:
-		TestInspectionResult rottenTest1 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest1 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow30Skip", "test1");
 
 		assertNotNull(rottenTest1);
@@ -1550,7 +1550,7 @@ public class RtTestExamples {
 		assertTrue(finalResult.skip.isEmpty());
 
 		/// Assert
-		TestInspectionResult rottenTest2 = etEn.processSingleRest(dynInf,
+		TestIntermediateAnalysisResult rottenTest2 = etEn.processSingleTest(dynInf,
 				"RottenTestsFinder.FakePaperTests.RTFRow30Skip", "test2");
 
 		assertNotNull(rottenTest2);
@@ -1568,13 +1568,73 @@ public class RtTestExamples {
 
 	}
 
-	private void checkFp(List<TestInspectionResult> tc, boolean toverif, String testname) {
-		Optional<TestInspectionResult> rotten01 = tc.stream().filter(e -> e.getTestMethodFromClass().equals(testname))
+	@Test
+	public void testRTFRow31ContextExecuted() throws Exception {
+		RtEngine etEn = detectRtSkip();
+
+		List<TestIntermediateAnalysisResult> resultByTest = etEn.getResultByTest();
+		assertNotNull(resultByTest);
+
+		RuntimeInformation dynInf = etEn.computeDynamicInformation();
+
+		// First case: not executed a method inv
+		TestIntermediateAnalysisResult rottenTest0 = etEn.processSingleTest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow31IfContextFP", "test0");
+
+		assertNotNull(rottenTest0);
+
+		assertTrue(rottenTest0.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+
+		assertTrue(rottenTest0.isRotten());
+
+		TestAnalysisResult finalResult = rottenTest0.generateFinalResult();
+		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
+		assertTrue(finalResult.contextHelperAssertion.isEmpty());
+		assertTrue(finalResult.contextAssertion.size() > 0);
+		assertTrue(finalResult.fullRottenAssert.isEmpty());
+		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
+		assertTrue(finalResult.skip.isEmpty());
+
+		AsAssertion ass0 = finalResult.contextAssertion.get(0);
+		assertNotNull(ass0);
+		//
+		assertTrue(ass0.isFp());
+
+		/// Now second case
+
+		// First case: not executed a method inv
+		TestIntermediateAnalysisResult rottenTest1 = etEn.processSingleTest(dynInf,
+				"RottenTestsFinder.FakePaperTests.RTFRow31IfContextFP", "test1");
+
+		assertNotNull(rottenTest1);
+
+		assertTrue(rottenTest1.getClassificationHelperCall().getResultNotExecuted().isEmpty());
+
+		assertTrue(rottenTest1.isRotten());
+
+		finalResult = rottenTest1.generateFinalResult();
+		assertTrue(finalResult.fullRottenHelperAssert.isEmpty());
+		// That one inside the helper
+		assertTrue(finalResult.contextHelperAssertion.size() > 0);
+		assertTrue(finalResult.contextAssertion.size() == 1);
+		assertTrue(finalResult.fullRottenAssert.isEmpty());
+		assertTrue(finalResult.fullRottenHelperCall.isEmpty());
+		assertTrue(finalResult.skip.isEmpty());
+
+		AsAssertion ass1 = finalResult.contextAssertion.get(0);
+		assertNotNull(ass1);
+		// The case to analyze (opt) does NOT mark it as FP.
+		assertFalse(ass1.isFp());
+
+	}
+
+	private void checkFp(List<TestIntermediateAnalysisResult> tc, boolean toverif, String testname) {
+		Optional<TestIntermediateAnalysisResult> rotten01 = tc.stream().filter(e -> e.getTestMethodFromClass().equals(testname))
 				.findFirst();
 
 		assertTrue(rotten01.isPresent());
 
-		TestInspectionResult rtest1 = rotten01.get();
+		TestIntermediateAnalysisResult rtest1 = rotten01.get();
 
 		assertEquals(1, rtest1.getClassificationAssert().getResultNotExecuted().size());
 
@@ -1583,13 +1643,13 @@ public class RtTestExamples {
 		assertEquals("--> FP", toverif, rtas1.isFp());
 	}
 
-	private void checkFpHelper(List<TestInspectionResult> tc, boolean toverif, String testname) {
-		Optional<TestInspectionResult> rotten01 = tc.stream().filter(e -> e.getTestMethodFromClass().equals(testname))
+	private void checkFpHelper(List<TestIntermediateAnalysisResult> tc, boolean toverif, String testname) {
+		Optional<TestIntermediateAnalysisResult> rotten01 = tc.stream().filter(e -> e.getTestMethodFromClass().equals(testname))
 				.findFirst();
 
 		assertTrue(rotten01.isPresent());
 
-		TestInspectionResult rtest1 = rotten01.get();
+		TestIntermediateAnalysisResult rtest1 = rotten01.get();
 
 		assertEquals(1, rtest1.getClassificationHelperAssertion().getResultNotExecuted().size());
 

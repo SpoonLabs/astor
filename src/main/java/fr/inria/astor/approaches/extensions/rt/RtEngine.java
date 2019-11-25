@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +16,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.approaches.extensions.rt.core.Classification;
+import fr.inria.astor.approaches.extensions.rt.core.RuntimeInformation;
+import fr.inria.astor.approaches.extensions.rt.core.TestIntermediateAnalysisResult;
+import fr.inria.astor.approaches.extensions.rt.elements.AsAssertion;
+import fr.inria.astor.approaches.extensions.rt.elements.Helper;
+import fr.inria.astor.approaches.extensions.rt.out.JSonResultOriginal;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.faultlocalization.gzoltar.TestCaseResult;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -26,22 +31,15 @@ import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.util.MapList;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtDo;
-import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtForEach;
-import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtTry;
-import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.LineFilter;
@@ -63,7 +61,7 @@ public class RtEngine extends AstorCoreEngine {
 
 	List<SuspiciousCode> allExecutedStatements = null;
 
-	public List<TestInspectionResult> resultByTest = new ArrayList<>();
+	public List<TestIntermediateAnalysisResult> resultByTest = new ArrayList<>();
 
 	List<String> namespace = Arrays.asList("org.assertj", "org.testng", "org.mockito", "org.spockframework",
 			"org.junit", "cucumber", "org.jbehave");
@@ -222,7 +220,7 @@ public class RtEngine extends AstorCoreEngine {
 
 			for (String aTestMethodFromClass : testMethodsFromClass) {
 
-				TestInspectionResult resultTestCase = processTest(aTestMethodFromClass, aNameOfTestClass,
+				TestIntermediateAnalysisResult resultTestCase = processTest(aTestMethodFromClass, aNameOfTestClass,
 						aTestModelCtClass, runtimeinfo);
 				if (resultTestCase != null) {
 					resultByTest.add(resultTestCase);
@@ -231,7 +229,7 @@ public class RtEngine extends AstorCoreEngine {
 		}
 	}
 
-	public TestInspectionResult processSingleRest(RuntimeInformation runtimeinfo, String aNameOfTestClass,
+	public TestIntermediateAnalysisResult processSingleTest(RuntimeInformation runtimeinfo, String aNameOfTestClass,
 			String aTestMethodFromClass) {
 
 		if (runtimeinfo.notexec.contains(aNameOfTestClass)) {
@@ -252,14 +250,14 @@ public class RtEngine extends AstorCoreEngine {
 			return null;
 		}
 
-		TestInspectionResult resultTestCase = processTest(aTestMethodFromClass, aNameOfTestClass, aTestModelCtClass,
+		TestIntermediateAnalysisResult resultTestCase = processTest(aTestMethodFromClass, aNameOfTestClass, aTestModelCtClass,
 				runtimeinfo);
 
 		return resultTestCase;
 
 	}
 
-	public TestInspectionResult processTest(String aTestMethodFromClass, String aNameOfTestClass,
+	public TestIntermediateAnalysisResult processTest(String aTestMethodFromClass, String aNameOfTestClass,
 			CtClass aTestModelCtClass, RuntimeInformation runtimeinfo) {
 		log.info("**** Analying TestMethod: " + aTestMethodFromClass);
 
@@ -300,9 +298,12 @@ public class RtEngine extends AstorCoreEngine {
 		List<CtInvocation> allMissedFailFromTest = filterMissedFail(allAssertionsFromTest);
 		List<CtInvocation> allRedundantAssertionFromTest = filterRedundantAssertions(allAssertionsFromTest);
 
+		allAssertionsFromTest.removeAll(allMissedFailFromTest);
+
+		// Second step
+
 		// The missed fails are removed from the assertion list (they are a
 		// sub-category).
-		allAssertionsFromTest.removeAll(allMissedFailFromTest);
 
 		List<CtReturn> allSkipFromTest = filterSkips(allStmtsFromClass, testMethodModel, allClasses);
 
@@ -318,11 +319,11 @@ public class RtEngine extends AstorCoreEngine {
 		Classification<AsAssertion> rRedundantAssertion = classifyAssertions(testMethodModel,
 				runtimeinfo.mapCacheSuspicious, aTestModelCtClass, allRedundantAssertionFromTest);
 
+		// TODO: to move?
 		chechInsideTry(rRedundantAssertion.resultExecuted, runtimeinfo.mapCacheSuspicious, aTestModelCtClass,
 				testMethodModel);
 		chechInsideTry(rRedundantAssertion.resultNotExecuted, runtimeinfo.mapCacheSuspicious, aTestModelCtClass,
 				testMethodModel);
-		//
 
 		Classification<AsAssertion> rAssert = classifyAssertions(testMethodModel, runtimeinfo.mapCacheSuspicious,
 				aTestModelCtClass, allAssertionsFromTest);
@@ -348,14 +349,6 @@ public class RtEngine extends AstorCoreEngine {
 		}
 		boolean onlyAssumeExecuted = checkOnlyAssumeExecuted(allStmtsFromClass, runtimeinfo.mapCacheSuspicious,
 				aTestModelCtClass, allAssumesFromTest, testMethodModel);
-		checkTwoBranches(rAssert, rAssert, rHelperCall, rHelperAssertion);
-		checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
-		checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
-
-		// checkTwoBranches(rAssert, runtimeinfo.mapCacheSuspicious,
-		// , aTestModelCtClass );
-		// checkTwoBranches(rHelperCall, rAssert, rHelperCall, rHelperAssertion);
-		// checkTwoBranches(rHelperAssertion, rAssert, rHelperCall, rHelperAssertion);
 
 		// We exclude assertions and fails from the list of other method invocations.
 		List<CtInvocation> allMIFromTest = testMethodModel.getBody().getElements(new TypeFilter<>(CtInvocation.class));
@@ -365,10 +358,10 @@ public class RtEngine extends AstorCoreEngine {
 		// Removing assertion called from helpers not executed
 		ignoringHelperAssertionFromNotExecutedHelper(rHelperAssertion.resultNotExecuted, rHelperCall.resultNotExecuted);
 
-		TestInspectionResult resultTestCase = new TestInspectionResult(onlyAssumeExecuted, allAssumesFromTest, rAssert,
-				rHelperAssertion, rHelperCall, aNameOfTestClass, aTestMethodFromClass, testMethodModel, rFailMissing,
-				rRedundantAssertion, allSkipFromTest, expectException, allExpectedExceptionFromTest, allMIFromTest,
-				allFailsFromTest);
+		TestIntermediateAnalysisResult resultTestCase = new TestIntermediateAnalysisResult(this, onlyAssumeExecuted, allAssumesFromTest,
+				rAssert, rHelperAssertion, rHelperCall, aNameOfTestClass, aTestMethodFromClass, testMethodModel,
+				rFailMissing, rRedundantAssertion, allSkipFromTest, expectException, allExpectedExceptionFromTest,
+				allMIFromTest, allFailsFromTest);
 
 		return resultTestCase;
 
@@ -714,381 +707,11 @@ public class RtEngine extends AstorCoreEngine {
 		return allClasses;
 	}
 
-	/**
-	 * Classification of a particular test
-	 * 
-	 * @author Matias Martinez
-	 *
-	 */
-	public class TestInspectionResult {
-		boolean onlyAssumeExecuted = false;
-		List<CtInvocation> allAssumesFromTest = null;
-		String nameOfTestClass;
-		String testMethodFromClass;
-		Classification<AsAssertion> rAssert = null;
-		Classification<Helper> rHelperAssertion = null;
-		Classification<Helper> rHelperCall = null;
-		Classification<AsAssertion> allMissedFailFromTest;
-		List<CtReturn> allSkipFromTest;
-		CtExecutable testMethodModel;
-		List<String> expectException;
-		List<CtInvocation> allExpectedExceptionFromTest;
-		Classification<AsAssertion> rRedundantAssertion;
-		List<CtInvocation> allOtherMIFromTest;
-		List<CtInvocation> allFailsFromTest;
-
-		public TestInspectionResult(boolean onlyAssumeExecuted, List<CtInvocation> allAssumesFromTest,
-				Classification<AsAssertion> rAssert, Classification<Helper> rHelperAssertion,
-				Classification<Helper> rHelperCall, String aNameOfTestClass, String aTestMethodFromClass,
-				CtExecutable testMethodModel, Classification<AsAssertion> allMissedFailFromTest,
-				Classification<AsAssertion> rRedundantAssertion, List<CtReturn> allSkipFromTest,
-				List<String> expectException, List<CtInvocation> allExpectedExceptionFromTest,
-				List<CtInvocation> allMIFromTest, List<CtInvocation> allFailsFromTest) {
-			super();
-			this.onlyAssumeExecuted = onlyAssumeExecuted;
-			this.allAssumesFromTest = allAssumesFromTest;
-			this.rAssert = rAssert;
-			this.rHelperAssertion = rHelperAssertion;
-			this.rHelperCall = rHelperCall;
-			this.testMethodModel = testMethodModel;
-			this.allMissedFailFromTest = allMissedFailFromTest;
-			this.allSkipFromTest = allSkipFromTest;
-			this.nameOfTestClass = aNameOfTestClass;
-			this.testMethodFromClass = aTestMethodFromClass;
-			this.expectException = expectException;
-			this.allExpectedExceptionFromTest = allExpectedExceptionFromTest;
-			this.rRedundantAssertion = rRedundantAssertion;
-			this.allOtherMIFromTest = allMIFromTest;
-			this.allFailsFromTest = allFailsFromTest;
-		}
-
-		public Classification<AsAssertion> getClassificationAssert() {
-			return rAssert;
-		}
-
-		public Classification<Helper> getClassificationHelperAssertion() {
-			return rHelperAssertion;
-		}
-
-		public Classification<Helper> getClassificationHelperCall() {
-			return rHelperCall;
-		}
-
-		public String getNameOfTestClass() {
-			return nameOfTestClass;
-		}
-
-		public String getTestMethodFromClass() {
-			return testMethodFromClass;
-		}
-
-		public Classification<AsAssertion> getAllMissedFailFromTest() {
-			return allMissedFailFromTest;
-		}
-
-		public List<CtReturn> getAllSkipFromTest() {
-			return allSkipFromTest;
-		}
-
-		public boolean hasControlFlow() {
-			return testMethodModel.getElements(new TypeFilter<>(CtIf.class)).size() > 0
-					//
-					|| testMethodModel.getElements(new TypeFilter<>(CtWhile.class)).size() > 0
-					//
-					|| testMethodModel.getElements(new TypeFilter<>(CtFor.class)).size() > 0
-					//
-					|| testMethodModel.getElements(new TypeFilter<>(CtForEach.class)).size() > 0
-					//
-					|| testMethodModel.getElements(new TypeFilter<>(CtSwitch.class)).size() > 0
-					//
-					|| testMethodModel.getElements(new TypeFilter<>(CtDo.class)).size() > 0;
-
-		}
-
-		public boolean isRotten() {
-			return !this.getClassificationAssert().getResultNotExecuted().isEmpty()
-					|| !this.getClassificationHelperCall().getResultNotExecuted().isEmpty()
-					|| !this.getClassificationHelperAssertion().getResultNotExecuted().isEmpty()
-					|| (!this.getAllMissedFailFromTest().getResultNotExecuted().isEmpty())
-					|| !this.getAllSkipFromTest().isEmpty();
-		}
-
-		public boolean isSmokeTest() {
-			return !isExceptionExpected() && testElementsNotPresentInTest();
-		}
-
-		public boolean testElementsNotPresentInTest() {
-			return rAssert.resultExecuted.isEmpty() && rAssert.resultNotExecuted.isEmpty()
-					&& rHelperCall.resultExecuted.isEmpty() && rHelperCall.resultNotExecuted.isEmpty()
-					&& rHelperAssertion.resultExecuted.isEmpty() && rHelperAssertion.resultNotExecuted.isEmpty()
-					&& allMissedFailFromTest.resultExecuted.isEmpty()
-					&& allMissedFailFromTest.resultNotExecuted.isEmpty();
-		}
-
-		public CtExecutable getTestMethodModel() {
-			return testMethodModel;
-		}
-
-		public void setTestMethodModel(CtExecutable testMethodModel) {
-			this.testMethodModel = testMethodModel;
-		}
-
-		public List<String> getExpectException() {
-			return expectException;
-		}
-
-		public void setExpectException(List<String> expectException) {
-			this.expectException = expectException;
-		}
-
-		public List<CtInvocation> getAllExpectedExceptionFromTest() {
-			return allExpectedExceptionFromTest;
-		}
-
-		public void setAllExpectedExceptionFromTest(List<CtInvocation> allExpectedExceptionFromTest) {
-			this.allExpectedExceptionFromTest = allExpectedExceptionFromTest;
-		}
-
-		public TestRottenAnalysisResult generateFinalResult() {
-			List<CtReturn> allSkipFromTest2 = this.getAllSkipFromTest();
-
-			List<Helper> notComplexHelperCallComplex = new ArrayList();
-			List<Helper> notComplexHelperAssertComplex = new ArrayList();
-			List<AsAssertion> notComplexAssertComplex = new ArrayList();
-			//
-			List<Helper> resultNotExecutedHelperCallComplex = new ArrayList<>();
-			List<Helper> resultNotExecutedHelperAssertComplex = new ArrayList<>();
-			List<AsAssertion> resultNotExecutedAssertComplex = new ArrayList<>();
-
-			//
-			List<Helper> resultNotExecutedHelperCall = this.getClassificationHelperCall().getResultNotExecuted();
-			List<Helper> resultNotExecutedHelperAssertion = this.getClassificationHelperAssertion()
-					.getResultNotExecuted();
-			List<AsAssertion> resultNotExecutedAssertion = this.getClassificationAssert().getResultNotExecuted();
-
-			// Skips
-			if (allSkipFromTest2 != null && allSkipFromTest2.size() > 0) {
-				List<Skip> skipss = new ArrayList<>();
-				for (CtReturn aReturn : allSkipFromTest2) {
-					Skip aSkip = new Skip(aReturn);
-					aSkip.notExecutedTestElements.addAll(resultNotExecutedHelperCall);
-					// Not necessary
-					// aSkip.notExecutedTestElements.addAll(resultNotExecutedHelperAssertion);
-					aSkip.notExecutedTestElements.addAll(resultNotExecutedAssertion);
-
-					skipss.add(aSkip);
-
-				}
-				return new TestRottenAnalysisResult(skipss);
-			}
-
-			boolean smokeTest = isSmokeTest();
-
-			//
-			classifyComplexHelper(notComplexHelperCallComplex, resultNotExecutedHelperCallComplex,
-					resultNotExecutedHelperCall, false /* not assert, a call */);
-			classifyComplexHelper(notComplexHelperAssertComplex, resultNotExecutedHelperAssertComplex,
-					resultNotExecutedHelperAssertion, true /* assert */);
-			classifyComplexAssert(notComplexAssertComplex, resultNotExecutedAssertComplex, resultNotExecutedAssertion);
-
-			// ignoringHelperAssertionFromNotExecutedHelper(resultNotExecutedHelperAssertion,
-			// resultNotExecutedHelperCall);
-
-			// Executed
-			List<AsAssertion> allMissedFail = this.getAllMissedFailFromTest().getAll();
-
-			List<AsAssertion> allRedundant = this.getRedundantAssertions().getAll();
-
-			return new TestRottenAnalysisResult(notComplexHelperCallComplex, notComplexHelperAssertComplex,
-					notComplexAssertComplex, smokeTest, allMissedFail, allRedundant, resultNotExecutedHelperCallComplex,
-					resultNotExecutedHelperAssertComplex, resultNotExecutedAssertComplex, allOtherMIFromTest);
-
-		}
-
-		public void classifyComplexHelper(List<Helper> notComplex, List<Helper> resultNotExecutedHelperCallComplex,
-				List<Helper> resultNotExecutedAssertion, boolean checkAssertion) {
-			for (Helper aHelper : resultNotExecutedAssertion) {
-
-				CtInvocation element = (checkAssertion) ? aHelper.getAssertion().getCtAssertion()
-						: aHelper.getCalls().get(0);
-
-				CtIf parentIf = element.getParent(CtIf.class);
-				if (parentIf != null) {
-					// complex
-					resultNotExecutedHelperCallComplex.add(aHelper);
-				} else {
-					// not complex
-					notComplex.add(aHelper);
-
-				}
-			}
-		}
-
-		/**
-		 * If the element has an IF parent, then goes to complex list, otherwise to the
-		 * no complex.
-		 * 
-		 * @param notComplex
-		 * @param resultNotExecutedHelperCallComplex
-		 * @param resultNotExecutedAssertion
-		 */
-		public void classifyComplexAssert(List<AsAssertion> notComplex,
-				List<AsAssertion> resultNotExecutedHelperCallComplex, List<AsAssertion> resultNotExecutedAssertion) {
-			for (AsAssertion testElement : resultNotExecutedAssertion) {
-
-				CtIf parentIf = testElement.getElement().getParent(CtIf.class);
-				if (parentIf != null) {
-					// complex
-					resultNotExecutedHelperCallComplex.add(testElement);
-				} else {
-					// not complex
-					notComplex.add(testElement);
-
-				}
-			}
-		}
-
-		@Override
-		public String toString() {
-			return "TestClassificationResult [nameOfTestClass=" + nameOfTestClass + ", testMethodFromClass="
-					+ testMethodFromClass + "]";
-		}
-
-		public Classification<AsAssertion> getRedundantAssertions() {
-			return rRedundantAssertion;
-		}
-
-		public void setrRedundantAssertion(Classification<AsAssertion> rRedundantAssertion) {
-			this.rRedundantAssertion = rRedundantAssertion;
-		}
-
-		public boolean hasHelperCall() {
-			return !getClassificationHelperCall().getResultExecuted().isEmpty()
-					|| !getClassificationHelperCall().getResultNotExecuted().isEmpty();
-		}
-
-		public boolean hasFailInvocation() {
-
-			return this.allFailsFromTest.size() > 0;
-		}
-
-		public boolean hasTryCatch() {
-			return testMethodModel.getElements(new TypeFilter<>(CtTry.class)).size() > 0;
-		}
-
-		public boolean isExceptionExpected() {
-
-			return ((hasTryCatch() && hasFailInvocation())
-					|| (getExpectException().size() > 0 || getAllExpectedExceptionFromTest().size() > 0));
-		}
-
-		public boolean isOnlyAssumeExecuted() {
-			return onlyAssumeExecuted;
-		}
-
-		public List<CtInvocation> getAllAssumesFromTest() {
-			return allAssumesFromTest;
-		}
-
-		public List<CtInvocation> getAllFailsFromTest() {
-			return allFailsFromTest;
-		}
-
-	}
-
-	public class TestRottenAnalysisResult {
-
-		public List<Helper> fullRottenHelperCall = Collections.EMPTY_LIST;
-		public List<Helper> fullRottenHelperAssert = Collections.EMPTY_LIST;
-		public List<AsAssertion> fullRottenAssert = Collections.EMPTY_LIST;
-		public boolean smokeTest = false;
-		public List<AsAssertion> missedFail = Collections.EMPTY_LIST;
-		public List<Skip> skip = Collections.EMPTY_LIST;
-		public List<Helper> contextHelperCall = Collections.EMPTY_LIST;
-		public List<Helper> contextHelperAssertion = Collections.EMPTY_LIST;
-		public List<AsAssertion> contextAssertion = Collections.EMPTY_LIST;
-
-		public List<CtInvocation> otherMethodInvocations = Collections.EMPTY_LIST;
-		public List<AsAssertion> redundantAssertion = Collections.EMPTY_LIST;
-
-		public TestRottenAnalysisResult(
-				//
-				List<Helper> fullRottenHelperCall, List<Helper> fullRottenHelperAssert, //
-				List<AsAssertion> fullRottenAssert, //
-				boolean smokeTest, List<AsAssertion> missed, //
-				List<AsAssertion> allRedundantFromTest, List<Helper> contextHelperCall,
-				List<Helper> contextHelperAssertion, List<AsAssertion> contextAssertion,
-				List<CtInvocation> allAssertionsFromTest) {
-			super();
-			this.fullRottenHelperCall = fullRottenHelperCall;
-			this.fullRottenHelperAssert = fullRottenHelperAssert;
-			this.fullRottenAssert = fullRottenAssert;
-			this.smokeTest = smokeTest;
-			this.missedFail = missed;
-			this.redundantAssertion = allRedundantFromTest;
-			// this.skip = skip;
-			this.contextHelperCall = contextHelperCall;
-			this.contextHelperAssertion = contextHelperAssertion;
-			this.contextAssertion = contextAssertion;
-			this.otherMethodInvocations = allAssertionsFromTest;
-
-		}
-
-		public TestRottenAnalysisResult(List<Skip> skip) {
-			this.skip = skip;
-		}
-
-		public List<TestElement> getFullRotten() {
-			List<TestElement> allRT = new ArrayList<>();
-			allRT.addAll(this.fullRottenAssert);
-			allRT.addAll(this.fullRottenHelperCall);
-			allRT.addAll(this.fullRottenHelperAssert);
-			return allRT;
-		}
-
-		public List<CtInvocation> getOtherMethodInvocations() {
-			return otherMethodInvocations;
-		}
-
-		public void setOtherMethodInvocations(List<CtInvocation> otherMethodInvocations) {
-			this.otherMethodInvocations = otherMethodInvocations;
-		}
-	}
-
-	public class Classification<T> {
-
-		protected List<T> resultNotExecuted = new ArrayList<>();
-		protected List<T> resultExecuted = new ArrayList<>();
-
-		public List<T> getResultNotExecuted() {
-			return resultNotExecuted;
-		}
-
-		public List<T> getResultExecuted() {
-			return resultExecuted;
-		}
-
-		public List<T> getAll() {
-
-			List<T> resultAll = new ArrayList<>();
-			resultAll.addAll(resultExecuted);
-			resultAll.addAll(resultNotExecuted);
-			return resultAll;
-		}
-
-		@Override
-		public String toString() {
-			return "Classification [#resultNotExecuted=" + resultNotExecuted.size() + ", #resultExecuted="
-					+ resultExecuted.size() + "]";
-		}
-
-	}
-
 	private Classification<Helper> classifyHelpersAssertionExecution(CtClass aTestModelCtClass,
 			List<Helper> allHelperInvocationFromTest, Map<String, SuspiciousCode> cacheSuspicious,
 			CtExecutable methodTestExecuted, boolean checkAssertion) {
 
-		Classification<Helper> result = new Classification<>();
+		Classification<Helper> result = new Classification();
 		for (Helper aHelper : allHelperInvocationFromTest) {
 
 			CtInvocation assertion = (checkAssertion) ? aHelper.getAssertion().getCtAssertion()
@@ -1135,7 +758,7 @@ public class RtEngine extends AstorCoreEngine {
 		return false;
 	}
 
-	private boolean isCovered(Map<String, SuspiciousCode> cacheSuspicious, CtElement elementToCheck,
+	public static boolean isCovered(Map<String, SuspiciousCode> cacheSuspicious, CtElement elementToCheck,
 			CtClass ctclassFromElementToCheck, CtClass aTestModelCtClass) {
 		return isCovered(cacheSuspicious, elementToCheck, ctclassFromElementToCheck, aTestModelCtClass);
 	}
@@ -1166,7 +789,7 @@ public class RtEngine extends AstorCoreEngine {
 	public Classification<AsAssertion> classifyAssertions(CtExecutable methodOfAssertment,
 			Map<String, SuspiciousCode> mapCacheSuspicious, CtClass aTestModelCtClass,
 			List<CtInvocation> allAssertionsFromTest) {
-		Classification<AsAssertion> result = new Classification<>();
+		Classification<AsAssertion> result = new Classification();
 		// For each assert
 		for (CtInvocation anAssertFromTest : allAssertionsFromTest) {
 
@@ -1184,134 +807,6 @@ public class RtEngine extends AstorCoreEngine {
 			}
 		}
 		return result;
-	}
-
-	public class RuntimeInformation {
-		List<String> allTestCases = new ArrayList();
-
-		List<String> allTestCasesWithoutParent = null;
-		MapList<String, Integer> mapLinesCovered = new MapList<>();
-		Map<String, SuspiciousCode> mapCacheSuspicious = new HashMap<>();
-		MapList<String, String> passingCoveredTestCaseFromClass = new MapList<>();
-		List<String> notexec = new ArrayList<>();
-
-		public RuntimeInformation(List<String> allTestCase, List<String> allTestCasesWithoutParent,
-				MapList<String, Integer> mapLinesCovered, Map<String, SuspiciousCode> mapCacheSuspicious,
-				MapList<String, String> passingCoveredTestCaseFromClass, List<String> notexec) {
-			super();
-			this.allTestCases = allTestCase;
-			this.allTestCasesWithoutParent = allTestCasesWithoutParent;
-			this.mapLinesCovered = mapLinesCovered;
-			this.mapCacheSuspicious = mapCacheSuspicious;
-			this.passingCoveredTestCaseFromClass = passingCoveredTestCaseFromClass;
-			this.notexec = notexec;
-		}
-
-	}
-
-	public abstract class TestElement {
-		private boolean fp = false;
-
-		public boolean isFp() {
-			return fp;
-		}
-
-		public void setFp(boolean fp) {
-			this.fp = fp;
-		}
-
-		public abstract CtElement getElement();
-	}
-
-	public class Skip {
-
-		CtReturn executedReturn;
-		public List<TestElement> notExecutedTestElements = new ArrayList<>();
-
-		public Skip(CtReturn executedReturn) {
-			super();
-			this.executedReturn = executedReturn;
-		}
-
-	}
-
-	public class AsAssertion extends TestElement {
-
-		CtInvocation assertion = null;
-
-		public AsAssertion(CtInvocation assertion) {
-			super();
-			this.assertion = assertion;
-		}
-
-		public CtInvocation getCtAssertion() {
-			return assertion;
-		}
-
-		public void setAssertion(CtInvocation assertion) {
-			this.assertion = assertion;
-		}
-
-		@Override
-		public String toString() {
-			return assertion.toString();
-		}
-
-		@Override
-		public CtElement getElement() {
-
-			return assertion;
-		}
-	}
-
-	public class Helper extends TestElement {
-
-		List<CtInvocation> calls = new ArrayList();
-		AsAssertion assertion = null;
-		public boolean unexecutedAssert = false;
-		public boolean unexecutedCall = false;
-
-		public int distance = 0;
-
-		public Helper(AsAssertion assertion) {
-			super();
-			this.assertion = assertion;
-		}
-
-		public List<CtInvocation> getCalls() {
-			return calls;
-		}
-
-		public void setCalls(List<CtInvocation> calls) {
-			this.calls = calls;
-		}
-
-		public AsAssertion getAssertion() {
-			return assertion;
-		}
-
-		public void setAssertion(AsAssertion assertion) {
-			this.assertion = assertion;
-		}
-
-		@Override
-		public String toString() {
-			return "Helper [calls=" + calls + ", assertion=" + assertion + "]";
-		}
-
-		@Override
-		public CtElement getElement() {
-
-			return (this.calls.size() > 0) ? this.calls.get(0) : null;
-		}
-
-		public int getDistance() {
-			return distance;
-		}
-
-		public void setDistance(int distance) {
-			this.distance = distance;
-		}
 	}
 
 	public String keySignatureExecuted(SuspiciousCode e) {
@@ -1507,11 +1002,7 @@ public class RtEngine extends AstorCoreEngine {
 		return false;
 	}
 
-	public class ResultRT {
-
-	}
-
-	public List<TestInspectionResult> getResultByTest() {
+	public List<TestIntermediateAnalysisResult> getResultByTest() {
 		return resultByTest;
 	}
 
@@ -1550,127 +1041,4 @@ public class RtEngine extends AstorCoreEngine {
 		}
 	}
 
-	public void checkTwoBranches(Classification<? extends TestElement> elementsToClassify,
-			Classification<? extends TestElement> rAssertions, Classification<? extends TestElement> rHelperCall,
-			Classification<Helper> rHelperAssertion) {
-
-		for (TestElement target : elementsToClassify.resultNotExecuted) {
-
-			CtElement invocation = (target instanceof Helper && ((Helper) target).unexecutedAssert)
-					? ((Helper) target).getAssertion().getElement()
-					: target.getElement();
-			CtIf parentif = null;
-			boolean inThen = false;
-			// Let's retrieve the parent if (I dont use getParent because I want the
-			// Immediate parent)
-			if (invocation.getParent() instanceof CtIf) {
-				parentif = (CtIf) invocation.getParent();
-				inThen = invocation.getRoleInParent().equals(CtRole.THEN);
-			} else {
-
-				if (invocation.getParent() instanceof CtBlock
-						&& (invocation.getParent().getRoleInParent().equals(CtRole.THEN)
-								|| invocation.getParent().getRoleInParent().equals(CtRole.ELSE))) {
-
-					parentif = (CtIf) invocation.getParent().getParent();
-					inThen = invocation.getParent().getRoleInParent().equals(CtRole.THEN);
-				}
-			}
-			//
-			if (parentif != null) {
-				CtStatement toAnalyze = inThen ? parentif.getElseStatement() : parentif.getThenStatement();
-
-				// other statements in the other branch
-				List<CtStatement> stms = (toAnalyze instanceof CtBlock) ? ((CtBlock) toAnalyze).getStatements()
-						: Collections.singletonList(toAnalyze);
-
-				// let's check if exist
-
-				for (CtStatement anStatement : stms) {
-					// let's check if the other branch has executed assertions/helpers
-					boolean exist = rAssertions.getResultExecuted().stream().filter(e -> e.getElement() == anStatement)
-							.findFirst().isPresent();
-
-					// Assertion executed by a helper
-					exist = exist || rHelperAssertion.getResultExecuted().stream()
-							.filter(e -> e.getAssertion().getCtAssertion() == anStatement).findFirst().isPresent();
-
-					exist = exist || checkStatementInCallStack(rHelperAssertion, anStatement);
-
-					if (exist) {
-						target.setFp(true);
-						log.debug("Found executed in the other branch");
-						break;
-					}
-				}
-
-			}
-		}
-
-	}
-
-	public boolean checkStatementInCallStack(Classification<Helper> rHelperAssertion, CtStatement anStatement) {
-
-		for (Helper helperAssertion : rHelperAssertion.getResultExecuted()) {
-
-			for (CtInvocation invocationInCall : helperAssertion.calls) {
-				if (invocationInCall == anStatement)
-					return true;
-			}
-
-		}
-		return false;
-	}
-
-	public void checkTwoBranches(Classification<? extends TestElement> elementsToClassify,
-			Map<String, SuspiciousCode> cacheSuspicious, CtClass ctclassFromElementToCheck, CtClass aTestModelCtClass) {
-
-		for (TestElement target : elementsToClassify.resultNotExecuted) {
-
-			CtElement invocation = (target instanceof Helper && ((Helper) target).unexecutedAssert)
-					? ((Helper) target).getAssertion().getElement()
-					: target.getElement();
-			CtIf parentif = null;
-			boolean inThen = false;
-			// Let's retrieve the parent if (I dont use getParent because I want the
-			// Immediate parent)
-			if (invocation.getParent() instanceof CtIf) {
-				parentif = (CtIf) invocation.getParent();
-				inThen = invocation.getRoleInParent().equals(CtRole.THEN);
-			} else {
-
-				if (invocation.getParent() instanceof CtBlock
-						&& (invocation.getParent().getRoleInParent().equals(CtRole.THEN)
-								|| invocation.getParent().getRoleInParent().equals(CtRole.ELSE))) {
-
-					parentif = (CtIf) invocation.getParent().getParent();
-					inThen = invocation.getParent().getRoleInParent().equals(CtRole.THEN);
-				}
-			}
-			//
-			if (parentif != null) {
-				CtStatement toAnalyze = inThen ? parentif.getElseStatement() : parentif.getThenStatement();
-
-				// other statements in the other branch
-				List<CtStatement> stms = (toAnalyze instanceof CtBlock) ? ((CtBlock) toAnalyze).getStatements()
-						: Collections.singletonList(toAnalyze);
-
-				// let's check if exist
-
-				for (CtStatement anStatement : stms) {
-					// let's check if the other branch has executed assertions/helpers
-					boolean exist = isCovered(cacheSuspicious, anStatement, ctclassFromElementToCheck,
-							aTestModelCtClass);
-
-					if (exist) {
-						target.setFp(true);
-						log.debug("Found executed in the other branch");
-						break;
-					}
-				}
-
-			}
-		}
-
-	}
 }

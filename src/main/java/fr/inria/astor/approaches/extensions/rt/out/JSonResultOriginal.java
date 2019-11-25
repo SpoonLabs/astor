@@ -1,4 +1,4 @@
-package fr.inria.astor.approaches.extensions.rt;
+package fr.inria.astor.approaches.extensions.rt.out;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,11 +15,11 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import fr.inria.astor.approaches.extensions.rt.RtEngine.AsAssertion;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.Helper;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.Skip;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.TestInspectionResult;
-import fr.inria.astor.approaches.extensions.rt.RtEngine.TestRottenAnalysisResult;
+import fr.inria.astor.approaches.extensions.rt.core.TestAnalysisResult;
+import fr.inria.astor.approaches.extensions.rt.core.TestIntermediateAnalysisResult;
+import fr.inria.astor.approaches.extensions.rt.elements.AsAssertion;
+import fr.inria.astor.approaches.extensions.rt.elements.Helper;
+import fr.inria.astor.approaches.extensions.rt.elements.Skip;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
@@ -89,7 +89,7 @@ public class JSonResultOriginal {
 		return root;
 	}
 
-	public JsonObject toJson(String name, ProjectRepairFacade projectFacade, List<TestInspectionResult> resultByTest) {
+	public JsonObject toJson(String name, ProjectRepairFacade projectFacade, List<TestIntermediateAnalysisResult> resultByTest) {
 
 		this.projectFacade = projectFacade;
 
@@ -112,9 +112,9 @@ public class JSonResultOriginal {
 		JsonArray testsArray = new JsonArray();
 		root.add("tests", testsArray);
 		Set<String> rTestclasses = new HashSet<>();
-		for (TestInspectionResult tr : resultByTest) {
+		for (TestIntermediateAnalysisResult tr : resultByTest) {
 
-			TestRottenAnalysisResult resultClassification = tr.generateFinalResult();
+			TestAnalysisResult resultClassification = tr.generateFinalResult();
 
 			JsonObject testjson = new JsonObject();
 			JsonArray typesRottens = new JsonArray();
@@ -192,7 +192,7 @@ public class JSonResultOriginal {
 			if (!resultClassification.skip.isEmpty()) {
 
 				for (Skip iSkip : resultClassification.skip) {
-					CtReturn skip = iSkip.executedReturn;
+					CtReturn skip = iSkip.getExecutedReturn();
 					JsonObject singleSkip = new JsonObject();
 					singleSkip.addProperty("code", skip.toString().toString());
 					singleSkip.addProperty("line", getPosition(skip));
@@ -254,7 +254,7 @@ public class JSonResultOriginal {
 				testWithException.add("expected_exception", expEx);
 				testWithException.add("fails", failsAr);
 
-				for (CtInvocation inv : tr.allFailsFromTest) {
+				for (CtInvocation inv : tr.getAllFailsFromTest()) {
 
 					JsonObject failJson = new JsonObject();
 					failJson.addProperty("code_assertion", inv.toString().toString());
@@ -354,7 +354,7 @@ public class JSonResultOriginal {
 	}
 
 	public int add_ASSERTIONS(ProjectRepairFacade projectFacade, String commitid, String branch, String remote,
-			String projectsubfolder, TestInspectionResult tr, JsonArray summaryRottens, Set<String> uniquesTypesRottern,
+			String projectsubfolder, TestIntermediateAnalysisResult tr, JsonArray summaryRottens, Set<String> uniquesTypesRottern,
 			List<AsAssertion> notExecutedAssert, String ROTTEN_CONTEXT_DEP_ASSERTIONS) {
 		int nrRtAssertion = 0;
 		if (!notExecutedAssert.isEmpty()) {
@@ -383,7 +383,7 @@ public class JSonResultOriginal {
 	}
 
 	public int add_HELPERS_ASSERTION(String commitid, String branch, String remote, String projectsubfolder,
-			TestInspectionResult tr, JsonArray summaryRottens, Set<String> uniquesTypesRottern,
+			TestIntermediateAnalysisResult tr, JsonArray summaryRottens, Set<String> uniquesTypesRottern,
 			List<Helper> notExecutedHelper, String ROTTEN_CONTEXT_DEP_HELPERS_ASSERTION) {
 		int nrRttHelperAssert = 0;
 		if (!notExecutedHelper.isEmpty()) {
@@ -408,7 +408,7 @@ public class JSonResultOriginal {
 	}
 
 	public int add_HELPERS_CALL(String commitid, String branch, String remote, String projectsubfolder,
-			TestInspectionResult tr, JsonArray summaryRottens, Set<String> uniquesTypesRottern,
+			TestIntermediateAnalysisResult tr, JsonArray summaryRottens, Set<String> uniquesTypesRottern,
 			List<Helper> notExecutedHelperInvoc, String ROTTEN_CONTEXT_DEP_HELPERS_CALL) {
 		int nrRtHelperCall = 0;
 		if (!notExecutedHelperInvoc.isEmpty()) {
