@@ -31,20 +31,8 @@ public class FileProcessValidator extends JUnitProcessValidator {
 	protected URL[] createClassPath(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade)
 			throws MalformedURLException {
 
-		URL[] defaultSUTClasspath = projectFacade
-				.getClassPathURLforProgramVariant(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		List<URL> originalURL = new ArrayList<>(Arrays.asList(defaultSUTClasspath));
-
-		String classpath = System.getProperty("java.class.path");
-
-		for (String path : classpath.split(File.pathSeparator)) {
-
-			File f = new File(path);
-			originalURL.add(new URL("file://" + f.getAbsolutePath()));
-
-		}
-
-		URL[] bc = null;
+		List<URL> originalURL = createOriginalURLs(projectFacade);
+		URL[] bc;
 
 		File variantOutputFile = defineLocationOfCompiledCode(mutatedVariant, projectFacade);
 

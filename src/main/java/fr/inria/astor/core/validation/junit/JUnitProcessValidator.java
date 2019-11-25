@@ -108,20 +108,8 @@ public class JUnitProcessValidator extends ProgramVariantValidator {
 	protected URL[] createClassPath(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade)
 			throws MalformedURLException {
 
-		URL[] defaultSUTClasspath = projectFacade
-				.getClassPathURLforProgramVariant(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-		List<URL> originalURL = new ArrayList<>(Arrays.asList(defaultSUTClasspath));
-
-		String classpath = System.getProperty("java.class.path");
-
-		for (String path : classpath.split(File.pathSeparator)) {
-
-			File f = new File(path);
-			originalURL.add(new URL("file://" + f.getAbsolutePath()));
-
-		}
-
-		URL[] bc = null;
+		List<URL> originalURL = createOriginalURLs(projectFacade);
+		URL[] bc;
 		if (mutatedVariant.getCompilation() != null) {
 
 			File variantOutputFile = defineLocationOfCompiledCode(mutatedVariant, projectFacade);
@@ -131,6 +119,23 @@ public class JUnitProcessValidator extends ProgramVariantValidator {
 			bc = originalURL.toArray(new URL[0]);
 		}
 		return bc;
+	}
+
+	public List<URL> createOriginalURLs(ProjectRepairFacade projectFacade) throws MalformedURLException {
+		URL[] defaultSUTClasspath = projectFacade
+				.getClassPathURLforProgramVariant(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+		List<URL> originalURL = new ArrayList<>(Arrays.asList(defaultSUTClasspath));
+
+		String classpath = System.getProperty("java.class.path");
+
+		for (String path : classpath.split(File.pathSeparator)) {
+
+			File f = new File(path);
+			originalURL.add(new URL("file://\"" + f.getAbsolutePath() + "\""));
+
+		}
+
+		return originalURL;
 	}
 
 	protected File defineLocationOfCompiledCode(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
