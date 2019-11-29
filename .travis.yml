@@ -4,7 +4,6 @@ env:
   matrix:
   - TEST=fr.inria.astor.test.repair.approaches.MultiMetEngineSimpleProgramsTest
   - TEST=fr.inria.astor.test.repair.QuixBugsRepairTest
-  - TEST=fr.inria.astor.test.repair.approaches.RtTestExamples
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.MultiPatchTest
   - TEST=fr.inria.astor.test.repair.evaluation.extensionpoints.patchsorting.PatchPriorizationTest
   - TEST=fr.inria.astor.test.repair.approaches.ExhaustiveAstorTest
