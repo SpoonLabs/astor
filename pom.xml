@@ -179,7 +179,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>fully.qualified.MainClass</mainClass>
+							<mainClass>fr.inria.main.evolution.AstorMain</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
