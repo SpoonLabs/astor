@@ -162,7 +162,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		String projLocationPath = projLocationFile.getAbsolutePath();
 		logger.debug("Gzoltar run over: " + projLocationPath + " , does it exist? " + projLocationFile.exists());
 
-		GZoltar gz = new GZoltar(projLocationPath + File.separator);
+		GZoltar gz = new GZoltar(System.getProperty("user.dir") + File.separator);
 
 		// 2. Add Package/Class names to instrument
 		// 3. Add Package/Test Case/Test Suite names to execute
