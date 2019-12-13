@@ -24,7 +24,6 @@ public class OutputWritter {
 	private JavaOutputProcessor javaPrinter;
 
 	private Factory factory;
-	
 
 	public static final String CLASS_EXT = ".class";
 
