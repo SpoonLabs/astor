@@ -62,14 +62,15 @@ public abstract class AbstractMain {
 
 	public static ProjectRepairFacade projectFacade;
 
-	static Options options = new Options();
+	protected static Options options = new Options();
 
 	CommandLineParser parser = new BasicParser();
 
 	static {
 		options.addOption("id", true, "(Optional) Name/identified of the project to evaluate (Default: folder name)");
 		options.addOption("mode", true, " (Optional) Mode (Default: jGenProg Mode)");
-		options.addOption("autoconfigure", false, " Auto-configure project. Must install ");
+		options.addOption("autoconfigure", true,
+				" Auto-configure project. Must install https://github.com/tdurieux/project-info-maven-plugin");
 		options.addOption("location", true, "URL of the project to manipulate");
 		options.addOption("dependencies", true,
 				"dependencies of the application, separated by char " + File.pathSeparator);
@@ -649,10 +650,14 @@ public abstract class AbstractMain {
 			}
 		}
 
+		processOtherCommands(cmd);
+
 		if (cmd.hasOption("autocompile"))
 			ConfigurationProperties.properties.setProperty("autocompile", cmd.getOptionValue("autocompile"));
 
-		if (cmd.hasOption("autoconfigure")) {
+		boolean autoconfigure = cmd.hasOption("autoconfigure") //
+				&& Boolean.valueOf(cmd.getOptionValue("autoconfigure"));
+		if (autoconfigure || ConfigurationProperties.getPropertyBool("autoconfigure")) {
 			executeAutoConfigure(ConfigurationProperties.properties.getProperty("location"));
 		}
 
@@ -662,6 +667,10 @@ public abstract class AbstractMain {
 		// is a reasonable place to initialize the random number generator.
 		RandomManager.initialize();
 		return true;
+	}
+
+	public void processOtherCommands(CommandLine cmd) {
+		// Subclass can override this method
 	}
 
 	private void executeAutoConfigure(String location) throws IOException {

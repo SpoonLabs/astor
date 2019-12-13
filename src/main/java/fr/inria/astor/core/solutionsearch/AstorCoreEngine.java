@@ -884,6 +884,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public List<SuspiciousCode> calculateSuspicious() throws Exception {
+
+		this.resolveTestsToRun();
+
 		long inittime = System.currentTimeMillis();
 		List<SuspiciousCode> susp = this.getFaultLocalization().searchSuspicious(getProjectFacade()).getCandidates();
 
