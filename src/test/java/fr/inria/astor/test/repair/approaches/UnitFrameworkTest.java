@@ -44,11 +44,13 @@ public class UnitFrameworkTest extends BaseEvolutionaryTest {
 			// Let's try directly:
 			e.printStackTrace();
 			try {
-				List<String> test = main1.getEngine().resolveTestsToRun();
+				List<String> test = main1.getEngine().getFaultLocalization()
+						.findTestCasesToExecute(main1.projectFacade);
 
 				assertTrue(test.size() > 0);
 			} catch (Exception e1) {
 				fail("sss");
+				e1.printStackTrace();
 			}
 
 		}

@@ -227,7 +227,7 @@ public class JUnitProcessValidator extends ProgramVariantValidator {
 
 	@Override
 	public List<String> findTestCasesToExecute(ProjectRepairFacade projectFacade) {
-		List<String> testCasesToRun = FinderTestCases.findTestCasesForRegression(projectFacade);
+		List<String> testCasesToRun = FinderTestCases.findJUnit4XTestCasesForRegression(projectFacade);
 
 		return testCasesToRun;
 	}

@@ -25,6 +25,7 @@ import fr.inria.astor.core.manipulation.bytecode.classloader.BytecodeClassLoader
 import fr.inria.astor.core.manipulation.bytecode.compiler.SpoonClassCompiler;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.util.Converters;
 import spoon.processing.ProcessInterruption;
@@ -42,7 +43,8 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	@Override
-	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade project) throws Exception {
+	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade project, List<String> testregression)
+			throws Exception {
 
 		MutationSupporter.cleanFactory();
 
@@ -59,11 +61,7 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 		BytecodeClassLoader customClassLoader = createClassLoader(cresults, project);
 
 		// call cocoa with tests
-
 		CocoSpoonEngineFaultLocalizer coco4Astor = new CocoSpoonEngineFaultLocalizer(new Ochiai());
-		// Get Test
-		List<String> testregression = project.getProperties().getRegressionTestCases();
-		testregression.toArray(new String[0]);
 		coco4Astor.runTests(testregression.toArray(new String[0]), customClassLoader, project);
 
 		// Collecting failing test cases
@@ -163,6 +161,13 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 
 		MutationSupporter.currentSupporter.buildSpoonModel(projectFacade);
 
+	}
+
+	@Override
+	public List<String> findTestCasesToExecute(ProjectRepairFacade projectFacade) {
+		List<String> testCasesToRun = FinderTestCases.findJUnit4XTestCasesForRegression(projectFacade);
+
+		return testCasesToRun;
 	}
 
 }
