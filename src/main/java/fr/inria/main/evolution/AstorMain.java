@@ -27,7 +27,6 @@ import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
-import fr.inria.astor.core.solutionsearch.population.ProgramVariantFactory;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
 
@@ -41,7 +40,7 @@ public class AstorMain extends AbstractMain {
 
 	protected Logger log = Logger.getLogger(AstorMain.class.getName());
 
-	AstorCoreEngine astorCore = null;
+	protected AstorCoreEngine core = null;
 
 	public void initProject(String location, String projectName, String dependencies, String packageToInstrument,
 			double thfl, String failing) throws Exception {
@@ -72,29 +71,29 @@ public class AstorMain extends AbstractMain {
 	 */
 
 	public AstorCoreEngine createEngine(ExecutionMode mode) throws Exception {
-		astorCore = null;
+		core = null;
 		MutationSupporter mutSupporter = new MutationSupporter();
 
 		if (ExecutionMode.DeepRepair.equals(mode)) {
-			astorCore = new DeepRepairEngine(mutSupporter, projectFacade);
+			core = new DeepRepairEngine(mutSupporter, projectFacade);
 
 		} else if (ExecutionMode.CARDUMEN.equals(mode)) {
-			astorCore = new CardumenApproach(mutSupporter, projectFacade);
+			core = new CardumenApproach(mutSupporter, projectFacade);
 
 		} else if (ExecutionMode.jKali.equals(mode)) {
-			astorCore = new JKaliEngine(mutSupporter, projectFacade);
+			core = new JKaliEngine(mutSupporter, projectFacade);
 
 		} else if (ExecutionMode.jGenProg.equals(mode)) {
-			astorCore = new JGenProg(mutSupporter, projectFacade);
+			core = new JGenProg(mutSupporter, projectFacade);
 
 		} else if (ExecutionMode.MutRepair.equals(mode)) {
-			astorCore = new MutationalExhaustiveRepair(mutSupporter, projectFacade);
+			core = new MutationalExhaustiveRepair(mutSupporter, projectFacade);
 
 		} else if (ExecutionMode.EXASTOR.equals(mode)) {
-			astorCore = new ExhaustiveIngredientBasedEngine(mutSupporter, projectFacade);
+			core = new ExhaustiveIngredientBasedEngine(mutSupporter, projectFacade);
 
 		} else if (ExecutionMode.SCAFFOLD.equals(mode)) {
-			astorCore = new ScaffoldRepairEngine(mutSupporter, projectFacade);
+			core = new ScaffoldRepairEngine(mutSupporter, projectFacade);
 
 		} else {
 			// If the execution mode is any of the predefined, Astor
@@ -102,28 +101,23 @@ public class AstorMain extends AbstractMain {
 			// a custom engine, where the value corresponds to the class name of
 			// the engine class
 			String customengine = ConfigurationProperties.getProperty(ExtensionPoints.NAVIGATION_ENGINE.identifier);
-			astorCore = createEngineFromArgument(customengine, mutSupporter, projectFacade);
+			core = createEngineFromArgument(customengine, mutSupporter, projectFacade);
 
 		}
 
 		// Loading extension Points
-		astorCore.loadExtensionPoints();
-
-		astorCore.setVariantFactory(new ProgramVariantFactory(astorCore.getTargetElementProcessors()));
-		// Find test cases to use in validation
-
-		astorCore.resolveTestsToRun();
+		core.loadExtensionPoints();
 
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
 			// We dont use FL, so at this point the do not have suspicious
-			astorCore.initPopulation(new ArrayList<SuspiciousCode>());
+			core.initPopulation(new ArrayList<SuspiciousCode>());
 		} else {
-			List<SuspiciousCode> suspicious = astorCore.calculateSuspicious();
+			List<SuspiciousCode> suspicious = core.calculateSuspicious();
 
-			astorCore.initPopulation(suspicious);
+			core.initPopulation(suspicious);
 		}
 
-		return astorCore;
+		return core;
 
 	}
 
@@ -137,7 +131,7 @@ public class AstorMain extends AbstractMain {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private AstorCoreEngine createEngineFromArgument(String customEngineValue, MutationSupporter mutSupporter,
+	protected AstorCoreEngine createEngineFromArgument(String customEngineValue, MutationSupporter mutSupporter,
 			ProjectRepairFacade projectFacade) throws Exception {
 		Object object = null;
 		try {
@@ -167,18 +161,18 @@ public class AstorMain extends AbstractMain {
 		String customEngine = ConfigurationProperties.getProperty(ExtensionPoints.NAVIGATION_ENGINE.identifier);
 
 		if (customEngine != null && !customEngine.isEmpty())
-			astorCore = createEngine(ExecutionMode.custom);
+			core = createEngine(ExecutionMode.custom);
 		else {
 			for (ExecutionMode executionMode : ExecutionMode.values()) {
 				for (String acceptedName : executionMode.getAcceptedNames()) {
 					if (acceptedName.equals(mode)) {
-						astorCore = createEngine(executionMode);
+						core = createEngine(executionMode);
 						break;
 					}
 				}
 			}
 
-			if (astorCore == null) {
+			if (core == null) {
 				System.err.println("Unknown mode of execution: '" + mode + "',  modes are: "
 						+ Arrays.toString(ExecutionMode.values()));
 				return;
@@ -188,9 +182,9 @@ public class AstorMain extends AbstractMain {
 
 		ConfigurationProperties.print();
 
-		astorCore.startEvolution();
+		core.startEvolution();
 
-		astorCore.atEnd();
+		core.atEnd();
 
 		long endT = System.currentTimeMillis();
 		log.info("Time Total(s): " + (endT - startT) / 1000d);
@@ -237,7 +231,7 @@ public class AstorMain extends AbstractMain {
 	}
 
 	public AstorCoreEngine getEngine() {
-		return astorCore;
+		return core;
 	}
 
 	public void setupLogging() throws IOException {
