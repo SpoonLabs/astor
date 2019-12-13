@@ -24,7 +24,7 @@ public class FinderTestCases {
 
 	protected static Logger log = Logger.getLogger(FinderTestCases.class.getName());
 
-	public static List<String> findTestCasesForRegression(ProjectRepairFacade projectFacade) {
+	public static List<String> findJUnit4XTestCasesForRegression(ProjectRepairFacade projectFacade) {
 
 		String classPath = projectFacade.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 		String cp = projectFacade.getProperties().getDependenciesString();

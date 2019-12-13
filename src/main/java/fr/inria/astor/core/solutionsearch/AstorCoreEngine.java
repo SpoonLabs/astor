@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -885,10 +886,23 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	public List<SuspiciousCode> calculateSuspicious() throws Exception {
 
-		this.resolveTestsToRun();
-
 		long inittime = System.currentTimeMillis();
-		List<SuspiciousCode> susp = this.getFaultLocalization().searchSuspicious(getProjectFacade()).getCandidates();
+
+		// Find tests:
+		String regressionTC = ConfigurationProperties.getProperty("regressiontestcases4fl");
+		List<String> regressionTestForFaultLocalization = null;
+		if (regressionTC != null && !regressionTC.trim().isEmpty()) {
+			regressionTestForFaultLocalization = Arrays.asList(regressionTC.split(File.pathSeparator));
+		} else {
+
+			regressionTestForFaultLocalization = this.getFaultLocalization().findTestCasesToExecute(projectFacade);
+			projectFacade.getProperties().setRegressionCases(regressionTestForFaultLocalization);
+
+			log.info("Test retrieved from classes: " + regressionTestForFaultLocalization.size());
+		}
+
+		List<SuspiciousCode> susp = this.getFaultLocalization()
+				.searchSuspicious(getProjectFacade(), regressionTestForFaultLocalization).getCandidates();
 
 		long endtime = System.currentTimeMillis();
 		// milliseconds
@@ -1297,23 +1311,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.loadOperatorSelectorStrategy();
 		this.loadSolutionPrioritization();
 		this.loadOutputResults();
-
-	}
-
-	/**
-	 * Finds the test cases to run and stores them in the project facade.
-	 * 
-	 * @return
-	 */
-	public List<String> resolveTestsToRun() {
-
-		List<String> testCasesFound = this.programValidator.findTestCasesToExecute(projectFacade);
-
-		projectFacade.getProperties().setRegressionCases(testCasesFound);
-
-		log.info("Test retrieved from classes: " + testCasesFound.size());
-		log.debug("Test retrieved from classes: " + testCasesFound);
-		return testCasesFound;
 
 	}
 

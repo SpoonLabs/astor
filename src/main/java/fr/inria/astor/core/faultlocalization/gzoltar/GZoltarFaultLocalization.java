@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,6 +21,7 @@ import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.FinderTestCases;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
@@ -36,14 +36,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 	public static final String PACKAGE_SEPARATOR = "-";
 	Logger logger = Logger.getLogger(GZoltarFaultLocalization.class.getName());
 
-	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade project) throws Exception {
-
-		String regressionTC = ConfigurationProperties.getProperty("regressiontestcases4fl");
-		List<String> regressionTestForFaultLocalization = null;
-		if (regressionTC != null && !regressionTC.trim().isEmpty()) {
-			regressionTestForFaultLocalization = Arrays.asList(regressionTC.split(File.pathSeparator));
-		} else
-			regressionTestForFaultLocalization = project.getProperties().getRegressionTestCases();
+	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade project,
+			List<String> regressionTestForFaultLocalization) throws Exception {
 
 		return this.calculateSuspicious(
 				ConfigurationProperties.getProperty("location") + File.separator
@@ -333,6 +327,12 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			return Double.compare(o2.getSuspiciousValue(), o1.getSuspiciousValue());
 		}
 
+	}
+
+	@Override
+	public List<String> findTestCasesToExecute(ProjectRepairFacade projectFacade) {
+		List<String> testCasesToRun = FinderTestCases.findJUnit4XTestCasesForRegression(projectFacade);
+		return testCasesToRun;
 	}
 
 }
