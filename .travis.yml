@@ -42,7 +42,7 @@ script:
 - mvn -ff -q clean
 - mvn -ff -q test -DskipTests -DfailIfNoTests=false
 - mvn -ff -q surefire:test -DfailIfNoTests=false -Dtest=$TEST
-sudo: required
+sudo: true #required
 before_script:
  - "echo Java_OPTS $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx4096m"
