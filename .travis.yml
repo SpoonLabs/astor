@@ -53,6 +53,8 @@ cache:
   - "$HOME/.m2"
  # - examples/
 after_success:
-- bash <(curl -s https://codecov.io/bash)
-- '[[ $TRAVIS_BRANCH == "master" ]] && [[ $TEST == "fr.inria.astor.test.repair.approaches.JGenProgTest"
-  ]] && { mvn -ff -q versions:set -DnewVersion=`git rev-parse HEAD`; mvn -ff -q deploy --settings .travis-settings.xml -DskipTests=true -B; };'
+#- bash <(curl -s https://codecov.io/bash)
+#- '[[ $TRAVIS_BRANCH == "master" ]] && [[ $TEST == "fr.inria.astor.test.repair.approaches.JGenProgTest"
+#  ]] && { mvn -ff -q versions:set -DnewVersion=`git rev-parse HEAD`; mvn -ff -q deploy --settings .travis-settings.xml -DskipTests=true -B; };'
+- "./.travis-deploy.sh"
+
