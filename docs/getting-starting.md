@@ -12,7 +12,10 @@ Pre-requisites:
 
      git clone https://github.com/SpoonLabs/astor.git
      cd astor
-     mvn install
+     mvn install -DskipTests=true
+
+The option `-DskipTests=true` disables the execution of test cases, which, due to the amount of tests,  will take long and can even fail. 
+In any case, most important test cases are always executed on [travis](https://travis-ci.org/SpoonLabs/astor)
 
 Warning: Windows is only partially supported.
 
