@@ -26,12 +26,10 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.manipulation.sourcecode.VarCombinationForIngredient;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionTransformedIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
@@ -42,7 +40,6 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.Ran
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.test.repair.approaches.TestHelper;
-import fr.inria.astor.test.repair.evaluation.regression.ClosureTest;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
@@ -1237,198 +1234,6 @@ public class CardumenApproachTest {
 
 		ExpressionTypeIngredientSpace space = (ExpressionTypeIngredientSpace) cardumen.getIngredientSearchStrategy()
 				.getIngredientSpace();
-
-	}
-
-	@Test
-	@Ignore
-	public void testCardumenClosure1() throws Exception {
-		File projectLocation = new File("./examples/closure_1");
-		AstorMain main1 = new AstorMain();
-		File dirLibs = new File(projectLocation.getAbsolutePath() + File.separator + "/lib/");
-		String dep = ClosureTest.getDependencies(projectLocation, dirLibs);
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { //
-				"-dependencies", dep, //
-				"-mode", "jgenprog", //
-				"-location", projectLocation.getAbsolutePath(), //
-				"-srcjavafolder", "/src/:/test/", //
-				"-srctestfolder", "/test/", //
-				"-binjavafolder", "/build/classes/", //
-				"-bintestfolder", "/build/test/", //
-				"-javacompliancelevel", "6", //
-				"-flthreshold", "0.5", //
-				"-out", out.getAbsolutePath(), //
-				"-scope", "local", //
-				"-seed", "10", //
-				"-maxgen", "0", // No run
-				"-stopfirst", "true", //
-				"-maxtime", "100"//
-
-		};
-
-		File fileLog = File.createTempFile("logclos1", "txt");
-
-		CommandSummary command = new CommandSummary(args);
-		command.command.put("-mode", ExecutionMode.custom.name());
-		command.command.put("-flthreshold", "0.1");
-		command.command.put("-maxtime", "60");
-		command.command.put("-population", "1");
-		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
-		command.command.put("-scope", "package");
-		command.command.put("-parameters",
-				"skipfitnessinitialpopulation:true:limitbysuspicious:false:"
-						+ "disablelog:false:uniformreplacement:false:skipfitnessinitialpopulation:true:logfilepath:"
-						+ fileLog.getAbsolutePath());
-		command.command.put("-loglevel", Level.INFO.toString());
-
-		main1.execute(command.flat());
-
-	}
-
-	@Test
-	@Ignore
-	public void testTime11() throws Exception {
-		// MP: (156/834) MP=org.joda.time.DateTimeZone line: 263, pointed
-		// element: CtBinaryOperatorImpl|| code: hoursInMinutes < 0||
-		// spoon.support.reflect.code.CtBinaryOperatorImpl (boolean)
-		// Base: (44/161) spoon.support.reflect.code.CtBinaryOperatorImpl
-		// (boolean) ((_long_0 ^ _int_1) >= 0)
-		// [DEBUG]
-		// fr.inria.astor.core.manipulation.sourcecode.VariableResolver.mapVariablesFromContext(VariableResolver.java:343)
-		// - #vars out of context: 2
-		// [DEBUG]
-		// fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine4Stats.startEvolution(CardumenExhaustiveEngine4Stats.java:123)
-		// - -nrIng-[0, 0]
-
-		// command line arguments: [-mode statement -location . -id Time
-		// -dependencies lib/ -failing org.joda.time.tz.TestCompiler: -package
-		// org.joda -jvm4testexecution
-		// /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/ -jvm4evosuitetestexecution
-		// /home/mmartinez/jdk1.8.0_45/bin/ -javacompliancelevel 5 -maxgen
-		// 1000000 -seed 10 -stopfirst false -scope local -maxtime 120
-		// -population 1 -srcjavafolder src/main/java/ -srctestfolder
-		// src/test/java/ -binjavafolder target/classes/ -bintestfolder
-		// target/test-classes/ -flthreshold 0.1 -validation
-		// fr.inria.astor.core.validation.validators.RegressionValidation
-		// -evosuitetimeout 300 -ignoredtestcases
-		// org.apache.commons.lang.LocaleUtilsTest]
-		File fileLog = File.createTempFile("logtime11", "txt");
-		fileLog.createNewFile();
-
-		String m2path = System.getenv("HOME") + "/.m2/repository/";
-		File fm2 = new File(m2path);
-		if (!fm2.exists()) {
-			throw new Exception(m2path + "does not exit");
-		}
-
-		String[] cms = new String[] { "-mode", "jgenprog"
-
-				, "-location", (new File("./examples/time_11")).getAbsolutePath(), "-dependencies",
-				new File("./examples/libs/junit-3.8.2.jar").getAbsolutePath() + File.pathSeparator
-						+ new File(m2path + "/org/joda/joda-convert/1.2/joda-convert-1.2.jar").getAbsolutePath()
-
-				, "out" + new File(ConfigurationProperties.getProperty("workingDirectory")), "-failing",
-				"org.joda.time.tz.TestCompiler", "-package", "org.joda", "-javacompliancelevel", "7", "-maxgen",
-				"1000000", "-seed", "6001", "-stopfirst", "true", "-scope", "package", "-maxtime", "10", "-population",
-				"1", "-srcjavafolder", "src/main/java/", "-srctestfolder", "src/test/java/", "-binjavafolder",
-				"target/classes/", "-bintestfolder", "target/test-classes/", "-flthreshold", "0.1" }
-		// + "
-		// -validation,fr.inria.astor.core.validation.validators.RegressionValidation,"
-		;
-
-		CommandSummary command = new CommandSummary(cms);
-		command.command.put("-mode", ExecutionMode.custom.name());
-		command.command.put("-flthreshold", "0.1");
-		command.command.put("-maxtime", "60");
-		command.command.put("-population", "1");
-		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
-		command.command.put("-scope", "package");
-		command.command.put("-parameters",
-				"skipfitnessinitialpopulation:true:limitbysuspicious:false:"
-						+ "disablelog:false:uniformreplacement:false:skipfitnessinitialpopulation:true:logfilepath:"
-						+ fileLog.getAbsolutePath());
-		command.command.put("-loglevel", Level.INFO.toString());
-		AstorMain main1 = new AstorMain();
-		main1.execute(command.flat());
-
-	}
-
-	@Test
-	@Ignore
-	public void testTime11Step() throws Exception {
-
-		File fileLog = File.createTempFile("logtime11", "txt");
-		fileLog.createNewFile();
-
-		String m2path = System.getenv("HOME") + "/.m2/repository/";
-		File fm2 = new File(m2path);
-		if (!fm2.exists()) {
-			throw new Exception(m2path + "does not exit");
-		}
-		String[] cms = new String[] { "-mode", "jgenprog"
-
-				, "-location", (new File("./examples/time_11")).getAbsolutePath(), "-dependencies",
-				new File("./examples/libs/junit-3.8.2.jar").getAbsolutePath() + File.pathSeparator
-						+ new File(fm2 + "/org/joda/joda-convert/1.2/joda-convert-1.2.jar").getAbsolutePath()
-
-				, "out" + new File(ConfigurationProperties.getProperty("workingDirectory")), "-failing",
-				"org.joda.time.tz.TestCompiler", "-package", "org.joda", "-javacompliancelevel", "7", "-maxgen",
-				"1000000", "-seed", "6001", "-stopfirst", "true", "-scope", "package", "-maxtime", "10", "-population",
-				"1", "-srcjavafolder", "src/main/java/", "-srctestfolder", "src/test/java/", "-binjavafolder",
-				"target/classes/", "-bintestfolder", "target/test-classes/", "-flthreshold", "0.1" }
-		// + "
-		// -validation,fr.inria.astor.core.validation.validators.RegressionValidation,"
-		;
-
-		CommandSummary command = new CommandSummary(cms);
-		command.command.put("-mode", "Cardumen");
-		command.command.put("-flthreshold", "0.1");
-		command.command.put("-maxtime", "0");
-		command.command.put("-population", "1");
-		// command.command.put("-customengine",
-		// CardumenExhaustiveEngine4Stats.class.getCanonicalName());
-		command.command.put("-scope", "package");
-		command.command.put("-maxgen", "0");
-		command.command.put("-parameters",
-				"skipfitnessinitialpopulation:true:limitbysuspicious:false:"
-						+ "disablelog:false:uniformreplacement:false:skipfitnessinitialpopulation:true:logfilepath:"
-						+ fileLog.getAbsolutePath());
-		command.command.put("-loglevel", Level.INFO.toString());
-		AstorMain main1 = new AstorMain();
-		main1.execute(command.flat());
-
-		AstorCoreEngine approach = main1.getEngine();
-		IngredientBasedApproach ingapproach = (IngredientBasedApproach) main1.getEngine();
-
-		// MP: (156/834) MP=org.joda.time.DateTimeZone line: 263, pointed
-		// element: CtBinaryOperatorImpl|| code: hoursInMinutes < 0||
-		// spoon.support.reflect.code.CtBinaryOperatorImpl (boolean)
-		// Base: (44/161) spoon.support.reflect.code.CtBinaryOperatorImpl
-		// (boolean) ((_long_0 ^ _int_1) >= 0)
-
-		ProgramVariant pv = main1.getEngine().getVariants().get(0);
-
-		// ingapproach.getIngredientStrategy().getIngredientSpace().defineSpace(pv);
-		ModificationPoint mp156 = pv.getModificationPoints().get(155);
-
-		assertEquals("hoursInMinutes < 0", mp156.getCodeElement().toString());
-		List<CtVariable> varContextClearResult = VariableResolver.searchVariablesInScope(mp156.getCodeElement());//
-		CtElement returnExpression = pv.getModificationPoints().get(8).getCodeElement();
-
-		RandomSelectionTransformedIngredientStrategy estrategy = (RandomSelectionTransformedIngredientStrategy) ingapproach
-				.getIngredientSearchStrategy();
-
-		List<Ingredient> baseElements = estrategy.getNotExhaustedBaseElements(mp156,
-				approach.getOperatorSpace().getOperators().get(0));
-
-		CtElement ingredient = baseElements.get(43).getCode();
-		assertEquals("((_long_0 ^ _int_1) >= 0)", ingredient.toString());
-
-		VarMapping vmapping = VariableResolver.mapVariablesFromContext(varContextClearResult, ingredient);
-		log.debug(vmapping);
-		assertEquals(1, vmapping.getMappedVariables().size());
-		assertEquals(1, vmapping.getNotMappedVariables().size());
 
 	}
 
