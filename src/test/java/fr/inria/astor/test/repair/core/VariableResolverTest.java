@@ -30,7 +30,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.IngredientPool;
 import fr.inria.astor.test.repair.approaches.TestHelper;
-import fr.inria.astor.test.repair.evaluation.extensionpoints.deep.DeepRepairTest;
+//import fr.inria.astor.test.repair.evaluation.extensionpoints.deep.DeepRepairTest;
 import fr.inria.main.evolution.AstorMain;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
@@ -386,37 +386,6 @@ public class VariableResolverTest {
 
 	private String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 	private File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-
-	@Test
-	@Ignore
-	public void testVarsOutOfScope() throws Exception {
-
-		AstorMain main1 = new AstorMain();
-		ClassLoader classLoader = getClass().getClassLoader();
-		File learningDir = new File(classLoader.getResource("learningm70").getFile());
-
-		Class typeCloneGranularityClass = CtType.class;
-
-		String[] args = DeepRepairTest.createCommandM70ForNotEvolve(learningDir, typeCloneGranularityClass);
-
-		log.debug(Arrays.toString(args));
-
-		main1.execute(args);
-		JGenProg engine = (JGenProg) main1.getEngine();
-
-		ProgramVariant pv = engine.getVariants().get(0);
-		CtElement c1 = pv.getModificationPoints().get(0).getCodeElement();
-		CtElement ingredientCtElement = pv.getModificationPoints().get(7).getCodeElement();
-
-		List<CtVariable> varContext = VariableResolver.searchVariablesInScope(c1);
-		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContext,
-				ingredientCtElement);
-		assertNotNull(variablesOutOfScope);
-		assertEquals(1, variablesOutOfScope.size());
-		log.debug("Out scope: " + variablesOutOfScope);
-		assertEquals("fmin", variablesOutOfScope.get(0).getVariable().getSimpleName());
-
-	}
 
 	@Test
 	public void testBugVariableResolver2() {
@@ -855,64 +824,5 @@ public class VariableResolverTest {
 			return true;
 		}
 	};
-
-	@Test
-	@Ignore
-	public void testOutOfScope288() throws Exception {
-		AstorMain main1 = new AstorMain();
-
-		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
-		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
-		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
-				"org.apache.commons.math.optimization.linear.SimplexSolverTest", "-location",
-				new File("./examples/Math-issue-288").getAbsolutePath(), "-package", "org.apache.commons",
-				"-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/main/test/", "-binjavafolder",
-				"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", //
-				"-flthreshold", "0.25", "-out", //
-				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
-				// Force not evolution
-				"-maxgen", "0", "-population", "1",
-				//
-				"-stopfirst", "true", "-maxtime", "100"
-
-		};
-
-		main1.execute(args);
-
-		List<ProgramVariant> variants = main1.getEngine().getVariants();
-		JGenProg jgp = (JGenProg) main1.getEngine();
-		// line 175, file SimplexSolver.java
-		ProgramVariant pv = jgp.getVariants().get(0);
-		CtElement placeToPut = pv.getModificationPoints().get(0).getCodeElement();
-		// l199 file SimplexSolver.java to query: return tableau.getSolution();
-		CtElement ingredientCtElement = pv.getModificationPoints().get(6).getCodeElement();
-
-		List<CtVariable> varContext = VariableResolver.searchVariablesInScope(placeToPut);
-		List<CtVariableAccess> variablesOutOfScope = VariableResolver.retriveVariablesOutOfContext(varContext,
-				ingredientCtElement);
-		assertNotNull(variablesOutOfScope);
-		assertEquals(0, variablesOutOfScope.size());
-
-		// to query: Integer pivotRow = getPivotRow(pivotCol, tableau);
-		// 55
-
-		CtElement outingredientCtElement112 = pv.getModificationPoints().get(55).getCodeElement();
-		List<CtVariableAccess> variablesOutOfScope112 = VariableResolver.retriveVariablesOutOfContext(varContext,
-				outingredientCtElement112);
-
-		assertNotNull(variablesOutOfScope112);
-
-		log.debug("Out scope l112 : " + variablesOutOfScope112);
-		assertEquals(1, variablesOutOfScope112.size());
-		assertEquals("pivotCol", variablesOutOfScope112.get(0).getVariable().getSimpleName());
-
-		// L118 double pivotVal = tableau.getEntry(pivotRow, pivotCol);
-		CtElement outingredientCtElement118 = pv.getModificationPoints().get(57).getCodeElement();
-		List<CtVariableAccess> variablesOutOfScope118 = VariableResolver.retriveVariablesOutOfContext(varContext,
-				outingredientCtElement118);
-
-		assertNotNull(variablesOutOfScope118);
-
-	}
 
 }

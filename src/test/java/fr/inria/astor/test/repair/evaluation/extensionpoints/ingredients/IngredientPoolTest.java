@@ -48,9 +48,9 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 	}
 
 	/**
-	 * This test asserts the navigation of the ing search space using a
-	 * modification point and a operation type The strategy used returns
-	 * ingredients according to LCS distance compared with modificationPoint.
+	 * This test asserts the navigation of the ing search space using a modification
+	 * point and a operation type The strategy used returns ingredients according to
+	 * LCS distance compared with modificationPoint.
 	 *
 	 * @throws Exception
 	 */
@@ -97,9 +97,9 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 	}
 
 	/**
-	 * This test asserts the navigation of the ing search space using a
-	 * modification point and a operation type The strategy used returns
-	 * ingredients according to LCS distance compared with modificationPoint.
+	 * This test asserts the navigation of the ing search space using a modification
+	 * point and a operation type The strategy used returns ingredients according to
+	 * LCS distance compared with modificationPoint.
 	 *
 	 * @throws Exception
 	 */
@@ -148,9 +148,9 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 	}
 
 	/**
-	 * This test asserts the navigation of the ing search space using a
-	 * modification point and a operation type The strategy used returns
-	 * ingredients according to their length (in term of number of chars)
+	 * This test asserts the navigation of the ing search space using a modification
+	 * point and a operation type The strategy used returns ingredients according to
+	 * their length (in term of number of chars)
 	 *
 	 * @throws Exception
 	 */
@@ -189,10 +189,9 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 	}
 
 	/**
-	 * This test asserts the navigation of the ing search space using a
-	 * modification point and a operation type For this reason, we assert that
-	 * the ingredients returned by the strategy are of the same type than the
-	 * modif point.
+	 * This test asserts the navigation of the ing search space using a modification
+	 * point and a operation type For this reason, we assert that the ingredients
+	 * returned by the strategy are of the same type than the modif point.
 	 *
 	 * @throws Exception
 	 */
