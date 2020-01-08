@@ -745,7 +745,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		if (validationResult == null) {
 			log.error("Initial run of test suite fails");
 
-		} else if (validationResult.isSuccessful()) {
+		} else if (validationResult.isSuccessful() && !ConfigurationProperties.getPropertyBool("canhavezerosusp")) {
 			throw new IllegalStateException("The application under repair has not failling test cases");
 		}
 

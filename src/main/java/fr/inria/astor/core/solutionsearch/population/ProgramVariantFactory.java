@@ -160,7 +160,7 @@ public class ProgramVariantFactory {
 
 			List<String> allTest = projectFacade.getProperties().getRegressionTestCases();
 			String testn = ctclasspointed.getQualifiedName();
-			if (allTest.contains(testn)) {
+			if (allTest != null && allTest.contains(testn)) {
 				// it's a test, we ignore it
 				log.debug("ModifPoints creation: Ignoring test case " + testn);
 				continue;
