@@ -14,6 +14,14 @@ public class TestCaseResult {
 	Boolean correct;
 	Boolean isParametrized = false;
 
+	public TestCaseResult(String testCaseCompleteName, String testCaseName, String testCaseClass, Boolean correct) {
+		super();
+		this.testCaseCompleteName = testCaseCompleteName;
+		this.testCaseName = testCaseName;
+		this.testCaseClass = testCaseClass;
+		this.correct = correct;
+	}
+
 	public TestCaseResult(String testCaseCompleteName, boolean correct) {
 		super();
 		this.testCaseCompleteName = testCaseCompleteName;
@@ -65,6 +73,12 @@ public class TestCaseResult {
 	public boolean isCorrect() {
 
 		return this.correct;
+	}
+
+	@Override
+	public String toString() {
+		return "TestCaseResult [testCaseName=" + testCaseName + ", testCaseClass=" + testCaseClass + ", correct="
+				+ correct + "]";
 	}
 
 }
