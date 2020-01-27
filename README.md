@@ -20,7 +20,7 @@ Matias Martinez, Martin Monperrus, "[ASTOR: A Program Repair Library for Java](h
 
 See also:
 
-* [ASTOR: Exploring the Design Space of Generate-and-Validate Program Repair beyond GenProg](https://arxiv.org/abs/1802.03365) (Matias Martinez, Martin Monperrus), Journal of Systems and Software, 2019.
+* [ASTOR: Exploring the Design Space of Generate-and-Validate Program Repair beyond GenProg](https://arxiv.org/abs/1802.03365) (Matias Martinez, Martin Monperrus), Article in Journal of Systems and Software, 2019, [doi:10.1016/j.jss.2019.01.069](https://doi.org/10.1016/j.jss.2019.01.069).
 * [ASTOR: Evolutionary Automatic Software Repair for Java](https://arxiv.org/abs/1410.6651), Arxiv 1410.6651, 2014.
 
 Contributing
