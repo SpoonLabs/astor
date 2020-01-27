@@ -79,7 +79,7 @@ Cardumen
 
 Cardumen is a repair approach based on mined templates. The experiments about Cardumen are described in
 
-* [Ultra-Large Repair Search Space with Automatically Mined Templates: the Cardumen Mode of Astor ](https://arxiv.org/pdf/1712.03854v2), Proceedings of the 10th International Symposium on Search-Based Software Engineering, 2018
+* [Ultra-Large Repair Search Space with Automatically Mined Templates: the Cardumen Mode of Astor ](https://arxiv.org/pdf/1712.03854v2), Proceedings of the 10th International Symposium on Search-Based Software Engineering, 2018 ([doi:10.1007/978-3-319-99241-9_3](https://doi.org/10.1007/978-3-319-99241-9_3))
 * [Open-ended Exploration of the Program Repair Search Space with Mined Templates: the Next 8935 Patches for Defects4J](https://arxiv.org/pdf/1712.03854v1) (Martin Monperrus, Matias Martinez), Arxiv 1712.03854, 2017
 * Open-science repository with Cardumen patches: <https://github.com/SpoonLabs/astor-experiments/>
 
