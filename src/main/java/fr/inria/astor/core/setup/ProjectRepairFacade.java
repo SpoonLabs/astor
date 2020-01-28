@@ -80,24 +80,26 @@ public class ProjectRepairFacade {
 	 */
 	public void cleanMutationResultDirectories(String currentMutatorIdentifier) throws IOException {
 
-		removeDir(getProperties().getWorkingDirForSource() + File.separator + currentMutatorIdentifier);
-		removeDir(getProperties().getWorkingDirForBytecode() + File.separator + currentMutatorIdentifier);
+		removeDir(getProperties().getWorkingDirForSource() + File.separator + currentMutatorIdentifier, false);
+		removeDir(getProperties().getWorkingDirForBytecode() + File.separator + currentMutatorIdentifier, false);
 	}
 
 	public void cleanMutationResultDirectories() throws IOException {
 
-		removeDir(getProperties().getWorkingDirForSource());
-		removeDir(getProperties().getWorkingDirForBytecode());
+		removeDir(getProperties().getWorkingDirForSource(), true);
+		removeDir(getProperties().getWorkingDirForBytecode(), true);
 	}
 
-	private void removeDir(String dir) throws IOException {
+	private void removeDir(String dir, boolean isFolderToBeRecreated) throws IOException {
 		File dirin = new File(dir);
 		try {
 			FileUtils.deleteDirectory(dirin);
 		} catch (Exception ex) {
 			logger.error("ex: " + ex.getMessage());
 		}
-		dirin.mkdir();
+		if (isFolderToBeRecreated) {
+			dirin.mkdir();
+		}
 	}
 
 	public boolean copyOriginalBin(List<String> inDirs, String mutatorIdentifier) throws IOException {

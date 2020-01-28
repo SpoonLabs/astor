@@ -1,0 +1,183 @@
+15:19:14.308 f.i.l.r.s.c.SpoonElementsCollector - [data] i2=1
+15:19:14.311 f.i.l.r.s.c.SpoonElementsCollector - [data] i1=2
+15:19:14.314 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:19:14.315 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=300)
+15:19:14.316 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:19:14.316 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:19:14.317 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:19:14.339 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:19:14.415 f.i.a.c.m.s.d.DataCombinerModified - [combine] start on 8 elements
+15:19:14.482 f.i.a.c.m.s.d.DataCombinerModified - [combine] end 10382 evaluated elements
+15:19:37.791 f.i.l.r.s.c.SpoonElementsCollector - [data] i2=1
+15:19:37.791 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:19:37.791 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=300)
+15:19:37.792 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:19:37.792 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:19:37.793 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:19:37.806 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:19:37.886 f.i.a.c.m.s.d.DataCombinerModified - [combine] start on 8 elements
+15:19:37.940 f.i.a.c.m.s.d.DataCombinerModified - [combine] end 10382 evaluated elements
+15:19:46.235 f.i.l.r.s.c.spoon.ClassCollector - [class] java.lang.String
+15:19:46.240 f.i.l.r.s.c.SpoonElementsCollector - [data] "-"="-"
+15:19:46.241 f.i.l.r.s.c.SpoonElementsCollector - [data] type="p"
+15:19:46.242 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:19:46.242 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=300)
+15:19:46.242 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:19:46.243 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:19:46.243 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:19:46.253 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:19:46.259 f.i.l.r.s.c.SpoonElementsCollector - [data] "-"="-"
+15:19:46.260 f.i.l.r.s.c.SpoonElementsCollector - [data] type="i"
+15:19:46.260 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:19:46.260 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=300)
+15:19:46.261 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:19:46.261 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:19:46.262 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:19:46.268 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:19:46.346 f.i.l.r.s.c.SpoonElementsCollector - [data] "-"="-"
+15:19:46.347 f.i.l.r.s.c.SpoonElementsCollector - [data] type="gr"
+15:19:46.347 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:19:46.347 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=398)
+15:19:46.348 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:19:46.348 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:19:46.349 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:19:46.354 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:19:46.361 f.i.a.c.m.s.d.DataCombinerModified - [combine] start on 9 elements
+15:19:46.403 f.i.a.c.m.s.d.DataCombinerModified - [combine] end 10411 evaluated elements
+15:20:15.083 f.i.l.r.s.c.spoon.ClassCollector - [class] java.lang.String
+15:20:15.096 f.i.a.c.m.s.d.DataCombinerModified - [combine] start on 0 elements
+15:20:15.096 f.i.a.c.m.s.d.DataCombinerModified - [combine] end 0 evaluated elements
+15:20:43.774 f.i.l.r.s.c.spoon.ClassCollector - [class] java.lang.String
+15:20:43.778 f.i.l.r.s.c.SpoonElementsCollector - [data] "+"="+"
+15:20:43.779 f.i.l.r.s.c.SpoonElementsCollector - [data] type="+"
+15:20:43.779 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:20:43.779 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=300)
+15:20:43.780 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:20:43.780 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:20:43.781 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:20:43.787 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:20:43.793 f.i.l.r.s.c.SpoonElementsCollector - [data] "+"="+"
+15:20:43.793 f.i.l.r.s.c.SpoonElementsCollector - [data] type="+"
+15:20:43.793 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:20:43.794 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=300)
+15:20:43.794 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:20:43.794 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:20:43.795 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:20:43.798 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:20:43.863 f.i.l.r.s.c.SpoonElementsCollector - [data] "+"="+"
+15:20:43.864 f.i.l.r.s.c.SpoonElementsCollector - [data] type="p"
+15:20:43.864 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:20:43.864 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=397)
+15:20:43.865 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:20:43.865 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:20:43.866 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:20:43.871 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:20:43.873 f.i.l.r.s.c.SpoonElementsCollector - [data] "+"="+"
+15:20:43.874 f.i.l.r.s.c.SpoonElementsCollector - [data] type="i"
+15:20:43.875 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:20:43.875 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=397)
+15:20:43.875 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:20:43.876 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:20:43.876 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:20:43.881 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:20:43.887 f.i.l.r.s.c.SpoonElementsCollector - [data] "+"="+"
+15:20:43.888 f.i.l.r.s.c.SpoonElementsCollector - [data] type="gr"
+15:20:43.888 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:20:43.888 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=402)
+15:20:43.889 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:20:43.889 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:20:43.889 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:20:43.894 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:20:43.903 f.i.l.r.s.c.SpoonElementsCollector - [data] "+"="+"
+15:20:43.903 f.i.l.r.s.c.SpoonElementsCollector - [data] type="+"
+15:20:43.903 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:20:43.903 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=416)
+15:20:43.904 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:20:43.904 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:20:43.905 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:20:43.909 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:20:43.911 f.i.l.r.s.c.SpoonElementsCollector - [data] "+"="+"
+15:20:43.911 f.i.l.r.s.c.SpoonElementsCollector - [data] type="+"
+15:20:43.912 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:20:43.912 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=416)
+15:20:43.912 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:20:43.912 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:20:43.913 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:20:43.916 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:20:43.919 f.i.a.c.m.s.d.DataCombinerModified - [combine] start on 9 elements
+15:20:43.958 f.i.a.c.m.s.d.DataCombinerModified - [combine] end 10411 evaluated elements
+15:21:17.886 f.i.l.r.s.c.spoon.ClassCollector - [class] java.lang.String
+15:21:17.895 f.i.l.r.s.c.SpoonElementsCollector - [data] "*"="*"
+15:21:17.897 f.i.l.r.s.c.SpoonElementsCollector - [data] type="+"
+15:21:17.897 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:21:17.897 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=300)
+15:21:17.898 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:21:17.898 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:21:17.901 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:21:17.910 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:21:17.921 f.i.l.r.s.c.SpoonElementsCollector - [data] "*"="*"
+15:21:17.922 f.i.l.r.s.c.SpoonElementsCollector - [data] type="+"
+15:21:17.922 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:21:17.922 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=300)
+15:21:17.923 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:21:17.924 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:21:17.925 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:21:17.935 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:21:18.031 f.i.l.r.s.c.SpoonElementsCollector - [data] "*"="*"
+15:21:18.032 f.i.l.r.s.c.SpoonElementsCollector - [data] type="p"
+15:21:18.032 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:21:18.032 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=397)
+15:21:18.032 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:21:18.033 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:21:18.033 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:21:18.038 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:21:18.041 f.i.l.r.s.c.SpoonElementsCollector - [data] "*"="*"
+15:21:18.042 f.i.l.r.s.c.SpoonElementsCollector - [data] type="i"
+15:21:18.043 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:21:18.043 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=397)
+15:21:18.043 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:21:18.044 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:21:18.044 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:21:18.050 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:21:18.056 f.i.l.r.s.c.SpoonElementsCollector - [data] "*"="*"
+15:21:18.057 f.i.l.r.s.c.SpoonElementsCollector - [data] type="gr"
+15:21:18.058 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:21:18.058 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=402)
+15:21:18.058 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:21:18.058 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:21:18.059 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:21:18.064 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:21:18.075 f.i.l.r.s.c.SpoonElementsCollector - [data] "*"="*"
+15:21:18.075 f.i.l.r.s.c.SpoonElementsCollector - [data] type="*"
+15:21:18.075 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:21:18.075 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=416)
+15:21:18.076 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:21:18.076 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:21:18.077 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:21:18.082 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:21:18.084 f.i.l.r.s.c.SpoonElementsCollector - [data] "*"="*"
+15:21:18.085 f.i.l.r.s.c.SpoonElementsCollector - [data] type="*"
+15:21:18.085 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:21:18.085 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=416)
+15:21:18.086 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:21:18.086 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:21:18.087 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:21:18.094 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:21:18.099 f.i.l.r.s.c.SpoonElementsCollector - [data] "*"="*"
+15:21:18.099 f.i.l.r.s.c.SpoonElementsCollector - [data] type="+"
+15:21:18.099 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:21:18.100 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=420)
+15:21:18.100 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:21:18.100 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:21:18.101 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:21:18.105 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:21:18.113 f.i.l.r.s.c.SpoonElementsCollector - [data] "*"="*"
+15:21:18.114 f.i.l.r.s.c.SpoonElementsCollector - [data] type="+"
+15:21:18.114 f.i.l.r.s.c.DynamothDataCollector - Collect Level 1
+15:21:18.114 f.i.l.r.s.c.DynamothDataCollector - [data] this=instance of test.MyBuggy(id=420)
+15:21:18.115 f.i.l.r.s.c.DynamothDataCollector - [data] i1
+15:21:18.115 f.i.l.r.s.c.DynamothDataCollector - [data] i2
+15:21:18.115 f.i.l.r.s.c.DynamothDataCollector - [data] type
+15:21:18.121 f.i.l.r.s.c.DynamothDataCollector - [data] type.length()
+15:21:18.127 f.i.a.c.m.s.d.DataCombinerModified - [combine] start on 9 elements
+15:21:18.190 f.i.a.c.m.s.d.DataCombinerModified - [combine] end 10411 evaluated elements

@@ -251,6 +251,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					fw.close();
 				}
 			}
+			if (!ConfigurationProperties.getPropertyBool("saveall")) {
+				try {
+					projectFacade.cleanMutationResultDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+				} catch (IOException e) {
+					e.printStackTrace();
+					log.error(e);
+				}
+			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -563,6 +571,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				saveVariant(programVariant);
 
 				return true;
+			} else if (!ConfigurationProperties.getPropertyBool("saveall")) {
+				projectFacade.cleanMutationResultDirectories(
+						ConfigurationProperties.getProperty("pvariantfoldername") + programVariant.getId());
 			}
 		} else {
 			log.debug("-The child does NOT compile: " + programVariant.getId() + ", errors: "

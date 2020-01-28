@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.List;
 
-import org.fest.util.Files;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -199,7 +198,7 @@ public class FaultLocalizationTest {
 		String anotherTestClassToRun = "org.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest";
 		String thirdTestclassToRun = "org.apache.commons.math.estimation.WeightedMeasurementTest";
 
-		File ft = Files.newTemporaryFile();
+		File ft = File.createTempFile("astortmp","");
 		FileWriter fw = new FileWriter(ft);
 
 		fw.write(oneFailingTestClassToRun);
