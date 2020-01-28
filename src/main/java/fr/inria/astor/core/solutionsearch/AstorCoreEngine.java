@@ -206,16 +206,16 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					}
 				}
 			}
-			if (!ConfigurationProperties.getPropertyBool("saveall")) {
-				try {
-					projectFacade.cleanMutationResultDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-				} catch (IOException e) {
-					e.printStackTrace();
-					log.error(e);
-				}
+		}
+		if (!ConfigurationProperties.getPropertyBool("saveall")) {
+			try {
+				projectFacade.cleanMutationResultDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
+				projectFacade.cleanMutationResultSourceDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT + PatchDiffCalculator.DIFF_SUFFIX);
+			} catch (IOException e) {
+				e.printStackTrace();
+				log.error(e);
 			}
 		}
-
 	}
 
 	protected void computePatchDiff(List<ProgramVariant> solutions) throws Exception {
