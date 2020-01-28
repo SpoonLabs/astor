@@ -84,6 +84,16 @@ public class ProjectRepairFacade {
 		removeDir(getProperties().getWorkingDirForBytecode() + File.separator + currentMutatorIdentifier, false);
 	}
 
+	/**
+	 * Remove source dir for a given mutation
+	 *
+	 * @throws IOException
+	 */
+	public void cleanMutationResultSourceDirectories(String currentMutatorIdentifier) throws IOException {
+
+		removeDir(getProperties().getWorkingDirForSource() + File.separator + currentMutatorIdentifier, false);
+	}
+
 	public void cleanMutationResultDirectories() throws IOException {
 
 		removeDir(getProperties().getWorkingDirForSource(), true);
