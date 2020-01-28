@@ -89,7 +89,7 @@ public class ProjectRepairFacade {
 	 *
 	 * @throws IOException
 	 */
-	public void cleanMutationResultSourceDirectories(String currentMutatorIdentifier) throws IOException {
+	public void cleanMutationResultSourceDirectory(String currentMutatorIdentifier) throws IOException {
 
 		removeDir(getProperties().getWorkingDirForSource() + File.separator + currentMutatorIdentifier, false);
 	}
