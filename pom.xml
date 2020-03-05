@@ -81,6 +81,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.gzoltar</groupId>
+			<artifactId>gzoltar</artifactId>
+			<version>0.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.gzoltar</groupId>
 			<artifactId>com.gzoltar.core</artifactId>
 			<version>1.7.2</version>
 		</dependency>
