@@ -485,6 +485,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertEquals(1, solutions.size());
 		ProgramVariant variant = solutions.get(0);
 		assertFalse(variant.getPatchDiff().getFormattedDiff().isEmpty());
+
+		assertTrue(existPatchWithCode(solutions, "return solve(f, min, max)"));
+
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
 
 		String diff = variant.getPatchDiff().getFormattedDiff();
@@ -516,6 +519,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertEquals(2, solutions.size());
 
+		assertTrue(existPatchWithCode(solutions, "return solve(f, min, max)"));
+		assertTrue(existPatchWithCode(solutions, "return solve(f, initial, max)"));
+
 		command.command.put("-parameters", "maxnumbersolutions:1");
 		main1.execute(command.flat());
 
@@ -523,6 +529,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertEquals(1, solutions.size());
 
 		assertEquals(AstorOutputStatus.STOP_BY_PATCH_FOUND, main1.getEngine().getOutputStatus());
+
+		assertTrue(existPatchWithCode(solutions, "return solve(f, min, max)"));
+		assertFalse(existPatchWithCode(solutions, "return solve(f, initial, max)"));
 
 	}
 
@@ -553,6 +562,40 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertEquals(0, solutions.size());
+
+	}
+
+	@Test
+	public void testMATH_1089_e91d0f05() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.11.jar").getAbsolutePath();
+		dep += File.pathSeparator + new File("./examples/libs/hamcrest-core-1.3.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", //
+				"-loglevel", "DEBUG", "-location",
+				new File("./examples/commons-math-bugs-dot-jar_MATH-1089_e91d0f05").getAbsolutePath(), "-failing",
+				"org.apache.commons.math3.util.PrecisionTest", "-srcjavafolder", "/src/main/java/", "-srctestfolder",
+				"/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder", "/target/test-classes",
+				"-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "true", "-scope", "package"
+				//
+				, "-maxgen", "0", "-parameters",
+				"skipfitnessinitialpopulation:true:regressionforfaultlocalization:false"
+
+		};
+
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+		assertTrue(variants.size() > 0);
+
+		ProgramVariant oneVariant = variants.get(0);
+		assertTrue(oneVariant.getModificationPoints().size() > 0);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertEquals(1, solutions.size());
+
+		// oneVariant.getModificationPoints().get(0).getCodeElement().getP
 
 	}
 

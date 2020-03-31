@@ -90,8 +90,6 @@ public abstract class BaseEvolutionaryTest {
 		assertTrue(cantSol > 0);
 	}
 
-	
-
 	protected static int numberSolutions(String dir) {
 		File out = new File(dir + File.separator + "src");
 		log.info("Searching for stored variants at " + out.getParent());
@@ -133,6 +131,32 @@ public abstract class BaseEvolutionaryTest {
 				return hunk;
 		}
 		return null;
+	}
+
+	protected boolean existPatchWithCode(List<ProgramVariant> solutions, String targetCode) {
+
+		for (ProgramVariant programVariant : solutions) {
+
+			if (existPatchWithCode(programVariant, targetCode)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean existPatchWithCode(ProgramVariant programVariant, String targetCode) {
+		List<OperatorInstance> allOps = programVariant.getAllOperations();
+
+		for (OperatorInstance op : allOps) {
+			if (op.getModified() != null) {
+				String content = op.getModified().toString();
+
+				if (content.contains(targetCode)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }
