@@ -30,6 +30,7 @@ import fr.inria.astor.core.manipulation.sourcecode.VarCombinationForIngredient;
 import fr.inria.astor.core.manipulation.sourcecode.VarMapping;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.ProbabilisticIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionTransformedIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.scopes.ExpressionTypeIngredientSpace;
@@ -40,6 +41,7 @@ import fr.inria.astor.core.solutionsearch.spaces.ingredients.transformations.Ran
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
 import fr.inria.astor.test.repair.approaches.TestHelper;
+import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.CommandSummary;
@@ -57,9 +59,55 @@ import spoon.reflect.declaration.CtVariable;
  * @author Matias Martinez
  *
  */
-public class CardumenApproachTest {
+public class CardumenApproachTest extends BaseEvolutionaryTest {
 
 	protected Logger log = Logger.getLogger(this.getClass().getName());
+
+	@Test
+	public void testCardumentChart11() throws Exception {
+
+		String depJunit411 = new File("./lib/junit-4.11.jar").getAbsolutePath();
+
+		String bugLocation = new File("./examples/chart_11/").getAbsolutePath();
+
+		CommandSummary command = new CommandSummary();
+
+		command.command.put("-mode", ExecutionMode.CARDUMEN.name());
+		command.command.put("-id", "Chart-11");
+		command.command.put("-location", bugLocation);
+		command.command.put("-srcjavafolder", "source");
+		command.command.put("-srctestfolder", "tests");
+		command.command.put("-binjavafolder", "build");
+		command.command.put("-bintestfolder", "build-tests");
+
+		command.command.put("-dependencies", bugLocation + File.separator + "/lib/servlet.jar" + File.pathSeparator
+				+ bugLocation + File.pathSeparator + "/lib/itext-2.0.6.jar" + File.pathSeparator + depJunit411);
+
+		command.command.put("-seed", "0");
+		command.command.put("-scope", "local");
+		command.command.put("-population", "1");
+		command.command.put("-javacompliancelevel", "4");
+
+		command.command.put("-flthreshold", "0.1");
+		command.command.put("-maxtime", "60");
+		command.command.put("-stopfirst", "true");
+		command.command.put("-maxgen", "1000000");
+		command.command.put("-population", "1");
+		command.command.put("-loglevel", "INFO");
+
+		AstorMain main1 = new AstorMain();
+		main1.execute(command.flat());
+
+		AstorCoreEngine engine = main1.getEngine();
+
+		assertEquals(1, engine.getSolutions().size());
+
+		// Assert the patch
+		assertTrue(super.existPatchWithCode(engine.getSolutions(), "p2.getPathIterator(null)"));
+		// Assert patch is not the buggy code
+		assertFalse(super.existPatchWithCode(engine.getSolutions(), "p1.getPathIterator(null)"));
+
+	}
 
 	@Test
 	public void testCardumentM70() throws Exception {
