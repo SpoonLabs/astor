@@ -120,7 +120,7 @@ For executing Astor in jMutRepair mode:
 
     -dependencies "folder with the dependencies of the application to repair" 
 
-    -failing "failing test case" (if there are several failing test case, give them separated by the classpath separator (: in linux/mac  and ; in windows)
+    -failing "canonical names of classes with failing test cases" (if there are several classes with failing test cases, give them separated by the classpath separator (: in linux/mac  and ; in windows)
         
     -package "package to manipulate" (only the statements from this package are manipulated to find a patch)
 
