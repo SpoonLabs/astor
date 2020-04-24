@@ -27,6 +27,7 @@ public abstract class ExpresionMutOp extends AutonomousOperator {
 		this.mutatorBinary = new MutatorComposite(MutationSupporter.getFactory());
 		this.mutatorBinary.getMutators().add(new RelationalBinaryOperatorMutator(MutationSupporter.getFactory()));
 		this.mutatorBinary.getMutators().add(new LogicalBinaryOperatorMutator(MutationSupporter.getFactory()));
+		this.mutatorBinary.getMutators().add(new ArithmeticBinaryOperatorMutator(MutationSupporter.getFactory()));
 		this.mutatorBinary.getMutators().add(new NegationUnaryOperatorConditionMutator(MutationSupporter.getFactory()));
 
 	}

@@ -9,6 +9,7 @@ import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
+import fr.inria.astor.approaches.jmutrepair.operators.ArithmeticBinaryOperatorMutator;
 import fr.inria.astor.approaches.jmutrepair.operators.LogicalBinaryOperatorMutator;
 import fr.inria.astor.approaches.jmutrepair.operators.MutatorComposite;
 import fr.inria.astor.approaches.jmutrepair.operators.NegationUnaryOperatorConditionMutator;
@@ -46,6 +47,7 @@ public class jMutRepairEvolutionary extends JGenProg {
 		this.mutatorBinary = new MutatorComposite(mutatorExecutor.getFactory());
 		this.mutatorBinary.getMutators().add(new RelationalBinaryOperatorMutator(mutatorExecutor.getFactory()));
 		this.mutatorBinary.getMutators().add(new LogicalBinaryOperatorMutator(mutatorExecutor.getFactory()));
+		this.mutatorBinary.getMutators().add(new ArithmeticBinaryOperatorMutator(mutatorExecutor.getFactory()));
 		this.mutatorBinary.getMutators().add(new NegationUnaryOperatorConditionMutator(mutatorExecutor.getFactory()));
 	}
 
