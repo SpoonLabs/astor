@@ -97,4 +97,26 @@ public class MutRepairTest extends BaseEvolutionaryTest {
 
 	}
 
+	@Test
+	public void testExampleMutateReturn() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.10.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep,
+				//
+				"-mode", "jmutrepair",
+
+				"-location", new File("./examples/example_return_mutation").getAbsolutePath(),
+
+				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.1",
+				"-stopfirst", "true", "-maxgen", "400", "-scope", "package", "-seed", "10", "-loglevel", "DEBUG" };
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() > 0);
+
+	}
+
 }

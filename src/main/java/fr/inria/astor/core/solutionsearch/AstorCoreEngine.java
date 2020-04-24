@@ -37,6 +37,7 @@ import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.IFConditionFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.IFExpressionFixSpaceProcessor;
+import fr.inria.astor.core.manipulation.filters.ReturnFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.SingleStatementFixSpaceProcessor;
 import fr.inria.astor.core.manipulation.filters.TargetElementProcessor;
 import fr.inria.astor.core.manipulation.sourcecode.BlockReificationScanner;
@@ -1145,6 +1146,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					loadedTargetElementProcessors.add(new IFExpressionFixSpaceProcessor());
 				} else if (processor.equals("if-conditions")) {
 					loadedTargetElementProcessors.add(new IFConditionFixSpaceProcessor());
+				} else if (processor.equals("return-op-mutation")) {
+					loadedTargetElementProcessors.add(new ReturnFixSpaceProcessor());
 				} else {
 					TargetElementProcessor proc_i = (TargetElementProcessor) PlugInLoader.loadPlugin(processor,
 							epoint._class);

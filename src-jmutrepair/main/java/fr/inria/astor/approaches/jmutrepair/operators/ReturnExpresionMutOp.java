@@ -6,8 +6,11 @@ import fr.inria.astor.approaches.jmutrepair.MutantCtElement;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
-import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 /**
  * 
@@ -15,22 +18,22 @@ import spoon.reflect.declaration.CtElement;
  *
  */
 @SuppressWarnings("rawtypes")
-public class IfExpresionMutOp extends ExpresionMutOp {
-
-	public IfExpresionMutOp() {
-		super();
-	}
+public class ReturnExpresionMutOp extends ExpresionMutOp {
 
 	@Override
 	public boolean canBeAppliedToPoint(ModificationPoint point) {
-		return (point.getCodeElement() instanceof CtIf);
+
+		return (point.getCodeElement() instanceof CtReturn)
+				&& (point.getCodeElement().getElements(new TypeFilter(CtBinaryOperator.class)).size() > 0
+						|| point.getCodeElement().getElements(new TypeFilter(CtUnaryOperator.class)).size() > 0);
+
 	}
 
 	protected OperatorInstance createModificationInstance(ModificationPoint point, MutantCtElement fix)
 			throws IllegalAccessException {
-		CtIf targetIF = (CtIf) point.getCodeElement();
+		CtReturn targetIF = (CtReturn) point.getCodeElement();
 		OperatorInstance operation = new OperatorInstance();
-		operation.setOriginal(targetIF.getCondition());
+		operation.setOriginal(targetIF.getReturnedExpression());
 		operation.setOperationApplied(this);
 		operation.setModificationPoint(point);
 		operation.setModified(fix.getElement());
@@ -42,15 +45,14 @@ public class IfExpresionMutOp extends ExpresionMutOp {
 	@Override
 	public List<MutantCtElement> getMutants(CtElement element) {
 
-		CtIf targetIF = (CtIf) element;
+		CtReturn targetIF = (CtReturn) element;
 		List<MutantCtElement> mutations = null;
-		mutations = this.mutatorBinary.execute(targetIF.getCondition());
+		mutations = this.mutatorBinary.execute(targetIF.getReturnedExpression());
 		return mutations;
 	}
 
 	@Override
 	public boolean updateProgramVariant(OperatorInstance opInstance, ProgramVariant p) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
