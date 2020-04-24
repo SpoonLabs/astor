@@ -15,9 +15,9 @@ import fr.inria.main.evolution.ExtensionPoints;
  * @author Matias Martinez
  *
  */
-public class MutationalExhaustiveRepair extends ExhaustiveSearchEngine {
+public class jMutRepairExhaustive extends ExhaustiveSearchEngine {
 
-	public MutationalExhaustiveRepair(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+	public jMutRepairExhaustive(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		ConfigurationProperties.properties.setProperty("regressionforfaultlocalization", "true");

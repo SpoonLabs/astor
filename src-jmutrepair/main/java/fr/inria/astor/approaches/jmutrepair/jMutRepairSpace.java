@@ -10,9 +10,9 @@ import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
  * @author Matias Martinez
  *
  */
-public class MutRepairSpace extends OperatorSpace {
+public class jMutRepairSpace extends OperatorSpace {
 
-	public MutRepairSpace() {
+	public jMutRepairSpace() {
 		super.register(new IfExpresionMutOp());
 		super.register(new ReturnExpresionMutOp());
 

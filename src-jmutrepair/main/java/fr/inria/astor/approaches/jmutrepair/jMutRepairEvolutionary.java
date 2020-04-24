@@ -31,7 +31,7 @@ import spoon.reflect.declaration.CtElement;
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
  */
-public class MutationalEvolutionaryRepair extends JGenProg {
+public class jMutRepairEvolutionary extends JGenProg {
 
 	public static boolean uniformRandom = true;
 
@@ -40,7 +40,7 @@ public class MutationalEvolutionaryRepair extends JGenProg {
 	Map<String, List<MutantCtElement>> mutantsCache = new HashMap<String, List<MutantCtElement>>();
 
 	@SuppressWarnings("unchecked")
-	public MutationalEvolutionaryRepair(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
+	public jMutRepairEvolutionary(MutationSupporter mutatorExecutor, ProjectRepairFacade projFacade)
 			throws JSAPException {
 		super(mutatorExecutor, projFacade);
 		this.mutatorBinary = new MutatorComposite(mutatorExecutor.getFactory());

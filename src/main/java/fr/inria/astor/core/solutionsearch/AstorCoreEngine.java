@@ -22,7 +22,7 @@ import fr.inria.astor.approaches.cardumen.CardumenOperatorSpace;
 import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteValidator;
 import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.approaches.jkali.JKaliSpace;
-import fr.inria.astor.approaches.jmutrepair.MutRepairSpace;
+import fr.inria.astor.approaches.jmutrepair.jMutRepairSpace;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.PatchDiff;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -1016,7 +1016,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				operatorSpace = new jGenProgSpace();
 			} else if ("relational-Logical-op".equals(repairOperatorsArgument)
 					|| "mutationspace".equals(repairOperatorsArgument)) {
-				operatorSpace = new MutRepairSpace();
+				operatorSpace = new jMutRepairSpace();
 			} else if ("suppression".equals(repairOperatorsArgument) || "jkalispace".equals(repairOperatorsArgument)) {
 				operatorSpace = new JKaliSpace();
 			} else if ("r-expression".equals(repairOperatorsArgument)
