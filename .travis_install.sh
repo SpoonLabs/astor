@@ -66,7 +66,7 @@ compile "examples/math_57/"
 compile "examples/math_70_modified/"
 compile "examples/lang_7/"
 compile "examples/example_return_mutation/"
-compile "examples/example_return_arthmetic/"
+compile "examples/example_return_arthmetic"
 compile "examples/issues/LeapYearIssue196/"
 cd ../
 compile "examples/issues/LeapYearIssue196-bis/"
