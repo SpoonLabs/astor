@@ -197,17 +197,11 @@ public class LaucherJUnitProcess {
 
 	}
 
-	private String getPath(Class<?> class1) {
-		return new File(
-				"./" + class1.getPackage().getName().replaceAll("\\.", "/") + "/" + class1.getSimpleName() + ".class")
-						.getAbsolutePath();
-	}
-
 	protected String urlArrayToString(URL[] urls) {
 		String s = "";
 		for (int i = 0; i < urls.length; i++) {
 			URL url = urls[i];
-			s += url.getPath() + File.pathSeparator;
+			s += "\"" + url.getPath() + "\"" + File.pathSeparator;
 		}
 		return s;
 	}
