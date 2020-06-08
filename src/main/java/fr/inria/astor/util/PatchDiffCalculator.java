@@ -124,7 +124,6 @@ public class PatchDiffCalculator {
 	public String getDiff(File original, File newvariant, String fileNameLeft, String fileNameRight) {
 
 		try {
-			String line = "";
 			ProcessBuilder builder = new ProcessBuilder("/bin/bash");
 			builder.redirectErrorStream(true);
 
@@ -133,9 +132,12 @@ public class PatchDiffCalculator {
 			BufferedWriter p_stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 
 			try {
+
+				int diffContext = ConfigurationProperties.getPropertyInt("diffcontext");
+
 				// Set up the timezone
-				String command = "diff -w -b -u " + " --label=" + fileNameLeft + " --label=" + fileNameRight + " "
-						+ original.getAbsolutePath() + " " + newvariant.getAbsolutePath();
+				String command = "diff -w -b " + " --label=" + fileNameLeft + " --label=" + fileNameRight + " "
+						+ original.getAbsolutePath() + " " + newvariant.getAbsolutePath() + " --unified=" + diffContext;
 				log.debug("diff command : " + command);
 				p_stdin.write(command);
 				p_stdin.newLine();
