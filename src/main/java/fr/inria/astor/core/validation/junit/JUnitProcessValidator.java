@@ -118,27 +118,30 @@ public class JUnitProcessValidator extends ProgramVariantValidator {
 		} else {
 			bc = originalURL.toArray(new URL[0]);
 		}
-		
+
 		boolean isGZoltarDependencyFound = false;
-		
+
 		for (int i = 0; i < bc.length && !isGZoltarDependencyFound; i++) {
 			if (bc[i].getFile().contains("gzoltar-0.1.1")) {
 				isGZoltarDependencyFound = true;
 			}
 		}
-		
+
 		if (!isGZoltarDependencyFound) {
-			
+
+			File libsfolder = new File("." + File.separator + "lib");
+
 			URL[] newBc = new URL[bc.length + 1];
-			newBc[0] = new URL("file://\"" + "lib" + File.separator + "com.gzoltar-0.1.1-jar-with-dependencies.jar\"");
-			
+			newBc[0] = new URL("file://" + libsfolder.getAbsolutePath() + File.separator
+					+ "com.gzoltar-0.1.1-jar-with-dependencies.jar");
+
 			for (int i = 0; i < bc.length; i++) {
-				newBc[i+1] = bc[i];
+				newBc[i + 1] = bc[i];
 			}
-			
+
 			return newBc;
 		}
-		
+
 		return bc;
 	}
 
@@ -152,7 +155,8 @@ public class JUnitProcessValidator extends ProgramVariantValidator {
 		for (String path : classpath.split(File.pathSeparator)) {
 
 			File f = new File(path);
-			originalURL.add(new URL("file://\"" + f.getAbsolutePath() + "\""));
+			// originalURL.add(new URL("file://\"" + f.getAbsolutePath() + "\""));
+			originalURL.add(new URL("file://" + f.getAbsolutePath()));
 
 		}
 
