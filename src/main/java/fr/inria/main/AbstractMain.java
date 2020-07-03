@@ -370,20 +370,6 @@ public abstract class AbstractMain {
 
 		}
 
-		if (!ProjectConfiguration.validJDK()) {
-			System.err.println("Error: invalid jdk folder");
-			return false;
-		} else {
-			String jvmhome = ConfigurationProperties.properties.getProperty("jvm4testexecution");
-			String jdkVersion = ProjectConfiguration.getVersionJDK(jvmhome);
-			if (jdkVersion != null) {
-				ConfigurationProperties.properties.setProperty("jvmversion", jdkVersion);
-				log.info("Java version of the JDK used to run tests: " + jdkVersion);
-				log.info("The compliance of the JVM is:  " + ProjectConfiguration.getJavaVersionOfJVM4Validation());
-			} else
-				log.equals("Error: problems to determine the version of the JDK located at path: " + jvmhome);
-		}
-
 		if (!this.isExample(cmd)) {
 			String dependenciespath = cmd.getOptionValue("dependencies");
 			String location = cmd.getOptionValue("location");
@@ -403,6 +389,20 @@ public abstract class AbstractMain {
 			if ((failing != null))
 				ConfigurationProperties.properties.setProperty("failing", failing);
 
+		}
+
+		if (!ProjectConfiguration.validJDK()) {
+			System.err.println("Error: invalid jdk folder");
+			return false;
+		} else {
+			String jvmhome = ConfigurationProperties.properties.getProperty("jvm4testexecution");
+			String jdkVersion = ProjectConfiguration.getVersionJDK(jvmhome);
+			if (jdkVersion != null) {
+				ConfigurationProperties.properties.setProperty("jvmversion", jdkVersion);
+				log.info("Java version of the JDK used to run tests: " + jdkVersion);
+				log.info("The compliance of the JVM is:  " + ProjectConfiguration.getJavaVersionOfJVM4Validation());
+			} else
+				log.equals("Error: problems to determine the version of the JDK located at path: " + jvmhome);
 		}
 
 		if (cmd.hasOption("package"))
