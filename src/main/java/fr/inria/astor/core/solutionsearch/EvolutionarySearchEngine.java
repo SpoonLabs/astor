@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import fr.inria.astor.core.antipattern.AntiPattern;
 import org.apache.commons.collections.map.HashedMap;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -149,9 +150,18 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 			if (newVariant == null) {
 				continue;
 			}
-			temporalInstances.add(newVariant);
 
-			boolean solution = processCreatedVariant(newVariant, generation);
+			boolean solution = false;
+
+			if(ConfigurationProperties.getPropertyBool("antipattern")){
+			  if(!AntiPattern.isAntiPattern(newVariant, generation)){
+          temporalInstances.add(newVariant);
+          solution = processCreatedVariant(newVariant, generation);
+        }
+      }else{
+        temporalInstances.add(newVariant);
+        solution = processCreatedVariant(newVariant, generation);
+      }
 
 			if (solution) {
 				foundSolution = true;
