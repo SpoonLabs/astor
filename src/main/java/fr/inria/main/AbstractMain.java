@@ -293,6 +293,8 @@ public abstract class AbstractMain {
 
 		options.addOption("runjava7code", false, "Validates on Java 7");
 
+		options.addOption("antipattern", true, "(Optional) Indicates whether to apply anti-patterns when running jGenProg2 (default: false)");
+
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
