@@ -642,6 +642,10 @@ public abstract class AbstractMain {
 			ConfigurationProperties.properties.setProperty("maxVarCombination",
 					cmd.getOptionValue("maxVarCombination"));
 
+		if (cmd.hasOption("antipattern"))
+			ConfigurationProperties.properties.setProperty("antipattern",
+			                                               cmd.getOptionValue("antipattern"));
+
 		if (cmd.hasOption("parameters")) {
 			String[] pars = cmd.getOptionValue("parameters").split(File.pathSeparator);
 			for (int i = 0; i < pars.length; i = i + 2) {
