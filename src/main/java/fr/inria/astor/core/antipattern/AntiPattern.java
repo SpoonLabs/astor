@@ -13,7 +13,9 @@ import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.code.*;
 
 import java.util.List;
-
+/** Implementation of anti-patterns
+ * @author Yi Wu
+ */
 public class AntiPattern {
 
   /**
@@ -36,9 +38,9 @@ public class AntiPattern {
 
       else if (operator instanceof ReplaceOp) return isTrivialCondition(genOperation); // Anti-append Trivial Condition
 
-      else if (operator instanceof InsertBeforeOp) return isReturnBeforeStatement(genOperation);  // Anti-append early return
+      else if (operator instanceof InsertBeforeOp) return isInsertReturnBeforeStatement(genOperation);  // Anti-append early return
 
-      else if (operator instanceof InsertAfterOp) return isReturnButNotLast(genOperation);  // Anti-append early return
+      else if (operator instanceof InsertAfterOp) return isInsertReturnAfterButNotLast(genOperation);  // Anti-append early return
 
     }
 
@@ -50,7 +52,7 @@ public class AntiPattern {
    * @param operation
    * @return true if insert return after a statement but not as the last statement.
    * */
-  public static boolean isReturnButNotLast(OperatorInstance operation) {
+  public static boolean isInsertReturnAfterButNotLast(OperatorInstance operation) {
     CtElement fix = operation.getModified();
     if (fix instanceof CtReturnImpl) {
       StatementOperatorInstance stmtoperator = (StatementOperatorInstance) operation;
@@ -68,7 +70,7 @@ public class AntiPattern {
    * @param operation
    * @return true if insert return before a statement.
    * */
-  public static boolean isReturnBeforeStatement(OperatorInstance operation) {
+  public static boolean isInsertReturnBeforeStatement(OperatorInstance operation) {
     CtElement original = operation.getOriginal();
     CtElement fix = operation.getModified();
     return ((original != null) && (fix instanceof CtReturnImpl));

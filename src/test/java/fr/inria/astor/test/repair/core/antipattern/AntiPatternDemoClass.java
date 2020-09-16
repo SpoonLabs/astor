@@ -1,6 +1,6 @@
 package fr.inria.astor.test.repair.core.antipattern;
 
-/** Code demo class used for test implementation od anti-pattern.
+/** Code demo class used for test implementation of anti-pattern.
  * @author Yi Wu
  */
 public class AntiPatternDemoClass {

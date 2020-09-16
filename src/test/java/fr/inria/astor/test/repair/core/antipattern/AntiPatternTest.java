@@ -98,7 +98,7 @@ public class AntiPatternTest {
 
   @Test
   public void InsertReturnBeforeStatementTest() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-    String methodName = "isReturnBeforeStatement";
+    String methodName = "isInsertReturnBeforeStatement";
     CtMethod returnStmt = (CtMethod) ctClass.getMethodsByName("returnStatement").get(0);
     CtReturn ctReturn = (CtReturn) returnStmt.getElements(new TypeFilter(CtReturn.class)).get(0);
     CtMethod insertReturn = (CtMethod) ctClass.getMethodsByName("insertReturn").get(0);
@@ -109,7 +109,7 @@ public class AntiPatternTest {
 
   @Test
   public void InsertReturnAfterButNotLastTest() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-    String methodName = "isReturnAfterButNotLast";
+    String methodName = "isInsertReturnAfterButNotLast";
     CtMethod returnStmt = (CtMethod) ctClass.getMethodsByName("returnStatement").get(0);
     CtReturn ctReturn = (CtReturn) returnStmt.getElements(new TypeFilter(CtReturn.class)).get(0);
     CtMethod insertReturn = (CtMethod) ctClass.getMethodsByName("insertReturn").get(0);
