@@ -30,12 +30,13 @@ We do welcome bug fixes, features and new repair approaches as pull request. Wel
 
 [Contributors](https://github.com/SpoonLabs/astor/graphs/contributors):
 
-* Matias Martinez (Université Polytechnique Hauts-de-France) (project leader: matias.sebastian.martinez@gmail.com)
-* Martin Monperrus (KTH Royal Institute of Technology) (martin.monperrus@csc.kth.se)
-* Thomas Durieux (Inria)
-* Martin G. White (William and Mary)
-* Claire Le Goues (CMU)
-* Simon Urli (Inria)
+* Matias Martinez (Université Polytechnique Hauts-de-France, France) (project leader: matias.sebastian.martinez@gmail.com)
+* Martin Monperrus (KTH Royal Institute of Technology, Sweden) (martin.monperrus@csc.kth.se)
+* Thomas Durieux (Inria, France)
+* Martin G. White (William and Mary, USA)
+* Claire Le Goues (CMU, USA)
+* Simon Urli (Inria, France)
+* Yi Wu (Southern University of Science and Technology, China).
 
 jGenProg
 -------
