@@ -293,6 +293,8 @@ public abstract class AbstractMain {
 
 		options.addOption("runjava7code", false, "Validates on Java 7");
 
+		options.addOption("antipattern", true, "(Optional) Indicates whether to apply anti-patterns when running jGenProg2 (default: false)");
+
 	}
 
 	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
@@ -639,6 +641,10 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("maxVarCombination"))
 			ConfigurationProperties.properties.setProperty("maxVarCombination",
 					cmd.getOptionValue("maxVarCombination"));
+
+		if (cmd.hasOption("antipattern"))
+			ConfigurationProperties.properties.setProperty("antipattern",
+			                                               cmd.getOptionValue("antipattern"));
 
 		if (cmd.hasOption("parameters")) {
 			String[] pars = cmd.getOptionValue("parameters").split(File.pathSeparator);
