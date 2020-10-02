@@ -52,9 +52,7 @@ public class BinaryExpressionEvaluator {
 					throw new RuntimeException("Not comparable");
 				}
 			} else if (secondExpression instanceof Boolean) {
-				if (!(firstExpression instanceof Boolean)) {
 					throw new RuntimeException("Not comparable");
-				}
 			}
 			return firstExpression.equals(secondExpression);
 		case NEQ:

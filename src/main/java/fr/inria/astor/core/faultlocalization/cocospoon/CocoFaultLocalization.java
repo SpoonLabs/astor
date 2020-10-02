@@ -65,9 +65,9 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 		coco4Astor.runTests(testregression.toArray(new String[0]), customClassLoader, project);
 
 		// Collecting failing test cases
-		List<String> testsfailing = coco4Astor.getResultsPerNameOfTest().entrySet().stream()
-				.filter(e -> e.getValue() == false).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()))
-				.keySet().stream().collect(Collectors.toList());
+		List<String> testsfailing = new ArrayList<>(coco4Astor.getResultsPerNameOfTest().entrySet().stream()
+				.filter(e -> !e.getValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+				.keySet());
 
 		Map<SourceLocation, List<TestResult>> stc = coco4Astor.getTestListPerStatement();
 		List<? extends StatementSourceLocation> suspstatement = coco4Astor.getStatements();
@@ -99,16 +99,14 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 		}
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
 
-		if (!ConfigurationProperties.getPropertyBool("considerzerovaluesusp")) {
+		if (Boolean.FALSE.equals(ConfigurationProperties.getPropertyBool("considerzerovaluesusp"))) {
 			candidates.removeIf(susp -> (susp.getSuspiciousValue() == 0));
 		}
 		// We select the best X candidates.
-		int max = (candidates.size() < maxSuspCandidates) ? candidates.size() : maxSuspCandidates;
+		int max = Math.min(candidates.size(), maxSuspCandidates);
 		candidates = candidates.subList(0, max);
 
-		FaultLocalizationResult flresults = new FaultLocalizationResult(candidates, testsfailing);
-
-		return flresults;
+		return new FaultLocalizationResult(candidates, testsfailing);
 	}
 
 	public CompilationResult compile(ProjectRepairFacade projectFacade) throws MalformedURLException {
@@ -151,7 +149,6 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 			try {
 				manager.process(modelledClass);
 			} catch (ProcessInterruption e) {
-				continue;
 			}
 		}
 	}
@@ -165,9 +162,7 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 
 	@Override
 	public List<String> findTestCasesToExecute(ProjectRepairFacade projectFacade) {
-		List<String> testCasesToRun = FinderTestCases.findJUnit4XTestCasesForRegression(projectFacade);
-
-		return testCasesToRun;
+		return FinderTestCases.findJUnit4XTestCasesForRegression(projectFacade);
 	}
 
 }

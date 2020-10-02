@@ -50,10 +50,12 @@ public ArithmeticRequest() {}
 		return 0;
 	}
 
+	@Override
 	public String toString() {
 		return relation < 0 ? "" : ops[relation] + " ";
 	}
 
+	@Override
 	public void reset() {
 		relation = -1;
 	}

@@ -62,7 +62,7 @@ public abstract class AstorCtIngredientPool extends IngredientPoolLocationType<C
 		String key = mapKey(ctCodeElement);
 		List<Ingredient> ingredientsKey = getFixSpace().get(key);
 		if (!getFixSpace().containsKey(key)) {
-			ingredientsKey = new CacheList<Ingredient>();
+			ingredientsKey = new CacheList<>();
 			getFixSpace().put(key, ingredientsKey);
 		}
 		Ingredient ingredientTOInsert = new Ingredient(ctCodeElement);

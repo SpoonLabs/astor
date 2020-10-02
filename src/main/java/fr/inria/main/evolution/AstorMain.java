@@ -55,7 +55,7 @@ public class AstorMain extends AbstractMain {
 
 		projectFacade.setupWorkingDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
 
-		if (ConfigurationProperties.getPropertyBool("autocompile")) {
+		if (Boolean.TRUE.equals(ConfigurationProperties.getPropertyBool("autocompile"))) {
 			compileProject(projectFacade.getProperties());
 		}
 
@@ -108,9 +108,9 @@ public class AstorMain extends AbstractMain {
 		// Loading extension Points
 		core.loadExtensionPoints();
 
-		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
+		if (Boolean.TRUE.equals(ConfigurationProperties.getPropertyBool("skipfaultlocalization"))) {
 			// We dont use FL, so at this point the do not have suspicious
-			core.initPopulation(new ArrayList<SuspiciousCode>());
+			core.initPopulation(new ArrayList<>());
 		} else {
 			List<SuspiciousCode> suspicious = core.calculateSuspicious();
 
@@ -237,7 +237,7 @@ public class AstorMain extends AbstractMain {
 	public void setupLogging() throws IOException {
 
 		String patternLayout = "";
-		if (ConfigurationProperties.getPropertyBool("disablelog")) {
+		if (Boolean.TRUE.equals(ConfigurationProperties.getPropertyBool("disablelog"))) {
 			patternLayout = "%m%n";
 		} else {
 			patternLayout = ConfigurationProperties.getProperty("logpatternlayout");

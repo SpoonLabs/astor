@@ -32,8 +32,7 @@ public class ClassLibrary {
         boolean oldValue = method.isAccessible();
         method.setAccessible(true);
         try {
-            Object response = invoke(method, receiver, arguments);
-            return response;
+            return invoke(method, receiver, arguments);
         } catch (Exception e) {
             throw e;
         } finally {

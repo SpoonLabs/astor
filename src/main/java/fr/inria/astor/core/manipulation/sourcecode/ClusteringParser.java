@@ -40,7 +40,7 @@ public class ClusteringParser {
 				String[] metad = line.split(",");
 				String lexicalElement = metad[0];
 				String idcluster = metad[1];
-				List<String> clusterElements = new ArrayList<String>();
+				List<String> clusterElements = new ArrayList<>();
 
 				if (metad.length == 3) {
 					String cluster = metad[2];

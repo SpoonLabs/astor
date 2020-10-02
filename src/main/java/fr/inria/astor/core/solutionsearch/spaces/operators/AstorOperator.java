@@ -76,7 +76,7 @@ public abstract class AstorOperator implements AstorExtensionPoint {
 	 */
 	public String name() {
 		return this.getClass().getSimpleName();
-	};
+	}
 
 	/**
 	 * Indicates whether the operator needs ingredients.
@@ -124,8 +124,7 @@ public abstract class AstorOperator implements AstorExtensionPoint {
 	 */
 	protected boolean removePoint(ProgramVariant variant, OperatorInstance operation) {
 		List<ModificationPoint> modifPoints = variant.getModificationPoints();
-		boolean removed = modifPoints.remove(operation.getModificationPoint());
-		return removed;
+		return modifPoints.remove(operation.getModificationPoint());
 
 	}
 

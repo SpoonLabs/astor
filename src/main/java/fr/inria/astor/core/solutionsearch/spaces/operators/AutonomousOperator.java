@@ -25,7 +25,7 @@ public abstract class AutonomousOperator extends AstorOperator {
 		OperatorInstance modinst = this.createOperatorInstance(modificationPoint);
 		instances.add(modinst);
 		return instances;
-	};
+	}
 
 	public OperatorInstance createOperatorInstance(ModificationPoint mp) {
 		OperatorInstance operation = new OperatorInstance();
