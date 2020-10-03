@@ -7,6 +7,20 @@
 	<description>ASTOR: AST transformation for Repairs</description>
 	<version>1.0.0-SNAPSHOT</version>
 
+  <name>ASTOR</name>
+  <url>https://github.com/SpoonLabs/astor</url>
+  
+  <licenses>
+    <license>
+      <name>GNU General Public License v3.0</name>
+      <url>https://www.gnu.org/licenses/gpl.txt</url>
+    </license>
+  </licenses>
+  
+  <scm>
+    <url>https://github.com/SpoonLabs/astor.git</url>
+  </scm>
+  
 	<developers>
 		<developer>
 			<name>Matias Martinez</name>
