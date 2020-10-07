@@ -708,10 +708,6 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 */
 	public void initPopulation(List<SuspiciousCode> suspicious) throws Exception {
 
-		log.info("\n---- Creating spoon model");
-
-		this.initModel();
-
 		log.info("\n---- Initial suspicious size: " + suspicious.size());
 		initializePopulation(suspicious);
 
@@ -762,6 +758,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public void initModel() throws Exception {
+
+		log.info("\n---- Creating spoon model");
 
 		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
 			if (ConfigurationProperties.getPropertyBool("resetmodel")) {

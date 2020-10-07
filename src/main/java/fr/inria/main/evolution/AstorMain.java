@@ -108,6 +108,8 @@ public class AstorMain extends AbstractMain {
 		// Loading extension Points
 		core.loadExtensionPoints();
 
+		core.initModel();
+
 		if (ConfigurationProperties.getPropertyBool("skipfaultlocalization")) {
 			// We dont use FL, so at this point the do not have suspicious
 			core.initPopulation(new ArrayList<SuspiciousCode>());
