@@ -268,8 +268,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			Statement gzoltarStatement = gzCandidates.get(i);
 			String compName = gzoltarStatement.getMethod().getParent().getLabel();
 
-			logger.debug("Suspicious: line " + compName + " l: " + gzoltarStatement.getLineNumber() + ", susp "
-					+ df.format(gzoltarStatement.getSuspiciousness()));
+			logger.debug("Suspicious: " + i + " line " + compName + " l: " + gzoltarStatement.getLineNumber()
+					+ ", susp " + df.format(gzoltarStatement.getSuspiciousness()));
 			SuspiciousCode suspcode = new SuspiciousCode(compName, gzoltarStatement.getMethod().getName(),
 					gzoltarStatement.getLineNumber(), gzoltarStatement.getSuspiciousness(),
 					gzoltarStatement.getCountMap());
