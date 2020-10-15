@@ -2,6 +2,7 @@ package fr.inria.astor.core.faultlocalization.flacoco;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 	@Override
 	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade projectToRepair, List<String> testToRun)
 			throws Exception {
-
+		long init = (new Date()).getTime();
 		// We first compute the covered lines
 
 		SuspiciousComputation flcalc = new SuspiciousComputation();
@@ -125,6 +126,10 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		}
 
 		List<String> failingTestCases = matrix.getFailingTestCases();
+
+		long end = (new Date()).getTime();
+
+		logger.info("Flacoco takes " + (end - init) / 1000 + " seconds");
 		return new FaultLocalizationResult(candidates, failingTestCases);
 	}
 
