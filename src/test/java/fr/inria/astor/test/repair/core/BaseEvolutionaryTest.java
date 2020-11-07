@@ -1,20 +1,5 @@
 package fr.inria.astor.test.repair.core;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
-import org.junit.After;
-import org.junit.Before;
-
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -23,7 +8,17 @@ import fr.inria.astor.core.stats.PatchHunkStats;
 import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.astor.core.stats.PatchStat.PatchStatEnum;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
 import spoon.support.StandardEnvironment;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * 
@@ -44,44 +39,6 @@ public abstract class BaseEvolutionaryTest {
 		MutationSupporter.cleanFactory();
 
 		Logger.getLogger(StandardEnvironment.class).setLevel(Level.ERROR);
-
-	}
-
-	public void createFileLogger(String file) throws IOException {
-		// ----
-		ConsoleAppender console = new ConsoleAppender();
-		String PATTERN = "%m%n";
-		console.setLayout(new PatternLayout(PATTERN));
-		console.setThreshold(Level.INFO);
-		console.activateOptions();
-		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
-		Logger.getRootLogger().removeAllAppenders();
-		Logger.getRootLogger().addAppender(console);
-		// ----
-		org.apache.log4j.RollingFileAppender rfa = new RollingFileAppender(new org.apache.log4j.PatternLayout(), file);
-		Logger.getRootLogger().addAppender(rfa);
-
-	}
-
-	public Logger createCustomFileLogger(String file) throws IOException {
-		// ----
-		ConsoleAppender console = new ConsoleAppender();
-		String PATTERN = "%m%n-%c: ";
-		console.setLayout(new PatternLayout(PATTERN));
-		console.setThreshold(Level.INFO);
-		console.activateOptions();
-		Logger log = Logger.getLogger(Thread.currentThread().getName());
-
-		log.getLoggerRepository().resetConfiguration();
-		log.removeAllAppenders();
-		log.addAppender(console);
-		// ----
-		org.apache.log4j.RollingFileAppender rfa = new RollingFileAppender(new org.apache.log4j.PatternLayout(PATTERN),
-				file);
-		log.addAppender(rfa);
-		rfa.setImmediateFlush(true);
-
-		return log;
 
 	}
 
