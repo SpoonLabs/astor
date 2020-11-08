@@ -592,10 +592,6 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("transformingredient"))
 			ConfigurationProperties.properties.setProperty("transformingredient", "true");
 
-		if (cmd.hasOption("loglevel")) {
-			String loglevelSelected = cmd.getOptionValue("loglevel");
-			ConfigurationProperties.properties.setProperty("loglevel", loglevelSelected);
-		}
 		if (cmd.hasOption("timezone")) {
 			ConfigurationProperties.properties.setProperty("timezone", cmd.getOptionValue("timezone"));
 		}
