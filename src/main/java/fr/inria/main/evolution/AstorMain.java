@@ -239,39 +239,7 @@ public class AstorMain extends AbstractMain {
 	}
 
 	public void setupLogging() throws IOException {
-
-		String patternLayout = "";
-		if (ConfigurationProperties.getPropertyBool("disablelog")) {
-			patternLayout = "%m%n";
-		} else {
-			patternLayout = ConfigurationProperties.getProperty("logpatternlayout");
-		}
-
-		ConsoleAppender console = new ConsoleAppender();
-		console.setLayout(new PatternLayout(patternLayout));
-		console.activateOptions();
-		Logger.getRootLogger().addAppender(console);
-
-		String loglevelSelected = ConfigurationProperties.properties.getProperty("loglevel");
-		if (loglevelSelected != null)
-			LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
-
-		if (ConfigurationProperties.hasProperty("logfilepath")) {
-			String filePath = ConfigurationProperties.getProperty("logfilepath");
-			File fileLog = new File(filePath);
-			if (!fileLog.exists()) {
-				fileLog.getParentFile().mkdirs();
-				fileLog.createNewFile();
-			}
-
-			WriterAppender fa = new WriterAppender(new PatternLayout(patternLayout), new FileOutputStream(new File(fileLog.getAbsolutePath())));
-			fa.setName("FileLogger");
-			fa.setLayout(new PatternLayout(patternLayout));
-			fa.setThreshold(LogManager.getRootLogger().getLevel());
-			fa.activateOptions();
-			Logger.getRootLogger().addAppender(fa);
-			this.log.info("Log file at: " + filePath);
-		}
+		// done with log4j2.xml
 	}
 
 }
