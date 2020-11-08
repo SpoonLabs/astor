@@ -41,7 +41,7 @@ dist: trusty
 script:
 - mvn -ff -q clean
 - mvn -ff -q test -DskipTests -DfailIfNoTests=false
-- mvn -ff -q surefire:test -DfailIfNoTests=false -Dtest=$TEST
+- mvn -ff -q surefire:test -DfailIfNoTests=false -Dtest=$TEST -Dlog4j.configurationFile=src/main/resources/log4j2.properties
 sudo: required
 before_script:
  - "echo Java_OPTS $JAVA_OPTS"
