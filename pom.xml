@@ -64,10 +64,14 @@
 			<version>8.3.0</version>
 			<exclusions>
 				<exclusion>
-					<groupId></groupId>
-					<artifactId>/src/main/resources/log4j.properties</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-to-slf4j</artifactId>
 				</exclusion>
-			</exclusions>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-api</artifactId>
+        </exclusion>
+      </exclusions>
 		</dependency>
 
 
