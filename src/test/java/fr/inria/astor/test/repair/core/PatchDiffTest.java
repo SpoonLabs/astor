@@ -49,12 +49,10 @@ public class PatchDiffTest {
 
 		String diff = variant.getPatchDiff().getFormattedDiff();
 		System.out.println("Patch formatted: \n" + diff);
-		assertTrue(diff.contains("@@ -22,7 +22,7"));
 		assertTrue(diff.contains("return solve(f, min, max)"));
 
 		String diff2 = variant.getPatchDiff().getOriginalStatementAlignmentDiff();
 		System.out.println("Patch original alignment: \n" + diff2);
-		assertTrue(diff2.contains("@@ -68,8 +68,8"));
 		assertTrue(diff2.contains("return solve(f, min, max)"));
 		assertTrue(diff2.startsWith("--- org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
 		assertTrue(diff2.contains("+++ org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
@@ -88,12 +86,10 @@ public class PatchDiffTest {
 
 		String diff = variant.getPatchDiff().getFormattedDiff();
 		System.out.println("Patch formatted: \n" + diff);
-		assertTrue(diff.contains("@@ -22,7 +22,7"));
 		assertTrue(diff.contains("return solve(f, min, max)"));
 
 		String diff2 = variant.getPatchDiff().getOriginalStatementAlignmentDiff();
 		System.out.println("Patch original alignment: \n" + diff2);
-		assertTrue(diff2.contains("@@ -68,8 +68,8"));
 		assertTrue(diff2.contains("return solve(f, min, max)"));
 		assertTrue(diff2.startsWith("--- a/org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
 		assertTrue(diff2.contains("+++ b/org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
@@ -127,12 +123,10 @@ public class PatchDiffTest {
 
 		String diff = variant.getPatchDiff().getFormattedDiff();
 		System.out.println("Patch formatted: \n" + diff);
-		assertTrue(diff.contains("@@ -22,7 +22,7"));
 		assertTrue(diff.contains("return solve(f, min, max)"));
 
 		String diff2 = variant.getPatchDiff().getOriginalStatementAlignmentDiff();
 		System.out.println("Patch original alignment: \n" + diff2);
-		assertTrue(diff2.contains("@@ -68,8 +68,8"));
 		assertTrue(diff2.contains("return solve(f, min, max)"));
 		assertTrue(
 				diff2.startsWith("--- /src/main/java/org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
