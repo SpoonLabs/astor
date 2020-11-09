@@ -1226,7 +1226,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				lastGeneration = i;
 
 				for (OperatorInstance genOperationInstance : genOperationInstances) {
-s
+
 					PatchHunkStats hunk = new PatchHunkStats();
 					hunks.add(hunk);
 					hunk.getStats().put(HunkStatEnum.OPERATOR, genOperationInstance.getOperationApplied().toString());
