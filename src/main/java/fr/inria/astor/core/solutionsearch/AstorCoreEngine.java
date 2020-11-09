@@ -98,7 +98,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 */
 	protected Stats currentStat = null;
 
-	protected static Logger log = Logger.getLogger(AstorCoreEngine.class.getName());
+	protected static Logger log = Logger.getLogger(AstorCoreEngine.class.getSimpleName());
 
 	protected ProgramVariantFactory variantFactory;
 

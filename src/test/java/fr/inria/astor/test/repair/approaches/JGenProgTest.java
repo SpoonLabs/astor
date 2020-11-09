@@ -313,6 +313,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	@SuppressWarnings("rawtypes")
 	@Test
+	@Ignore // triggers some infinite loops and JVMs don't get killed
 	public void testMath74() throws Exception {
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();

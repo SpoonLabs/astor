@@ -63,7 +63,8 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 			}
 
 			generationsExecuted++;
-			log.debug("\n----------Running generation: " + generationsExecuted + ", population size: "
+			// warning level to keep Travis CI log aliive
+			log.warn("\n----------Running generation: " + generationsExecuted + ", population size: "
 					+ this.variants.size());
 			try {
 				boolean solutionFound = processGenerations(generationsExecuted);
