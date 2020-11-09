@@ -98,7 +98,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 */
 	protected Stats currentStat = null;
 
-	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
+	protected static Logger log = Logger.getLogger(AstorCoreEngine.class.getName());
 
 	protected ProgramVariantFactory variantFactory;
 
@@ -708,7 +708,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 */
 	public void initPopulation(List<SuspiciousCode> suspicious) throws Exception {
 
-		log.info("\n---- Initial suspicious size: " + suspicious.size());
+		log.info("---- Initial suspicious size: " + suspicious.size());
 		initializePopulation(suspicious);
 
 		if (originalVariant == null) {
@@ -759,7 +759,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	public void initModel() throws Exception {
 
-		log.info("\n---- Creating spoon model");
+		log.info("---- Creating spoon model");
 
 		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
 			if (ConfigurationProperties.getPropertyBool("resetmodel")) {
@@ -1219,15 +1219,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 			int lastGeneration = -1;
 			for (int i = 1; i <= generation; i++) {
-				// a warning message for Travis (at least 1 line in 10 minutes)
-				log.warn("Generation " + i);
+				log.info("Generation " + i);
 				List<OperatorInstance> genOperationInstances = solutionVariant.getOperations().get(i);
 				if (genOperationInstances == null)
 					continue;
 				lastGeneration = i;
 
 				for (OperatorInstance genOperationInstance : genOperationInstances) {
-
+s
 					PatchHunkStats hunk = new PatchHunkStats();
 					hunks.add(hunk);
 					hunk.getStats().put(HunkStatEnum.OPERATOR, genOperationInstance.getOperationApplied().toString());

@@ -63,8 +63,9 @@ public class ConfigurationProperties {
 	}
 
 	public static void print() {
-		log.info("----------------------------");
-		log.info("---Configuration properties:---Execution values");
+		// warn level for waking up travis
+		log.warn("----------------------------");
+		log.info("---Configuration properties");
 		for (String key : properties.stringPropertyNames()) {
 			log.info("p:" + key + "= " + properties.getProperty(key));
 		}

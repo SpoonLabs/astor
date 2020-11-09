@@ -73,20 +73,6 @@ public class OutputTest {
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
 
-		assertEquals(Level.INFO.toString(), ConfigurationProperties.getProperty("loglevel"));
-		List<String> logInStringList = Files.readAllLines(fileLog.toPath());
-		assertTrue(logInStringList.size() > 0);
-
-		boolean allInfo = true;
-		for (String lineLog : logInStringList) {
-			if (lineLog.startsWith("[DEBUG]")) {
-				allInfo = false;
-				break;
-			}
-		}
-
-		assertTrue("a debug line found", allInfo);
-		System.out.println("START Test log file Info");
 
 	}
 
@@ -235,20 +221,6 @@ public class OutputTest {
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
 
-		cs.command.put("-loglevel", Level.DEBUG.toString());
-		main1.execute(cs.flat());
-
-		List<String> logInStringList = Files.readAllLines(fileLog.toPath());
-		assertTrue(logInStringList.size() > 0);
-		boolean existDebugLog = false;
-		for (String lineLog : logInStringList) {
-			if (lineLog.startsWith("[DEBUG]")) {
-				existDebugLog = true;
-				break;
-			}
-		}
-		assertTrue("Any debug line", existDebugLog);
-		System.out.println("END Test log file DEBUG");
 	}
 
 	@Test

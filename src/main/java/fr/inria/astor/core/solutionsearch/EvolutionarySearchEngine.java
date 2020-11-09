@@ -38,7 +38,7 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 
 	public void startEvolution() throws Exception {
 
-		log.info("\n----Starting Solution Search");
+		log.info("----Starting Solution Search");
 
 		generationsExecuted = 0;
 		nrGenerationWithoutModificatedVariant = 0;
