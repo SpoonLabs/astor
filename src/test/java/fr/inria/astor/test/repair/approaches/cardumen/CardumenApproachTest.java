@@ -747,6 +747,7 @@ public class CardumenApproachTest extends BaseEvolutionaryTest {
 	}
 
 	@Test
+	@Ignore // takes too much time
 	public void testCardumentM70EvolveUniformreplacement() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
 

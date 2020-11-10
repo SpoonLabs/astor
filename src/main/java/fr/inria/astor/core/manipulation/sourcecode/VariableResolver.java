@@ -1157,7 +1157,7 @@ public class VariableResolver {
 			}
 		} catch (Throwable e) {
 			logger.error("Problems when calculating combinations, nr vars " + mappedVars.size()
-					+ " teorical combinations: " + Arrays.toString(maxValues));
+					+ " theoretical combinations: " + Arrays.toString(maxValues));
 			logger.error(e);
 			return new ArrayList<Map<String, CtVariable>>();
 		}
@@ -1223,7 +1223,7 @@ public class VariableResolver {
 			}
 		}
 
-		logger.debug("Teoricalcombinations: " + numberTotalComb);
+		logger.debug("Theoreticalcombinations: " + numberTotalComb);
 		double maxPerVarLimit = 0;
 
 		if (numberTotalComb < maxNumberCombinations

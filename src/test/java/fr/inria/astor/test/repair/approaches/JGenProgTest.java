@@ -337,6 +337,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	@SuppressWarnings("rawtypes")
 	@Test
+	@Ignore // takes too long time on Travis CI
 	public void testMath5_buggy() throws Exception {
 		AstorMain main1 = new AstorMain();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
@@ -372,7 +373,6 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"-parameters", "maxmodificationpoints:1"
 
 		};
-		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();

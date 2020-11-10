@@ -323,14 +323,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	}
 
-	Map<String, String> originalModel = new HashedMap();
+	Map<String, CtType> originalModel = new HashedMap();
 	Map<String, String> modifModel = new HashedMap();
 
 	protected void saveOriginalVariant(ProgramVariant variant) {
 		originalModel.clear();
 		for (CtType st : variant.getAffectedClasses()) {
 			try {
-				originalModel.put(st.getQualifiedName(), st.toString());
+				originalModel.put(st.getQualifiedName(), st);
 			} catch (Exception e) {
 				log.error("Problems saving cttype: " + st.getQualifiedName());
 			}
@@ -354,9 +354,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	protected boolean validateReversedOriginalVariant(ProgramVariant variant) {
 
 		for (CtType st : variant.getAffectedClasses()) {
-			String original = originalModel.get(st.getQualifiedName());
+			CtType original = originalModel.get(st.getQualifiedName());
 			if (original != null) {
-				boolean idem = original.equals(st.toString());
+				boolean idem = original.equals(st);
 				if (!idem) {
 					log.error("Error variant :" + variant.getId()
 							+ " the model was not the same from the original after this generation (see Diff in debug level)");
@@ -365,7 +365,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					try {
 						File forig = File.createTempFile("torig", "java");
 						FileWriter fr = new FileWriter(forig);
-						fr.write(original);
+						fr.write(original.toString());
 						fr.close();
 
 						File fmod = File.createTempFile("torig", "java");
