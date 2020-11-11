@@ -246,11 +246,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public void printFinalStatus() {
-		log.warn("\n----SUMMARY_EXECUTION---");
+		log.warn("----SUMMARY_EXECUTION---");
 		if (!this.solutions.isEmpty()) {
 			log.warn("End Repair Search: Found solution");
 			log.warn("Solution stored at: " + projectFacade.getProperties().getWorkingDirForSource());
-			log.warn("\nNumber solutions:" + this.solutions.size());
+			log.warn("Number solutions:" + this.solutions.size());
 			for (ProgramVariant variant : solutions) {
 				log.info("f (sol): " + variant.getFitness() + ", " + variant);
 			}
@@ -258,11 +258,11 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		} else {
 			log.warn("End Repair Search: NOT Found solution");
 		}
-		log.debug("\nAll variants:");
+		log.debug("All variants:");
 		for (ProgramVariant variant : variants) {
 			log.debug("f " + variant.getFitness() + ", " + variant);
 		}
-		log.warn("\nNumber suspicious:" + this.variants.size());
+		log.warn("Number suspicious:" + this.variants.size());
 
 	}
 
