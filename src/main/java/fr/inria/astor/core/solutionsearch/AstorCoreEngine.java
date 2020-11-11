@@ -246,23 +246,23 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public void printFinalStatus() {
-		log.info("\n----SUMMARY_EXECUTION---");
+		log.warn("\n----SUMMARY_EXECUTION---");
 		if (!this.solutions.isEmpty()) {
-			log.info("End Repair Search: Found solution");
-			log.info("Solution stored at: " + projectFacade.getProperties().getWorkingDirForSource());
-			log.debug("\nNumber solutions:" + this.solutions.size());
+			log.warn("End Repair Search: Found solution");
+			log.warn("Solution stored at: " + projectFacade.getProperties().getWorkingDirForSource());
+			log.warn("\nNumber solutions:" + this.solutions.size());
 			for (ProgramVariant variant : solutions) {
-				log.debug("f (sol): " + variant.getFitness() + ", " + variant);
+				log.info("f (sol): " + variant.getFitness() + ", " + variant);
 			}
 
 		} else {
-			log.info("End Repair Search: NOT Found solution");
+			log.warn("End Repair Search: NOT Found solution");
 		}
 		log.debug("\nAll variants:");
 		for (ProgramVariant variant : variants) {
 			log.debug("f " + variant.getFitness() + ", " + variant);
 		}
-		log.debug("\nNumber suspicious:" + this.variants.size());
+		log.warn("\nNumber suspicious:" + this.variants.size());
 
 	}
 
