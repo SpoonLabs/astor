@@ -41,7 +41,7 @@ public class MutationSupporter {
 
 	public static MutationSupporter currentSupporter = null;
 
-	private Logger logger = Logger.getLogger(Thread.currentThread().getName());
+	private Logger logger = Logger.getLogger(MutationSupporter.class.getSimpleName());
 
 	private OutputWritter output;
 

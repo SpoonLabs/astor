@@ -98,7 +98,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 */
 	protected Stats currentStat = null;
 
-	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
+	protected static Logger log = Logger.getLogger(AstorCoreEngine.class.getSimpleName());
 
 	protected ProgramVariantFactory variantFactory;
 
@@ -246,23 +246,23 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	}
 
 	public void printFinalStatus() {
-		log.info("\n----SUMMARY_EXECUTION---");
+		log.warn("----SUMMARY_EXECUTION---");
 		if (!this.solutions.isEmpty()) {
-			log.info("End Repair Search: Found solution");
-			log.info("Solution stored at: " + projectFacade.getProperties().getWorkingDirForSource());
-			log.debug("\nNumber solutions:" + this.solutions.size());
+			log.warn("End Repair Search: Found solution");
+			log.warn("Solution stored at: " + projectFacade.getProperties().getWorkingDirForSource());
+			log.warn("Number solutions:" + this.solutions.size());
 			for (ProgramVariant variant : solutions) {
-				log.debug("f (sol): " + variant.getFitness() + ", " + variant);
+				log.info("f (sol): " + variant.getFitness() + ", " + variant);
 			}
 
 		} else {
-			log.info("End Repair Search: NOT Found solution");
+			log.warn("End Repair Search: NOT Found solution");
 		}
-		log.debug("\nAll variants:");
+		log.debug("All variants:");
 		for (ProgramVariant variant : variants) {
 			log.debug("f " + variant.getFitness() + ", " + variant);
 		}
-		log.debug("\nNumber suspicious:" + this.variants.size());
+		log.warn("Number suspicious:" + this.variants.size());
 
 	}
 
@@ -323,14 +323,14 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	}
 
-	Map<String, String> originalModel = new HashedMap();
+	Map<String, CtType> originalModel = new HashedMap();
 	Map<String, String> modifModel = new HashedMap();
 
 	protected void saveOriginalVariant(ProgramVariant variant) {
 		originalModel.clear();
 		for (CtType st : variant.getAffectedClasses()) {
 			try {
-				originalModel.put(st.getQualifiedName(), st.toString());
+				originalModel.put(st.getQualifiedName(), st);
 			} catch (Exception e) {
 				log.error("Problems saving cttype: " + st.getQualifiedName());
 			}
@@ -354,9 +354,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	protected boolean validateReversedOriginalVariant(ProgramVariant variant) {
 
 		for (CtType st : variant.getAffectedClasses()) {
-			String original = originalModel.get(st.getQualifiedName());
+			CtType original = originalModel.get(st.getQualifiedName());
 			if (original != null) {
-				boolean idem = original.equals(st.toString());
+				boolean idem = original.equals(st);
 				if (!idem) {
 					log.error("Error variant :" + variant.getId()
 							+ " the model was not the same from the original after this generation (see Diff in debug level)");
@@ -365,7 +365,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 					try {
 						File forig = File.createTempFile("torig", "java");
 						FileWriter fr = new FileWriter(forig);
-						fr.write(original);
+						fr.write(original.toString());
 						fr.close();
 
 						File fmod = File.createTempFile("torig", "java");
@@ -708,7 +708,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 */
 	public void initPopulation(List<SuspiciousCode> suspicious) throws Exception {
 
-		log.info("\n---- Initial suspicious size: " + suspicious.size());
+		log.info("---- Initial suspicious size: " + suspicious.size());
 		initializePopulation(suspicious);
 
 		if (originalVariant == null) {
@@ -759,7 +759,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	public void initModel() throws Exception {
 
-		log.info("\n---- Creating spoon model");
+		log.info("---- Creating spoon model");
 
 		if (!MutationSupporter.getFactory().Type().getAll().isEmpty()) {
 			if (ConfigurationProperties.getPropertyBool("resetmodel")) {
@@ -1219,6 +1219,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 			int lastGeneration = -1;
 			for (int i = 1; i <= generation; i++) {
+				log.info("Generation " + i);
 				List<OperatorInstance> genOperationInstances = solutionVariant.getOperations().get(i);
 				if (genOperationInstances == null)
 					continue;

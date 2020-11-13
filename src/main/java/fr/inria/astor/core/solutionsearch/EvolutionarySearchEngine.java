@@ -38,7 +38,7 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 
 	public void startEvolution() throws Exception {
 
-		log.info("\n----Starting Solution Search");
+		log.info("----Starting Solution Search");
 
 		generationsExecuted = 0;
 		nrGenerationWithoutModificatedVariant = 0;
@@ -63,7 +63,8 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 			}
 
 			generationsExecuted++;
-			log.debug("\n----------Running generation: " + generationsExecuted + ", population size: "
+			// warning level to keep Travis CI log aliive
+			log.warn("----------Running generation: " + generationsExecuted + ", population size: "
 					+ this.variants.size());
 			try {
 				boolean solutionFound = processGenerations(generationsExecuted);
@@ -77,7 +78,7 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 											.getPropertyInt("maxnumbersolutions")));
 
 					if (stopSearch) {
-						log.debug("\n Max Solution found " + this.solutions.size());
+						log.debug("Max Solution found " + this.solutions.size());
 						this.outputStatus = AstorOutputStatus.STOP_BY_PATCH_FOUND;
 					}
 				}

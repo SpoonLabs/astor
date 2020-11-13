@@ -58,7 +58,7 @@ import spoon.SpoonModelBuilder.InputType;
  */
 public abstract class AbstractMain {
 
-	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
+	protected static Logger log = Logger.getLogger(Thread.currentThread().getName());
 
 	public static ProjectRepairFacade projectFacade;
 
@@ -322,7 +322,7 @@ public abstract class AbstractMain {
 			return isExample(cmd);
 		} catch (Exception e) { // generic exceptions are bad practice, but Java
 								// is also the worst.
-			System.out.println("Error: " + e.getMessage());
+			log.error("Error: " + e.getMessage());
 			help();
 			return false;
 		}
@@ -336,7 +336,7 @@ public abstract class AbstractMain {
 		try {
 			cmd = parser.parse(options, args);
 		} catch (UnrecognizedOptionException e) {
-			System.out.println("Error: " + e.getMessage());
+			log.error("Error: " + e.getMessage());
 			help();
 			return false;
 		}
@@ -442,7 +442,7 @@ public abstract class AbstractMain {
 			try {
 				ConfigurationProperties.properties.setProperty("flthreshold", cmd.getOptionValue("flthreshold"));
 			} catch (Exception e) {
-				System.out.println("Error: threshold not valid");
+				log.error("Error: threshold not valid");
 				help();
 				return false;
 			}
@@ -502,7 +502,7 @@ public abstract class AbstractMain {
 			try {
 				TimeUtil.tranformHours(hour);
 			} catch (Exception e) {
-				System.out.println("Problem when parser maxdate property, tip: HH:mm");
+				log.error("Problem when parser maxdate property, tip: HH:mm");
 			}
 			ConfigurationProperties.properties.setProperty("maxdate", hour);
 
@@ -592,10 +592,6 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("transformingredient"))
 			ConfigurationProperties.properties.setProperty("transformingredient", "true");
 
-		if (cmd.hasOption("loglevel")) {
-			String loglevelSelected = cmd.getOptionValue("loglevel");
-			ConfigurationProperties.properties.setProperty("loglevel", loglevelSelected);
-		}
 		if (cmd.hasOption("timezone")) {
 			ConfigurationProperties.properties.setProperty("timezone", cmd.getOptionValue("timezone"));
 		}
@@ -768,7 +764,7 @@ public abstract class AbstractMain {
 		Map p = System.getenv();
 		for (String dirname : System.getenv("PATH").split(File.pathSeparator)) {
 			File file = new File(dirname, name);
-			System.out.println(file + " " + file.exists());
+			log.info(file + " " + file.exists());
 			if (file.isFile() && file.canExecute()) {
 				return file.getAbsolutePath();
 			}
@@ -779,7 +775,7 @@ public abstract class AbstractMain {
 	/**
 	 * Finds an example to test in the command line
 	 * 
-	 * @param cmd
+	 * @param args
 	 * @return
 	 * @throws Exception
 	 */
@@ -845,7 +841,7 @@ public abstract class AbstractMain {
 
 		HelpFormatter formater = new HelpFormatter();
 		formater.printHelp("Main", options);
-		System.out.println("More options and default values at 'configuration.properties' file");
+		log.info("More options and default values at 'configuration.properties' file");
 
 		System.exit(0);
 

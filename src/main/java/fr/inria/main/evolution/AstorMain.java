@@ -1,6 +1,7 @@
 package fr.inria.main.evolution;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +9,8 @@ import java.util.List;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
+import org.apache.log4j.WriterAppender;
+import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -237,42 +239,7 @@ public class AstorMain extends AbstractMain {
 	}
 
 	public void setupLogging() throws IOException {
-
-		String patternLayout = "";
-		if (ConfigurationProperties.getPropertyBool("disablelog")) {
-			patternLayout = "%m%n";
-		} else {
-			patternLayout = ConfigurationProperties.getProperty("logpatternlayout");
-		}
-
-		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
-		ConsoleAppender console = new ConsoleAppender();
-		console.setLayout(new PatternLayout(patternLayout));
-		console.activateOptions();
-		Logger.getRootLogger().addAppender(console);
-
-		String loglevelSelected = ConfigurationProperties.properties.getProperty("loglevel");
-		if (loglevelSelected != null)
-			LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
-
-		if (ConfigurationProperties.hasProperty("logfilepath")) {
-			FileAppender fa = new FileAppender();
-			String filePath = ConfigurationProperties.getProperty("logfilepath");
-			File fileLog = new File(filePath);
-			if (!fileLog.exists()) {
-				fileLog.getParentFile().mkdirs();
-				fileLog.createNewFile();
-			}
-
-			fa.setName("FileLogger");
-			fa.setFile(fileLog.getAbsolutePath());
-			fa.setLayout(new PatternLayout(patternLayout));
-			fa.setThreshold(LogManager.getRootLogger().getLevel());
-			fa.setAppend(true);
-			fa.activateOptions();
-			Logger.getRootLogger().addAppender(fa);
-			this.log.info("Log file at: " + filePath);
-		}
+		// done with log4j2.xml
 	}
 
 }
