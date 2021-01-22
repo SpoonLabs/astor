@@ -717,6 +717,8 @@ public class CardumenApproachTest extends BaseEvolutionaryTest {
 		assertNotNull(ingredientSpace);
 
 		assertTrue(cardumen.getSolutions().size() > 0);
+		// In this test case we find the solution at generation 74
+		assertTrue(cardumen.getCurrentStat().getGeneralStats().get(Stats.GeneralStatEnum.NR_GENERATIONS).equals(74));
 	}
 
 	@Test
