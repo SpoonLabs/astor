@@ -20,6 +20,8 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -27,9 +29,9 @@ import spoon.reflect.declaration.CtVariable;
 
 /**
  * Creates the initial population of program variants
- * 
+ *
  * @author Matias Martinez, matias.martinez@inria.fr
- * 
+ *
  */
 public class ProgramVariantFactory {
 
@@ -59,16 +61,15 @@ public class ProgramVariantFactory {
 
 	/**
 	 * Create a list of Program Variant from a list of suspicious code.
-	 * 
+	 *
 	 * @param suspiciousList
 	 * @param maxNumberInstances
-	 * @param populationControler
 	 * @param projectFacade
 	 * @return
 	 * @throws Exception
 	 */
 	public List<ProgramVariant> createInitialPopulation(List<SuspiciousCode> suspiciousList, int maxNumberInstances,
-			PopulationController populationControler, ProjectRepairFacade projectFacade) throws Exception {
+														ProjectRepairFacade projectFacade) throws Exception {
 
 		this.projectFacade = projectFacade;
 
@@ -104,7 +105,7 @@ public class ProgramVariantFactory {
 	/**
 	 * A Program instances is created from the list of suspicious. For each
 	 * suspiciuos a list of modif point is created.
-	 * 
+	 *
 	 * @param suspiciousList
 	 * @param idProgramInstance
 	 * @return
@@ -154,7 +155,7 @@ public class ProgramVariantFactory {
 	private List<SuspiciousModificationPoint> createModificationPoints(ProgramVariant progInstance) {
 
 		List<SuspiciousModificationPoint> suspGen = new ArrayList<>();
-		List<CtClass> classesFromModel = mutatorSupporter.getFactory().Class().getAll().stream()
+		List<CtClass> classesFromModel = MutationSupporter.getFactory().Class().getAll().stream()
 				.filter(CtClass.class::isInstance).map(sc -> (CtClass) sc).collect(Collectors.toList());
 		for (CtClass ctclasspointed : classesFromModel) {
 
@@ -176,29 +177,33 @@ public class ProgramVariantFactory {
 			classesToProcess.add(ctclasspointed);
 			List<CtElement> extractedElements = extractChildElements(classesToProcess, processors);
 
+			// remove the elements that are instance of NoSourcePosition
+			extractedElements = extractedElements.stream().filter(ctElement ->
+					!(ctElement.getPosition() instanceof NoSourcePosition))
+					.collect(Collectors.toList());
+
 			int maxModPoints = ConfigurationProperties.getPropertyInt("maxmodificationpoints");
 
 			for (CtElement suspiciousElement : extractedElements) {
+					List<CtVariable> contextOfGen = VariableResolver.searchVariablesInScope(suspiciousElement);
 
-				List<CtVariable> contextOfGen = VariableResolver.searchVariablesInScope(suspiciousElement);
+					SuspiciousModificationPoint point = new SuspiciousModificationPoint();
+					point.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
+							suspiciousElement.getPosition().getLine(), 0d, null));
+					point.setCtClass(ctclasspointed);
+					point.setCodeElement(suspiciousElement);
+					point.setContextOfModificationPoint(contextOfGen);
+					suspGen.add(point);
+					log.info("--ModificationPoint:" + suspiciousElement.getClass().getSimpleName() + ", suspValue "
+							+ point.getSuspicious().getSuspiciousValue() + ", line "
+							+ suspiciousElement.getPosition().getLine() + ", file "
+							+ suspiciousElement.getPosition().getFile().getName());
 
-				SuspiciousModificationPoint point = new SuspiciousModificationPoint();
-				point.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
-						suspiciousElement.getPosition().getLine(), 0d, null));
-				point.setCtClass(ctclasspointed);
-				point.setCodeElement(suspiciousElement);
-				point.setContextOfModificationPoint(contextOfGen);
-				suspGen.add(point);
-				log.info("--ModificationPoint:" + suspiciousElement.getClass().getSimpleName() + ", suspValue "
-						+ point.getSuspicious().getSuspiciousValue() + ", line "
-						+ suspiciousElement.getPosition().getLine() + ", file "
-						+ suspiciousElement.getPosition().getFile().getName());
-
-				if (suspGen.size() > maxModPoints) {
-					log.info("Reducing Total ModPoint created to: " + maxModPoints);
-					return suspGen;
+					if (suspGen.size() > maxModPoints) {
+						log.info("Reducing Total ModPoint created to: " + maxModPoints);
+						return suspGen;
+					}
 				}
-			}
 
 		}
 		return suspGen;
@@ -208,7 +213,7 @@ public class ProgramVariantFactory {
 	/**
 	 * It receives a suspicious code (a line) and it create a list of Gens from than
 	 * suspicious line when it's possible.
-	 * 
+	 *
 	 * @param suspiciousCode
 	 * @param progInstance
 	 * @return
@@ -252,27 +257,31 @@ public class ProgramVariantFactory {
 		List<CtElement> filterByType = extractChildElements(ctSuspects, processors);
 
 		List<CtElement> filteredTypeByLine = intersection(filterByType, ctSuspects);
-		// For each filtered element, we create a ModificationPoint.
 
+		// remove the elements that are instance of NoSourcePosition
+		filteredTypeByLine = filteredTypeByLine.stream().filter(ctElement ->
+				!(ctElement.getPosition() instanceof NoSourcePosition))
+				.collect(Collectors.toList());
+		// For each filtered element, we create a ModificationPoint.
 		for (CtElement ctElement : filteredTypeByLine) {
-			SuspiciousModificationPoint modifPoint = new SuspiciousModificationPoint();
-			modifPoint.setSuspicious(suspiciousCode);
-			modifPoint.setCtClass(ctclasspointed);
-			modifPoint.setCodeElement(ctElement);
-			modifPoint.setContextOfModificationPoint(contextOfPoint);
-			suspiciousModificationPoints.add(modifPoint);
-			log.debug("--ModifPoint:" + ctElement.getClass().getSimpleName() + ", suspValue "
-					+ suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
-					+ ((ctElement.getPosition().getFile() == null) ? "-null-file-"
-							: ctElement.getPosition().getFile().getName()));
-		}
+                SuspiciousModificationPoint modifPoint = new SuspiciousModificationPoint();
+                modifPoint.setSuspicious(suspiciousCode);
+                modifPoint.setCtClass(ctclasspointed);
+                modifPoint.setCodeElement(ctElement);
+                modifPoint.setContextOfModificationPoint(contextOfPoint);
+                suspiciousModificationPoints.add(modifPoint);
+                log.debug("--ModifPoint:" + ctElement.getClass().getSimpleName() + ", suspValue "
+                        + suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
+                        + ((ctElement.getPosition().getFile() == null) ? "-null-file-"
+                        : ctElement.getPosition().getFile().getName()));
+        }
 		return suspiciousModificationPoints;
 	}
 
 	/**
 	 * Retrieve the ct elements we want to consider in our model, for instance, some
 	 * approach are interested only in repair If conditions.
-	 * 
+	 *
 	 * @param ctSuspects
 	 * @param processors
 	 * @return
@@ -312,8 +321,7 @@ public class ProgramVariantFactory {
 	 * This method revolve a CtClass from one suspicious statement. If it was
 	 * resolved before, it get it from a "cache" of CtClasses stored in the Program
 	 * Instance.
-	 * 
-	 * @param suspiciousCode
+	 *
 	 * @param progInstance
 	 * @return
 	 */
@@ -340,7 +348,7 @@ public class ProgramVariantFactory {
 
 	/**
 	 * New Program Variant Clone
-	 * 
+	 *
 	 * @param parentVariant
 	 * @param id
 	 * @return
@@ -366,7 +374,7 @@ public class ProgramVariantFactory {
 
 	/**
 	 * TODO: Replicated in RepairActionLoops
-	 * 
+	 *
 	 * @param candidate
 	 * @param ctclass
 	 * @return

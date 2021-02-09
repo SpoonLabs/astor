@@ -416,8 +416,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	/**
 	 * 
 	 * Compiles and validates a created variant.
-	 * 
-	 * @param parentVariant
+	 *
 	 * @param generation
 	 * @return true if the variant is a solution. False otherwise.
 	 * @throws Exception
@@ -509,7 +508,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * GenOperationInstance
 	 * 
 	 * @param variant
-	 * @param operationofGen
+	 * @param generation
 	 */
 	protected void updateVariantGenList(ProgramVariant variant, int generation) {
 		List<OperatorInstance> operations = variant.getOperations().get(generation);
@@ -801,7 +800,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		variantFactory.setMutatorExecutor(getMutatorSupporter());
 
 		this.variants = variantFactory.createInitialPopulation(suspicious,
-				ConfigurationProperties.getPropertyInt("population"), populationControler, projectFacade);
+				ConfigurationProperties.getPropertyInt("population"), projectFacade);
 
 		if (variants.isEmpty()) {
 			throw new IllegalArgumentException("Any variant created from list of suspicious");
@@ -821,7 +820,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * GenOperationInstance
 	 * 
 	 * @param variant        variant to modify the modification point information
-	 * @param operationofGen operator to apply in the variant.
+	 * @param operation operator to apply in the variant.
 	 */
 	protected void updateVariantGenList(ProgramVariant variant, OperatorInstance operation) {
 		operation.getOperationApplied().updateProgramVariant(operation, variant);
@@ -841,7 +840,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	/**
 	 * Apply a given Mutation to the node referenced by the operation
 	 * 
-	 * @param operation
+	 * @param operationInstance
 	 * @throws IllegalAccessException
 	 */
 	protected void applyNewMutationOperationToSpoonElement(OperatorInstance operationInstance)
