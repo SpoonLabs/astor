@@ -117,7 +117,8 @@ public class MathCommandsTests {
 	public static CommandSummary getMath32Command() {
 		String dep = new File("./examples/libs/junit-4.10.jar").getAbsolutePath();
 
-		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-location",
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog","-failing",
+				"org.apache.commons.math3.geometry.euclidean.threed.PolyhedronsSetTest", "-location",
 				new File("./examples/math_32").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes",
 				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5",
