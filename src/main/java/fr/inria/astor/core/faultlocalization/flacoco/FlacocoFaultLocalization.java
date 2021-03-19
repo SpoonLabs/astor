@@ -1,6 +1,7 @@
 package fr.inria.astor.core.faultlocalization.flacoco;
 
 import java.io.File;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
+import eu.stamp_project.testrunner.listener.CoveredTestResult;
 import eu.stamp_project.testrunner.runner.coverage.JUnit4JacocoRunner;
 import eu.stamp_project.testrunner.runner.coverage.JUnit5JacocoRunner;
 import eu.stamp_project.testrunner.runner.coverage.JacocoRunner;
@@ -80,6 +82,22 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 		if (runner == null) {
 			throw new IllegalStateException("Test Runner cannot be determined");
+		}
+		//
+
+		if (false) {
+			URLClassLoader urlloader = runner.getUrlClassloaderFromClassPath(dependencies);
+
+			List<String> allTestClassName = tests.stream().map(e -> e.getTestClassQualifiedName())
+					.collect(Collectors.toList());
+
+			String[] testsall = new String[allTestClassName.size()];
+			testsall = allTestClassName.toArray(testsall);
+
+			CoveredTestResult testResults = runner.executeTest(testsall, new String[] {}, null);
+			System.out.println("Test results all: " + testResults);
+
+			//
 		}
 
 		logger.debug("Tests detected " + tests.size());

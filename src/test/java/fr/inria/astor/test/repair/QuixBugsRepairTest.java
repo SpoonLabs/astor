@@ -64,7 +64,7 @@ public class QuixBugsRepairTest {
 		cs.command.put("-flthreshold", "0.0");
 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-stopfirst", "TRUE");
-		cs.command.put("-parameters", "logtestexecution:TRUE:"
+		cs.command.put("-parameters", "tmax1:20000:loglevel:debug:logtestexecution:TRUE:"
 				+ "disablelog:FALSE:maxtime:120:autocompile:false:gzoltarpackagetonotinstrument:com.google.gson_engine"
 				+ GZoltarFaultLocalization.PACKAGE_SEPARATOR + "java_programs_test");
 		cs.command.put("-location", new File("./examples/quixbugscompiled/" + name).getAbsolutePath());
@@ -154,6 +154,30 @@ public class QuixBugsRepairTest {
 		CommandSummary command = (getQuixBugsCommand("next_permutation"));
 		command.command.put("-maxgen", "500");
 		command.command.put("-mode", "mutation");
+		main1.execute(command.flat());
+
+		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
+
+	}
+
+	/**
+	 * Repaired in paper
+	 * 
+	 * This test is disable because for repairing it consumes a lot of time: The
+	 * suspicious while at line 15 is replaced by the assignment from line 16. Then,
+	 * that assignment must be added at least 5 times. More that that produces it
+	 * passes the cases. Otherwise no.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	@Ignore
+	public void test_SQRT_jgenprog() throws Exception {
+		AstorMain main1 = new AstorMain();
+
+		CommandSummary command = (getQuixBugsCommand("sqrt"));
+		command.command.put("-maxgen", "500");
+		command.command.put("-mode", "jgenprog");
 		main1.execute(command.flat());
 
 		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);

@@ -155,6 +155,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		File projLocationFile = new File(locationBytecode + File.separator);
 		String projLocationPath = projLocationFile.getAbsolutePath();
 		logger.debug("Gzoltar run over: " + projLocationPath + " , does it exist? " + projLocationFile.exists());
+		logger.debug("User.dir passed to gzoltar: " + System.getProperty("user.dir"));
 
 		GZoltar gz = new GZoltar(System.getProperty("user.dir") + File.separator);
 

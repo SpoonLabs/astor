@@ -188,6 +188,35 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath8FaultLocatization() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.11.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		int generations = 0;
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-location",
+				new File("./examples/math_8").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.1", "-out",
+				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
+				"-stopfirst", "true", "-loglevel", "INFO", "-parameters", "disablelog:false"
+
+		};
+		CommandSummary cs = new CommandSummary(args);
+		cs.command.put("-flthreshold", "0.1");
+		cs.command.put("-stopfirst", "true");
+		cs.command.put("-loglevel", "DEBUG");
+		cs.command.put("-saveall", "true");
+		cs.append("-parameters", ("logtestexecution:true"));
+
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		assertEquals(2, main1.getEngine().getProjectFacade().getProperties().getFailingTestCases());
+
+	}
+
 	public static String[] commandMath70(String dep, File out, int generations) {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
