@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.inria.sacha.automaticRepair</groupId>
 	<artifactId>astor</artifactId>
 	<description>ASTOR: AST transformation for Repairs</description>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.1.0</version>
 
 	<name>ASTOR</name>
 	<url>https://github.com/SpoonLabs/astor</url>
@@ -133,11 +133,6 @@
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
-		<dependency>
-			<groupId>fr.inria.gforge.spirals</groupId>
-			<artifactId>nopol</artifactId>
-			<version>0.2-SNAPSHOT</version>
-		</dependency>
 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -221,7 +216,8 @@
 						</filter>
 					</filters>
 					<transformers>
-						<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+						<transformer
+							implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 							<mainClass>fr.inria.main.evolution.AstorMain</mainClass>
 						</transformer>
 					</transformers>
@@ -334,9 +330,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.16</version>
 				<configuration>
-					<!-- the following is required to have the same execution semantics
+					<!-- the following is required to have the same execution semantics 
 						as eclipse (hence all tests passing) -->
-					<!-- the reason is that it switches Spoon in noclasspath or not for
+					<!-- the reason is that it switches Spoon in noclasspath or not for 
 						this particular file -->
 					<useSystemClassLoader>false</useSystemClassLoader>
 					<forkCount>1</forkCount>
@@ -359,16 +355,86 @@
 
 	</build>
 
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.2</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+					<!-- Source -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<phase>package</phase>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- Javadoc -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.10.4</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<additionalparam>-Xdoclint:none</additionalparam>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- GPG -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
 	<distributionManagement>
+		
 		<repository>
-			<id>internal-repo</id>
-			<name>Temporary Staging Repository</name>
-			<url>file://${project.build.directory}/mvn-repo/releases</url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 		<snapshotRepository>
-			<id>internal-snapshot-repo</id>
-			<name>Temporary Staging Snapshot Repository</name>
-			<url>file://${project.build.directory}/mvn-repo/snapshots</url>
+			<id>ossrh-snapshot</id>
+			<url>https://oss.sonatype.org/repositories/snapshots</url>
 		</snapshotRepository>
+		
 	</distributionManagement>
 </project>

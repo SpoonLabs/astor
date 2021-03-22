@@ -1,7 +1,7 @@
 package fr.inria.astor.approaches.cardumen;
 
 import fr.inria.astor.approaches.jgenprog.operators.ReplaceOp;
-import fr.inria.astor.approaches.tos.operator.metaevaltos.MetaGenerator;
+import fr.inria.astor.approaches.tos.core.MetaGenerator;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
