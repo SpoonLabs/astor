@@ -1,4 +1,4 @@
-package fr.inria.astor.approaches.tos.operator.metaevaltos;
+package fr.inria.astor.approaches.tos.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.approaches.cardumen.FineGrainedExpressionReplaceOperator;
-import fr.inria.astor.approaches.tos.core.InsertMethodOperator;
 import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
@@ -51,6 +50,8 @@ public class MetaGenerator {
 	private static final String META_CNST = "_meta_";
 
 	public static final String MUT_IDENTIFIER = "mutnumber_";
+
+	public static final String METALL = "metid";
 
 	public static int global_moi_indentifier = 0;
 

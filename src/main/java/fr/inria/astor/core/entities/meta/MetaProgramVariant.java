@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import fr.inria.astor.approaches.tos.operator.metaevaltos.MetaGenerator;
+import fr.inria.astor.approaches.tos.core.MetaGenerator;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
@@ -95,7 +95,7 @@ public class MetaProgramVariant extends ProgramVariant {
 
 			}
 		}
-		//Adding the no meta ops
+		// Adding the no meta ops
 		for (OperatorInstance normalOpInstances : noMetaOps) {
 			generation++;
 			childPlainVariant.getOperations(generation).add(normalOpInstances);
