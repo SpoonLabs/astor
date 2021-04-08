@@ -255,6 +255,16 @@ public class ProjectConfiguration {
 		return true;
 	}
 
+	/**
+	 * This method tries to retrieve the java version used.
+	 * It starts a system process to run java-version.
+	 *
+	 * First tries to read $JAVAHOME/java then $JAVAHOME/bin/java, and fails afterwards.
+	 * The first one is how earlier jvms were structured, while the latter corresponds to modern jvms.
+	 *
+	 * @param jvmPath the path to the specified (currently running) jvm
+	 * @return A string describing with JDK is used, empty string on failure.
+	 */
 	public static String getVersionJDK(String jvmPath) {
 		File javaFolder = new File(jvmPath);
 		if (!javaFolder.exists()) {
@@ -262,10 +272,10 @@ public class ProjectConfiguration {
 		}
 		String processOutput = "";
 		try {
-			jvmPath += File.separator + "java";
+			String jvmPathA = jvmPath + File.separator + "java";
 
 			List<String> command = new ArrayList<String>();
-			command.add(jvmPath);
+			command.add(jvmPathA);
 			command.add("-version");
 
 			ProcessBuilder pb = new ProcessBuilder(command.toArray(new String[command.size()]));
@@ -286,7 +296,34 @@ public class ProjectConfiguration {
 			}
 
 		} catch (Exception e) {
-			logger.error("Error retrieving java version: " + e);
+			logger.warn("Error retrieving java version: " + e + " - Retrying with slightly different path");
+			logger.debug("Retrying to get Java-Version with slightly different path");
+			try {
+				String jvmPathB = jvmPath + File.separator + "bin" + File.separator + "java";
+
+				List<String> command = new ArrayList<String>();
+				command.add(jvmPathB);
+				command.add("-version");
+
+				ProcessBuilder pb = new ProcessBuilder(command.toArray(new String[command.size()]));
+				pb.redirectOutput();
+				pb.redirectErrorStream(true);
+				pb.directory(new File((ConfigurationProperties.getProperty("location"))));
+				Process p = pb.start();
+				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+				String line = null;
+				while ((line = br.readLine()) != null) {
+					if (line.contains("\"")) {
+						String version = line.split("\"")[1];
+						logger.info("Version of the JVM used: " + version);
+						return version;
+					}
+					processOutput += line;
+				}
+			} catch (Exception et){
+				logger.error("Error retrieving java version (2nd attempt): " + et);
+			}
 		}
 		logger.error("Error retrieving java version output obtained: \n" + processOutput);
 		return null;
