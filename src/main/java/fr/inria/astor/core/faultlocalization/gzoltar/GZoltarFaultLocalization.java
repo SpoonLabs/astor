@@ -26,7 +26,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
  * Facade of Fault Localization techniques like GZoltar or own implementations
- * (package {@link org.inria.sacha.faultlocalization}.).
+ * (package {@link fr.inria.astor.core.faultlocalization}.).
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  *
@@ -49,10 +49,34 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 	}
 
+    /**
+     * This method is the private pardon to the
+     * above given public API "calculateSuspicious(ProjectRepairFacade,List<Tests>)".
+     *
+     * The method does the following:
+     * 1. Test & Project Setup
+     * 2. Run Gzoltar on it
+     * 3. Check the Gzoltar output for validity and filter/change according to parameters
+     * 4. Transform the Gzoltar Output to Project-Internal FaultLocalizationResult
+     *
+     * This method is mostly a wrapper around the "searchSuspicious(...)" below, which adds cleaning and sanity checks.
+     *
+     * @param locationSrc path to the location of sourcecode
+     * @param locationBytecode path to the location of ByteCode
+     * @param packageToInst A list of packages that will be added to the bytecode, e.g. libraries like JUnit
+     * @param mutatorIdentifier
+     * @param failingTest A list of the failing tests considered for the fault localization
+     * @param allTest A list of all tests considered for the fault localization
+     * @param mustRunAllTest whether all tests will be executed, or just
+     * @param project
+     * @return
+     * @throws IllegalArgumentException if either there are no TestCases given / left after filtering, or if no suspicious code was found.
+     */
 	private FaultLocalizationResult calculateSuspicious(String locationSrc, String locationBytecode,
 			String packageToInst, String mutatorIdentifier, List<String> failingTest, List<String> allTest,
 			boolean mustRunAllTest, ProjectRepairFacade project) throws Exception {
 
+	    // Step 1: Test & Project Setup
 		List<String> testcasesToExecute = null;
 
 		if (mustRunAllTest) {
@@ -84,10 +108,14 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			classPath.add(dep.getPath());
 		}
 
+		// Step 2: Run Gzoltar
+
 		FaultLocalizationResult flResult = this.searchSuspicious(locationBytecode, testcasesToExecute, listTOInst,
 				classPath, locationSrc);
 
 		List<SuspiciousCode> suspiciousStatemens = flResult.getCandidates();
+
+		// Step 3: Check and Adjust Gzoltar Output
 
 		if ((suspiciousStatemens == null || suspiciousStatemens.isEmpty())
 				&& !ConfigurationProperties.getPropertyBool("canhavezerosusp"))
@@ -104,6 +132,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			project.getProperties().setFailingTestCases(failingTestCases);
 		}
 
+		// Step 4: Adjust filtered output to interface
+
 		if (ConfigurationProperties.getPropertyBool("filterfaultlocalization")) {
 			List<SuspiciousCode> filtercandidates = new ArrayList<SuspiciousCode>();
 
@@ -114,7 +144,6 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		}
 		return flResult;
-
 	}
 
 	/**
@@ -139,6 +168,28 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		ConfigurationProperties.properties.setProperty("ignoredTestCases", ignoredTestCases);
 	}
 
+
+    /**
+     * This method initializes and runs Gzoltar, and returns unfiltered results of the process.
+     *
+     * The primary part of the method maps the properties given in parameters and the Astor-Configuration
+     * to the attributes required by Gzoltar.
+     * The Astor-ConfigurationProperties are particularly important for this method.
+     *
+     * An important sidenote is, if results are found but none is above the threshold,
+     * all results are being returned as fitting.
+     *
+     * At the moment, it fails "gracefully" when run above Java 8.
+     * The invocation "gz.run()" does simply not find suspicious code (gz.getTestResults() is empty).
+     *
+     * @param locationBytecode The Path to the ByteCode to be run
+     * @param testsToExecute The list of tests to be executed
+     * @param toInstrument
+     * @param cp
+     * @param srcFolder The Path to the SourceCode to be analyzed
+     * @return
+     * @throws Exception Any Exception produced by gz.Run()
+     */
 	protected FaultLocalizationResult searchSuspicious(String locationBytecode, List<String> testsToExecute,
 			List<String> toInstrument, List<String> cp, String srcFolder) throws Exception {
 
@@ -189,14 +240,15 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			String[] packages = packagetonotinstrument.split(PACKAGE_SEPARATOR);
 			for (String p : packages) {
 				gz.addPackageNotToInstrument(p);
-
 			}
-
 		}
 
 		gz.run();
 		int[] sum = new int[2];
 		List<TestResult> testResults = gz.getTestResults();
+
+        // This Block checks & sorts the gz test-results
+        // and for all Junit Tests checks for failing and passing, logging a short summary
 		for (TestResult tr : testResults) {
 			String testName = tr.getName().split("#")[0];
 			if (testName.startsWith("junit")) {
@@ -225,6 +277,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		List<Statement> gzCandidates = new ArrayList();
 
+
 		logger.info("nr test results " + testResults.size());
 		for (Statement gzoltarStatement : gz.getSuspiciousStatements()) {
 			String compName = gzoltarStatement.getMethod().getParent().getLabel();
@@ -245,13 +298,12 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			}
 
 		}
-		// If we do not have candidate due the threshold is to high, we add all
-		// as suspicious
+		// If we do not have candidate due the threshold is to high, we add all as suspicious
 		if (gzCandidates.isEmpty()) {
 			gzCandidates.addAll(gz.getSuspiciousStatements());
-
 		}
-
+        // If we do not accept zero-values by configuration, we do remove all 0 elements.
+        // Otherwise they are kept.
 		if (!ConfigurationProperties.getPropertyBool("considerzerovaluesusp")) {
 			gzCandidates.removeIf(susp -> (susp.getSuspiciousness() == 0));
 		}
@@ -317,6 +369,10 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 	}
 
+	/*
+	Short Interface to compare two pieces of susipicious code.
+	It accepts null-values and defaults to 0, otherwise it compares the values found.
+	 */
 	public class ComparatorCandidates implements Comparator<SuspiciousCode> {
 
 		@Override
