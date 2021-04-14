@@ -10,11 +10,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.gzoltar.core.AgentConfigs;
+import com.gzoltar.core.instr.granularity.GranularityLevel;
+import com.gzoltar.sfl.SFLFormulas;
 import org.apache.log4j.Logger;
 
-import com.gzoltar.core.GZoltar;
-import com.gzoltar.core.components.Statement;
-import com.gzoltar.core.instr.testing.TestResult;
+import com.gzoltar.report.fl.FaultLocalizationReportBuilder;
+import com.gzoltar.core.test.TestResult;
+
+//import com.gzoltar.core.GZoltar;
+//import com.gzoltar.core.components.Statement;
+//import com.gzoltar.core.instr.testing.TestResult;
+
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
@@ -185,10 +192,14 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
      * @param locationBytecode The Path to the ByteCode to be run
      * @param testsToExecute The list of tests to be executed
      * @param toInstrument
-     * @param cp
+     * @param cp A classpath that can be added
      * @param srcFolder The Path to the SourceCode to be analyzed
      * @return
      * @throws Exception Any Exception produced by gz.Run()
+     *
+     * Further Information on AgentConfig
+     * https://github.com/GZoltar/gzoltar/blob/master/com.gzoltar.core/src/main/java/com/gzoltar/core/AgentConfigs.java
+     *
      */
 	protected FaultLocalizationResult searchSuspicious(String locationBytecode, List<String> testsToExecute,
 			List<String> toInstrument, List<String> cp, String srcFolder) throws Exception {
@@ -207,6 +218,33 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		String projLocationPath = projLocationFile.getAbsolutePath();
 		logger.debug("Gzoltar run over: " + projLocationPath + " , does it exist? " + projLocationFile.exists());
 
+        AgentConfigs agentConfigs = new AgentConfigs();
+
+        agentConfigs.setGranularity(GranularityLevel.LINE);
+
+        ArrayList<com.gzoltar.report.fl.config.ConfigFaultLocalizationFamily> fls = new ArrayList<>();
+        com.gzoltar.report.fl.config.ConfigFaultLocalizationReport.getDefaults();
+
+        File tmpDir = new File("./tmp/");
+        if (!tmpDir.exists()){
+            tmpDir.mkdirs();
+        }
+        File tmpReport = new File("./tmp/report.txt");
+        if (!tmpReport.exists()){
+            tmpReport.delete();
+        }
+
+        FaultLocalizationReportBuilder.build(
+                projLocationPath,
+                agentConfigs,
+                tmpDir,
+                tmpReport,
+                com.gzoltar.report.fl.config.ConfigFaultLocalizationReport.getDefaults()
+        );
+
+
+        // Commented out for now
+/*
 		GZoltar gz = new GZoltar(System.getProperty("user.dir") + File.separator);
 
 		// 2. Add Package/Class names to instrument
@@ -335,8 +373,10 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		logger.info("Gzoltar found: " + candidates.size() + " with susp > " + thr + ", we consider: " + max);
 
 		return new FaultLocalizationResult(candidates, failingTestCases);
+		*/
+        return null;
 	}
-
+/*
 	private List<TestCaseResult> getTestCaseResults(List<TestResult> testResults, Statement gzoltarStatement) {
 		List<TestCaseResult> tcresults = new ArrayList<>();
 
@@ -368,7 +408,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 				&& !simpleClassName.toLowerCase().startsWith("validate");
 
 	}
-
+*/
 	/*
 	Short Interface to compare two pieces of susipicious code.
 	It accepts null-values and defaults to 0, otherwise it compares the values found.
