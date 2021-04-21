@@ -1,7 +1,13 @@
 package fr.inria.astor.core.faultlocalization.gzoltar;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -12,6 +18,11 @@ import java.util.stream.Collectors;
 
 import com.gzoltar.core.AgentConfigs;
 import com.gzoltar.core.instr.granularity.GranularityLevel;
+import com.gzoltar.core.spectrum.ISpectrum;
+import com.gzoltar.fl.FaultLocalization;
+import com.gzoltar.fl.FaultLocalizationFamily;
+import com.gzoltar.report.fl.config.ConfigFaultLocalizationFamily;
+import com.gzoltar.report.fl.config.ConfigFaultLocalizationReport;
 import com.gzoltar.sfl.SFLFormulas;
 import org.apache.log4j.Logger;
 
@@ -59,12 +70,14 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
     /**
      * This method is the private pardon to the
      * above given public API "calculateSuspicious(ProjectRepairFacade,List<Tests>)".
+	 *
+	 * It starts actual system processes invoking gzoltar and creates a folder for the generated files.
      *
      * The method does the following:
      * 1. Test & Project Setup
      * 2. Run Gzoltar on it
      * 3. Check the Gzoltar output for validity and filter/change according to parameters
-     * 4. Transform the Gzoltar Output to Project-Internal FaultLocalizationResult
+     * 4. Read & Transform the Gzoltar Output to Project-Internal FaultLocalizationResult
      *
      * This method is mostly a wrapper around the "searchSuspicious(...)" below, which adds cleaning and sanity checks.
      *
@@ -178,6 +191,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
     /**
      * This method initializes and runs Gzoltar, and returns unfiltered results of the process.
+	 * Filtering, such as for suspiciousness or un-interesting classes, is done further upstream.
      *
      * The primary part of the method maps the properties given in parameters and the Astor-Configuration
      * to the attributes required by Gzoltar.
@@ -187,7 +201,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
      * all results are being returned as fitting.
      *
      * At the moment, it fails "gracefully" when run above Java 8.
-     * The invocation "gz.run()" does simply not find suspicious code (gz.getTestResults() is empty).
+	 * The gzoltar version required for all elements that include the spectrum is 1.9.3-SNAPSHOT at the moment.
+	 * Also, due to serialization in the .ser file by gzoltar, the used CLI and the libraries used here need to match.
      *
      * @param locationBytecode The Path to the ByteCode to be run
      * @param testsToExecute The list of tests to be executed
@@ -197,6 +212,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
      * @return
      * @throws Exception Any Exception produced by gz.Run()
      *
+	 * When used in this method, the abbreviation "CP" is for "ClassPath".
      * Further Information on AgentConfig
      * https://github.com/GZoltar/gzoltar/blob/master/com.gzoltar.core/src/main/java/com/gzoltar/core/AgentConfigs.java
      *
@@ -204,45 +220,184 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 	protected FaultLocalizationResult searchSuspicious(String locationBytecode, List<String> testsToExecute,
 			List<String> toInstrument, List<String> cp, String srcFolder) throws Exception {
 
-		List<String> failingTestCases = new ArrayList<String>();
+		// The 4 dependencies on Gzoltar
+		// TODO: De-hardcode these into system configuration
+		final String GZOLTARCLIJAR = System.getProperty("user.home")+"/Code/astor/lib/moderngzoltar/gzoltarcli.jar";
+		final String GZOLTARAGENTJAR = System.getProperty("user.home")+"/Code/astor/lib/moderngzoltar/gzoltaragent.jar";
+		final String JUNITJAR = System.getProperty("user.home")+"/Code/astor/lib/moderngzoltar/junit.jar";
+		final String HAMCRESTJAR = System.getProperty("user.home")+"/Code/astor/lib/moderngzoltar/hamcrest-core.jar";
+		//Check for their existence
+		if (!(new File(GZOLTARCLIJAR)).exists()||!(new File(GZOLTARAGENTJAR)).exists()
+			|| !(new File(HAMCRESTJAR)).exists() || !(new File(JUNITJAR)).exists())
+		{
+			throw new UnsupportedOperationException(
+					"Atleast one of the Gzoltar Dependencies (CLI,Agent,Hamcrest or JUnit) is not found under their given path");
+		}
 
-		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");
-		logger.info("Gzoltar fault localization: min susp value parameter: " + thr);
-		// 1. Instantiate GZoltar
-		// here you need to specify the working directory where the tests will
-		// be run. Can be the full or relative path.
-		// Example: GZoltar gz = new
-		// GZoltar("C:\\Personal\\develop\\workspaceEvolution\\testProject\\target\\classes");
-
+		// The projectLocationDirectory is the Directory containing the .class files of the un-instrumented code
 		File projLocationFile = new File(locationBytecode + File.separator);
-		String projLocationPath = projLocationFile.getAbsolutePath();
-		logger.debug("Gzoltar run over: " + projLocationPath + " , does it exist? " + projLocationFile.exists());
+		if (!projLocationFile.exists()||!projLocationFile.isDirectory()){
+			throw new UnsupportedOperationException("The found project location directory does not exist or is not a folder");
+		}
+		logger.debug("Gzoltar run over: " + projLocationFile.getAbsolutePath());
 
+		// The agent configs would be required for a newly created gzoltar-agent,
+		// but we run it from console, so this one can be (mostly) empty.
         AgentConfigs agentConfigs = new AgentConfigs();
-
+		// This is the default-finest granularity, others are method or class
+		// A statement/expression granularity is not possible by default Gzoltar
         agentConfigs.setGranularity(GranularityLevel.LINE);
 
-        ArrayList<com.gzoltar.report.fl.config.ConfigFaultLocalizationFamily> fls = new ArrayList<>();
-        com.gzoltar.report.fl.config.ConfigFaultLocalizationReport.getDefaults();
-
-        File tmpDir = new File("./tmp/");
+        // This temporary folder should keep
+		// 	1) the instrumented class files
+		// 	2) the .ser file created by gzoltar
+		// 	3) (maybe) the reports created before reading them in
+		// If it does not exist, make it, otherwise remove all old content
+        File tmpDir = new File("/tmp/astor/");
         if (!tmpDir.exists()){
             tmpDir.mkdirs();
-        }
-        File tmpReport = new File("./tmp/report.txt");
-        if (!tmpReport.exists()){
-            tmpReport.delete();
-        }
+        } else {
+        	for (File f : tmpDir.listFiles())
+        		f.delete();
+		}
 
-        FaultLocalizationReportBuilder.build(
-                projLocationPath,
-                agentConfigs,
-                tmpDir,
-                tmpReport,
-                com.gzoltar.report.fl.config.ConfigFaultLocalizationReport.getDefaults()
-        );
+        // Run the Version first (just to have another sanity check)
+		new ProcessBuilder()
+				//The Command MUST be as varargs or a list, putting the command in a single string doesn't work
+				.command("java", "-jar",GZOLTARCLIJAR,"version")
+				.redirectOutput(new File(tmpDir.getAbsolutePath()+File.separator+"gzoltar_version.txt"))
+				.directory(tmpDir)
+				.start();
+
+        // Get the Gzoltar Tests, they are written to tests.txt
+		String testMethodCp = projLocationFile.getAbsolutePath() + ":"+GZOLTARAGENTJAR+":"+GZOLTARCLIJAR;
+		Process testMethodProcess = new ProcessBuilder()
+				//The Command MUST be as varargs or a list, putting the command in a single string doesn't work
+				.command("java", "-cp",testMethodCp,"com.gzoltar.cli.Main","listTestMethods", projLocationFile.getAbsolutePath())
+				.redirectOutput(new File(tmpDir.getAbsolutePath()+File.separator+"gzoltar_listTestMethods_output.txt"))
+				.directory(tmpDir)
+				.start();
+		testMethodProcess.waitFor();
+		File testsTxt = new File(tmpDir + File.separator + "tests.txt");
+		if(!testsTxt.exists() || !testsTxt.isFile()){
+			throw new UnsupportedOperationException("Tests.txt was not created/found");
+		}
+
+		String instrumentationCP = testMethodCp;
+		Process instrumentationProcess = new ProcessBuilder()
+				.command("java","-cp",instrumentationCP,
+						"com.gzoltar.cli.Main","instrument"
+						,projLocationFile.getAbsolutePath(),
+						"--outputDirectory","./instrumented")
+				.redirectOutput(new File(tmpDir.getAbsolutePath()+File.separator+"gzoltar_instrument_output.txt"))
+				.directory(tmpDir)
+				.start();
+		instrumentationProcess.waitFor();
+
+		File instrumentationFile = new File(tmpDir+File.separator+"instrumented");
+		if(!instrumentationFile.exists() || !instrumentationFile.isDirectory()){
+			throw new UnsupportedOperationException("Instrumentation Directory was not created/found");
+		}
+
+		// Unlike the other CPs, running the test needs the instrumented classes but NOT the original ones in the classpath.
+		String runTestsCP = instrumentationFile.getAbsolutePath()
+				+ ":" + HAMCRESTJAR  + ":" + GZOLTARCLIJAR + ":" + GZOLTARAGENTJAR;
+
+		Process testProcess = new ProcessBuilder()
+				.command("java","-cp",runTestsCP,
+						//"-Dgzoltar-agent.output=\"file\"",
+						//"-Dgzoltar-agent.destfile=\"./gzoltar.ser\"",
+						"com.gzoltar.cli.Main",
+						"runTestMethods",
+						"--testMethods",testsTxt.getAbsolutePath(),
+						"--offline","--collectCoverage")
+				.redirectOutput(new File(tmpDir.getAbsolutePath()+File.separator+"gzoltar_runTest_output.txt"))
+				.directory(tmpDir)
+				.start();
+		testProcess.waitFor();
 
 
+		File serFile = new File(tmpDir+File.separator+"gzoltar.ser");
+		if(!serFile.exists() || !serFile.isFile()){
+			throw new UnsupportedOperationException("gzoltar.ser was not created/found");
+		}
+
+		String reportCP = instrumentationCP + ":" + testMethodCp;
+		Process reportProcess = new ProcessBuilder()
+				.command("java","-cp",reportCP,
+						"com.gzoltar.cli.Main",
+						"faultLocalizationReport",
+						// Configuration of the CLI
+						"--buildLocation",instrumentationFile.getAbsolutePath(),
+						"--dataFile", serFile.getAbsolutePath(),
+						"--outputDirectory",tmpDir+File.separator+"reports",
+						"--formatter","txt",
+						// Configuration of the reports
+						"--family","sfl",
+						"--formula","ochiai",
+						"--granularity","line",
+						"--metric","entropy")
+				.redirectOutput(new File(tmpDir.getAbsolutePath()+File.separator+"gzoltar_runReport_output.txt"))
+				.redirectError(new File(tmpDir.getAbsolutePath()+File.separator+"gzoltar_runReport_error.txt"))
+				.directory(tmpDir)
+				.start();
+		reportProcess.waitFor();
+
+		// The report files as txt files are always under $givenDir/sfl/txt/xxx.csv
+		// sfl is short for spectrum-based-fault-localization
+		File ochiaiFile = new File(tmpDir+File.separator+"reports"
+				+File.separator+"sfl"+File.separator+"txt"+File.separator+"ochiai.ranking.csv");
+		if(!ochiaiFile.exists() || !ochiaiFile.isFile()){
+			throw new UnsupportedOperationException("Reports were not created/found");
+		}
+
+		FaultLocalizationResult result = parseOutputFile(ochiaiFile,0.1);
+		// From hereon we have two options
+		// a) run gzoltar up to the point of reporting, reading in the spectrum and make the report here
+		// b) run gzoltar including the reporting, and read in the reports here
+		// The biggest issue is to re-match the found issues to the code here either way I guess.
+
+
+		/*
+		// For a)
+		// We need to get a fault-localization family (technique(s)+ranking-metric) first
+        List<ConfigFaultLocalizationFamily> flFamilies = ConfigFaultLocalizationReport.getDefaults();
+        ConfigFaultLocalizationFamily firstFam = flFamilies.get(0);
+
+		FaultLocalization fl = new FaultLocalization(
+				firstFam.getFaultLocalizationFamily(),firstFam.getFormulas()
+		);
+		// Then we read in the spectrum from the .ser file and the .class files
+		String original_location = ConfigurationProperties.getProperty("location");
+
+		String serFilePath = original_location + File.separator + "gzoltar.ser";
+		File serFile = new File(serFilePath);
+		if (!serFile.exists() || !serFile.isFile()){
+			throw new UnsupportedOperationException(".Ser-File for Gzoltar does not exist @"+serFile.getAbsolutePath());
+		}
+		// Using the spectrum, we can create our own report in-memory
+		// With the current (empty) Datafile it will just create empty reports (but it makes them).
+		FaultLocalizationReportBuilder.build(
+				projLocationFile.getAbsolutePath(),
+				agentConfigs,
+				tmpDir,
+				serFile,
+				null // This will go to defaults
+		);
+		// First attempt: Use Proj LocationPath, which is ./astor_output
+		//ISpectrum spec = fl.diagnose(projLocationPath,agentConfigs,tmpReport);
+		// Second attempt: Use LocationByteCode
+		//File byteLocation = new File(locationBytecode.replace("//","/"));
+		// Other options to look at are binjavafolder;bintestfolder;srcjavafolder;srctestfolder
+		//String original_bytecode = original_location + File.separator + ConfigurationProperties.getProperty("srctestfolder");
+		String original_target = original_location + File.separator + "target" + File.separator;
+		// Third Attempt: read .ser file created from console in
+
+		//ISpectrum spec2 = fl.diagnose(projLocationPath,agentConfigs,serFile);
+
+
+*/
+		String aa = "reached?";
         // Commented out for now
 /*
 		GZoltar gz = new GZoltar(System.getProperty("user.dir") + File.separator);
@@ -430,5 +585,84 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		List<String> testCasesToRun = FinderTestCases.findJUnit4XTestCasesForRegression(projectFacade);
 		return testCasesToRun;
 	}
+
+
+	public SuspiciousCode parseLine(String line) {
+		try {
+			if (line.equals("Component,OCHIAI"))
+				return null;
+			SuspiciousCode sc = new SuspiciousCode();
+
+			String[] infoLine = line.split("#");
+			String[] linesusp = infoLine[1].split(",");
+			sc.setLineNumber(Integer.valueOf(linesusp[0]));
+			sc.setSusp(Double.parseDouble(linesusp[1]));
+
+			String[] splitFile = line.split("<");
+			String fileName = splitFile[0].replace("[", ".");
+			sc.setFileName(fileName);
+			String[] classLine = splitFile[1].split("\\{");
+			String className = classLine[0];
+			sc.setClassName(className);
+			String method = "";
+			if (classLine.length > 1)
+				method = classLine[1];//
+			sc.setMethodName(method);
+
+			return sc;
+		} catch (Exception e) {
+			logger.error("-->" + line);
+			logger.error(e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public FaultLocalizationResult parseOutputFile(File path, Double thr) {
+		File spectrapath = new File(path.getAbsolutePath() + File.separator + "spectra");
+		File testpath = new File(path.getAbsolutePath() + File.separator + "tests");
+
+		List<SuspiciousCode> codes = new ArrayList<>();
+		List<String> failingTestCases = new ArrayList<>();
+		try (BufferedReader br = new BufferedReader(new FileReader(spectrapath))) {
+
+			String line;
+			while ((line = br.readLine()) != null) {
+				// System.out.println(line);
+				SuspiciousCode sc = parseLine(line);
+				if (sc != null && sc.getSuspiciousValue() > 0 && sc.getSuspiciousValue() >= thr)
+					codes.add(sc);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// org.apache.commons.lang3.AnnotationUtilsTest#testAnnotationsOfDifferingTypes,PASS,92358174
+		try (BufferedReader br = new BufferedReader(new FileReader(testpath))) {
+
+			String line;
+			while ((line = br.readLine()) != null) {
+				System.out.println(line);
+				String[] lineS = line.split(",");
+				if (lineS[1].equals("FAIL")) {
+					String name = lineS[0].split("#")[0];
+					if (!failingTestCases.contains(name))
+						failingTestCases.add(name);
+				}
+
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		codes.forEach(e -> logger.debug(e));
+		failingTestCases.forEach(e -> logger.debug(e));
+		FaultLocalizationResult result = new FaultLocalizationResult(codes, failingTestCases);
+
+		return result;
+	}
+
 
 }
