@@ -9,11 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.gzoltar.core.AgentConfigs;
@@ -351,150 +347,20 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			throw new UnsupportedOperationException("Reports were not created/found");
 		}
 
-		FaultLocalizationResult result = parseOutputFile(ochiaiFile,0.1);
+		FaultLocalizationResult result = parseOutputFile(new File(tmpDir+File.separator+"reports"
+				+File.separator+"sfl"+File.separator+"txt"),0.01);
 		// From hereon we have two options
 		// a) run gzoltar up to the point of reporting, reading in the spectrum and make the report here
 		// b) run gzoltar including the reporting, and read in the reports here
 		// The biggest issue is to re-match the found issues to the code here either way I guess.
 
-
-		/*
-		// For a)
-		// We need to get a fault-localization family (technique(s)+ranking-metric) first
-        List<ConfigFaultLocalizationFamily> flFamilies = ConfigFaultLocalizationReport.getDefaults();
-        ConfigFaultLocalizationFamily firstFam = flFamilies.get(0);
-
-		FaultLocalization fl = new FaultLocalization(
-				firstFam.getFaultLocalizationFamily(),firstFam.getFormulas()
-		);
-		// Then we read in the spectrum from the .ser file and the .class files
-		String original_location = ConfigurationProperties.getProperty("location");
-
-		String serFilePath = original_location + File.separator + "gzoltar.ser";
-		File serFile = new File(serFilePath);
-		if (!serFile.exists() || !serFile.isFile()){
-			throw new UnsupportedOperationException(".Ser-File for Gzoltar does not exist @"+serFile.getAbsolutePath());
-		}
-		// Using the spectrum, we can create our own report in-memory
-		// With the current (empty) Datafile it will just create empty reports (but it makes them).
-		FaultLocalizationReportBuilder.build(
-				projLocationFile.getAbsolutePath(),
-				agentConfigs,
-				tmpDir,
-				serFile,
-				null // This will go to defaults
-		);
-		// First attempt: Use Proj LocationPath, which is ./astor_output
-		//ISpectrum spec = fl.diagnose(projLocationPath,agentConfigs,tmpReport);
-		// Second attempt: Use LocationByteCode
-		//File byteLocation = new File(locationBytecode.replace("//","/"));
-		// Other options to look at are binjavafolder;bintestfolder;srcjavafolder;srctestfolder
-		//String original_bytecode = original_location + File.separator + ConfigurationProperties.getProperty("srctestfolder");
-		String original_target = original_location + File.separator + "target" + File.separator;
-		// Third Attempt: read .ser file created from console in
-
-		//ISpectrum spec2 = fl.diagnose(projLocationPath,agentConfigs,serFile);
-
-
-*/
-		String aa = "reached?";
-        // Commented out for now
 /*
-		GZoltar gz = new GZoltar(System.getProperty("user.dir") + File.separator);
 
-		// 2. Add Package/Class names to instrument
-		// 3. Add Package/Test Case/Test Suite names to execute
-		// Example: gz.addPackageToInstrument("org.test1.Person");
-		for (String to : toInstrument) {
-			gz.addPackageToInstrument(to);
-		}
-		if (cp != null || !cp.isEmpty()) {
-			logger.info("-gz-Adding classpath: " + cp);
-			gz.getClasspaths().addAll(cp);
-		}
-		for (String test : testsToExecute) {
-			gz.addTestToExecute(test);
-			if (!ConfigurationProperties.getPropertyBool("includeTestInSusp")) {
-				gz.addClassNotToInstrument(test);
-			}
-		}
-
-		String testToAvoid = ConfigurationProperties.getProperty("gzoltartestpackagetoexclude");
-		if (testToAvoid != null) {
-			String[] testtoavoidarray = testToAvoid.split(PACKAGE_SEPARATOR);
-			for (String test : testtoavoidarray) {
-				gz.addTestPackageNotToExecute(test);
-			}
-		}
-
-		String packagetonotinstrument = ConfigurationProperties.getProperty("gzoltarpackagetonotinstrument");
-
-		if (packagetonotinstrument != null) {
-			String[] packages = packagetonotinstrument.split(PACKAGE_SEPARATOR);
-			for (String p : packages) {
-				gz.addPackageNotToInstrument(p);
-			}
-		}
-
-		gz.run();
-		int[] sum = new int[2];
-		List<TestResult> testResults = gz.getTestResults();
-
-        // This Block checks & sorts the gz test-results
-        // and for all Junit Tests checks for failing and passing, logging a short summary
-		for (TestResult tr : testResults) {
-			String testName = tr.getName().split("#")[0];
-			if (testName.startsWith("junit")) {
-				continue;
-			}
-			sum[0]++;
-			sum[1] += tr.wasSuccessful() ? 0 : 1;
-			if (!tr.wasSuccessful()) {
-				logger.info("Test failt: " + tr.getName());
-
-				String testCaseName = testName.split("\\#")[0];
-				if (!failingTestCases.contains(testCaseName)) {
-					failingTestCases.add(testCaseName);
-				}
-			}
-		}
-
-		int gzPositives = gz.getSuspiciousStatements().stream().filter(x -> x.getSuspiciousness() > 0)
-				.collect(Collectors.toList()).size();
-
-		logger.info("Gzoltar Test Result Total:" + sum[0] + ", fails: " + sum[1] + ", GZoltar suspicious "
-				+ gz.getSuspiciousStatements().size() + ", with positive susp " + gzPositives);
-
-		DecimalFormat df = new DecimalFormat("#.###");
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
 
 		List<Statement> gzCandidates = new ArrayList();
 
 
-		logger.info("nr test results " + testResults.size());
-		for (Statement gzoltarStatement : gz.getSuspiciousStatements()) {
-			String compName = gzoltarStatement.getMethod().getParent().getLabel();
-			if (// Kind of files to include in analysis
-			(ConfigurationProperties.getPropertyBool("includeTestInSusp") || isSource(compName, srcFolder))
-					// Analyze suspiciousness
-					&& (!ConfigurationProperties.getPropertyBool("limitbysuspicious")
-							|| (gzoltarStatement.getSuspiciousness() >= thr))
-					//
-					&& (!ConfigurationProperties.getPropertyBool("onlympcovered")
-							|| !gzoltarStatement.getCoverage().isEmpty())
-					//
-					&& (!ConfigurationProperties.getPropertyBool("onlympfromtest")
-							|| (testsToExecute.contains(gzoltarStatement.getMethod().getParent().getLabel())))) {
-
-				gzCandidates.add(gzoltarStatement);
-
-			}
-
-		}
-		// If we do not have candidate due the threshold is to high, we add all as suspicious
-		if (gzCandidates.isEmpty()) {
-			gzCandidates.addAll(gz.getSuspiciousStatements());
-		}
         // If we do not accept zero-values by configuration, we do remove all 0 elements.
         // Otherwise they are kept.
 		if (!ConfigurationProperties.getPropertyBool("considerzerovaluesusp")) {
@@ -529,63 +395,165 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		return new FaultLocalizationResult(candidates, failingTestCases);
 		*/
-        return null;
-	}
-/*
-	private List<TestCaseResult> getTestCaseResults(List<TestResult> testResults, Statement gzoltarStatement) {
-		List<TestCaseResult> tcresults = new ArrayList<>();
-
-		BitSet coverage = gzoltarStatement.getCoverage();
-		int nextTest = coverage.nextSetBit(0);
-		while (nextTest != -1) {
-			TestResult testResult = testResults.get(nextTest);
-			if (!ConfigurationProperties.getPropertyBool("savecoverbyfailtests") || !testResult.wasSuccessful()) {
-
-				TestCaseResult tcri = new TestCaseResult(testResult.getName(), testResult.wasSuccessful());
-				tcresults.add(tcri);
-			}
-			nextTest = coverage.nextSetBit(nextTest + 1);
-		}
-		return tcresults;
+        return result;
 	}
 
-	private boolean isSource(String compName, String srcFolder) {
-		String clRoot = compName.split("\\$")[0];
-		String[] segmentationName = clRoot.split("\\.");
-		String simpleClassName = segmentationName[segmentationName.length - 1];
-
-		// File root = new File(srcFolder+"/"+clRoot.replace(".", "/")+".java");
-
-		return // root.exists()
-				// &&
-		!compName.toLowerCase().endsWith("test") && !compName.toLowerCase().endsWith("tests")
-				&& !simpleClassName.toLowerCase().startsWith("test")
-				&& !simpleClassName.toLowerCase().startsWith("validate");
-
-	}
-*/
-	/*
-	Short Interface to compare two pieces of susipicious code.
-	It accepts null-values and defaults to 0, otherwise it compares the values found.
+	/**
+	 * This method looks up the tests.csv and ochiai.ranking.csv created by gzoltar and parses them into the system-internal
+	 * objects for further use.
+	 *
+	 * There are two system-properties used:
+	 * 	- considerzerovaluesusp: whether 0 suspiciousness is allowed to be considered a candidate
+	 * 	- maxsuspcandidates: upper limit for the results
+	 *
+	 * If there are no elements with enough suspiciousness, all elements are seen as candidates.
+	 * These candidates are still filtered by the system properties.
+	 *
+	 * The method will fail if the files are not found under their location.
+	 * The headers & formats used by the parsing match Gzoltar 1.7.3-SNAPSHOT and might be subject to change in later versions.
+	 * @param path The directory containing the reports created by gzoltar.
+	 *             Must contain a tests.csv and an ochiai.ranking.csv.
+	 * @param minimumSuspiciousness The minimum suspiciousness a line must have to be included in the candidates. Must be greater than the threshold.
+	 * @return The suspicious lines of code found in the gzoltar reports.
 	 */
-	public class ComparatorCandidates implements Comparator<SuspiciousCode> {
+	public FaultLocalizationResult parseOutputFile(File path, Double minimumSuspiciousness) {
+		// Paths to the data files
+		File testpath = new File(path.getAbsolutePath() + File.separator + "tests.csv");
+		File ochiaiFile = new File(path.getAbsolutePath() + File.separator +"ochiai.ranking.csv");
+		// Short checks for existance - exit early and hard if missing
 
-		@Override
-		public int compare(SuspiciousCode o1, SuspiciousCode o2) {
-			if (o1 == null || o2 == null) {
-				return 0;
+		// Aggregator objects
+		List<SuspiciousCode> codeCandidates = new ArrayList<>();
+		List<SuspiciousCode> codes = new ArrayList<>();
+		Set<String> failingTestCases = new HashSet<>();
+
+		try (BufferedReader br = new BufferedReader(new FileReader(ochiaiFile))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				// At this point, just add all non-null elements to the candidates
+				// Filtering is done below
+				SuspiciousCode sc = parseLineOchiaiLine(line);
+				if (sc != null )
+					codeCandidates.add(sc);
 			}
-			return Double.compare(o2.getSuspiciousValue(), o1.getSuspiciousValue());
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		// add the according suspicious values to the results
+		for (SuspiciousCode c : codeCandidates){
+			if(c.getSuspiciousValue() > minimumSuspiciousness){
+				codes.add(c);
+			}
+		}
+		// If there are none, just add all candidates (current default behaviour of astor)
+		if (codes.isEmpty())
+			codes.addAll(codeCandidates);
+		// Limit and filter return values by the system property
+		codes = codes.stream()
+				// Iff zero values are allowed, filter nothing
+				// Otherwise filter out 0 values
+				.filter(c ->
+						ConfigurationProperties.getPropertyBool("considerzerovaluesusp") && c.getSuspiciousValue() > 0
+				)
+				// Sort entries by their suspiciousness descending (most susp first)
+				.sorted((a,b)->Double.compare(a.getSuspiciousValue(),b.getSuspiciousValue()))
+				// Limit to the first n given by system properties
+				.limit(ConfigurationProperties.getPropertyInt("maxsuspcandidates"))
+				.collect(Collectors.toList());
 
+		logger.debug("Reading the report.csv worked and found " + codes.size() + " lines of suspicious code");
+		// A line of the tests.csv looks the following:
+		// nl.tudelft.mutated_rers.Problem1_ESTest#test002,FAIL,4395022,java.lang.IllegalArgumentException:
+		final String testCSVHeader = "name,outcome,runtime,stacktrace";
+		try (BufferedReader br = new BufferedReader(new FileReader(testpath))) {
+			String test_line;
+			while ((test_line = br.readLine()) != null) {
+				// Skip the header
+				if (test_line.equals(testCSVHeader))
+					continue;
+				logger.trace(test_line);
+				// Not all of these attributes are actually used,
+				// But I found them useful during the debugging process
+				String[] linePieces = test_line.split(",");
+				String testName = linePieces[0].split("#")[1];
+				String testclassName = linePieces[0].split("#")[1];
+				String status = linePieces[1];
+				// Stacktrace is only around for failing tests
+				if(linePieces.length>2) {
+					String stacktrace = linePieces[2];
+				}
+				if(status.equals("FAIL")){
+					failingTestCases.add(testName);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		logger.debug("Reading the tests.csv worked and found " + failingTestCases.size() + " failing tests");
+
+		codes.forEach(e -> logger.trace(e));
+		failingTestCases.forEach(e -> logger.trace(e));
+		FaultLocalizationResult result = new FaultLocalizationResult(codes, failingTestCases.stream().collect(Collectors.toList()));
+
+		return result;
 	}
 
-	@Override
-	public List<String> findTestCasesToExecute(ProjectRepairFacade projectFacade) {
-		List<String> testCasesToRun = FinderTestCases.findJUnit4XTestCasesForRegression(projectFacade);
-		return testCasesToRun;
-	}
+	/**
+	 * This method parses a line of the ochiai.csv created by gzoltar into this projects internal suspicious code.
+	 * A line of the file looks as following:
+	 *	name;suspiciousness_value
+	 *	nl.tudelft.mutated_rers$Problem1_ESTest#test002():39;1.0
+	 * Where the name follows the pattern
+	 *	package$class#method:line
+	 * The suspiciousness-value is a double between 0 and 1.
+	 *
+	 * This format matches the output of Gzoltar Version 1.7.3-SNAPSHOT
+	 * @param line a single line of the ochiai.csv
+	 * @return the parsed object created from an ochiai line. Null for the header. Null in case of parsing error.
+	 *
+	 * This method should work for other reports as well (e.g. a "tarantula.csv" created by gzoltar).
+	 */
+	public static SuspiciousCode parseLineOchiaiLine(String line) {
+		//Shortcut: header returns null
+		if (line.equals("name;suspiciousness_value"))
+			return null;
+		final String CSV_SEPARATOR = ";";
 
+		String location = line.split(CSV_SEPARATOR)[0];
+		String susp = line.split(CSV_SEPARATOR)[1];
+		//For parsing the pieces, put everything into a try catch block
+		try {
+			// Cut the location into pieces according to the separators
+			// "$" is a regex character, and must be escaped with a double \ beforehand
+			String packageName = location.split("\\$")[0];
+			String remainingLoc = location.split("\\$")[1];
+
+			String className = remainingLoc.split("#")[0];
+			remainingLoc = remainingLoc.split("#")[1];
+
+			String methodName = remainingLoc.split(":")[0];
+			remainingLoc = remainingLoc.split(":")[1];
+
+			int lineNumber = Integer.parseInt(remainingLoc);
+			// Create a new suspicious code object and set the found values
+			SuspiciousCode sc = new SuspiciousCode();
+
+			sc.setSusp(Double.parseDouble(susp));
+
+			sc.setLineNumber(Integer.valueOf(lineNumber));
+
+			sc.setClassName(className);
+			sc.setMethodName(methodName);
+
+			// TODO: Does the classname should have package prefix?
+			// TODO: Is the FileName required and where do I get it from?
+
+			return sc;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public SuspiciousCode parseLine(String line) {
 		try {
@@ -618,50 +586,27 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		}
 	}
 
-	public FaultLocalizationResult parseOutputFile(File path, Double thr) {
-		File spectrapath = new File(path.getAbsolutePath() + File.separator + "spectra");
-		File testpath = new File(path.getAbsolutePath() + File.separator + "tests");
 
-		List<SuspiciousCode> codes = new ArrayList<>();
-		List<String> failingTestCases = new ArrayList<>();
-		try (BufferedReader br = new BufferedReader(new FileReader(spectrapath))) {
+	/*
+        Short Interface to compare two pieces of susipicious code.
+        It accepts null-values and defaults to 0, otherwise it compares the values found.
+         */
+	public class ComparatorCandidates implements Comparator<SuspiciousCode> {
 
-			String line;
-			while ((line = br.readLine()) != null) {
-				// System.out.println(line);
-				SuspiciousCode sc = parseLine(line);
-				if (sc != null && sc.getSuspiciousValue() > 0 && sc.getSuspiciousValue() >= thr)
-					codes.add(sc);
+		@Override
+		public int compare(SuspiciousCode o1, SuspiciousCode o2) {
+			if (o1 == null || o2 == null) {
+				return 0;
 			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
+			return Double.compare(o2.getSuspiciousValue(), o1.getSuspiciousValue());
 		}
 
-		// org.apache.commons.lang3.AnnotationUtilsTest#testAnnotationsOfDifferingTypes,PASS,92358174
-		try (BufferedReader br = new BufferedReader(new FileReader(testpath))) {
+	}
 
-			String line;
-			while ((line = br.readLine()) != null) {
-				System.out.println(line);
-				String[] lineS = line.split(",");
-				if (lineS[1].equals("FAIL")) {
-					String name = lineS[0].split("#")[0];
-					if (!failingTestCases.contains(name))
-						failingTestCases.add(name);
-				}
-
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		codes.forEach(e -> logger.debug(e));
-		failingTestCases.forEach(e -> logger.debug(e));
-		FaultLocalizationResult result = new FaultLocalizationResult(codes, failingTestCases);
-
-		return result;
+	@Override
+	public List<String> findTestCasesToExecute(ProjectRepairFacade projectFacade) {
+		List<String> testCasesToRun = FinderTestCases.findJUnit4XTestCasesForRegression(projectFacade);
+		return testCasesToRun;
 	}
 
 

@@ -209,7 +209,7 @@ public class GZoltarClientMasterFaultLocalization extends GZoltarFaultLocalizati
 		}
 	}
 
-	public FaultLocalizationResult parseOutputFile(File path, Double thr) {
+	public FaultLocalizationResult parseOutputFile(File path, Double minimumSuspiciousness) {
 		File spectrapath = new File(path.getAbsolutePath() + File.separator + "spectra");
 		File testpath = new File(path.getAbsolutePath() + File.separator + "tests");
 
@@ -221,7 +221,7 @@ public class GZoltarClientMasterFaultLocalization extends GZoltarFaultLocalizati
 			while ((line = br.readLine()) != null) {
 				// System.out.println(line);
 				SuspiciousCode sc = parseLine(line);
-				if (sc != null && sc.getSuspiciousValue() > 0 && sc.getSuspiciousValue() >= thr)
+				if (sc != null && sc.getSuspiciousValue() > 0 && sc.getSuspiciousValue() >= minimumSuspiciousness)
 					codes.add(sc);
 			}
 
