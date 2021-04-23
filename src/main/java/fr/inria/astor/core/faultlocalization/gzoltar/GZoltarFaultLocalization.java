@@ -175,14 +175,15 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
      * The Astor-ConfigurationProperties are particularly important for this method.
 	 * The properties used are
 	 * 	- gzoltarpath
+	 * 	- flthreshold
 	 * 	- considerzerovaluesusp (downstream)
 	 * 	- maxsuspcandidates (downstream)
      *
      * An important sidenote is, if results are found but none is above the threshold,
      * all results are being returned as fitting.
      *
-     * At the moment, it fails "gracefully" when run above Java 8.
-	 * The gzoltar version required for all elements that include the spectrum is 1.9.3-SNAPSHOT at the moment.
+	 * The gzoltar version required for all elements that include the spectrum is 1.9.3-SNAPSHOT at the moment,
+	 * others fail above Java8 and might use a different format.
 	 * Also, due to serialization in the .ser file by gzoltar, the used CLI and the libraries used here need to match.
      *
      * @param locationBytecode The Path to the ByteCode to be run
@@ -227,6 +228,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		// 	2) the .ser file created by gzoltar
 		// 	3) (maybe) the reports created before reading them in
 		// If it does not exist, make it, otherwise remove all old content
+		// TODO: Use actual java TempFile Method
         File tmpDir = new File("/tmp/astor/");
         if (!tmpDir.exists()){
             tmpDir.mkdirs();
@@ -328,8 +330,10 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			throw new UnsupportedOperationException("Reports were not created/found at "+reportsDirectory.getAbsolutePath());
 		}
 
+		double threshold =  ConfigurationProperties.getPropertyDouble("flthreshold");
+
 		FaultLocalizationResult result = parseOutputFile(new File(tmpDir+File.separator+"reports"
-				+File.separator+"sfl"+File.separator+"txt"),0.1);
+				+File.separator+"sfl"+File.separator+"txt"),threshold);
 
 		//TODO: Do I have to run suspCode.setCoveredByTests ?
 
@@ -358,7 +362,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		// Paths to the data files
 		File testpath = new File(path.getAbsolutePath() + File.separator + "tests.csv");
 		File ochiaiFile = new File(path.getAbsolutePath() + File.separator +"ochiai.ranking.csv");
-		// Short checks for existance - exit early and hard if missing
+		// Short checks for existence - exit early and hard if missing
 		if(!testpath.exists() || !testpath.isFile()){
 			throw new UnsupportedOperationException("Tests.csv was not created/found");
 		}
@@ -366,8 +370,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			throw new UnsupportedOperationException("Ochiai.csv was not created/found");
 		}
 		// Aggregator objects
-		List<SuspiciousCode> codeCandidates = new ArrayList<>();
-		List<SuspiciousCode> codes = new ArrayList<>();
+		List<SuspiciousCode> codeCandidates = new ArrayList<>();	// The unfiltered lines of code found
+		List<SuspiciousCode> codes = new ArrayList<>();				// The filtered lines of code
 		Set<String> failingTestCases = new HashSet<>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader(ochiaiFile))) {
@@ -382,12 +386,14 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		logger.info("Found " + codeCandidates.size() + " Code Candidates in the file " + ochiaiFile.getAbsolutePath());
 		// add the according suspicious values to the results
 		for (SuspiciousCode c : codeCandidates){
 			if(c.getSuspiciousValue() > minimumSuspiciousness){
 				codes.add(c);
 			}
 		}
+		logger.info(codes.size() + " Code Candidates reached the suspiciousness-threshold");
 		// If there are none, just add all candidates (current default behaviour of astor)
 		if (codes.isEmpty())
 			codes.addAll(codeCandidates);
@@ -395,8 +401,12 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		codes = codes.stream()
 				// Iff zero values are allowed, filter nothing
 				// Otherwise filter out 0 values
-				.filter(c ->
-						ConfigurationProperties.getPropertyBool("considerzerovaluesusp") && c.getSuspiciousValue() > 0
+				.filter(c -> {
+						if(ConfigurationProperties.getPropertyBool("considerzerovaluesusp"))
+							return true;
+						else
+							return c.getSuspiciousValue() > 0;
+						}
 				)
 				// Sort entries by their suspiciousness descending (most susp first)
 				.sorted((a,b)->Double.compare(a.getSuspiciousValue(),b.getSuspiciousValue()))
@@ -404,7 +414,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 				.limit(ConfigurationProperties.getPropertyInt("maxsuspcandidates"))
 				.collect(Collectors.toList());
 
-		logger.debug("Reading the report.csv worked and found " + codes.size() + " lines of suspicious code");
+		logger.info("Reading the report.csv worked and found " + codes.size() + " lines of suspicious code");
 		// A line of the tests.csv looks the following:
 		// nl.tudelft.mutated_rers.Problem1_ESTest#test002,FAIL,4395022,java.lang.IllegalArgumentException:
 		final String testCSVHeader = "name,outcome,runtime,stacktrace";
@@ -432,12 +442,14 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		logger.debug("Reading the tests.csv worked and found " + failingTestCases.size() + " failing tests");
+		logger.info("Reading the tests.csv worked and found " + failingTestCases.size() + " failing tests");
 
+		logger.trace("Detailed info on suspicious code:");
 		codes.forEach(e -> logger.trace(e));
+		logger.trace("Detailed info on failing tests:");
 		failingTestCases.forEach(e -> logger.trace(e));
-		FaultLocalizationResult result = new FaultLocalizationResult(codes, failingTestCases.stream().collect(Collectors.toList()));
 
+		FaultLocalizationResult result = new FaultLocalizationResult(codes, failingTestCases.stream().collect(Collectors.toList()));
 		return result;
 	}
 
@@ -494,13 +506,10 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			SuspiciousCode sc = new SuspiciousCode();
 
 			sc.setSusp(Double.parseDouble(susp));
-
 			sc.setLineNumber(Integer.valueOf(lineNumber));
-
 			sc.setClassName(className);
 			sc.setMethodName(methodName);
-
-			// TODO: Does the classname should have package prefix?
+			// TODO: Should the classname have package prefix?
 			// TODO: Is the FileName required and where do I get it from?
 
 			return sc;
@@ -517,10 +526,13 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 	 * This method returns the first element that comes AFTER a markup sign (e.g. $)
 	 * but ends the string after any other markup Sign.
 	 *
-	 * Returns null if there was no markup Sign in the stringToSplit. Returns null if either parameter is null.
+	 * Returns null if there was no markup Sign in the stringToSplit.
+	 * Returns null if either parameter is null.
+	 *
 	 * @param stringToSplit The string in which to search
 	 * @param markupSign The sign to find a substring after, one of "$","#",":"
-	 * @return The first sub-string between the markup sign and any other char "$","#",":". Null if there was none.
+	 * @return The first sub-string between the markup sign and any other char "$","#",":".
+	 * 		   Null if there was none.
 	 */
 	public static String firstAfter(String stringToSplit, String markupSign){
 		if (stringToSplit == null || markupSign == null) {
@@ -528,6 +540,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		}
 		String[] pieces;
 		if(markupSign.equals("$"))
+			// Edge case: the split function takes "$" as a regex operator and must escape it with double \
 			pieces = stringToSplit.split("\\$");
 		else
 			pieces = stringToSplit.split(markupSign);
@@ -547,7 +560,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 	}
 
 	/*
-        Short Interface to compare two pieces of susipicious code.
+        Short Interface to compare two pieces of suspicious code.
         It accepts null-values and defaults to 0, otherwise it compares the values found.
          */
 	public class ComparatorCandidates implements Comparator<SuspiciousCode> {

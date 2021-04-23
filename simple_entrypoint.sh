@@ -2,7 +2,7 @@ echo "Starting astor"
 
 java \
 -Dlog4j.configurationFile=/apps/astor/log4j2.xml \
--Xmx8g \
+-Dgzoltarpath=/apps/astor/lib/moderngzoltar \
 -cp $(cat /apps/astor/astor-classpath.txt):target/classes \
 fr.inria.main.evolution.AstorMain \
 -mode $astor_mode \
