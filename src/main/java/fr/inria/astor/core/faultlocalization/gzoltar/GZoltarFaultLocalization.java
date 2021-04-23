@@ -5,29 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import com.gzoltar.core.AgentConfigs;
-import com.gzoltar.core.instr.granularity.GranularityLevel;
-import com.gzoltar.core.spectrum.ISpectrum;
-import com.gzoltar.fl.FaultLocalization;
-import com.gzoltar.fl.FaultLocalizationFamily;
-import com.gzoltar.report.fl.config.ConfigFaultLocalizationFamily;
-import com.gzoltar.report.fl.config.ConfigFaultLocalizationReport;
-import com.gzoltar.sfl.SFLFormulas;
 import org.apache.log4j.Logger;
-
-import com.gzoltar.report.fl.FaultLocalizationReportBuilder;
-import com.gzoltar.core.test.TestResult;
-
-//import com.gzoltar.core.GZoltar;
-//import com.gzoltar.core.components.Statement;
-//import com.gzoltar.core.instr.testing.TestResult;
 
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -100,6 +80,8 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		} else {
 			testcasesToExecute = failingTest;
 		}
+
+		locationBytecode = locationBytecode.replace("//","/");
 
 		if (testcasesToExecute == null || testcasesToExecute.isEmpty()) {
 			new IllegalArgumentException("Astor needs at least one test case for running");
@@ -187,11 +169,14 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
     /**
      * This method initializes and runs Gzoltar, and returns unfiltered results of the process.
-	 * Filtering, such as for suspiciousness or un-interesting classes, is done further upstream.
-     *
+	 * Filtering, such as for suspiciousness or un-interesting classes, is done further downstream.
      * The primary part of the method maps the properties given in parameters and the Astor-Configuration
-     * to the attributes required by Gzoltar.
+     * to the attributes required by Gzoltar and runs the Gzoltar-CLI.
      * The Astor-ConfigurationProperties are particularly important for this method.
+	 * The properties used are
+	 * 	- gzoltarpath
+	 * 	- considerzerovaluesusp (downstream)
+	 * 	- maxsuspcandidates (downstream)
      *
      * An important sidenote is, if results are found but none is above the threshold,
      * all results are being returned as fitting.
@@ -211,23 +196,23 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 	 * When used in this method, the abbreviation "CP" is for "ClassPath".
      * Further Information on AgentConfig
      * https://github.com/GZoltar/gzoltar/blob/master/com.gzoltar.core/src/main/java/com/gzoltar/core/AgentConfigs.java
-     *
      */
 	protected FaultLocalizationResult searchSuspicious(String locationBytecode, List<String> testsToExecute,
 			List<String> toInstrument, List<String> cp, String srcFolder) throws Exception {
 
+		String gzoltarBasePath = ConfigurationProperties.getProperty("gzoltarpath");
 		// The 4 dependencies on Gzoltar
-		// TODO: De-hardcode these into system configuration
-		final String GZOLTARCLIJAR = System.getProperty("user.home")+"/Code/astor/lib/moderngzoltar/gzoltarcli.jar";
-		final String GZOLTARAGENTJAR = System.getProperty("user.home")+"/Code/astor/lib/moderngzoltar/gzoltaragent.jar";
-		final String JUNITJAR = System.getProperty("user.home")+"/Code/astor/lib/moderngzoltar/junit.jar";
-		final String HAMCRESTJAR = System.getProperty("user.home")+"/Code/astor/lib/moderngzoltar/hamcrest-core.jar";
+		// Fulfill the BasePath to the actual jars
+		final String GZOLTARCLIJAR = gzoltarBasePath + File.separator + "gzoltarcli.jar";
+		final String GZOLTARAGENTJAR = gzoltarBasePath + File.separator + "gzoltaragent.jar";
+		final String JUNITJAR = gzoltarBasePath + File.separator + "junit.jar";
+		final String HAMCRESTJAR = gzoltarBasePath + File.separator + "hamcrest-core.jar";
 		//Check for their existence
 		if (!(new File(GZOLTARCLIJAR)).exists()||!(new File(GZOLTARAGENTJAR)).exists()
 			|| !(new File(HAMCRESTJAR)).exists() || !(new File(JUNITJAR)).exists())
 		{
 			throw new UnsupportedOperationException(
-					"Atleast one of the Gzoltar Dependencies (CLI,Agent,Hamcrest or JUnit) is not found under their given path");
+					"At least one of the Gzoltar Dependencies (CLI,Agent,Hamcrest or JUnit) is not found under the given path '" + gzoltarBasePath + "'");
 		}
 
 		// The projectLocationDirectory is the Directory containing the .class files of the un-instrumented code
@@ -236,13 +221,6 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			throw new UnsupportedOperationException("The found project location directory does not exist or is not a folder");
 		}
 		logger.debug("Gzoltar run over: " + projLocationFile.getAbsolutePath());
-
-		// The agent configs would be required for a newly created gzoltar-agent,
-		// but we run it from console, so this one can be (mostly) empty.
-        AgentConfigs agentConfigs = new AgentConfigs();
-		// This is the default-finest granularity, others are method or class
-		// A statement/expression granularity is not possible by default Gzoltar
-        agentConfigs.setGranularity(GranularityLevel.LINE);
 
         // This temporary folder should keep
 		// 	1) the instrumented class files
@@ -257,6 +235,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
         		f.delete();
 		}
 
+		logger.debug("Running Gzoltar CLI 'version'");
         // Run the Version first (just to have another sanity check)
 		new ProcessBuilder()
 				//The Command MUST be as varargs or a list, putting the command in a single string doesn't work
@@ -265,6 +244,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 				.directory(tmpDir)
 				.start();
 
+		logger.debug("Running Gzoltar CLI 'listTestMethods'");
         // Get the Gzoltar Tests, they are written to tests.txt
 		String testMethodCp = projLocationFile.getAbsolutePath() + ":"+GZOLTARAGENTJAR+":"+GZOLTARCLIJAR;
 		Process testMethodProcess = new ProcessBuilder()
@@ -279,6 +259,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			throw new UnsupportedOperationException("Tests.txt was not created/found");
 		}
 
+		logger.debug("Running Gzoltar CLI 'instrument'");
 		String instrumentationCP = testMethodCp;
 		Process instrumentationProcess = new ProcessBuilder()
 				.command("java","-cp",instrumentationCP,
@@ -298,7 +279,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		// Unlike the other CPs, running the test needs the instrumented classes but NOT the original ones in the classpath.
 		String runTestsCP = instrumentationFile.getAbsolutePath()
 				+ ":" + HAMCRESTJAR  + ":" + GZOLTARCLIJAR + ":" + GZOLTARAGENTJAR;
-
+		logger.debug("Running Gzoltar CLI 'runTestMethods'");
 		Process testProcess = new ProcessBuilder()
 				.command("java","-cp",runTestsCP,
 						//"-Dgzoltar-agent.output=\"file\"",
@@ -318,6 +299,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			throw new UnsupportedOperationException("gzoltar.ser was not created/found");
 		}
 
+		logger.debug("Running Gzoltar CLI 'faultLocalizationReport'");
 		String reportCP = instrumentationCP + ":" + testMethodCp;
 		Process reportProcess = new ProcessBuilder()
 				.command("java","-cp",reportCP,
@@ -341,60 +323,16 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		// The report files as txt files are always under $givenDir/sfl/txt/xxx.csv
 		// sfl is short for spectrum-based-fault-localization
-		File ochiaiFile = new File(tmpDir+File.separator+"reports"
-				+File.separator+"sfl"+File.separator+"txt"+File.separator+"ochiai.ranking.csv");
-		if(!ochiaiFile.exists() || !ochiaiFile.isFile()){
-			throw new UnsupportedOperationException("Reports were not created/found");
+		File reportsDirectory = new File(tmpDir+File.separator+"reports");
+		if(!reportsDirectory.exists() || !reportsDirectory.isDirectory()){
+			throw new UnsupportedOperationException("Reports were not created/found at "+reportsDirectory.getAbsolutePath());
 		}
 
 		FaultLocalizationResult result = parseOutputFile(new File(tmpDir+File.separator+"reports"
-				+File.separator+"sfl"+File.separator+"txt"),0.01);
-		// From hereon we have two options
-		// a) run gzoltar up to the point of reporting, reading in the spectrum and make the report here
-		// b) run gzoltar including the reporting, and read in the reports here
-		// The biggest issue is to re-match the found issues to the code here either way I guess.
+				+File.separator+"sfl"+File.separator+"txt"),0.1);
 
-/*
+		//TODO: Do I have to run suspCode.setCoveredByTests ?
 
-		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
-
-		List<Statement> gzCandidates = new ArrayList();
-
-
-        // If we do not accept zero-values by configuration, we do remove all 0 elements.
-        // Otherwise they are kept.
-		if (!ConfigurationProperties.getPropertyBool("considerzerovaluesusp")) {
-			gzCandidates.removeIf(susp -> (susp.getSuspiciousness() == 0));
-		}
-
-		// we order the suspicious DESC
-		Collections.sort(gzCandidates, (o1, o2) -> Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()));
-
-		// We select the best X candidates.
-		int max = (gzCandidates.size() < maxSuspCandidates) ? gzCandidates.size() : maxSuspCandidates;
-
-		List<SuspiciousCode> candidates = new ArrayList<SuspiciousCode>();
-
-		for (int i = 0; i < max; i++) {
-			Statement gzoltarStatement = gzCandidates.get(i);
-			String compName = gzoltarStatement.getMethod().getParent().getLabel();
-
-			logger.debug("Suspicious: line " + compName + " l: " + gzoltarStatement.getLineNumber() + ", susp "
-					+ df.format(gzoltarStatement.getSuspiciousness()));
-			SuspiciousCode suspcode = new SuspiciousCode(compName, gzoltarStatement.getMethod().getName(),
-					gzoltarStatement.getLineNumber(), gzoltarStatement.getSuspiciousness(),
-					gzoltarStatement.getCountMap());
-			candidates.add(suspcode);
-
-			List<TestCaseResult> test = getTestCaseResults(testResults, gzoltarStatement);
-			suspcode.setCoveredByTests(test);
-
-		}
-
-		logger.info("Gzoltar found: " + candidates.size() + " with susp > " + thr + ", we consider: " + max);
-
-		return new FaultLocalizationResult(candidates, failingTestCases);
-		*/
         return result;
 	}
 
@@ -421,7 +359,12 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		File testpath = new File(path.getAbsolutePath() + File.separator + "tests.csv");
 		File ochiaiFile = new File(path.getAbsolutePath() + File.separator +"ochiai.ranking.csv");
 		// Short checks for existance - exit early and hard if missing
-
+		if(!testpath.exists() || !testpath.isFile()){
+			throw new UnsupportedOperationException("Tests.csv was not created/found");
+		}
+		if(!ochiaiFile.exists() || !ochiaiFile.isFile()){
+			throw new UnsupportedOperationException("Ochiai.csv was not created/found");
+		}
 		// Aggregator objects
 		List<SuspiciousCode> codeCandidates = new ArrayList<>();
 		List<SuspiciousCode> codes = new ArrayList<>();
@@ -507,15 +450,26 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 	 *	package$class#method:line
 	 * The suspiciousness-value is a double between 0 and 1.
 	 *
+	 * There was an issue that some lines are of the format
+	 * 	org.apache.commons.math.complex$ComplexTest$TestComplex#ComplexTest$TestComplex(double,double):962;0.0
+	 * So they contain multiple $ signs, which represent inner classes.
+	 * This is currently addressed by picking the first class as the class name and the first method as the method name.
+	 * While I have not seen examples with multiple #'s, it is addressed in the same way.
+	 *
+	 *
 	 * This format matches the output of Gzoltar Version 1.7.3-SNAPSHOT
 	 * @param line a single line of the ochiai.csv
 	 * @return the parsed object created from an ochiai line. Null for the header. Null in case of parsing error.
 	 *
 	 * This method should work for other reports as well (e.g. a "tarantula.csv" created by gzoltar).
+	 * Could be made static, but has been made non-static to utilize the logger.
 	 */
-	public static SuspiciousCode parseLineOchiaiLine(String line) {
+	public SuspiciousCode parseLineOchiaiLine(String line) {
 		//Shortcut: header returns null
 		if (line.equals("name;suspiciousness_value"))
+			return null;
+		//Shortcut: Format does not provide atleast on class and method
+		if (!line.contains("$") || !line.contains("#"))
 			return null;
 		final String CSV_SEPARATOR = ";";
 
@@ -525,16 +479,17 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		try {
 			// Cut the location into pieces according to the separators
 			// "$" is a regex character, and must be escaped with a double \ beforehand
-			String packageName = location.split("\\$")[0];
-			String remainingLoc = location.split("\\$")[1];
+			String[] packagePieces = location.split("\\$");
+			String packageName = packagePieces[0];
 
-			String className = remainingLoc.split("#")[0];
-			remainingLoc = remainingLoc.split("#")[1];
+			// ClassName and MethodName are the outermost instances of these in the files, in case the file contains inner classes etc.
+			String className = firstAfter(location,"$");
+			String methodName = firstAfter(location,"#");
 
-			String methodName = remainingLoc.split(":")[0];
-			remainingLoc = remainingLoc.split(":")[1];
+			// The pattern of taking the last piece should be irrelevant for linenumbers,
+			// as unlike classes/methods linenumbers should be unique
+			int lineNumber = Integer.parseInt(location.split(":")[1]);
 
-			int lineNumber = Integer.parseInt(remainingLoc);
 			// Create a new suspicious code object and set the found values
 			SuspiciousCode sc = new SuspiciousCode();
 
@@ -550,42 +505,46 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 			return sc;
 		} catch (Exception e) {
+			logger.error("Issue with parsing line: " + line);
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public SuspiciousCode parseLine(String line) {
-		try {
-			if (line.equals("Component,OCHIAI"))
-				return null;
-			SuspiciousCode sc = new SuspiciousCode();
-
-			String[] infoLine = line.split("#");
-			String[] linesusp = infoLine[1].split(",");
-			sc.setLineNumber(Integer.valueOf(linesusp[0]));
-			sc.setSusp(Double.parseDouble(linesusp[1]));
-
-			String[] splitFile = line.split("<");
-			String fileName = splitFile[0].replace("[", ".");
-			sc.setFileName(fileName);
-			String[] classLine = splitFile[1].split("\\{");
-			String className = classLine[0];
-			sc.setClassName(className);
-			String method = "";
-			if (classLine.length > 1)
-				method = classLine[1];//
-			sc.setMethodName(method);
-
-			return sc;
-		} catch (Exception e) {
-			logger.error("-->" + line);
-			logger.error(e);
-			e.printStackTrace();
+	/**
+	 * This method is a short helper as it turned out to be rather complex to get the classes and methods
+	 * when there are private inner classes and methods in play.
+	 * This method returns the first element that comes AFTER a markup sign (e.g. $)
+	 * but ends the string after any other markup Sign.
+	 *
+	 * Returns null if there was no markup Sign in the stringToSplit. Returns null if either parameter is null.
+	 * @param stringToSplit The string in which to search
+	 * @param markupSign The sign to find a substring after, one of "$","#",":"
+	 * @return The first sub-string between the markup sign and any other char "$","#",":". Null if there was none.
+	 */
+	public static String firstAfter(String stringToSplit, String markupSign){
+		if (stringToSplit == null || markupSign == null) {
 			return null;
 		}
-	}
+		String[] pieces;
+		if(markupSign.equals("$"))
+			pieces = stringToSplit.split("\\$");
+		else
+			pieces = stringToSplit.split(markupSign);
 
+		if (pieces.length <= 1) {
+			return null;
+		}
+		String firstPiece = pieces[1];
+
+		String returnValue =
+				firstPiece
+						.split("\\$")[0] // Cut off any other classes
+						.split("#")[0] // Cut off any other methods
+						.split(":")[0]; // Cut off linenumber
+
+		return returnValue;
+	}
 
 	/*
         Short Interface to compare two pieces of susipicious code.

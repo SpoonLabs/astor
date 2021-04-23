@@ -14,7 +14,7 @@ RUN apt-get update
 
 ENV JAVA7_HOME /usr/lib/jvm/zulu-7-amd64
 # Either Gzoltar or CoCoSpoon
-ENV astor_faultlocalization CoCoSpoon
+ENV astor_faultlocalization Gzoltar
 # Either jMutRepair, jGenProg, jKali
 ENV astor_mode jMutRepair
 # Max Time in Minutes for astor to run - abort after
@@ -22,6 +22,7 @@ ENV astor_max_time 10
 # Population of Candidates (for approaches that support this) in Astor
 ENV astor_population 8
 ENV astor_max_generations 3000
+ENV gzoltar_lib_path /apps/astor/lib/moderngzoltar
 
 # Copy Astor around and install it 
 WORKDIR /apps/astor
