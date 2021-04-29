@@ -507,9 +507,11 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 			sc.setSusp(Double.parseDouble(susp));
 			sc.setLineNumber(Integer.valueOf(lineNumber));
-			sc.setClassName(className);
+			// There was an issue with the ClassName not being recognized for later matching
+			// Hence, the Package name is added to give a fully qualified classname
+			String fullyQualifiedClassName = packageName + "." + className;
+			sc.setClassName(fullyQualifiedClassName);
 			sc.setMethodName(methodName);
-			// TODO: Should the classname have package prefix?
 			// TODO: Is the FileName required and where do I get it from?
 
 			return sc;

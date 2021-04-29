@@ -49,7 +49,13 @@ public class LaucherJUnitProcess {
 
 	public TestResult execute(String jvmPath, String classpath, List<String> classesToExecute, int waitTime) {
 		Process p = null;
-		jvmPath += File.separator + "java";
+		// In the current version, this would point to ~/lib/jvm/zulu7/java which does not exist
+		// It must point to ~/lib/jvm/zulu7/bin/java
+		String adjustedJvmPath = jvmPath + File.separator + "bin" + File.separator + "java";
+		// Short check for existance
+		if(!(new File(adjustedJvmPath).exists())){
+			throw new UnsupportedOperationException("There was no Java version at given JVMPath " + adjustedJvmPath);
+		}
 
 		List<String> cls = new ArrayList<>(classesToExecute);
 
@@ -66,7 +72,7 @@ public class LaucherJUnitProcess {
 
 			List<String> command = new ArrayList<String>();
 
-			command.add(jvmPath);
+			command.add(adjustedJvmPath);
 			command.add("-Xmx2048m");
 
 			String[] ids = ConfigurationProperties.getProperty(MetaGenerator.METALL).split(File.pathSeparator);
