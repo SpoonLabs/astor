@@ -30,6 +30,15 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 	public static final String PACKAGE_SEPARATOR = "-";
 	Logger logger = Logger.getLogger(GZoltarFaultLocalization.class.getName());
 
+	/*
+	Whether or not Classes and Methods that contain the keywords "test" or "Tests"
+	will be removed from susp code and from susp classes.
+	Reason for this is that without it the tests that are used to calculate suspiciousness are 100% susp.
+	Default should be True.
+	TODO: Make this a configurable parameter with default true.
+	 */
+	private static final boolean REMOVE_TESTS = true;
+
 	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade project,
 			List<String> regressionTestForFaultLocalization) throws Exception {
 
@@ -204,16 +213,25 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		String gzoltarBasePath = ConfigurationProperties.getProperty("gzoltarpath");
 		// The 4 dependencies on Gzoltar
 		// Fulfill the BasePath to the actual jars
-		final String GZOLTARCLIJAR = gzoltarBasePath + File.separator + "gzoltarcli.jar";
-		final String GZOLTARAGENTJAR = gzoltarBasePath + File.separator + "gzoltaragent.jar";
-		final String JUNITJAR = gzoltarBasePath + File.separator + "junit.jar";
-		final String HAMCRESTJAR = gzoltarBasePath + File.separator + "hamcrest-core.jar";
+		String GZOLTARCLIJAR = gzoltarBasePath + File.separator + "gzoltarcli.jar";
+		String GZOLTARAGENTJAR = gzoltarBasePath + File.separator + "gzoltaragent.jar";
+		String JUNITJAR = gzoltarBasePath + File.separator + "junit.jar";
+		String HAMCRESTJAR = gzoltarBasePath + File.separator + "hamcrest-core.jar";
 		//Check for their existence
 		if (!(new File(GZOLTARCLIJAR)).exists()||!(new File(GZOLTARAGENTJAR)).exists()
 			|| !(new File(HAMCRESTJAR)).exists() || !(new File(JUNITJAR)).exists())
 		{
 			throw new UnsupportedOperationException(
 					"At least one of the Gzoltar Dependencies (CLI,Agent,Hamcrest or JUnit) is not found under the given path '" + gzoltarBasePath + "'");
+		} else {
+			/*
+			Jar Paths might not be absolute - which will cause issues with running the Gzoltar processes "from anywhere".
+			The gzoltar processes are run in subdirectories, so we resolve the jars to their absolute paths.
+			*/
+			GZOLTARAGENTJAR = (new File(GZOLTARAGENTJAR)).getAbsolutePath();
+			GZOLTARCLIJAR = (new File(GZOLTARCLIJAR)).getAbsolutePath();
+			JUNITJAR = (new File(JUNITJAR)).getAbsolutePath();
+			HAMCRESTJAR = (new File(HAMCRESTJAR)).getAbsolutePath();
 		}
 
 		// The projectLocationDirectory is the Directory containing the .class files of the un-instrumented code
@@ -258,7 +276,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		testMethodProcess.waitFor();
 		File testsTxt = new File(tmpDir + File.separator + "tests.txt");
 		if(!testsTxt.exists() || !testsTxt.isFile()){
-			throw new UnsupportedOperationException("Tests.txt was not created/found");
+			throw new UnsupportedOperationException("tests.txt was not created/found");
 		}
 
 		logger.debug("Running Gzoltar CLI 'instrument'");
@@ -407,6 +425,18 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 						else
 							return c.getSuspiciousValue() > 0;
 						}
+				)
+				// Remove "Test" Methods iff parameter is set for it
+				.filter(d -> {
+					if(REMOVE_TESTS) {
+						// If tests are filtered, check if they contain in either class or method name "test" or "tests"
+						return !d.getClassName().toLowerCase().contains("test")
+								&& !d.getMethodName().toLowerCase().contains("test");
+					} else {
+						// If tests are not filtered out, just accept any code here
+						return true;
+					}
+				}
 				)
 				// Sort entries by their suspiciousness descending (most susp first)
 				.sorted((a,b)->Double.compare(a.getSuspiciousValue(),b.getSuspiciousValue()))
