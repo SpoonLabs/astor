@@ -3,6 +3,7 @@ package fr.inria.astor.core.validation.junit;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
+import org.junit.vintage.*;
 
 /**
  * This class runs a JUnit test suite i.e., a set of test cases.

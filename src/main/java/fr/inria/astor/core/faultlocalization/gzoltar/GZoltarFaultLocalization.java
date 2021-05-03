@@ -584,9 +584,9 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		String returnValue =
 				firstPiece
-						.split("\\$")[0] // Cut off any other classes
-						.split("#")[0] // Cut off any other methods
-						.split(":")[0]; // Cut off linenumber
+						.split("\\$")[0] 	// Cut off any other classes
+						.split("#")[0] 	// Cut off any other methods
+						.split(":")[0]; 	// Cut off linenumber
 
 		return returnValue;
 	}
@@ -596,7 +596,6 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
         It accepts null-values and defaults to 0, otherwise it compares the values found.
          */
 	public class ComparatorCandidates implements Comparator<SuspiciousCode> {
-
 		@Override
 		public int compare(SuspiciousCode o1, SuspiciousCode o2) {
 			if (o1 == null || o2 == null) {
@@ -604,7 +603,6 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			}
 			return Double.compare(o2.getSuspiciousValue(), o1.getSuspiciousValue());
 		}
-
 	}
 
 	@Override

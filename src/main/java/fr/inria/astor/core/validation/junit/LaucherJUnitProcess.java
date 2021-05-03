@@ -90,6 +90,12 @@ public class LaucherJUnitProcess {
 
 			ProcessBuilder pb = new ProcessBuilder("/bin/bash");
 
+			ProcessBuilder replacement = new ProcessBuilder(command)
+					.redirectErrorStream(true)	// whether to merge error into output
+					.redirectOutput(ProcessBuilder.Redirect.INHERIT); // Puts the output to this process' stdout stderr
+			Process replacementProcess = replacement.start();
+			replacementProcess.waitFor();
+
 			if (outputInFile) {
 				pb.redirectOutput(ftemp);
 			} else
@@ -249,10 +255,10 @@ public class LaucherJUnitProcess {
 
 	/**
 	 * This method analyze the output of the junit executor (i.e.,
-	 * {@link JUnitTestExecutor}) and return an entity called TestResult with the
+	 * {@link JUnitNologExternalExecutor}) and return an entity called TestResult with the
 	 * result of the test execution
 	 *
-	 * @param p
+	 * @param in
 	 * @return
 	 */
 	protected TestResult getTestResult(BufferedReader in) {

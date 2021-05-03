@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
-import org.junit.runners.model.InitializationError;
 
 import fr.inria.astor.core.validation.junit.filters.TestFilter;
 
@@ -60,7 +59,7 @@ public class JUnitExternalExecutor {
 		}
 	}
 
-	public static void main(String[] arg) throws Exception, InitializationError {
+	public static void main(String[] arg) throws Exception {
 
 		JUnitExternalExecutor re = new JUnitExternalExecutor();
 
@@ -85,6 +84,7 @@ public class JUnitExternalExecutor {
 		List<Class> classes = getClassesToRun(arg);
 		JUnitCore runner = new JUnitCore();
 		Logger.getGlobal().setLevel(Level.OFF);
+		//System.out.println("Hello JUnitExternalExecutor!");
 		Result resultjUnit = runner.run(classes.toArray(new Class[classes.size()]));
 		System.setOut(original);
 
@@ -104,7 +104,7 @@ public class JUnitExternalExecutor {
 					classes.add(c);
 				}
 			} else
-				System.out.println("We discart : " + classString);
+				System.out.println("We discard : " + classString);
 
 		}
 		return classes;
