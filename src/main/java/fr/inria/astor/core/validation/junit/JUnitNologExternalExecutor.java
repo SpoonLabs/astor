@@ -1,9 +1,8 @@
 package fr.inria.astor.core.validation.junit;
 
-import org.junit.runner.Result;
+import org.junit.runner.*;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
-import org.junit.vintage.*;
 
 /**
  * This class runs a JUnit test suite i.e., a set of test cases.
@@ -31,14 +30,15 @@ public class JUnitNologExternalExecutor extends JUnitExternalExecutor {
 		return (OUTSEP + r.getRunCount() + OUTSEP + nr_failures + OUTSEP + "" + OUTSEP);
 	}
 
-	public static void main(String[] arg) throws Exception, InitializationError {
+	public static void main(String[] arg) throws Exception {
 
 		JUnitNologExternalExecutor re = new JUnitNologExternalExecutor();
-
+		System.out.println("NoLogExecutor Main Start");
 		Result result = re.run(arg);
+		System.out.println("NologExecutor Main Result retrieved ");
 		// This sysout is necessary for the communication between process...
 		System.out.println(re.createOutput(result));
-
+		System.out.println("NoLog Executor Main Finished");
 		System.exit(0);
 	}
 

@@ -2,7 +2,6 @@ echo "Starting astor"
 
 java \
 -Dlog4j.configurationFile=/apps/astor/log4j2.xml \
--Dgzoltarpath=/apps/astor/lib/moderngzoltar \
 -cp $(cat /apps/astor/astor-classpath.txt):target/classes \
 fr.inria.main.evolution.AstorMain \
 -mode $astor_mode \
@@ -13,6 +12,7 @@ fr.inria.main.evolution.AstorMain \
 -maxgen $astor_max_generations \
 -faultlocalization $astor_faultlocalization \
 -jvm4testexecution $JAVA7_HOME \
+-parameters gzoltarpath:/apps/astor/lib/moderngzoltar/
 
 # To keep the container open for inspection
 # tail -f /dev/null

@@ -51,6 +51,7 @@ public class LaucherJUnitProcess {
 		Process p = null;
 		// In the current version, this would point to ~/lib/jvm/zulu7/java which does not exist
 		// It must point to ~/lib/jvm/zulu7/bin/java
+		// Which is addressed below
 		String adjustedJvmPath = jvmPath + File.separator + "bin" + File.separator + "java";
 		// Short check for existance
 		if(!(new File(adjustedJvmPath).exists())){
@@ -59,11 +60,25 @@ public class LaucherJUnitProcess {
 
 		List<String> cls = new ArrayList<>(classesToExecute);
 
+		/*
+		Things the classpath must contain at this point:
+		- Astor
+		- The binaries for the system under test (Maybe: variant-bins)
+		- The binaries for the tests of the SUT
+		- The dependencies of astor
+		- The dependencies of the SUT
+		- Maybe: Java 7 TestExecutor
+		- Maybe: Additional JUnit Deps
+		 */
 		String newClasspath = classpath;
+		//newClasspath = newClasspath.replace("\"","").replace("\"","");
 		if (ConfigurationProperties.getPropertyBool("runjava7code") || ProjectConfiguration.isJDKLowerThan8()) {
-			newClasspath = (new File(ConfigurationProperties.getProperty("executorjar")).getAbsolutePath())
-					+ File.pathSeparator + classpath;
+			newClasspath = "\""+(new File(ConfigurationProperties.getProperty("executorjar")).getAbsolutePath())+"\""
+					+ File.pathSeparator + newClasspath;
 		}
+		// This should add the tests to the cp
+		String testlocation = (new File((ConfigurationProperties.getProperty("location")))).getAbsolutePath();
+		newClasspath += newClasspath + File.pathSeparator + testlocation;
 
 		try {
 			File ftemp = null;
@@ -72,7 +87,8 @@ public class LaucherJUnitProcess {
 
 			List<String> command = new ArrayList<String>();
 
-			command.add(adjustedJvmPath);
+			//command.add(adjustedJvmPath);
+			command.add("java");
 			command.add("-Xmx2048m");
 
 			String[] ids = ConfigurationProperties.getProperty(MetaGenerator.METALL).split(File.pathSeparator);
@@ -85,16 +101,19 @@ public class LaucherJUnitProcess {
 			command.add(newClasspath);
 			command.add(laucherClassName().getCanonicalName());
 			command.addAll(cls);
-
+			//log.error("CP is " + newClasspath);
 			printCommandToExecute(command, waitTime);
 
 			ProcessBuilder pb = new ProcessBuilder("/bin/bash");
 
 			ProcessBuilder replacement = new ProcessBuilder(command)
 					.redirectErrorStream(true)	// whether to merge error into output
-					.redirectOutput(ProcessBuilder.Redirect.INHERIT); // Puts the output to this process' stdout stderr
+					.redirectOutput(ProcessBuilder.Redirect.INHERIT) // Puts the output to this process' stdout stderr
+			;
 			Process replacementProcess = replacement.start();
 			replacementProcess.waitFor();
+
+			log.error("Full Command is " + toString(command));
 
 			if (outputInFile) {
 				pb.redirectOutput(ftemp);
@@ -110,15 +129,15 @@ public class LaucherJUnitProcess {
 			try {
 				// Set up the timezone
 				String timeZone = ConfigurationProperties.getProperty("timezone");
-				p_stdin.write("TZ=\"" + timeZone + "\"");
-				p_stdin.newLine();
-				p_stdin.flush();
-				p_stdin.write("export TZ");
-				p_stdin.newLine();
-				p_stdin.flush();
-				p_stdin.write("echo $TZ");
-				p_stdin.newLine();
-				p_stdin.flush();
+				//p_stdin.write("TZ=\"" + timeZone + "\"");
+				//p_stdin.newLine();
+				//p_stdin.flush();
+				//p_stdin.write("export TZ");
+				//p_stdin.newLine();
+				//p_stdin.flush();
+				//p_stdin.write("echo $TZ");
+				//p_stdin.newLine();
+				//p_stdin.flush();
 				// Writing the command
 				p_stdin.write(toString(command));
 

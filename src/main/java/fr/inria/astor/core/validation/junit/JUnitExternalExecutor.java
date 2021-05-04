@@ -60,18 +60,29 @@ public class JUnitExternalExecutor {
 	}
 
 	public static void main(String[] arg) throws Exception {
-
+		System.out.println("JUnitExternalExecutorMainStart");
 		JUnitExternalExecutor re = new JUnitExternalExecutor();
 
 		Result result = re.run(arg);
 		// This sysout is necessary for the communication between process...
 		System.out.println(re.createOutput(result));
 
+		System.out.println("JUnitExternalExecutorMainEnd");
 		System.exit(0);
 	}
 
+	/*
+	This Args should only contain the tests to run within the Classpath.
+	Any ClassPath from the JunitLauncher is "consumed" at this point.
+	It fails silently if the methods are not found.
+	 */
 	public Result run(String[] arg) throws Exception {
+		System.out.println("JUnitExternalExecutor Run Start");
+		for (String a : arg){
+			System.out.println("Received arg: " + a);
+		}
 		PrintStream original = System.out;
+		/*
 		System.setOut(new PrintStream(new OutputStream() {
 			public void write(int b) {
 			}
@@ -80,6 +91,8 @@ public class JUnitExternalExecutor {
 			public void write(int b) {
 			}
 		}));
+		 */
+		System.out.println("JUnitExternalExecutor Run Outputs Reset");
 
 		List<Class> classes = getClassesToRun(arg);
 		JUnitCore runner = new JUnitCore();
@@ -88,6 +101,7 @@ public class JUnitExternalExecutor {
 		Result resultjUnit = runner.run(classes.toArray(new Class[classes.size()]));
 		System.setOut(original);
 
+		System.out.println("JUnitExternalExecutorRunEnd");
 		return resultjUnit;
 	}
 
