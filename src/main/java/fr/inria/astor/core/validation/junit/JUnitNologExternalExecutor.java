@@ -31,14 +31,11 @@ public class JUnitNologExternalExecutor extends JUnitExternalExecutor {
 	}
 
 	public static void main(String[] arg) throws Exception {
-
 		JUnitNologExternalExecutor re = new JUnitNologExternalExecutor();
-		System.out.println("NoLogExecutor Main Start");
 		Result result = re.run(arg);
-		System.out.println("NologExecutor Main Result retrieved ");
 		// This sysout is necessary for the communication between process...
+		// All other System prints are silenced intentionally in "run(String[] args)"
 		System.out.println(re.createOutput(result));
-		System.out.println("NoLog Executor Main Finished");
 		System.exit(0);
 	}
 

@@ -78,7 +78,9 @@ public class LaucherJUnitProcess {
 		}
 		// This should add the tests to the cp
 		String testlocation = (new File((ConfigurationProperties.getProperty("location")))).getAbsolutePath();
-		newClasspath += newClasspath + File.pathSeparator + testlocation;
+		newClasspath += newClasspath
+				//+ File.pathSeparator
+					+ "\"" + testlocation + "\"";
 
 		try {
 			File ftemp = null;
