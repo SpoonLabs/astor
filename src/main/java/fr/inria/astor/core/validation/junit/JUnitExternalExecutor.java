@@ -19,6 +19,11 @@ import fr.inria.astor.core.validation.junit.filters.TestFilter;
 
 /**
  * This class runs a JUnit test suite i.e., a set of test cases.
+ *
+ * This is a separated program / main due to concepts in the repair-approach:
+ * The Executor is used upon the mutants/variants which share the naming of their origins.
+ * Hence, there is big potential for Classpath-Collisions, and the executor is used as a simple program
+ * to run with the same dependencies but different java pieces.
  * 
  * @author Matias Martinez, matias.martinez@inria.fr
  * 
