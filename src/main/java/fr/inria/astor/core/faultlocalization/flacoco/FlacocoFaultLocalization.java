@@ -1,7 +1,6 @@
 package fr.inria.astor.core.faultlocalization.flacoco;
 
 import java.io.File;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,7 +11,8 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
-import eu.stamp_project.testrunner.listener.CoveredTestResult;
+import eu.stamp_project.testrunner.listener.CoverageTransformer;
+import eu.stamp_project.testrunner.listener.impl.CoverageCollectorSummarization;
 import eu.stamp_project.testrunner.runner.coverage.JUnit4JacocoRunner;
 import eu.stamp_project.testrunner.runner.coverage.JUnit5JacocoRunner;
 import eu.stamp_project.testrunner.runner.coverage.JacocoRunner;
@@ -70,40 +70,25 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 		// The input format of Flacoco is different from Astor: flacoco executes
 		// methods (tests), Astor considered classes with tests.
+		// For that reason, we need to retrieve all tests.
 		// TODO: we could replace List<String> per List<TestInformation> everywhere.
-		List<TestInformation> tests = testDetector.findTest(MutationSupporter.getFactory());
+		List<TestInformation> testsToRun = testDetector.findTest(MutationSupporter.getFactory());
 
-		if (tests == null || tests.isEmpty()) {
+		if (testsToRun == null || testsToRun.isEmpty()) {
 			throw new IllegalStateException("No test found");
 		}
 
 		// Obtain the runner based on the test cases we ve just collected
-		JacocoRunner runner = determineTestRunner(pathToClasses, pathToTestClasses, tests);
+		JacocoRunner runner = determineTestRunner(pathToClasses, pathToTestClasses, testsToRun);
 
 		if (runner == null) {
 			throw new IllegalStateException("Test Runner cannot be determined");
 		}
-		//
 
-		if (false) {
-			URLClassLoader urlloader = runner.getUrlClassloaderFromClassPath(dependencies);
-
-			List<String> allTestClassName = tests.stream().map(e -> e.getTestClassQualifiedName())
-					.collect(Collectors.toList());
-
-			String[] testsall = new String[allTestClassName.size()];
-			testsall = allTestClassName.toArray(testsall);
-
-			CoveredTestResult testResults = runner.executeTest(testsall, new String[] {}, null);
-			System.out.println("Test results all: " + testResults);
-
-			//
-		}
-
-		logger.debug("Tests detected " + tests.size());
+		logger.debug("Tests detected " + testsToRun.size());
 
 		MatrixCoverage matrix = detector.getCoverageMatrix(runner, dependencies, pathToClasses, pathToTestClasses,
-				tests);
+				testsToRun);
 
 		// We then compute the suspicious value
 		Map<String, Double> susp = flcalc.calculateSuspicious(matrix, new OchiaiFormula(), false);
@@ -181,14 +166,23 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 				.sorted((o1, o2) -> freqOfTestFramework.get(o2).compareTo(freqOfTestFramework.get(o1)))
 				.collect(Collectors.toList());
 
+		// TODO: To check: in the first version of flacoco, I also added, at the same
+		// time into test runner project,
+		// the class CoverageTransformer, which used this instance
+		// (CoverageCollectorSummarization).
+		// Then, a PR from Caro add a parameter in the Jacoco runner with the coverage
+		// Transformer.
+		// For this reason I create the instance here.
+		CoverageTransformer coverageCollector = new CoverageCollectorSummarization();
+
 		if (mostUsedFrameworks.indexOf(JUnit4Support.class.getSimpleName()) == 0
 				|| mostUsedFrameworks.indexOf(JUnit3Support.class.getSimpleName()) == 0) {
 			logger.info("Running test on Junit 3.x/4.x: " + (mostUsedFrameworks.get(0)));
-			return new JUnit4JacocoRunner(pathToClasses, pathToTestClasses);
+			return new JUnit4JacocoRunner(pathToClasses, pathToTestClasses, coverageCollector);
 		}
 		if (mostUsedFrameworks.indexOf(JUnit5Support.class.getSimpleName()) == 0) {
 			logger.info("Running test on Junit 5");
-			return new JUnit5JacocoRunner(pathToClasses, pathToTestClasses);
+			return new JUnit5JacocoRunner(pathToClasses, pathToTestClasses, coverageCollector);
 		} else {
 
 			logger.error("Not runner recognized: " + mostUsedFrameworks);

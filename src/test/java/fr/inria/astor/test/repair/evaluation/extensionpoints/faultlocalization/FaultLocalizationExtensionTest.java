@@ -32,7 +32,7 @@ public class FaultLocalizationExtensionTest {
 	public void flacocoTest1_Math85() throws Exception {
 		long init = (new Date()).getTime();
 
-		List<SuspiciousModificationPoint> suspflacoco = getSuspicious(
+		List<SuspiciousModificationPoint> suspflacoco = getSuspiciousMath85(
 				FlacocoFaultLocalization.class.getCanonicalName());
 		long end = (new Date()).getTime();
 
@@ -41,7 +41,7 @@ public class FaultLocalizationExtensionTest {
 
 		init = (new Date()).getTime();
 
-		List<SuspiciousModificationPoint> suspgzoltar = getSuspicious(
+		List<SuspiciousModificationPoint> suspgzoltar = getSuspiciousMath85(
 				GZoltarFaultLocalization.class.getCanonicalName());
 		end = (new Date()).getTime();
 
@@ -69,7 +69,7 @@ public class FaultLocalizationExtensionTest {
 
 	}
 
-	public List<SuspiciousModificationPoint> getSuspicious(String fltorun) throws Exception {
+	private List<SuspiciousModificationPoint> getSuspiciousMath85(String fltorun) throws Exception {
 		List<SuspiciousModificationPoint> susp = new ArrayList<>();
 		CommandSummary csDefault = MathCommandsTests.getMath85Command();
 		csDefault.command.put("-maxgen", "0");
@@ -105,7 +105,6 @@ public class FaultLocalizationExtensionTest {
 
 	@Test
 	public void flacocoTest1_Jackrabbit_Oak_33c18762() throws Exception {
-		List<SuspiciousModificationPoint> susp = new ArrayList<>();
 
 		File exampleFolder = new File("./examples/PR_Bugs.jar_Jackrabbit-Oak_33c18762");
 
@@ -160,7 +159,6 @@ public class FaultLocalizationExtensionTest {
 			assertTrue(iSmp.getSuspicious().getSuspiciousValue() >= 0);
 
 		}
-		// return susp;
 	}
 
 	@Test
