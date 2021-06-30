@@ -7,6 +7,10 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -14,7 +18,9 @@ import fr.inria.astor.approaches.jgenprog.operators.RemoveOp;
 import fr.inria.astor.approaches.jkali.operators.ReplaceIfBooleanOp;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.stats.PatchStat;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
+import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
 
 /**
@@ -82,6 +88,109 @@ public class jKaliTest extends BaseEvolutionaryTest {
 
 		// checkOperator(solutions, ReplaceReturnOp.class);
 
+	}
+
+	@Test
+	public void testjKaliFindingMoreThanOneSolution() throws Exception {
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+
+		int compilerResult = compiler.run(null, null, null,
+				"./examples/many-solutions/src/main/java/com/example/many_solutions/App.java",
+				"./examples/many-solutions/src/test/java/com/example/many_solutions/AppTest.java",
+				"-d", "./examples/many-solutions/target/");
+
+		assertEquals(0, compilerResult);
+
+		File binJavaFolder = new File("./examples/many-solutions/target/classes/com/example/many_solutions");
+		if (!binJavaFolder.exists()){
+			binJavaFolder.mkdirs();
+		}
+
+		File compiledSource = new File("./examples/many-solutions/target/com/example/many_solutions/App.class");
+		compiledSource.renameTo(new File(binJavaFolder, compiledSource.getName()));
+
+		File binTestFolder = new File("./examples/many-solutions/target/test-classes/com/example/many_solutions");
+		if (!binTestFolder.exists()){
+			binTestFolder.mkdirs();
+		}
+
+		File compiledTest = new File("./examples/many-solutions/target/com/example/many_solutions/AppTest.class");
+		compiledTest.renameTo(new File(binTestFolder, compiledTest.getName()));
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", ExecutionMode.jKali.toString().toLowerCase(),
+				"-failing", "com.example.many_solutions.AppTest", "-location",
+				new File("./examples/many-solutions").getAbsolutePath(), "-package", "com.example.many_solutions", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-out",
+				out.getAbsolutePath(),
+				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false",
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+
+		assertTrue(solutions.size() > 1);
+
+		List<PatchStat> patches = main1.getEngine().getPatchInfo();
+
+		Assert.assertTrue(patches.size() > 1);
+
+		Assert.assertEquals(3, patches.size());
+	}
+
+	@Test
+	public void testjKaliStopAfterFindingFirstSolution() throws Exception {
+
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+
+		int compilerResult = compiler.run(null, null, null,
+				"./examples/many-solutions/src/main/java/com/example/many_solutions/App.java",
+				"./examples/many-solutions/src/test/java/com/example/many_solutions/AppTest.java",
+				"-d", "./examples/many-solutions/target/");
+
+		assertEquals(0, compilerResult);
+
+		File binJavaFolder = new File("./examples/many-solutions/target/classes/com/example/many_solutions");
+		if (!binJavaFolder.exists()){
+			binJavaFolder.mkdirs();
+		}
+
+		File compiledSource = new File("./examples/many-solutions/target/com/example/many_solutions/App.class");
+		compiledSource.renameTo(new File(binJavaFolder, compiledSource.getName()));
+
+		File binTestFolder = new File("./examples/many-solutions/target/test-classes/com/example/many_solutions");
+		if (!binTestFolder.exists()){
+			binTestFolder.mkdirs();
+		}
+
+		File compiledTest = new File("./examples/many-solutions/target/com/example/many_solutions/AppTest.class");
+		compiledTest.renameTo(new File(binTestFolder, compiledTest.getName()));
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", ExecutionMode.jKali.toString().toLowerCase(),
+				"-failing", "com.example.many_solutions.AppTest", "-location",
+				new File("./examples/many-solutions").getAbsolutePath(), "-package", "com.example.many_solutions", "-srcjavafolder",
+				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-out",
+				out.getAbsolutePath(),
+				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "true",
+		};
+		System.out.println(Arrays.toString(args));
+		main1.execute(args);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+
+		assertTrue(solutions.size() == 1);
+
+		List<PatchStat> patches = main1.getEngine().getPatchInfo();
+
+		Assert.assertTrue(patches.size() == 1);
 	}
 
 	@SuppressWarnings("static-access")
