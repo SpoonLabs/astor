@@ -92,37 +92,43 @@ public class jKaliTest extends BaseEvolutionaryTest {
 
 	@Test
 	public void testjKaliFindingMoreThanOneSolution() throws Exception {
+		
+		File targetolder = new File("./examples/test-jkali-multiple-solutions/target/");
+		if (!targetolder.exists()){
+			targetolder.mkdirs();
+		}
+		
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
 		int compilerResult = compiler.run(null, null, null,
-				"./examples/many-solutions/src/main/java/com/example/many_solutions/App.java",
-				"./examples/many-solutions/src/test/java/com/example/many_solutions/AppTest.java",
-				"-d", "./examples/many-solutions/target/");
+				"./examples/test-jkali-multiple-solutions/src/main/java/com/example/jkali_multiple_solutions/App.java",
+				"./examples/test-jkali-multiple-solutions/src/test/java/com/example/jkali_multiple_solutions/AppTest.java",
+				"-d", "./examples/test-jkali-multiple-solutions/target/");
 
 		assertEquals(0, compilerResult);
 
-		File binJavaFolder = new File("./examples/many-solutions/target/classes/com/example/many_solutions");
+		File binJavaFolder = new File("./examples/test-jkali-multiple-solutions/target/classes/com/example/jkali_multiple_solutions");
 		if (!binJavaFolder.exists()){
 			binJavaFolder.mkdirs();
 		}
 
-		File compiledSource = new File("./examples/many-solutions/target/com/example/many_solutions/App.class");
+		File compiledSource = new File("./examples/test-jkali-multiple-solutions/target/com/example/jkali_multiple_solutions/App.class");
 		compiledSource.renameTo(new File(binJavaFolder, compiledSource.getName()));
 
-		File binTestFolder = new File("./examples/many-solutions/target/test-classes/com/example/many_solutions");
+		File binTestFolder = new File("./examples/test-jkali-multiple-solutions/target/test-classes/com/example/jkali_multiple_solutions");
 		if (!binTestFolder.exists()){
 			binTestFolder.mkdirs();
 		}
 
-		File compiledTest = new File("./examples/many-solutions/target/com/example/many_solutions/AppTest.class");
+		File compiledTest = new File("./examples/test-jkali-multiple-solutions/target/com/example/jkali_multiple_solutions/AppTest.class");
 		compiledTest.renameTo(new File(binTestFolder, compiledTest.getName()));
 
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { "-dependencies", dep, "-mode", ExecutionMode.jKali.toString().toLowerCase(),
-				"-failing", "com.example.many_solutions.AppTest", "-location",
-				new File("./examples/many-solutions").getAbsolutePath(), "-package", "com.example.many_solutions", "-srcjavafolder",
+				"-failing", "com.example.jkali_multiple_solutions.AppTest", "-location",
+				new File("./examples/test-jkali-multiple-solutions").getAbsolutePath(), "-package", "com.example.jkali_multiple_solutions", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-out",
 				out.getAbsolutePath(),
@@ -145,37 +151,42 @@ public class jKaliTest extends BaseEvolutionaryTest {
 	@Test
 	public void testjKaliStopAfterFindingFirstSolution() throws Exception {
 
+		File targetolder = new File("./examples/test-jkali-multiple-solutions/target/");
+		if (!targetolder.exists()){
+			targetolder.mkdirs();
+		}
+		
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
 		int compilerResult = compiler.run(null, null, null,
-				"./examples/many-solutions/src/main/java/com/example/many_solutions/App.java",
-				"./examples/many-solutions/src/test/java/com/example/many_solutions/AppTest.java",
-				"-d", "./examples/many-solutions/target/");
+				"./examples/test-jkali-multiple-solutions/src/main/java/com/example/jkali_multiple_solutions/App.java",
+				"./examples/test-jkali-multiple-solutions/src/test/java/com/example/jkali_multiple_solutions/AppTest.java",
+				"-d", "./examples/test-jkali-multiple-solutions/target/");
 
 		assertEquals(0, compilerResult);
 
-		File binJavaFolder = new File("./examples/many-solutions/target/classes/com/example/many_solutions");
+		File binJavaFolder = new File("./examples/test-jkali-multiple-solutions/target/classes/com/example/jkali_multiple_solutions");
 		if (!binJavaFolder.exists()){
 			binJavaFolder.mkdirs();
 		}
 
-		File compiledSource = new File("./examples/many-solutions/target/com/example/many_solutions/App.class");
+		File compiledSource = new File("./examples/test-jkali-multiple-solutions/target/com/example/jkali_multiple_solutions/App.class");
 		compiledSource.renameTo(new File(binJavaFolder, compiledSource.getName()));
 
-		File binTestFolder = new File("./examples/many-solutions/target/test-classes/com/example/many_solutions");
+		File binTestFolder = new File("./examples/test-jkali-multiple-solutions/target/test-classes/com/example/jkali_multiple_solutions");
 		if (!binTestFolder.exists()){
 			binTestFolder.mkdirs();
 		}
 
-		File compiledTest = new File("./examples/many-solutions/target/com/example/many_solutions/AppTest.class");
+		File compiledTest = new File("./examples/test-jkali-multiple-solutions/target/com/example/jkali_multiple_solutions/AppTest.class");
 		compiledTest.renameTo(new File(binTestFolder, compiledTest.getName()));
 
 		AstorMain main1 = new AstorMain();
 		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { "-dependencies", dep, "-mode", ExecutionMode.jKali.toString().toLowerCase(),
-				"-failing", "com.example.many_solutions.AppTest", "-location",
-				new File("./examples/many-solutions").getAbsolutePath(), "-package", "com.example.many_solutions", "-srcjavafolder",
+				"-failing", "com.example.jkali_multiple_solutions.AppTest", "-location",
+				new File("./examples/test-jkali-multiple-solutions").getAbsolutePath(), "-package", "com.example.jkali_multiple_solutions", "-srcjavafolder",
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-out",
 				out.getAbsolutePath(),
