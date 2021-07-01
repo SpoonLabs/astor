@@ -78,6 +78,13 @@ public class MutationSupporter {
 			if (!src.trim().isEmpty())
 				jdtSpoonModelBuilder.addInputSource(new File(src));
 		}
+		// Sometimes there happen to be double slashes in the paths, such as ./astor_output//bin//default
+		// To address this issue, if it persisted to this point, clear double slashes
+		if (classpath != null){
+			for( int i = 0; i < classpath.length; i++){
+				classpath[i] = classpath[i].replace("//","/");
+			}
+		}
 		logger.info("Classpath (Dependencies) for building SpoonModel: " + Arrays.toString(classpath));
 		if (classpath != null && classpath.length > 0) {
 			jdtSpoonModelBuilder.setSourceClasspath(classpath);

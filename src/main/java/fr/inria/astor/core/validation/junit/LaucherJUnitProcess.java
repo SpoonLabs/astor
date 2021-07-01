@@ -22,7 +22,10 @@ import fr.inria.astor.core.setup.ProjectConfiguration;
 import fr.inria.astor.core.validation.results.TestResult;
 
 /**
- * Lauches a process and parses its output.
+ * Launches a JunitExecutor-process and parses its output.
+ * The normal JUnit runner cannot be used directly due to issues with the classpaths:
+ * As Programs and their variants share the namespace, it is not easy to "just run" it.
+ * Therefore the Classpath is adjusted for every mutant and the executor is run.
  *
  * @author Matias Martinez, matias.martinez@inria.fr
  *
@@ -31,6 +34,7 @@ public class LaucherJUnitProcess {
 
 	protected Logger log = Logger.getLogger(Thread.currentThread().getName());
 	boolean avoidInterruption = false;
+	final boolean SET_TIMEZONE = false;
 
 	public LaucherJUnitProcess(boolean avoidInterruption) {
 		super();
@@ -49,15 +53,42 @@ public class LaucherJUnitProcess {
 
 	public TestResult execute(String jvmPath, String classpath, List<String> classesToExecute, int waitTime) {
 		Process p = null;
-		jvmPath += File.separator + "java";
+		// In the current version, this would point to ~/lib/jvm/zulu7/java which does not exist
+		// It must point to ~/lib/jvm/zulu7/bin/java
+		// Which is addressed below
+		String adjustedJvmPath = jvmPath;
+		// Check if the original javapath exists, if not try to adjust it
+		if(!(new File(adjustedJvmPath).exists())) {
+			adjustedJvmPath += adjustedJvmPath+File.separator + "bin" + File.separator + "java";
+		}
+		// Short check for existence on the adjusted java path
+		if(!(new File(adjustedJvmPath).exists())){
+			throw new UnsupportedOperationException("There was no Java version at given JVMPath " + adjustedJvmPath);
+		}
 
 		List<String> cls = new ArrayList<>(classesToExecute);
 
-		String newClasspath = classpath;
+		/*
+		Things the classpath must contain at this point:
+		- Astor classes
+		- The classes for the system under test (Maybe: variant-bins)
+		- The classes for the tests of the SUT
+		- The dependencies of astor
+		- The dependencies of the SUT
+		- Maybe: Java 7 TestExecutor (For legacy code, it's called jtestex7)
+		- Maybe: Additional JUnit Deps
+		 */
+		String adjustedClasspath = classpath;
+		//adjustedClasspath = adjustedClasspath.replace("\"","").replace("\"","");
 		if (ConfigurationProperties.getPropertyBool("runjava7code") || ProjectConfiguration.isJDKLowerThan8()) {
-			newClasspath = (new File(ConfigurationProperties.getProperty("executorjar")).getAbsolutePath())
-					+ File.pathSeparator + classpath;
+			adjustedClasspath = "\""+(new File(ConfigurationProperties.getProperty("executorjar")).getAbsolutePath())+"\""
+					+ File.pathSeparator + adjustedClasspath;
 		}
+		// This should add the tests to the cp
+		String testlocation = (new File((ConfigurationProperties.getProperty("location")))).getAbsolutePath();
+		adjustedClasspath += adjustedClasspath
+				//+ File.pathSeparator
+					+ "\"" + testlocation + "\"";
 
 		try {
 			File ftemp = null;
@@ -66,23 +97,37 @@ public class LaucherJUnitProcess {
 
 			List<String> command = new ArrayList<String>();
 
-			command.add(jvmPath);
+			command.add(adjustedJvmPath);
+			//command.add("java");
 			command.add("-Xmx2048m");
 
 			String[] ids = ConfigurationProperties.getProperty(MetaGenerator.METALL).split(File.pathSeparator);
+			// The mutid keeps track of the program-variant / patch candidate.
+			// The naming over the classes is the same despite different content, which is expressed as the mutid
 			for (String mutid : ids) {
 				command.add("-D" + MetaGenerator.MUT_IDENTIFIER + mutid + "="
 						+ ConfigurationProperties.getProperty(MetaGenerator.MUT_IDENTIFIER + mutid));
 			}
 
 			command.add("-cp");
-			command.add(newClasspath);
+			command.add(adjustedClasspath);
 			command.add(laucherClassName().getCanonicalName());
 			command.addAll(cls);
-
+			//log.error("CP is " + newClasspath);
 			printCommandToExecute(command, waitTime);
 
 			ProcessBuilder pb = new ProcessBuilder("/bin/bash");
+
+
+			//TODO: This should be the nicer approach, once everything works
+			ProcessBuilder replacement = new ProcessBuilder(command)
+					.redirectErrorStream(true)	// whether to merge error into output
+					.redirectOutput(ProcessBuilder.Redirect.INHERIT) // Puts the output to this process' stdout stderr
+			;
+			Process replacementProcess = replacement.start();
+			replacementProcess.waitFor();
+
+			log.error("Full Command is " + toString(command));
 
 			if (outputInFile) {
 				pb.redirectOutput(ftemp);
@@ -97,19 +142,20 @@ public class LaucherJUnitProcess {
 
 			try {
 				// Set up the timezone
-				String timeZone = ConfigurationProperties.getProperty("timezone");
-				p_stdin.write("TZ=\"" + timeZone + "\"");
-				p_stdin.newLine();
-				p_stdin.flush();
-				p_stdin.write("export TZ");
-				p_stdin.newLine();
-				p_stdin.flush();
-				p_stdin.write("echo $TZ");
-				p_stdin.newLine();
-				p_stdin.flush();
+				if (SET_TIMEZONE) {
+					String timeZone = ConfigurationProperties.getProperty("timezone");
+					p_stdin.write("TZ=\"" + timeZone + "\"");
+					p_stdin.newLine();
+					p_stdin.flush();
+					p_stdin.write("export TZ");
+					p_stdin.newLine();
+					p_stdin.flush();
+					p_stdin.write("echo $TZ");
+					p_stdin.newLine();
+					p_stdin.flush();
+				}
 				// Writing the command
 				p_stdin.write(toString(command));
-
 				p_stdin.newLine();
 				p_stdin.flush();
 
@@ -117,7 +163,6 @@ public class LaucherJUnitProcess {
 				p_stdin.write("exit");
 				p_stdin.newLine();
 				p_stdin.flush();
-
 			} catch (IOException e) {
 				log.error(e);
 			}
@@ -129,8 +174,7 @@ public class LaucherJUnitProcess {
 				return null;
 			}
 			long t_end = System.currentTimeMillis();
-			// log.debug("Execution time " + ((t_end - t_start) / 1000) + "
-			// seconds");
+			// log.debug("Execution time " + ((t_end - t_start) / 1000) + " seconds");
 
 			if (!avoidInterruption) {
 				// We force obtaining the exit value.
@@ -143,6 +187,8 @@ public class LaucherJUnitProcess {
 			else
 				output = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			TestResult tr = getTestResult(output);
+			if(tr == null)
+				log.warn("The Process that runs JUnit could not retrieve results for " + classesToExecute.toArray().toString());
 			p.destroyForcibly();
 			return tr;
 		} catch (IOException | InterruptedException | IllegalThreadStateException ex) {
@@ -185,12 +231,10 @@ public class LaucherJUnitProcess {
 				log.debug("Killing subprocess " + subprocessid);
 				Process process = new ProcessBuilder(new String[] { "kill", subprocessid.toString() }).start();
 				process.waitFor();
-
 			} catch (Exception e) {
 				log.error("Problems killing subprocess " + subprocessid);
 				log.error(e);
 			}
-
 		}
 
 	}
@@ -243,10 +287,10 @@ public class LaucherJUnitProcess {
 
 	/**
 	 * This method analyze the output of the junit executor (i.e.,
-	 * {@link JUnitTestExecutor}) and return an entity called TestResult with the
+	 * {@link JUnitNologExternalExecutor}) and return an entity called TestResult with the
 	 * result of the test execution
 	 *
-	 * @param p
+	 * @param in
 	 * @return
 	 */
 	protected TestResult getTestResult(BufferedReader in) {
