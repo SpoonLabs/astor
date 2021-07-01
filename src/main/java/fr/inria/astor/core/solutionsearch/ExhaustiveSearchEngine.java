@@ -76,9 +76,10 @@ public abstract class ExhaustiveSearchEngine extends AstorCoreEngine {
 
 					if (solution) {
 						this.solutions.add(solutionVariant);
-						if (ConfigurationProperties.getPropertyBool("stopfirst"))
+						if (ConfigurationProperties.getPropertyBool("stopfirst")) {
 							this.setOutputStatus(AstorOutputStatus.STOP_BY_PATCH_FOUND);
-						return;
+							return;
+						}
 					}
 
 					if (!belowMaxTime(dateInitEvolution, maxMinutes)) {
