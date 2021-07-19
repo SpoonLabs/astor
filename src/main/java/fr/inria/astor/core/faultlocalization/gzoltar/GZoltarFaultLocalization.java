@@ -109,6 +109,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 			for (SuspiciousCode suspiciousCode : suspiciousStatemens) {
 				filtercandidates.add(suspiciousCode);
+				logger.info("Suspicious:  line " + suspiciousCode.getClassName() + " l: " + suspiciousCode.getLineNumber() + ", susp " + suspiciousCode.getSuspiciousValue());
 			}
 			flResult.setCandidates(filtercandidates);
 

@@ -8,6 +8,9 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.spoonlabs.flacoco.api.Flacoco;
 import fr.spoonlabs.flacoco.api.Suspiciousness;
 import fr.spoonlabs.flacoco.core.config.FlacocoConfig;
+import fr.spoonlabs.flacoco.core.coverage.framework.JUnit4Strategy;
+import fr.spoonlabs.flacoco.core.coverage.framework.JUnit5Strategy;
+import fr.spoonlabs.flacoco.core.test.TestContext;
 import fr.spoonlabs.flacoco.core.test.TestDetector;
 import fr.spoonlabs.flacoco.core.test.TestMethod;
 import org.apache.log4j.Logger;
@@ -21,6 +24,8 @@ import java.util.stream.Collectors;
 public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 	Logger logger = Logger.getLogger(FlacocoFaultLocalization.class);
+
+	List<TestContext> testContexts = new ArrayList<>();
 
 	@Override
 	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade projectToRepair, List<String> testToRun) throws Exception {
@@ -68,11 +73,12 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 	@Override
 	public List<String> findTestCasesToExecute(ProjectRepairFacade projectFacade) {
 		setupFlacocoConfig(projectFacade);
-		return new TestDetector().findTests().stream().flatMap(x -> x.getTestMethods().stream())
+		this.testContexts = new TestDetector().getTests();
+		return this.testContexts.stream().flatMap(x -> x.getTestMethods().stream())
 				.map(TestMethod::getFullyQualifiedClassName).distinct().collect(Collectors.toList());
 	}
 
-	private static void setupFlacocoConfig(ProjectRepairFacade projectFacade) {
+	private void setupFlacocoConfig(ProjectRepairFacade projectFacade) {
 		FlacocoConfig config = FlacocoConfig.getInstance();
 		config.setProjectPath(projectFacade.getProperties().getOriginalProjectRootDir());
 		config.setClasspath(projectFacade.getProperties().getDependenciesString());
@@ -81,5 +87,23 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		config.setBinJavaDir(projectFacade.getProperties().getOriginalAppBinDir());
 		config.setBinTestDir(projectFacade.getProperties().getOriginalTestBinDir());
 		config.setThreshold(ConfigurationProperties.getPropertyDouble("flthreshold"));
+
+		if (!this.testContexts.isEmpty()) {
+			for (TestContext testContext : this.testContexts) {
+				if (testContext.getTestFrameworkStrategy() instanceof JUnit4Strategy) {
+					config.setjUnit4Tests(
+							testContext.getTestMethods().stream()
+									.map(TestMethod::getFullyQualifiedMethodName)
+									.collect(Collectors.toList())
+					);
+				} else if (testContext.getTestFrameworkStrategy() instanceof JUnit5Strategy) {
+					config.setjUnit5Tests(
+							testContext.getTestMethods().stream()
+									.map(TestMethod::getFullyQualifiedMethodName)
+									.collect(Collectors.toList())
+					);
+				}
+			}
+		}
 	}
 }
