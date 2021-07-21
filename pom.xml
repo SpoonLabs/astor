@@ -46,6 +46,12 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>com.github.spoonlabs</groupId>
+			<artifactId>flacoco</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
 			<!-- doc: https://logging.apache.org/log4j/2.0/faq.html -->
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-1.2-api</artifactId>

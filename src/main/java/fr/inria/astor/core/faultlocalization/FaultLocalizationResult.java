@@ -1,20 +1,20 @@
 package fr.inria.astor.core.faultlocalization;
 
-import java.util.List;
-
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+
+import java.util.List;
 
 /**
  * Stores the result of a fault localization process
- * @author Matias Martinez
  *
+ * @author Matias Martinez
  */
 public class FaultLocalizationResult {
 
-	
+
 	List<SuspiciousCode> candidates;
 	List<String> failingTestCases;
-	
+
 	public FaultLocalizationResult(List<SuspiciousCode> candidates, List<String> failingTestCases) {
 		super();
 		this.candidates = candidates;
@@ -37,4 +37,11 @@ public class FaultLocalizationResult {
 		this.failingTestCases = failingTestCases;
 	}
 
+	@Override
+	public String toString() {
+		return "FaultLocalizationResult{" +
+				"candidates=" + candidates +
+				", failingTestCases=" + failingTestCases +
+				'}';
+	}
 }
