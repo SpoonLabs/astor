@@ -87,6 +87,8 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		config.setBinJavaDir(projectFacade.getProperties().getOriginalAppBinDir());
 		config.setBinTestDir(projectFacade.getProperties().getOriginalTestBinDir());
 		config.setThreshold(ConfigurationProperties.getPropertyDouble("flthreshold"));
+		config.setjUnit4Tests(new ArrayList<>());
+		config.setjUnit4Tests(new ArrayList<>());
 
 		if (!this.testContexts.isEmpty()) {
 			for (TestContext testContext : this.testContexts) {
