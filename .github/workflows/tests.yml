@@ -48,7 +48,7 @@ jobs:
       - name: Cache .m2
         uses: actions/cache@v2.1.6
         with:
-          path: "~/.m2"
+          path: "~/.m2/repository"
           key: ${{ runner.os }}-m2
 
       - name: Setup JDK8
@@ -56,6 +56,11 @@ jobs:
         with:
           java-version: 8
           distribution: 'adopt'
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4
+        with:
+          maven-version: 3.6.0
 
       - name: Install example projects
         run: ./.github/install_examples.sh
