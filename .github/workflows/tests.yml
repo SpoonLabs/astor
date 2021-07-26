@@ -1,0 +1,76 @@
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        test: [ 
+          "fr.inria.astor.test.repair.QuixBugsRepairTest" , 
+          "fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.MultiPatchTest" ,
+          "fr.inria.astor.test.repair.evaluation.extensionpoints.patchsorting.PatchPriorizationTest" ,
+          "fr.inria.astor.test.repair.approaches.ExhaustiveAstorTest" ,
+          "fr.inria.astor.test.repair.approaches.jKaliTest" ,
+          "fr.inria.astor.test.repair.approaches.MutRepairTest" ,
+          "fr.inria.astor.test.repair.approaches.JGenProgTest" ,
+          "fr.inria.astor.test.repair.approaches.EvoSuiteGenerationTest" ,
+          "fr.inria.astor.test.repair.approaches.TibraApproachTest" ,
+          "fr.inria.astor.test.repair.approaches.cardumen.CardumenApproachTest" ,
+          "fr.inria.astor.test.repair.approaches.cardumen.CardumenExahustiveTest" ,
+          "fr.inria.astor.test.repair.approaches.JGenProgEvolutionaryTest" ,
+          "fr.inria.astor.test.repair.core.ConfigurationTest" ,
+          "fr.inria.astor.test.repair.core.ValidationTest" ,
+          "fr.inria.astor.test.repair.core.StatsTest" ,
+          "fr.inria.astor.test.repair.core.VariableResolverTest" ,
+          "fr.inria.astor.test.repair.core.PatchDiffTest" ,
+          "fr.inria.astor.test.repair.core.PlugInLoaderTest" ,
+          "fr.inria.astor.test.repair.core.PatchValidationTest" ,
+          "fr.inria.astor.test.repair.core.OutputTest" ,
+          "fr.inria.astor.test.repair.core.ValidationTest" ,
+          "fr.inria.astor.test.repair.evaluation.regression.RepairnatorTest" ,
+          "fr.inria.astor.test.repair.evaluation.regression.LangTest" ,
+          "fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientScopeTest" ,
+          "fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientProcessorTest" ,
+          "fr.inria.astor.test.repair.evaluation.extensionpoints.ingredients.IngredientPoolTest" ,
+          "fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.SelectionOperatorTest" ,
+          "fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.RepairOperatorTest" ,
+          "fr.inria.astor.test.repair.evaluation.extensionpoints.suspiciousnavigation.SuspiciousNavigationStrategyTest" ,
+          "fr.inria.astor.util.CommandSummaryTest"
+      ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+
+      - name: Cache .m2
+        uses: actions/cache@v2.1.6
+        with:
+          path: "~/.m2/repository"
+          key: ${{ runner.os }}-m2
+
+      - name: Setup JDK8
+        uses: actions/setup-java@v2
+        with:
+          java-version: 8
+          distribution: 'adopt'
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4
+        with:
+          maven-version: 3.6.0
+
+      - name: Install example projects
+        run: ./.github/install_examples.sh
+        shell: bash
+
+      - name: Run tests
+        run: |
+          mvn -ff -q clean
+          mvn -ff -q test -DskipTests -DfailIfNoTests=false
+          mvn -ff -q surefire:test -DfailIfNoTests=false -Dtest=${{ matrix.test }}
+
+      - name: Codecov
+        uses: codecov/codecov-action@v1.5.2
