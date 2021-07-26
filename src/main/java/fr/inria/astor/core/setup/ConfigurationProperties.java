@@ -40,10 +40,18 @@ public class ConfigurationProperties {
 	}
 
 	public static String getProperty(String key) {
-		return properties.getProperty(key);
+		// There is a nasty (ongoing) issue with paths containing double slashes
+		// To address this, replace all // with /
+		String value = properties.getProperty(key);
+		if (value != null)
+			value = value.replace("//","/");
+		return value;
 	}
 
 	public static void setProperty(String key, String value) {
+		if(value.contains("//")){
+			value = value.replace("//","/");
+		}
 		properties.setProperty(key, value);
 	}
 
