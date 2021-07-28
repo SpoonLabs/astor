@@ -88,11 +88,15 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		config.setClasspath(projectFacade.getProperties().getDependenciesString());
 		config.setSrcJavaDir(projectFacade.getProperties().getOriginalDirSrc());
 		config.setSrcTestDir(projectFacade.getProperties().getTestDirSrc());
-		config.setBinJavaDir(projectFacade.getProperties().getOriginalAppBinDir());
-		config.setBinTestDir(projectFacade.getProperties().getOriginalTestBinDir());
+		if (projectFacade.getProperties().getOriginalAppBinDir() != null)
+			config.setBinJavaDir(projectFacade.getProperties().getOriginalAppBinDir());
+		if (projectFacade.getProperties().getOriginalTestBinDir() != null)
+			config.setBinTestDir(projectFacade.getProperties().getOriginalTestBinDir());
 		config.setThreshold(ConfigurationProperties.getPropertyDouble("flthreshold"));
 		config.setjUnit4Tests(new ArrayList<>());
-		config.setjUnit4Tests(new ArrayList<>());
+		config.setjUnit5Tests(new ArrayList<>());
+
+		System.out.println(config);
 
 		if (!this.testContexts.isEmpty()) {
 			for (TestContext testContext : this.testContexts) {
