@@ -49,6 +49,10 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 			candidates.add(sc);
 		}
 
+
+		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
+		candidates = candidates.subList(0, Math.min(maxSuspCandidates, candidates.size()));
+
 		FaultLocalizationResult result = new FaultLocalizationResult(
 				candidates,
 				susp.values().stream()
