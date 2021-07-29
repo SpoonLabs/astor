@@ -245,7 +245,7 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "true",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", "-ingredientstrategy",
+				"-maxgen", "200", "-scope", "package", "-seed", "10", "-ingredientstrategy",
 				RandomSelectionTransformedIngredientStrategy.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
