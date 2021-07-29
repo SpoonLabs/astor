@@ -92,7 +92,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		Stats.createStat();
 		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
-		assertEquals(73, cardumen.totalBases);
+		assertEquals(85, cardumen.totalBases);
 
 		log.debug("PACKAGE SCOPE");
 		// PACKAGE
