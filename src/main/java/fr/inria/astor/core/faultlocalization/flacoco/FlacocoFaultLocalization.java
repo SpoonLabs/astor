@@ -86,6 +86,7 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		FlacocoConfig config = FlacocoConfig.getInstance();
 		config.setProjectPath(projectFacade.getProperties().getOriginalProjectRootDir());
 		config.setClasspath(projectFacade.getProperties().getDependenciesString());
+		config.setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
 		config.setSrcJavaDir(projectFacade.getProperties().getOriginalDirSrc());
 		config.setSrcTestDir(projectFacade.getProperties().getTestDirSrc());
 		if (projectFacade.getProperties().getOriginalAppBinDir() != null)
