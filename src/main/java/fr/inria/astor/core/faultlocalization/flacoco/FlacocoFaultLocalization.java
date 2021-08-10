@@ -96,8 +96,6 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		config.setjUnit4Tests(new ArrayList<>());
 		config.setjUnit5Tests(new ArrayList<>());
 
-		System.out.println(config);
-
 		if (!this.testContexts.isEmpty()) {
 			for (TestContext testContext : this.testContexts) {
 				if (testContext.getTestFrameworkStrategy() instanceof JUnit4Strategy) {
