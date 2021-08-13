@@ -12,13 +12,11 @@ import fr.spoonlabs.flacoco.core.coverage.framework.JUnit4Strategy;
 import fr.spoonlabs.flacoco.core.coverage.framework.JUnit5Strategy;
 import fr.spoonlabs.flacoco.core.test.TestContext;
 import fr.spoonlabs.flacoco.core.test.TestDetector;
-import fr.spoonlabs.flacoco.core.test.TestMethod;
+import fr.spoonlabs.flacoco.core.test.method.TestMethod;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
@@ -64,7 +62,7 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		);
 
 		if (projectToRepair.getProperties().getFailingTestCases().isEmpty()) {
-			logger.debug("Failing test cases was not pass as argument: we use failings from FL "
+			logger.debug("Failing test cases was not passed as argument: we use the results from running them"
 					+ result.getFailingTestCases());
 			projectToRepair.getProperties().setFailingTestCases(result.getFailingTestCases());
 		}
@@ -94,8 +92,13 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		if (projectFacade.getProperties().getOriginalTestBinDir() != null)
 			config.setBinTestDir(projectFacade.getProperties().getOriginalTestBinDir());
 		config.setThreshold(ConfigurationProperties.getPropertyDouble("flthreshold"));
-		config.setjUnit4Tests(new ArrayList<>());
-		config.setjUnit5Tests(new ArrayList<>());
+		config.setjUnit4Tests(new HashSet<>());
+		config.setjUnit5Tests(new HashSet<>());
+		if (ConfigurationProperties.getProperty("ignoredTestCases") != null &&
+				!ConfigurationProperties.getProperty("ignoredTestCases").isEmpty()) {
+			config.setIgnoredTests(Arrays.stream(ConfigurationProperties.getProperty("ignoredTestCases")
+							.split(File.pathSeparator)).collect(Collectors.toSet()));
+		}
 
 		if (!this.testContexts.isEmpty()) {
 			for (TestContext testContext : this.testContexts) {
@@ -103,13 +106,13 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 					config.setjUnit4Tests(
 							testContext.getTestMethods().stream()
 									.map(TestMethod::getFullyQualifiedMethodName)
-									.collect(Collectors.toList())
+									.collect(Collectors.toSet())
 					);
 				} else if (testContext.getTestFrameworkStrategy() instanceof JUnit5Strategy) {
 					config.setjUnit5Tests(
 							testContext.getTestMethods().stream()
 									.map(TestMethod::getFullyQualifiedMethodName)
-									.collect(Collectors.toList())
+									.collect(Collectors.toSet())
 					);
 				}
 			}
