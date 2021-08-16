@@ -127,7 +127,7 @@ public class VariableResolverTest {
 		// remember that we exclude serialId fields
 		assertEquals((0 + 4 + 1), vars.size());
 
-		ModificationPoint mp4 = pv.getModificationPoints().get(1);
+		ModificationPoint mp4 = pv.getModificationPoints().get(4);
 		assertEquals(181, ((SuspiciousModificationPoint) mp4).getSuspicious().getLineNumber());
 
 		List<CtVariable> vars4 = VariableResolver.searchVariablesInScope(mp4.getCodeElement());
