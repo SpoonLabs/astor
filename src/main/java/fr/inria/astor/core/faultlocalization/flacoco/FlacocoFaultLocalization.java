@@ -18,6 +18,9 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static fr.inria.astor.core.faultlocalization.FaultLocalizationUtils.addFlakyFailingTestToIgnoredList;
 
 public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
@@ -61,13 +64,27 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 						.collect(Collectors.toList())
 		);
 
+		if (ConfigurationProperties.getPropertyBool("ignoreflakyinfl")) {
+			addFlakyFailingTestToIgnoredList(result.getFailingTestCases(), projectToRepair);
+		}
+
 		if (projectToRepair.getProperties().getFailingTestCases().isEmpty()) {
 			logger.debug("Failing test cases was not passed as argument: we use the results from running them"
 					+ result.getFailingTestCases());
 			projectToRepair.getProperties().setFailingTestCases(result.getFailingTestCases());
 		}
 
-		// TODO: Add support for other Astor options
+		// FIXME?: This does nothing, but it is in GZoltar like this.
+		if (ConfigurationProperties.getPropertyBool("filterfaultlocalization")) {
+			List<SuspiciousCode> filtercandidates = new ArrayList<>();
+
+			for (SuspiciousCode suspiciousCode : result.getCandidates()) {
+				filtercandidates.add(suspiciousCode);
+				logger.info("Suspicious:  line " + suspiciousCode.getClassName() + " l: " + suspiciousCode.getLineNumber() + ", susp " + suspiciousCode.getSuspiciousValue());
+			}
+
+			result.setCandidates(filtercandidates);
+		}
 
 		return result;
 	}
@@ -82,6 +99,10 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 	private void setupFlacocoConfig(ProjectRepairFacade projectFacade) {
 		FlacocoConfig config = FlacocoConfig.getInstance();
+
+		config.setThreshold(ConfigurationProperties.getPropertyDouble("flthreshold"));
+
+		// Handle project location configuration
 		config.setProjectPath(projectFacade.getProperties().getOriginalProjectRootDir());
 		config.setClasspath(projectFacade.getProperties().getDependenciesString());
 		config.setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
@@ -91,7 +112,18 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 			config.setBinJavaDir(projectFacade.getProperties().getOriginalAppBinDir());
 		if (projectFacade.getProperties().getOriginalTestBinDir() != null)
 			config.setBinTestDir(projectFacade.getProperties().getOriginalTestBinDir());
-		config.setThreshold(ConfigurationProperties.getPropertyDouble("flthreshold"));
+
+		// Handle manually set includes/excludes
+		if (ConfigurationProperties.getProperty("packageToInstrument") != null &&
+				!ConfigurationProperties.getProperty("packageToInstrument").isEmpty()) {
+			String option = ConfigurationProperties.getProperty("packageToInstrument");
+			if (!option.endsWith(".*")) {
+				option += ".*";
+			}
+			config.setJacocoIncludes(Collections.singleton(option));
+		}
+
+		// Handle test configuration
 		config.setjUnit4Tests(new HashSet<>());
 		config.setjUnit5Tests(new HashSet<>());
 		if (ConfigurationProperties.getProperty("ignoredTestCases") != null &&
@@ -99,7 +131,6 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 			config.setIgnoredTests(Arrays.stream(ConfigurationProperties.getProperty("ignoredTestCases")
 							.split(File.pathSeparator)).collect(Collectors.toSet()));
 		}
-
 		if (!this.testContexts.isEmpty()) {
 			for (TestContext testContext : this.testContexts) {
 				if (testContext.getTestFrameworkStrategy() instanceof JUnit4Strategy) {
