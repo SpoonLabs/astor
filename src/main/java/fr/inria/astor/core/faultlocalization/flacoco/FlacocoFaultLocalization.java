@@ -6,7 +6,9 @@ import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.spoonlabs.flacoco.api.Flacoco;
-import fr.spoonlabs.flacoco.api.Suspiciousness;
+import fr.spoonlabs.flacoco.api.result.FlacocoResult;
+import fr.spoonlabs.flacoco.api.result.Location;
+import fr.spoonlabs.flacoco.api.result.Suspiciousness;
 import fr.spoonlabs.flacoco.core.config.FlacocoConfig;
 import fr.spoonlabs.flacoco.core.coverage.framework.JUnit4Strategy;
 import fr.spoonlabs.flacoco.core.coverage.framework.JUnit5Strategy;
@@ -18,7 +20,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static fr.inria.astor.core.faultlocalization.FaultLocalizationUtils.addFlakyFailingTestToIgnoredList;
 
@@ -33,16 +34,15 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		setupFlacocoConfig(projectToRepair);
 		Flacoco flacoco = new Flacoco();
 
-		Map<String, Suspiciousness> susp = flacoco.runDefault();
+		FlacocoResult flacocoResult = flacoco.run();
 
 		List<SuspiciousCode> candidates = new ArrayList<>();
 
 		int i = 0;
-		for (String line : susp.keySet()) {
-			double suspvalue = susp.get(line).getScore();
-
-			String className = line.split("@-@")[0].replace("/", ".");
-			Integer lineNumber = Integer.parseInt(line.split("@-@")[1]);
+		for (Map.Entry<Location, Suspiciousness> entry : flacocoResult.getDefaultSuspiciousnessMap().entrySet()) {
+			double suspvalue = entry.getValue().getScore();
+			String className = entry.getKey().getClassName();
+			Integer lineNumber = entry.getKey().getLineNumber();
 
 			logger.info("Suspicious: " + ++i + " line " + className + " l: " + lineNumber + ", susp " + suspvalue);
 
@@ -56,12 +56,7 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 		FaultLocalizationResult result = new FaultLocalizationResult(
 				candidates,
-				susp.values().stream()
-						.map(Suspiciousness::getFailingTestCases)
-						.flatMap(Collection::stream)
-						.map(TestMethod::getFullyQualifiedClassName)
-						.distinct()
-						.collect(Collectors.toList())
+				flacocoResult.getFailingTests().stream().map(TestMethod::getFullyQualifiedClassName).collect(Collectors.toList())
 		);
 
 		if (ConfigurationProperties.getPropertyBool("ignoreflakyinfl")) {
@@ -98,6 +93,7 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 	}
 
 	private void setupFlacocoConfig(ProjectRepairFacade projectFacade) {
+		FlacocoConfig.deleteInstance();
 		FlacocoConfig config = FlacocoConfig.getInstance();
 
 		config.setThreshold(ConfigurationProperties.getPropertyDouble("flthreshold"));
