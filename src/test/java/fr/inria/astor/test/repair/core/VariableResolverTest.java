@@ -127,20 +127,12 @@ public class VariableResolverTest {
 		// remember that we exclude serialId fields
 		assertEquals((0 + 4 + 1), vars.size());
 
-		ModificationPoint mp4 = pv.getModificationPoints().get(4);
-		assertEquals(181, ((SuspiciousModificationPoint) mp4).getSuspicious().getLineNumber());
+		ModificationPoint mp9 = pv.getModificationPoints().get(9);
+		assertEquals(181, ((SuspiciousModificationPoint) mp9).getSuspicious().getLineNumber());
 
-		List<CtVariable> vars4 = VariableResolver.searchVariablesInScope(mp4.getCodeElement());
+		List<CtVariable> vars9 = VariableResolver.searchVariablesInScope(mp9.getCodeElement());
 		// method local + block local + par + fields
-		System.out.println(vars4);
-		// TODO: Fix this bug. For some reason it returns 5
-		// [private static final double SQRT2PI = java.lang.Math.sqrt(2 * java.lang.Math.PI);,
-		// private double mean = 0;,
-		// private double standardDeviation = 1;,
-		// double p,
-		// double ret]
-		// 3 class attributes (all except serialID), 1 parameter, 1 method local
-		//assertEquals((1 + 3 + 4 + 6), vars4.size());
+		assertEquals((1 + 3 + 4 + 6), vars9.size());
 	}
 
 	@Test
