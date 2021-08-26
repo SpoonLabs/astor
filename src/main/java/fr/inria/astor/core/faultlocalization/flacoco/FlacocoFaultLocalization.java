@@ -31,8 +31,8 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 	@Override
 	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade projectToRepair, List<String> testToRun) throws Exception {
-		setupFlacocoConfig(projectToRepair);
-		Flacoco flacoco = new Flacoco();
+		FlacocoConfig config = setupFlacocoConfig(projectToRepair);
+		Flacoco flacoco = new Flacoco(config);
 
 		FlacocoResult flacocoResult = flacoco.run();
 
@@ -86,15 +86,14 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 	@Override
 	public List<String> findTestCasesToExecute(ProjectRepairFacade projectFacade) {
-		setupFlacocoConfig(projectFacade);
-		this.testContexts = new TestDetector().getTests();
+		FlacocoConfig config = setupFlacocoConfig(projectFacade);
+		this.testContexts = new TestDetector(config).getTests();
 		return this.testContexts.stream().flatMap(x -> x.getTestMethods().stream())
 				.map(TestMethod::getFullyQualifiedClassName).distinct().collect(Collectors.toList());
 	}
 
-	private void setupFlacocoConfig(ProjectRepairFacade projectFacade) {
-		FlacocoConfig.deleteInstance();
-		FlacocoConfig config = FlacocoConfig.getInstance();
+	private FlacocoConfig setupFlacocoConfig(ProjectRepairFacade projectFacade) {
+		FlacocoConfig config = new FlacocoConfig();
 
 		config.setThreshold(ConfigurationProperties.getPropertyDouble("flthreshold"));
 
@@ -144,5 +143,7 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 				}
 			}
 		}
+
+		return config;
 	}
 }
