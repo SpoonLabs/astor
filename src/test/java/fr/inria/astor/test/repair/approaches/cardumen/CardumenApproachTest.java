@@ -1212,11 +1212,9 @@ public class CardumenApproachTest extends BaseEvolutionaryTest {
 
 		ProgramVariant pv = cardumen.getVariants().get(0);
 		// C1:.BisectionSolver l: 66,
-		CtElement clearResult = (CtCodeElement) pv.getModificationPoints().get(5).getCodeElement();
+		CtElement clearResult = (CtCodeElement) pv.getModificationPoints().get(2).getCodeElement();
 
 		List<CtVariable> varContextClearResult = VariableResolver.searchVariablesInScope(clearResult);//
-
-		System.out.println(pv.getModificationPoints());
 		CtElement returnExpression = pv.getModificationPoints().get(8).getCodeElement();
 		VarMapping vmapping = VariableResolver.mapVariablesFromContext(varContextClearResult, returnExpression);
 
@@ -1267,7 +1265,7 @@ public class CardumenApproachTest extends BaseEvolutionaryTest {
 
 		ProgramVariant pv = cardumen.getVariants().get(0);
 		// C1:.BisectionSolver l: 66,
-		CtElement clearResult = (CtCodeElement) pv.getModificationPoints().get(5).getCodeElement();
+		CtElement clearResult = (CtCodeElement) pv.getModificationPoints().get(2).getCodeElement();
 
 		List<CtVariable> varContextClearResult = VariableResolver.searchVariablesInScope(clearResult);//
 		CtElement returnExpression = pv.getModificationPoints().get(8).getCodeElement();
