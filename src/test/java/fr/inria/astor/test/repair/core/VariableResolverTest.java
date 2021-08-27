@@ -127,12 +127,13 @@ public class VariableResolverTest {
 		// remember that we exclude serialId fields
 		assertEquals((0 + 4 + 1), vars.size());
 
-		ModificationPoint mp9 = pv.getModificationPoints().get(9);
-		assertEquals(181, ((SuspiciousModificationPoint) mp9).getSuspicious().getLineNumber());
+		ModificationPoint mp10 = pv.getModificationPoints().get(10);
+		System.out.println(mp10.toString());
+		assertEquals(181, ((SuspiciousModificationPoint) mp10).getSuspicious().getLineNumber());
 
-		List<CtVariable> vars9 = VariableResolver.searchVariablesInScope(mp9.getCodeElement());
+		List<CtVariable> vars10 = VariableResolver.searchVariablesInScope(mp10.getCodeElement());
 		// method local + block local + par + fields
-		assertEquals((1 + 3 + 4 + 6), vars9.size());
+		assertEquals((1 + 3 + 4 + 6), vars10.size());
 	}
 
 	@Test
