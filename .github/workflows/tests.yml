@@ -38,6 +38,7 @@ jobs:
           "fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.SelectionOperatorTest" ,
           "fr.inria.astor.test.repair.evaluation.extensionpoints.operatorselection.RepairOperatorTest" ,
           "fr.inria.astor.test.repair.evaluation.extensionpoints.suspiciousnavigation.SuspiciousNavigationStrategyTest" ,
+          "fr.inria.astor.test.repair.evaluation.extensionpoints.FaultLocalizationExtensionTest" ,
           "fr.inria.astor.util.CommandSummaryTest"
       ]
 

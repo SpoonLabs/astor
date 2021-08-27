@@ -56,7 +56,7 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 		FaultLocalizationResult result = new FaultLocalizationResult(
 				candidates,
-				flacocoResult.getFailingTests().stream().map(TestMethod::getFullyQualifiedClassName).collect(Collectors.toList())
+				flacocoResult.getFailingTests().stream().map(TestMethod::getFullyQualifiedClassName).distinct().collect(Collectors.toList())
 		);
 
 		if (ConfigurationProperties.getPropertyBool("ignoreflakyinfl")) {
