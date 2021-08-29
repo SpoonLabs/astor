@@ -1,15 +1,5 @@
 package fr.inria.astor.test.repair.approaches.cardumen;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
-import org.apache.log4j.Level;
-import org.junit.Assert;
-import org.junit.Test;
-
 import fr.inria.astor.approaches.cardumen.CardumenExhaustiveApproach;
 import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine4Stats;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -25,6 +15,13 @@ import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
+import org.apache.log4j.Level;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * 
@@ -40,7 +37,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 		// Configuration for paper experiment
 		command.command.put("-mode", ExecutionMode.custom.name());
-		command.command.put("-flthreshold", "0.1");
+		command.command.put("-flthreshold", "0.05");
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
 		command.command.put("-customengine", CardumenExhaustiveApproach.class.getCanonicalName());
@@ -75,7 +72,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		IngredientPoolScope scope = IngredientPoolScope.LOCAL;
 
 		command.command.put("-mode", ExecutionMode.custom.name());
-		command.command.put("-flthreshold", "0.1");
+		command.command.put("-flthreshold", "0.05");
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
 		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
@@ -95,7 +92,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		Stats.createStat();
 		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
-		assertEquals(73, cardumen.totalBases);
+		assertEquals(85, cardumen.totalBases);
 
 		log.debug("PACKAGE SCOPE");
 		// PACKAGE
@@ -118,7 +115,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 		// Configuration for paper experiment
 		command.command.put("-mode", ExecutionMode.custom.name());
-		command.command.put("-flthreshold", "0.1");
+		command.command.put("-flthreshold", "0.05");
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
 		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
@@ -163,7 +160,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		Stats.createStat();
 		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 
-		assertEquals(12, cardumen.totalmp);
+		assertEquals(10, cardumen.totalmp);
 
 		command.command.put("-maxsuspcandidates", "3");
 		main1.execute(command.flat());
@@ -183,7 +180,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		IngredientPoolScope scope = IngredientPoolScope.PACKAGE;
 		boolean uniformreplacement = false;
 		command.command.put("-mode", ExecutionMode.custom.name());
-		command.command.put("-flthreshold", "0.1");
+		command.command.put("-flthreshold", "0.05");
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
 		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());

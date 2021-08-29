@@ -1,30 +1,9 @@
 package fr.inria.main;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.UnrecognizedOptionException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.output.ReportResults;
 import fr.inria.astor.core.setup.ConfigurationProperties;
@@ -45,9 +24,19 @@ import fr.inria.astor.core.solutionsearch.spaces.operators.OperatorSpace;
 import fr.inria.astor.core.validation.ProgramVariantValidator;
 import fr.inria.astor.util.TimeUtil;
 import fr.inria.main.evolution.ExtensionPoints;
+import org.apache.commons.cli.*;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder.InputType;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.util.*;
 
 /**
  * Abstract entry point of the framework. It defines and manages program
@@ -879,6 +868,9 @@ public abstract class AbstractMain {
 		launcher.buildModel();
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
 		launcher.getModelBuilder().compile(InputType.FILES);
+
+		projectFacade.getProperties().setOriginalAppBinDir(Collections.singletonList(launcher.getModelBuilder().getBinaryOutputDirectory().getAbsolutePath()));
+		projectFacade.getProperties().setOriginalTestBinDir(Collections.singletonList(launcher.getModelBuilder().getBinaryOutputDirectory().getAbsolutePath()));
 		// launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 
 	}

@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;
@@ -195,7 +196,7 @@ public class RepairOperatorTest extends BaseEvolutionaryTest {
 				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-stopfirst", "false",
-				"-maxgen", "100", "-scope", "package", "-seed", "10", "-loglevel", "INFO", "-ingredientstrategy",
+				"-maxgen", "200", "-scope", "package", "-seed", "10", "-loglevel", "INFO", "-ingredientstrategy",
 				RandomSelectionTransformedIngredientStrategy.class.getCanonicalName() };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);

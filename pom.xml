@@ -46,6 +46,12 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>com.github.spoonlabs</groupId>
+			<artifactId>flacoco</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
 			<!-- doc: https://logging.apache.org/log4j/2.0/faq.html -->
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-1.2-api</artifactId>
@@ -61,7 +67,7 @@
 		<dependency>
 			<groupId>fr.inria.gforge.spoon</groupId>
 			<artifactId>spoon-core</artifactId>
-			<version>8.3.0</version>
+			<version>9.2.0-beta-1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
@@ -90,18 +96,18 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
+			<version>4.13.2</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.1.0</version>
+			<version>5.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.1.0</version>
+			<version>5.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.gzoltar</groupId>
@@ -143,24 +149,22 @@
 
 	</dependencies>
 
-	<repositories>
+        <repositories>
+                 <repository>
+                     <id>sonatype-snapshots</id>
+                        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                        <snapshots />
+                </repository>
 		<repository>
 			<id>inria</id>
 			<url>http://spoon.gforge.inria.fr/repositories/releases/</url>
 		</repository>
 		<repository>
-			<id>gforge.inria.fr-snapshot</id>
-			<name>Maven Repository for Spoon Snapshot</name>
-			<url>http://spoon.gforge.inria.fr/repositories/snapshots/</url>
-			<snapshots />
+			<id>spoon-snapshot</id>
+			<name>maven repository for spoon snapshots</name>
+                        <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
+                        <snapshots/>
 		</repository>
-		<repository>
-			<id>gforge.inria.fr-release</id>
-			<name>Maven Repository for Spoon Release</name>
-			<url>http://sachaproject.gforge.inria.fr/repositories/releases/</url>
-			<snapshots />
-		</repository>
-
 		<repository>
 			<id>EvoSuite</id>
 			<name>EvoSuite Repository</name>

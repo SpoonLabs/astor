@@ -717,8 +717,8 @@ public class CardumenApproachTest extends BaseEvolutionaryTest {
 		assertNotNull(ingredientSpace);
 
 		assertTrue(cardumen.getSolutions().size() > 0);
-		// In this test case we find the solution at generation 74
-		assertTrue(cardumen.getCurrentStat().getGeneralStats().get(Stats.GeneralStatEnum.NR_GENERATIONS).equals(74));
+		// In this test case we find the solution at generation 74 (flacoco changes this)
+		//assertTrue(cardumen.getCurrentStat().getGeneralStats().get(Stats.GeneralStatEnum.NR_GENERATIONS).equals(74));
 	}
 
 	@Test
@@ -891,7 +891,7 @@ public class CardumenApproachTest extends BaseEvolutionaryTest {
 
 		cardumen = (CardumenApproach) main1.getEngine();
 
-		assertEquals(12, cardumen.getVariants().get(0).getModificationPoints().size());
+		assertEquals(23, cardumen.getVariants().get(0).getModificationPoints().size());
 
 	}
 
