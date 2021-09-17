@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+# CITATION.cff created with https://github.com/monperrus/bibtexbrowser/
+preferred-citation:
+  title: "ASTOR: A Program Repair Library for Java"
+  doi: "10.1145/2931037.2948705"
+  year: "2016"
+  type: conference-paper
+  conference: "Proceedings of ISSTA, Demonstration Track"
+  authors:
+    - family-names: Martinez
+      given-names: Matias
+    - family-names: Monperrus
+      given-names: Martin
