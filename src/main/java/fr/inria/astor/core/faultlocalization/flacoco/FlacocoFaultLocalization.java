@@ -118,6 +118,8 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 			config.setJacocoIncludes(Collections.singleton(option));
 		}
 
+		config.setJacocoExcludes(Collections.singleton("java.*"));
+
 		// Handle test configuration
 		config.setjUnit4Tests(new HashSet<>());
 		config.setjUnit5Tests(new HashSet<>());
