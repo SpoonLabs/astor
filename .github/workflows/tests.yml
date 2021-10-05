@@ -43,7 +43,7 @@ jobs:
       ]
         javaversion: [8]
         include:
-          - os: fr.inria.astor.test.repair.approaches.JGenProgEvolutionaryTest
+          - test: fr.inria.astor.test.repair.approaches.JGenProgEvolutionaryTest
             javaversion: 11
 
     steps:
