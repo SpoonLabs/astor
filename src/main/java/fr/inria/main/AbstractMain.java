@@ -354,7 +354,7 @@ public abstract class AbstractMain {
 			String javahome = System.getProperty("java.home");
 			File location = new File(javahome);
 
-			javahome = location.getParent() + File.separator + "bin";
+			javahome = location + File.separator + "bin";
 			File javalocationbin = new File(javahome);
 			if (!javalocationbin.exists()) {
 				System.err.println("Problems to generate java jdk path");
