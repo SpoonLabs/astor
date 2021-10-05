@@ -366,11 +366,32 @@ public abstract class AbstractMain {
 		}
 
 		if (cmd.hasOption("jvm4evosuitetestexecution")) {
+
 			ConfigurationProperties.properties.setProperty("jvm4evosuitetestexecution",
 					cmd.getOptionValue("jvm4evosuitetestexecution"));
+
 		} else {
-			ConfigurationProperties.properties.setProperty("jvm4evosuitetestexecution",
-					ConfigurationProperties.properties.getProperty("jvm4testexecution"));
+
+			// We need a JDK as we compile the test cases from Evosuite
+			String javahome = System.getProperty("java.home");
+			File location = new File(javahome);
+			if (location.getName().equals("jre")) {
+				javahome = location.getParent() + File.separator + "bin";
+				File javalocationbin = new File(javahome);
+				if (!javalocationbin.exists()) {
+					System.err.println("Problems to generate java jdk path");
+					return false;
+				}
+
+			} else {
+				javahome = location + File.separator + "bin";
+				File javalocationbin = new File(javahome);
+				if (!javalocationbin.exists()) {
+					System.err.println("Problems to generate java jdk path");
+					return false;
+				}
+			}
+			ConfigurationProperties.properties.setProperty("jvm4evosuitetestexecution", javahome);
 
 		}
 
