@@ -41,6 +41,10 @@ jobs:
           "fr.inria.astor.test.repair.evaluation.extensionpoints.FaultLocalizationExtensionTest" ,
           "fr.inria.astor.util.CommandSummaryTest"
       ]
+        javaversion: [8]
+        include:
+          - test: "fr.inria.astor.test.repair.approaches.JGenProgEvolutionaryTest"
+            javaversion: 11
 
     steps:
       - name: Checkout
@@ -55,7 +59,7 @@ jobs:
       - name: Setup JDK8
         uses: actions/setup-java@v2
         with:
-          java-version: 8
+          java-version: ${{ matrix.javaversion }}
           distribution: 'adopt'
 
       - name: Set up Maven
