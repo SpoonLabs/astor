@@ -8,8 +8,7 @@ Pre-requisites:
 * You will need **jdk 8** installed (if you have multiple jdk versions installed you can switched between them using update-alternatives).
 * You will need **maven** installed (possibly with some additional pluggins, so look out for these if error messages come up during compilation).
 
-## Option 1: the installation route
-
+## Maven installation
      git clone https://github.com/SpoonLabs/astor.git
      cd astor
      mvn install -DskipTests=true
@@ -19,39 +18,25 @@ In any case, most important test cases are always executed on [travis](https://t
 
 Warning: Windows is only partially supported.
 
-### Creating astor.jar containing dependencies.
-
      mvn package -DskipTests=true
      
-The following JAR will be created: `target/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar`  
+The following JAR will be created by this command: `target/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar`  
 This will referenced as `astor.jar` for the rest of this guide but you will need to replace it with the full line when inserting commands.
-
-## Option 2: compiling and building class path separately
-
-In addition to compiling and building the classpath for astor, the following also gives you the command required to compile an example test.
-
-     git clone https://github.com/SpoonLabs/astor.git
-     cd astor
-     mvn clean compile # compiling  astor
-     cd examples/Math-issue-280
-     mvn clean compile test  # compiling and running bug example
-     cd ../../
-     mvn dependency:build-classpath -B | egrep -v "(^\[INFO\]|^\[WARNING\])" | tee /tmp/astor-classpath.txt
-     cat /tmp/astor-classpath.txt
-
-Note: you will need to rebuild the class path each day if you store it in /tmp/ as suggested, so expect an error if you come back the following day and try to run astor without doing so.
      
 ## Executing the program
 
 The execution of the program will be different depending on the build option you chose previously.
 
-### Executing after building with option 2, demonstrated for jGenProg
+### Executing with jGenProg
 
 We present a command line with the required arguments for executing jGenProg.  Optional arguments found using option -help are also listed further down this document. The arguments can also be changed  in "./target/classes/astor.properties".
 
 Then the main execution command is as follows (note that the "location" argument is mandatory, and must be an absolute path):
 
-     java -cp $(cat /tmp/astor-classpath.txt):target/classes fr.inria.main.evolution.AstorMain -mode jgenprog -srcjavafolder /src/java/ -srctestfolder /src/test/  -binjavafolder /target/classes/ -bintestfolder  /target/test-classes/ -location /home/user/astor/examples/Math-issue-280/ -dependencies examples/Math-issue-280/lib
+     cd examples/Math-issue-280
+     mvn clean compile test -DskipTests # compiling and running bug example
+     cd ../../
+     java -cp target/astor-*-jar-with-dependencies.jar fr.inria.main.evolution.AstorMain -mode jgenprog -srcjavafolder /src/java/ -srctestfolder /src/test/  -binjavafolder /target/classes/ -bintestfolder  /target/test-classes/ -location /home/user/astor/examples/Math-issue-280/ -dependencies examples/Math-issue-280/lib
 
 The only part of the above command that you should need to alter is the absolute path that follows the -location argument.
 
@@ -59,6 +44,7 @@ Notes:
 
 * the default ingredient scope is `package`, to change it do `ConfigurationProperties.properties.setProperty("scope","global")`
 * Always put code in a package, not in the default unnamed package. 
+* if the project under repair has dependencies, you must use the `--dependencies` flag, see below.
 
 ### Output
 
@@ -98,7 +84,7 @@ Folder “default” contains the original program, without any modification. It
 
 Each folder "variant-x" is a valid solution to the repair problem (passes all tests). The "x" corresponds to the id (unique identifier) assigned to a variant. There is an command line argument `saveall` that allows you to save all variants that Astor generates, even if they are not a solution.
 
-## Executing after building with option 1
+## Other repair modes
 
 ### jKali
 
