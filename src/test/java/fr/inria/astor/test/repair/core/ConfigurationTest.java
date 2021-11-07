@@ -119,4 +119,25 @@ public class ConfigurationTest extends BaseEvolutionaryTest {
 
 	}
 
+	@Test
+	public void testclasspath() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
+				"org.apache.commons.math.distribution.NormalDistributionTest", "-location",
+				new File("./examples/math_85").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/",
+				///
+				"-binjavafolder", "/target/classes" + File.pathSeparator + "/target/classes",
+				//
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5",
+				"-stopfirst", "false", "-maxgen", "0", "-scope", "local", "-seed", "10", "-ingredientstrategy",
+				ShortestIngredientSearchStrategy.class.getName() };
+
+		main1.execute(args);
+
+	}
+
+
 }
