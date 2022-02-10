@@ -52,7 +52,7 @@ public class ProgramVariant {
 	protected List<ModificationPoint> modificationPoints = null;
 	/**
 	 * Reference to the loaded classes from the spoon model. The classes are shared
-	 * by all variants, a s consequence, it does not have changes of any variant.
+	 * by all variants.
 	 */
 	protected Map<String, CtClass> loadClasses = new HashMap<String, CtClass>();
 
@@ -211,7 +211,7 @@ public class ProgramVariant {
 	 * 
 	 * @return
 	 */
-	public List<CtType<?>> getAffectedClasses() {
+	public List<CtType<?>> getAllClasses() {
 		List<CtType<?>> r = new ArrayList<CtType<?>>();
 		for (CtClass c : loadClasses.values()) {
 			r.add(c);
@@ -219,7 +219,7 @@ public class ProgramVariant {
 		return Collections.unmodifiableList(r);
 	}
 
-	public List<CtType<?>> getClassesToCompile() {
+	public List<CtType<?>> getClassesAffectedByOperators() {
 
 		Set<CtType<?>> affectedClassesSet = new HashSet<CtType<?>>();
 

@@ -55,7 +55,7 @@ public class EvoSuiteFacade {
 			throws Exception {
 		// If the variant does not have operators, we use all classes.
 		List<CtType<?>> types = (!variant.computeAffectedClassesByOperators().isEmpty())
-				? variant.computeAffectedClassesByOperators() : variant.getAffectedClasses();
+				? variant.computeAffectedClassesByOperators() : variant.getAllClasses();
 
 		List<String> affectedTypes = types.stream().map(e -> e.getQualifiedName()).collect(Collectors.toList());
 
@@ -173,7 +173,7 @@ public class EvoSuiteFacade {
 				typesToProcess = variant.computeAffectedClassesByOperators();
 			} else {
 				logger.info("All Buggy classes");
-				typesToProcess = variant.getAffectedClasses();
+				typesToProcess = variant.getAllClasses();
 			}
 
 		} else
@@ -407,7 +407,7 @@ public class EvoSuiteFacade {
 
 	private List<CtType> obtainBuggyButLatterModif(ProgramVariant variant) {
 		List<CtType> types = new ArrayList<>();
-		for (CtType affected : variant.getAffectedClasses()) {
+		for (CtType affected : variant.getAllClasses()) {
 
 			boolean add = false;
 			for (CtType modif : variant.getModifiedClasses()) {

@@ -36,7 +36,7 @@ public class PackageBasicFixSpace extends LocalIngredientSpace {
 
 	@Override
 	public void defineSpace(ProgramVariant variant) {
-		List<CtType<?>> affected = variant.getAffectedClasses();
+		List<CtType<?>> affected = variant.getAllClasses();
 
 		List<CtPackage> packageAnalyzed = new ArrayList<>();
 		for (CtType<?> ing : affected) {

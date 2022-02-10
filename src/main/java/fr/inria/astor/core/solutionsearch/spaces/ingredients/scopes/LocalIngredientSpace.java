@@ -33,7 +33,7 @@ public class LocalIngredientSpace extends AstorCtIngredientPool {
 
 	@Override
 	public void defineSpace(ProgramVariant variant) {
-		List<CtType<?>> affected = variant.getAffectedClasses();
+		List<CtType<?>> affected = variant.getAllClasses();
 		for (CtType<?> CtType : affected) {
 			this.createFixSpaceFromAClass(CtType);
 		}

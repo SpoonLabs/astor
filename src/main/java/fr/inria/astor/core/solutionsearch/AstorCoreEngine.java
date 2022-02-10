@@ -360,7 +360,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected void saveOriginalVariant(ProgramVariant variant) {
 		originalModel.clear();
-		for (CtType st : variant.getAffectedClasses()) {
+		for (CtType st : variant.getAllClasses()) {
 			try {
 				originalModel.put(st.getQualifiedName(), st);
 			} catch (Exception e) {
@@ -372,7 +372,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected void saveModifVariant(ProgramVariant variant) {
 		modifModel.clear();
-		for (CtType st : variant.getAffectedClasses()) {
+		for (CtType st : variant.getAllClasses()) {
 			try {
 				modifModel.put(st.getQualifiedName(), st.toString());
 			} catch (Exception e) {
@@ -385,7 +385,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	protected boolean validateReversedOriginalVariant(ProgramVariant variant) {
 
-		for (CtType st : variant.getAffectedClasses()) {
+		for (CtType st : variant.getAllClasses()) {
 			CtType original = originalModel.get(st.getQualifiedName());
 			if (original != null) {
 				boolean idem = original.equals(st);

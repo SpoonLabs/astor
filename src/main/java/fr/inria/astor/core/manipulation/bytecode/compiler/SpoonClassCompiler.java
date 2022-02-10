@@ -51,10 +51,14 @@ public class SpoonClassCompiler implements VariantCompiler {
 
 	@Override
 	public CompilationResult compile(ProgramVariant instance, URL[] cp) {
-		List<CtType<?>> ctClasses = instance.getClassesToCompile();
+		List<CtType<?>> ctClasses = instance.getClassesAffectedByOperators();
 
-		if (ctClasses.isEmpty()) {
-			throw new IllegalStateException("No class to compile");
+		if (ctClasses == null || ctClasses.isEmpty()) {
+			// In case we dont have affected by operations, we take all.
+			ctClasses = instance.getAllClasses();
+
+			if (ctClasses == null || ctClasses.isEmpty())
+				throw new IllegalStateException("No class to compile");
 		}
 
 		CompilationResult compilation2 = this.compile(ctClasses, cp);

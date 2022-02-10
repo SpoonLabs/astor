@@ -188,7 +188,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 
 		// mi.getIngredientScope()
 		// Program variant ref to
-		Collection<CtType<?>> affected = variant.getAffectedClasses();
+		Collection<CtType<?>> affected = variant.getAllClasses();
 		List<CtClass> progVariant = variant.getModifiedClasses();
 		assertFalse(progVariant.isEmpty());
 
@@ -288,7 +288,7 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 
 		// mi.getIngredientScope()
 		// Program variant ref to
-		Collection<CtType<?>> affected = variant.getAffectedClasses();
+		Collection<CtType<?>> affected = variant.getAllClasses();
 		List<CtClass> progVariant = variant.getModifiedClasses();
 		assertFalse(progVariant.isEmpty());
 

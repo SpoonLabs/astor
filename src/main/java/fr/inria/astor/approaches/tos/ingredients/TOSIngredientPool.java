@@ -215,7 +215,7 @@ public class TOSIngredientPool<T extends CtElement>
 	protected List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {
 
 		if (IngredientPoolScope.PACKAGE.equals(scope)) {
-			List<CtType<?>> affected = variant.getAffectedClasses();
+			List<CtType<?>> affected = variant.getAllClasses();
 			List<CtType<?>> types = new ArrayList<>();
 			List<CtPackage> packageAnalyzed = new ArrayList<>();
 			for (CtType<?> ing : affected) {
@@ -231,7 +231,7 @@ public class TOSIngredientPool<T extends CtElement>
 			return types;
 		}
 		if (IngredientPoolScope.LOCAL.equals(scope)) {
-			return variant.getAffectedClasses();
+			return variant.getAllClasses();
 		}
 		if (IngredientPoolScope.GLOBAL.equals(scope)) {
 			return MutationSupporter.getFactory().Type().getAll();

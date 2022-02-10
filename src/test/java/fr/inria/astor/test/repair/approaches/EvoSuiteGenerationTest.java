@@ -65,8 +65,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "package", "-seed", "10",
 				// We force to not execute the evolution, so, we run it for zero
 				// generation
@@ -88,7 +88,7 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String outES = main1.getEngine().getProjectFacade()
 				.getInDirWithPrefix(ConfigurationProperties.getProperty("evosuiteresultfolder"));
 
-		List<String> affectedTypes = variant.getAffectedClasses().stream().map(e -> e.getQualifiedName())
+		List<String> affectedTypes = variant.getAllClasses().stream().map(e -> e.getQualifiedName())
 				.collect(Collectors.toList());
 
 		boolean executed = fev.runEvosuite(variant, affectedTypes, main1.getEngine().getProjectFacade(), outES, true);// fev.runEvosuite(variant,
@@ -183,8 +183,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "package", "-package", "10",
 				// We force to not execute the evolution, so, we run it for zero
 				// generation
@@ -228,8 +228,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-stopfirst", "true", "-population", "1",
 				"-stopfirst", "true", "-maxtime", "100", "-validation", "evosuite", "-maxgen", "250", "-parameters",
 				"overridemaxtime:false"
@@ -340,8 +340,8 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
-				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
-				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				"/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes",
+				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "2000", "-population", "1",
 				"-stopfirst", "true", "-maxtime", "20",
 				// PARAMETER TO TEST
@@ -463,10 +463,10 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 			String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 					"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 					new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons",
-					"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
-					"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5",
-					"-out", out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "200", "-population",
-					"1", "-stopfirst", "true", "-maxtime", "100",
+					"-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder",
+					"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7",
+					"-flthreshold", "0.5", "-out", out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen",
+					"200", "-population", "1", "-stopfirst", "true", "-maxtime", "100",
 					// PARAMETER TO TEST
 					"-validation", "wrongargument"
 
@@ -514,11 +514,11 @@ public class EvoSuiteGenerationTest extends BaseEvolutionaryTest {
 			String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
 					"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 					new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons",
-					"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
-					"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5",
-					"-out", out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "250", "-population",
-					"1", "-stopfirst", "true", "-maxtime", "100", "-validation", "evosuite", "-parameters",
-					"overridemaxtime:false"
+					"-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder",
+					"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7",
+					"-flthreshold", "0.5", "-out", out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen",
+					"250", "-population", "1", "-stopfirst", "true", "-maxtime", "100", "-validation", "evosuite",
+					"-parameters", "overridemaxtime:false"
 
 			};
 			System.out.println(Arrays.toString(args));

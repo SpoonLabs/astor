@@ -129,10 +129,10 @@ public class ExpressionTypeIngredientSpace
 	protected List<CtType<?>> obtainClassesFromScope(ProgramVariant variant) {
 
 		if (IngredientPoolScope.PACKAGE.equals(scope)) {
-			return variant.getAffectedClasses();
+			return variant.getAllClasses();
 		}
 		if (IngredientPoolScope.LOCAL.equals(scope)) {
-			return variant.getAffectedClasses();
+			return variant.getAllClasses();
 		}
 		if (IngredientPoolScope.GLOBAL.equals(scope)) {
 			return MutationSupporter.getFactory().Type().getAll();

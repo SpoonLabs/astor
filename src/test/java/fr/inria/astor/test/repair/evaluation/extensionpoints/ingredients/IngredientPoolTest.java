@@ -325,7 +325,7 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 
 		List<String> files = ingStrategy.getIngredientSpace().getLocations();
 		Assert.assertTrue(files.size() > 0);
-		Assert.assertTrue(files.contains(mpoint.getProgramVariant().getAffectedClasses().get(0).getQualifiedName()));
+		Assert.assertTrue(files.contains(mpoint.getProgramVariant().getAllClasses().get(0).getQualifiedName()));
 
 		List<Ingredient> ingredients = ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
 		Assert.assertTrue(ingredients.size() > 0);
@@ -333,7 +333,7 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 
 		// Now, we check if all ingredients retrieved belongs affected classes
 		for (Ingredient ctCodeElement : ingredients) {
-			assertTrue(mpoint.getProgramVariant().getAffectedClasses()
+			assertTrue(mpoint.getProgramVariant().getAllClasses()
 					.contains(ctCodeElement.getCode().getParent(CtType.class)));
 		}
 
@@ -393,7 +393,7 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 		List<String> packages = ingStrategy.getIngredientSpace().getLocations();
 		Assert.assertTrue(packages.size() > 0);
 		Assert.assertTrue(packages.contains(
-				mpoint.getProgramVariant().getAffectedClasses().get(0).getParent(CtPackage.class).getQualifiedName()));
+				mpoint.getProgramVariant().getAllClasses().get(0).getParent(CtPackage.class).getQualifiedName()));
 
 		List<Ingredient> ingredients = ingStrategy.getIngredientSpace().getIngredients(mpoint.getCodeElement());
 		Assert.assertTrue(ingredients.size() > 0);
@@ -402,7 +402,7 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 		boolean ingrePackageCorrect = false;
 		// Now, we check if all ingredients retrieved belongs affected classes
 		for (Ingredient ctCodeElement : ingredients) {
-			for (CtType aff : mpoint.getProgramVariant().getAffectedClasses()) {
+			for (CtType aff : mpoint.getProgramVariant().getAllClasses()) {
 				if (aff.getPackage().equals(ctCodeElement.getCode().getParent(CtPackage.class)))
 					ingrePackageCorrect = true;
 			}
