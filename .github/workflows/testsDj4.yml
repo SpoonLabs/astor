@@ -1,0 +1,117 @@
+name: testsD4JRepair
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    env:
+      TZ: America/Los_Angeles
+
+    strategy:
+      fail-fast: false
+      matrix:
+        test: [ 
+        "fr.inria.astor.test.D4JWorkflowTestSingle#testMath2",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath5",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath8",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath28",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath32",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath40",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath49",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath50",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath53",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath70",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath71",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath73",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath78",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath80",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath81",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath82",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath84",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath85",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath95",    
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart1",   
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart3",  
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart5",  	 
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart7",                  
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart13",  
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart15",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart25", 
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testTime4",  
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testTime11", 
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath2JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath8JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath28JKali",
+           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath32JKali", 
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath40JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath49JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath50JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath78JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath80JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath81JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath82JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath84JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath85JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath95JKali",  	
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart1JKali",     
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart5JKali",  	                
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart13JKali",  
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart15JKali",
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart25JKali", 
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testChart26JKali", 
+          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath40JKaliSummary",   	  		
+      ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+
+      - name: Cache .m2
+        uses: actions/cache@v2.1.6
+        with:
+          path: "~/.m2/repository"
+          key: ${{ runner.os }}-m2
+
+      - name: Setup JDK8
+        uses: actions/setup-java@v2
+        with:
+          java-version: 8
+          distribution: 'adopt'
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4
+        with:
+          maven-version: 3.6.0
+
+      - name: Install Java 7
+        run: |
+          wget -O $RUNNER_TEMP/java_package.tar.gz https://download.java.net/openjdk/jdk7u75/ri/openjdk-7u75-b13-linux-x64-18_dec_2014.tar.gz
+          tar -xzvf  $RUNNER_TEMP/java_package.tar.gz  -C  $RUNNER_TEMP/
+          ls $RUNNER_TEMP/java-se-7u75-ri      
+      - name: run Java 7
+        run: |
+          $RUNNER_TEMP/java-se-7u75-ri/bin/java -version		
+         
+      - name: Run tests
+        run: |
+          export J7PATH=$RUNNER_TEMP/java-se-7u75-ri/bin 
+          echo $J7PATH 
+          TZ='America/Los_Angeles'
+          export TZ
+          mvn -ff -q clean
+          mvn -ff -q test -DskipTests -DfailIfNoTests=false
+          mvn -ff -q surefire:test -DfailIfNoTests=false -Dtest=${{ matrix.test }}
+                             
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: resultsD4J
+          path: resultsTestCases/
+    
+
+      - name: Codecov
+        uses: codecov/codecov-action@v1.5.2
+  
+         
