@@ -55,6 +55,13 @@ public abstract class ExhaustiveSearchEngine extends AstorCoreEngine {
 
 				for (OperatorInstance pointOperation : operatorInstances) {
 
+					if (!belowMaxTime(dateInitEvolution, maxMinutes)) {
+
+						this.setOutputStatus(AstorOutputStatus.TIME_OUT);
+						log.debug("Max time reached");
+						return;
+					}
+
 					try {
 						log.info("mod_point " + modifPoint);
 						log.info("-->op: " + pointOperation);
