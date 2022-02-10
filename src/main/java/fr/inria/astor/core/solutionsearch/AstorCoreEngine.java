@@ -23,6 +23,7 @@ import fr.inria.astor.approaches.extensions.minimpact.validator.ProcessEvoSuiteV
 import fr.inria.astor.approaches.jgenprog.jGenProgSpace;
 import fr.inria.astor.approaches.jkali.JKaliSpace;
 import fr.inria.astor.approaches.jmutrepair.jMutRepairSpace;
+import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.PatchDiff;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -177,6 +178,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		currentStat.getGeneralStats().put(GeneralStatEnum.EXECUTION_IDENTIFIER,
 				ConfigurationProperties.getProperty("projectIdentifier"));
 
+		currentStat.getGeneralStats().put(GeneralStatEnum.FAULT_LOCALIZATION,
+				ConfigurationProperties.getProperty("faultlocalization").toString());
+
 		this.printFinalStatus();
 
 		if (this.solutions.size() > 0) {
@@ -191,23 +195,51 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.info(this.getSolutionData(this.solutions, this.generationsExecuted) + "\n");
 
 			patchInfo = createStatsForPatches(solutions, generationsExecuted, dateInitEvolution);
+		} else {
+			patchInfo = new ArrayList<>();
+		}
+		// Reporting results
+		String output = this.projectFacade.getProperties().getWorkingDirRoot();
+		for (ReportResults out : this.getOutputResults()) {
+			out.produceOutput(patchInfo, this.currentStat.getGeneralStats(), output);
+			if (ConfigurationProperties.getPropertyBool("removeworkingfolder")) {
+				File fout = new File(output);
 
-			// Reporting results
-			String output = this.projectFacade.getProperties().getWorkingDirRoot();
-			for (ReportResults out : this.getOutputResults()) {
-				out.produceOutput(patchInfo, this.currentStat.getGeneralStats(), output);
-				if (ConfigurationProperties.getPropertyBool("removeworkingfolder")) {
-					File fout = new File(output);
-
-					try {
-						FileUtils.deleteDirectory(fout);
-					} catch (IOException e) {
-						e.printStackTrace();
-						log.error(e);
-					}
+				try {
+					FileUtils.deleteDirectory(fout);
+				} catch (IOException e) {
+					e.printStackTrace();
+					log.error(e);
 				}
 			}
+		}
+		try {
+			List<SuspiciousCode> susp = new ArrayList<>();
+			for (ModificationPoint mpi : originalVariant.getModificationPoints()) {
+				SuspiciousModificationPoint smpi = (SuspiciousModificationPoint) mpi;
+				if (!susp.contains(smpi.getSuspicious())) {
+					susp.add(smpi.getSuspicious());
+					String noout = (ConfigurationProperties.hasProperty("outfl")
+							? ConfigurationProperties.getProperty("outfl")
+							: output);
+					File f = (new File(noout));
+					if (!f.exists()) {
+						f.mkdirs();
+					}
 
+					FileWriter fw = new FileWriter(noout + File.separator + "suspicious_"
+							+ this.projectFacade.getProperties().getFixid() + ".json");
+					for (SuspiciousCode suspiciousCode : susp) {
+						fw.append(suspiciousCode.getClassName() + "," + suspiciousCode.getLineNumber() + ","
+								+ suspiciousCode.getSuspiciousValueString());
+						fw.append("\n");
+					}
+					fw.flush();
+					fw.close();
+				}
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
 
 	}
@@ -819,7 +851,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 	 * This method updates modification point of a variant according to a created
 	 * GenOperationInstance
 	 * 
-	 * @param variant        variant to modify the modification point information
+	 * @param variant   variant to modify the modification point information
 	 * @param operation operator to apply in the variant.
 	 */
 	protected void updateVariantGenList(ProgramVariant variant, OperatorInstance operation) {
