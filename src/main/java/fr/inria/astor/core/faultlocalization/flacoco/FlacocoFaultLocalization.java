@@ -104,7 +104,16 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 		// Handle project location configuration
 
-		config.setTestRunnerTimeoutInMs(new Integer(ConfigurationProperties.getProperty("maxtime")) * 60000);
+		Integer timeOut = 0;
+
+		if (ConfigurationProperties.getProperty("maxtime") != null)
+			timeOut = new Integer(ConfigurationProperties.getProperty("maxtime"));
+
+		if (timeOut == 0) {
+			timeOut = 10;
+		}
+
+		config.setTestRunnerTimeoutInMs(timeOut * 60000);
 
 		if (ConfigurationProperties.properties.containsKey("maxmemory")) {
 			config.setTestRunnerJVMArgs(ConfigurationProperties.properties.get("maxmemory").toString());
