@@ -1,20 +1,13 @@
 package fr.inria.main.evolution;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.ParseException;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.WriterAppender;
-import org.apache.logging.log4j.core.appender.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
 import fr.inria.astor.approaches.deeprepair.DeepRepairEngine;
@@ -22,7 +15,6 @@ import fr.inria.astor.approaches.jgenprog.JGenProg;
 import fr.inria.astor.approaches.jkali.JKaliEngine;
 import fr.inria.astor.approaches.jmutrepair.jMutRepairExhaustive;
 import fr.inria.astor.approaches.scaffold.ScaffoldRepairEngine;
-import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.ingredientbased.ExhaustiveIngredientBasedEngine;
 import fr.inria.astor.core.manipulation.MutationSupporter;
@@ -43,25 +35,6 @@ public class AstorMain extends AbstractMain {
 	protected Logger log = Logger.getLogger(AstorMain.class.getName());
 
 	protected AstorCoreEngine core = null;
-
-	public void initProject(String location, String projectName, String dependencies, String packageToInstrument,
-			double thfl, String failing) throws Exception {
-
-		List<String> failingList = (failing != null) ? Arrays.asList(failing.split(File.pathSeparator))
-				: new ArrayList<>();
-		String method = this.getClass().getSimpleName();
-
-		projectFacade = getProjectConfiguration(location, projectName, method, failingList, dependencies, true);
-
-		projectFacade.getProperties().setExperimentName(this.getClass().getSimpleName());
-
-		projectFacade.setupWorkingDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-
-		if (ConfigurationProperties.getPropertyBool("autocompile")) {
-			compileProject(projectFacade.getProperties());
-		}
-
-	}
 
 	/**
 	 * It creates a repair engine according to an execution mode.
@@ -117,6 +90,10 @@ public class AstorMain extends AbstractMain {
 			core.initPopulation(new ArrayList<SuspiciousCode>());
 		} else {
 			List<SuspiciousCode> suspicious = core.calculateSuspicious();
+
+			if (suspicious == null || suspicious.isEmpty()) {
+				throw new IllegalStateException("No suspicious line detected by the fault localization");
+			}
 
 			core.initPopulation(suspicious);
 		}
