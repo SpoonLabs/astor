@@ -1,5 +1,18 @@
 package fr.inria.astor.core.faultlocalization.flacoco;
 
+import static fr.inria.astor.core.faultlocalization.FaultLocalizationUtils.addFlakyFailingTestToIgnoredList;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.Logger;
+
 import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
@@ -15,13 +28,6 @@ import fr.spoonlabs.flacoco.core.coverage.framework.JUnit5Strategy;
 import fr.spoonlabs.flacoco.core.test.TestContext;
 import fr.spoonlabs.flacoco.core.test.TestDetector;
 import fr.spoonlabs.flacoco.core.test.method.TestMethod;
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static fr.inria.astor.core.faultlocalization.FaultLocalizationUtils.addFlakyFailingTestToIgnoredList;
 
 public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
@@ -30,7 +36,8 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 	List<TestContext> testContexts = new ArrayList<>();
 
 	@Override
-	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade projectToRepair, List<String> testToRun) throws Exception {
+	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade projectToRepair, List<String> testToRun)
+			throws Exception {
 		FlacocoConfig config = setupFlacocoConfig(projectToRepair);
 		Flacoco flacoco = new Flacoco(config);
 
@@ -50,14 +57,11 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 			candidates.add(sc);
 		}
 
-
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
 		candidates = candidates.subList(0, Math.min(maxSuspCandidates, candidates.size()));
 
-		FaultLocalizationResult result = new FaultLocalizationResult(
-				candidates,
-				flacocoResult.getFailingTests().stream().map(TestMethod::getFullyQualifiedClassName).distinct().collect(Collectors.toList())
-		);
+		FaultLocalizationResult result = new FaultLocalizationResult(candidates, flacocoResult.getFailingTests()
+				.stream().map(TestMethod::getFullyQualifiedClassName).distinct().collect(Collectors.toList()));
 
 		if (ConfigurationProperties.getPropertyBool("ignoreflakyinfl")) {
 			addFlakyFailingTestToIgnoredList(result.getFailingTestCases(), projectToRepair);
@@ -75,7 +79,8 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 			for (SuspiciousCode suspiciousCode : result.getCandidates()) {
 				filtercandidates.add(suspiciousCode);
-				logger.info("Suspicious:  line " + suspiciousCode.getClassName() + " l: " + suspiciousCode.getLineNumber() + ", susp " + suspiciousCode.getSuspiciousValue());
+				logger.info("Suspicious:  line " + suspiciousCode.getClassName() + " l: "
+						+ suspiciousCode.getLineNumber() + ", susp " + suspiciousCode.getSuspiciousValue());
 			}
 
 			result.setCandidates(filtercandidates);
@@ -98,6 +103,19 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		config.setThreshold(ConfigurationProperties.getPropertyDouble("flthreshold"));
 
 		// Handle project location configuration
+
+		config.setTestRunnerTimeoutInMs(new Integer(ConfigurationProperties.getProperty("maxtime")) * 60000);
+
+		if (ConfigurationProperties.properties.containsKey("maxmemory")) {
+			System.out.println("[TEST] maxmemory " + ConfigurationProperties.properties.get("maxmemory").toString());
+			config.setTestRunnerJVMArgs(ConfigurationProperties.properties.get("maxmemory").toString());
+
+		} else {
+			System.out.println("[TEST] maxmemory Null " + ConfigurationProperties.properties.keySet());
+			config.setTestRunnerJVMArgs(null);
+
+		}
+
 		config.setProjectPath(projectFacade.getProperties().getOriginalProjectRootDir());
 		config.setClasspath(projectFacade.getProperties().getDependenciesString());
 		config.setComplianceLevel(ConfigurationProperties.getPropertyInt("javacompliancelevel"));
@@ -109,39 +127,34 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 			config.setBinTestDir(projectFacade.getProperties().getOriginalTestBinDir());
 
 		// Handle manually set includes/excludes
-		if (ConfigurationProperties.getProperty("packageToInstrument") != null &&
-				!ConfigurationProperties.getProperty("packageToInstrument").isEmpty()) {
+		if (ConfigurationProperties.getProperty("packageToInstrument") != null
+				&& !ConfigurationProperties.getProperty("packageToInstrument").isEmpty())
+
+		{
 			String option = ConfigurationProperties.getProperty("packageToInstrument");
 			if (!option.endsWith(".*")) {
 				option += ".*";
 			}
 			config.setJacocoIncludes(Collections.singleton(option));
 		}
-
 		config.setJacocoExcludes(Collections.singleton("java.*"));
-
 		// Handle test configuration
 		config.setjUnit4Tests(new HashSet<>());
 		config.setjUnit5Tests(new HashSet<>());
-		if (ConfigurationProperties.getProperty("ignoredTestCases") != null &&
-				!ConfigurationProperties.getProperty("ignoredTestCases").isEmpty()) {
-			config.setIgnoredTests(Arrays.stream(ConfigurationProperties.getProperty("ignoredTestCases")
-							.split(File.pathSeparator)).collect(Collectors.toSet()));
+		if (ConfigurationProperties.getProperty("ignoredTestCases") != null
+				&& !ConfigurationProperties.getProperty("ignoredTestCases").isEmpty()) {
+			config.setIgnoredTests(
+					Arrays.stream(ConfigurationProperties.getProperty("ignoredTestCases").split(File.pathSeparator))
+							.collect(Collectors.toSet()));
 		}
 		if (!this.testContexts.isEmpty()) {
 			for (TestContext testContext : this.testContexts) {
 				if (testContext.getTestFrameworkStrategy() instanceof JUnit4Strategy) {
-					config.setjUnit4Tests(
-							testContext.getTestMethods().stream()
-									.map(TestMethod::getFullyQualifiedMethodName)
-									.collect(Collectors.toSet())
-					);
+					config.setjUnit4Tests(testContext.getTestMethods().stream()
+							.map(TestMethod::getFullyQualifiedMethodName).collect(Collectors.toSet()));
 				} else if (testContext.getTestFrameworkStrategy() instanceof JUnit5Strategy) {
-					config.setjUnit5Tests(
-							testContext.getTestMethods().stream()
-									.map(TestMethod::getFullyQualifiedMethodName)
-									.collect(Collectors.toSet())
-					);
+					config.setjUnit5Tests(testContext.getTestMethods().stream()
+							.map(TestMethod::getFullyQualifiedMethodName).collect(Collectors.toSet()));
 				}
 			}
 		}
