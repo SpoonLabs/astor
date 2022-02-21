@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
 import fr.inria.astor.approaches.deeprepair.DeepRepairEngine;
 import fr.inria.astor.approaches.jgenprog.JGenProg;
+import fr.inria.astor.approaches.jgenprog.extension.TibraApproach;
 import fr.inria.astor.approaches.jkali.JKaliEngine;
 import fr.inria.astor.approaches.jmutrepair.jMutRepairExhaustive;
 import fr.inria.astor.approaches.scaffold.ScaffoldRepairEngine;
@@ -66,6 +67,9 @@ public class AstorMain extends AbstractMain {
 
 		} else if (ExecutionMode.EXASTOR.equals(mode)) {
 			core = new ExhaustiveIngredientBasedEngine(mutSupporter, projectFacade);
+
+		} else if (ExecutionMode.TIBRA.equals(mode)) {
+			core = new TibraApproach(mutSupporter, projectFacade);
 
 		} else if (ExecutionMode.SCAFFOLD.equals(mode)) {
 			core = new ScaffoldRepairEngine(mutSupporter, projectFacade);
