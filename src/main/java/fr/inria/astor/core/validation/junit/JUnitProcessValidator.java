@@ -1,12 +1,14 @@
 package fr.inria.astor.core.validation.junit;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -79,18 +81,26 @@ public class JUnitProcessValidator extends ProgramVariantValidator {
 			}
 
 			log.debug(trfailing);
+			TestCaseVariantValidationResult r = null;
+
 			if (trfailing.wasSuccessful() || forceExecuteRegression) {
-				return runRegression(mutatedVariant, projectFacade, bc);
+				r = runRegression(mutatedVariant, projectFacade, bc);
 			} else {
-				TestCaseVariantValidationResult r = new TestCasesProgramValidationResult(trfailing,
-						trfailing.wasSuccessful(), false);
-				return r;
+				r = new TestCasesProgramValidationResult(trfailing, trfailing.wasSuccessful(), false);
+
 			}
 
+			removeOfCompiledCode(mutatedVariant, projectFacade);
+			return r;
+
 		} catch (MalformedURLException e) {
+			removeOfCompiledCode(mutatedVariant, projectFacade);
 			e.printStackTrace();
 			return null;
 		}
+
+		// WE REMOVE THE bin code generated for validating the variant
+
 	}
 
 	protected TestCaseVariantValidationResult runRegression(ProgramVariant mutatedVariant,
@@ -169,6 +179,19 @@ public class JUnitProcessValidator extends ProgramVariantValidator {
 
 		MutationSupporter.currentSupporter.getOutput().saveByteCode(mutatedVariant.getCompilation(), variantOutputFile);
 		return variantOutputFile;
+	}
+
+	protected void removeOfCompiledCode(ProgramVariant mutatedVariant, ProjectRepairFacade projectFacade) {
+		String bytecodeOutput = projectFacade.getOutDirWithPrefix(mutatedVariant.currentMutatorIdentifier());
+		File variantOutputFile = new File(bytecodeOutput);
+
+		try {
+			FileUtils.deleteDirectory(variantOutputFile);
+		} catch (IOException e) {
+			log.error("Cannot we removed variant BIN: " + e.getMessage());
+
+		}
+
 	}
 
 	protected TestCaseVariantValidationResult executeRegressionTesting(ProgramVariant mutatedVariant, URL[] bc,
