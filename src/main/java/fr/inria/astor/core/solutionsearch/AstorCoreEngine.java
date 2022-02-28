@@ -15,7 +15,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.astor.approaches.cardumen.CardumenOperatorSpace;
@@ -248,24 +253,86 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		PatchDiffCalculator cdiff = new PatchDiffCalculator();
 		for (ProgramVariant solutionVariant : solutions) {
-			PatchDiff pdiff = new PatchDiff();
-			boolean format = true;
-
-			String diffPatchFormated = cdiff.getDiff(getProjectFacade(), this.originalVariant, solutionVariant, format,
-					this.mutatorSupporter);
-
-			pdiff.setFormattedDiff(diffPatchFormated);
-
-			format = false;
-
-			String diffPatchOriginalAlign = cdiff.getDiff(getProjectFacade(), this.originalVariant, solutionVariant,
-					format, this.mutatorSupporter);
-
-			pdiff.setOriginalStatementAlignmentDiff(diffPatchOriginalAlign);
-
-			solutionVariant.setPatchDiff(pdiff);
+			computePatchDiff(cdiff, solutionVariant);
 		}
 
+	}
+
+	protected void savePatch(ProgramVariant solutionVariant) {
+		PatchDiffCalculator cdiff = new PatchDiffCalculator();
+		try {
+			computePatchDiff(cdiff, solutionVariant);
+			PatchStat statsPatchSolution = getStatSingle(solutionVariant, generationsExecuted);
+			PatchJSONStandarOutput p = new PatchJSONStandarOutput();
+			JSONObject ob = p.stat(statsPatchSolution);
+
+			String output = ConfigurationProperties.getProperty("folderDiff");
+			File f = new File(output);
+			if (!f.exists())
+				f.mkdirs();
+			// String filename = ConfigurationProperties.getProperty("jsonoutputname");
+			String absoluteFileName = output + "/patchinfo_" + solutionVariant.getId() + ".json";
+
+			try (FileWriter file = new FileWriter(absoluteFileName)) {
+
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				JsonParser jp = new JsonParser();
+				JsonElement je = jp.parse(ob.toJSONString());
+				String prettyJsonString = gson.toJson(je);
+
+				file.write(prettyJsonString);
+				file.flush();
+				log.info("Storing ing JSON at " + absoluteFileName);
+				log.info(absoluteFileName + ":\n" + ob.toJSONString());
+				System.out.println("Saving patch info at " + absoluteFileName);
+			} catch (IOException e) {
+				e.printStackTrace();
+				log.error("Problem storing ing json file" + e.toString());
+			}
+
+			absoluteFileName = output + "/patch_" + solutionVariant.getId() + ".diff";
+			try (FileWriter file = new FileWriter(absoluteFileName)) {
+
+				String prettyJsonString = solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff();
+
+				file.write(prettyJsonString);
+				file.flush();
+				log.info("Storing ing JSON at " + absoluteFileName);
+				log.info(absoluteFileName + ":\n" + ob.toJSONString());
+				System.out.println("Saving patch diff at " + absoluteFileName);
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				log.error("Problem storing diff" + e.toString());
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void computePatchDiff(PatchDiffCalculator cdiff, ProgramVariant solutionVariant) throws Exception {
+
+		if (solutionVariant.getPatchDiff() != null) {
+			return;
+		}
+
+		PatchDiff pdiff = new PatchDiff();
+		boolean format = true;
+
+		String diffPatchFormated = cdiff.getDiff(getProjectFacade(), this.originalVariant, solutionVariant, format,
+				this.mutatorSupporter);
+
+		pdiff.setFormattedDiff(diffPatchFormated);
+
+		format = false;
+
+		String diffPatchOriginalAlign = cdiff.getDiff(getProjectFacade(), this.originalVariant, solutionVariant, format,
+				this.mutatorSupporter);
+
+		pdiff.setOriginalStatementAlignmentDiff(diffPatchOriginalAlign);
+
+		solutionVariant.setPatchDiff(pdiff);
 	}
 
 	/**
@@ -1230,96 +1297,110 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		for (ProgramVariant solutionVariant : variants) {
 
-			PatchStat patch_i = new PatchStat();
-			solutionVariant.setPatchInfo(patch_i);
-			patches.add(patch_i);
-			patch_i.addStat(PatchStatEnum.TIME,
-					TimeUtil.getDateDiff(dateInitEvolution, solutionVariant.getBornDate(), TimeUnit.SECONDS));
-			patch_i.addStat(PatchStatEnum.VARIANT_ID, solutionVariant.getId());
-
-			patch_i.addStat(PatchStatEnum.VALIDATION, solutionVariant.getValidationResult().toString());
-
-			patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
-					solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
-
-			patch_i.addStat(PatchStatEnum.FOLDER_SOLUTION_CODE,
-					projectFacade.getInDirWithPrefix(solutionVariant.currentMutatorIdentifier()));
-
-			List<PatchHunkStats> hunks = new ArrayList<>();
-			patch_i.addStat(PatchStatEnum.HUNKS, hunks);
-
-			int lastGeneration = -1;
-			for (int i = 1; i <= generation; i++) {
-				log.info("Generation " + i);
-				List<OperatorInstance> genOperationInstances = solutionVariant.getOperations().get(i);
-				if (genOperationInstances == null)
-					continue;
-				lastGeneration = i;
-
-				for (OperatorInstance genOperationInstance : genOperationInstances) {
-
-					PatchHunkStats hunk = new PatchHunkStats();
-					hunks.add(hunk);
-					hunk.getStats().put(HunkStatEnum.OPERATOR, genOperationInstance.getOperationApplied().toString());
-					hunk.getStats().put(HunkStatEnum.LOCATION,
-							genOperationInstance.getModificationPoint().getCtClass().getQualifiedName());
-
-					hunk.getStats().put(HunkStatEnum.PATH, genOperationInstance.getModificationPoint().getCtClass()
-							.getPosition().getFile().getAbsolutePath());
-
-					boolean originalAlingment = ConfigurationProperties.getPropertyBool("parsesourcefromoriginal");
-					String mpath = determineSourceFolderInWorkspace(solutionVariant, !originalAlingment)
-							+ File.separator + genOperationInstance.getModificationPoint().getCtClass()
-									.getQualifiedName().replace(".", File.separator)
-							+ ".java";
-					hunk.getStats().put(HunkStatEnum.MODIFIED_FILE_PATH, mpath);
-
-					hunk.getStats().put(HunkStatEnum.MP_RANKING,
-							genOperationInstance.getModificationPoint().identified);
-
-					if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
-						SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
-								.getModificationPoint();
-						hunk.getStats().put(HunkStatEnum.LINE, gs.getSuspicious().getLineNumber());
-						hunk.getStats().put(HunkStatEnum.SUSPICIOUNESS, gs.getSuspicious().getSuspiciousValueString());
-					}
-					hunk.getStats().put(HunkStatEnum.ORIGINAL_CODE, genOperationInstance.getOriginal().toString());
-					hunk.getStats().put(HunkStatEnum.BUGGY_CODE_TYPE,
-							genOperationInstance.getOriginal().getClass().getSimpleName() + "|"
-									+ genOperationInstance.getOriginal().getParent().getClass().getSimpleName());
-
-					if (genOperationInstance.getModified() != null) {
-						// if fix content is the same that original buggy
-						// content, we do not write the patch, remaining empty
-						// the property fixed statement
-						if (genOperationInstance.getModified().toString() != genOperationInstance.getOriginal()
-								.toString())
-
-							hunk.getStats().put(HunkStatEnum.PATCH_HUNK_CODE,
-									genOperationInstance.getModified().toString());
-						else {
-							hunk.getStats().put(HunkStatEnum.PATCH_HUNK_CODE,
-									genOperationInstance.getOriginal().toString());
-
-						}
-						// Information about types Parents
-
-						hunk.getStats().put(HunkStatEnum.PATCH_HUNK_TYPE,
-								genOperationInstance.getModified().getClass().getSimpleName() + "|"
-										+ genOperationInstance.getModified().getParent().getClass().getSimpleName());
-					}
-
-					setParticularStats(hunk, genOperationInstance);
-
-				}
+			if (solutionVariant.getPatchInfo() != null) {
+				continue;
 			}
-			if (lastGeneration > 0) {
-				patch_i.addStat(PatchStatEnum.GENERATION, lastGeneration);
-
-			}
+			PatchStat stats = getStatSingle(solutionVariant, generation);
+			patches.add(stats);
 
 		}
 		return patches;
+	}
+
+	private PatchStat getStatSingle(ProgramVariant solutionVariant, int generation) {
+
+		PatchStat patch_i = new PatchStat();
+		solutionVariant.setPatchInfo(patch_i);
+
+		patch_i.addStat(PatchStatEnum.TIME,
+				TimeUtil.getDateDiff(dateInitEvolution, solutionVariant.getBornDate(), TimeUnit.SECONDS));
+		patch_i.addStat(PatchStatEnum.VARIANT_ID, solutionVariant.getId());
+
+		patch_i.addStat(PatchStatEnum.VALIDATION, solutionVariant.getValidationResult().toString());
+
+		patch_i.addStat(PatchStatEnum.PATCH_DIFF_ORIG,
+				solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff());
+
+		patch_i.addStat(PatchStatEnum.FOLDER_SOLUTION_CODE,
+				projectFacade.getInDirWithPrefix(solutionVariant.currentMutatorIdentifier()));
+
+		List<PatchHunkStats> hunks = new ArrayList<>();
+		patch_i.addStat(PatchStatEnum.HUNKS, hunks);
+
+		int lastGeneration = getPatchStatsInformationHunks(generation, solutionVariant, hunks);
+		if (lastGeneration > 0) {
+			patch_i.addStat(PatchStatEnum.GENERATION, lastGeneration);
+
+		}
+		return patch_i;
+	}
+
+	private int getPatchStatsInformationHunks(int generation, ProgramVariant solutionVariant,
+			List<PatchHunkStats> hunks) {
+		int lastGeneration = -1;
+		for (int i = 1; i <= generation; i++) {
+			log.info("Generation " + i);
+			List<OperatorInstance> genOperationInstances = solutionVariant.getOperations().get(i);
+			if (genOperationInstances == null)
+				continue;
+			lastGeneration = i;
+
+			for (OperatorInstance genOperationInstance : genOperationInstances) {
+
+				PatchHunkStats hunk = new PatchHunkStats();
+				hunks.add(hunk);
+				hunk.getStats().put(HunkStatEnum.OPERATOR, genOperationInstance.getOperationApplied().toString());
+				hunk.getStats().put(HunkStatEnum.LOCATION,
+						genOperationInstance.getModificationPoint().getCtClass().getQualifiedName());
+
+				hunk.getStats().put(HunkStatEnum.PATH, genOperationInstance.getModificationPoint().getCtClass()
+						.getPosition().getFile().getAbsolutePath());
+
+				boolean originalAlingment = ConfigurationProperties.getPropertyBool("parsesourcefromoriginal");
+				String mpath = determineSourceFolderInWorkspace(solutionVariant, !originalAlingment) + File.separator
+						+ genOperationInstance.getModificationPoint().getCtClass().getQualifiedName().replace(".",
+								File.separator)
+						+ ".java";
+				hunk.getStats().put(HunkStatEnum.MODIFIED_FILE_PATH, mpath);
+
+				hunk.getStats().put(HunkStatEnum.MP_RANKING, genOperationInstance.getModificationPoint().identified);
+
+				if (genOperationInstance.getModificationPoint() instanceof SuspiciousModificationPoint) {
+					SuspiciousModificationPoint gs = (SuspiciousModificationPoint) genOperationInstance
+							.getModificationPoint();
+					hunk.getStats().put(HunkStatEnum.LINE, gs.getSuspicious().getLineNumber());
+					hunk.getStats().put(HunkStatEnum.SUSPICIOUNESS, gs.getSuspicious().getSuspiciousValueString());
+				}
+				hunk.getStats().put(HunkStatEnum.ORIGINAL_CODE, genOperationInstance.getOriginal().toString());
+				hunk.getStats().put(HunkStatEnum.BUGGY_CODE_TYPE,
+						genOperationInstance.getOriginal().getClass().getSimpleName() + "|"
+								+ genOperationInstance.getOriginal().getParent().getClass().getSimpleName());
+
+				if (genOperationInstance.getModified() != null) {
+					// if fix content is the same that original buggy
+					// content, we do not write the patch, remaining empty
+					// the property fixed statement
+					if (genOperationInstance.getModified().toString() != genOperationInstance.getOriginal().toString())
+
+						hunk.getStats().put(HunkStatEnum.PATCH_HUNK_CODE,
+								genOperationInstance.getModified().toString());
+					else {
+						hunk.getStats().put(HunkStatEnum.PATCH_HUNK_CODE,
+								genOperationInstance.getOriginal().toString());
+
+					}
+					// Information about types Parents
+
+					hunk.getStats().put(HunkStatEnum.PATCH_HUNK_TYPE,
+							genOperationInstance.getModified().getClass().getSimpleName() + "|"
+									+ genOperationInstance.getModified().getParent().getClass().getSimpleName());
+				}
+
+				setParticularStats(hunk, genOperationInstance);
+
+			}
+		}
+		return lastGeneration;
 	}
 
 	/**

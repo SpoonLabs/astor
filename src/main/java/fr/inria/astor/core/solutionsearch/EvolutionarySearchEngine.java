@@ -5,11 +5,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import fr.inria.astor.core.antipattern.AntiPattern;
 import org.apache.commons.collections.map.HashedMap;
 
 import com.martiansoftware.jsap.JSAPException;
 
+import fr.inria.astor.core.antipattern.AntiPattern;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -154,15 +154,15 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 
 			boolean solution = false;
 
-			if(ConfigurationProperties.getPropertyBool("antipattern")){
-			  if(!AntiPattern.isAntiPattern(newVariant, generation)){
-          temporalInstances.add(newVariant);
-          solution = processCreatedVariant(newVariant, generation);
-        }
-      }else{
-        temporalInstances.add(newVariant);
-        solution = processCreatedVariant(newVariant, generation);
-      }
+			if (ConfigurationProperties.getPropertyBool("antipattern")) {
+				if (!AntiPattern.isAntiPattern(newVariant, generation)) {
+					temporalInstances.add(newVariant);
+					solution = processCreatedVariant(newVariant, generation);
+				}
+			} else {
+				temporalInstances.add(newVariant);
+				solution = processCreatedVariant(newVariant, generation);
+			}
 
 			if (solution) {
 				foundSolution = true;
@@ -172,6 +172,12 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 			// Finally, reverse the changes done by the child
 			reverseOperationInModel(newVariant, generation);
 			boolean validation = this.validateReversedOriginalVariant(newVariant);
+
+			if (solution) {
+				this.savePatch(newVariant);
+
+			}
+
 			if (foundSolution && ConfigurationProperties.getPropertyBool("stopfirst")) {
 				break;
 			}

@@ -65,38 +65,8 @@ public class PatchJSONStandarOutput implements ReportResults {
 
 		for (PatchStat patchStat : statsForPatches) {
 
-			JSONObject patchjson = new JSONObject();
+			JSONObject patchjson = stat(patchStat);
 			patchlistJson.add(patchjson);
-
-			Map<PatchStatEnum, Object> stats = patchStat.getStats();
-			for (PatchStatEnum statKey : PatchStatEnum.values()) {
-				if (statKey.equals(PatchStatEnum.HUNKS)) {
-					List<PatchHunkStats> hunks = (List<PatchHunkStats>) stats.get(statKey);
-					JSONArray hunksListJson = new JSONArray();
-					patchjson.put("patchhunks", hunksListJson);
-
-					for (PatchHunkStats patchHunkStats : hunks) {
-						Map<HunkStatEnum, Object> statshunk = patchHunkStats.getStats();
-
-						JSONObject hunkjson = new JSONObject();
-						hunksListJson.add(hunkjson);
-						for (HunkStatEnum hs : HunkStatEnum.values()) {
-							if (statshunk.containsKey(hs))
-								hunkjson.put(hs.name(), JSONObject.escape(statshunk.get(hs).toString()));
-						}
-					}
-
-				} else {
-					try {
-						if (stats.containsKey(statKey))
-							patchjson.put(statKey.name(), JSONObject.escape(stats.get(statKey).toString()));
-					} catch (Exception e) {
-						log.error(e);
-						log.error("problems with key " + statKey.name());
-					}
-				}
-
-			}
 
 		}
 		String filename = ConfigurationProperties.getProperty("jsonoutputname");
@@ -119,6 +89,41 @@ public class PatchJSONStandarOutput implements ReportResults {
 		}
 
 		return statsjsonRoot;
+	}
+
+	public JSONObject stat(PatchStat patchStat) {
+		JSONObject patchjson = new JSONObject();
+
+		Map<PatchStatEnum, Object> stats = patchStat.getStats();
+		for (PatchStatEnum statKey : PatchStatEnum.values()) {
+			if (statKey.equals(PatchStatEnum.HUNKS)) {
+				List<PatchHunkStats> hunks = (List<PatchHunkStats>) stats.get(statKey);
+				JSONArray hunksListJson = new JSONArray();
+				patchjson.put("patchhunks", hunksListJson);
+
+				for (PatchHunkStats patchHunkStats : hunks) {
+					Map<HunkStatEnum, Object> statshunk = patchHunkStats.getStats();
+
+					JSONObject hunkjson = new JSONObject();
+					hunksListJson.add(hunkjson);
+					for (HunkStatEnum hs : HunkStatEnum.values()) {
+						if (statshunk.containsKey(hs))
+							hunkjson.put(hs.name(), JSONObject.escape(statshunk.get(hs).toString()));
+					}
+				}
+
+			} else {
+				try {
+					if (stats.containsKey(statKey))
+						patchjson.put(statKey.name(), JSONObject.escape(stats.get(statKey).toString()));
+				} catch (Exception e) {
+					log.error(e);
+					log.error("problems with key " + statKey.name());
+				}
+			}
+
+		}
+		return patchjson;
 	}
 
 }

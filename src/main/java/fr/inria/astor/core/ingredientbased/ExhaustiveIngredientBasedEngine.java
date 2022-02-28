@@ -106,12 +106,18 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 
 					if (solution) {
 						log.info("Solution found " + getSolutions().size());
+
 						this.solutions.add(solutionVariant);
 
 					}
 
 					// We undo the operator (for try the next one)
 					undoOperationToSpoonElement(pointOperation);
+
+					if (solution) {
+						log.info("Solution found " + getSolutions().size());
+						this.savePatch(solutionVariant);
+					}
 
 					if (!this.solutions.isEmpty() && ConfigurationProperties.getPropertyBool("stopfirst")) {
 						this.setOutputStatus(AstorOutputStatus.STOP_BY_PATCH_FOUND);
