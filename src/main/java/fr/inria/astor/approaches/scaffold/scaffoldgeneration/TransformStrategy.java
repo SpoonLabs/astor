@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -41,7 +40,7 @@ import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.CtScanner;
 
 public abstract class TransformStrategy extends CtScanner {
-	
+
 	protected Logger log = Logger.getLogger(TransformStrategy.class.getName());
 
 	ModificationPoint modificationPoint;
@@ -49,7 +48,7 @@ public abstract class TransformStrategy extends CtScanner {
 	ProjectRepairFacade projFacade;
 	OutputWritter outputWritter;
 	ScaffoldRepairEngine repairEngine;
-	
+
 	protected List<String> list = new ArrayList<String>();
 	@SuppressWarnings("rawtypes")
 	protected Map<CtExpression, CtExpression> candidates = new HashMap<CtExpression, CtExpression>();
@@ -58,47 +57,48 @@ public abstract class TransformStrategy extends CtScanner {
 	protected String pre = "";
 	private String source = "";
 
-	public TransformStrategy(ModificationPoint modPoint, int modificationPointIndex, MutationSupporter supporter, ProjectRepairFacade facade
-			, ScaffoldRepairEngine engine) {
-		
-		this.mutSupporter=supporter;
-		this.modificationPoint=modPoint;
-		this.projFacade=facade;
-		this.outputWritter=this.mutSupporter.getOutput();
-		this.outputWritter.getFactory().getEnvironment().setAutoImports(true);
-		this.indexOfModPoint=modificationPointIndex;
-		this.repairEngine=engine;
-		
+	public TransformStrategy(ModificationPoint modPoint, int modificationPointIndex, MutationSupporter supporter,
+			ProjectRepairFacade facade, ScaffoldRepairEngine engine) {
+
+		this.mutSupporter = supporter;
+		this.modificationPoint = modPoint;
+		this.projFacade = facade;
+		this.outputWritter = this.mutSupporter.getOutput();
+		// this.outputWritter.getFactory().getEnvironment().setAutoImports(true);
+		this.indexOfModPoint = modificationPointIndex;
+		this.repairEngine = engine;
+
 		source = this.projFacade.getInDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-	//	source = this.projFacade.getProperties().getOriginalProjectRootDir()+File.separator+"Sketches"+File.separator;
-		
+		// source =
+		// this.projFacade.getProperties().getOriginalProjectRootDir()+File.separator+"Sketches"+File.separator;
+
 		File file = new File(source);
 		if (!file.exists())
 			file.mkdirs();
-	//	addImportsForSketch();
+		// addImportsForSketch();
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "static-access" })
 	protected void addImportsForSketch() {
-		 CtClass classA = this.modificationPoint.getCtClass();
-		 CompilationUnit unitA = this.mutSupporter.getFactory().CompilationUnit().getMap().get(
-				 classA.getPosition().getFile().getPath());
-		 Collection<CtImport> imports = unitA.getImports();
-		 CtImport sketchlib=this.mutSupporter.getFactory().Type().createImport(this.mutSupporter.getFactory().Type().createReference
-				 ("fr.inria.astor.approaches.scaffold.scaffoldsynthesis.ScaffoldSynthesisEntry"));
-		 imports.add(sketchlib);
-	//	 unitA.setImports(imports);
+		CtClass classA = this.modificationPoint.getCtClass();
+		CompilationUnit unitA = this.mutSupporter.getFactory().CompilationUnit().getMap()
+				.get(classA.getPosition().getFile().getPath());
+		Collection<CtImport> imports = unitA.getImports();
+		CtImport sketchlib = this.mutSupporter.getFactory().Type().createImport(this.mutSupporter.getFactory().Type()
+				.createReference("fr.inria.astor.approaches.scaffold.scaffoldsynthesis.ScaffoldSynthesisEntry"));
+		imports.add(sketchlib);
+		// unitA.setImports(imports);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public List<String> transform () {
+	public List<String> transform() {
 		CtStatement targetStmt = (CtStatement) this.modificationPoint.getCodeElement();
 		if (targetStmt instanceof CtInvocation)
 			this.visitCtInvocation((CtInvocation) targetStmt);
 		else if (targetStmt instanceof CtConstructorCall)
 			this.visitCtConstructorCall((CtConstructorCall) targetStmt);
 		else if (targetStmt instanceof CtIf)
-			this.visitCtIf ((CtIf)targetStmt);
+			this.visitCtIf((CtIf) targetStmt);
 		else if (targetStmt instanceof CtReturn)
 			this.visitCtReturn((CtReturn) targetStmt);
 		else if (targetStmt instanceof CtSwitch)
@@ -124,10 +124,10 @@ public abstract class TransformStrategy extends CtScanner {
 	}
 
 	protected void saveSketchAndSynthesize() {
-		
-	    list.add(source + pre +"-"+ this.indexOfModPoint+"-"+index++);
+
+		list.add(source + pre + "-" + this.indexOfModPoint + "-" + index++);
 		saveToWorkSpace();
-		
+
 		Boolean whetherFondPatch = false;
 		try {
 			whetherFondPatch = this.repairEngine.synthesizeSketch(pre, this.modificationPoint);
@@ -135,12 +135,12 @@ public abstract class TransformStrategy extends CtScanner {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		if (whetherFondPatch) {
 			System.exit(0);
-		} 
+		}
 	}
-	
+
 //   protected void saveSketchAndSynthesize() {
 //		
 //		String path = source + pre +"-"+ this.indexOfModPoint+"-"+index++;
@@ -151,7 +151,7 @@ public abstract class TransformStrategy extends CtScanner {
 //		this.outputWritter.updateOutput(path);
 //		this.outputWritter.saveSourceCode(this.modificationPoint.getCtClass());
 //	}
-	
+
 	protected void resoreDiskFile() {
 		saveToWorkSpace();
 	}
@@ -160,55 +160,55 @@ public abstract class TransformStrategy extends CtScanner {
 		File file = new File(source);
 		if (!file.exists())
 			file.mkdirs();
-		
+
 		this.outputWritter.updateOutput(source);
 		this.outputWritter.saveSourceCode(this.modificationPoint.getCtClass());
 	}
-	
+
 	@Override
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		super.visitCtInvocation(invocation);
 
-		List<CtExpression<?>>  argumentlist = invocation.getArguments();
+		List<CtExpression<?>> argumentlist = invocation.getArguments();
 		for (int i = 0; i < argumentlist.size(); i++) {
 			@SuppressWarnings("rawtypes")
 			CtExpression p = argumentlist.get(i);
 			if (candidates.containsKey(p)) {
 				argumentlist.set(i, candidates.get(p));
-			//	invocation.setArguments(argumentlist);
+				// invocation.setArguments(argumentlist);
 				saveSketchAndSynthesize();
 				argumentlist.set(i, p);
 				resoreDiskFile();
-			//	invocation.setArguments(argumentlist);
+				// invocation.setArguments(argumentlist);
 			}
 		}
 	}
-	
+
 	@Override
 	public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
 		super.visitCtConstructorCall(ctConstructorCall);
 
-		List<CtExpression<?>>  argumentlist = ctConstructorCall.getArguments();
+		List<CtExpression<?>> argumentlist = ctConstructorCall.getArguments();
 		for (int i = 0; i < argumentlist.size(); i++) {
 			@SuppressWarnings("rawtypes")
 			CtExpression p = argumentlist.get(i);
 			if (candidates.containsKey(p)) {
 				argumentlist.set(i, candidates.get(p));
-			//	ctConstructorCall.setArguments(argumentlist);
+				// ctConstructorCall.setArguments(argumentlist);
 				saveSketchAndSynthesize();
 				argumentlist.set(i, p);
 				resoreDiskFile();
-			//	ctConstructorCall.setArguments(argumentlist);
+				// ctConstructorCall.setArguments(argumentlist);
 			}
 		}
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		super.visitCtReturn(returnStatement);
-		
-		CtExpression exper=returnStatement.getReturnedExpression();
+
+		CtExpression exper = returnStatement.getReturnedExpression();
 		if (candidates.containsKey(exper)) {
 			returnStatement.setReturnedExpression(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -216,21 +216,21 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public <T> void visitCtAssert(CtAssert<T> asserted) {
 		super.visitCtAssert(asserted);
 
-		CtExpression exper=asserted.getExpression();
+		CtExpression exper = asserted.getExpression();
 		if (candidates.containsKey(exper)) {
 			asserted.setExpression(candidates.get(exper));
 			saveSketchAndSynthesize();
 			asserted.setExpression(exper);
 			resoreDiskFile();
 		}
-		
-		CtExpression assertexper=asserted.getAssertExpression();
+
+		CtExpression assertexper = asserted.getAssertExpression();
 		if (candidates.containsKey(assertexper)) {
 			asserted.setAssertExpression(candidates.get(assertexper));
 			saveSketchAndSynthesize();
@@ -238,13 +238,13 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public <S> void visitCtSwitch(CtSwitch<S> switchStatement) {
 		super.visitCtSwitch(switchStatement);
-		
-		CtExpression exper=switchStatement.getSelector();
+
+		CtExpression exper = switchStatement.getSelector();
 		if (candidates.containsKey(exper)) {
 			switchStatement.setSelector(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -252,13 +252,13 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public <S> void visitCtCase(CtCase<S> caseStatement) {
 		super.visitCtCase(caseStatement);
-		
-		CtExpression exper=caseStatement.getCaseExpression();
+
+		CtExpression exper = caseStatement.getCaseExpression();
 		if (candidates.containsKey(exper)) {
 			caseStatement.setCaseExpression(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -266,21 +266,21 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignement) {
 		super.visitCtAssignment(assignement);
-		
-		CtExpression exper=assignement.getAssigned();
+
+		CtExpression exper = assignement.getAssigned();
 		if (candidates.containsKey(exper)) {
 			assignement.setAssigned(candidates.get(exper));
 			saveSketchAndSynthesize();
 			assignement.setAssigned(exper);
 			resoreDiskFile();
 		}
-		
-		exper=assignement.getAssignment();
+
+		exper = assignement.getAssignment();
 		if (candidates.containsKey(exper)) {
 			assignement.setAssignment(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -288,14 +288,14 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void visitCtFor(CtFor forLoop) {
 		super.visitCtFor(forLoop);
 
 		@SuppressWarnings("rawtypes")
-		CtExpression exper=forLoop.getExpression();
+		CtExpression exper = forLoop.getExpression();
 		if (candidates.containsKey(exper)) {
 			forLoop.setExpression(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -303,13 +303,13 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@Override
 	public void visitCtForEach(CtForEach foreach) {
 		super.visitCtForEach(foreach);
-		
+
 		@SuppressWarnings("rawtypes")
-		CtExpression exper=foreach.getExpression();
+		CtExpression exper = foreach.getExpression();
 		if (candidates.containsKey(exper)) {
 			foreach.setExpression(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -317,14 +317,14 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void visitCtWhile(CtWhile whileLoop) {
 		super.visitCtWhile(whileLoop);
-		
+
 		@SuppressWarnings("rawtypes")
-		CtExpression exper=whileLoop.getLoopingExpression();
+		CtExpression exper = whileLoop.getLoopingExpression();
 		if (candidates.containsKey(exper)) {
 			whileLoop.setLoopingExpression(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -332,13 +332,13 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
 		super.visitCtUnaryOperator(operator);
-		
-		CtExpression exper=operator.getOperand();
+
+		CtExpression exper = operator.getOperand();
 		if (candidates.containsKey(exper)) {
 			operator.setOperand(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -346,14 +346,14 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void visitCtIf(CtIf ifElement) {
 		super.visitCtIf(ifElement);
-		
+
 		@SuppressWarnings("rawtypes")
-		CtExpression exper=ifElement.getCondition();
+		CtExpression exper = ifElement.getCondition();
 		if (candidates.containsKey(exper)) {
 			ifElement.setCondition(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -361,12 +361,12 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public <T> void visitCtConditional(CtConditional<T> conditional) {
 		super.visitCtConditional(conditional);
-		
+
 		CtExpression exp = conditional.getCondition();
 		if (candidates.containsKey(exp)) {
 			conditional.setCondition(candidates.get(exp));
@@ -389,13 +389,13 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
 		super.visitCtArrayRead(arrayRead);
-		
-		CtExpression exper=arrayRead.getIndexExpression();
+
+		CtExpression exper = arrayRead.getIndexExpression();
 		if (candidates.containsKey(exper)) {
 			arrayRead.setIndexExpression(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -408,8 +408,8 @@ public abstract class TransformStrategy extends CtScanner {
 	@Override
 	public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
 		super.visitCtArrayWrite(arrayWrite);
-		
-		CtExpression exper=arrayWrite.getIndexExpression();
+
+		CtExpression exper = arrayWrite.getIndexExpression();
 		if (candidates.containsKey(exper)) {
 			arrayWrite.setIndexExpression(candidates.get(exper));
 			saveSketchAndSynthesize();
@@ -417,12 +417,12 @@ public abstract class TransformStrategy extends CtScanner {
 			resoreDiskFile();
 		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		super.visitCtNewArray(newArray);
-		
+
 		List<CtExpression<Integer>> dimension = newArray.getDimensionExpressions();
 		for (int i = 0; i < dimension.size(); i++) {
 			CtExpression p = dimension.get(i);
@@ -435,7 +435,7 @@ public abstract class TransformStrategy extends CtScanner {
 				resoreDiskFile();
 			}
 		}
-		
+
 		List<CtExpression<?>> iniexper = newArray.getElements();
 		for (int i = 0; i < iniexper.size(); i++) {
 			CtExpression p = iniexper.get(i);
@@ -449,13 +449,13 @@ public abstract class TransformStrategy extends CtScanner {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void visitCtSynchronized(CtSynchronized synchro) {
 		super.visitCtSynchronized(synchro);
-		
-		CtExpression exper=synchro.getExpression();
+
+		CtExpression exper = synchro.getExpression();
 		if (candidates.containsKey(exper)) {
 			synchro.setExpression(candidates.get(exper));
 			saveSketchAndSynthesize();
