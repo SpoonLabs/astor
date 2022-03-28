@@ -270,7 +270,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			File f = new File(output);
 			if (!f.exists())
 				f.mkdirs();
-			// String filename = ConfigurationProperties.getProperty("jsonoutputname");
+
 			String absoluteFileName = output + "/patchinfo_" + solutionVariant.getId() + ".json";
 
 			try (FileWriter file = new FileWriter(absoluteFileName)) {
@@ -290,7 +290,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 				log.error("Problem storing ing json file" + e.toString());
 			}
 
-			absoluteFileName = output + "/patch_" + solutionVariant.getId() + ".diff";
+			long timelapsed = (new Date()).getTime() - this.dateInitEvolution.getTime();
+			absoluteFileName = (new File(output + "/patch_" + timelapsed + "_" + solutionVariant.getId() + ".diff"))
+					.getAbsolutePath();
 			try (FileWriter file = new FileWriter(absoluteFileName)) {
 
 				String prettyJsonString = solutionVariant.getPatchDiff().getOriginalStatementAlignmentDiff();
