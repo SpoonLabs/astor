@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +52,7 @@ public class LaucherJUnitProcess {
 		Process p = null;
 		jvmPath += File.separator + "java";
 
-		List<String> cls = new ArrayList<>(classesToExecute);
+		List<String> cls = new ArrayList<>(new HashSet(classesToExecute));
 
 		String newClasspath = classpath;
 		if (ConfigurationProperties.getPropertyBool("runjava7code") || ProjectConfiguration.isJDKLowerThan8()) {
