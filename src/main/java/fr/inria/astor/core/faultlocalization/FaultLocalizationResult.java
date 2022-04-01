@@ -1,8 +1,8 @@
 package fr.inria.astor.core.faultlocalization;
 
-import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
-
 import java.util.List;
+
+import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 
 /**
  * Stores the result of a fault localization process
@@ -11,14 +11,28 @@ import java.util.List;
  */
 public class FaultLocalizationResult {
 
-
 	List<SuspiciousCode> candidates;
 	List<String> failingTestCases;
+	List<String> executedTestCases;
+
+	public FaultLocalizationResult(List<SuspiciousCode> candidates) {
+		super();
+		this.candidates = candidates;
+
+	}
 
 	public FaultLocalizationResult(List<SuspiciousCode> candidates, List<String> failingTestCases) {
 		super();
 		this.candidates = candidates;
 		this.failingTestCases = failingTestCases;
+	}
+
+	public FaultLocalizationResult(List<SuspiciousCode> candidates, List<String> failingTestCases,
+			List<String> executedTestCases) {
+		super();
+		this.candidates = candidates;
+		this.failingTestCases = failingTestCases;
+		this.executedTestCases = executedTestCases;
 	}
 
 	public List<SuspiciousCode> getCandidates() {
@@ -39,9 +53,14 @@ public class FaultLocalizationResult {
 
 	@Override
 	public String toString() {
-		return "FaultLocalizationResult{" +
-				"candidates=" + candidates +
-				", failingTestCases=" + failingTestCases +
-				'}';
+		return "FaultLocalizationResult{" + "candidates=" + candidates + ", failingTestCases=" + failingTestCases + '}';
+	}
+
+	public List<String> getExecutedTestCases() {
+		return executedTestCases;
+	}
+
+	public void setExecutedTestCases(List<String> executedTestCases) {
+		this.executedTestCases = executedTestCases;
 	}
 }
