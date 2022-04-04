@@ -40,7 +40,8 @@ public class FaultLocalizationTest {
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		// by default, max generations is zero, that means, it does not evolve
 		cs.command.put("-faultlocalization", FaultLocalization.GZOLTAR1_7.name());
-		cs.command.put("-flthreshold", "0.0001");
+		cs.command.put("-flthreshold", "0.0000");
+		cs.command.put("-parameters", "includeZeros:false:keepGZoltarFiles:false");
 
 		// We execute astor for creating the model and run FL
 

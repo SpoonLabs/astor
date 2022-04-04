@@ -99,7 +99,7 @@ public class CocoFaultLocalization implements FaultLocalizationStrategy {
 		}
 		int maxSuspCandidates = ConfigurationProperties.getPropertyInt("maxsuspcandidates");
 
-		if (!ConfigurationProperties.getPropertyBool("considerzerovaluesusp")) {
+		if (!ConfigurationProperties.getPropertyBool("includeZeros")) {
 			candidates.removeIf(susp -> (susp.getSuspiciousValue() == 0));
 		}
 		// We select the best X candidates.

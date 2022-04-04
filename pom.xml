@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>com.github.spoonlabs</groupId>
 			<artifactId>flacoco</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -109,16 +109,28 @@
 			<artifactId>junit-jupiter-api</artifactId>
 			<version>5.3.2</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.gzoltar/com.gzoltar.cli -->
+		<dependency>
+			<groupId>com.gzoltar</groupId>
+			<artifactId>com.gzoltar.cli</artifactId>
+			<version>1.7.3</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>com.gzoltar</groupId>
+			<artifactId>com.gzoltar.core</artifactId>
+			<version>1.7.3</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.gzoltar</groupId>
 			<artifactId>gzoltar</artifactId>
 			<version>0.1.1</version>
 		</dependency>
-		<dependency>
-			<groupId>com.gzoltar</groupId>
-			<artifactId>com.gzoltar.core</artifactId>
-			<version>1.7.2</version>
-		</dependency>
+
 
 
 		<dependency>
@@ -149,12 +161,12 @@
 
 	</dependencies>
 
-        <repositories>
-                 <repository>
-                     <id>sonatype-snapshots</id>
-                        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                        <snapshots />
-                </repository>
+	<repositories>
+		<repository>
+			<id>sonatype-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots />
+		</repository>
 		<repository>
 			<id>inria</id>
 			<url>http://spoon.gforge.inria.fr/repositories/releases/</url>
@@ -162,8 +174,8 @@
 		<repository>
 			<id>spoon-snapshot</id>
 			<name>maven repository for spoon snapshots</name>
-                        <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
-                        <snapshots/>
+			<url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
+			<snapshots />
 		</repository>
 		<repository>
 			<id>EvoSuite</id>
@@ -430,7 +442,7 @@
 
 
 	<distributionManagement>
-		
+
 		<repository>
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
@@ -439,6 +451,6 @@
 			<id>ossrh-snapshot</id>
 			<url>https://oss.sonatype.org/repositories/snapshots</url>
 		</snapshotRepository>
-		
+
 	</distributionManagement>
 </project>

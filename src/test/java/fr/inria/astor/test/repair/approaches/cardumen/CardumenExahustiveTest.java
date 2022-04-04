@@ -1,5 +1,15 @@
 package fr.inria.astor.test.repair.approaches.cardumen;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
+import org.apache.log4j.Level;
+import org.junit.Assert;
+import org.junit.Test;
+
 import fr.inria.astor.approaches.cardumen.CardumenExhaustiveApproach;
 import fr.inria.astor.approaches.cardumen.CardumenExhaustiveEngine4Stats;
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -15,13 +25,6 @@ import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.ExecutionMode;
 import fr.inria.main.evolution.AstorMain;
-import org.apache.log4j.Level;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * 
@@ -59,12 +62,14 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		Assert.assertEquals(maxSol, solutions.size());
 		List<PatchStat> patches = cardumen.getPatchInfo();
 		Assert.assertEquals(maxSol, patches.size());
-		//Patch only found by Cardumen
+		// Patch only found by Cardumen
 		PatchHunkStats hunkSolution = getHunkSolution(patches, "solve(f, defaultFunctionValueAccuracy, max)",
 				"CtInvocationImpl|CtReturnImpl");
 		Assert.assertNotNull(hunkSolution);
-		assertEquals("solve(_UnivariateRealFunction_0, _double_1, _double_2)", hunkSolution.getStats().get(HunkStatEnum.INGREDIENT_PARENT).toString());
+		assertEquals("solve(_UnivariateRealFunction_0, _double_1, _double_2)",
+				hunkSolution.getStats().get(HunkStatEnum.INGREDIENT_PARENT).toString());
 	}
+
 	@Test
 	public void testCardumentM70Exhausitve() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();
@@ -76,7 +81,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
 		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
-		command.command.put("-parameters", "considerzerovaluesusp:true:scope:" + scope.toString().toLowerCase()
+		command.command.put("-parameters", "includeZeros:true:scope:" + scope.toString().toLowerCase()
 				+ "scope:limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
 		command.command.put("-loglevel", Level.INFO.toString());
 		command.command.put("-maxVarCombination", "100000000");
@@ -84,7 +89,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		AstorMain main1 = new AstorMain();
 		log.debug("LOCAL SCOPE");
 		// Local
-		command.command.put("-parameters", "considerzerovaluesusp:false:scope:local" + ":limitbysuspicious:false:"
+		command.command.put("-parameters", "includeZeros:false:scope:local" + ":limitbysuspicious:false:"
 				+ "disablelog:true:uniformreplacement:false:frequenttemplate:true");
 
 		main1 = new AstorMain();
@@ -96,7 +101,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 
 		log.debug("PACKAGE SCOPE");
 		// PACKAGE
-		command.command.put("-parameters", "considerzerovaluesusp:false:scope:package" + ":limitbysuspicious:false:"
+		command.command.put("-parameters", "includeZeros:false:scope:package" + ":limitbysuspicious:false:"
 				+ "disablelog:true:uniformreplacement:false:frequenttemplate:true");
 
 		main1 = new AstorMain();
@@ -104,9 +109,8 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		Stats.createStat();
 		cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 		int limit = 100;
-		assertTrue(cardumen.totalBases +" >= "+limit, cardumen.totalBases >= limit);
+		assertTrue(cardumen.totalBases + " >= " + limit, cardumen.totalBases >= limit);
 	}
-	
 
 	@Test
 	public void testCardumentM70ExhausitveMaxLimited() throws Exception {
@@ -130,10 +134,11 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		Stats.createStat();
 		CardumenExhaustiveEngine4Stats cardumen = (CardumenExhaustiveEngine4Stats) main1.getEngine();
 		int limit = 86000000;
-		//assertTrue(cardumen.totalIngredients + " > " + Integer.toString(limit), cardumen.totalIngredients >= limit);
-		//assertTrue(86299730 >= cardumen.totalIngredientsCutted);
-		//assertTrue(cardumen.totalIngredientsCutted >= 26000);
-		//assertTrue(cardumen.totalBases >= 160);
+		// assertTrue(cardumen.totalIngredients + " > " + Integer.toString(limit),
+		// cardumen.totalIngredients >= limit);
+		// assertTrue(86299730 >= cardumen.totalIngredientsCutted);
+		// assertTrue(cardumen.totalIngredientsCutted >= 26000);
+		// assertTrue(cardumen.totalBases >= 160);
 
 	}
 
@@ -173,6 +178,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		// assertEquals(38222,cardumen.totalBases);
 
 	}
+
 	@Test
 	public void testCardumentM70ExhausitveReplacement() throws Exception {
 		CommandSummary command = MathCommandsTests.getMath70Command();

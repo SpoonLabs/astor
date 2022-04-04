@@ -238,7 +238,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 
 		}
 
-		if (!ConfigurationProperties.getPropertyBool("considerzerovaluesusp")) {
+		if (!ConfigurationProperties.getPropertyBool("includeZeros")) {
 			gzCandidates.removeIf(susp -> (susp.getSuspiciousness() == 0));
 		}
 

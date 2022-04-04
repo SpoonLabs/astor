@@ -178,12 +178,15 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 
 		processRunReport.waitFor(timeoutMiliseconds, TimeUnit.MILLISECONDS);
 
+		Double thr = ConfigurationProperties.getPropertyDouble("flthreshold");
+		boolean includeZeros = ConfigurationProperties.getPropertyBool("includeZeros");
 		File gzoltarOutFile = new File(outputdirGzoltar);
-		FaultLocalizationResult result = parseOutputFile(gzoltarOutFile, 0.1);
+		FaultLocalizationResult result = parseOutputFile(gzoltarOutFile, thr, includeZeros);
 		System.out.println(result);
 
-		// Files.deleteIfExists(gzoltarOutFile.toPath());
-		FileUtils.deleteDirectory(gzoltarOutFile);
+		if (ConfigurationProperties.hasProperty("keepGZoltarFiles")) {
+			FileUtils.deleteDirectory(gzoltarOutFile);
+		}
 		return result;
 
 	}
@@ -313,9 +316,9 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 		}
 	}
 
-	public FaultLocalizationResult parseOutputFile(File path, Double thr) {
+	public FaultLocalizationResult parseOutputFile(File path, Double thr, boolean includeZeros) {
 
-		List<SuspiciousCode> codes = analyzeSuspiciousValues(thr, path);
+		List<SuspiciousCode> codes = analyzeSuspiciousValues(thr, path, includeZeros);
 
 		FaultLocalizationResult result = new FaultLocalizationResult(codes);
 
@@ -325,7 +328,7 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 
 	}
 
-	private List<SuspiciousCode> analyzeSuspiciousValues(Double thr, File path) {
+	private List<SuspiciousCode> analyzeSuspiciousValues(Double thr, File path, boolean includeZeros) {
 		List<SuspiciousCode> codes = new ArrayList<>();
 		File spectrapath = new File(path.getAbsolutePath() + File.separator + "sfl" + File.separator + "txt"
 				+ File.separator + "ochiai.ranking.csv");
@@ -335,7 +338,7 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 			String line;
 			while ((line = br.readLine()) != null) {
 				SuspiciousCode sc = parseLine(line);
-				if (sc != null && sc.getSuspiciousValue() > 0 && sc.getSuspiciousValue() >= thr)
+				if (sc != null && sc.getSuspiciousValue() >= thr && (sc.getSuspiciousValue() > 0.0 || includeZeros))
 					codes.add(sc);
 			}
 
