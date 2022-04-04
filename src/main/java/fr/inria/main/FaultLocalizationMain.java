@@ -2,14 +2,27 @@ package fr.inria.main;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Arrays;
 import java.util.List;
 
+import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization;
 import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
+import fr.inria.astor.core.faultlocalization.gzoltar.NovelGZoltarFaultLocalization;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 
+/**
+ * Facade for using fault localization from Astor
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class FaultLocalizationMain extends AbstractMain {
+
+	public enum FaultLocalization {
+		FLACOCO, ALL, GZOLTAR, GZOLTAR1_7
+	};
 
 	public static void main(String[] args) throws Exception {
 		FaultLocalizationMain m = new FaultLocalizationMain();
@@ -23,27 +36,69 @@ public class FaultLocalizationMain extends AbstractMain {
 		long startT = System.currentTimeMillis();
 		initProject(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
-		String fl = ConfigurationProperties.getProperty("faultlocalization").toLowerCase();
+		String faultLocalizationModeS = ConfigurationProperties.getProperty("faultlocalization").toUpperCase();
 
-		if (fl.equals("gzoltar") || fl.equals("both")) {
+		FaultLocalization faultLocalizationMode = FaultLocalization.valueOf(faultLocalizationModeS);
+
+		if (faultLocalizationMode == null) {
+
+			log.error(
+					"No mode for " + faultLocalizationMode + " Options " + Arrays.toString(FaultLocalization.values()));
+		}
+
+		boolean executed = false;
+
+		if (faultLocalizationMode.equals(FaultLocalization.GZOLTAR)
+				|| faultLocalizationMode.equals(FaultLocalization.ALL)) {
+
+			executed = true;
+
 			GZoltarFaultLocalization gZoltarFaultLocalization = new GZoltarFaultLocalization();
 			List<String> regressionTestForFaultLocalization = gZoltarFaultLocalization
 					.findTestCasesToExecute(projectFacade);
 
-			List<SuspiciousCode> susp = gZoltarFaultLocalization
-					.searchSuspicious(this.projectFacade, regressionTestForFaultLocalization).getCandidates();
+			FaultLocalizationResult result = gZoltarFaultLocalization.searchSuspicious(this.projectFacade,
+					regressionTestForFaultLocalization);
 
-			save(susp, "gzoltar");
+			save(result, FaultLocalization.GZOLTAR);
 		}
 
-		if (fl.equals("flacoco") || fl.equals("both")) {
+		if (faultLocalizationMode.equals(FaultLocalization.FLACOCO)
+				|| faultLocalizationMode.equals(FaultLocalization.ALL)) {
+
+			executed = true;
 
 			FlacocoFaultLocalization flacocoFaultLocalization = new FlacocoFaultLocalization();
 
-			List<SuspiciousCode> susp = flacocoFaultLocalization.searchSuspicious(this.projectFacade, null)
-					.getCandidates();
-			save(susp, "flacoco");
+			FaultLocalizationResult result = flacocoFaultLocalization.searchSuspicious(this.projectFacade, null);
 
+			save(result, FaultLocalization.FLACOCO);
+
+		}
+
+		if (faultLocalizationMode.equals(FaultLocalization.GZOLTAR1_7)
+				|| faultLocalizationMode.equals(FaultLocalization.ALL)) {
+
+			executed = true;
+
+			NovelGZoltarFaultLocalization gzoltarFaultLocalization = new NovelGZoltarFaultLocalization();
+
+			List<String> regressionTestForFaultLocalization = gzoltarFaultLocalization
+					.findTestCasesToExecute(projectFacade);
+			System.out.println("Test to execute: " + regressionTestForFaultLocalization);
+			FaultLocalizationResult searchSuspicious = gzoltarFaultLocalization.searchSuspicious(projectFacade,
+					regressionTestForFaultLocalization);
+
+			System.out.println("FL results: " + searchSuspicious);
+
+			save(searchSuspicious, FaultLocalization.GZOLTAR1_7);
+
+		}
+
+		if (!executed) {
+
+			log.error("Could not execute any mode at " + faultLocalizationMode + " Options "
+					+ Arrays.toString(FaultLocalization.values()));
 		}
 
 		long endT = System.currentTimeMillis();
@@ -51,7 +106,8 @@ public class FaultLocalizationMain extends AbstractMain {
 
 	}
 
-	public void save(List<SuspiciousCode> susp, String approach) {
+	public void save(FaultLocalizationResult searchSuspicious, FaultLocalization approach) {
+		List<SuspiciousCode> susp = searchSuspicious.getCandidates();
 		try {
 
 			String output = this.projectFacade.getProperties().getWorkingDirRoot();
