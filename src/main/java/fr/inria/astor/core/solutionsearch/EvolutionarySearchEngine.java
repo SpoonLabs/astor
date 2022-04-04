@@ -36,7 +36,7 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 		super(mutatorExecutor, projFacade);
 	}
 
-	public void startEvolution() throws Exception {
+	public void startSearch() throws Exception {
 
 		log.info("----Starting Solution Search");
 

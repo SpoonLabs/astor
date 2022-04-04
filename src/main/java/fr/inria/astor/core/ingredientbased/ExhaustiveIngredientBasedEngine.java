@@ -51,7 +51,7 @@ public class ExhaustiveIngredientBasedEngine extends ExhaustiveSearchEngine impl
 	}
 
 	@Override
-	public void startEvolution() throws Exception {
+	public void startSearch() throws Exception {
 
 		if (this.ingredientSpace == null) {
 			this.ingredientSpace = IngredientBasedEvolutionaryRepairApproachImpl

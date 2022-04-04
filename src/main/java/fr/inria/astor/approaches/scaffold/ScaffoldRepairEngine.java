@@ -82,7 +82,7 @@ public class ScaffoldRepairEngine extends AstorCoreEngine {
 	}
 
 	@Override
-	public void startEvolution() throws Exception {
+	public void startSearch() throws Exception {
 		
 	}
 	

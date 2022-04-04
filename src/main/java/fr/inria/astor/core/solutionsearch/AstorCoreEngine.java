@@ -169,7 +169,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	}
 
-	public abstract void startEvolution() throws Exception;
+	public abstract void startSearch() throws Exception;
 
 	public void atEnd() {
 

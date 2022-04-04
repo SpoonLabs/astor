@@ -31,7 +31,7 @@ public abstract class ExhaustiveSearchEngine extends AstorCoreEngine {
 	}
 
 	@Override
-	public void startEvolution() throws Exception {
+	public void startSearch() throws Exception {
 
 		dateInitEvolution = new Date();
 		// We don't evolve variants, so the generation is always one.

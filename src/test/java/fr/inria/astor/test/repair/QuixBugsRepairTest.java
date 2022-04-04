@@ -313,7 +313,7 @@ public class QuixBugsRepairTest {
 		cardumentapproach.getVariants().get(0).getModificationPoints().add(mpl20);
 
 		ConfigurationProperties.setProperty("maxGeneration", "100");
-		cardumentapproach.startEvolution();
+		cardumentapproach.startSearch();
 		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 
 	}
@@ -351,7 +351,7 @@ public class QuixBugsRepairTest {
 		approach.getVariants().get(0).getModificationPoints().add(buggyModifPoint);
 
 		ConfigurationProperties.setProperty("maxGeneration", "1000");
-		approach.startEvolution();
+		approach.startSearch();
 		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 		approach.atEnd();
 
@@ -470,7 +470,7 @@ public class QuixBugsRepairTest {
 		approach.getOperatorSpace().getOperators().removeIf(e -> !e.name().startsWith("Insert"));
 
 		ConfigurationProperties.setProperty("maxGeneration", "1000");
-		approach.startEvolution();
+		approach.startSearch();
 		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 		approach.atEnd();
 
