@@ -22,10 +22,10 @@ public class FaultLocalizationResult {
 
 	}
 
-	public FaultLocalizationResult(List<SuspiciousCode> candidates, List<String> failingTestCases) {
+	public FaultLocalizationResult(List<SuspiciousCode> candidates, List<String> failingTestCasesClasses) {
 		super();
 		this.candidates = candidates;
-		this.failingTestCasesClasses = failingTestCases;
+		this.failingTestCasesClasses = failingTestCasesClasses;
 	}
 
 	public FaultLocalizationResult(List<SuspiciousCode> candidates, List<String> failingTestCases,

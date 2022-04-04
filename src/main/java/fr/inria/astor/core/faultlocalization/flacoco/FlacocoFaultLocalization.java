@@ -29,6 +29,11 @@ import fr.spoonlabs.flacoco.core.test.TestContext;
 import fr.spoonlabs.flacoco.core.test.TestDetector;
 import fr.spoonlabs.flacoco.core.test.method.TestMethod;
 
+/**
+ * 
+ * @author Matias Martinez
+ *
+ */
 public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 	Logger logger = Logger.getLogger(FlacocoFaultLocalization.class);
@@ -62,6 +67,12 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 		FaultLocalizationResult result = new FaultLocalizationResult(candidates, flacocoResult.getFailingTests()
 				.stream().map(TestMethod::getFullyQualifiedClassName).distinct().collect(Collectors.toList()));
+
+		result.setExecutedTestCasesMethods(flacocoResult.getExecutedTests().stream()
+				.map(TestMethod::getFullyQualifiedMethodName).distinct().collect(Collectors.toList()));
+
+		result.setFailingTestCasesMethods(flacocoResult.getFailingTests().stream()
+				.map(TestMethod::getFullyQualifiedClassName).distinct().collect(Collectors.toList()));
 
 		if (ConfigurationProperties.getPropertyBool("ignoreflakyinfl")) {
 			addFlakyFailingTestToIgnoredList(result.getFailingTestCasesClasses(), projectToRepair);
