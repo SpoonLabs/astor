@@ -84,6 +84,10 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 		String junitpath = retrieveJUnitLibPath();
 
 		String gzoltarversion = "1.7.4-SNAPSHOT";
+		if (ConfigurationProperties.properties.containsKey("gzoltarversion")) {
+			gzoltarversion = ConfigurationProperties.properties.getProperty("gzoltarversion");
+		}
+
 		// GZoltar path
 		String gzoltar_cli_jar = getGZoltarCLIPath(gzoltarversion);
 		String gzoltar_agent_jar = getGzoltarAgentRtPath(gzoltarversion);
