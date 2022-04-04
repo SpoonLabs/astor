@@ -106,18 +106,26 @@ public class FaultLocalizationMain extends AbstractMain {
 
 	}
 
-	public void save(FaultLocalizationResult searchSuspicious, FaultLocalization approach) {
-		List<SuspiciousCode> susp = searchSuspicious.getCandidates();
+	public void save(FaultLocalizationResult result, FaultLocalization approach) {
+
+		String output = this.projectFacade.getProperties().getWorkingDirRoot();
+
+		String noout = (ConfigurationProperties.hasProperty("outfl") ? ConfigurationProperties.getProperty("outfl")
+				: output);
+		File f = (new File(noout));
+		if (!f.exists()) {
+			f.mkdirs();
+		}
+
+		saveSuspicious(result, approach, noout);
+		saveFailing(result, approach, noout);
+		saveExecuted(result, approach, noout);
+
+	}
+
+	private void saveSuspicious(FaultLocalizationResult result, FaultLocalization approach, String noout) {
+		List<SuspiciousCode> susp = result.getCandidates();
 		try {
-
-			String output = this.projectFacade.getProperties().getWorkingDirRoot();
-
-			String noout = (ConfigurationProperties.hasProperty("outfl") ? ConfigurationProperties.getProperty("outfl")
-					: output);
-			File f = (new File(noout));
-			if (!f.exists()) {
-				f.mkdirs();
-			}
 
 			String fileName = noout + File.separator + approach + "_suspicious_"
 					+ this.projectFacade.getProperties().getFixid() + ".csv";
@@ -125,6 +133,39 @@ public class FaultLocalizationMain extends AbstractMain {
 			for (SuspiciousCode suspiciousCode : susp) {
 				fw.append(suspiciousCode.getClassName() + "," + suspiciousCode.getLineNumber() + ","
 						+ suspiciousCode.getSuspiciousValueString());
+				fw.append("\n");
+			}
+			fw.flush();
+			fw.close();
+			System.out.println("Saving Results at " + fileName);
+
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	private void saveExecuted(FaultLocalizationResult result, FaultLocalization approach, String noout) {
+		List<String> tests = result.getExecutedTestCasesMethods();
+		String key = "_executed_tests_";
+
+		saveListTests(approach, noout, tests, key);
+	}
+
+	private void saveFailing(FaultLocalizationResult result, FaultLocalization approach, String noout) {
+		List<String> tests = result.getFailingTestCasesMethods();
+		String key = "_failing_tests_";
+
+		saveListTests(approach, noout, tests, key);
+	}
+
+	private void saveListTests(FaultLocalization approach, String noout, List<String> tests, String key) {
+		try {
+
+			String fileName = noout + File.separator + approach + key + this.projectFacade.getProperties().getFixid()
+					+ ".csv";
+			FileWriter fw = new FileWriter(fileName);
+			for (String aTest : tests) {
+				fw.append(aTest);
 				fw.append("\n");
 			}
 			fw.flush();

@@ -80,7 +80,7 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 		String gzoltarversion = "1.7.4-SNAPSHOT";
 		// GZoltar path
 		String gzoltar_cli_jar = getGZoltarCLIPath(gzoltarversion);
-		String gzoltar_agent_jar = getAgentRt(gzoltarversion);
+		String gzoltar_agent_jar = getGzoltarAgentRtPath(gzoltarversion);
 
 		String commandGetTest = "java -cp " + src_classes_dir + ":" + testClassPath + ":" + junitpath + ":"
 				+ gzoltar_cli_jar + "  com.gzoltar.cli.Main listTestMethods " + testClassPath + "    --outputFile "
@@ -178,7 +178,7 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 
 	}
 
-	private String getAgentRt(String gzoltarversion) throws IllegalAccessException {
+	private String getGzoltarAgentRtPath(String gzoltarversion) throws IllegalAccessException {
 
 		String jarToFind = "com.gzoltar.agent.rt-" + gzoltarversion + "-all.jar";
 		return getFromFolder(jarToFind);
@@ -288,6 +288,10 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 			//
 			String[] infoLine = line.split(";");
 
+			if ("suspiciousness_value".equals(infoLine[1])) {
+				return null;
+			}
+
 			sc.setSusp(Double.parseDouble(infoLine[1]));
 
 			infoLine = infoLine[0].split(":");
@@ -347,22 +351,27 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 	private void analyzeTestCaseExecution(File path, FaultLocalizationResult results) {
 		File testpath = new File(path.getAbsolutePath() + File.separator + "sfl" + File.separator + "txt"
 				+ File.separator + "tests.csv");
-		List<String> failingTestCases = new ArrayList<>();
-		List<String> allTestCases = new ArrayList<>();
+
+		List<String> failingTestCasesMethod = new ArrayList<>();
+		List<String> failingTestCasesClasses = new ArrayList<>();
+		List<String> allTestCasesMethod = new ArrayList<>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader(testpath))) {
 
 			String line;
 			while ((line = br.readLine()) != null) {
 				String[] lineS = line.split(",");
-				String name = lineS[0].split("#")[0];
-				if (lineS[1].equals("FAIL")) {
-					if (!failingTestCases.contains(name))
-						failingTestCases.add(name);
+				String testName = lineS[0];
+				String name = testName.split("#")[0];
+				String testResult = lineS[1];
+				if (testResult.equals("FAIL")) {
+					failingTestCasesMethod.add(testName);
+					if (!failingTestCasesClasses.contains(name))
+						failingTestCasesClasses.add(name);
 				}
 
-				if (!allTestCases.contains(name))
-					allTestCases.add(name);
+				if (!allTestCasesMethod.contains(testName))
+					allTestCasesMethod.add(testName);
 
 			}
 
@@ -370,33 +379,10 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 			e.printStackTrace();
 		}
 
-		results.setFailingTestCases(failingTestCases);
-		results.setExecutedTestCases(allTestCases);
-	}
+		results.setFailingTestCasesClasses(failingTestCasesClasses);
+		results.setFailingTestCasesMethods(allTestCasesMethod);
+		results.setExecutedTestCasesMethods(failingTestCasesMethod);
 
-	private List<String> analyzeTestCaseExecution(File path) {
-		File testpath = new File(path.getAbsolutePath() + File.separator + "sfl" + File.separator + "txt"
-				+ File.separator + "tests.csv");
-		List<String> failingTestCases = new ArrayList<>();
-
-		try (BufferedReader br = new BufferedReader(new FileReader(testpath))) {
-
-			String line;
-			while ((line = br.readLine()) != null) {
-				System.out.println(line);
-				String[] lineS = line.split(",");
-				if (lineS[1].equals("FAIL")) {
-					String name = lineS[0].split("#")[0];
-					if (!failingTestCases.contains(name))
-						failingTestCases.add(name);
-				}
-
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return failingTestCases;
 	}
 
 }

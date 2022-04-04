@@ -64,13 +64,13 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 				.stream().map(TestMethod::getFullyQualifiedClassName).distinct().collect(Collectors.toList()));
 
 		if (ConfigurationProperties.getPropertyBool("ignoreflakyinfl")) {
-			addFlakyFailingTestToIgnoredList(result.getFailingTestCases(), projectToRepair);
+			addFlakyFailingTestToIgnoredList(result.getFailingTestCasesClasses(), projectToRepair);
 		}
 
 		if (projectToRepair.getProperties().getFailingTestCases().isEmpty()) {
 			logger.debug("Failing test cases was not passed as argument: we use the results from running them"
-					+ result.getFailingTestCases());
-			projectToRepair.getProperties().setFailingTestCases(result.getFailingTestCases());
+					+ result.getFailingTestCasesClasses());
+			projectToRepair.getProperties().setFailingTestCases(result.getFailingTestCasesClasses());
 		}
 
 		// FIXME?: This does nothing, but it is in GZoltar like this.

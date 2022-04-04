@@ -90,13 +90,13 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 			throw new IllegalArgumentException("No suspicious gen for analyze");
 
 		if (ConfigurationProperties.getPropertyBool("ignoreflakyinfl")) {
-			addFlakyFailingTestToIgnoredList(flResult.getFailingTestCases(), project);
+			addFlakyFailingTestToIgnoredList(flResult.getFailingTestCasesClasses(), project);
 		}
 
 		if (project.getProperties().getFailingTestCases().isEmpty()) {
 			logger.debug("Failing test cases was not pass as argument: we use failings from FL "
-					+ flResult.getFailingTestCases());
-			project.getProperties().setFailingTestCases(flResult.getFailingTestCases());
+					+ flResult.getFailingTestCasesClasses());
+			project.getProperties().setFailingTestCases(flResult.getFailingTestCasesClasses());
 		}
 
 		if (ConfigurationProperties.getPropertyBool("filterfaultlocalization")) {

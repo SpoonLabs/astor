@@ -12,8 +12,9 @@ import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 public class FaultLocalizationResult {
 
 	List<SuspiciousCode> candidates;
-	List<String> failingTestCases;
-	List<String> executedTestCases;
+	List<String> failingTestCasesClasses;
+	List<String> failingTestCasesMethods;
+	List<String> executedTestCasesMethods;
 
 	public FaultLocalizationResult(List<SuspiciousCode> candidates) {
 		super();
@@ -24,15 +25,15 @@ public class FaultLocalizationResult {
 	public FaultLocalizationResult(List<SuspiciousCode> candidates, List<String> failingTestCases) {
 		super();
 		this.candidates = candidates;
-		this.failingTestCases = failingTestCases;
+		this.failingTestCasesClasses = failingTestCases;
 	}
 
 	public FaultLocalizationResult(List<SuspiciousCode> candidates, List<String> failingTestCases,
 			List<String> executedTestCases) {
 		super();
 		this.candidates = candidates;
-		this.failingTestCases = failingTestCases;
-		this.executedTestCases = executedTestCases;
+		this.failingTestCasesClasses = failingTestCases;
+		this.executedTestCasesMethods = executedTestCases;
 	}
 
 	public List<SuspiciousCode> getCandidates() {
@@ -43,24 +44,34 @@ public class FaultLocalizationResult {
 		this.candidates = candidates;
 	}
 
-	public List<String> getFailingTestCases() {
-		return failingTestCases;
+	public List<String> getFailingTestCasesClasses() {
+		return failingTestCasesClasses;
 	}
 
-	public void setFailingTestCases(List<String> failingTestCases) {
-		this.failingTestCases = failingTestCases;
+	public void setFailingTestCasesClasses(List<String> failingTestCases) {
+		this.failingTestCasesClasses = failingTestCases;
+	}
+
+	public List<String> getExecutedTestCasesMethods() {
+		return executedTestCasesMethods;
+	}
+
+	public void setExecutedTestCasesMethods(List<String> executedTestCases) {
+		this.executedTestCasesMethods = executedTestCases;
+	}
+
+	public List<String> getFailingTestCasesMethods() {
+		return failingTestCasesMethods;
+	}
+
+	public void setFailingTestCasesMethods(List<String> failingTestCasesMethods) {
+		this.failingTestCasesMethods = failingTestCasesMethods;
 	}
 
 	@Override
 	public String toString() {
-		return "FaultLocalizationResult{" + "candidates=" + candidates + ", failingTestCases=" + failingTestCases + '}';
+		return "FaultLocalizationResult{" + "candidates=" + candidates + ", failingTestCases=" + failingTestCasesClasses
+				+ '}';
 	}
 
-	public List<String> getExecutedTestCases() {
-		return executedTestCases;
-	}
-
-	public void setExecutedTestCases(List<String> executedTestCases) {
-		this.executedTestCases = executedTestCases;
-	}
 }
