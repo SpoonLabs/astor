@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -54,6 +55,18 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 		String noout = (ConfigurationProperties.hasProperty("outfl") ? ConfigurationProperties.getProperty("outfl")
 				: output);
 
+		// Let's take the default timeout in seconds
+		Integer timeOutSeconds = 10;
+		if (ConfigurationProperties.getProperty("maxtime") != null)
+			timeOutSeconds = new Integer(ConfigurationProperties.getProperty("maxtime"));
+
+		Integer timeoutMiliseconds = timeOutSeconds * 60000;
+
+		String maxmemory = "-XX:MaxPermSize=4096M";
+		if (ConfigurationProperties.properties.containsKey("maxmemory")) {
+			maxmemory = (ConfigurationProperties.properties.get("maxmemory").toString());
+		}
+
 		// Outs
 		String outputdirGzoltar = noout + File.separator + "outputgzoltar";
 		File fileOutGzoltar = (new File(outputdirGzoltar));
@@ -96,13 +109,13 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 			}
 		}).start();
 
-		p.waitFor();
+		p.waitFor(timeoutMiliseconds, TimeUnit.MILLISECONDS);
 
 		System.out.println("End obtaining test");
 
-		String commandRunTestMethods = "java -XX:MaxPermSize=4096M -javaagent:" + gzoltar_agent_jar + "=destfile="
-				+ serfile + ",buildlocation=" + src_classes_dir + ",inclnolocationclasses=false,output=FILE"
-				+ "        -cp " + src_classes_dir + ":" + junitpath + ":" + testClassPath + ":" + gzoltar_cli_jar
+		String commandRunTestMethods = "java " + maxmemory + " -javaagent:" + gzoltar_agent_jar + "=destfile=" + serfile
+				+ ",buildlocation=" + src_classes_dir + ",inclnolocationclasses=false,output=FILE" + "        -cp "
+				+ src_classes_dir + ":" + junitpath + ":" + testClassPath + ":" + gzoltar_cli_jar
 				+ "  com.gzoltar.cli.Main runTestMethods " + "   --testMethods " + pathTestsFiles
 				+ "  --collectCoverage";
 
@@ -123,7 +136,7 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 			}
 		}).start();
 
-		p2.waitFor();
+		p2.waitFor(timeoutMiliseconds, TimeUnit.MILLISECONDS);
 
 		System.out.println("Report: ");
 
@@ -159,7 +172,7 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 			}
 		}).start();
 
-		processRunReport.waitFor();
+		processRunReport.waitFor(timeoutMiliseconds, TimeUnit.MILLISECONDS);
 
 		File gzoltarOutFile = new File(outputdirGzoltar);
 		FaultLocalizationResult result = parseOutputFile(gzoltarOutFile, 0.1);
