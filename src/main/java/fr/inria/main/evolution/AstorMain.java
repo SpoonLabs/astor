@@ -7,7 +7,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.ParseException;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 import fr.inria.astor.approaches.cardumen.CardumenApproach;
 import fr.inria.astor.approaches.deeprepair.DeepRepairEngine;
@@ -24,6 +29,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
 import fr.inria.main.AbstractMain;
 import fr.inria.main.ExecutionMode;
+import fr.inria.main.ExecutionResult;
 
 /**
  * Astor main
@@ -136,8 +142,8 @@ public class AstorMain extends AbstractMain {
 	}
 
 	@Override
-	public void run(String location, String projectName, String dependencies, String packageToInstrument, double thfl,
-			String failing) throws Exception {
+	public ExecutionResult run(String location, String projectName, String dependencies, String packageToInstrument,
+			double thfl, String failing) throws Exception {
 
 		long startT = System.currentTimeMillis();
 		initProject(location, projectName, dependencies, packageToInstrument, thfl, failing);
@@ -160,19 +166,21 @@ public class AstorMain extends AbstractMain {
 			if (core == null) {
 				System.err.println("Unknown mode of execution: '" + mode + "',  modes are: "
 						+ Arrays.toString(ExecutionMode.values()));
-				return;
+				return null;
 			}
 
 		}
 
 		ConfigurationProperties.print();
 
-		core.startEvolution();
+		core.startSearch();
 
-		core.atEnd();
+		ExecutionResult result = core.atEnd();
 
 		long endT = System.currentTimeMillis();
 		log.info("Time Total(s): " + (endT - startT) / 1000d);
+
+		return result;
 	}
 
 	/**
@@ -185,18 +193,18 @@ public class AstorMain extends AbstractMain {
 		m.execute(args);
 	}
 
-	public void execute(String[] args) throws Exception {
+	public ExecutionResult execute(String[] args) throws Exception {
 		boolean correct = processArguments(args);
 
 		log.info("Running Astor on a JDK at " + System.getProperty("java.home"));
 
 		if (!correct) {
 			System.err.println("Problems with commands arguments");
-			return;
+			return null;
 		}
 		if (isExample(args)) {
 			executeExample(args);
-			return;
+			return null;
 		}
 
 		String dependencies = ConfigurationProperties.getProperty("dependenciespath");
@@ -211,8 +219,8 @@ public class AstorMain extends AbstractMain {
 
 		setupLogging();
 
-		run(location, projectName, dependencies, packageToInstrument, thfl, failing);
-
+		ExecutionResult result = run(location, projectName, dependencies, packageToInstrument, thfl, failing);
+		return result;
 	}
 
 	public AstorCoreEngine getEngine() {
@@ -220,7 +228,47 @@ public class AstorMain extends AbstractMain {
 	}
 
 	public void setupLogging() throws IOException {
-		// done with log4j2.xml
-	}
 
+		if (ConfigurationProperties.getPropertyBool("nolog")) {
+
+			LogManager.getRootLogger().setLevel(Level.FATAL);
+		} else {
+			String patternLayout = "";
+			if (ConfigurationProperties.getPropertyBool("disablelog")) {
+				patternLayout = "%m%n";
+			} else {
+				patternLayout = ConfigurationProperties.getProperty("logpatternlayout");
+			}
+
+			Logger.getRootLogger().getLoggerRepository().resetConfiguration();
+			ConsoleAppender console = new ConsoleAppender();
+			console.setLayout(new PatternLayout(patternLayout));
+			console.activateOptions();
+			Logger.getRootLogger().addAppender(console);
+
+			String loglevelSelected = ConfigurationProperties.properties.getProperty("loglevel");
+			if (loglevelSelected != null)
+				LogManager.getRootLogger().setLevel(Level.toLevel(loglevelSelected));
+
+			if (ConfigurationProperties.hasProperty("logfilepath")) {
+				FileAppender fa = new FileAppender();
+				String filePath = ConfigurationProperties.getProperty("logfilepath");
+				File fileLog = new File(filePath);
+				if (!fileLog.exists()) {
+					fileLog.getParentFile().mkdirs();
+					fileLog.createNewFile();
+				}
+
+				fa.setName("FileLogger");
+				fa.setFile(fileLog.getAbsolutePath());
+				fa.setLayout(new PatternLayout(patternLayout));
+				fa.setThreshold(LogManager.getRootLogger().getLevel());
+				fa.setAppend(true);
+				fa.activateOptions();
+				Logger.getRootLogger().addAppender(fa);
+				this.log.info("Log file at: " + filePath);
+
+			}
+		}
+	}
 }

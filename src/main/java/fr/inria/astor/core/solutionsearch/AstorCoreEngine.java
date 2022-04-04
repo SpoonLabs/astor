@@ -80,6 +80,7 @@ import fr.inria.astor.core.validation.junit.JUnitProcessValidator;
 import fr.inria.astor.util.PatchDiffCalculator;
 import fr.inria.astor.util.TimeUtil;
 import fr.inria.main.AstorOutputStatus;
+import fr.inria.main.ExecutionResult;
 import fr.inria.main.evolution.ExtensionPoints;
 import fr.inria.main.evolution.PlugInLoader;
 import spoon.reflect.declaration.CtClass;
@@ -171,7 +172,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 	public abstract void startSearch() throws Exception;
 
-	public void atEnd() {
+	public ExecutionResult atEnd() {
+
+		RepairResult result = new RepairResult();
 
 		long startT = dateInitEvolution.getTime();
 		long endT = System.currentTimeMillis();
@@ -189,6 +192,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		this.printFinalStatus();
 
 		if (this.solutions.size() > 0) {
+
 			this.sortPatches();
 			try {
 
@@ -200,6 +204,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.info(this.getSolutionData(this.solutions, this.generationsExecuted) + "\n");
 
 			patchInfo = createStatsForPatches(solutions, generationsExecuted, dateInitEvolution);
+
+			result.setSolutions(solutions);
+
 		} else {
 			patchInfo = new ArrayList<>();
 		}
@@ -246,6 +253,8 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+
+		return result;
 
 	}
 

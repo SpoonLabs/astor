@@ -3,13 +3,14 @@ package fr.inria.astor.core.faultlocalization;
 import java.util.List;
 
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import fr.inria.main.ExecutionResult;
 
 /**
  * Stores the result of a fault localization process
  *
  * @author Matias Martinez
  */
-public class FaultLocalizationResult {
+public class FaultLocalizationResult extends ExecutionResult {
 
 	List<SuspiciousCode> candidates;
 	List<String> failingTestCasesClasses;

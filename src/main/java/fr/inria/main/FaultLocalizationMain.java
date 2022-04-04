@@ -30,9 +30,10 @@ public class FaultLocalizationMain extends AbstractMain {
 	}
 
 	@Override
-	public void run(String location, String projectName, String dependencies, String packageToInstrument, double thfl,
-			String failing) throws Exception {
+	public ExecutionResult run(String location, String projectName, String dependencies, String packageToInstrument,
+			double thfl, String failing) throws Exception {
 
+		CompositeExecutionResult results = new CompositeExecutionResult();
 		long startT = System.currentTimeMillis();
 		initProject(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
@@ -61,6 +62,8 @@ public class FaultLocalizationMain extends AbstractMain {
 					regressionTestForFaultLocalization);
 
 			save(result, FaultLocalization.GZOLTAR);
+
+			results.add(result);
 		}
 
 		if (faultLocalizationMode.equals(FaultLocalization.FLACOCO)
@@ -74,6 +77,8 @@ public class FaultLocalizationMain extends AbstractMain {
 
 			save(result, FaultLocalization.FLACOCO);
 
+			results.add(result);
+
 		}
 
 		if (faultLocalizationMode.equals(FaultLocalization.GZOLTAR1_7)
@@ -86,12 +91,14 @@ public class FaultLocalizationMain extends AbstractMain {
 			List<String> regressionTestForFaultLocalization = gzoltarFaultLocalization
 					.findTestCasesToExecute(projectFacade);
 			System.out.println("Test to execute: " + regressionTestForFaultLocalization);
-			FaultLocalizationResult searchSuspicious = gzoltarFaultLocalization.searchSuspicious(projectFacade,
+			FaultLocalizationResult result = gzoltarFaultLocalization.searchSuspicious(projectFacade,
 					regressionTestForFaultLocalization);
 
-			System.out.println("FL results: " + searchSuspicious);
+			System.out.println("FL results: " + result);
 
-			save(searchSuspicious, FaultLocalization.GZOLTAR1_7);
+			save(result, FaultLocalization.GZOLTAR1_7);
+
+			results.add(result);
 
 		}
 
@@ -103,6 +110,14 @@ public class FaultLocalizationMain extends AbstractMain {
 
 		long endT = System.currentTimeMillis();
 		log.info("Time Total(s): " + (endT - startT) / 1000d);
+
+		if (results.getResults().size() > 1) {
+			return results;
+		} else if (results.getResults().size() == 1) {
+			// Don't need to send a composite result as there is only 1
+			return results.getResults().get(0);
+		}
+		return null;
 
 	}
 

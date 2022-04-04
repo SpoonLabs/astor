@@ -299,8 +299,8 @@ public abstract class AbstractMain {
 
 	}
 
-	public abstract void run(String location, String projectName, String dependencies, String packageToInstrument,
-			double thfl, String failing) throws Exception;
+	public abstract ExecutionResult run(String location, String projectName, String dependencies,
+			String packageToInstrument, double thfl, String failing) throws Exception;
 
 	// CLG notes that this slightly modifies the semantics of example execution,
 	// such that it now will execute examples for non-GenProg tools as well.
@@ -1083,18 +1083,18 @@ public abstract class AbstractMain {
 		// done with log4j2.xml
 	}
 
-	public void execute(String[] args) throws Exception {
+	public ExecutionResult execute(String[] args) throws Exception {
 		boolean correct = processArguments(args);
 
 		log.info("Running Astor on a JDK at " + System.getProperty("java.home"));
 
 		if (!correct) {
 			System.err.println("Problems with commands arguments");
-			return;
+			return null;
 		}
 		if (isExample(args)) {
 			executeExample(args);
-			return;
+			return null;
 		}
 
 		String dependencies = ConfigurationProperties.getProperty("dependenciespath");
@@ -1109,7 +1109,7 @@ public abstract class AbstractMain {
 
 		setupLogging();
 
-		run(location, projectName, dependencies, packageToInstrument, thfl, failing);
+		return run(location, projectName, dependencies, packageToInstrument, thfl, failing);
 
 	}
 
