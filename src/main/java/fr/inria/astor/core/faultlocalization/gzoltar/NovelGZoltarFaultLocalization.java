@@ -181,20 +181,18 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 	private String getGzoltarAgentRtPath(String gzoltarversion) throws IllegalAccessException {
 
 		String jarToFind = "com.gzoltar.agent.rt-" + gzoltarversion + "-all.jar";
-		return getFromFolder(jarToFind);
+		return getJar(jarToFind);
 	}
 
 	private String getGZoltarCLIPath(String gzoltarversion) throws IllegalAccessException {
 
 		String jarToFind = "com.gzoltar.cli-" + gzoltarversion + "-jar-with-dependencies.jar";
 
-		return getFromFolder(jarToFind);
-
-		// return getFromClassPath(jarToFind);
+		return getJar(jarToFind);
 
 	}
 
-	private String getFromFolder(String jarToFind) throws IllegalAccessException {
+	private String getJar(String jarToFind) throws IllegalAccessException {
 		String locationGzoltarJar = ConfigurationProperties.getProperty("locationGzoltarJar");
 
 		if (locationGzoltarJar == null || locationGzoltarJar.isEmpty()) {
@@ -203,8 +201,18 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 		}
 		File f = new File(locationGzoltarJar + File.separator + jarToFind);
 
+		if (f != null && f.exists()) {
+
+			return f.getAbsolutePath();
+
+		}
+
+		String jarFromCP = getFromClassPath(jarToFind);
+
+		f = new File(jarFromCP);
 		if (!f.exists())
-			throw new IllegalAccessException("We cannot localize the jar at " + f.getAbsolutePath());
+			throw new IllegalAccessException(
+					"We cannot localize the jar at " + f.getAbsolutePath() + ". Please add it in the classpath");
 
 		return f.getAbsolutePath();
 	}
@@ -222,10 +230,6 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 			}
 
 		}
-		if (np.isEmpty()) {
-			throw new IllegalAccessException("Could not find file with " + jarToFind);
-		}
-
 		System.out.println("gzoltar path " + np);
 		return np;
 	}
