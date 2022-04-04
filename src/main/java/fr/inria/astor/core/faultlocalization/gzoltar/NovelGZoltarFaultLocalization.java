@@ -5,18 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-
-import com.gzoltar.core.test.TestMethod;
-import com.gzoltar.core.test.TestRunner;
-import com.gzoltar.core.test.TestTask;
-import com.gzoltar.core.test.junit.JUnitTestTask;
-import com.gzoltar.core.util.ClassType;
 
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
@@ -248,24 +241,8 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 
 		}
 		System.out.println("junit path " + np);
-		// return
-		// "/Users/matias/.m2/repository/junit/junit/4.12/junit-4.12.jar:/Users/matias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar";
 
 		return np;
-	}
-
-	private void runLocally(List<String> allTest, boolean offline, boolean collectCoverage, boolean initTestClass,
-			URL[] searchPathURLs) {
-		for (String test : allTest) {
-
-			String[] split = test.split(",");
-			TestMethod testMethod = new TestMethod(ClassType.valueOf(split[0]), split[1]);
-
-			TestTask testRunnerGzoltar = new JUnitTestTask(searchPathURLs, offline, collectCoverage, initTestClass,
-					testMethod);
-			TestRunner.run(testRunnerGzoltar);
-
-		}
 	}
 
 	@Override
@@ -277,7 +254,6 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 			System.out.println("Test all " + testall);
 
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		return testall;
