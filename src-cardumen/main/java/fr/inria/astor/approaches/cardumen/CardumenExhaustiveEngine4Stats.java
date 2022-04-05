@@ -28,6 +28,7 @@ import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.ingredientSearch.RandomSelectionTransformedIngredientStrategy;
 import fr.inria.astor.core.solutionsearch.spaces.operators.AstorOperator;
 import fr.inria.astor.core.stats.Stats;
+import fr.inria.main.ExecutionResult;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
@@ -132,10 +133,9 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 			}
 		}
 		/*
-		 * log.info("totalmp: " + this.totalmp); log.info("totalBases: " +
-		 * totalBases); log.info("totalAttempts: " + totalAttempts);
-		 * log.info("totalCutsAttempts: " + attemptsCutted);
-		 * log.info("totalIngredients: " + totalIngredients);
+		 * log.info("totalmp: " + this.totalmp); log.info("totalBases: " + totalBases);
+		 * log.info("totalAttempts: " + totalAttempts); log.info("totalCutsAttempts: " +
+		 * attemptsCutted); log.info("totalIngredients: " + totalIngredients);
 		 * log.info("totalCutIngredients: " + totalIngredientsCutted);
 		 * log.info("totalBasesWithZeros: " + totalBasesWithZeros);
 		 */
@@ -279,11 +279,12 @@ public class CardumenExhaustiveEngine4Stats extends CardumenApproach {
 	}
 
 	@Override
-	public void atEnd() {
-		super.atEnd();
+	public ExecutionResult atEnd() {
+		ExecutionResult result = super.atEnd();
 		this.showCardumenStats();
 		JSONObject jsonob = getOutputJSON();
 		outputToJSon(jsonob);
+		return result;
 	}
 
 	private void outputToJSon(JSONObject jsonob) {
