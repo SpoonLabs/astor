@@ -5,9 +5,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -31,6 +35,7 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 	public static final String PACKAGE_SEPARATOR = "-";
 	Logger logger = Logger.getLogger(NovelGZoltarFaultLocalization.class.getName());
 
+	@Override
 	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade project,
 			List<String> regressionTestForFaultLocalization) throws Exception {
 
@@ -39,14 +44,13 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 						+ ConfigurationProperties.getProperty("srcjavafolder"),
 				project.getOutDirWithPrefix(ProgramVariant.DEFAULT_ORIGINAL_VARIANT),
 				ConfigurationProperties.getProperty("packageToInstrument"), ProgramVariant.DEFAULT_ORIGINAL_VARIANT,
-				project.getProperties().getFailingTestCases(), regressionTestForFaultLocalization,
-				ConfigurationProperties.getPropertyBool("regressionforfaultlocalization"), project);
+				project.getProperties().getFailingTestCases(), regressionTestForFaultLocalization, project);
 
 	}
 
 	private FaultLocalizationResult calculateSuspicious(String locationSrc, String locationBytecode,
 			String packageToInst, String mutatorIdentifier, List<String> failingTest, List<String> allTest,
-			boolean mustRunAllTest, ProjectRepairFacade project) throws Exception {
+			ProjectRepairFacade project) throws Exception {
 
 		System.out.println("Calculating suspicious");
 
@@ -74,6 +78,7 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 			fileOutGzoltar.mkdirs();
 		}
 		String serfile = outputdirGzoltar + File.separator + "gzoltar_mm.ser";
+
 		String pathTestsFiles = noout + File.separator + "outTest.txt";
 
 		// Info related to project
@@ -92,30 +97,18 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 		String gzoltar_cli_jar = getGZoltarCLIPath(gzoltarversion);
 		String gzoltar_agent_jar = getGzoltarAgentRtPath(gzoltarversion);
 
-		String commandGetTest = "java -cp " + src_classes_dir + ":" + testClassPath + ":" + junitpath + ":"
-				+ gzoltar_cli_jar + "  com.gzoltar.cli.Main listTestMethods " + testClassPath + "    --outputFile "
-				+ pathTestsFiles;
+		retrieveTestCases(timeoutMiliseconds, pathTestsFiles, src_classes_dir, testClassPath, junitpath,
+				gzoltar_cli_jar);
 
-		System.out.println(commandGetTest);
-		final Process p = Runtime.getRuntime().exec(commandGetTest);
-
-		new Thread(new Runnable() {
-			public void run() {
-				BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				String line = null;
-
-				try {
-					while ((line = input.readLine()) != null)
-						System.out.println(line);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();
-
-		p.waitFor(timeoutMiliseconds, TimeUnit.MILLISECONDS);
-
-		System.out.println("End obtaining test");
+		Path pathTestFile = new File(pathTestsFiles).toPath();
+		try (Stream<String> lines = Files.lines(pathTestFile)) {
+			// System.out.println(lines.collect(Collectors.toList()));
+			List<String> replaced = lines
+					.filter(e -> allTest.isEmpty() || allTest.contains(e.split(",")[1].split("#")[0]))
+					.collect(Collectors.toList());
+			System.out.println("Filtered " + replaced);
+			Files.write(pathTestFile, replaced);
+		}
 
 		String commandRunTestMethods = "java " + maxmemory + " -javaagent:" + gzoltar_agent_jar + "=destfile=" + serfile
 				+ ",buildlocation=" + src_classes_dir + ",inclnolocationclasses=false,output=FILE" + "        -cp "
@@ -189,6 +182,34 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 		}
 		return result;
 
+	}
+
+	private void retrieveTestCases(Integer timeoutMiliseconds, String pathTestsFiles, String src_classes_dir,
+			String testClassPath, String junitpath, String gzoltar_cli_jar) throws IOException, InterruptedException {
+		String commandGetTest = "java -cp " + src_classes_dir + ":" + testClassPath + ":" + junitpath + ":"
+				+ gzoltar_cli_jar + "  com.gzoltar.cli.Main listTestMethods " + testClassPath + "    --outputFile "
+				+ pathTestsFiles;
+
+		System.out.println(commandGetTest);
+		final Process p = Runtime.getRuntime().exec(commandGetTest);
+
+		new Thread(new Runnable() {
+			public void run() {
+				BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				String line = null;
+
+				try {
+					while ((line = input.readLine()) != null)
+						System.out.println(line);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+
+		p.waitFor(timeoutMiliseconds, TimeUnit.MILLISECONDS);
+
+		System.out.println("End obtaining test");
 	}
 
 	private String getGzoltarAgentRtPath(String gzoltarversion) throws IllegalAccessException {
@@ -362,6 +383,11 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 			while ((line = br.readLine()) != null) {
 				String[] lineS = line.split(",");
 				String testName = lineS[0];
+
+				if (testName.toLowerCase().equals("name")) {
+					continue;
+				}
+
 				String name = testName.split("#")[0];
 				String testResult = lineS[1];
 				if (testResult.equals("FAIL")) {
@@ -380,8 +406,8 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 		}
 
 		results.setFailingTestCasesClasses(failingTestCasesClasses);
-		results.setFailingTestCasesMethods(allTestCasesMethod);
-		results.setExecutedTestCasesMethods(failingTestCasesMethod);
+		results.setFailingTestCasesMethods(failingTestCasesMethod);
+		results.setExecutedTestCasesMethods(allTestCasesMethod);
 
 	}
 

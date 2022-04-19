@@ -139,12 +139,53 @@ public class FaultLocalizationTest {
 
 		FaultLocalizationResult er = (FaultLocalizationResult) main.execute(cs.flat());
 
-		System.out.println(er);
+		assertFalse(er.getCandidates().isEmpty());
+		assertFalse(er.getExecutedTestCasesMethods().isEmpty());
+		assertFalse(er.getFailingTestCasesClasses().isEmpty());
+		assertFalse(er.getFailingTestCasesMethods().isEmpty());
+
+		// Avoid the first line of the result file
+		assertFalse(er.getExecutedTestCasesMethods().contains("name"));
+
+		assertEquals(2178, er.getExecutedTestCasesMethods().size());
+
+	}
+
+	@org.junit.Test
+	public void testFLMath70Ngz_limited() throws Exception {
+		FaultLocalizationMain main = new FaultLocalizationMain();
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+		// by default, max generations is zero, that means, it does not evolve
+		cs.command.put("-faultlocalization", FaultLocalization.GZOLTAR1_7.name());
+		cs.command.put("-flthreshold", "0.0000");
+		cs.command.put("-parameters", "includeZeros:false:keepGZoltarFiles:false");
+
+		String oneFailingTestClassToRun = "org.apache.commons.math.analysis.solvers.BisectionSolverTest";
+		String anotherTestClassToRun = "org.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest";
+		cs.command.put("-regressiontestcases4fl",
+				oneFailingTestClassToRun + File.pathSeparator + anotherTestClassToRun);
+		// We execute astor for creating the model and run FL
+
+		FaultLocalizationResult er = (FaultLocalizationResult) main.execute(cs.flat());
 
 		assertFalse(er.getCandidates().isEmpty());
 		assertFalse(er.getExecutedTestCasesMethods().isEmpty());
 		assertFalse(er.getFailingTestCasesClasses().isEmpty());
 		assertFalse(er.getFailingTestCasesMethods().isEmpty());
 
+		assertEquals(27, er.getExecutedTestCasesMethods().size());
+
+		// All test method must come from some of those two test clases
+		for (String testMethod : er.getExecutedTestCasesMethods()) {
+
+			assertTrue(testMethod.contains(oneFailingTestClassToRun) || testMethod.contains(anotherTestClassToRun));
+
+		}
+
+		assertTrue(er.getFailingTestCasesClasses().contains(oneFailingTestClassToRun));
+
+		assertEquals(1, er.getFailingTestCasesClasses().size());
+
 	}
+
 }
