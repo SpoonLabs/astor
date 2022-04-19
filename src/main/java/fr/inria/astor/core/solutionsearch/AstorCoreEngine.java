@@ -37,6 +37,7 @@ import fr.inria.astor.core.entities.validation.VariantValidationResult;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.faultlocalization.cocospoon.CocoFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization;
 import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
@@ -1078,7 +1079,9 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		// Fault localization
 		String flvalue = ConfigurationProperties.getProperty("faultlocalization").toLowerCase();
-		if (flvalue.equals("gzoltar")) {
+		if (flvalue.equals("flacoco")) {
+			this.setFaultLocalization(new FlacocoFaultLocalization());
+		} else if (flvalue.equals("gzoltar")) {
 			this.setFaultLocalization(new GZoltarFaultLocalization());
 		} else if (flvalue.equals("cocospoon")) {
 			this.setFaultLocalization(new CocoFaultLocalization());
