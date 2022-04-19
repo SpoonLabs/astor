@@ -1311,10 +1311,10 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 
 		for (ProgramVariant solutionVariant : variants) {
 
-			if (solutionVariant.getPatchInfo() != null) {
-				continue;
+			PatchStat stats = solutionVariant.getPatchInfo();
+			if (stats == null) {
+				stats = getStatSingle(solutionVariant, generation);
 			}
-			PatchStat stats = getStatSingle(solutionVariant, generation);
 			patches.add(stats);
 
 		}
