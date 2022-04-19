@@ -20,7 +20,6 @@ import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.setup.ProjectRepairFacade;
 import fr.inria.astor.core.solutionsearch.spaces.ingredients.CodeParserLauncher;
-import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -69,7 +68,7 @@ public class ProgramVariantFactory {
 	 * @throws Exception
 	 */
 	public List<ProgramVariant> createInitialPopulation(List<SuspiciousCode> suspiciousList, int maxNumberInstances,
-														ProjectRepairFacade projectFacade) throws Exception {
+			ProjectRepairFacade projectFacade) throws Exception {
 
 		this.projectFacade = projectFacade;
 
@@ -119,6 +118,22 @@ public class ProgramVariantFactory {
 		if (!suspiciousList.isEmpty()) {
 			int maxModPoints = ConfigurationProperties.getPropertyInt("maxmodificationpoints");
 			for (SuspiciousCode suspiciousCode : suspiciousList) {
+
+				String fixedLocation = ConfigurationProperties.getProperty("fixedLocation");
+
+				if (fixedLocation != null) {
+
+					String[] sp = fixedLocation.split("-");
+					String className = sp[0];
+					String line = sp[1];
+
+					if (!(suspiciousCode.getClassName().endsWith(className)
+							&& suspiciousCode.getLineNumber() == new Integer(line))) {
+						log.info("Skipping location " + suspiciousCode);
+						continue;
+					}
+
+				}
 
 				List<SuspiciousModificationPoint> modifPoints = createModificationPoints(suspiciousCode, progInstance);
 				if (modifPoints != null && !modifPoints.isEmpty()) {
@@ -178,32 +193,32 @@ public class ProgramVariantFactory {
 			List<CtElement> extractedElements = extractChildElements(classesToProcess, processors);
 
 			// remove the elements that are instance of NoSourcePosition
-			extractedElements = extractedElements.stream().filter(ctElement ->
-					!(ctElement.getPosition() instanceof NoSourcePosition))
+			extractedElements = extractedElements.stream()
+					.filter(ctElement -> !(ctElement.getPosition() instanceof NoSourcePosition))
 					.collect(Collectors.toList());
 
 			int maxModPoints = ConfigurationProperties.getPropertyInt("maxmodificationpoints");
 
 			for (CtElement suspiciousElement : extractedElements) {
-					List<CtVariable> contextOfGen = VariableResolver.searchVariablesInScope(suspiciousElement);
+				List<CtVariable> contextOfGen = VariableResolver.searchVariablesInScope(suspiciousElement);
 
-					SuspiciousModificationPoint point = new SuspiciousModificationPoint();
-					point.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
-							suspiciousElement.getPosition().getLine(), 0d, null));
-					point.setCtClass(ctclasspointed);
-					point.setCodeElement(suspiciousElement);
-					point.setContextOfModificationPoint(contextOfGen);
-					suspGen.add(point);
-					log.info("--ModificationPoint:" + suspiciousElement.getClass().getSimpleName() + ", suspValue "
-							+ point.getSuspicious().getSuspiciousValue() + ", line "
-							+ suspiciousElement.getPosition().getLine() + ", file "
-							+ suspiciousElement.getPosition().getFile().getName());
+				SuspiciousModificationPoint point = new SuspiciousModificationPoint();
+				point.setSuspicious(new SuspiciousCode(ctclasspointed.getQualifiedName(), "",
+						suspiciousElement.getPosition().getLine(), 0d, null));
+				point.setCtClass(ctclasspointed);
+				point.setCodeElement(suspiciousElement);
+				point.setContextOfModificationPoint(contextOfGen);
+				suspGen.add(point);
+				log.info("--ModificationPoint:" + suspiciousElement.getClass().getSimpleName() + ", suspValue "
+						+ point.getSuspicious().getSuspiciousValue() + ", line "
+						+ suspiciousElement.getPosition().getLine() + ", file "
+						+ suspiciousElement.getPosition().getFile().getName());
 
-					if (suspGen.size() > maxModPoints) {
-						log.info("Reducing Total ModPoint created to: " + maxModPoints);
-						return suspGen;
-					}
+				if (suspGen.size() > maxModPoints) {
+					log.info("Reducing Total ModPoint created to: " + maxModPoints);
+					return suspGen;
 				}
+			}
 
 		}
 		return suspGen;
@@ -259,22 +274,22 @@ public class ProgramVariantFactory {
 		List<CtElement> filteredTypeByLine = intersection(filterByType, ctSuspects);
 
 		// remove the elements that are instance of NoSourcePosition
-		filteredTypeByLine = filteredTypeByLine.stream().filter(ctElement ->
-				!(ctElement.getPosition() instanceof NoSourcePosition))
+		filteredTypeByLine = filteredTypeByLine.stream()
+				.filter(ctElement -> !(ctElement.getPosition() instanceof NoSourcePosition))
 				.collect(Collectors.toList());
 		// For each filtered element, we create a ModificationPoint.
 		for (CtElement ctElement : filteredTypeByLine) {
-                SuspiciousModificationPoint modifPoint = new SuspiciousModificationPoint();
-                modifPoint.setSuspicious(suspiciousCode);
-                modifPoint.setCtClass(ctclasspointed);
-                modifPoint.setCodeElement(ctElement);
-                modifPoint.setContextOfModificationPoint(contextOfPoint);
-                suspiciousModificationPoints.add(modifPoint);
-                log.debug("--ModifPoint:" + ctElement.getClass().getSimpleName() + ", suspValue "
-                        + suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
-                        + ((ctElement.getPosition().getFile() == null) ? "-null-file-"
-                        : ctElement.getPosition().getFile().getName()));
-        }
+			SuspiciousModificationPoint modifPoint = new SuspiciousModificationPoint();
+			modifPoint.setSuspicious(suspiciousCode);
+			modifPoint.setCtClass(ctclasspointed);
+			modifPoint.setCodeElement(ctElement);
+			modifPoint.setContextOfModificationPoint(contextOfPoint);
+			suspiciousModificationPoints.add(modifPoint);
+			log.debug("--ModifPoint:" + ctElement.getClass().getSimpleName() + ", suspValue "
+					+ suspiciousCode.getSuspiciousValue() + ", line " + ctElement.getPosition().getLine() + ", file "
+					+ ((ctElement.getPosition().getFile() == null) ? "-null-file-"
+							: ctElement.getPosition().getFile().getName()));
+		}
 		return suspiciousModificationPoints;
 	}
 
