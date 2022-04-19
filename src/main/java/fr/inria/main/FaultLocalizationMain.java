@@ -42,11 +42,11 @@ public class FaultLocalizationMain extends AbstractMain {
 
 		FaultLocalization faultLocalizationMode = FaultLocalization.valueOf(faultLocalizationModeS);
 
-		List<String> testToRun = new ArrayList<>();
+		List<String> testsToRun = new ArrayList<>();
 
 		String toRun = ConfigurationProperties.getProperty("regressiontestcases4fl");
 		if (toRun != null && !toRun.isEmpty()) {
-			testToRun = Arrays.asList(toRun.split(File.pathSeparator));
+			testsToRun = Arrays.asList(toRun.split(File.pathSeparator));
 		}
 
 		if (faultLocalizationMode == null) {
@@ -63,11 +63,21 @@ public class FaultLocalizationMain extends AbstractMain {
 			executed = true;
 
 			GZoltarFaultLocalization gZoltarFaultLocalization = new GZoltarFaultLocalization();
-			List<String> regressionTestForFaultLocalization = gZoltarFaultLocalization
-					.findTestCasesToExecute(projectFacade);
 
-			FaultLocalizationResult result = gZoltarFaultLocalization.searchSuspicious(this.projectFacade,
-					regressionTestForFaultLocalization);
+			FaultLocalizationResult result = null;
+
+			if (testsToRun.size() > 0) {
+
+				result = gZoltarFaultLocalization.searchSuspicious(this.projectFacade, testsToRun);
+
+			} else {
+				List<String> regressionTestForFaultLocalization = gZoltarFaultLocalization
+						.findTestCasesToExecute(projectFacade);
+
+				result = gZoltarFaultLocalization.searchSuspicious(this.projectFacade,
+						regressionTestForFaultLocalization);
+
+			}
 
 			save(result, FaultLocalization.GZOLTAR);
 
@@ -81,7 +91,7 @@ public class FaultLocalizationMain extends AbstractMain {
 
 			FlacocoFaultLocalization flacocoFaultLocalization = new FlacocoFaultLocalization();
 
-			FaultLocalizationResult result = flacocoFaultLocalization.searchSuspicious(this.projectFacade, testToRun);
+			FaultLocalizationResult result = flacocoFaultLocalization.searchSuspicious(this.projectFacade, testsToRun);
 
 			save(result, FaultLocalization.FLACOCO);
 
@@ -96,11 +106,11 @@ public class FaultLocalizationMain extends AbstractMain {
 
 			NovelGZoltarFaultLocalization gzoltarFaultLocalization = new NovelGZoltarFaultLocalization();
 
-			List<String> regressionTestForFaultLocalization = gzoltarFaultLocalization
-					.findTestCasesToExecute(projectFacade);
-			System.out.println("Test to execute: " + regressionTestForFaultLocalization);
-			FaultLocalizationResult result = gzoltarFaultLocalization.searchSuspicious(projectFacade,
-					regressionTestForFaultLocalization);
+			// List<String> regressionTestForFaultLocalization = gzoltarFaultLocalization
+			// .findTestCasesToExecute(projectFacade);
+
+			// System.out.println("Test to execute: " + regressionTestForFaultLocalization);
+			FaultLocalizationResult result = gzoltarFaultLocalization.searchSuspicious(projectFacade, testsToRun);
 
 			System.out.println("FL results: " + result);
 
