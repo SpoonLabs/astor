@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileReader;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
@@ -72,7 +71,6 @@ public class OutputTest {
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() > 0);
 		assertEquals(1, solutions.size());
-
 
 	}
 
@@ -232,9 +230,11 @@ public class OutputTest {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", //
 
 				"-location", new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons",
-				"-srcjavafolder", "/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes",
-				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(), "-maxgen", "0", "-maxtime", "10", "-stopfirst", "true"
+				// "-faultlocalization", "gzoltar",
+				"-srcjavafolder", "/src/main/java/", "-srctestfolder", "/src/test/java/", "-binjavafolder",
+				"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7",
+				"-flthreshold", "0.5", "-out", out.getAbsolutePath(), "-maxgen", "0", "-maxtime", "10", "-stopfirst",
+				"true"
 
 		};
 		CommandSummary command = new CommandSummary(args);

@@ -31,6 +31,7 @@ import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.PerfectEngine;
 import fr.inria.main.CommandSummary;
 import fr.inria.main.evolution.AstorMain;
 import spoon.reflect.code.CtCodeElement;
@@ -52,9 +53,95 @@ public class D4JWorkflowTestSingle {
 	public void testMath2() throws Exception {
 
 		CommandSummary cs = new CommandSummary();
-		cs.append("-parameters", "maxmemory" + File.pathSeparator + "-Xmx4G");
+		cs.append("-parameters", "maxmemory" + File.pathSeparator + "-Xmx4G:fixedLocation");
 		cs.command.put("-flthreshold", "0.159");
 		runComplete("Math2", "-Dmaven.compiler.source=7 -Dmaven.compiler.target=7", "jGenProg", 120, cs);
+	}
+
+	@Test
+	public void testMath2Perfect() throws Exception {
+
+		CommandSummary cs = new CommandSummary();
+
+		String bug_id = "Math2";
+		String mvn_option = "-Dmaven.compiler.source=7 -Dmaven.compiler.target=7";
+
+		System.out.println("Env var " + System.getenv("J7PATH"));
+		File dirResults = new File("./resultsTestCases");
+		if (!dirResults.exists()) {
+			dirResults.mkdirs();
+		}
+
+		configureBuggyProject(bug_id, mvn_option);
+
+		createCommand(bug_id, "custom", 600, "gzoltar", cs);
+		cs.command.put("-jvm4testexecution", System.getenv("J7PATH"));
+		cs.command.put("-customengine", PerfectEngine.class.getCanonicalName());
+
+		File f = File.createTempFile("mmm", "txt");
+
+		FileWriter fw = new FileWriter(f);
+		fw.write("numericalVarianceIsCalculated = true");
+		fw.close();
+
+		cs.append("-parameters",
+				"logtestexecution:true:" + "maxmemory" + File.pathSeparator + "-Xmx4G" + File.pathSeparator
+						+ "fixedLocation:HypergeometricDistribution-321:" + "peOperator:insertbefore:pefile:"
+						+ f.getAbsolutePath());
+
+		AstorMain main1 = new AstorMain();
+
+		main1.execute(cs.flat());
+
+		long end = System.currentTimeMillis();
+
+		List<ProgramVariant> variantsSolutions = main1.getEngine().getSolutions();
+
+		assertTrue(variantsSolutions.size() > 0);
+
+	}
+
+	@Test
+	public void testLang44Perfect() throws Exception {
+
+		CommandSummary cs = new CommandSummary();
+
+		String bug_id = "Lang44";
+		String mvn_option = "-Dmaven.compiler.source=7 -Dmaven.compiler.target=7";
+
+		System.out.println("Env var " + System.getenv("J7PATH"));
+		File dirResults = new File("./resultsTestCases");
+		if (!dirResults.exists()) {
+			dirResults.mkdirs();
+		}
+
+		configureBuggyProject(bug_id, mvn_option);
+
+		createCommand(bug_id, "custom", 600, "gzoltar", cs);
+		cs.command.put("-jvm4testexecution", System.getenv("J7PATH"));
+		cs.command.put("-customengine", PerfectEngine.class.getCanonicalName());
+
+		File f = File.createTempFile("mmm", "txt");
+
+		FileWriter fw = new FileWriter(f);
+		fw.write(
+				" if (val.length() == 1 && !Character.isDigit(val.charAt(0))) {   throw new NumberFormatException(val + \" is not a valid number.\");         }");
+		fw.close();
+
+		cs.append("-parameters",
+				"logtestexecution:true:" + "maxmemory" + File.pathSeparator + "-Xmx4G" + File.pathSeparator
+						+ "fixedLocation:NumberUtils-145:" + "peOperator:insertbefore:pefile:" + f.getAbsolutePath());
+
+		AstorMain main1 = new AstorMain();
+
+		main1.execute(cs.flat());
+
+		long end = System.currentTimeMillis();
+
+		List<ProgramVariant> variantsSolutions = main1.getEngine().getSolutions();
+
+		assertTrue(variantsSolutions.size() > 0);
+
 	}
 
 	@Test
@@ -298,7 +385,7 @@ public class D4JWorkflowTestSingle {
 		assertEquals(1, programVariant.getModificationPoints().size());
 		System.out.println("MD selected: " + programVariant.getModificationPoints().get(0).getCodeElement().toString());
 		ConfigurationProperties.setProperty("maxtime", "1000000");
-		engine.startEvolution();
+		engine.startSearch();
 		engine.atEnd();
 
 		assertEquals(1, engine.getSolutions().size());
@@ -709,7 +796,7 @@ public class D4JWorkflowTestSingle {
 		System.out.println("---Starting second run---");
 		// let's start the evolution again (the model was already created on that
 		// engine, so we directly call start)
-		engine.startEvolution();
+		engine.startSearch();
 
 		// we should call end after the startevol
 		engine.atEnd();

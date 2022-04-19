@@ -6,10 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.log4j.Level;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -22,6 +24,7 @@ import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
+import fr.inria.astor.core.solutionsearch.PerfectEngine;
 import fr.inria.astor.core.solutionsearch.population.PopulationConformation;
 import fr.inria.astor.test.repair.core.BaseEvolutionaryTest;
 import fr.inria.astor.test.repair.evaluation.regression.MathCommandsTests;
@@ -436,7 +439,15 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
+		cs.command.put("-parameters",
+				"logtestexecution:true:ignoredTestCases:org.apache.commons.math.estimation.MinpackTest:" + "maxmemory"
+						+ File.pathSeparator + "-Xmx4G");
 
+		// testMinpackMeyer(org.apache.commons.math.estimation.MinpackTest)
+
+		// cs.command.put("-faultlocalization", "gzoltar");
+		// cs.command.put("-flthreshold", "0.1");
+		org.apache.log4j.LogManager.getRootLogger().setLevel(Level.INFO);
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
 
@@ -461,8 +472,10 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		// by default, max generations is zero, that means, it does not evolve
 		cs.command.put("-maxgen", "0");
 		cs.command.put("-population", "1");
+		cs.command.put("-faultlocalization", "gzoltar");
 
 		// We execute astor for creating the model and run FL
+
 		main1.execute(cs.flat());
 
 		// Let's change the number of generations (it was 0 in the original command)
@@ -476,7 +489,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertEquals(1, engine.getVariants().get(0).getModificationPoints().size());
 		// let's start the evolution again (the model was already created on that
 		// engine, so we directly call start)
-		engine.startEvolution();
+		engine.startSearch();
 
 		// we should call end after the startevol
 		engine.atEnd();
@@ -506,7 +519,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
 				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
-				out.getAbsolutePath(),
+				out.getAbsolutePath(), "-faultlocalization", "gzoltar",
 				//
 				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", "-maxtime", "10",
 				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(), "-parameters",
@@ -520,7 +533,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
 		assertTrue(solutions.size() >= 1);
 
-		assertTrue(existPatchWithCode(solutions, "return solve(f, min, max)") || existPatchWithCode(solutions, "return solve(f, initial, max)"));
+		assertTrue(existPatchWithCode(solutions, "return solve(f, min, max)")
+				|| existPatchWithCode(solutions, "return solve(f, initial, max)"));
 
 		command.command.put("-parameters", "maxnumbersolutions:1");
 		main1.execute(command.flat());
@@ -532,6 +546,66 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		assertTrue(existPatchWithCode(solutions, "return solve(f, min, max)"));
 		assertFalse(existPatchWithCode(solutions, "return solve(f, initial, max)"));
+
+	}
+
+	@Test
+	public void testMath70FixedFL() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-faultlocalization", "gzoltar",
+				//
+				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", "-maxtime", "10",
+				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(), };
+		System.out.println(Arrays.toString(args));
+		CommandSummary command = new CommandSummary(args);
+
+		command.command.put("-parameters", "fixedLocation:BisectionSolver-72");
+		main1.execute(command.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() >= 1);
+
+		assertTrue(existPatchWithCode(solutions, "return solve(f, min, max)")
+				|| existPatchWithCode(solutions, "return solve(f, initial, max)"));
+
+	}
+
+	@Test
+	public void testMath70Perfect() throws Exception {
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "custom", "-customengine",
+				PerfectEngine.class.getCanonicalName(), "-failing",
+				"org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
+				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",
+				"/src/java/", "-srctestfolder", "/src/test/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
+				out.getAbsolutePath(), "-faultlocalization", "gzoltar",
+				//
+				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", "-maxtime", "10",
+				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(), };
+		System.out.println(Arrays.toString(args));
+		CommandSummary command = new CommandSummary(args);
+
+		File f = File.createTempFile("mmm", "txt");
+
+		FileWriter fw = new FileWriter(f);
+		fw.write("return solve(f, min, max)");
+		fw.close();
+		command.command.put("-parameters",
+				"fixedLocation:BisectionSolver-72:" + "peOperator:replace:pefile:" + f.getAbsolutePath());
+		main1.execute(command.flat());
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertTrue(solutions.size() >= 1);
 
 	}
 
@@ -565,4 +639,85 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 	}
 
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testTime11() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		// File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-loglevel", "DEBUG", //
+
+				"-location", new File("./examples/time_11/").getAbsolutePath(), "-srcjavafolder", "/src/main/java/",
+				"-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "5", "-mode", "jkali", "-flthreshold", "0.1",
+				"-stopfirst", "true"// Forced
+				, "-faultlocalization", "gzoltar", "-dependencies",
+				new File("./examples/libs/joda-convert-1.2.jar").getAbsolutePath() + File.pathSeparatorChar
+						+ new File("./examples/libs/junit-3.8.2.jar").getAbsolutePath()
+
+		};
+
+		System.out.println(Arrays.toString(args));
+		org.apache.log4j.LogManager.getRootLogger().setLevel(Level.DEBUG);
+		main1.execute(args);
+
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+		assertTrue(variants.size() > 0);
+
+		ProgramVariant oneVariant = variants.get(0);
+		assertTrue(oneVariant.getModificationPoints().size() > 0);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertEquals(0, solutions.size());
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testTime11Step() throws Exception {
+
+		AstorMain main1 = new AstorMain();
+		String dep = new File("./examples/libs/junit-4.4.jar").getAbsolutePath();
+		// File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
+		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog", "-loglevel", "DEBUG", //
+
+				"-location", new File("./examples/time_11/").getAbsolutePath(), "-srcjavafolder", "/src/main/java/",
+				"-srctestfolder", "/src/test/java/", "-binjavafolder", "/target/classes", "-bintestfolder",
+				"/target/test-classes", "-javacompliancelevel", "5", "-mode", "jkali", "-flthreshold", "0.1",
+				"-stopfirst", "true"// Forced
+				, "-faultlocalization", "gzoltar", "-dependencies",
+				new File("./examples/libs/joda-convert-1.2.jar").getAbsolutePath() + File.pathSeparatorChar
+						+ new File("./examples/libs/junit-3.8.2.jar").getAbsolutePath()
+
+		};
+
+		System.out.println(Arrays.toString(args));
+		org.apache.log4j.LogManager.getRootLogger().setLevel(Level.DEBUG);
+		main1.execute(args);
+
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+		assertTrue(variants.size() > 0);
+
+		ProgramVariant oneVariant = variants.get(0);
+		assertTrue(oneVariant.getModificationPoints().size() > 0);
+
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		assertEquals(0, solutions.size());
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testMath28() throws Exception {
+
+		CommandSummary cs = MathCommandsTests.getMath28Command();
+		AstorMain main1 = new AstorMain();
+		org.apache.log4j.LogManager.getRootLogger().setLevel(Level.DEBUG);
+		main1.execute(cs.flat());
+
+		List<ProgramVariant> variants = main1.getEngine().getVariants();
+		assertTrue(variants.size() > 0);
+
+	}
 }
