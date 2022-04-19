@@ -2,6 +2,7 @@ package fr.inria.main;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,6 +42,13 @@ public class FaultLocalizationMain extends AbstractMain {
 
 		FaultLocalization faultLocalizationMode = FaultLocalization.valueOf(faultLocalizationModeS);
 
+		List<String> testToRun = new ArrayList<>();
+
+		String toRun = ConfigurationProperties.getProperty("regressiontestcases4fl");
+		if (toRun != null && !toRun.isEmpty()) {
+			testToRun = Arrays.asList(toRun.split(File.pathSeparator));
+		}
+
 		if (faultLocalizationMode == null) {
 
 			log.error(
@@ -73,7 +81,7 @@ public class FaultLocalizationMain extends AbstractMain {
 
 			FlacocoFaultLocalization flacocoFaultLocalization = new FlacocoFaultLocalization();
 
-			FaultLocalizationResult result = flacocoFaultLocalization.searchSuspicious(this.projectFacade, null);
+			FaultLocalizationResult result = flacocoFaultLocalization.searchSuspicious(this.projectFacade, testToRun);
 
 			save(result, FaultLocalization.FLACOCO);
 

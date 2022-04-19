@@ -43,7 +43,17 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 	@Override
 	public FaultLocalizationResult searchSuspicious(ProjectRepairFacade projectToRepair, List<String> testToRun)
 			throws Exception {
+
 		FlacocoConfig config = setupFlacocoConfig(projectToRepair);
+
+		// We force the detection of test cases
+		if (this.testContexts == null || testContexts.isEmpty()) {
+
+			this.testContexts = new TestDetector(config).getTests();
+		}
+		// We put the test cases names in the flacoco configuration
+		setupTestCasesToExecute(config, this.testContexts, testToRun);
+
 		Flacoco flacoco = new Flacoco(config);
 
 		FlacocoResult flacocoResult = flacoco.run();
@@ -159,24 +169,30 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 		// Handle test configuration
 		config.setjUnit4Tests(new HashSet<>());
 		config.setjUnit5Tests(new HashSet<>());
+
 		if (ConfigurationProperties.getProperty("ignoredTestCases") != null
 				&& !ConfigurationProperties.getProperty("ignoredTestCases").isEmpty()) {
 			config.setIgnoredTests(
 					Arrays.stream(ConfigurationProperties.getProperty("ignoredTestCases").split(File.pathSeparator))
 							.collect(Collectors.toSet()));
 		}
-		if (!this.testContexts.isEmpty()) {
-			for (TestContext testContext : this.testContexts) {
-				if (testContext.getTestFrameworkStrategy() instanceof JUnit4Strategy) {
-					config.setjUnit4Tests(testContext.getTestMethods().stream()
-							.map(TestMethod::getFullyQualifiedMethodName).collect(Collectors.toSet()));
-				} else if (testContext.getTestFrameworkStrategy() instanceof JUnit5Strategy) {
-					config.setjUnit5Tests(testContext.getTestMethods().stream()
-							.map(TestMethod::getFullyQualifiedMethodName).collect(Collectors.toSet()));
-				}
+
+		return config;
+	}
+
+	private void setupTestCasesToExecute(FlacocoConfig config, List<TestContext> testContexts, List<String> testToRun) {
+
+		for (TestContext testContext : testContexts) {
+			if (testContext.getTestFrameworkStrategy() instanceof JUnit4Strategy) {
+				config.setjUnit4Tests(testContext.getTestMethods().stream()
+						.filter(e -> testToRun.isEmpty() || testToRun.contains(e.getFullyQualifiedClassName()))
+						.map(TestMethod::getFullyQualifiedMethodName).collect(Collectors.toSet()));
+			} else if (testContext.getTestFrameworkStrategy() instanceof JUnit5Strategy) {
+				config.setjUnit5Tests(testContext.getTestMethods().stream()
+						.filter(e -> testToRun.isEmpty() || testToRun.contains(e.getFullyQualifiedClassName()))
+						.map(TestMethod::getFullyQualifiedMethodName).collect(Collectors.toSet()));
 			}
 		}
 
-		return config;
 	}
 }
