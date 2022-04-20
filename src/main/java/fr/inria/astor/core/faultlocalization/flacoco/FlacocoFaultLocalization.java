@@ -82,7 +82,7 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 				.map(TestMethod::getFullyQualifiedMethodName).distinct().collect(Collectors.toList()));
 
 		result.setFailingTestCasesMethods(flacocoResult.getFailingTests().stream()
-				.map(TestMethod::getFullyQualifiedClassName).distinct().collect(Collectors.toList()));
+				.map(TestMethod::getFullyQualifiedMethodName).distinct().collect(Collectors.toList()));
 
 		if (ConfigurationProperties.getPropertyBool("ignoreflakyinfl")) {
 			addFlakyFailingTestToIgnoredList(result.getFailingTestCasesClasses(), projectToRepair);
