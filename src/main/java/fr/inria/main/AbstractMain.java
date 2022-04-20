@@ -280,10 +280,6 @@ public abstract class AbstractMain {
 				"Classes names of test cases used in the regression, separated by '" + File.pathSeparator
 						+ "' . If the argument it is not specified, Astor automatically calculates them.");
 
-		options.addOption("testmethod4fl", true,
-				"Method names of test cases used by the fault localization, separated by '" + File.pathSeparator
-						+ "'. It must have the format <class_name>#<method_name>. If the argument it is not specified, Astor automatically calculates them.");
-
 		options.addOption("manipulatesuper", false, "Allows to manipulate 'super' statements. Disable by default.");
 
 		options.addOption("classestoinstrument", true, "List of classes names that Astor instrument, separated by '"
@@ -653,9 +649,6 @@ public abstract class AbstractMain {
 		if (cmd.hasOption("regressiontestcases4fl"))
 			ConfigurationProperties.properties.setProperty("regressiontestcases4fl",
 					cmd.getOptionValue("regressiontestcases4fl"));
-
-		if (cmd.hasOption("testmethod4fl"))
-			ConfigurationProperties.properties.setProperty("testmethod4fl", cmd.getOptionValue("testmethod4fl"));
 
 		if (cmd.hasOption("manipulatesuper"))
 			ConfigurationProperties.properties.setProperty("manipulatesuper", Boolean.TRUE.toString());

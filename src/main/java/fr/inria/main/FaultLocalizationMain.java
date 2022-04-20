@@ -45,14 +45,10 @@ public class FaultLocalizationMain extends AbstractMain {
 		List<String> testsToRun = new ArrayList<>();
 
 		String toRun = null;
-		if (ConfigurationProperties.hasProperty("testmethod4fl")) {
-			toRun = ConfigurationProperties.getProperty("testmethod4fl");
 
-		} else {
-			if (ConfigurationProperties.hasProperty("regressiontestcases4fl")) {
-				toRun = ConfigurationProperties.getProperty("regressiontestcases4fl");
+		if (ConfigurationProperties.hasProperty("regressiontestcases4fl")) {
+			toRun = ConfigurationProperties.getProperty("regressiontestcases4fl");
 
-			}
 		}
 
 		if (toRun != null && !toRun.isEmpty()) {
@@ -116,10 +112,6 @@ public class FaultLocalizationMain extends AbstractMain {
 
 			NovelGZoltarFaultLocalization gzoltarFaultLocalization = new NovelGZoltarFaultLocalization();
 
-			// List<String> regressionTestForFaultLocalization = gzoltarFaultLocalization
-			// .findTestCasesToExecute(projectFacade);
-
-			// System.out.println("Test to execute: " + regressionTestForFaultLocalization);
 			FaultLocalizationResult result = gzoltarFaultLocalization.searchSuspicious(projectFacade, testsToRun);
 
 			System.out.println("FL results: " + result);

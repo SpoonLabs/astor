@@ -159,7 +159,8 @@ public class FaultLocalizationTest {
 		cs.command.put("-flthreshold", "0.0001");
 		String oneFailingTestClassToRun = "org.apache.commons.math.analysis.solvers.BisectionSolverTest#testMath369";
 		String anotherTestClassToRun = "org.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest#testTrivial";
-		cs.command.put("-testmethod4fl", oneFailingTestClassToRun + File.pathSeparator + anotherTestClassToRun);
+		cs.command.put("-regressiontestcases4fl",
+				oneFailingTestClassToRun + File.pathSeparator + anotherTestClassToRun);
 
 		// We execute astor for creating the model and run FL
 
