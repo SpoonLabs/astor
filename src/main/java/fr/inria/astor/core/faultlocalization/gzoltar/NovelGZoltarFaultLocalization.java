@@ -101,13 +101,16 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 				gzoltar_cli_jar);
 
 		// Refine the test cases
-		boolean isMethodName = (!allTest.isEmpty() && allTest.get(0).split("#").length >= 2);
+
+		List<String> testMethodToRun = allTest.stream().filter(e -> e.contains("#")).collect(Collectors.toList());
+		List<String> testClassesToRun = allTest.stream().filter(e -> !e.contains("#")).collect(Collectors.toList());
+
 		Path pathTestFile = new File(pathTestsFiles).toPath();
 		try (Stream<String> lines = Files.lines(pathTestFile)) {
-			List<String> replaced = lines
-					.filter(e -> allTest.isEmpty() || (isMethodName && (allTest.contains(e.split(",")[1])))
-							|| (!isMethodName && allTest.contains(e.split(",")[1].split("#")[0])))
-					.collect(Collectors.toList());
+			List<String> replaced = lines.filter(e -> allTest.isEmpty() || (testMethodToRun.contains(e.split(",")[1])
+					|| testClassesToRun.contains(e.split(",")[1].split("#")[0]))
+
+			).collect(Collectors.toList());
 			System.out.println("Filtered " + replaced);
 			Files.write(pathTestFile, replaced);
 		}

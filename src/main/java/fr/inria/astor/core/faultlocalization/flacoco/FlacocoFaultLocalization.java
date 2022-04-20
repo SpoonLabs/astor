@@ -182,19 +182,21 @@ public class FlacocoFaultLocalization implements FaultLocalizationStrategy {
 
 	private void setupTestCasesToExecute(FlacocoConfig config, List<TestContext> testContexts, List<String> testToRun) {
 
-		boolean isMethodName = (!testToRun.isEmpty() && testToRun.get(0).split("#").length >= 2);
+		List<String> testMethodToRun = testToRun.stream().filter(e -> e.contains("#")).collect(Collectors.toList());
+		List<String> testClassesToRun = testToRun.stream().filter(e -> !e.contains("#")).collect(Collectors.toList());
 
 		for (TestContext testContext : testContexts) {
 			if (testContext.getTestFrameworkStrategy() instanceof JUnit4Strategy) {
 
 				config.setjUnit4Tests(testContext.getTestMethods().stream()
-						.filter(e -> testToRun.isEmpty() || testToRun.contains(
-								isMethodName ? e.getFullyQualifiedMethodName() : e.getFullyQualifiedClassName()))
+						.filter(e -> testToRun.isEmpty() || (testMethodToRun.contains(e.getFullyQualifiedMethodName())
+								|| testClassesToRun.contains(e.getFullyQualifiedClassName())))
 						.map(TestMethod::getFullyQualifiedMethodName).collect(Collectors.toSet()));
+
 			} else if (testContext.getTestFrameworkStrategy() instanceof JUnit5Strategy) {
 				config.setjUnit5Tests(testContext.getTestMethods().stream()
-						.filter(e -> testToRun.isEmpty() || testToRun.contains(
-								isMethodName ? e.getFullyQualifiedMethodName() : e.getFullyQualifiedClassName()))
+						.filter(e -> testToRun.isEmpty() || (testMethodToRun.contains(e.getFullyQualifiedMethodName())
+								|| testClassesToRun.contains(e.getFullyQualifiedClassName())))
 						.map(TestMethod::getFullyQualifiedMethodName).collect(Collectors.toSet()));
 			}
 		}
