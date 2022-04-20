@@ -98,6 +98,7 @@ Usage
 
 * [Getting Started](https://github.com/SpoonLabs/astor/blob/master/docs/getting-starting.md)
 * [How to extend Astor?](https://github.com/SpoonLabs/astor/blob/master/docs/extension_points.md)
+* [Intellij IDEA Astor Plugin](https://github.com/bc2021-program-repair/intellij-idea-astor-plugin)
 
 Usage of Astor in education
 -------------------------------
