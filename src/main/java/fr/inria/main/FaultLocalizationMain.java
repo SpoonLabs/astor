@@ -44,7 +44,17 @@ public class FaultLocalizationMain extends AbstractMain {
 
 		List<String> testsToRun = new ArrayList<>();
 
-		String toRun = ConfigurationProperties.getProperty("regressiontestcases4fl");
+		String toRun = null;
+		if (ConfigurationProperties.hasProperty("testmethod4fl")) {
+			toRun = ConfigurationProperties.getProperty("testmethod4fl");
+
+		} else {
+			if (ConfigurationProperties.hasProperty("regressiontestcases4fl")) {
+				toRun = ConfigurationProperties.getProperty("regressiontestcases4fl");
+
+			}
+		}
+
 		if (toRun != null && !toRun.isEmpty()) {
 			testsToRun = Arrays.asList(toRun.split(File.pathSeparator));
 		}
