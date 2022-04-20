@@ -100,11 +100,13 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 		retrieveTestCases(timeoutMiliseconds, pathTestsFiles, src_classes_dir, testClassPath, junitpath,
 				gzoltar_cli_jar);
 
+		// Refine the test cases
+		boolean isMethodName = (!allTest.isEmpty() && allTest.get(0).split("#").length >= 2);
 		Path pathTestFile = new File(pathTestsFiles).toPath();
 		try (Stream<String> lines = Files.lines(pathTestFile)) {
-			// System.out.println(lines.collect(Collectors.toList()));
 			List<String> replaced = lines
-					.filter(e -> allTest.isEmpty() || allTest.contains(e.split(",")[1].split("#")[0]))
+					.filter(e -> allTest.isEmpty() || (isMethodName && (allTest.contains(e.split(",")[1])))
+							|| (!isMethodName && allTest.contains(e.split(",")[1].split("#")[0])))
 					.collect(Collectors.toList());
 			System.out.println("Filtered " + replaced);
 			Files.write(pathTestFile, replaced);
