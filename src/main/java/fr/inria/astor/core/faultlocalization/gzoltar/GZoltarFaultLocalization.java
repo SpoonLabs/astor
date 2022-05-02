@@ -181,7 +181,7 @@ public class GZoltarFaultLocalization implements FaultLocalizationStrategy {
 		int[] sum = new int[2];
 		List<TestResult> testResults = gz.getTestResults();
 		for (TestResult tr : testResults) {
-			String testName = tr.getName().split("#")[0];
+			String testName = tr.getName();
 			if (testName.startsWith("junit")) {
 				continue;
 			}

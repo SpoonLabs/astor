@@ -83,6 +83,24 @@ public class FaultLocalizationTest {
 	}
 
 	@org.junit.Test
+	public void testFLMath70GZoltar_limitedMethod() throws Exception {
+
+		FaultLocalization fl = FaultLocalization.GZOLTAR;
+
+		helperLimitedNumberOfTestMethods(fl);
+
+	}
+
+	@org.junit.Test
+	public void testFLMath70_limited() throws Exception {
+
+		FaultLocalization flocalization = FaultLocalization.GZOLTAR;
+
+		helperLimitedTestClasses(flocalization);
+
+	}
+
+	@org.junit.Test
 	public void testFLMath70Flacoco() throws Exception {
 		FaultLocalizationMain main = new FaultLocalizationMain();
 		CommandSummary cs = MathCommandsTests.getMath70Command();
