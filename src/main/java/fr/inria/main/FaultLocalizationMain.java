@@ -2,9 +2,11 @@ package fr.inria.main;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
@@ -49,13 +51,26 @@ public class FaultLocalizationMain extends AbstractMain {
 		if (ConfigurationProperties.hasProperty("regressiontestcases4fl")) {
 			toRun = ConfigurationProperties.getProperty("regressiontestcases4fl");
 
+			if (toRun != null && !toRun.isEmpty()) {
+				testsToRun = Arrays.asList(toRun.split(File.pathSeparator));
+			}
+
 		}
 
-		if (toRun != null && !toRun.isEmpty()) {
-			testsToRun = Arrays.asList(toRun.split(File.pathSeparator));
+		else if (ConfigurationProperties.hasProperty("filetestcases4fl")) {
+
+			File ftcases = new File(ConfigurationProperties.getProperty("filetestcases4fl"));
+			if (ftcases.exists()) {
+				testsToRun = Files.lines(ftcases.toPath()).collect(Collectors.toList());
+			} else {
+				new IllegalArgumentException("File with test cases not found " + ftcases.getAbsolutePath());
+			}
+
 		}
 
-		if (faultLocalizationMode == null) {
+		if (faultLocalizationMode == null)
+
+		{
 
 			log.error(
 					"No mode for " + faultLocalizationMode + " Options " + Arrays.toString(FaultLocalization.values()));

@@ -280,6 +280,11 @@ public abstract class AbstractMain {
 				"Classes names of test cases used in the regression, separated by '" + File.pathSeparator
 						+ "' . If the argument it is not specified, Astor automatically calculates them.");
 
+		options.addOption("filetestcases4fl", true,
+				"Path to the file containing classes names of test cases used in the regression, separated by '"
+						+ File.pathSeparator
+						+ "' . If the argument it is not specified, Astor automatically calculates them.");
+
 		options.addOption("manipulatesuper", false, "Allows to manipulate 'super' statements. Disable by default.");
 
 		options.addOption("classestoinstrument", true, "List of classes names that Astor instrument, separated by '"
@@ -663,6 +668,9 @@ public abstract class AbstractMain {
 
 		if (cmd.hasOption("antipattern"))
 			ConfigurationProperties.properties.setProperty("antipattern", cmd.getOptionValue("antipattern"));
+
+		if (cmd.hasOption("filetestcases4fl"))
+			ConfigurationProperties.properties.setProperty("filetestcases4fl", cmd.getOptionValue("filetestcases4fl"));
 
 		if (cmd.hasOption("parameters")) {
 			String[] pars = cmd.getOptionValue("parameters").split(File.pathSeparator);
