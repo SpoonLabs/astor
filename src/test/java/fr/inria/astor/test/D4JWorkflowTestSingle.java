@@ -510,6 +510,11 @@ public class D4JWorkflowTestSingle {
 		}
 		System.out.println("Storing results at " + dirResults.getAbsolutePath());
 
+		if (true) {
+			System.out.println("[DEBUG] Exit for testing");
+			return;
+		}
+
 		configureBuggyProject(bug_id, mvn_option);
 
 		String[] faultLocalization = new String[] { "flacoco" };//
