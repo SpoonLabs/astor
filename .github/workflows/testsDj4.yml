@@ -23,7 +23,7 @@ jobs:
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath50",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath53",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath70",
-          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath71",
+        #  "fr.inria.astor.test.D4JWorkflowTestSingle#testMath71",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath73",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath78",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath80",
@@ -39,8 +39,8 @@ jobs:
           "fr.inria.astor.test.D4JWorkflowTestSingle#testChart13",  
           "fr.inria.astor.test.D4JWorkflowTestSingle#testChart15",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testChart25", 
-          "fr.inria.astor.test.D4JWorkflowTestSingle#testTime4",  
-          "fr.inria.astor.test.D4JWorkflowTestSingle#testTime11", 
+        # "fr.inria.astor.test.D4JWorkflowTestSingle#testTime4",  
+         # "fr.inria.astor.test.D4JWorkflowTestSingle#testTime11", 
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath2JKali",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath8JKali",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath28JKali",
@@ -61,7 +61,7 @@ jobs:
           "fr.inria.astor.test.D4JWorkflowTestSingle#testChart15JKali",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testChart25JKali", 
           "fr.inria.astor.test.D4JWorkflowTestSingle#testChart26JKali", 
-          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath40JKaliSummary",   	  		
+         # "fr.inria.astor.test.D4JWorkflowTestSingle#testMath40JKaliSummary",   	  		
       ]
 
     steps:
