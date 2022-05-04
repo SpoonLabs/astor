@@ -51,7 +51,8 @@ public class D4JWorkflowTestSingle {
 		CommandSummary cs = new CommandSummary();
 		cs.append("-parameters", "maxmemory" + File.pathSeparator + "-Xmx4G:fixedLocation");
 		cs.command.put("-flthreshold", "0.159");
-		runComplete("Math2", "-Dmaven.compiler.source=7 -Dmaven.compiler.target=7", "jGenProg", 120, cs);
+		runComplete("Math2", "-Dmaven.compiler.source=7 -Dmaven.compiler.target=7", "jGenProg", 120, cs,
+				new String[] { "gzoltar" });
 	}
 
 	@Test
@@ -263,12 +264,15 @@ public class D4JWorkflowTestSingle {
 
 	@Test
 	public void testChart3() throws Exception {
-		runCompleteJGenProg("Chart3", "");
+
+		CommandSummary cs = new CommandSummary();
+		runComplete("Chart3", "", "jGenProg", TIMEOUTMIN, cs, new String[] { "gzoltar" });
 	}
 
 	@Test
 	public void testChart5() throws Exception {
-		runCompleteJGenProg("Chart5", "");
+		CommandSummary cs = new CommandSummary();
+		runComplete("Chart5", "", "jGenProg", TIMEOUTMIN, cs, new String[] { "gzoltar" });
 	}
 
 	@Test
@@ -328,7 +332,7 @@ public class D4JWorkflowTestSingle {
 		CommandSummary cs = new CommandSummary();
 		cs.command.putIfAbsent("-flthreshold", "0");
 		cs.append("-parameters", "maxmemory" + File.pathSeparator + "-Xmx4G");
-		runComplete("Math28", "", "jKali", TIMEOUTMIN, cs);
+		runComplete("Math28", "", "jKali", TIMEOUTMIN, cs, new String[] { "gzoltar" });
 	}
 
 	@Test
@@ -455,7 +459,9 @@ public class D4JWorkflowTestSingle {
 
 	@Test
 	public void testChart5JKali() throws Exception {
-		runComplete("Chart5", "", "jKali", TIMEOUTMIN);
+		CommandSummary cs = new CommandSummary();
+
+		runComplete("Chart5", "", "jKali", TIMEOUTMIN, cs, new String[] { "gzoltar" });
 	}
 
 	@Test
@@ -497,6 +503,11 @@ public class D4JWorkflowTestSingle {
 
 	public static void runComplete(String bug_id, String mvn_option, String approach, int timeout, CommandSummary cs)
 			throws Exception {
+		runComplete(bug_id, mvn_option, approach, timeout, cs, new String[] { "flacoco" });
+	}
+
+	public static void runComplete(String bug_id, String mvn_option, String approach, int timeout, CommandSummary cs,
+			String[] fls) throws Exception {
 		System.out.println("\n****\nRunning repair attempt for " + bug_id);
 
 		System.out.println("Env var " + System.getenv("J7PATH"));
@@ -508,7 +519,8 @@ public class D4JWorkflowTestSingle {
 
 		configureBuggyProject(bug_id, mvn_option);
 
-		helperRunBug(bug_id, approach, timeout, cs, "flacoco");
+		for (String fl : fls)
+			helperRunBug(bug_id, approach, timeout, cs, fl);
 
 	}
 
