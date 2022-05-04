@@ -9,12 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -510,82 +506,42 @@ public class D4JWorkflowTestSingle {
 		}
 		System.out.println("Storing results at " + dirResults.getAbsolutePath());
 
-		if (true) {
-			System.out.println("[DEBUG] Exit for testing");
-			return;
-		}
-
 		configureBuggyProject(bug_id, mvn_option);
 
-		String[] faultLocalization = new String[] { "flacoco" };//
+		helperRunBug(bug_id, approach, timeout, cs, "flacoco");
 
+	}
+
+	private static void helperRunBug(String bug_id, String approach, int timeout, CommandSummary cs, String aFL)
+			throws IOException, FileNotFoundException {
 		boolean hasSolution = false;
 
-		Map<String, Long> timePerFL = new HashMap<>();
-		Map<String, Boolean> repairedPerFL = new HashMap<>();
+		System.out.println("Running on FL : " + aFL);
 
-		for (String aFL : faultLocalization) {
+		createCommand(bug_id, approach, timeout,
+				("flacoco".equals(aFL) ? "fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization"
+						: aFL),
+				cs);
+		cs.command.put("-jvm4testexecution", System.getenv("J7PATH"));
+		AstorMain main1 = new AstorMain();
 
-			System.out.println("Running on FL : " + aFL);
-
-			createCommand(bug_id, approach, timeout,
-					("flacoco".equals(aFL) ? "fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization"
-							: aFL),
-					cs);
-			cs.command.put("-jvm4testexecution", System.getenv("J7PATH"));
-			AstorMain main1 = new AstorMain();
-
-			long init = System.currentTimeMillis();
-			try {
-				// org.apache.log4j.LogManager.getRootLogger().setLevel(Level.DEBUG);
-				main1.execute(cs.flat());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			long end = System.currentTimeMillis();
-
-			List<ProgramVariant> variantsSolutions = main1.getEngine().getSolutions();
-
-			System.out.println("Finishing execution for " + bug_id + ": # patches: " + variantsSolutions.size());
-
-			hasSolution = hasSolution || variantsSolutions.size() > 0;
-
-			// Results
-
-			// Copy the result
-			File foutput = new File("./output_astor/AstorMain-" + bug_id + File.separator + "astor_output.json");
-			// We rename the file and put in a result folder
-			File foutputnew = new File(dirResults.getAbsolutePath() + File.separator + File.separator + "astor_output_"
-					+ bug_id + "-" + approach + "_" + aFL + ".json");
-
-			Files.copy(foutput.toPath(), foutputnew.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-			//
-			timePerFL.put(aFL, (end - init) / 1000);
-			repairedPerFL.put(aFL, variantsSolutions.size() > 0);
-
-			System.out.println("Saving execution of " + aFL + "results at " + foutputnew);
-
+		long init = System.currentTimeMillis();
+		try {
+			// org.apache.log4j.LogManager.getRootLogger().setLevel(Level.DEBUG);
+			main1.execute(cs.flat());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		// Save results
 
-		String fileNameResults = dirResults.getAbsolutePath() + File.separator + "results_" + bug_id + "-" + approach
-				+ ".json";
-		System.out.println("Saving results at " + fileNameResults);
-		FileWriter fw = new FileWriter(fileNameResults);
-		fw.write("{\"bugid\" :  \" " + bug_id + "\",  \"approach\": \"  " + approach + " \" , \"flacoco_sol\": \" "
-				+ repairedPerFL.get("flacoco") + " \" , \"flacoco_time\" : " + timePerFL.get("flacoco")
-				+ ", \"gzoltar_sol\": \" " + repairedPerFL.get("gzoltar") + " \" , \"gzoltar_time\": "
-				+ timePerFL.get("gzoltar")
+		long end = System.currentTimeMillis();
 
-				+ "}");
-		fw.close();
+		List<ProgramVariant> variantsSolutions = main1.getEngine().getSolutions();
 
-		//
+		System.out.println("Finishing execution for " + bug_id + ": # patches: " + variantsSolutions.size());
+
+		hasSolution = variantsSolutions.size() > 0;
 
 		assertTrue(hasSolution);
-
 	}
 
 	public static void configureBuggyProject(String bug_id, String mvn_option)
