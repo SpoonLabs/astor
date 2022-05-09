@@ -49,7 +49,7 @@ public class D4JWorkflowTestSingle {
 	public void testMath2() throws Exception {
 
 		CommandSummary cs = new CommandSummary();
-		cs.append("-parameters", "maxmemory" + File.pathSeparator + "-Xmx4G:fixedLocation");
+		cs.append("-parameters", "maxmemory" + File.pathSeparator + "-Xmx4G");
 		cs.command.put("-flthreshold", "0.159");
 		runComplete("Math2", "-Dmaven.compiler.source=7 -Dmaven.compiler.target=7", "jGenProg", 120, cs,
 				new String[] { "gzoltar" });
