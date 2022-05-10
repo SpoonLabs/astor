@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         test: [ 
-        "fr.inria.astor.test.D4JWorkflowTestSingle#testMath2",
+      # To check "fr.inria.astor.test.D4JWorkflowTestSingle#testMath2",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath5",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath8",
        # To check   "fr.inria.astor.test.D4JWorkflowTestSingle#testMath28", 
@@ -22,10 +22,10 @@ jobs:
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath49",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath50",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath53",
-          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath70",
+    #  To check    "fr.inria.astor.test.D4JWorkflowTestSingle#testMath70",
         #  "fr.inria.astor.test.D4JWorkflowTestSingle#testMath71",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath73",
-          "fr.inria.astor.test.D4JWorkflowTestSingle#testMath78",
+       # To check  "fr.inria.astor.test.D4JWorkflowTestSingle#testMath78",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath80",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath81",
           "fr.inria.astor.test.D4JWorkflowTestSingle#testMath82",
