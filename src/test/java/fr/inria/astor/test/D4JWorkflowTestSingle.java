@@ -509,7 +509,7 @@ public class D4JWorkflowTestSingle {
 	public static void runComplete(String bug_id, String mvn_option, String approach, int timeout, CommandSummary cs,
 			String[] fls) throws Exception {
 		System.out.println("\n****\nRunning repair attempt for " + bug_id);
-
+		int maxAttempts = 3;
 		System.out.println("Env var " + System.getenv("J7PATH"));
 		File dirResults = new File("./resultsTestCases");
 		if (!dirResults.exists()) {
@@ -519,12 +519,22 @@ public class D4JWorkflowTestSingle {
 
 		configureBuggyProject(bug_id, mvn_option);
 
-		for (String fl : fls)
-			helperRunBug(bug_id, approach, timeout, cs, fl);
+		boolean pass = true;
+		for (String fl : fls) {
+			boolean localpass = false;
 
+			int attempts = 0;
+			while (attempts < maxAttempts && !localpass) {
+				localpass = helperRunBug(bug_id, approach, timeout, cs, fl);
+				attempts++;
+			}
+			pass = pass && localpass;
+		}
+
+		assertTrue(pass);
 	}
 
-	private static void helperRunBug(String bug_id, String approach, int timeout, CommandSummary cs, String aFL)
+	private static boolean helperRunBug(String bug_id, String approach, int timeout, CommandSummary cs, String aFL)
 			throws IOException, FileNotFoundException {
 		boolean hasSolution = false;
 
@@ -553,7 +563,7 @@ public class D4JWorkflowTestSingle {
 
 		hasSolution = variantsSolutions.size() > 0;
 
-		assertTrue(hasSolution);
+		return hasSolution;
 	}
 
 	public static void configureBuggyProject(String bug_id, String mvn_option)
