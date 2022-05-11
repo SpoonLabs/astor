@@ -9,12 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -53,9 +49,10 @@ public class D4JWorkflowTestSingle {
 	public void testMath2() throws Exception {
 
 		CommandSummary cs = new CommandSummary();
-		cs.append("-parameters", "maxmemory" + File.pathSeparator + "-Xmx4G:fixedLocation");
+		cs.append("-parameters", "maxmemory" + File.pathSeparator + "-Xmx4G");
 		cs.command.put("-flthreshold", "0.159");
-		runComplete("Math2", "-Dmaven.compiler.source=7 -Dmaven.compiler.target=7", "jGenProg", 120, cs);
+		runComplete("Math2", "-Dmaven.compiler.source=7 -Dmaven.compiler.target=7", "jGenProg", 120, cs,
+				new String[] { "gzoltar" });
 	}
 
 	@Test
@@ -267,12 +264,15 @@ public class D4JWorkflowTestSingle {
 
 	@Test
 	public void testChart3() throws Exception {
-		runCompleteJGenProg("Chart3", "");
+
+		CommandSummary cs = new CommandSummary();
+		runComplete("Chart3", "", "jGenProg", TIMEOUTMIN, cs, new String[] { "gzoltar" });
 	}
 
 	@Test
 	public void testChart5() throws Exception {
-		runCompleteJGenProg("Chart5", "");
+		CommandSummary cs = new CommandSummary();
+		runComplete("Chart5", "", "jGenProg", TIMEOUTMIN, cs, new String[] { "gzoltar" });
 	}
 
 	@Test
@@ -332,7 +332,7 @@ public class D4JWorkflowTestSingle {
 		CommandSummary cs = new CommandSummary();
 		cs.command.putIfAbsent("-flthreshold", "0");
 		cs.append("-parameters", "maxmemory" + File.pathSeparator + "-Xmx4G");
-		runComplete("Math28", "", "jKali", TIMEOUTMIN, cs);
+		runComplete("Math28", "", "jKali", TIMEOUTMIN, cs, new String[] { "gzoltar" });
 	}
 
 	@Test
@@ -459,7 +459,9 @@ public class D4JWorkflowTestSingle {
 
 	@Test
 	public void testChart5JKali() throws Exception {
-		runComplete("Chart5", "", "jKali", TIMEOUTMIN);
+		CommandSummary cs = new CommandSummary();
+
+		runComplete("Chart5", "", "jKali", TIMEOUTMIN, cs, new String[] { "gzoltar" });
 	}
 
 	@Test
@@ -501,8 +503,13 @@ public class D4JWorkflowTestSingle {
 
 	public static void runComplete(String bug_id, String mvn_option, String approach, int timeout, CommandSummary cs)
 			throws Exception {
-		System.out.println("\n****\nRunning repair attempt for " + bug_id);
+		runComplete(bug_id, mvn_option, approach, timeout, cs, new String[] { "flacoco" });
+	}
 
+	public static void runComplete(String bug_id, String mvn_option, String approach, int timeout, CommandSummary cs,
+			String[] fls) throws Exception {
+		System.out.println("\n****\nRunning repair attempt for " + bug_id);
+		int maxAttempts = 3;
 		System.out.println("Env var " + System.getenv("J7PATH"));
 		File dirResults = new File("./resultsTestCases");
 		if (!dirResults.exists()) {
@@ -512,75 +519,51 @@ public class D4JWorkflowTestSingle {
 
 		configureBuggyProject(bug_id, mvn_option);
 
-		String[] faultLocalization = new String[] { "gzoltar", "flacoco" };//
+		boolean pass = true;
+		for (String fl : fls) {
+			boolean localpass = false;
 
+			int attempts = 0;
+			while (attempts < maxAttempts && !localpass) {
+				localpass = helperRunBug(bug_id, approach, timeout, cs, fl);
+				attempts++;
+			}
+			pass = pass && localpass;
+		}
+
+		assertTrue(pass);
+	}
+
+	private static boolean helperRunBug(String bug_id, String approach, int timeout, CommandSummary cs, String aFL)
+			throws IOException, FileNotFoundException {
 		boolean hasSolution = false;
 
-		Map<String, Long> timePerFL = new HashMap<>();
-		Map<String, Boolean> repairedPerFL = new HashMap<>();
+		System.out.println("Running on FL : " + aFL);
 
-		for (String aFL : faultLocalization) {
+		createCommand(bug_id, approach, timeout,
+				("flacoco".equals(aFL) ? "fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization"
+						: aFL),
+				cs);
+		cs.command.put("-jvm4testexecution", System.getenv("J7PATH"));
+		AstorMain main1 = new AstorMain();
 
-			System.out.println("Running on FL : " + aFL);
-
-			createCommand(bug_id, approach, timeout,
-					("flacoco".equals(aFL) ? "fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization"
-							: aFL),
-					cs);
-			cs.command.put("-jvm4testexecution", System.getenv("J7PATH"));
-			AstorMain main1 = new AstorMain();
-
-			long init = System.currentTimeMillis();
-			try {
-				// org.apache.log4j.LogManager.getRootLogger().setLevel(Level.DEBUG);
-				main1.execute(cs.flat());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			long end = System.currentTimeMillis();
-
-			List<ProgramVariant> variantsSolutions = main1.getEngine().getSolutions();
-
-			System.out.println("Finishing execution for " + bug_id + ": # patches: " + variantsSolutions.size());
-
-			hasSolution = hasSolution || variantsSolutions.size() > 0;
-
-			// Results
-
-			// Copy the result
-			File foutput = new File("./output_astor/AstorMain-" + bug_id + File.separator + "astor_output.json");
-			// We rename the file and put in a result folder
-			File foutputnew = new File(dirResults.getAbsolutePath() + File.separator + File.separator + "astor_output_"
-					+ bug_id + "-" + approach + "_" + aFL + ".json");
-
-			Files.copy(foutput.toPath(), foutputnew.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-			//
-			timePerFL.put(aFL, (end - init) / 1000);
-			repairedPerFL.put(aFL, variantsSolutions.size() > 0);
-
-			System.out.println("Saving execution of " + aFL + "results at " + foutputnew);
-
+		long init = System.currentTimeMillis();
+		try {
+			// org.apache.log4j.LogManager.getRootLogger().setLevel(Level.DEBUG);
+			main1.execute(cs.flat());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		// Save results
 
-		String fileNameResults = dirResults.getAbsolutePath() + File.separator + "results_" + bug_id + "-" + approach
-				+ ".json";
-		System.out.println("Saving results at " + fileNameResults);
-		FileWriter fw = new FileWriter(fileNameResults);
-		fw.write("{\"bugid\" :  \" " + bug_id + "\",  \"approach\": \"  " + approach + " \" , \"flacoco_sol\": \" "
-				+ repairedPerFL.get("flacoco") + " \" , \"flacoco_time\" : " + timePerFL.get("flacoco")
-				+ ", \"gzoltar_sol\": \" " + repairedPerFL.get("gzoltar") + " \" , \"gzoltar_time\": "
-				+ timePerFL.get("gzoltar")
+		long end = System.currentTimeMillis();
 
-				+ "}");
-		fw.close();
+		List<ProgramVariant> variantsSolutions = main1.getEngine().getSolutions();
 
-		//
+		System.out.println("Finishing execution for " + bug_id + ": # patches: " + variantsSolutions.size());
 
-		assertTrue(hasSolution);
+		hasSolution = variantsSolutions.size() > 0;
 
+		return hasSolution;
 	}
 
 	public static void configureBuggyProject(String bug_id, String mvn_option)
