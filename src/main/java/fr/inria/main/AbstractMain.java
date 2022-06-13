@@ -106,7 +106,10 @@ public abstract class AbstractMain {
 		options.addOption("flthreshold", true, "(Optional) threshold for Fault locatication. Default:"
 				+ ConfigurationProperties.properties.getProperty("flthreshold"));
 
-		options.addOption("maxsuspcandidates", true,
+		options.addOption("locationGzoltarJar", true, "(Optional) Path to the location of the GZoltar agent jar. Default:"
+				+ ConfigurationProperties.properties.getProperty("locationGzoltarJar"));
+
+                options.addOption("maxsuspcandidates", true,
 				"(Optional) Maximun number of suspicious statement considered. Default: "
 						+ ConfigurationProperties.properties.getProperty("maxsuspcandidates"));
 
@@ -476,7 +479,11 @@ public abstract class AbstractMain {
 			}
 		}
 
-		if (cmd.hasOption("reintroduce"))
+		if (cmd.hasOption("locationGzoltarJar"))
+			ConfigurationProperties.properties.setProperty("locationGzoltarJar",
+					cmd.getOptionValue("locationGzoltarJar"));
+
+                if (cmd.hasOption("reintroduce"))
 			ConfigurationProperties.properties.setProperty("reintroduce", cmd.getOptionValue("reintroduce"));
 
 		if (cmd.hasOption("tmax1"))

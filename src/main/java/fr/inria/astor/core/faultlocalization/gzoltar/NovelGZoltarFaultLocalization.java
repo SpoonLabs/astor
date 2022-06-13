@@ -1,10 +1,15 @@
 package fr.inria.astor.core.faultlocalization.gzoltar;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import fr.inria.astor.core.entities.ProgramVariant;
+import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
+import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
+import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
+import fr.inria.astor.core.setup.ConfigurationProperties;
+import fr.inria.astor.core.setup.ProjectRepairFacade;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -12,16 +17,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-
-import fr.inria.astor.core.entities.ProgramVariant;
-import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
-import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
-import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
-import fr.inria.astor.core.setup.ConfigurationProperties;
-import fr.inria.astor.core.setup.ProjectRepairFacade;
 
 /**
  * Facade of Fault Localization techniques like GZoltar or own implementations
@@ -88,12 +83,8 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 		// Junit path
 		String junitpath = retrieveJUnitLibPath();
 
-		String gzoltarversion = "1.7.4-SNAPSHOT";
-		if (ConfigurationProperties.properties.containsKey("gzoltarversion")) {
-			gzoltarversion = ConfigurationProperties.properties.getProperty("gzoltarversion");
-		}
-
 		// GZoltar path
+		String gzoltarversion = ConfigurationProperties.getProperty("gzoltarVersion");
 		String gzoltar_cli_jar = getGZoltarCLIPath(gzoltarversion);
 		String gzoltar_agent_jar = getGzoltarAgentRtPath(gzoltarversion);
 
@@ -234,25 +225,17 @@ public class NovelGZoltarFaultLocalization implements FaultLocalizationStrategy 
 	private String getJar(String jarToFind) throws IllegalAccessException {
 		String locationGzoltarJar = ConfigurationProperties.getProperty("locationGzoltarJar");
 
-		if (locationGzoltarJar == null || locationGzoltarJar.isEmpty()) {
-			locationGzoltarJar = "./lib/";
-
-		}
 		File f = new File(locationGzoltarJar + File.separator + jarToFind);
 
 		if (f != null && f.exists()) {
-
 			return f.getAbsolutePath();
-
 		}
 
 		String jarFromCP = getFromClassPath(jarToFind);
-
 		f = new File(jarFromCP);
 		if (!f.exists())
 			throw new IllegalAccessException(
 					"We cannot localize the jar at " + f.getAbsolutePath() + ". Please add it in the classpath");
-
 		return f.getAbsolutePath();
 	}
 
