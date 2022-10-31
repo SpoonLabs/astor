@@ -60,9 +60,9 @@ public class OutputTest {
 		cs.command.put("-scope", "package");
 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-maxgen", "500");
-		cs.command.put("-parameters", "disablelog:false");
+		cs.command.put("-parameters", "disablelog" + File.pathSeparator + "false");
 		File fileLog = File.createTempFile("logTest", ".log");
-		cs.append("-parameters", "logfilepath:" + fileLog.getAbsolutePath());
+		cs.append("-parameters", "logfilepath" + File.pathSeparator + "" + fileLog.getAbsolutePath());
 
 		assertEquals(4, cs.command.get("-parameters").split(File.pathSeparator).length);
 		System.out.println(Arrays.toString(cs.flat()));
@@ -154,7 +154,7 @@ public class OutputTest {
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-outputresult",
 				PatchJSONStandarOutput.class.getCanonicalName() + "|" + StandardOutputReport.class.getCanonicalName());
-		cs.command.put("-parameters", "outputjsonresult:true");
+		cs.command.put("-parameters", "outputjsonresult" + File.pathSeparator + "true");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -211,9 +211,9 @@ public class OutputTest {
 		cs.command.put("-scope", "package");
 		cs.command.put("-loglevel", Level.DEBUG.toString());
 
-		cs.command.put("-parameters", "disablelog:false");
+		cs.command.put("-parameters", "disablelog" + File.pathSeparator + "false");
 		File fileLog = File.createTempFile("logTest", ".log");
-		cs.append("-parameters", "logfilepath:" + fileLog.getAbsolutePath());
+		cs.append("-parameters", "logfilepath" + File.pathSeparator + "" + fileLog.getAbsolutePath());
 
 		assertEquals(4, cs.command.get("-parameters").split(File.pathSeparator).length);
 		System.out.println(Arrays.toString(cs.flat()));
@@ -267,7 +267,7 @@ public class OutputTest {
 
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-parameters", "parsesourcefromoriginal:true");
+		cs.command.put("-parameters", "parsesourcefromoriginal" + File.pathSeparator + "true");
 		cs.command.put("-loglevel", "DEBUG");
 
 		System.out.println(Arrays.toString(cs.flat()));
@@ -326,7 +326,7 @@ public class OutputTest {
 				"-bintestfolder", new File("./examples/math_70").getAbsolutePath() + "/target/test-classes", //
 				"-javacompliancelevel", "7", "-flthreshold", "0.5", "-out", out.getAbsolutePath(), "-scope", "local",
 				"-seed", "10", "-maxgen", Integer.toString(generations), "-stopfirst", "true", "-maxtime", "100",
-				"-loglevel", "INFO", "-parameters", "disablelog:false"
+				"-loglevel", "INFO", "-parameters", "disablelog" + File.pathSeparator + "false"
 
 		};
 

@@ -199,14 +199,17 @@ public class MathCommandsTests {
 		String[] args = new String[] { "-dependencies", dep, "-mode", "jgenprog",
 				//
 				"-failing",
-				"org.apache.commons.math3.fraction.FractionTest:org.apache.commons.math3.fraction.BigFractionTest",
+				"org.apache.commons.math3.fraction.FractionTest" + File.pathSeparator
+						+ "org.apache.commons.math3.fraction.BigFractionTest",
 				"-location", new File("./examples/math_1").getAbsolutePath(), "-package", "org.apache.commons",
 				"-srcjavafolder", "/src/main/java/ ", "-srctestfolder", "/src/test/java/", "-binjavafolder",
 				"/target/classes", "-bintestfolder", "/target/test-classes", "-javacompliancelevel", "5",
 				"-flthreshold", "0.1", "-out", out.getAbsolutePath(), //
 				"-seed", "11", "-maxgen", "50", "-stopfirst", "true", "-maxtime", "100", //
 				ExtensionPoints.REPAIR_OPERATORS.argument(),
-				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
+				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp" + File.pathSeparator
+						+ "fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp" + File.pathSeparator
+						+ "fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
 				"-scope", "fr.inria.astor.core.loop.spaces.ingredients.scopes.ctscopes.CtGlobalIngredientScope",
 				"-ingredientstrategy",
 				"fr.inria.astor.core.loop.spaces.ingredients.ingredientSearch.CloneIngredientSearchStrategy",

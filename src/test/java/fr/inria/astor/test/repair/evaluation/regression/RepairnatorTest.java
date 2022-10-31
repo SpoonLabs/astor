@@ -37,11 +37,10 @@ public class RepairnatorTest {
 			throw new Exception(m2path + "does not exit");
 		}
 
-		String[] command = new String[] { "-dependencies",
-				m2path + "/junit/junit/4.12/junit-4.12.jar:" + m2path
-						+ "/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:" + m2path
-						+ "/com/google/code/gson/gson/2.7/gson-2.7.jar",
-				"-mode", "jgenprog", "-location",
+		String[] command = new String[] { "-dependencies", m2path + "/junit/junit/4.12/junit-4.12.jar"
+				+ File.pathSeparator + "" + m2path + "/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
+				+ File.pathSeparator + "" + m2path + "/com/google/code/gson/gson/2.7/gson-2.7.jar", "-mode", "jgenprog",
+				"-location",
 				new File("./examples/librepair-experiments-jhy-jsoup-285353482-20171009-062400_bugonly")
 						.getAbsolutePath(),
 				"-srcjavafolder", "/src/main/java", // Modified by M.M, original
@@ -56,7 +55,10 @@ public class RepairnatorTest {
 																			// sent
 																			// by
 																			// S.U.
-				"-parameters", "timezone:Europe/Paris:maxnumbersolutions:3:limitbysuspicious:false:" + "loglevel:DEBUG",
+				"-parameters",
+				"timezone" + File.pathSeparator + "Europe/Paris" + File.pathSeparator + "maxnumbersolutions"
+						+ File.pathSeparator + "3" + File.pathSeparator + "limitbysuspicious" + File.pathSeparator
+						+ "false" + File.pathSeparator + "" + "loglevel" + File.pathSeparator + "DEBUG",
 				"-maxtime", "100", "-seed", "1" };
 		CommandSummary cs = new CommandSummary(command);
 		AstorMain main1 = new AstorMain();
@@ -76,11 +78,10 @@ public class RepairnatorTest {
 			throw new Exception(m2path + "does not exit");
 		}
 
-		String[] command = new String[] { "-dependencies",
-				m2path + "/junit/junit/4.12/junit-4.12.jar:" + m2path
-						+ "/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:" + m2path
-						+ "/com/google/code/gson/gson/2.7/gson-2.7.jar",
-				"-mode", "jgenprog", "-location",
+		String[] command = new String[] { "-dependencies", m2path + "/junit/junit/4.12/junit-4.12.jar"
+				+ File.pathSeparator + "" + m2path + "/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
+				+ File.pathSeparator + "" + m2path + "/com/google/code/gson/gson/2.7/gson-2.7.jar", "-mode", "jgenprog",
+				"-location",
 				new File(
 						"./examples/librepair-experiments-jhy-jsoup-285353482-20171009-062400_bugonly_with_package_info")
 								.getAbsolutePath(),
@@ -96,7 +97,10 @@ public class RepairnatorTest {
 																			// sent
 																			// by
 																			// S.U.
-				"-parameters", "timezone:Europe/Paris:maxnumbersolutions:3:limitbysuspicious:false:" + "loglevel:DEBUG",
+				"-parameters",
+				"timezone" + File.pathSeparator + "Europe/Paris" + File.pathSeparator + "maxnumbersolutions"
+						+ File.pathSeparator + "3" + File.pathSeparator + "limitbysuspicious" + File.pathSeparator
+						+ "false" + File.pathSeparator + "" + "loglevel" + File.pathSeparator + "DEBUG",
 				"-maxtime", "100", "-seed", "1" };
 		CommandSummary cs = new CommandSummary(command);
 		AstorMain main1 = new AstorMain();
@@ -123,7 +127,7 @@ public class RepairnatorTest {
 				"-bintestfolder", new File("./examples/math_70").getAbsolutePath() + "/target/test-classes", //
 				"-javacompliancelevel", "7", "-flthreshold", "0.5", "-out", out.getAbsolutePath(), "-scope", "local",
 				"-seed", "10", "-maxgen", Integer.toString(generations), "-stopfirst", "true", "-maxtime", "100",
-				"-loglevel", "INFO", "-parameters", "disablelog:false"
+				"-loglevel", "INFO", "-parameters", "disablelog" + File.pathSeparator + "false"
 
 		};
 
@@ -158,7 +162,7 @@ public class RepairnatorTest {
 				"-bintestfolder", new File("./examples/math_70").getAbsolutePath() + "/target/test-classes", //
 				"-javacompliancelevel", "7", "-flthreshold", "0.5", "-out", out.getAbsolutePath(), "-scope", "local",
 				"-seed", "10", "-maxgen", Integer.toString(generations), "-stopfirst", "true", "-maxtime", "100",
-				"-loglevel", "INFO", "-parameters", "disablelog:false"
+				"-loglevel", "INFO", "-parameters", "disablelog" + File.pathSeparator + "false"
 
 		};
 
@@ -207,7 +211,12 @@ public class RepairnatorTest {
 				"/root/workspace/AsyncHttpClient/async-http-client/285409364/client", "-srcjavafolder",
 				"/root/workspace/AsyncHttpClient/async-http-client/285409364/client/src/main/java", "-stopfirst",
 				"true", "-population", "1", "-parameters",
-				"timezone:Europe/Paris:maxnumbersolutions:3:limitbysuspicious:false:maxmodificationpoints:1000:javacompliancelevel:8:logfilepath:./workspace/AsyncHttpClient/async-http-client/285409364/repairnator.astor.log",
+				"timezone" + File.pathSeparator + "Europe/Paris" + File.pathSeparator + "maxnumbersolutions"
+						+ File.pathSeparator + "3" + File.pathSeparator + "limitbysuspicious" + File.pathSeparator
+						+ "false" + File.pathSeparator + "maxmodificationpoints" + File.pathSeparator + "1000"
+						+ File.pathSeparator + "javacompliancelevel" + File.pathSeparator + "8" + File.pathSeparator
+						+ "logfilepath" + File.pathSeparator
+						+ "./workspace/AsyncHttpClient/async-http-client/285409364/repairnator.astor.log",
 				"-maxtime", "100", "-seed", "1" };
 		CommandSummary cs = new CommandSummary(command);
 		AstorMain main1 = new AstorMain();

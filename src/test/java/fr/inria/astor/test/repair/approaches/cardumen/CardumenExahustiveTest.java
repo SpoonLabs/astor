@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -46,8 +47,8 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		command.command.put("-customengine", CardumenExhaustiveApproach.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
 		int maxSol = 7;
-		command.command.put("-parameters", "limitbysuspicious:false:" + "disablelog:false:uniformreplacement:false:"
-				+ "frequenttemplate:false:" + "maxnumbersolutions:" + maxSol);
+		command.command.put("-parameters", "limitbysuspicious" + File.pathSeparator + "false" + File.pathSeparator + "" + "disablelog" + File.pathSeparator + "false" + File.pathSeparator + "uniformreplacement" + File.pathSeparator + "false" + File.pathSeparator + ""
+				+ "frequenttemplate" + File.pathSeparator + "false" + File.pathSeparator + "" + "maxnumbersolutions" + File.pathSeparator + "" + maxSol);
 		command.command.put("-loglevel", Level.INFO.toString());
 
 		command.command.put("-maxVarCombination", "1000");
@@ -81,16 +82,16 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		command.command.put("-maxtime", "60");
 		command.command.put("-population", "1");
 		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
-		command.command.put("-parameters", "includeZeros:true:scope:" + scope.toString().toLowerCase()
-				+ "scope:limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
+		command.command.put("-parameters", "includeZeros" + File.pathSeparator + "true" + File.pathSeparator + "scope" + File.pathSeparator + "" + scope.toString().toLowerCase()
+				+ "scope" + File.pathSeparator + "limitbysuspicious" + File.pathSeparator + "false" + File.pathSeparator + "" + "disablelog" + File.pathSeparator + "true" + File.pathSeparator + "uniformreplacement" + File.pathSeparator + "false" + File.pathSeparator + "frequenttemplate" + File.pathSeparator + "true");
 		command.command.put("-loglevel", Level.INFO.toString());
 		command.command.put("-maxVarCombination", "100000000");
 
 		AstorMain main1 = new AstorMain();
 		log.debug("LOCAL SCOPE");
 		// Local
-		command.command.put("-parameters", "includeZeros:false:scope:local" + ":limitbysuspicious:false:"
-				+ "disablelog:true:uniformreplacement:false:frequenttemplate:true");
+		command.command.put("-parameters", "includeZeros" + File.pathSeparator + "false" + File.pathSeparator + "scope" + File.pathSeparator + "local" + "" + File.pathSeparator + "limitbysuspicious" + File.pathSeparator + "false" + File.pathSeparator + ""
+				+ "disablelog" + File.pathSeparator + "true" + File.pathSeparator + "uniformreplacement" + File.pathSeparator + "false" + File.pathSeparator + "frequenttemplate" + File.pathSeparator + "true");
 
 		main1 = new AstorMain();
 		main1.execute(command.flat());
@@ -101,8 +102,8 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 
 		log.debug("PACKAGE SCOPE");
 		// PACKAGE
-		command.command.put("-parameters", "includeZeros:false:scope:package" + ":limitbysuspicious:false:"
-				+ "disablelog:true:uniformreplacement:false:frequenttemplate:true");
+		command.command.put("-parameters", "includeZeros" + File.pathSeparator + "false" + File.pathSeparator + "scope" + File.pathSeparator + "package" + "" + File.pathSeparator + "limitbysuspicious" + File.pathSeparator + "false" + File.pathSeparator + ""
+				+ "disablelog" + File.pathSeparator + "true" + File.pathSeparator + "uniformreplacement" + File.pathSeparator + "false" + File.pathSeparator + "frequenttemplate" + File.pathSeparator + "true");
 
 		main1 = new AstorMain();
 		main1.execute(command.flat());
@@ -125,7 +126,7 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
 		command.command.put("-parameters",
-				"limitbysuspicious:false:" + "disablelog:true:uniformreplacement:false:frequenttemplate:true");
+				"limitbysuspicious" + File.pathSeparator + "false" + File.pathSeparator + "" + "disablelog" + File.pathSeparator + "true" + File.pathSeparator + "uniformreplacement" + File.pathSeparator + "false" + File.pathSeparator + "frequenttemplate" + File.pathSeparator + "true");
 		command.command.put("-loglevel", Level.INFO.toString());
 		command.command.put("-maxVarCombination", "1000");
 
@@ -154,8 +155,8 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		command.command.put("-population", "1");
 		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
-		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
-				+ "disablelog:false:uniformreplacement:false:frequenttemplate:false");
+		command.command.put("-parameters", "skipfitnessinitialpopulation" + File.pathSeparator + "true" + File.pathSeparator + "limitbysuspicious" + File.pathSeparator + "false" + File.pathSeparator + ""
+				+ "disablelog" + File.pathSeparator + "false" + File.pathSeparator + "uniformreplacement" + File.pathSeparator + "false" + File.pathSeparator + "frequenttemplate" + File.pathSeparator + "false");
 		command.command.put("-loglevel", Level.INFO.toString());
 		command.command.put("-maxVarCombination", "100");
 		command.command.put("-maxsuspcandidates", "1000");
@@ -191,8 +192,8 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 		command.command.put("-population", "1");
 		command.command.put("-customengine", CardumenExhaustiveEngine4Stats.class.getCanonicalName());
 		command.command.put("-scope", scope.toString().toLowerCase());
-		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
-				+ "disablelog:false:uniformreplacement:" + Boolean.toString(uniformreplacement));
+		command.command.put("-parameters", "skipfitnessinitialpopulation" + File.pathSeparator + "true" + File.pathSeparator + "limitbysuspicious" + File.pathSeparator + "false" + File.pathSeparator + ""
+				+ "disablelog" + File.pathSeparator + "false" + File.pathSeparator + "uniformreplacement" + File.pathSeparator + "" + Boolean.toString(uniformreplacement));
 		command.command.put("-loglevel", Level.INFO.toString());
 
 		AstorMain main1 = new AstorMain();
@@ -210,8 +211,8 @@ public class CardumenExahustiveTest extends BaseEvolutionaryTest {
 
 		uniformreplacement = true;
 
-		command.command.put("-parameters", "skipfitnessinitialpopulation:true:limitbysuspicious:false:"
-				+ "disablelog:false:uniformreplacement:" + Boolean.toString(uniformreplacement));
+		command.command.put("-parameters", "skipfitnessinitialpopulation" + File.pathSeparator + "true" + File.pathSeparator + "limitbysuspicious" + File.pathSeparator + "false" + File.pathSeparator + ""
+				+ "disablelog" + File.pathSeparator + "false" + File.pathSeparator + "uniformreplacement" + File.pathSeparator + "" + Boolean.toString(uniformreplacement));
 
 		cardumen = null;
 		main1.execute(command.flat());

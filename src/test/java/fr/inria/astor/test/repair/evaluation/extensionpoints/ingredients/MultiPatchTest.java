@@ -55,7 +55,8 @@ public class MultiPatchTest {
 				//
 				"-loglevel", "INFO", "-scope", "package", "-seed", "10", "-maxgen", "0", "-stopfirst", "false",
 				"-maxtime", "10", "-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(),
-				"-parameters", "logtestexecution:true:saveall:true" };
+				"-parameters", "logtestexecution" + File.pathSeparator + "true" + File.pathSeparator + "saveall"
+						+ File.pathSeparator + "true" };
 
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
@@ -131,7 +132,8 @@ public class MultiPatchTest {
 				//
 				"-loglevel", "INFO", "-scope", "package", "-seed", "10", "-maxgen", "0", "-stopfirst", "false",
 				"-maxtime", "10", "-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(),
-				"-parameters", "logtestexecution:true:saveall:true" };
+				"-parameters", "logtestexecution" + File.pathSeparator + "true" + File.pathSeparator + "saveall"
+						+ File.pathSeparator + "true" };
 
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
@@ -201,7 +203,7 @@ public class MultiPatchTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "1", "-out", out.getAbsolutePath(),
 				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", "-maxtime", "15", //
 				"-patchprioritization", IdentifierPriorityCriterion.class.getName(), "-parameters",
-				"maxnumbersolutions:2"
+				"maxnumbersolutions" + File.pathSeparator + "2"
 
 		};
 		System.out.println(Arrays.toString(args));
@@ -231,7 +233,7 @@ public class MultiPatchTest {
 				//
 				"-scope", "package", "-seed", "10", "-maxgen", "2000", "-stopfirst", "false", "-maxtime", "10",
 				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(), "-parameters",
-				"maxnumbersolutions:2" };
+				"maxnumbersolutions" + File.pathSeparator + "2" };
 
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
