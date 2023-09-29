@@ -19,7 +19,7 @@ In any case, most important test cases are always executed on [travis](https://t
 Warning: Windows is only partially supported.
 
      mvn package -DskipTests=true
-     
+
 The following JAR will be created by this command: `target/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar`  
 This will referenced as `astor.jar` for the rest of this guide but you will need to replace it with the full line when inserting commands.
      
@@ -80,6 +80,8 @@ Additionally, Astor writes a JSON file ('astor_output.json') which summarizes th
 
 Inside the folder "/src/" Astor stores the source code of the solutions that it found.
 
+If there is no solution found (i.e. the list `patch` is empty in "astor_output.json"), no source code would be generated in the folder "/src/".
+
 Folder “default” contains the original program, without any modification. It's a sanity check, containing the output of spoon without applying any processor over the spoon model of the application under repair.
 
 Each folder "variant-x" is a valid solution to the repair problem (passes all tests). The "x" corresponds to the id (unique identifier) assigned to a variant. There is an command line argument `saveall` that allows you to save all variants that Astor generates, even if they are not a solution.
@@ -101,11 +103,11 @@ For executing Astor in jMutRepair mode:
 # Command line arguments
 
      -mode jgenprog|jkali|jMutRepair|... 
-
+    
     -location "absolute location of the project to repair" (**MANDATORY**)
-
+    
     -dependencies "folder with the dependencies of the application to repair" 
-
+    
     -failing "canonical names of classes with failing test cases" (if there are several classes with failing test cases, give them separated by the classpath separator (: in linux/mac  and ; in windows)
         
     -package "package to manipulate" (only the statements from this package are manipulated to find a patch)
@@ -125,14 +127,15 @@ For executing Astor in jMutRepair mode:
     -binjavafolder "class folder"
     
     -bintestfolder "test class folder" 
-    
+
   
-    
+
+
 ### Command line arguments example Math-70 from Defects4J: 
-	
+
 	-location <PATH_TO_ASTOR_FOLDER>/examples/math_70 
-  	
-    -mode statement
+	
+	-mode statement
 	
 	-package  org.apache.commons 
 	
@@ -171,7 +174,7 @@ Astor needs to be executed over a JVM 8+. By default, Astor uses the JVM specifi
 For example, running bug Math-70 from Defects4J on a JVM 8 could produce two failing/errored test cases:
 
   	testMath280(org.apache.commons.math.distribution.NormalDistributionTest)
-	testMinpackMeyer(org.apache.commons.math.estimation.MinpackTest)
+  	testMinpackMeyer(org.apache.commons.math.estimation.MinpackTest)
 
 The first one (`testMath280`) is the test that expose the bug Math-70. It's correct that it fails. However, the second one (`testMinpackMeyer`) fails due to the JVM and it must not fail. It's a platform-related error.
 As conclusion, using a java VM 8+ could produce that Astor does not find patches for bugs that must be repaired by the tool.
@@ -208,5 +211,4 @@ A. Run the install command under the folder "/astor/lib/gzoltar", which is `mvn 
 
 
  
-
 
