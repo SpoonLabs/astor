@@ -82,8 +82,10 @@ public class D4JWorkflowTestSingle {
 		fw.close();
 
 		cs.append("-parameters",
-				"logtestexecution:true:" + "maxmemory" + File.pathSeparator + "-Xmx4G" + File.pathSeparator
-						+ "fixedLocation:HypergeometricDistribution-321:" + "peOperator:insertbefore:pefile:"
+				"logtestexecution" + File.pathSeparator + "true" + File.pathSeparator + "" + "maxmemory"
+						+ File.pathSeparator + "-Xmx4G" + File.pathSeparator + "fixedLocation" + File.pathSeparator
+						+ "HypergeometricDistribution-321" + File.pathSeparator + "" + "peOperator" + File.pathSeparator
+						+ "insertbefore" + File.pathSeparator + "pefile" + File.pathSeparator + ""
 						+ f.getAbsolutePath());
 
 		AstorMain main1 = new AstorMain();
@@ -125,9 +127,10 @@ public class D4JWorkflowTestSingle {
 				" if (val.length() == 1 && !Character.isDigit(val.charAt(0))) {   throw new NumberFormatException(val + \" is not a valid number.\");         }");
 		fw.close();
 
-		cs.append("-parameters",
-				"logtestexecution:true:" + "maxmemory" + File.pathSeparator + "-Xmx4G" + File.pathSeparator
-						+ "fixedLocation:NumberUtils-145:" + "peOperator:insertbefore:pefile:" + f.getAbsolutePath());
+		cs.append("-parameters", "logtestexecution" + File.pathSeparator + "true" + File.pathSeparator + ""
+				+ "maxmemory" + File.pathSeparator + "-Xmx4G" + File.pathSeparator + "fixedLocation"
+				+ File.pathSeparator + "NumberUtils-145" + File.pathSeparator + "" + "peOperator" + File.pathSeparator
+				+ "insertbefore" + File.pathSeparator + "pefile" + File.pathSeparator + "" + f.getAbsolutePath());
 
 		AstorMain main1 = new AstorMain();
 
@@ -167,7 +170,7 @@ public class D4JWorkflowTestSingle {
 	public void testMath40() throws Exception {
 		CommandSummary cs = new CommandSummary();
 		cs.command.putIfAbsent("-flthreshold", "0.2");
-		cs.command.put("-parameters", "logtestexecution:true");
+		cs.command.put("-parameters", "logtestexecution" + File.pathSeparator + "true");
 		cs.command.put("-ignoredtestcases",
 				"org.apache.commons.math.util.FastMathTest" + File.pathSeparator
 						+ "org.apache.commons.math.ode.nonstiff.ClassicalRungeKuttaIntegratorTest" + File.pathSeparator
@@ -346,7 +349,7 @@ public class D4JWorkflowTestSingle {
 	public void testMath40JKali() throws Exception {
 		CommandSummary cs = new CommandSummary();
 		cs.command.putIfAbsent("-flthreshold", "0");
-		cs.command.put("-parameters", "logtestexecution:true");
+		cs.command.put("-parameters", "logtestexecution" + File.pathSeparator + "true");
 		cs.command.put("-ignoredtestcases",
 				"org.apache.commons.math.util.FastMathTest" + File.pathSeparator
 						+ "org.apache.commons.math.ode.nonstiff.ClassicalRungeKuttaIntegratorTest" + File.pathSeparator
@@ -703,7 +706,8 @@ public class D4JWorkflowTestSingle {
 		}
 		System.out.println("\nConfiguration " + cs.command.toString());
 
-		cs.append("-parameters", "logtestexecution:true:" + "maxmemory" + File.pathSeparator + "-Xmx4G");
+		cs.append("-parameters", "logtestexecution" + File.pathSeparator + "true" + File.pathSeparator + ""
+				+ "maxmemory" + File.pathSeparator + "-Xmx4G");
 
 	}
 

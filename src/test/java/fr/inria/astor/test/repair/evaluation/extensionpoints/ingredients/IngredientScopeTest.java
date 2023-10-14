@@ -45,7 +45,7 @@ public class IngredientScopeTest extends BaseEvolutionaryTest {
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-saveall", "true");
-		cs.append("-parameters", ("logtestexecution:true"));
+		cs.append("-parameters", ("logtestexecution" + File.pathSeparator + "true"));
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -74,7 +74,8 @@ public class IngredientScopeTest extends BaseEvolutionaryTest {
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "DEBUG");
 		cs.command.put("-saveall", "true");
-		cs.append("-parameters", ("logtestexecution:true:autocompile:true"));
+		cs.append("-parameters", ("logtestexecution" + File.pathSeparator + "true" + File.pathSeparator + "autocompile"
+				+ File.pathSeparator + "true"));
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -184,7 +185,7 @@ public class IngredientScopeTest extends BaseEvolutionaryTest {
 				"-scope", "package", "-seed", "10", "-maxgen", "2000", "-stopfirst", "false", "-maxtime", "10",
 				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(),
 				// Parameters:
-				"-parameters", "maxnumbersolutions:2" };// Two ingredients from package
+				"-parameters", "maxnumbersolutions" + File.pathSeparator + "2" };// Two ingredients from package
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 

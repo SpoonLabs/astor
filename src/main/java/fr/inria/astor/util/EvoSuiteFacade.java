@@ -219,6 +219,8 @@ public class EvoSuiteFacade {
 	 * @return
 	 */
 	protected boolean runProcess(URL[] urlClasspath, String[] argumentsEvo) {
+		String envOS = System.getProperty("os.name");
+
 		Process p = null;
 
 		String javaPath = ConfigurationProperties.getProperty("jvm4evosuitetestexecution");
@@ -227,7 +229,10 @@ public class EvoSuiteFacade {
 		try {
 
 			List<String> command = new ArrayList<String>();
-			command.add(javaPath);
+			if (!envOS.contains("Windows"))
+				command.add(javaPath);
+			else
+				command.add("\"" + javaPath + "\"");
 			command.add("-jar");
 			command.add(new File(ConfigurationProperties.getProperty("evosuitejar")).getAbsolutePath());
 

@@ -513,7 +513,7 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 				"/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-stopfirst", "true", "-seed", "10", "-maxgen", "100", "-scope",
 				CtLocationIngredientSpace.class.getCanonicalName(), "-parameters",
-				"duplicateingredientsinspace:false" };
+				"duplicateingredientsinspace" + File.pathSeparator + "false" };
 		System.out.println(Arrays.toString(args));
 		main1.execute(args);
 
@@ -545,7 +545,7 @@ public class IngredientPoolTest extends BaseEvolutionaryTest {
 		// Now, with duplicates:
 
 		CommandSummary cs = new CommandSummary(args);
-		cs.command.put("-parameters", "duplicateingredientsinspace:true");
+		cs.command.put("-parameters", "duplicateingredientsinspace" + File.pathSeparator + "true");
 		main1.execute(cs.flat());
 		jgp = (JGenProg) main1.getEngine();
 		pv = solutions.get(0);

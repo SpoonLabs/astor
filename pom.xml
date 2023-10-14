@@ -1,6 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.inria.sacha.automaticRepair</groupId>
 	<artifactId>astor</artifactId>
@@ -169,7 +169,7 @@
 		</repository>
 		<repository>
 			<id>inria</id>
-			<url>http://spoon.gforge.inria.fr/repositories/releases/</url>
+			<url>https://spoon.gforge.inria.fr/repositories/releases/</url>
 		</repository>
 		<repository>
 			<id>spoon-snapshot</id>
@@ -180,13 +180,13 @@
 		<repository>
 			<id>EvoSuite</id>
 			<name>EvoSuite Repository</name>
-			<url>http://www.evosuite.org/m2</url>
+			<url>https://www.evosuite.org/m2</url>
 		</repository>
 
 		<repository>
 			<id>sachaproject.gforge.inria.fr-release</id>
 			<name>Maven Repository for Spoon Release</name>
-			<url>http://sachaproject.gforge.inria.fr/repositories/releases/</url>
+			<url>https://sachaproject.gforge.inria.fr/repositories/releases/</url>
 			<snapshots />
 		</repository>
 
@@ -199,7 +199,7 @@
 		<repository>
 			<id>maven.inria.fr-snapshot</id>
 			<name>Maven Repository for Spoon Artifac Snapshot</name>
-			<url>http://maven.inria.fr/artifactory/spoon-public-snapshot/</url>
+			<url>https://maven.inria.fr/artifactory/spoon-public-snapshot/</url>
 			<snapshots />
 		</repository>
 	</repositories>

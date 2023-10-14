@@ -3,6 +3,7 @@ package fr.inria.astor.test.repair.approaches;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class TibraApproachTest {
 		cs.command.put("-mode", "custom");
 		cs.command.put("-saveall", "true");
 		cs.command.put("-customengine", TibraApproach.class.getCanonicalName());
-		cs.command.put("-parameters", "desactivateingredientcache:true");
+		cs.command.put("-parameters", "desactivateingredientcache" + File.pathSeparator + "true");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());

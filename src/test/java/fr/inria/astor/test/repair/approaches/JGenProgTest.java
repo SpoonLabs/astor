@@ -141,7 +141,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-saveall", "true");
-		cs.append("-parameters", ("logtestexecution:true"));
+		cs.append("-parameters", ("logtestexecution" + File.pathSeparator + "true"));
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -198,7 +198,8 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				"/src/main/java/", "-srctestfolder", "/src/test/java", "-binjavafolder", "/target/classes",
 				"-bintestfolder", "/target/test-classes", "-javacompliancelevel", "7", "-flthreshold", "0.5", "-out",
 				out.getAbsolutePath(), "-scope", "local", "-seed", "10", "-maxgen", Integer.toString(generations),
-				"-stopfirst", "true", "-maxtime", "5", "-loglevel", "INFO", "-parameters", "disablelog:false"
+				"-stopfirst", "true", "-maxtime", "5", "-loglevel", "INFO", "-parameters",
+				"disablelog" + File.pathSeparator + "false"
 
 		};
 		return args;
@@ -373,7 +374,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				//
 				"-javacompliancelevel", "6",
 
-				"-parameters", "maxmodificationpoints:1"
+				"-parameters", "maxmodificationpoints" + File.pathSeparator + "1"
 
 		};
 		main1.execute(args);
@@ -440,8 +441,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
 		cs.command.put("-parameters",
-				"logtestexecution:true:ignoredTestCases:org.apache.commons.math.estimation.MinpackTest:" + "maxmemory"
-						+ File.pathSeparator + "-Xmx4G");
+				"logtestexecution" + File.pathSeparator + "true" + File.pathSeparator + "ignoredTestCases"
+						+ File.pathSeparator + "org.apache.commons.math.estimation.MinpackTest" + File.pathSeparator
+						+ "" + "maxmemory" + File.pathSeparator + "-Xmx4G");
 
 		// testMinpackMeyer(org.apache.commons.math.estimation.MinpackTest)
 
@@ -523,11 +525,11 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 				//
 				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", "-maxtime", "10",
 				"-population", "1", "-reintroduce", PopulationConformation.PARENTS.toString(), "-parameters",
-				"maxnumbersolutions:2" };
+				"maxnumbersolutions" + File.pathSeparator + "2" };
 		System.out.println(Arrays.toString(args));
 		CommandSummary command = new CommandSummary(args);
 
-		command.command.put("-parameters", "maxnumbersolutions:2");
+		command.command.put("-parameters", "maxnumbersolutions" + File.pathSeparator + "2");
 		main1.execute(command.flat());
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
@@ -536,7 +538,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		assertTrue(existPatchWithCode(solutions, "return solve(f, min, max)")
 				|| existPatchWithCode(solutions, "return solve(f, initial, max)"));
 
-		command.command.put("-parameters", "maxnumbersolutions:1");
+		command.command.put("-parameters", "maxnumbersolutions" + File.pathSeparator + "1");
 		main1.execute(command.flat());
 
 		solutions = main1.getEngine().getSolutions();
@@ -566,7 +568,7 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		System.out.println(Arrays.toString(args));
 		CommandSummary command = new CommandSummary(args);
 
-		command.command.put("-parameters", "fixedLocation:BisectionSolver-72");
+		command.command.put("-parameters", "fixedLocation" + File.pathSeparator + "BisectionSolver-72");
 		main1.execute(command.flat());
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
@@ -601,7 +603,9 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		fw.write("return solve(f, min, max)");
 		fw.close();
 		command.command.put("-parameters",
-				"fixedLocation:BisectionSolver-72:" + "peOperator:replace:pefile:" + f.getAbsolutePath());
+				"fixedLocation" + File.pathSeparator + "BisectionSolver-72" + File.pathSeparator + "" + "peOperator"
+						+ File.pathSeparator + "replace" + File.pathSeparator + "pefile" + File.pathSeparator + ""
+						+ f.getAbsolutePath());
 		main1.execute(command.flat());
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();

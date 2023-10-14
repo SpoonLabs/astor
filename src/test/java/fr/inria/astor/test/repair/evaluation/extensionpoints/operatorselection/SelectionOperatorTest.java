@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,7 +34,7 @@ public class SelectionOperatorTest {
 		csDefault.command.put("-maxgen", "0");
 		csDefault.command.put("-opselectionstrategy", WeightedRandomOperatorSelection.class.getName());
 
-		csDefault.append("-parameters", "weightsopselection:0.25_0.25_0.25_0.25");
+		csDefault.append("-parameters", "weightsopselection" + File.pathSeparator + "0.25_0.25_0.25_0.25");
 		AstorMain main1 = new AstorMain();
 		main1.execute(csDefault.flat());
 
@@ -47,7 +49,7 @@ public class SelectionOperatorTest {
 			CommandSummary csDefault = MathCommandsTests.getMath70Command();
 			csDefault.command.put("-maxgen", "0");
 			csDefault.command.put("-opselectionstrategy", WeightedRandomOperatorSelection.class.getName());
-			csDefault.append("-parameters", "weightsopselection:0.25");
+			csDefault.append("-parameters", "weightsopselection" + File.pathSeparator + "0.25");
 			AstorMain main1 = new AstorMain();
 			main1.execute(csDefault.flat());
 			fail();
@@ -60,7 +62,7 @@ public class SelectionOperatorTest {
 			CommandSummary csDefault = MathCommandsTests.getMath70Command();
 			csDefault.command.put("-maxgen", "0");
 			csDefault.command.put("-opselectionstrategy", WeightedRandomOperatorSelection.class.getName());
-			csDefault.append("-parameters", "weightsopselection:0.a5_0.25_0.25_0.25");
+			csDefault.append("-parameters", "weightsopselection" + File.pathSeparator + "0.a5_0.25_0.25_0.25");
 			AstorMain main1 = new AstorMain();
 			main1.execute(csDefault.flat());
 			fail();
@@ -75,7 +77,7 @@ public class SelectionOperatorTest {
 		csDefault.command.put("-maxgen", "0");
 		csDefault.command.put("-opselectionstrategy", WeightedRandomOperatorSelection.class.getName());
 
-		csDefault.append("-parameters", "weightsopselection:1_0.0_0.0_0.0");
+		csDefault.append("-parameters", "weightsopselection" + File.pathSeparator + "1_0.0_0.0_0.0");
 		AstorMain main1 = new AstorMain();
 		main1.execute(csDefault.flat());
 

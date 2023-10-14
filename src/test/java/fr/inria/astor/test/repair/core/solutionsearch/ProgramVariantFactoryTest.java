@@ -10,6 +10,7 @@ import org.junit.Test;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,8 @@ public class ProgramVariantFactoryTest {
         command.command.put("-maxgen", "0");
         command.command.put("-population", "1");
         command.command.put("-scope", scope.toString().toLowerCase());
-        command.command.put("-parameters", "disablelog:false:tmax2:6000");
+        command.command.put("-parameters", "disablelog" + File.pathSeparator + "false" + File.pathSeparator + "tmax2"
+				+ File.pathSeparator + "6000");
         command.command.put("-maxVarCombination", "100");
         AstorMain main = new AstorMain();
 

@@ -1053,14 +1053,21 @@ public abstract class AbstractMain {
 			boolean onlyOne) throws IOException {
 		boolean added = false;
 		for (String possibleSrc : possibleTestSrcFolders) {
-			File fSrc = new File(File.separator + possibleSrc).getAbsoluteFile();
+			possibleSrc = possibleSrc.trim();
+			File fSrc = null;
+			String envOS = System.getProperty("os.name");
+			if (envOS.contains("Windows") && possibleSrc.startsWith("/")) {
+				fSrc = new File(possibleSrc).getAbsoluteFile();
+			} else {
+				fSrc = new File(File.separator + possibleSrc).getAbsoluteFile();
+			}
 			if (Files.exists(fSrc.toPath())) {
 				if (!pathResults.contains(fSrc.getAbsolutePath())) {
 					pathResults.add(fSrc.getAbsolutePath());
 					added = true;
 				}
 
-			} else {
+			} else if (!fSrc.getAbsolutePath().contains(originalProjectRoot)) {
 				File fSrcRelative = new File(originalProjectRoot + File.separator + possibleSrc);
 				if (Files.isDirectory(fSrcRelative.toPath())) {
 					if (!pathResults.contains(fSrcRelative.getAbsolutePath())) {

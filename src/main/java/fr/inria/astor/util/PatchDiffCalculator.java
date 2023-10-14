@@ -124,7 +124,20 @@ public class PatchDiffCalculator {
 	public String getDiff(File original, File newvariant, String fileNameLeft, String fileNameRight) {
 
 		try {
-			ProcessBuilder builder = new ProcessBuilder("/bin/bash");
+			int diffContext = ConfigurationProperties.getPropertyInt("diffcontext");
+
+			String command = "diff -w -b " + " --label=" + fileNameLeft + " --label=" + fileNameRight + " "
+					+ original.getAbsolutePath() + " " + newvariant.getAbsolutePath() + " --unified=" + diffContext;
+			log.debug("diff command : " + command);
+
+			ProcessBuilder builder;
+			String envOS = System.getProperty("os.name");
+			if (!envOS.contains("Windows"))
+				builder = new ProcessBuilder("/bin/bash");
+			else {
+				// Linux 'diff' command must be added on Windows Path (ex. by Cygwin)
+				builder = new ProcessBuilder("cmd", "/C", command);
+			}
 			builder.redirectErrorStream(true);
 
 			Process process = builder.start();
@@ -132,16 +145,13 @@ public class PatchDiffCalculator {
 			BufferedWriter p_stdin = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 
 			try {
+				if (!envOS.contains("Windows")) {
+					// Set up the timezone
 
-				int diffContext = ConfigurationProperties.getPropertyInt("diffcontext");
-
-				// Set up the timezone
-				String command = "diff -w -b " + " --label=" + fileNameLeft + " --label=" + fileNameRight + " "
-						+ original.getAbsolutePath() + " " + newvariant.getAbsolutePath() + " --unified=" + diffContext;
-				log.debug("diff command : " + command);
-				p_stdin.write(command);
-				p_stdin.newLine();
-				p_stdin.flush();
+					p_stdin.write(command);
+					p_stdin.newLine();
+					p_stdin.flush();
+				}
 
 				// end
 				p_stdin.write("exit");

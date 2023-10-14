@@ -194,7 +194,8 @@ public class FaultLocalizationExtensionTest {
 		csDefault.command.put("-maxgen", "0");
 		csDefault.command.put("-modificationpointnavigation", SuspiciousNavigationValues.WEIGHT.toString());
 		csDefault.command.put("-faultlocalization", fltorun);
-		csDefault.command.put("-parameters", "includeTestInSusp:true:loglevel:INFO");
+		csDefault.command.put("-parameters", "includeTestInSusp" + File.pathSeparator + "true" + File.pathSeparator
+				+ "loglevel" + File.pathSeparator + "INFO");
 
 		final Double flthreshold = 0.5;
 		csDefault.command.put("-flthreshold", flthreshold.toString());

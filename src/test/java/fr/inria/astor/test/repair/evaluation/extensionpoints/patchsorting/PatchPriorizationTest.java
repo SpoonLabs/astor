@@ -36,7 +36,7 @@ public class PatchPriorizationTest {
 				out.getAbsolutePath(), "-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false",
 				"-maxtime", "15", //
 				"-patchprioritization", IdentifierPriorityCriterion.class.getName(), "-parameters",
-				"maxnumbersolutions:2"
+				"maxnumbersolutions" + File.pathSeparator + "2"
 
 		};
 		System.out.println(Arrays.toString(args));

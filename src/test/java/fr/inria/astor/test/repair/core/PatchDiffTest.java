@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,10 @@ public class PatchDiffTest {
 
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-parameters", "savesolution:false:" + "preservelinenumbers:false" + ":diff_type:default");
+		cs.command.put("-parameters",
+				"savesolution" + File.pathSeparator + "false" + File.pathSeparator + "" + "preservelinenumbers"
+						+ File.pathSeparator + "false" + "" + File.pathSeparator + "diff_type" + File.pathSeparator
+						+ "default");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -54,8 +58,12 @@ public class PatchDiffTest {
 		String diff2 = variant.getPatchDiff().getOriginalStatementAlignmentDiff();
 		System.out.println("Patch original alignment: \n" + diff2);
 		assertTrue(diff2.contains("return solve(f, min, max)"));
-		assertTrue(diff2.startsWith("--- org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
-		assertTrue(diff2.contains("+++ org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
+		assertTrue(diff2.startsWith("--- org" + File.separator + "apache" + File.separator + "commons" + File.separator
+				+ "math" + File.separator + "analysis" + File.separator + "solvers" + File.separator
+				+ "BisectionSolver.java"));
+		assertTrue(diff2.contains("+++ org" + File.separator + "apache" + File.separator + "commons" + File.separator
+				+ "math" + File.separator + "analysis" + File.separator + "solvers" + File.separator
+				+ "BisectionSolver.java"));
 
 		String path_o = main1.getEngine().getProjectFacade().getInDirWithPrefix(variant.currentMutatorIdentifier());
 		assertTrue(new File(path_o + File.separator + PatchDiffCalculator.PATCH_DIFF_FILE_NAME).exists());
@@ -72,7 +80,10 @@ public class PatchDiffTest {
 
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-parameters", "savesolution:false:" + "preservelinenumbers:true" + ":diff_type:git");
+		cs.command.put("-parameters",
+				"savesolution" + File.pathSeparator + "false" + File.pathSeparator + "" + "preservelinenumbers"
+						+ File.pathSeparator + "true" + "" + File.pathSeparator + "diff_type" + File.pathSeparator
+						+ "git");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -91,8 +102,12 @@ public class PatchDiffTest {
 		String diff2 = variant.getPatchDiff().getOriginalStatementAlignmentDiff();
 		System.out.println("Patch original alignment: \n" + diff2);
 		assertTrue(diff2.contains("return solve(f, min, max)"));
-		assertTrue(diff2.startsWith("--- a/org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
-		assertTrue(diff2.contains("+++ b/org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
+		assertTrue(diff2.startsWith("--- a" + File.separator + "org" + File.separator + "apache" + File.separator
+				+ "commons" + File.separator + "math" + File.separator + "analysis" + File.separator + "solvers"
+				+ File.separator + "BisectionSolver.java"));
+		assertTrue(diff2.contains("+++ b" + File.separator + "org" + File.separator + "apache" + File.separator
+				+ "commons" + File.separator + "math" + File.separator + "analysis" + File.separator + "solvers"
+				+ File.separator + "BisectionSolver.java"));
 
 		String path_o = main1.getEngine().getProjectFacade().getInDirWithPrefix(variant.currentMutatorIdentifier());
 		assertTrue(new File(path_o + File.separator + PatchDiffCalculator.PATCH_DIFF_FILE_NAME).exists());
@@ -109,7 +124,10 @@ public class PatchDiffTest {
 
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 		cs.command.put("-stopfirst", "true");
-		cs.command.put("-parameters", "savesolution:false:" + "preservelinenumbers:true" + ":diff_type:relative");
+		cs.command.put("-parameters",
+				"savesolution" + File.pathSeparator + "false" + File.pathSeparator + "" + "preservelinenumbers"
+						+ File.pathSeparator + "true" + "" + File.pathSeparator + "diff_type" + File.pathSeparator
+						+ "relative");
 
 		System.out.println(Arrays.toString(cs.flat()));
 		main1.execute(cs.flat());
@@ -128,9 +146,18 @@ public class PatchDiffTest {
 		String diff2 = variant.getPatchDiff().getOriginalStatementAlignmentDiff();
 		System.out.println("Patch original alignment: \n" + diff2);
 		assertTrue(diff2.contains("return solve(f, min, max)"));
-		assertTrue(
-				diff2.startsWith("--- /src/main/java/org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
-		assertTrue(diff2.contains("+++ /src/main/java/org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
+		String envOS = System.getProperty("os.name");
+		if (!envOS.contains("Windows")) {
+			assertTrue(diff2.startsWith("--- /src/main/java/org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
+			assertTrue(diff2.contains("+++ /src/main/java/org/apache/commons/math/analysis/solvers/BisectionSolver.java"));
+		} else {
+			assertTrue(Pattern.compile(
+					"--- [^\r\n]*\\\\src\\\\main\\\\java\\\\org\\\\apache\\\\commons\\\\math\\\\analysis\\\\solvers\\\\BisectionSolver.java\n.*",
+					Pattern.DOTALL).matcher(diff2).matches());
+			assertTrue(Pattern.compile(
+					".*\\+\\+\\+ [^\r\n]*\\\\src\\\\main\\\\java\\\\org\\\\apache\\\\commons\\\\math\\\\analysis\\\\solvers\\\\BisectionSolver.java\n.*",
+					Pattern.DOTALL).matcher(diff2).matches());
+		}
 
 		String path_o = main1.getEngine().getProjectFacade().getInDirWithPrefix(variant.currentMutatorIdentifier());
 		assertTrue(new File(path_o + File.separator + PatchDiffCalculator.PATCH_DIFF_FILE_NAME).exists());
