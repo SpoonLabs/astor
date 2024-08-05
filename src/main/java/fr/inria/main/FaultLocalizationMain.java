@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import fr.inria.astor.core.faultlocalization.FaultLocalizationResult;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization;
-import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
 import fr.inria.astor.core.faultlocalization.gzoltar.NovelGZoltarFaultLocalization;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 
@@ -83,7 +82,7 @@ public class FaultLocalizationMain extends AbstractMain {
 
 			executed = true;
 
-			GZoltarFaultLocalization gZoltarFaultLocalization = new GZoltarFaultLocalization();
+			NovelGZoltarFaultLocalization gZoltarFaultLocalization = new NovelGZoltarFaultLocalization();
 
 			FaultLocalizationResult result = null;
 
