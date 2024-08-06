@@ -49,7 +49,7 @@ public class LangTest {
 		String[] args = commandLang63(dep, out, stepbystep);
 		CommandSummary command = new CommandSummary(args);
 		System.out.println(Arrays.toString(command.flat()));
-		command.command.put("-parameters", "logtestexecution:true");
+		command.command.put("-parameters", "logtestexecution" + File.pathSeparator + "true");
 		command.command.put("-population", "1");
 		command.command.put("-mode", "jkali");
 		main1.execute(command.flat());
@@ -74,7 +74,7 @@ public class LangTest {
 		CommandSummary command = new CommandSummary(args);
 		System.out.println(Arrays.toString(command.flat()));
 		String save = "true";
-		command.command.put("-parameters", "logtestexecution:" + save);
+		command.command.put("-parameters", "logtestexecution" + File.pathSeparator + "" + save);
 		command.command.put("-population", "1");
 		command.command.put("-mode", "jkali");
 		main1.execute(command.flat());

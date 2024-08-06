@@ -72,8 +72,8 @@ public class ValidationTest extends BaseEvolutionaryTest {
 		cs.command.put("-scope", "package");
 		cs.command.put("-maxgen", "200");
 		cs.command.put("-loglevel", "INFO");
-		cs.command.put("-parameters", "disablelog:false");
-		cs.append("-parameters", "logtestexecution:true");
+		cs.command.put("-parameters", "disablelog" + File.pathSeparator + "false");
+		cs.append("-parameters", "logtestexecution" + File.pathSeparator + "true");
 
 		assertEquals(4, cs.command.get("-parameters").split(File.pathSeparator).length);
 		System.out.println(Arrays.toString(cs.flat()));
