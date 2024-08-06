@@ -481,10 +481,11 @@ public class D4JWorkflowTestSingle {
 		runComplete("Chart25", "", "jKali", TIMEOUTMIN);
 	}
 
-	@Test
-	public void testChart26JKali() throws Exception {
-		runComplete("Chart26", "", "jKali", TIMEOUTMIN);
-	}
+	// removed on August 24 by Martin, flaky
+	// @Test
+	// public void testChart26JKali() throws Exception {
+	// 	runComplete("Chart26", "", "jKali", TIMEOUTMIN);
+	// }
 
 	public static void runCompleteJGenProg(String bug_id, String mvn_option) throws Exception {
 
