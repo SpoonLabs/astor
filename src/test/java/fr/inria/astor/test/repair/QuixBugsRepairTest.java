@@ -21,7 +21,7 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
+import fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
@@ -69,7 +69,7 @@ public class QuixBugsRepairTest {
 						+ File.pathSeparator + "FALSE" + File.pathSeparator + "maxtime" + File.pathSeparator + "120"
 						+ File.pathSeparator + "autocompile" + File.pathSeparator + "false" + File.pathSeparator
 						+ "gzoltarpackagetonotinstrument" + File.pathSeparator + "com.google.gson_engine"
-						+ GZoltarFaultLocalization.PACKAGE_SEPARATOR + "java_programs_test");
+						+ File.pathSeparator + "java_programs_test");
 		cs.command.put("-location", new File("./examples/quixbugscompiled/" + name).getAbsolutePath());
 
 		return cs;

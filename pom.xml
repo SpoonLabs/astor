@@ -1,4 +1,4 @@
-<project xmlns="https://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -125,12 +125,6 @@
 			<version>1.7.3</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.gzoltar</groupId>
-			<artifactId>gzoltar</artifactId>
-			<version>0.1.1</version>
-		</dependency>
-
 
 
 		<dependency>
@@ -151,6 +145,11 @@
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>30.1-jre</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

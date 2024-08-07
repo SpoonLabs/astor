@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import fr.inria.astor.core.faultlocalization.gzoltar.NovelGZoltarFaultLocalization;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -38,7 +39,6 @@ import fr.inria.astor.core.faultlocalization.FaultLocalizationStrategy;
 import fr.inria.astor.core.faultlocalization.cocospoon.CocoFaultLocalization;
 import fr.inria.astor.core.faultlocalization.entity.SuspiciousCode;
 import fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization;
-import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
 import fr.inria.astor.core.manipulation.MutationSupporter;
 import fr.inria.astor.core.manipulation.bytecode.entities.CompilationResult;
 import fr.inria.astor.core.manipulation.filters.ExpressionIngredientSpaceProcessor;
@@ -1089,7 +1089,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 		if (flvalue.equals("flacoco")) {
 			this.setFaultLocalization(new FlacocoFaultLocalization());
 		} else if (flvalue.equals("gzoltar")) {
-			this.setFaultLocalization(new GZoltarFaultLocalization());
+			this.setFaultLocalization(new NovelGZoltarFaultLocalization());
 		} else if (flvalue.equals("cocospoon")) {
 			this.setFaultLocalization(new CocoFaultLocalization());
 		} else
