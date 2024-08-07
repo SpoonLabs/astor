@@ -253,7 +253,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			}
 			if (!ConfigurationProperties.getPropertyBool("saveall")) {
 				projectFacade.cleanMutationResultDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT);
-				projectFacade.cleanMutationResultSourceDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT + PatchDiffCalculator.DIFF_SUFFIX);
+				projectFacade.cleanMutationResultDirectories(ProgramVariant.DEFAULT_ORIGINAL_VARIANT + PatchDiffCalculator.DIFF_SUFFIX);
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
