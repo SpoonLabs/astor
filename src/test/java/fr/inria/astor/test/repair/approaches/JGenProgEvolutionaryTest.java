@@ -44,7 +44,8 @@ public class JGenProgEvolutionaryTest extends BaseEvolutionaryTest {
 				"-population", "1", "-reintroduce",
 				PopulationConformation.PARENTS.toString() + File.pathSeparator
 						+ PopulationConformation.SOLUTIONS.toString(), // Parameters:
-				"-parameters", "maxnumbersolutions:3:ignoredTestCases:org.apache.commons.math.estimation.MinpackTest"
+				"-parameters", "maxnumbersolutions" + File.pathSeparator + "3" + File.pathSeparator + "ignoredTestCases"
+						+ File.pathSeparator + "org.apache.commons.math.estimation.MinpackTest"
 
 		};
 		System.out.println(Arrays.toString(args));

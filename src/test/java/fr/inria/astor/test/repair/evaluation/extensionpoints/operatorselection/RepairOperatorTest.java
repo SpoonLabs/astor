@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
 import org.junit.Test;
 
 import fr.inria.astor.approaches.jgenprog.JGenProg;

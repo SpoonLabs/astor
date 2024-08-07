@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.List;
 
-import org.fest.util.Files;
 import org.junit.Test;
 
 import fr.inria.astor.core.entities.ProgramVariant;
@@ -150,7 +149,8 @@ public class FaultLocalizationTest {
 
 		cs.command.put("-faultlocalization", fl.name());
 		cs.command.put("-flthreshold", "0.0000");
-		cs.command.put("-parameters", "includeZeros:false:keepGZoltarFiles:false");
+		cs.command.put("-parameters", "includeZeros" + File.pathSeparator + "false" + File.pathSeparator
+				+ "keepGZoltarFiles" + File.pathSeparator + "false");
 
 		String oneFailingTestClassToRun = "org.apache.commons.math.analysis.solvers.BisectionSolverTest#testMath369";
 		String anotherTestClassToRun = "org.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest";
@@ -191,13 +191,14 @@ public class FaultLocalizationTest {
 
 		cs.command.put("-faultlocalization", fl.name());
 		cs.command.put("-flthreshold", "0.0000");
-		cs.command.put("-parameters", "includeZeros:false:keepGZoltarFiles:false");
+		cs.command.put("-parameters", "includeZeros" + File.pathSeparator + "false" + File.pathSeparator
+				+ "keepGZoltarFiles" + File.pathSeparator + "false");
 
 		String oneFailingTestClassToRun = "org.apache.commons.math.analysis.solvers.BisectionSolverTest#testMath369";
 		String anotherTestClassToRun = "org.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest";
 		String thirdTestclassToRun = "org.apache.commons.math.estimation.WeightedMeasurementTest";
 
-		File ft = Files.newTemporaryFile();
+		File ft = File.createTempFile("astortmp","");
 		FileWriter fw = new FileWriter(ft);
 
 		fw.write(oneFailingTestClassToRun);
@@ -262,7 +263,7 @@ public class FaultLocalizationTest {
 		System.out.println(Arrays.toString(args));
 		CommandSummary command = new CommandSummary(args);
 
-		command.command.put("-parameters", "fixedLocation:BisectionSolver-72");
+		command.command.put("-parameters", "fixedLocation" + File.pathSeparator + "BisectionSolver-72");
 		main1.execute(command.flat());
 
 		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
@@ -277,7 +278,8 @@ public class FaultLocalizationTest {
 		// by default, max generations is zero, that means, it does not evolve
 		cs.command.put("-faultlocalization", FaultLocalization.GZOLTAR1_7.name());
 		cs.command.put("-flthreshold", "0.0000");
-		cs.command.put("-parameters", "includeZeros:false:keepGZoltarFiles:false");
+		cs.command.put("-parameters", "includeZeros" + File.pathSeparator + "false" + File.pathSeparator
+				+ "keepGZoltarFiles" + File.pathSeparator + "false");
 
 		// We execute astor for creating the model and run FL
 
@@ -311,7 +313,8 @@ public class FaultLocalizationTest {
 
 		cs.command.put("-faultlocalization", flocalization.name());
 		cs.command.put("-flthreshold", "0.0000");
-		cs.command.put("-parameters", "includeZeros:false:keepGZoltarFiles:false");
+		cs.command.put("-parameters", "includeZeros" + File.pathSeparator + "false" + File.pathSeparator
+				+ "keepGZoltarFiles" + File.pathSeparator + "false");
 
 		String oneFailingTestClassToRun = "org.apache.commons.math.analysis.solvers.BisectionSolverTest";
 		String anotherTestClassToRun = "org.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest";
@@ -358,7 +361,8 @@ public class FaultLocalizationTest {
 
 		cs.command.put("-faultlocalization", fl.name());
 		cs.command.put("-flthreshold", "0.0000");
-		cs.command.put("-parameters", "includeZeros:false:keepGZoltarFiles:false");
+		cs.command.put("-parameters", "includeZeros" + File.pathSeparator + "false" + File.pathSeparator
+				+ "keepGZoltarFiles" + File.pathSeparator + "false");
 
 		String oneFailingTestClassToRun = "org.apache.commons.math.analysis.solvers.BisectionSolverTest#testMath369";
 		String anotherTestClassToRun = "org.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest#testTrivial";

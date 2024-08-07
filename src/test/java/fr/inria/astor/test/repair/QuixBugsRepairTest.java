@@ -21,7 +21,7 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.OperatorInstance;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
-import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
+import fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization;
 import fr.inria.astor.core.ingredientbased.IngredientBasedApproach;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
@@ -64,9 +64,12 @@ public class QuixBugsRepairTest {
 		cs.command.put("-flthreshold", "0.0");
 		cs.command.put("-loglevel", "INFO");
 		cs.command.put("-stopfirst", "TRUE");
-		cs.command.put("-parameters", "logtestexecution:TRUE:"
-				+ "disablelog:FALSE:maxtime:120:autocompile:false:gzoltarpackagetonotinstrument:com.google.gson_engine"
-				+ "-" + "java_programs_test");
+		cs.command.put("-parameters",
+				"logtestexecution" + File.pathSeparator + "TRUE" + File.pathSeparator + "" + "disablelog"
+						+ File.pathSeparator + "FALSE" + File.pathSeparator + "maxtime" + File.pathSeparator + "120"
+						+ File.pathSeparator + "autocompile" + File.pathSeparator + "false" + File.pathSeparator
+						+ "gzoltarpackagetonotinstrument" + File.pathSeparator + "com.google.gson_engine"
+						+ File.pathSeparator + "java_programs_test");
 		cs.command.put("-location", new File("./examples/quixbugscompiled/" + name).getAbsolutePath());
 
 		return cs;
@@ -296,7 +299,7 @@ public class QuixBugsRepairTest {
 		CommandSummary command = (getQuixBugsCommand("get_factors"));
 		command.command.put("-maxgen", "0");
 		command.command.put("-mode", "cardumen");
-		command.append("-parameters", "packageToInstrument:java_programs");
+		command.append("-parameters", "packageToInstrument" + File.pathSeparator + "java_programs");
 
 		main1.execute(command.flat());
 
@@ -427,8 +430,8 @@ public class QuixBugsRepairTest {
 		command.command.put("-maxgen", "1000");
 		// The suspicious is a var declaration used in the patch, so, the default
 		// transformation ignore it
-		command.append("-parameters", ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + ":"
-				+ NoIngredientTransformation.class.getName());
+		command.append("-parameters", ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + "" + File.pathSeparator
+				+ "" + NoIngredientTransformation.class.getName());
 		main1.execute(command.flat());
 
 		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
@@ -452,8 +455,8 @@ public class QuixBugsRepairTest {
 		CommandSummary command = (getQuixBugsCommand("lis"));
 		command.command.put("-maxgen", "0");
 		command.command.put("-loglevel", "ERROR");
-		command.append("-parameters", ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + ":"
-				+ NoIngredientTransformation.class.getName());
+		command.append("-parameters", ExtensionPoints.INGREDIENT_TRANSFORM_STRATEGY.identifier + "" + File.pathSeparator
+				+ "" + NoIngredientTransformation.class.getName());
 
 		main1.execute(command.flat());
 

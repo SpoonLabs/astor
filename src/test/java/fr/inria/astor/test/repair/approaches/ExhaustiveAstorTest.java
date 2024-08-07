@@ -108,9 +108,10 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 				"-scope", "package", "-seed", "10", "-maxgen", "10000", "-stopfirst", "false", //
 				"-maxtime", "100", "-loglevel", "INFO",
 				// For excluding regression
-				"-excludeRegression", "-parameters", "maxCombinationVariableLimit:true"
-						// reduced search space
-						+ ":maxVarCombination:1" + ":ingredienttransformstrategy:"
+				"-excludeRegression", "-parameters", "maxCombinationVariableLimit" + File.pathSeparator + "true"
+				// reduced search space
+						+ "" + File.pathSeparator + "maxVarCombination" + File.pathSeparator + "1" + ""
+						+ File.pathSeparator + "ingredienttransformstrategy" + File.pathSeparator + ""
 						+ RandomTransformationStrategy.class.getCanonicalName()
 
 		};
@@ -250,7 +251,9 @@ public class ExhaustiveAstorTest extends BaseEvolutionaryTest {
 		File out = new File(ConfigurationProperties.getProperty("workingDirectory"));
 		String[] args = new String[] { "-dependencies", dep, "-mode", "custom", "-customengine",
 				DeepRepairExhausitiveCloneEngine.class.getCanonicalName(), ExtensionPoints.REPAIR_OPERATORS.argument(),
-				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp:fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp:fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
+				"fr.inria.astor.approaches.jgenprog.operators.InsertAfterOp" + File.pathSeparator
+						+ "fr.inria.astor.approaches.jgenprog.operators.InsertBeforeOp" + File.pathSeparator
+						+ "fr.inria.astor.approaches.jgenprog.operators.ReplaceOp",
 
 				"-failing", "org.apache.commons.math.analysis.solvers.BisectionSolverTest", "-location",
 				new File("./examples/math_70").getAbsolutePath(), "-package", "org.apache.commons", "-srcjavafolder",

@@ -4,7 +4,6 @@ import fr.inria.astor.core.entities.ModificationPoint;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.SuspiciousModificationPoint;
 import fr.inria.astor.core.faultlocalization.flacoco.FlacocoFaultLocalization;
-import fr.inria.astor.core.faultlocalization.gzoltar.GZoltarFaultLocalization;
 import fr.inria.astor.core.faultlocalization.gzoltar.NovelGZoltarFaultLocalization;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.navigation.SuspiciousNavigationValues;
@@ -195,7 +194,8 @@ public class FaultLocalizationExtensionTest {
 		csDefault.command.put("-maxgen", "0");
 		csDefault.command.put("-modificationpointnavigation", SuspiciousNavigationValues.WEIGHT.toString());
 		csDefault.command.put("-faultlocalization", fltorun);
-		csDefault.command.put("-parameters", "includeTestInSusp:true:loglevel:INFO");
+		csDefault.command.put("-parameters", "includeTestInSusp" + File.pathSeparator + "true" + File.pathSeparator
+				+ "loglevel" + File.pathSeparator + "INFO");
 
 		final Double flthreshold = 0.5;
 		csDefault.command.put("-flthreshold", flthreshold.toString());
