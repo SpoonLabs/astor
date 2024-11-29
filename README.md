@@ -30,7 +30,7 @@ We do welcome bug fixes, features and new repair approaches as pull request. Wel
 
 [Contributors](https://github.com/SpoonLabs/astor/graphs/contributors):
 
-* Matias Martinez (Université Polytechnique Hauts-de-France, France) (project leader: matias.sebastian.martinez@gmail.com)
+* Matias Martinez (Universitat Politecnica de Catalunya - BarcelonaTech, Spain) (project leader: matias.sebastian.martinez@gmail.com)
 * Martin Monperrus (KTH Royal Institute of Technology, Sweden) (martin.monperrus@csc.kth.se)
 * Thomas Durieux (Inria, France)
 * Martin G. White (William and Mary, USA)
