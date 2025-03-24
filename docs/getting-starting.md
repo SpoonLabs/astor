@@ -22,6 +22,8 @@ Warning: Windows is only partially supported.
 
 The following JAR will be created by this command: `target/astor-0.0.2-SNAPSHOT-jar-with-dependencies.jar`  
 This will referenced as `astor.jar` for the rest of this guide but you will need to replace it with the full line when inserting commands.
+
+If you find any error, please check the [FAQ](#FAQ) section.
      
 ## Executing the program
 
@@ -196,6 +198,38 @@ If after doing the previous steps Astor produces the exception  `UnsupportedClas
 you will need to add  the jar `<astor_location>/lib/jtestex7.jar` in the java classplath (attention: add it *before* the astor jar).
 
 ## FAQ
+
+Q. I get the following error when setting up Astor with Maven: 
+```
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.003 s
+[INFO] Finished at: 2025-03-24T13:34:48+01:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal on project astor: Could not collect dependencies for project org.inria.sacha.automaticRepair:astor:jar:2.0.0
+[ERROR] Failed to read artifact descriptor for com.gzoltar:gzoltar:jar:0.1.1
+[ERROR] 	Caused by: The following artifacts could not be resolved: com.gzoltar:gzoltar:pom:0.1.1 (present, but unavailable): Could not transfer artifact com.gzoltar:gzoltar:pom:0.1.1 from/to maven-default-http-blocker (http://0.0.0.0/): Blocked mirror for repositories: [inria (http://spoon.gforge.inria.fr/repositories/releases/, default, releases+snapshots), EvoSuite (http://www.evosuite.org/m2, default, releases+snapshots), sachaproject.gforge.inria.fr-release (http://sachaproject.gforge.inria.fr/repositories/releases/, default, releases+snapshots), maven.inria.fr-snapshot (http://maven.inria.fr/artifactory/spoon-public-snapshot/, default, releases+snapshots)]
+
+```
+A.  In the `/<USER_HOME>/.m2/settings.xml` file add the following code:
+```
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd">
+  ...
+    <mirrors>
+        <mirror>
+            <id>maven-default-http-blocker</id>
+            <mirrorOf>external:dont-match-anything-mate:*</mirrorOf>
+            <name>Pseudo repository to mirror external repositories initially using HTTP.</name>
+            <url>http://0.0.0.0/</url>
+            <blocked>false</blocked>
+        </mirror>
+    </mirrors>
+  ...
+</settings>
+```
 
 Q. I get following error after running Astor: `Exception in thread "main" java.lang.IllegalArgumentException: The bin folder /home/user/astor/examples/Math-issue-280/target/classes does not exist`   
 A. Run `mvn clean compile test` again in the example issue folder.  
