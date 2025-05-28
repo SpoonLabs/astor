@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "32",
+  "VALIDATION": "|true|0|6|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.RPN_EVAL",
+      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\rpn_eval\\\\src\\\\java_programs\\\\RPN_EVAL.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "0,707",
+      "INGREDIENT_PARENT": "_BinaryOperator_0.apply(_Double_1, _Double_2)",
+      "PATCH_HUNK_TYPE": "CtInvocationImpl|CtAssignmentImpl",
+      "ORIGINAL_CODE": "bin_op.apply(a, b)",
+      "BUGGY_CODE_TYPE": "CtInvocationImpl|CtAssignmentImpl",
+      "OPERATOR": "ExpressionReplaceOperator",
+      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-rpn_eval\\\\\\/src\\/\\\\variant-32\\\\java_programs\\\\RPN_EVAL.java",
+      "LINE": "34",
+      "MP_RANKING": "19",
+      "PATCH_HUNK_CODE": "bin_op.apply(b, a)"
+    }
+  ],
+  "TIME": "14",
+  "GENERATION": "16",
+  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-rpn_eval\\\\\\/src\\/\\\\variant-32",
+  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\rpn_eval\\\\src\\\\java_programs\\\\RPN_EVAL.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\rpn_eval\\\\src\\\\java_programs\\\\RPN_EVAL.java\\n@@ -34 +34 @@\\n-\\t\\t\\t\\tc \u003d bin_op.apply(a, b);\\n+\\t\\t\\t\\tc \u003d bin_op.apply(b, a);\\n\\n"
+}

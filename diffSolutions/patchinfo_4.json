@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "4",
+  "VALIDATION": "|true|0|5|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.DEPTH_FIRST_SEARCH",
+      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "0,577",
+      "INGREDIENT_PARENT": "_Node_0 \u003d\u003d _Node_1",
+      "PATCH_HUNK_TYPE": "CtBinaryOperatorImpl|CtIfImpl",
+      "ORIGINAL_CODE": "search(successornodes)",
+      "BUGGY_CODE_TYPE": "CtInvocationImpl|CtIfImpl",
+      "OPERATOR": "ExpressionReplaceOperator",
+      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-depth_first_search\\\\\\/src\\/\\\\variant-4\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java",
+      "LINE": "23",
+      "MP_RANKING": "1",
+      "PATCH_HUNK_CODE": "node \u003d\u003d node"
+    }
+  ],
+  "TIME": "1",
+  "GENERATION": "2",
+  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-depth_first_search\\\\\\/src\\/\\\\variant-4",
+  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java\\n@@ -23 +23 @@\\n-\\t\\t\\t\\t\\t\\tif (search(successornodes)) { \\t\\t\\t\\t\\t\\t\\treturn true;}\\n+\\t\\t\\t\\t\\t\\tif (node \u003d\u003d node) { \\t\\t\\t\\t\\t\\t\\treturn true;}\\n\\n"
+}

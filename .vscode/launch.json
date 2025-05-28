@@ -1,0 +1,49 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "_3sFix",
+            "request": "launch",
+            "mainClass": "fr.inria.astor.approaches._3sfix._3sFix",
+            "projectName": "astor"
+        },
+        {
+            "type": "java",
+            "name": "JUnitExternalExecutor",
+            "request": "launch",
+            "mainClass": "fr.inria.astor.core.validation.junit.JUnitExternalExecutor",
+            "projectName": "astor"
+        },
+        {
+            "type": "java",
+            "name": "JUnitNologExternalExecutor",
+            "request": "launch",
+            "mainClass": "fr.inria.astor.core.validation.junit.JUnitNologExternalExecutor",
+            "projectName": "astor"
+        },
+        {
+            "type": "java",
+            "name": "FaultLocalizationMain",
+            "request": "launch",
+            "mainClass": "fr.inria.main.FaultLocalizationMain",
+            "projectName": "astor"
+        },
+        {
+            "type": "java",
+            "name": "AstorMain",
+            "request": "launch",
+            "mainClass": "fr.inria.main.evolution.AstorMain",
+            "projectName": "astor"
+        }
+    ]
+}

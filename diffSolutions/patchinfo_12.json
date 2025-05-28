@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "12",
+  "VALIDATION": "|true|0|11|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.GET_FACTORS",
+      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\get_factors\\\\src\\\\java_programs\\\\GET_FACTORS.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "1",
+      "INGREDIENT_PARENT": "(_int_0 % _int_1) \u003d\u003d 0",
+      "PATCH_HUNK_TYPE": "CtBinaryOperatorImpl|CtForImpl",
+      "ORIGINAL_CODE": "i \u003c max",
+      "BUGGY_CODE_TYPE": "CtBinaryOperatorImpl|CtForImpl",
+      "OPERATOR": "ExpressionReplaceOperator",
+      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-get_factors\\\\\\/src\\/\\\\variant-12\\\\java_programs\\\\GET_FACTORS.java",
+      "LINE": "19",
+      "MP_RANKING": "2",
+      "PATCH_HUNK_CODE": "(n % n) \u003d\u003d 0"
+    }
+  ],
+  "TIME": "3",
+  "GENERATION": "1",
+  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-get_factors\\\\\\/src\\/\\\\variant-12",
+  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\get_factors\\\\src\\\\java_programs\\\\GET_FACTORS.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\get_factors\\\\src\\\\java_programs\\\\GET_FACTORS.java\\n@@ -19,2 +19,2 @@\\n-\\t\\tfor (int i \u003d 2; i \u003c max; i++) {\\n-\\t\\t\\tif ((n % i) \u003d\u003d 0) {\\n+\\t\\tfor (int i \u003d 2; \\n+\\t\\t(n % n) \u003d\u003d 0; i++) { \\t\\t\\tif ((n % i) \u003d\u003d 0) {\\n\\n"
+}

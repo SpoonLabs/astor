@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "416",
+  "VALIDATION": "|true|0|5|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.POWERSET",
+      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\powerset\\\\src\\\\java_programs\\\\POWERSET.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "1",
+      "INGREDIENT_PARENT": "return empty_set",
+      "PATCH_HUNK_TYPE": "CtReturnImpl|CtBlockImpl",
+      "ORIGINAL_CODE": "return output",
+      "BUGGY_CODE_TYPE": "CtReturnImpl|CtBlockImpl",
+      "OPERATOR": "ReplaceOp",
+      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-powerset\\\\\\/src\\/\\\\variant-416\\\\java_programs\\\\POWERSET.java",
+      "LINE": "35",
+      "MP_RANKING": "13",
+      "PATCH_HUNK_CODE": "return rest_subsets"
+    }
+  ],
+  "TIME": "106",
+  "GENERATION": "208",
+  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-powerset\\\\\\/src\\/\\\\variant-416",
+  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\powerset\\\\src\\\\java_programs\\\\POWERSET.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\powerset\\\\src\\\\java_programs\\\\POWERSET.java\\n@@ -35,5 +35,5 @@\\n-\\t\\t\\treturn output;\\n-\\t\\t} else {\\n-\\t\\t\\tjava.util.ArrayList empty_set \u003d new java.util.ArrayList\u003cjava.util.ArrayList\u003e();\\n-\\t\\t\\tempty_set.add(new java.util.ArrayList());\\n-\\t\\t\\treturn empty_set;\\n+\\n+\\n+\\n+\\n+\\t\\t\\treturn rest_subsets;} else { \\t\\t\\tjava.util.ArrayList empty_set \u003d new java.util.ArrayList\u003cjava.util.ArrayList\u003e(); \\t\\t\\tempty_set.add(new java.util.ArrayList()); \\t\\t\\treturn empty_set;\\n\\n"
+}

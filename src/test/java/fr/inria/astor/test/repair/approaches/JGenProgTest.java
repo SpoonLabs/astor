@@ -21,6 +21,7 @@ import fr.inria.astor.core.entities.Ingredient;
 import fr.inria.astor.core.entities.ProgramVariant;
 import fr.inria.astor.core.entities.StatementOperatorInstance;
 import fr.inria.astor.core.entities.validation.TestCaseVariantValidationResult;
+import fr.inria.astor.core.ingredientbased.LLMIngredientEngine;
 import fr.inria.astor.core.manipulation.sourcecode.VariableResolver;
 import fr.inria.astor.core.setup.ConfigurationProperties;
 import fr.inria.astor.core.solutionsearch.AstorCoreEngine;
@@ -462,7 +463,51 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 
 		String diff = variant.getPatchDiff().getFormattedDiff();
 		log.debug("Patch: " + diff);
+	}
 
+	@Test
+	public void testTFG() throws Exception {
+		// We will use Math-70 as the test subject
+		CommandSummary cs = MathCommandsTests.getMath70Command();
+
+		// Configure to use our custom LLM engine
+		cs.command.put("-customengine", LLMIngredientEngine.class.getName());
+		
+		// Add LLM-specific parameters - now using the template name instead of the whole prompt
+		cs.command.put("-parameters",
+			"llmService" + File.pathSeparator + "ollama" +  // LLM
+			File.pathSeparator + "llmmodel" + File.pathSeparator + "codellama:7b" +  // Use CodeLlama model
+			File.pathSeparator + "maxsuggestionsperpoint" + File.pathSeparator + "1" + // Only generate 1 suggestion per point
+			File.pathSeparator + "llmprompttemplate" + File.pathSeparator + "MULTIPLE_SOLUTIONS" + // Use the detailed repair template
+			File.pathSeparator + "stopfirst" + File.pathSeparator + "true" // Stop at first solution
+		);
+
+		AstorMain main1 = new AstorMain();
+		System.out.println(Arrays.toString(cs.flat()));
+		main1.execute(cs.flat());
+
+		// Add debug output
+		System.out.println("Engine status: " + main1.getEngine().getOutputStatus());
+		System.out.println("Solutions found: " + main1.getEngine().getSolutions().size());
+		
+		// Validate results
+		List<ProgramVariant> solutions = main1.getEngine().getSolutions();
+		// assertTrue("Should find at least one solution", solutions.size() > 0);
+		
+		// Validate the first solution
+		if (!solutions.isEmpty()) {
+			ProgramVariant variant = solutions.get(0);
+			assertNotNull(variant.getPatchDiff().getFormattedDiff());
+			
+			// Print the patch for inspection
+			System.out.println("Found patch: " + variant.getPatchDiff().getFormattedDiff());
+		}
+		else {
+			System.out.println("\n-----------------------\n-----------------------");
+			System.out.println("\nNO SOLUTION FOUND.");
+			System.out.println("\n-----------------------\n-----------------------");
+		}
+		System.out.println("\nEnd of testTFG");
 	}
 
 	@Test

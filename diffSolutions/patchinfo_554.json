@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "554",
+  "VALIDATION": "|true|0|7|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.HANOI",
+      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\hanoi\\\\src\\\\java_programs\\\\HANOI.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "1",
+      "INGREDIENT_PARENT": "_ArrayList_0.add(new java_programs.HANOI.Pair\u003cjava.lang.Integer, java.lang.Integer\u003e(_int_1, _int_2))",
+      "PATCH_HUNK_TYPE": "CtInvocationImpl|CtBlockImpl",
+      "ORIGINAL_CODE": "steps.add(new java_programs.HANOI.Pair\u003cjava.lang.Integer, java.lang.Integer\u003e(start, helper))",
+      "BUGGY_CODE_TYPE": "CtInvocationImpl|CtBlockImpl",
+      "OPERATOR": "ExpressionReplaceOperator",
+      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-hanoi\\\\\\/src\\/\\\\variant-554\\\\java_programs\\\\HANOI.java",
+      "LINE": "27",
+      "MP_RANKING": "13",
+      "PATCH_HUNK_CODE": "steps.add(new java_programs.HANOI.Pair\u003cjava.lang.Integer, java.lang.Integer\u003e(start, end))"
+    }
+  ],
+  "TIME": "111",
+  "GENERATION": "277",
+  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-hanoi\\\\\\/src\\/\\\\variant-554",
+  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\hanoi\\\\src\\\\java_programs\\\\HANOI.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\hanoi\\\\src\\\\java_programs\\\\HANOI.java\\n@@ -27 +27 @@\\n-\\t\\t\\tsteps.add(new java_programs.HANOI.Pair\u003cjava.lang.Integer, java.lang.Integer\u003e(start, helper));\\n+\\t\\t\\tsteps.add(new java_programs.HANOI.Pair\u003cjava.lang.Integer, java.lang.Integer\u003e(start, end));\\n\\n"
+}
