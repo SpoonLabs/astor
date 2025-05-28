@@ -471,15 +471,14 @@ public class JGenProgTest extends BaseEvolutionaryTest {
 		CommandSummary cs = MathCommandsTests.getMath70Command();
 
 		// Configure to use our custom LLM engine
+		cs.command.put("-stopfirst", "true");
 		cs.command.put("-customengine", LLMIngredientEngine.class.getName());
-		
 		// Add LLM-specific parameters - now using the template name instead of the whole prompt
 		cs.command.put("-parameters",
 			"llmService" + File.pathSeparator + "ollama" +  // LLM
 			File.pathSeparator + "llmmodel" + File.pathSeparator + "codellama:7b" +  // Use CodeLlama model
 			File.pathSeparator + "maxsuggestionsperpoint" + File.pathSeparator + "1" + // Only generate 1 suggestion per point
-			File.pathSeparator + "llmprompttemplate" + File.pathSeparator + "MULTIPLE_SOLUTIONS" + // Use the detailed repair template
-			File.pathSeparator + "stopfirst" + File.pathSeparator + "true" // Stop at first solution
+			File.pathSeparator + "llmprompttemplate" + File.pathSeparator + "MULTIPLE_SOLUTIONS" // Use the detailed repair template
 		);
 
 		AstorMain main1 = new AstorMain();
