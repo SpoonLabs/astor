@@ -18,7 +18,7 @@
       "PATCH_HUNK_CODE": "new java_programs.DEPTH_FIRST_SEARCH().depth_first_search(node, node)"
     }
   ],
-  "TIME": "12",
+  "TIME": "4",
   "GENERATION": "1",
   "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-depth_first_search\\\\\\/src\\/\\\\variant-9",
   "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java\\n@@ -23,10 +23,58 @@\\n-\\t\\t\\t\\t\\t\\tif (search(successornodes)) { \\t\\t\\t\\t\\t\\t\\treturn true;}\\n-\\t\\t\\t\\t\\t}\\n-\\t\\t\\t\\t}\\n-\\t\\t\\t\\treturn false;\\n-\\t\\t\\t}\\n-\\t\\t}\\n-\\n-\\t\\tSearch s \u003d new Search();\\n-\\t\\treturn s.search(startnode);\\n-\\t}}\\n\\\\ No newline at end of file\\n+\\t\\t\\t\\t\\t\\tif (\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\t\\t\\t\\t\\t\\tnew java_programs.DEPTH_FIRST_SEARCH().depth_first_search(node, node)) { \\t\\t\\t\\t\\t\\t\\treturn true;}}} \\t\\t\\t\\treturn false;}} \\t\\tSearch s \u003d new Search(); \\t\\treturn s.search(startnode);}}\\n\\\\ No newline at end of file\\n\\n"

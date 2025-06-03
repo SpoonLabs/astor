@@ -18,7 +18,7 @@
       "PATCH_HUNK_CODE": "return rest_subsets"
     }
   ],
-  "TIME": "135",
+  "TIME": "100",
   "GENERATION": "208",
   "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-powerset\\\\\\/src\\/\\\\variant-416",
   "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\powerset\\\\src\\\\java_programs\\\\POWERSET.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\powerset\\\\src\\\\java_programs\\\\POWERSET.java\\n@@ -35,5 +35,5 @@\\n-\\t\\t\\treturn output;\\n-\\t\\t} else {\\n-\\t\\t\\tjava.util.ArrayList empty_set \u003d new java.util.ArrayList\u003cjava.util.ArrayList\u003e();\\n-\\t\\t\\tempty_set.add(new java.util.ArrayList());\\n-\\t\\t\\treturn empty_set;\\n+\\n+\\n+\\n+\\n+\\t\\t\\treturn rest_subsets;} else { \\t\\t\\tjava.util.ArrayList empty_set \u003d new java.util.ArrayList\u003cjava.util.ArrayList\u003e(); \\t\\t\\tempty_set.add(new java.util.ArrayList()); \\t\\t\\treturn empty_set;\\n\\n"

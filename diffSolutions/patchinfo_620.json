@@ -18,7 +18,7 @@
       "PATCH_HUNK_CODE": "ends.put(length + 1, i)"
     }
   ],
-  "TIME": "156",
+  "TIME": "89",
   "GENERATION": "310",
   "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-lis\\\\\\/src\\/\\\\variant-620",
   "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java\\n@@ -29,2 +29,2 @@\\n-\\t\\t\\tif ((length \u003d\u003d longest) || (val \u003c arr[ends.get(length + 1)])) {\\n-\\t\\t\\t\\tends.put(length + 1, i);\\n+\\n+\\t\\t\\tends.put(length + 1, i); \\t\\t\\tif ((length \u003d\u003d longest) || (val \u003c arr[ends.get(length + 1)])) { \\t\\t\\t\\tends.put(length + 1, i);\\n\\n"

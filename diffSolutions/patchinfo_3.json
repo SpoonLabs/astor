@@ -18,7 +18,7 @@
       "PATCH_HUNK_CODE": "new java_programs.Node(\\\"C\\\", new java.util.ArrayList\u003cjava_programs.Node\u003e(java.util.Arrays.asList(successor)))"
     }
   ],
-  "TIME": "2",
+  "TIME": "1",
   "GENERATION": "1",
   "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-depth_first_search\\\\\\/src\\/\\\\variant-3",
   "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\Node.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\Node.java\\n@@ -49,2 +49,2 @@\\n-\\tpublic void setSuccessors(java.util.ArrayList\u003cjava_programs.Node\u003e successors) {\\n-\\t\\tthis.successors \u003d successors;\\n+\\tpublic void setSuccessors(java.util.ArrayList\u003cjava_programs.Node\u003e successors) { \\t\\tnew java_programs.Node(\\\"C\\\", new java.util.ArrayList\u003cjava_programs.Node\u003e(java.util.Arrays.asList(successor))).successors \u003d \\n+\\t\\tsuccessors;\\n\\n"

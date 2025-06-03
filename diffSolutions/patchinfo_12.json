@@ -18,7 +18,7 @@
       "PATCH_HUNK_CODE": "(n % n) \u003d\u003d 0"
     }
   ],
-  "TIME": "8",
+  "TIME": "3",
   "GENERATION": "1",
   "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-get_factors\\\\\\/src\\/\\\\variant-12",
   "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\get_factors\\\\src\\\\java_programs\\\\GET_FACTORS.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\get_factors\\\\src\\\\java_programs\\\\GET_FACTORS.java\\n@@ -19,2 +19,2 @@\\n-\\t\\tfor (int i \u003d 2; i \u003c max; i++) {\\n-\\t\\t\\tif ((n % i) \u003d\u003d 0) {\\n+\\t\\tfor (int i \u003d 2; \\n+\\t\\t(n % n) \u003d\u003d 0; i++) { \\t\\t\\tif ((n % i) \u003d\u003d 0) {\\n\\n"

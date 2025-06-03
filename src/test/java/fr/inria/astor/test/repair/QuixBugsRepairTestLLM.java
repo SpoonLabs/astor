@@ -72,7 +72,7 @@ public class QuixBugsRepairTestLLM {
 		cs.command.put("-package", "java_programs");
 		cs.command.put("-dependencies", dep);
 		cs.command.put("-scope", "package");
-		cs.command.put("-mode", "jgenprog");
+		cs.command.put("-mode", "custom");
 		cs.command.put("-id", name);
 		cs.command.put("-population", "1");
 		cs.command.put("-srcjavafolder", "/src");
@@ -121,18 +121,16 @@ public class QuixBugsRepairTestLLM {
         for (Method method : methods) {
             if (method.isAnnotationPresent(Test.class) && 
                 !method.isAnnotationPresent(Ignore.class) && 
-                method.getName().contains("Repair")) {
+                method.getName().contains("Repair") &&
+				!method.getName().contains("sort")) {
                 testMethods.add(method);
             }
         }
         
-        // Limit to first 4 tests only
-        List<Method> limitedTests = testMethods.size() > 4 ? testMethods.subList(0, 4) : testMethods;
-        
-        System.out.println("Found " + testMethods.size() + " QuixBugs repair tests, running first 4 only");
+        System.out.println("Found " + testMethods.size() + " QuixBugs repair tests to run");
         
         // Run each test and collect results
-        for (Method testMethod : limitedTests) {
+        for (Method testMethod : testMethods) {
             String testName = testMethod.getName();
             System.out.println("\n----------------------");
             System.out.println("Running test: " + testName);

@@ -18,7 +18,7 @@
       "PATCH_HUNK_CODE": "java_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1))"
     }
   ],
-  "TIME": "187",
+  "TIME": "127",
   "GENERATION": "1",
   "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-levenshtein\\\\\\/src\\/\\\\variant-120",
   "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\levenshtein\\\\src\\\\java_programs\\\\LEVENSHTEIN.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\levenshtein\\\\src\\\\java_programs\\\\LEVENSHTEIN.java\\n@@ -17 +17 @@\\n-\\t\\t\\treturn 1 + java_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1));\\n+\\t\\t\\treturn java_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1));\\n\\n"
