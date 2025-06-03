@@ -4,7 +4,7 @@
   "patchhunks": [
     {
       "LOCATION": "java_programs.LIS",
-      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java",
+      "PATH": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java",
       "INGREDIENT_SCOPE": "-",
       "SUSPICIOUNESS": "1",
       "INGREDIENT_PARENT": "ends.put(length + 1, i)",
@@ -12,14 +12,14 @@
       "ORIGINAL_CODE": "if ((length \u003d\u003d longest) || (val \u003c arr[ends.get(length + 1)])) {\\r\\n\\tends.put(length + 1, i);\\r\\n\\tlongest \u003d length + 1;\\r\\n}",
       "BUGGY_CODE_TYPE": "CtIfImpl|CtBlockImpl",
       "OPERATOR": "InsertBeforeOp",
-      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-lis\\\\\\/src\\/\\\\variant-620\\\\java_programs\\\\LIS.java",
+      "MODIFIED_FILE_PATH": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-lis\\\\\\/src\\/\\\\variant-620\\\\java_programs\\\\LIS.java",
       "LINE": "29",
       "MP_RANKING": "9",
       "PATCH_HUNK_CODE": "ends.put(length + 1, i)"
     }
   ],
-  "TIME": "100",
+  "TIME": "156",
   "GENERATION": "310",
-  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-lis\\\\\\/src\\/\\\\variant-620",
-  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java\\n@@ -29,2 +29,2 @@\\n-\\t\\t\\tif ((length \u003d\u003d longest) || (val \u003c arr[ends.get(length + 1)])) {\\n-\\t\\t\\t\\tends.put(length + 1, i);\\n+\\n+\\t\\t\\tends.put(length + 1, i); \\t\\t\\tif ((length \u003d\u003d longest) || (val \u003c arr[ends.get(length + 1)])) { \\t\\t\\t\\tends.put(length + 1, i);\\n\\n"
+  "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-lis\\\\\\/src\\/\\\\variant-620",
+  "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java\\n@@ -29,2 +29,2 @@\\n-\\t\\t\\tif ((length \u003d\u003d longest) || (val \u003c arr[ends.get(length + 1)])) {\\n-\\t\\t\\t\\tends.put(length + 1, i);\\n+\\n+\\t\\t\\tends.put(length + 1, i); \\t\\t\\tif ((length \u003d\u003d longest) || (val \u003c arr[ends.get(length + 1)])) { \\t\\t\\t\\tends.put(length + 1, i);\\n\\n"
 }
