@@ -1,0 +1,6 @@
+--- C:\Users\Lenovo\Desktop\UPC\TFG_Clone\astorTFGFork\examples\quixbugscompiled\levenshtein\src\java_programs\LEVENSHTEIN.java
++++ C:\Users\Lenovo\Desktop\UPC\TFG_Clone\astorTFGFork\examples\quixbugscompiled\levenshtein\src\java_programs\LEVENSHTEIN.java
+@@ -17 +17 @@
+-			return 1 + java_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1));
++			return java_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1));
+

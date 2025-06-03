@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "QuixBugsRepairTestLLM",
+            "request": "launch",
+            "mainClass": "fr.inria.astor.test.repair.QuixBugsRepairTestLLM",
+            "projectName": "astor"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"

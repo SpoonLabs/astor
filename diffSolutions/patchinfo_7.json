@@ -1,23 +1,25 @@
 {
   "VARIANT_ID": "7",
-  "VALIDATION": "|true|0|13|[]|",
+  "VALIDATION": "|true|0|5|[]|",
   "patchhunks": [
     {
-      "LOCATION": "java_programs.QUICKSORT",
-      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\quicksort\\\\src\\\\java_programs\\\\QUICKSORT.java",
-      "ORIGINAL_CODE": "x \u003c pivot",
-      "BUGGY_CODE_TYPE": "CtBinaryOperatorImpl|CtIfImpl",
-      "OPERATOR": "IfExpresionMutOp",
-      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-quicksort\\\\\\/src\\/\\\\variant-7\\\\java_programs\\\\QUICKSORT.java",
-      "LINE": "24",
-      "SUSPICIOUNESS": "0,277",
-      "MP_RANKING": "2",
-      "PATCH_HUNK_CODE": "x \u003c\u003d pivot",
-      "PATCH_HUNK_TYPE": "CtBinaryOperatorImpl|CtIfImpl"
+      "LOCATION": "java_programs.DEPTH_FIRST_SEARCH",
+      "PATH": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "0,577",
+      "INGREDIENT_PARENT": "node \u003d\u003d _Node_0",
+      "PATCH_HUNK_TYPE": "CtBinaryOperatorImpl|CtIfImpl",
+      "ORIGINAL_CODE": "search(successornodes)",
+      "BUGGY_CODE_TYPE": "CtInvocationImpl|CtIfImpl",
+      "OPERATOR": "ExpressionReplaceOperator",
+      "MODIFIED_FILE_PATH": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-depth_first_search\\\\\\/src\\/\\\\variant-7\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java",
+      "LINE": "23",
+      "MP_RANKING": "1",
+      "PATCH_HUNK_CODE": "node \u003d\u003d node"
     }
   ],
-  "TIME": "2",
+  "TIME": "3",
   "GENERATION": "1",
-  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-quicksort\\\\\\/src\\/\\\\variant-7",
-  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\quicksort\\\\src\\\\java_programs\\\\QUICKSORT.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\quicksort\\\\src\\\\java_programs\\\\QUICKSORT.java\\n@@ -24 +24 @@\\n-\\t\\t\\tif (x \u003c pivot) {\\n+\\t\\t\\tif (x \u003c\u003d pivot) {\\n\\n"
+  "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-depth_first_search\\\\\\/src\\/\\\\variant-7",
+  "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java\\n@@ -23 +23 @@\\n-\\t\\t\\t\\t\\t\\tif (search(successornodes)) { \\t\\t\\t\\t\\t\\t\\treturn true;}\\n+\\t\\t\\t\\t\\t\\tif (node \u003d\u003d node) { \\t\\t\\t\\t\\t\\t\\treturn true;}\\n\\n"
 }
