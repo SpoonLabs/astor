@@ -25,6 +25,7 @@ import fr.inria.astor.core.stats.PatchStat.HunkStatEnum;
 import fr.inria.main.AstorOutputStatus;
 import fr.inria.main.evolution.ExtensionPoints;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * Exhaustive Search Engine
@@ -175,18 +176,21 @@ public class LLMIngredientEngine extends ExhaustiveSearchEngine implements Ingre
 
 
 		for (String fixedCode : suggestions) {
-			
-			// Create ReplaceOp with the fix
-			ReplaceOp replaceOp = new ReplaceOp();
-			OperatorInstance opInstance = new StatementOperatorInstance();
-			opInstance.setOperationApplied(replaceOp);
-			opInstance.setOriginal(modificationPoint.getCodeElement());
-			opInstance.setModificationPoint(modificationPoint);
+
 
 			// Create a CtCodeSnippetStatement from the fixed code string using MutationSupporter
 			CtCodeSnippetStatement snippetStatement = MutationSupporter.factory.Core().createCodeSnippetStatement();
 			snippetStatement.setValue(fixedCode);
-			opInstance.setModified(snippetStatement);
+			//opInstance.setModified(snippetStatement);
+
+			// Create ReplaceOp with the fix
+			ReplaceOp replaceOp = new ReplaceOp();
+			//OperatorInstance opInstance = new StatementOperatorInstance();
+			OperatorInstance opInstance = new StatementOperatorInstance(modificationPoint, replaceOp,
+					modificationPoint.getCodeElement(), snippetStatement);
+			//opInstance.setOperationApplied(replaceOp);
+			//opInstance.setOriginal(modificationPoint.getCodeElement());
+			//opInstance.setModificationPoint(modificationPoint);
 
 			ops.add(opInstance);
 		}
@@ -194,12 +198,32 @@ public class LLMIngredientEngine extends ExhaustiveSearchEngine implements Ingre
 		return ops;
 	}
 	
-	private List<String> getLLMSuggestion(String buggyCode, String testCode) {
-        
+	private List<String> getLLMSuggestion(String buggyCodeOriginal, String testCode) {
+		String buggyCode = "";
+		String restCode = "";
+		if (buggyCodeOriginal.contains("\n")) {
+			String[] splitCode = buggyCodeOriginal.split("\n");
+			buggyCode = splitCode[0];// Use only the first line of buggy code for simplicity
+			for (int i = 1; i < splitCode.length; i++) {
+				restCode += "\n" + splitCode[i].trim(); // Reconstruct the code without leading spaces
+			}
+
+		}
+		else{
+			buggyCode = buggyCodeOriginal; // Use the whole code if no new lines
+		}
+
+
         List<String> candidates = new ArrayList<>();
+
+		//if (true){
+		//	candidates.add("if (perm.get(j) >= perm.get(i)) {\n"+restCode);
+		//	return candidates;
+		//}
+
         
         int maxP = ConfigurationProperties.getPropertyInt("maxsuggestionsperpoint");
-		maxP = (maxP > 0 && maxP < 7) ? maxP : 6;  // max suggestions for each modification point given by LLM is 6
+		//maxP = (maxP > 0 && maxP < 7) ? maxP : 6;  // max suggestions for each modification point given by LLM is 6
         
 		String llmService = ConfigurationProperties.getProperty("llmService");
         if (llmService == null || llmService.trim().isEmpty()) {
@@ -237,7 +261,18 @@ public class LLMIngredientEngine extends ExhaustiveSearchEngine implements Ingre
                 String cleanedResponse = cleanLLMResponse(response);
                 candidates.add(cleanedResponse);
             }
-            
+            List<String> ncandidates = new ArrayList();
+			for (String candidate : candidates) {
+				// if restCode is not empty, append it to the candidate
+				if (!restCode.isEmpty()) {
+					candidate += restCode;
+					ncandidates.add(candidate);
+				}
+
+			}
+			if (!ncandidates.isEmpty()) {
+				candidates = ncandidates;
+			}
         } catch (Exception e) {
             log.error("Error getting LLM suggestion", e);
         }
@@ -311,7 +346,9 @@ public class LLMIngredientEngine extends ExhaustiveSearchEngine implements Ingre
         
         // Remove markdown code blocks
         response = response.replaceAll("```java", "").replaceAll("```", "");
-        
+		// Workaround for backticks
+		response = response.replace("`", ""); // Remove any backticks that might be left
+
         // If the response contains multiple lines, try to extract just the code line
         if (response.contains("\n")) {
             String[] lines = response.split("\n");
@@ -322,7 +359,9 @@ public class LLMIngredientEngine extends ExhaustiveSearchEngine implements Ingre
                 }
             }
         }
-        
+
+
+
         return response.trim();
     }
 
