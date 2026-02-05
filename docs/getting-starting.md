@@ -209,7 +209,7 @@ Q. I get the following error when setting up Astor with Maven:
 [INFO] ------------------------------------------------------------------------
 [ERROR] Failed to execute goal on project astor: Could not collect dependencies for project org.inria.sacha.automaticRepair:astor:jar:2.0.0
 [ERROR] Failed to read artifact descriptor for com.gzoltar:gzoltar:jar:0.1.1
-[ERROR] 	Caused by: The following artifacts could not be resolved: com.gzoltar:gzoltar:pom:0.1.1 (present, but unavailable): Could not transfer artifact com.gzoltar:gzoltar:pom:0.1.1 from/to maven-default-http-blocker (http://0.0.0.0/): Blocked mirror for repositories: [inria (http://spoon.gforge.inria.fr/repositories/releases/, default, releases+snapshots), EvoSuite (http://www.evosuite.org/m2, default, releases+snapshots), sachaproject.gforge.inria.fr-release (http://sachaproject.gforge.inria.fr/repositories/releases/, default, releases+snapshots), maven.inria.fr-snapshot (http://maven.inria.fr/artifactory/spoon-public-snapshot/, default, releases+snapshots)]
+[ERROR] 	Caused by: The following artifacts could not be resolved: com.gzoltar:gzoltar:pom:0.1.1 (present, but unavailable): Could not transfer artifact com.gzoltar:gzoltar:pom:0.1.1 from/to maven-default-http-blocker (http://0.0.0.0/): Blocked mirror for repositories: [inria (http://spoon.gforge.inria.fr/repositories/releases/, default, releases+snapshots), EvoSuite (http://www.evosuite.org/m2, default, releases+snapshots), sachaproject.gforge.inria.fr-release (http://sachaproject.gforge.inria.fr/repositories/releases/, default, releases+snapshots), default, releases+snapshots)]
 
 ```
 A.  In the `/<USER_HOME>/.m2/settings.xml` file add the following code:
