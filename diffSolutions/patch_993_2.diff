@@ -1,0 +1,8 @@
+--- C:\astor\examples\quixbugscompiled\depth_first_search\src\java_programs\Node.java
++++ C:\astor\examples\quixbugscompiled\depth_first_search\src\java_programs\Node.java
+@@ -50,2 +50,2 @@
+-		this.successors = successors;
+-	}
++		if (true)
++			return; 		this.successors = successors;}
+

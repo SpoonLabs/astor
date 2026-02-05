@@ -1,0 +1,6 @@
+--- C:\astor\examples\quixbugscompiled\rpn_eval\src\java_programs\RPN_EVAL.java
++++ C:\astor\examples\quixbugscompiled\rpn_eval\src\java_programs\RPN_EVAL.java
+@@ -34 +34 @@
+-				c = bin_op.apply(a, b);
++				c = bin_op.apply(b, a);
+

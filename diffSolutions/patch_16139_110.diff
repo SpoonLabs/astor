@@ -1,0 +1,8 @@
+--- C:\Users\Lenovo\Desktop\UPC\TFG_Clone\astorTFGFork\examples\math_70\src\main\java\org\apache\commons\math\analysis\solvers\BisectionSolver.java
++++ C:\Users\Lenovo\Desktop\UPC\TFG_Clone\astorTFGFork\examples\math_70\src\main\java\org\apache\commons\math\analysis\solvers\BisectionSolver.java
+@@ -71,2 +71,2 @@
+-	 */ 	public double solve(final org.apache.commons.math.analysis.UnivariateRealFunction f, double min, double max, double initial) throws org.apache.commons.math.MaxIterationsExceededException, org.apache.commons.math.FunctionEvaluationException {
+-		return solve(min, max);
++	 */ 	public double solve(final org.apache.commons.math.analysis.UnivariateRealFunction f, double min, double max, double initial) throws org.apache.commons.math.MaxIterationsExceededException, org.apache.commons.math.FunctionEvaluationException { 		return solve(f, min, max);
++
+

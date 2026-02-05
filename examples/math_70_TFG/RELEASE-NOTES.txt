@@ -1,0 +1,142 @@
+                        
+
+              Apache Commons Math 2.1 RELEASE NOTES
+
+This is primarily a maintenance release, but it also includes new features and enhancements.
+Users of version 2.0 are encouraged to upgrade to 2.1, as this release includes some important
+bug fixes.  See the detailed list of changes below for full description of all bug fixes and
+enhancements. 
+
+This release contains some minor API compatibility breaks with version 2.0:
+ --------------------------------------------------------------------------
+ - the return type of RealVector.copy() has been changed to AbstractRealVector
+ - the no-argument constructor of MatrixUtils() has been made private
+ - the mapXxxToSelf methods of OpenMapRealVector have been removed and some method return types
+   have been changed in this class
+ - new methods have been added to the RealVector interface
+ - several fields in AdaptiveStepSizeIntegrator have been made final
+ - DummyStepInterpolator requires an additional argument for one of its constructors
+ - some protected fields have been removed from AbstractLeastSquaresOptimizer,
+   AbstractScalarDifferentiableOptimizer and AbstractLinearOptimizer
+ - the isOptimal(SimplexTableau) method has been removed from SimplexSolver
+
+Changes in this version include:
+
+New features:
+o MATH-357:  Implementation of bicubic interpolation. 
+o Added a way to compute both the final state in an Initial Value Problem (IVP)
+        for Ordinary Differential Equations (ODE) and its derivatives with respect to
+        initial state and with respect to some problem parameters. This allows wrapping
+        ODE solvers into optimization or root finding algorithms, which in turn can be
+        used to solve Boundary Value Problems (BVP). There are no implementations (yet)
+        of BVP solvers in the library. 
+o MATH-323:  Added SemiVariance statistic. Thanks to Larry Diamond. 
+o MATH-341:  Added a warning in the getCoefficients method documentation for
+        PolynomialFunctionLagrangeForm. Computation may be ill-conditioned
+        so this method should be used with care. 
+o MATH-340:  Fixed an error in BigFraction multiplication for large numerators that don't
+        fit in a primitive int. 
+o MATH-334:  Added min/max getters for real vectors (not yet in the RealVector interface for
+        compatibility purposes, but in the AbstractRealVector abstract class). 
+o MATH-321:  Singular Value Decomposition now computes either the compact SVD (using only
+        positive singular values) or truncated SVD (using a user-specified maximal
+        number of singular values). 
+o MATH-300:  Added support for multidimensional interpolation using the robust microsphere algorithm. Thanks to Gilles Sadowski. 
+o MATH-287:  Added support for weighted descriptive statistics. Thanks to Matthew Rowles. 
+o Added normalizeArray method to MathUtils. 
+
+Fixed Bugs:
+o MATH-360:  Fix use of wrong variable in SmoothingBicubicSplineInterpolatorTest.testPreconditions() 
+o MATH-335:  Fraction.hashCode() implementation was not fully consistent with Fraction.equals().
+        Changed hashCode() to use fields directly to agree with equals(). 
+o MATH-282:  Resolved multiple problems leading to inaccuracy and/or failure to compute Normal,
+        ChiSquare and  Poisson probabilities, Erf and Gamma functions.  Made Brent solver 
+        absolute accuracy configurable for all continuous distributions. 
+o MATH-347:  Fixed too stringent interval check in Brent solver: initial guess is now
+        allowed to be at either interval end 
+o MATH-358:  Fixed an error in events handling in ODE solvers. In some rare cases, events
+        occurring close to a step start were handled without truncating the step, making
+        them appear as is they occurred close to the step end 
+o Fixed a problem with getInterpolatedDerivatives returning zero derivatives when
+        an ODE step handler is configured to not use interpolation. It now returns a
+        constant but non-zero value consistent with at least one point inside the step 
+o MATH-344:  Fixed wrong return values when enpoints are roots in Brent solver with
+        a user provided initial guess 
+o MATH-343:  Fixed a missing bracketing check of initial interval in Brent solver. 
+o MATH-342:  In SVD, the matrices passed to EigenDecomposition are now symmetric
+        by construction (rather than simply by definition).  In EigenDecomposition,
+        once the tridiagonal form is obtained, the non-significant elements are
+        set to 0. 
+o MATH-333:  A EigenDecompositionImpl simplified makes it possible to compute
+        the SVD of a singular matrix (with the right number of elements in
+        the diagonal matrix) or a matrix with singular value(s) of multiplicity
+        greater than 1. 
+o Fixed a spurious exception in EigenDecompositionImpl when a 3x3 block
+        had two identical eigenvalues. 
+o MATH-338:  Fixed automatic step initialization in embedded Runge-Kutta integrators.
+        The relative tolerance setting was never used, only the absolute tolerance
+        was used. Thanks to Vincent Morand. 
+o MATH-329:  Fixed regression in Frequency.getPct(Object) introduced in 2.0. Cumulative
+        percent was being returned for Object arguments in place of percent. 
+o MATH-320:  Fixed Singular Value Decomposition solving of singular systems. 
+o MATH-326:  Fixed a wrong implementation of the Linf norm in vectors. Thanks to Jake Mannix. 
+o MATH-324:  Fixed a convergence discrepancy with respect to theory in Gragg-Bulirsch-Stoer
+        integrator. Thanks to Vincent Morand. 
+o Fixed a wrong dimension check in SVD solver. Thanks to Dimitri Pourbaix. 
+o MATH-313:  Added composition features for real functions. Thanks to Jake Mannix. 
+o MATH-312:  Added mapping and iteration methods to vectors. Provided a default implementation
+        for the numerous simple methods in the RealVectorInterface. Thanks to Jake Mannix. 
+o MATH-322:  Fixed an error in handling very close events in ODE integration. 
+o MATH-305:  Fixed an overflow error in MathUtils.distance that was causing KMeansPlusPlusClusterer
+        to fail with a NullPointerException when component distances between points
+        exceeded Integer.MAXVALUE. Thanks to Erik van Ingen. 
+o MATH-318:  Fixed an index computation error in eigen decomposition. Once again, kudos to Dimitri
+        for debugging this. Thanks to Dimitri Pourbaix. 
+o MATH-308:  Fixed an ArrayIndexOutOfBoundsException in eigen decomposition. Kudos to Dimitri
+        for debugging this, it was really difficult. Thanks to Dimitri Pourbaix. 
+o MATH-309:  Fixed parameter test in RandomDataImpl#nextExponential. The method now throws
+        IllegalArgumentException for mean = 0. Thanks to Mikkel Meyer Andersen. 
+o MATH-306:  Removed dead code from Complex#divide. Thanks to Joerg Huber. 
+o MATH-294:  Fixed implementation of RandomDataImpl#nextPoisson by implementing an alternative
+        algorithm for large means. 
+o MATH-298:  Fixed implementation of EmpiricalDistributionImpl#getUpperBounds to match
+        interface contract.  Added getGeneratorUpperBounds method to
+        EmpiricalDistributionImpl providing previous behavior. 
+o MATH-296:  Fixed wrong results on Loess interpolation, also added a way to set weights
+        for smoothing and to ignore zero weights for coefficients computation Thanks to Eugene Kirpichov. 
+o MATH-293:  Fixed a OutOfBoundException in simplex solver when some constraints are tight. Thanks to Benjamin McCann. 
+o MATH-291:  Fixed misleading number formats in error messages for adaptive
+        stepsize integrators. Thanks to Sebb. 
+o MATH-290:  Fixed a NullPointerException in simplex solver when no solution is possible
+        and some constraints are negative. Thanks to Benjamin McCann. 
+o MATH-289:  Removed an unused argument in a private method in simplex solver. 
+o MATH-288:  Fixed an error induced by entries set to 0 in simplex solver. Thanks to Benjamin McCann. 
+o MATH-286:  Fixed an error leading the simplex solver to compute the right solution
+        but return another one. Thanks to Benjamin McCann. 
+o MATH-283:  Prevent infinite loops in multi-directional direct optimization method when
+        the start point is exactly at the optimal point. Thanks to Michael Nischt. 
+o MATH-297:  Prevent possible zero divides on eigenvectors of indefinite matrices Thanks to Axel Kramer. 
+
+Changes:
+o MATH-356:  Added method to clear the list of observations in CurveFitter. 
+o MATH-332:  Added density functions to remaining continuous distributions (F, T, Weibull, Cauchy).
+        As of Math 2.1, all continuous distributions implement density functions.  The HasDensity
+        interface has been deprecated and in version 3.0, density(double) will be added to the
+        ContinuousDistribution interface. Thanks to Mikkel Meyer Andersen. 
+o MATH-337:  Changed equals() methods to use instanceof check rather than catching ClassCastException;
+        this also allows some null checks to be omitted. 
+o MATH-336:  Removed unnecessary null checks in equals methods. 
+o MATH-239:  Added MathUtils methods to compute gcd and lcm for long arguments. Thanks to Christian Semrau. 
+o MATH-287:  Added support for weighted univariate statistics. Thanks to Matthew Rowles. 
+o MATH-315:  Added generationsEvolved property to GeneticAlgorithm to track the number of generations
+        evolved by the evolve() method before reaching the StoppingCondition. Thanks to Mikkel Meyer Andersen. 
+o MATH-311:  Changed probability calculations for Binomial, Poisson, and Hypergeometric
+        distributions to use Catherine Loader's saddle point approximations. Thanks to Nipun Jawalkar. 
+
+ 
+For complete information on Commons Math, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Math website:
+
+http://commons.apache.org/math/
+
+

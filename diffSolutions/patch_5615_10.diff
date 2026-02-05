@@ -1,0 +1,6 @@
+--- C:\astor\examples\quixbugscompiled\next_permutation\src\java_programs\NEXT_PERMUTATION.java
++++ C:\astor\examples\quixbugscompiled\next_permutation\src\java_programs\NEXT_PERMUTATION.java
+@@ -19 +19 @@
+-					if (perm.get(j) < perm.get(i)) {
++					if (perm.get(j) >= perm.get(i)) {
+

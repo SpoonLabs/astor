@@ -1,0 +1,74 @@
+--- C:\astor\examples\quixbugscompiled\depth_first_search\src\java_programs\DEPTH_FIRST_SEARCH.java
++++ C:\astor\examples\quixbugscompiled\depth_first_search\src\java_programs\DEPTH_FIRST_SEARCH.java
+@@ -23,10 +23,58 @@
+-						if (search(successornodes)) { 							return true;}
+-					}
+-				}
+-				return false;
+-			}
+-		}
+-
+-		Search s = new Search();
+-		return s.search(startnode);
+-	}}
+\ No newline at end of file
++						if (
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++						new java_programs.DEPTH_FIRST_SEARCH().depth_first_search(node, node)) { 							return true;}}} 				return false;}} 		Search s = new Search(); 		return s.search(startnode);}}
+\ No newline at end of file
+

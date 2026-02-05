@@ -1,0 +1,8 @@
+--- C:\astor\examples\quixbugscompiled\get_factors\src\java_programs\GET_FACTORS.java
++++ C:\astor\examples\quixbugscompiled\get_factors\src\java_programs\GET_FACTORS.java
+@@ -19,2 +19,2 @@
+-		for (int i = 2; i < max; i++) {
+-			if ((n % i) == 0) {
++		for (int i = 2; 
++		(n % n) == 0; i++) { 			if ((n % i) == 0) {
+

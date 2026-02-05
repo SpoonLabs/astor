@@ -1,0 +1,23 @@
+{
+  "VARIANT_ID": "10",
+  "VALIDATION": "|true|0|8|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.NEXT_PERMUTATION",
+      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\next_permutation\\\\src\\\\java_programs\\\\NEXT_PERMUTATION.java",
+      "ORIGINAL_CODE": "perm.get(j) \u003c perm.get(i)",
+      "BUGGY_CODE_TYPE": "CtBinaryOperatorImpl|CtIfImpl",
+      "OPERATOR": "IfExpresionMutOp",
+      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-next_permutation\\\\\\/src\\/\\\\variant-10\\\\java_programs\\\\NEXT_PERMUTATION.java",
+      "LINE": "19",
+      "SUSPICIOUNESS": "1",
+      "MP_RANKING": "1",
+      "PATCH_HUNK_CODE": "perm.get(j) \u003e\u003d perm.get(i)",
+      "PATCH_HUNK_TYPE": "CtBinaryOperatorImpl|CtIfImpl"
+    }
+  ],
+  "TIME": "4",
+  "GENERATION": "1",
+  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-next_permutation\\\\\\/src\\/\\\\variant-10",
+  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\next_permutation\\\\src\\\\java_programs\\\\NEXT_PERMUTATION.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\next_permutation\\\\src\\\\java_programs\\\\NEXT_PERMUTATION.java\\n@@ -19 +19 @@\\n-\\t\\t\\t\\t\\tif (perm.get(j) \u003c perm.get(i)) {\\n+\\t\\t\\t\\t\\tif (perm.get(j) \u003e\u003d perm.get(i)) {\\n\\n"
+}

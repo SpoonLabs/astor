@@ -1,0 +1,8 @@
+--- C:\astor\examples\quixbugscompiled\lis\src\java_programs\LIS.java
++++ C:\astor\examples\quixbugscompiled\lis\src\java_programs\LIS.java
+@@ -29,2 +29,2 @@
+-			if ((length == longest) || (val < arr[ends.get(length + 1)])) {
+-				ends.put(length + 1, i);
++
++			ends.put(length + 1, i); 			if ((length == longest) || (val < arr[ends.get(length + 1)])) { 				ends.put(length + 1, i);
+

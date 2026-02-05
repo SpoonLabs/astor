@@ -173,7 +173,7 @@ public class AstorMain extends AbstractMain {
 
 		ConfigurationProperties.print();
 
-		core.startSearch();
+		core.startSearch(); // Aqui
 
 		ExecutionResult result = core.atEnd();
 
@@ -216,10 +216,9 @@ public class AstorMain extends AbstractMain {
 		String packageToInstrument = ConfigurationProperties.getProperty("packageToInstrument");
 		double thfl = ConfigurationProperties.getPropertyDouble("flthreshold");
 		String projectName = ConfigurationProperties.getProperty("projectIdentifier");
-
 		setupLogging();
 
-		ExecutionResult result = run(location, projectName, dependencies, packageToInstrument, thfl, failing);
+		ExecutionResult result = run(location, projectName, dependencies, packageToInstrument, thfl, failing); // Aqui
 		return result;
 	}
 

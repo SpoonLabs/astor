@@ -1,0 +1,6 @@
+--- C:\astor\examples\quixbugscompiled\quicksort\src\java_programs\QUICKSORT.java
++++ C:\astor\examples\quixbugscompiled\quicksort\src\java_programs\QUICKSORT.java
+@@ -26 +26 @@
+-			} else if (x > pivot) {
++			} else if (true) {
+

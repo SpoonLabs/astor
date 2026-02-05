@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "202",
+  "VALIDATION": "|true|0|4|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.LIS",
+      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "1",
+      "INGREDIENT_PARENT": "ends.put(length + 1, i)",
+      "PATCH_HUNK_TYPE": "CtInvocationImpl|CtBlockImpl",
+      "ORIGINAL_CODE": "int length \u003d (!prefix_lengths.isEmpty()) ? java.util.Collections.max(prefix_lengths) : 0",
+      "BUGGY_CODE_TYPE": "CtLocalVariableImpl|CtBlockImpl",
+      "OPERATOR": "InsertAfterOp",
+      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-lis\\\\\\/src\\/\\\\variant-202\\\\java_programs\\\\LIS.java",
+      "LINE": "27",
+      "MP_RANKING": "8",
+      "PATCH_HUNK_CODE": "ends.put(length + 1, i)"
+    }
+  ],
+  "TIME": "23",
+  "GENERATION": "101",
+  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-lis\\\\\\/src\\/\\\\variant-202",
+  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\lis\\\\src\\\\java_programs\\\\LIS.java\\n@@ -29,2 +29,2 @@\\n-\\t\\t\\tif ((length \u003d\u003d longest) || (val \u003c arr[ends.get(length + 1)])) {\\n-\\t\\t\\t\\tends.put(length + 1, i);\\n+\\n+\\t\\t\\tends.put(length + 1, i); \\t\\t\\tif ((length \u003d\u003d longest) || (val \u003c arr[ends.get(length + 1)])) { \\t\\t\\t\\tends.put(length + 1, i);\\n\\n"
+}

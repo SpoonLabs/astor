@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "7",
+  "VALIDATION": "|true|0|5|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.DEPTH_FIRST_SEARCH",
+      "PATH": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "0,577",
+      "INGREDIENT_PARENT": "node \u003d\u003d _Node_0",
+      "PATCH_HUNK_TYPE": "CtBinaryOperatorImpl|CtIfImpl",
+      "ORIGINAL_CODE": "search(successornodes)",
+      "BUGGY_CODE_TYPE": "CtInvocationImpl|CtIfImpl",
+      "OPERATOR": "ExpressionReplaceOperator",
+      "MODIFIED_FILE_PATH": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-depth_first_search\\\\\\/src\\/\\\\variant-7\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java",
+      "LINE": "23",
+      "MP_RANKING": "1",
+      "PATCH_HUNK_CODE": "node \u003d\u003d node"
+    }
+  ],
+  "TIME": "3",
+  "GENERATION": "1",
+  "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-depth_first_search\\\\\\/src\\/\\\\variant-7",
+  "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java\\n@@ -23 +23 @@\\n-\\t\\t\\t\\t\\t\\tif (search(successornodes)) { \\t\\t\\t\\t\\t\\t\\treturn true;}\\n+\\t\\t\\t\\t\\t\\tif (node \u003d\u003d node) { \\t\\t\\t\\t\\t\\t\\treturn true;}\\n\\n"
+}

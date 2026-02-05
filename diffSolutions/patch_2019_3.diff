@@ -1,0 +1,8 @@
+--- C:\astor\examples\quixbugscompiled\depth_first_search\src\java_programs\Node.java
++++ C:\astor\examples\quixbugscompiled\depth_first_search\src\java_programs\Node.java
+@@ -49,2 +49,2 @@
+-	public void setSuccessors(java.util.ArrayList<java_programs.Node> successors) {
+-		this.successors = successors;
++	public void setSuccessors(java.util.ArrayList<java_programs.Node> successors) { 		new java_programs.Node("C", new java.util.ArrayList<java_programs.Node>(java.util.Arrays.asList(successor))).successors = 
++		successors;
+

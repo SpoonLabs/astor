@@ -1,0 +1,6 @@
+--- C:\astor\examples\quixbugscompiled\hanoi\src\java_programs\HANOI.java
++++ C:\astor\examples\quixbugscompiled\hanoi\src\java_programs\HANOI.java
+@@ -27 +27 @@
+-			steps.add(new java_programs.HANOI.Pair<java.lang.Integer, java.lang.Integer>(start, helper));
++			steps.add(new java_programs.HANOI.Pair<java.lang.Integer, java.lang.Integer>(start, end));
+
