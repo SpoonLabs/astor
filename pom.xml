@@ -175,7 +175,7 @@
 		<repository>
 			<id>sachaproject.gforge.inria.fr-release</id>
 			<name>Maven Repository for Spoon Release</name>
-			<url>https://sachaproject.gforge.inria.fr/repositories/releases/</url>
+			<url>https://files.inria.fr/sachaproject/htdocs/repositories/releases/</url>
 			<snapshots />
 		</repository>
 
