@@ -338,7 +338,8 @@ public abstract class AbstractMain {
 		}
 	}
 
-	public boolean processArguments(String[] args) throws Exception {
+	public boolean 
+	processArguments(String[] args) throws Exception {
 
 		ConfigurationProperties.clear();
 

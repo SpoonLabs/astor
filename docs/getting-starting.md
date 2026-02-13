@@ -1,4 +1,4 @@
-# Getting started Astor
+ # Getting started Astor
 
 Astor can be built either with an install generating an executable jar file which contains classpath and build dependencies, or by compiling the code and building the classpath separately, storing it in a text file to be included using the -cp option on execution.
 

@@ -1,0 +1,23 @@
+{
+  "VARIANT_ID": "30",
+  "VALIDATION": "|true|0|10|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.KNAPSACK",
+      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\knapsack\\\\src\\\\java_programs\\\\KNAPSACK.java",
+      "ORIGINAL_CODE": "weight \u003c j",
+      "BUGGY_CODE_TYPE": "CtBinaryOperatorImpl|CtIfImpl",
+      "OPERATOR": "IfExpresionMutOp",
+      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-knapsack\\\\\\/src\\/\\\\variant-30\\\\java_programs\\\\KNAPSACK.java",
+      "LINE": "30",
+      "SUSPICIOUNESS": "0,775",
+      "MP_RANKING": "2",
+      "PATCH_HUNK_CODE": "weight \u003c\u003d j",
+      "PATCH_HUNK_TYPE": "CtBinaryOperatorImpl|CtIfImpl"
+    }
+  ],
+  "TIME": "21",
+  "GENERATION": "1",
+  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-knapsack\\\\\\/src\\/\\\\variant-30",
+  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\knapsack\\\\src\\\\java_programs\\\\KNAPSACK.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\knapsack\\\\src\\\\java_programs\\\\KNAPSACK.java\\n@@ -30 +30 @@\\n-\\t\\t\\t\\tif (weight \u003c j) {\\n+\\t\\t\\t\\tif (weight \u003c\u003d j) {\\n\\n"
+}

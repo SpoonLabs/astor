@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "20",
+  "VALIDATION": "|true|0|13|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.MERGESORT",
+      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\mergesort\\\\src\\\\java_programs\\\\MERGESORT.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "1",
+      "INGREDIENT_PARENT": "_ArrayList_0.size() \\/ 2",
+      "PATCH_HUNK_TYPE": "CtBinaryOperatorImpl|CtBinaryOperatorImpl",
+      "ORIGINAL_CODE": "arr.size()",
+      "BUGGY_CODE_TYPE": "CtInvocationImpl|CtBinaryOperatorImpl",
+      "OPERATOR": "ExpressionReplaceOperator",
+      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-mergesort\\\\\\/src\\/\\\\variant-20\\\\java_programs\\\\MERGESORT.java",
+      "LINE": "38",
+      "MP_RANKING": "0",
+      "PATCH_HUNK_CODE": "(arr.size() \\/ 2)"
+    }
+  ],
+  "TIME": "4",
+  "GENERATION": "10",
+  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-mergesort\\\\\\/src\\/\\\\variant-20",
+  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\mergesort\\\\src\\\\java_programs\\\\MERGESORT.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\mergesort\\\\src\\\\java_programs\\\\MERGESORT.java\\n@@ -38,5 +38,5 @@\\n-\\t\\tif (arr.size() \u003d\u003d 0) { \\t\\t\\t\\/\\/ \u003c\u003d 1 in correct version\\n-\\t\\t\\treturn arr;\\n-\\t\\t} else {\\n-\\t\\t\\tint middle \u003d arr.size() \\/ 2;\\n-\\t\\t\\tjava.util.ArrayList\u003cjava.lang.Integer\u003e left \u003d new java.util.ArrayList\u003cjava.lang.Integer\u003e(100);\\n+\\t\\tif (\\n+\\n+\\n+\\t\\t(arr.size() \\/ 2) \u003d\u003d 0) { \\t\\t\\t\\/\\/ \u003c\u003d 1 in correct version\\n+\\t\\t\\treturn arr;} else { \\t\\t\\tint middle \u003d arr.size() \\/ 2; \\t\\t\\tjava.util.ArrayList\u003cjava.lang.Integer\u003e left \u003d new java.util.ArrayList\u003cjava.lang.Integer\u003e(100);\\n\\n"
+}

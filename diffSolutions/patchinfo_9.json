@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "9",
+  "VALIDATION": "|true|0|5|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.DEPTH_FIRST_SEARCH",
+      "PATH": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "0,577",
+      "INGREDIENT_PARENT": "new java_programs.DEPTH_FIRST_SEARCH().depth_first_search(_Node_0, _Node_0)",
+      "PATCH_HUNK_TYPE": "CtInvocationImpl|CtIfImpl",
+      "ORIGINAL_CODE": "search(successornodes)",
+      "BUGGY_CODE_TYPE": "CtInvocationImpl|CtIfImpl",
+      "OPERATOR": "ExpressionReplaceOperator",
+      "MODIFIED_FILE_PATH": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-depth_first_search\\\\\\/src\\/\\\\variant-9\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java",
+      "LINE": "23",
+      "MP_RANKING": "1",
+      "PATCH_HUNK_CODE": "new java_programs.DEPTH_FIRST_SEARCH().depth_first_search(node, node)"
+    }
+  ],
+  "TIME": "4",
+  "GENERATION": "1",
+  "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-depth_first_search\\\\\\/src\\/\\\\variant-9",
+  "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\depth_first_search\\\\src\\\\java_programs\\\\DEPTH_FIRST_SEARCH.java\\n@@ -23,10 +23,58 @@\\n-\\t\\t\\t\\t\\t\\tif (search(successornodes)) { \\t\\t\\t\\t\\t\\t\\treturn true;}\\n-\\t\\t\\t\\t\\t}\\n-\\t\\t\\t\\t}\\n-\\t\\t\\t\\treturn false;\\n-\\t\\t\\t}\\n-\\t\\t}\\n-\\n-\\t\\tSearch s \u003d new Search();\\n-\\t\\treturn s.search(startnode);\\n-\\t}}\\n\\\\ No newline at end of file\\n+\\t\\t\\t\\t\\t\\tif (\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\t\\t\\t\\t\\t\\tnew java_programs.DEPTH_FIRST_SEARCH().depth_first_search(node, node)) { \\t\\t\\t\\t\\t\\t\\treturn true;}}} \\t\\t\\t\\treturn false;}} \\t\\tSearch s \u003d new Search(); \\t\\treturn s.search(startnode);}}\\n\\\\ No newline at end of file\\n\\n"
+}

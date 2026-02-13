@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "266",
+  "VALIDATION": "|true|0|4|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.SHORTEST_PATH_LENGTHS",
+      "PATH": "C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\shortest_path_lengths\\\\src\\\\java_programs\\\\SHORTEST_PATH_LENGTHS.java",
+      "INGREDIENT_SCOPE": "LOCAL",
+      "SUSPICIOUNESS": "1",
+      "INGREDIENT_PARENT": "return length_by_path",
+      "PATCH_HUNK_TYPE": "CtReturnImpl|CtBlockImpl",
+      "ORIGINAL_CODE": "length_by_path.put(edge, length_by_edge.get(edge))",
+      "BUGGY_CODE_TYPE": "CtInvocationImpl|CtBlockImpl",
+      "OPERATOR": "InsertAfterOp",
+      "MODIFIED_FILE_PATH": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-shortest_path_lengths\\\\\\/src\\/\\\\variant-266\\\\java_programs\\\\SHORTEST_PATH_LENGTHS.java",
+      "LINE": "26",
+      "MP_RANKING": "7",
+      "PATCH_HUNK_CODE": "return length_by_path"
+    }
+  ],
+  "TIME": "39",
+  "GENERATION": "133",
+  "FOLDER_SOLUTION_CODE": "C:\\\\astor\\\\.\\\\output_astor\\\\AstorMain-shortest_path_lengths\\\\\\/src\\/\\\\variant-266",
+  "PATCH_DIFF_ORIG": "--- C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\shortest_path_lengths\\\\src\\\\java_programs\\\\SHORTEST_PATH_LENGTHS.java\\n+++ C:\\\\astor\\\\examples\\\\quixbugscompiled\\\\shortest_path_lengths\\\\src\\\\java_programs\\\\SHORTEST_PATH_LENGTHS.java\\n@@ -27,15 +27,15 @@\\n-\\t\\t\\t\\t} else {\\n-\\t\\t\\t\\t\\tlength_by_path.put(edge, java_programs.SHORTEST_PATH_LENGTHS.INF);\\n-\\t\\t\\t\\t}\\n-\\t\\t\\t}\\n-\\t\\t}\\n-\\t\\tfor (int k \u003d 0; k \u003c numNodes; k++) {\\n-\\t\\t\\tfor (int i \u003d 0; i \u003c numNodes; i++) {\\n-\\t\\t\\t\\tfor (int j \u003d 0; j \u003c numNodes; j++) {\\n-\\t\\t\\t\\t\\tint update_length \u003d java.lang.Math.min(length_by_path.get(java.util.Arrays.asList(i, j)), \\n-\\t\\t\\t\\t\\tlength_by_path.get(java.util.Arrays.asList(i, k)) + length_by_path.get(java.util.Arrays.asList(j, k)));\\n-\\t\\t\\t\\t\\tlength_by_path.put(java.util.Arrays.asList(i, j), update_length);\\n-\\t\\t\\t\\t}\\n-\\t\\t\\t}\\n-\\t\\t}\\n-\\t\\treturn length_by_path;\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\n+\\t\\t\\t\\t\\treturn length_by_path;} else { \\t\\t\\t\\t\\tlength_by_path.put(edge, java_programs.SHORTEST_PATH_LENGTHS.INF);}}} \\t\\tfor (int k \u003d 0; k \u003c numNodes; k++) { \\t\\t\\tfor (int i \u003d 0; i \u003c numNodes; i++) { \\t\\t\\t\\tfor (int j \u003d 0; j \u003c numNodes; j++) { \\t\\t\\t\\t\\tint update_length \u003d java.lang.Math.min(length_by_path.get(java.util.Arrays.asList(i, j)), length_by_path.get(java.util.Arrays.asList(i, k)) + length_by_path.get(java.util.Arrays.asList(j, k))); \\t\\t\\t\\t\\tlength_by_path.put(java.util.Arrays.asList(i, j), update_length);}}} \\t\\treturn length_by_path;\\n\\n"
+}

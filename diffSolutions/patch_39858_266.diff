@@ -1,0 +1,34 @@
+--- C:\astor\examples\quixbugscompiled\shortest_path_lengths\src\java_programs\SHORTEST_PATH_LENGTHS.java
++++ C:\astor\examples\quixbugscompiled\shortest_path_lengths\src\java_programs\SHORTEST_PATH_LENGTHS.java
+@@ -27,15 +27,15 @@
+-				} else {
+-					length_by_path.put(edge, java_programs.SHORTEST_PATH_LENGTHS.INF);
+-				}
+-			}
+-		}
+-		for (int k = 0; k < numNodes; k++) {
+-			for (int i = 0; i < numNodes; i++) {
+-				for (int j = 0; j < numNodes; j++) {
+-					int update_length = java.lang.Math.min(length_by_path.get(java.util.Arrays.asList(i, j)), 
+-					length_by_path.get(java.util.Arrays.asList(i, k)) + length_by_path.get(java.util.Arrays.asList(j, k)));
+-					length_by_path.put(java.util.Arrays.asList(i, j), update_length);
+-				}
+-			}
+-		}
+-		return length_by_path;
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++					return length_by_path;} else { 					length_by_path.put(edge, java_programs.SHORTEST_PATH_LENGTHS.INF);}}} 		for (int k = 0; k < numNodes; k++) { 			for (int i = 0; i < numNodes; i++) { 				for (int j = 0; j < numNodes; j++) { 					int update_length = java.lang.Math.min(length_by_path.get(java.util.Arrays.asList(i, j)), length_by_path.get(java.util.Arrays.asList(i, k)) + length_by_path.get(java.util.Arrays.asList(j, k))); 					length_by_path.put(java.util.Arrays.asList(i, j), update_length);}}} 		return length_by_path;
+

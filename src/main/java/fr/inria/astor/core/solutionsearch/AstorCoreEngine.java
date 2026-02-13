@@ -556,7 +556,7 @@ public abstract class AstorCoreEngine implements AstorExtensionPoint {
 			log.debug("-The child compiles: id " + programVariant.getId());
 			currentStat.increment(GeneralStatEnum.NR_RIGHT_COMPILATIONS);
 
-			VariantValidationResult validationResult = validateInstance(programVariant);
+			VariantValidationResult validationResult = validateInstance(programVariant); // Valida
 			double fitness = this.fitnessFunction.calculateFitnessValue(validationResult);
 			programVariant.setFitness(fitness);
 
