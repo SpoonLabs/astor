@@ -1,0 +1,14 @@
+--- C:\astor\examples\quixbugscompiled\mergesort\src\java_programs\MERGESORT.java
++++ C:\astor\examples\quixbugscompiled\mergesort\src\java_programs\MERGESORT.java
+@@ -38,5 +38,5 @@
+-		if (arr.size() == 0) { 			// <= 1 in correct version
+-			return arr;
+-		} else {
+-			int middle = arr.size() / 2;
+-			java.util.ArrayList<java.lang.Integer> left = new java.util.ArrayList<java.lang.Integer>(100);
++		if (
++
++
++		(arr.size() / 2) == 0) { 			// <= 1 in correct version
++			return arr;} else { 			int middle = arr.size() / 2; 			java.util.ArrayList<java.lang.Integer> left = new java.util.ArrayList<java.lang.Integer>(100);
+

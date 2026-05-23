@@ -1,0 +1,6 @@
+--- C:\astor\examples\quixbugscompiled\knapsack\src\java_programs\KNAPSACK.java
++++ C:\astor\examples\quixbugscompiled\knapsack\src\java_programs\KNAPSACK.java
+@@ -30 +30 @@
+-				if (weight < j) {
++				if (weight <= j) {
+

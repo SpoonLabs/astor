@@ -69,7 +69,8 @@ public class QuixBugsRepairTest {
 						+ File.pathSeparator + "FALSE" + File.pathSeparator + "maxtime" + File.pathSeparator + "120"
 						+ File.pathSeparator + "autocompile" + File.pathSeparator + "false" + File.pathSeparator
 						+ "gzoltarpackagetonotinstrument" + File.pathSeparator + "com.google.gson_engine"
-						+ File.pathSeparator + "java_programs_test");
+						// + File.pathSeparator + "java_programs_test"
+						);
 		cs.command.put("-location", new File("./examples/quixbugscompiled/" + name).getAbsolutePath());
 
 		return cs;
@@ -89,6 +90,7 @@ public class QuixBugsRepairTest {
 		main1.execute(command.flat());
 
 		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
+		
 
 	}
 
@@ -121,7 +123,7 @@ public class QuixBugsRepairTest {
 		CommandSummary command = (getQuixBugsCommand("depth_first_search"));
 		command.command.put("-maxgen", "500");
 		command.command.put("-mode", "cardumen");
-		main1.execute(command.flat());
+		 main1.execute(command.flat());
 
 		assertTrue("No solution", main1.getEngine().getSolutions().size() > 0);
 

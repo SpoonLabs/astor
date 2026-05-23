@@ -1,0 +1,14 @@
+--- C:\Users\Lenovo\Desktop\UPC\TFG_Clone\astorTFGFork\examples\quixbugscompiled\powerset\src\java_programs\POWERSET.java
++++ C:\Users\Lenovo\Desktop\UPC\TFG_Clone\astorTFGFork\examples\quixbugscompiled\powerset\src\java_programs\POWERSET.java
+@@ -35,5 +35,5 @@
+-			return output;
+-		} else {
+-			java.util.ArrayList empty_set = new java.util.ArrayList<java.util.ArrayList>();
+-			empty_set.add(new java.util.ArrayList());
+-			return empty_set;
++
++
++
++
++			return rest_subsets;} else { 			java.util.ArrayList empty_set = new java.util.ArrayList<java.util.ArrayList>(); 			empty_set.add(new java.util.ArrayList()); 			return empty_set;
+

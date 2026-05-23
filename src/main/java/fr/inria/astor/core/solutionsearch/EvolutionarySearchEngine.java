@@ -63,13 +63,14 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 			}
 
 			generationsExecuted++;
-			// warning level to keep Travis CI log aliive
+			// warning level to keep Travis CI log alive
 			log.warn("----------Running generation: " + generationsExecuted + ", population size: "
 					+ this.variants.size());
 			try {
-				boolean solutionFound = processGenerations(generationsExecuted);
+				boolean solutionFound = processGenerations(generationsExecuted); // Checkea la iteración
 
 				if (solutionFound) {
+
 					stopSearch =
 							// one solution
 							(ConfigurationProperties.getPropertyBool("stopfirst")
@@ -161,7 +162,7 @@ public class EvolutionarySearchEngine extends AstorCoreEngine {
 				}
 			} else {
 				temporalInstances.add(newVariant);
-				solution = processCreatedVariant(newVariant, generation);
+				solution = processCreatedVariant(newVariant, generation); // encuentra la solucion
 			}
 
 			if (solution) {

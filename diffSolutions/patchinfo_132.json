@@ -1,0 +1,25 @@
+{
+  "VARIANT_ID": "132",
+  "VALIDATION": "|true|0|6|[]|",
+  "patchhunks": [
+    {
+      "LOCATION": "java_programs.LEVENSHTEIN",
+      "PATH": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\levenshtein\\\\src\\\\java_programs\\\\LEVENSHTEIN.java",
+      "INGREDIENT_SCOPE": "-",
+      "SUSPICIOUNESS": "1",
+      "INGREDIENT_PARENT": "java.lang.Math.min(\\r\\njava_programs.LEVENSHTEIN.levenshtein(_String_0, target.substring(1)), \\r\\njava_programs.LEVENSHTEIN.levenshtein(_String_0.substring(1), target.substring(1)))",
+      "PATCH_HUNK_TYPE": "CtInvocationImpl|CtReturnImpl",
+      "ORIGINAL_CODE": "1 + java_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1))",
+      "BUGGY_CODE_TYPE": "CtBinaryOperatorImpl|CtReturnImpl",
+      "OPERATOR": "ExpressionReplaceOperator",
+      "MODIFIED_FILE_PATH": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-levenshtein\\\\\\/src\\/\\\\variant-132\\\\java_programs\\\\LEVENSHTEIN.java",
+      "LINE": "17",
+      "MP_RANKING": "6",
+      "PATCH_HUNK_CODE": "java.lang.Math.min(\\r\\njava_programs.LEVENSHTEIN.levenshtein(source, target.substring(1)), \\r\\njava_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1)))"
+    }
+  ],
+  "TIME": "136",
+  "GENERATION": "1",
+  "FOLDER_SOLUTION_CODE": "C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\.\\\\output_astor\\\\AstorMain-levenshtein\\\\\\/src\\/\\\\variant-132",
+  "PATCH_DIFF_ORIG": "--- C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\levenshtein\\\\src\\\\java_programs\\\\LEVENSHTEIN.java\\n+++ C:\\\\Users\\\\Lenovo\\\\Desktop\\\\UPC\\\\TFG_Clone\\\\astorTFGFork\\\\examples\\\\quixbugscompiled\\\\levenshtein\\\\src\\\\java_programs\\\\LEVENSHTEIN.java\\n@@ -17,3 +17,3 @@\\n-\\t\\t\\treturn 1 + java_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1));\\n-\\t\\t} else {\\n-\\t\\t\\treturn 1 + java.lang.Math.min(java.lang.Math.min(\\n+\\t\\t\\treturn \\n+\\n+\\t\\t\\tjava.lang.Math.min(\\n@@ -21 +21 @@\\n-\\t\\t\\tjava_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1))), \\n+\\t\\t\\tjava_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1)));} else { \\t\\t\\treturn 1 + java.lang.Math.min(java.lang.Math.min(java_programs.LEVENSHTEIN.levenshtein(source, target.substring(1)), java_programs.LEVENSHTEIN.levenshtein(source.substring(1), target.substring(1))), \\n\\n"
+}
