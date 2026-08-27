@@ -24,7 +24,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /astor/target /astor/target
-COPY docker-run.py docker-run.py
-RUN chmod +x docker-run.py
+COPY docker-run.py /astor/docker-run.py
+RUN chmod a+x /astor/docker-run.py
 
+RUN chmod -R 777 /astor
+
+WORKDIR /astor
 ENTRYPOINT ["python3", "docker-run.py"]

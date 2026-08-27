@@ -7,7 +7,7 @@ from shutil import copytree, rmtree
 import glob
 
 INPUT_DIR = "/input-project"
-TARGET_DIR = "/target-project"
+
 
 def astor_jar() -> str:
     matches = glob.glob("/astor/target/astor-*-jar-with-dependencies.jar")
@@ -16,13 +16,27 @@ def astor_jar() -> str:
         exit(1)
     return matches[0]
 
-def prepare_target_project() -> None:
+
+def prepare_target_project() -> str:
     if not os.path.isdir(INPUT_DIR):
-        print(f"No mounted project in {INPUT_DIR}. Use -v <project>:{INPUT_DIR}:ro")
+        print(f"No mounted project in {INPUT_DIR}. Use -v <project>:{INPUT_DIR}/<name>:ro")
         exit(1)
-    if os.path.exists(TARGET_DIR):
-        rmtree(TARGET_DIR)
-    copytree(INPUT_DIR, TARGET_DIR)
+
+    entries = os.listdir(INPUT_DIR)
+    if len(entries) != 1:
+        print(f"Expected exactly one project mounted in {INPUT_DIR}, found: {entries}")
+        exit(1)
+
+    project_name = entries[0]
+    source = os.path.join(INPUT_DIR, project_name)
+    target = os.path.join("/astor", project_name)
+
+    if os.path.exists(target):
+        rmtree(target)
+    copytree(source, target)
+
+    return target
+
 
 # Allowed arguments. See docs/arguments.md
 ALLOWED_ARGS: set[str] = {
@@ -64,28 +78,27 @@ ALLOWED_ARGS: set[str] = {
     "loglevel",
     "logpatternlayout",
     "jsonoutputname",
-    "parameters"
+    "parameters",
 }
 
-def build_command(argv: list[str]) -> list[str]:
+
+def build_command(argv: list[str], target_dir: str) -> list[str]:
     args: list[str] = [
         "java",
         "-cp",
         astor_jar(),
         "fr.inria.main.evolution.AstorMain",
         "-location",
-        "/target-project"
+        target_dir,
     ]
     # We iterate the parameters as a batch, so we can catch the parameter's value
     for pair in batched(argv, 2):
         if len(pair) != 2:
             print(f"Missing value for parameter: {pair[0]}")
             exit(1)
-            
         if pair[0][1:] == "location":
-            # We override the location to point to our /target-project
+            # We override the location to point to our target dir
             continue
-            
         if pair[0][1:] not in ALLOWED_ARGS:
             print(f"An unknown parameter has been given: {pair[0]}")
             exit(1)
@@ -101,6 +114,6 @@ if __name__ == "__main__":
         print(f"Usage: {sys.argv[0]} <parameters>")
         exit(1)
 
-    prepare_target_project()
-    command = build_command(argv)
+    target_dir = prepare_target_project()
+    command = build_command(argv, target_dir)
     os.execvp(command[0], command)
