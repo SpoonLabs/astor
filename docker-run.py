@@ -41,7 +41,6 @@ def prepare_target_project() -> str:
 # Allowed arguments. See docs/arguments.md
 ALLOWED_ARGS: set[str] = {
     "javacompliancelevel",
-    "location",
     "srcjavafolder",
     "srctestfolder",
     "binjavafolder",
@@ -51,7 +50,6 @@ ALLOWED_ARGS: set[str] = {
     "maxtime",
     "maxGeneration",
     "population",
-    "workingDirectory",
     "stopfirst",
     "maxnumbersolutions",
     "maxsuspcandidates",
@@ -81,6 +79,11 @@ ALLOWED_ARGS: set[str] = {
     "parameters",
 }
 
+# Parameters that shouldn't be allowed as the container should deal with the hard work
+BLACKLISTED_ARGS: set[str] = {
+    "location",
+    "workingDirectory",
+}
 
 def build_command(argv: list[str], target_dir: str) -> list[str]:
     args: list[str] = [
@@ -96,12 +99,15 @@ def build_command(argv: list[str], target_dir: str) -> list[str]:
         if len(pair) != 2:
             print(f"Missing value for parameter: {pair[0]}")
             exit(1)
-        if pair[0][1:] == "location":
-            # We override the location to point to our target dir
+        
+        param: str = pair[0][1:]
+        if param in BLACKLISTED_ARGS:
+            # This parameter is related to the I/O directories which are already handled by the container
             continue
-        if pair[0][1:] not in ALLOWED_ARGS:
+        elif param not in ALLOWED_ARGS:
             print(f"An unknown parameter has been given: {pair[0]}")
             exit(1)
+
         args.append(pair[0])
         args.append(pair[1])
 
