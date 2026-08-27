@@ -1,0 +1,10 @@
+# Files/directories ignored by the container when being built
+target
+#examples
+.github
+docs
+.git
+.gitignore
+CITATION.cff
+LICENSE
+README.md
